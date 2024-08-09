@@ -14,7 +14,7 @@ const defaultLinks = [
 
 export const metadata = {
   ...rootMetadata,
-  title: "CAS OBPS | COAM",
+  title: `${rootMetadata.title} | COAM`,
 };
 
 export default function COAMLayout({

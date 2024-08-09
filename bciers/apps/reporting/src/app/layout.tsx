@@ -14,7 +14,7 @@ const defaultLinks = [
 
 export const metadata = {
   ...rootMetadata,
-  title: "CAS OBPS | Reporting",
+  title: `${rootMetadata.title} | Reporting`,
 };
 
 export default function ReportingLayout({
