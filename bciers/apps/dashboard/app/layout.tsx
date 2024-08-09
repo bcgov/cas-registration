@@ -11,7 +11,7 @@ import RootLayout, { rootMetadata } from "@bciers/components/layout/RootLayout";
 
 export const metadata = {
   ...rootMetadata,
-  title: "CAS OBPS | Dashboard",
+  title: `${rootMetadata.title} | Dashboard`,
 };
 
 export default RootLayout;

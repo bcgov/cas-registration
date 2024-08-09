@@ -18,7 +18,7 @@ export const rootMetadata: Metadata = {
   description:
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
   icons: {
-    icon: "/img/favicon.ico",
+    icon: "/favicon.ico",
   },
 };
 

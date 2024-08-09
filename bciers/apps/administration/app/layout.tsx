@@ -15,7 +15,7 @@ const defaultLinks = [
 
 export const metadata = {
   ...rootMetadata,
-  title: "CAS OBPS | Administration",
+  title: `${rootMetadata.title} | Administration`,
 };
 
 export default function AdministrationLayout({
