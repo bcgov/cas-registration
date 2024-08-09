@@ -11,6 +11,7 @@ from registration.models import (
     UserOperator,
     WellAuthorizationNumber,
 )
+from registration.tests.utils.helpers import TestUtils
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.tests.utils.bakers import (
     address_baker,
@@ -267,11 +268,9 @@ class TestUpdateFacility:
     @staticmethod
     def test_update_facility_with_mandatory_data():
         user, owning_operation, facility = TestUpdateFacility._setup_facility()
-        # Before update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(facility, expected_count=0)
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=1, address_expected=False
-        )  # assert 1 for the operator; 0 for the facility
+        
+        # Assert Initial State
+        TestUtils.assert_facility_db_state(facility)
 
         facility_payload = FacilityIn(
             name='zip',
@@ -290,20 +289,17 @@ class TestUpdateFacility:
         assert facility.starting_date is None
         assert facility.address is None
         assert len(facility.well_authorization_numbers.all()) == 0
-        # After update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(facility, expected_count=0)
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=1, address_expected=False
-        )  # assert 1 for the operator; 0 for the facility
+        
+         # Assert Updated State
+        TestUtils.assert_facility_db_state(facility)  
 
     @staticmethod
     def test_update_facility_with_all_data():
         user, owning_operation, facility = TestUpdateFacility._setup_facility()
-        # Before update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(facility, expected_count=0)
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=1, address_expected=False
-        )  # assert 1 for the operator; 0 for the facility
+        
+        # Assert Initial State
+        TestUtils.assert_facility_db_state(facility)
+
         facility_payload = FacilityIn(
             name='zip',
             type='Large Facility',
@@ -330,16 +326,10 @@ class TestUpdateFacility:
         assert facility.address.municipality == facility_payload.municipality
         assert facility.address.province == facility_payload.province
         assert facility.address.postal_code == facility_payload.postal_code
-        assert sorted(
-            facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)
-        ) == sorted(facility_payload.well_authorization_numbers)
-        # After update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(
-            facility, expected_count=len(facility_payload.well_authorization_numbers)
-        )
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=2, address_expected=True
-        )  # assert 1 for the operator; 1 for the facility
+
+        # Assert Updated State
+        TestUtils.assert_facility_db_state(facility, expect_address=facility.address, expect_well_authorization_numbers=len(facility_payload.well_authorization_numbers))  
+      
 
     @staticmethod
     def test_update_facility_update_address():
