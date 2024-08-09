@@ -14,10 +14,7 @@ class FacilityReport(TimeStampedModel):
     facility = models.ForeignKey(
         Facility,
         on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        db_comment="""The facility record this report was created for, at the time the report was filled out.
-        This may be null in the future if the facility disappears or changes ownership.""",
+        db_comment="The facility record this report was created for, at the time the report was filled out.",
         related_name="facility_reports",
     )
 
