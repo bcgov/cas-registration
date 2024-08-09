@@ -63,6 +63,7 @@ const FacilityInformationForm = ({
 }: FacilityInformationFormProps) => {
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Get the list of sections in the LFO schema - used to unnest the formData
   const formSectionListLFo = Object.keys(
     facilitiesLfoSchema.properties as RJSFSchema,
@@ -78,12 +79,13 @@ const FacilityInformationForm = ({
   const FacilityDataGridMemo = useMemo(
     () => (
       <FacilityDataGrid
+        disabled={isSubmitting}
         initialData={initialGridData ?? { rows: [], row_count: 0 }}
         operationId={operation}
         sx={FacilityGridSx}
       />
     ),
-    [initialGridData, operation],
+    [initialGridData, isSubmitting, operation],
   );
 
   const handleFormChange = useCallback(
@@ -95,6 +97,7 @@ const FacilityInformationForm = ({
 
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
+      setIsSubmitting(true);
       const method = "POST";
       const endpoint = "registration/facilities";
 
@@ -115,6 +118,7 @@ const FacilityInformationForm = ({
       });
       if (response.error) {
         setError(response.error);
+        setIsSubmitting(false);
         return { error: response.error };
       }
     },

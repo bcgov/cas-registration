@@ -17,6 +17,7 @@ import styles from "@bciers/components/datagrid/styles";
 interface Props {
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
+  disabled?: boolean; // Optional prop to disable sorting and filtering - was needed to prevent URL updates on page change
   fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
   initialData: {
     rows: { [key: string]: any }[];
@@ -56,6 +57,7 @@ const PAGE_SIZE = 20;
 const DataGrid: React.FC<Props> = ({
   columns,
   columnGroupModel,
+  disabled,
   fetchPageData,
   paginationMode = "client",
   initialData,
@@ -84,7 +86,7 @@ const DataGrid: React.FC<Props> = ({
 
     fetchData().then(() => setLoading(false));
     return () => debouncedFetchData.cancel();
-  }, 100);
+  }, 200);
 
   useEffect(() => {
     setIsComponentMounted(true);
@@ -97,7 +99,7 @@ const DataGrid: React.FC<Props> = ({
   useEffect(() => {
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
-    if (!isComponentMounted || !fetchPageData) return;
+    if (!isComponentMounted || !fetchPageData || disabled) return;
     setLoading(true);
     debouncedFetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,6 +107,7 @@ const DataGrid: React.FC<Props> = ({
 
   const handleSortModelChange = useMemo(
     () => (newSortModel: GridSortItem[]) => {
+      if (disabled) return;
       // window.location.pathname includes `/registration` unlike usePathname
       const pathName = window.location.pathname;
       const params = new URLSearchParams(searchParams);
@@ -112,10 +115,8 @@ const DataGrid: React.FC<Props> = ({
         Object.keys(Object.fromEntries(params)).length === 0;
       const isSortFieldEmpty = !newSortModel[0]?.field;
 
-      if (isParamsEmpty && isSortFieldEmpty) {
-        // Do not update the URL if the sort field is empty and the URL is already empty
-        return;
-      }
+      // Do not update the URL if the sort field is empty and the URL is already empty
+      if (isParamsEmpty && isSortFieldEmpty) return;
 
       const sortField = newSortModel[0]?.field;
 
@@ -143,6 +144,7 @@ const DataGrid: React.FC<Props> = ({
 
   const handlePaginationModelChange = useMemo(
     () => (newPaginationModel: { page: number; pageSize: number }) => {
+      if (disabled) return;
       // window.location.pathname includes `/registration` unlike usePathname
       const pathName = window.location.pathname;
       const params = new URLSearchParams(searchParams);
