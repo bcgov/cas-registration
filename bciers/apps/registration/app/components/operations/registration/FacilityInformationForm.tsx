@@ -20,7 +20,7 @@ import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 
 interface FacilityInformationFormProps {
   formData: FacilityInformationFormData;
-  initialGridData: FacilityInitialData;
+  initialGridData?: FacilityInitialData;
   isOperationSfo: boolean;
   operation: UUID | "create";
   step: number;
@@ -140,7 +140,10 @@ const FacilityInformationForm = ({
       steps={steps}
       uiSchema={uiSchema}
     >
-      <section className="mt-4">{FacilityDataGridMemo}</section>
+      {/* Only display DataGrid for LFO Operations */}
+      {!isOperationSfo && (
+        <section className="mt-4">{FacilityDataGridMemo}</section>
+      )}
     </MultiStepBase>
   );
 };
