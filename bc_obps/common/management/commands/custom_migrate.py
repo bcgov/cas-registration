@@ -27,7 +27,7 @@ class Command(BaseCommand):
             self.stdout.write(f'Running migrations for {app_label}...')
             # Wrap in try/except block to handle errors for apps with no migrations and continue with other apps
             try:
-                call_command('migrate', app_label)
+                call_command('migrate', app_label=app_label)
                 self.stdout.write(self.style.SUCCESS(f'Successfully migrated {app_label}.'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Error migrating {app_label}: {e}'))
