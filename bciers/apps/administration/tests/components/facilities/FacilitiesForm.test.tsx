@@ -388,11 +388,13 @@ describe("FacilitiesForm component", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /submit/i });
-    actionHandler.mockReturnValueOnce({
-      id: facilityId,
-      name: facilityName,
-      error: null,
-    });
+    actionHandler.mockReturnValueOnce([
+      {
+        id: facilityId,
+        name: facilityName,
+        error: null,
+      },
+    ]);
     // fill year and starting date
     const year = screen.getByLabelText(/Did this facility begin operations+/i);
     await userEvent.click(year);
@@ -410,6 +412,7 @@ describe("FacilitiesForm component", () => {
       screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
       { target: { value: 0.1 } },
     );
+
     userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -421,7 +424,7 @@ describe("FacilitiesForm component", () => {
       );
     });
   });
-  it.skip("fills all form fields, creates new LFO facility, and redirects on success", async () => {
+  it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
     render(
       <FacilitiesForm
         isCreating
@@ -432,11 +435,13 @@ describe("FacilitiesForm component", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /submit/i });
-    actionHandler.mockReturnValueOnce({
-      id: facilityId,
-      name: facilityName,
-      error: null,
-    });
+    actionHandler.mockResolvedValueOnce([
+      {
+        id: facilityId,
+        name: facilityName,
+        error: null,
+      },
+    ]);
     // FILL FIELDS
     // fill name
     await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
