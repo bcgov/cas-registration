@@ -15,7 +15,7 @@ const ReadOnlyArrayFieldTemplate = ({
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            <div className="form-heading flex justify-between m-w-full my-10">
+            <div className="text-bc-bg-blue text-lg flex justify-between m-w-full my-10">
               {customTitleName && (
                 <span>
                   {customTitleName} {i + 1}
