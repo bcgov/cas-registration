@@ -25,6 +25,6 @@ spec:
           command:
             - /bin/sh
             - -ec
-            - "curl https://$(BACKEND_HOST)/api/registration/test-setup"
+            - "curl https://$(BACKEND_HOST)/api/registration/test-setup?load_only=True"
       restartPolicy: Never
 {{ end }}
