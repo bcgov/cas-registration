@@ -10,10 +10,10 @@ from common.models import DashboardData
 from common.schema.v1 import DashboardDataSchemaOut
 
 from registration.api.utils.current_user_utils import get_current_user_guid
-from registration.models import AppRole, UserOperator
-from registration.decorators import authorize, handle_http_errors
+from registration.models import AppRole
+from registration.decorators import handle_http_errors
+from common.permissions import authorize
 from registration.schema.generic import Message
-
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.dashboard_service import DashboardDataService
 
@@ -23,8 +23,8 @@ from service.data_access_service.dashboard_service import DashboardDataService
     response={200: List[DashboardDataSchemaOut], codes_4xx: Message},
     url_name="list_dashboard_data",
     tags=TAG_DASHBOARD_TILES,
+    auth=authorize("authorized_roles"),
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def list_dashboard_data(
     request: HttpRequest,

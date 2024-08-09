@@ -1,15 +1,13 @@
 from typing import Dict, Literal, Tuple
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from service.data_access_service.user_service import UserDataAccessService
-
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import handle_http_errors
 from registration.schema.v1 import IsApprovedUserOperator
 from registration.schema.generic import Message
 from registration.api.router import router
-
-from registration.models import UserOperator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
@@ -21,8 +19,8 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     description="""Checks if the current user is an approved admin for their operator.
     The endpoint verifies whether the current user has the 'ADMIN' role and 'APPROVED' status.
     It returns a dictionary indicating whether the user is an approved admin.""",
+    auth=authorize("approved_industry_user"),
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def is_current_user_approved_admin(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
     user_guid = get_current_user_guid(request)
