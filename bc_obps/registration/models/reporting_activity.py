@@ -13,6 +13,8 @@ class ReportingActivity(BaseModel):
     applicable_to = models.CharField(
         max_length=1000, choices=Applicability.choices, db_comment="Which type of facility the activity applies to"
     )
+    slug = models.CharField(max_length=50, db_comment="A varchar slug to identify the activity on the frontend. This will be used to generate the routes to navigate to each activity")
+    weight = models.FloatField(db_comment='A weighted float value used to order activities. This will be used on the frontend to determine the order in which activity pages appear in an emissions report')
     history = HistoricalRecords(
         table_name='erc_history"."reporting_activity_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
