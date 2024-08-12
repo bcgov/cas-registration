@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 
+
 def init_activity_slug_weight(apps, schema_monitor):
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
     r = ReportingActivity.objects.get(name='General stationary combustion excluding line tracing')
@@ -206,6 +207,7 @@ def init_activity_slug_weight(apps, schema_monitor):
     r.slug = 'lng_activities'
     r.weight = 3700.0
     r.save()
+
 
 class Migration(migrations.Migration):
 
