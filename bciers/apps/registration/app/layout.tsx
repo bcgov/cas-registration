@@ -5,18 +5,26 @@ The app directory must include a root app/layout.js.
 
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import { RootLayout } from "@bciers/components/server";
+import RootLayout, {
+  generateMetadata,
+} from "@bciers/components/layout/RootLayout";
+
+const title = "Registration";
+
 const defaultLinks = [
   { label: "Dashboard", href: "/" },
-  { label: "Registration", href: "/registration" },
+  { label: title, href: "/registration" },
 ];
+
+export const metadata = generateMetadata(title);
+
 export default function ReportingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <RootLayout defaultLinks={defaultLinks} zone="registration">
+    <RootLayout defaultLinks={defaultLinks} zone={title.toLowerCase()}>
       {children}
     </RootLayout>
   );
