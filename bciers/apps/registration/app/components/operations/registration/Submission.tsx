@@ -26,7 +26,7 @@ const Submission = ({
           <p className="m-0">This operation has been registered</p>
         </div>
         <div className="mt-6">
-          <p className="m-0">
+          <p className="m-0" data-testid="submission-date-message">
             Did your operation or facility have any of the following changes in{" "}
             {previousYear} or {currentYear}?
           </p>
