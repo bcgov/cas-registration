@@ -254,5 +254,7 @@ class Migration(migrations.Migration):
             ),
             preserve_default=False,
         ),
-        migrations.RunPython(init_activity_slug_weight) # No reverse needed, function just overwrites the defaults above
+        migrations.RunPython(
+            init_activity_slug_weight
+        ),  # No reverse needed, function just overwrites the defaults above
     ]
