@@ -1,4 +1,3 @@
-import BasicFieldTemplate from "@bciers/components/form/fields/BasicFieldTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
 import { GenerateNewEntrantFormMessage } from "apps/registration/app/components/operations/registration/form/titles";
@@ -7,10 +6,11 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 export const newEntrantOperationSchema: RJSFSchema = {
   title: "When is this operation’s date of First Shipment?",
   type: "object",
+  required: ["operation_date_of_first_shipment", "statutory_declaration"],
   properties: {
     operation_date_of_first_shipment: {
       title: "Date of First Shipment",
-      type: "boolean",
+      type: "string",
       enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
       default: "On or after April 1, 2024",
     },
@@ -88,10 +88,10 @@ export const newEntrantOperationUiSchema: UiSchema = {
     "ui:title": GenerateNewEntrantFormMessage("April 1, 2024", "tbd"),
   },
   statutory_declaration: {
-    "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "FileWidget",
     "ui:options": {
       accept: ".pdf",
+      label: false,
     },
   },
 };

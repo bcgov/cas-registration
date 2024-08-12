@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { actionHandler } from "@bciers/actions";
+import { IChangeEvent } from "@rjsf/core";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { newEntrantOperationUiSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/newEntrantOperation";
 import {
@@ -18,14 +21,33 @@ const NewEntrantOperationForm = ({
   step,
   steps,
 }: NewEntrantOperationFormProps) => {
+  const [error, setError] = useState(undefined);
+  const handleSubmit = async (e: IChangeEvent) => {
+    const method = "POST";
+    const endpoint = "registration/tbd";
+    const body = {
+      ...e.formData,
+      operation_id: operation,
+    };
+    const response = await actionHandler(endpoint, method, "", {
+      body: JSON.stringify(body),
+    });
+
+    if (response.error) {
+      setError(response.error);
+      return { error: response.error };
+    }
+  };
+
   return (
     <MultiStepBase
       allowBackNavigation
       baseUrl={`/register-an-operation/${operation}`}
       baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
+      error={error}
       formData={formData}
-      onSubmit={() => {}}
+      onSubmit={handleSubmit}
       schema={schema}
       step={step}
       steps={steps}
