@@ -48,8 +48,12 @@ class OperationModelTest(BaseTestCase):
 
         cls.test_object.reporting_activities.set(
             [
-                ReportingActivity.objects.create(name="test", applicable_to=ReportingActivity.Applicability.ALL),
-                ReportingActivity.objects.create(name="test2", applicable_to=ReportingActivity.Applicability.LFO),
+                ReportingActivity.objects.create(
+                    name="test", applicable_to=ReportingActivity.Applicability.ALL, slug="test", weight=100
+                ),
+                ReportingActivity.objects.create(
+                    name="test2", applicable_to=ReportingActivity.Applicability.LFO, slug="test2", weight=200
+                ),
             ]
         )
         cls.test_object.regulated_products.set(
