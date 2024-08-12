@@ -33,8 +33,6 @@ export default async function Facility({
     );
   }
   const isCreating = Object.keys(facilityFormData).length === 0;
-  console.log(operation);
-  console.log(operation.type === "Single Facility Operation");
   return (
     <FacilityForm
       schema={
