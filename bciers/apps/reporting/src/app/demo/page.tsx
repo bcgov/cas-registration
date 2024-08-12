@@ -18,7 +18,7 @@ const data: TaskListElement[] = [
         elements: [
           {
             type: "Page",
-            title: "General stationary combustion",
+            title: "General stationary combustion excluding line tracing",
           },
           { type: "Page", title: "Mobile combustion", isActive: true },
           { type: "Page", title: "...", isChecked: true },
