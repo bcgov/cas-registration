@@ -35,7 +35,7 @@ const mockdefaultSourceType = { units: [{ fuels: [{ emissions: [{}] }] }] };
 const response = {
   schema: {
     type: "object",
-    title: "General stationary combustion",
+    title: "General stationary combustion excluding line tracing",
     properties: {
       firstTestSourceType: {
         type: "boolean",
@@ -76,7 +76,7 @@ describe("ActivityForm component", () => {
     const response2 = {
       schema: {
         type: "object",
-        title: "General stationary combustion",
+        title: "General stationary combustion excluding line tracing",
         properties: {
           firstTestSourceType: {
             type: "boolean",

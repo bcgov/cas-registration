@@ -153,7 +153,7 @@ class TestInitialData(TestCase):
     def test_reporting_activity_initial_data(self):
         expected_activities = sorted(
             [
-                ('General stationary combustion', 'all'),
+                ('General stationary combustion excluding line tracing', 'all'),
                 ('Fuel combustion by mobile equipment', 'sfo'),
                 ('Aluminum or alumina production', 'sfo'),
                 ('Ammonia production', 'sfo'),

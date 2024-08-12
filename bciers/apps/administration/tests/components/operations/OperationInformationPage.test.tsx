@@ -32,7 +32,10 @@ const fetchFormEnums = () => {
 
   // Reporting activities
   actionHandler.mockResolvedValueOnce([
-    { name: "General stationary combustion", applicable_to: "all" },
+    {
+      name: "General stationary combustion excluding line tracing",
+      applicable_to: "all",
+    },
     { name: "Fuel combustion by mobile equipment", applicable_to: "sfo" },
   ]);
 };
