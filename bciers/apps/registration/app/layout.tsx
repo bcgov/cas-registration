@@ -5,7 +5,9 @@ The app directory must include a root app/layout.js.
 
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import RootLayout, { rootMetadata } from "@bciers/components/layout/RootLayout";
+import RootLayout, {
+  generateMetadata,
+} from "@bciers/components/layout/RootLayout";
 
 const title = "Registration";
 
@@ -14,10 +16,7 @@ const defaultLinks = [
   { label: title, href: "/registration" },
 ];
 
-export const metadata = {
-  ...rootMetadata,
-  title: `${rootMetadata.title} | ${title}`,
-};
+export const metadata = generateMetadata(title);
 
 export default function ReportingLayout({
   children,
