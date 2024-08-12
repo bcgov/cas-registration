@@ -1,4 +1,4 @@
-import { render, screen, act } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
 import { actionHandler, useSession } from "@bciers/testConfig/mocks";
@@ -90,5 +90,94 @@ describe("the RegistrationSubmissionForm component", () => {
         }),
       },
     );
+  });
+
+  it("should render the Submission component when the form is submitted", async () => {
+    render(
+      <RegistrationSubmissionForm
+        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        schema={submissionSchema}
+        step={5}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await act(async () => {
+      submitButton.click();
+    });
+
+    expect(screen.getByText("Registration complete")).toBeVisible();
+    expect(
+      screen.getByText("This operation has been registered"),
+    ).toBeVisible();
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "If yes, and you have not reported it yet, please report it in the Report a Change page. Otherwise, no further action is required and this registration is complete.",
+    );
+
+    expect(screen.getByRole("link", { name: "Report a change" })).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Return to Dashboard" }),
+    ).toBeVisible();
+  });
+
+  it("should render the Submission message with the correct years (older date)", async () => {
+    render(
+      <RegistrationSubmissionForm
+        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        schema={submissionSchema}
+        step={5}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    // Using old date to show this is working
+    const date = new Date(2000, 8, 12);
+
+    vi.useFakeTimers();
+    vi.setSystemTime(date);
+
+    expect(Date.now()).toBe(date.valueOf());
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await act(async () => {
+      submitButton.click();
+    });
+
+    const submissionDateMessage = screen.getByTestId("submission-date-message");
+    expect(submissionDateMessage).toHaveTextContent(
+      "Did your operation or facility have any of the following changes in 1999 or 2000?",
+    );
+    vi.useRealTimers();
+  });
+
+  it("should render the message with the correct years (recent date)", async () => {
+    render(
+      <RegistrationSubmissionForm
+        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        schema={submissionSchema}
+        step={5}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await act(async () => {
+      submitButton.click();
+    });
+
+    const submissionDateMessage = screen.getByTestId("submission-date-message");
+    const newerDate = new Date(2024, 8, 12);
+    vi.useFakeTimers();
+    vi.setSystemTime(newerDate);
+
+    expect(submissionDateMessage).toHaveTextContent(
+      "Did your operation or facility have any of the following changes in 2023 or 2024?",
+    );
+    vi.useRealTimers();
   });
 });
