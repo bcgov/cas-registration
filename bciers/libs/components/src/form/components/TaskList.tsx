@@ -1,5 +1,4 @@
 import { useState } from "react";
-import CheckCircle from "@bciers/components/icons/CheckCircle";
 
 export interface TaskListProps {
   className?: string;
@@ -7,16 +6,9 @@ export interface TaskListProps {
     section: string;
     title: string;
   }[];
-  taskListItemStatus: {
-    [section: string]: boolean;
-  };
 }
 
-const TaskList: React.FC<TaskListProps> = ({
-  className,
-  taskListItems,
-  taskListItemStatus,
-}) => {
+const TaskList: React.FC<TaskListProps> = ({ className, taskListItems }) => {
   const [activeTask, setActiveTask] = useState(taskListItems[0].section);
 
   const handleTaskClick = (e: React.MouseEvent, section: string) => {
@@ -34,7 +26,6 @@ const TaskList: React.FC<TaskListProps> = ({
     >
       {taskListItems.map((task) => {
         const { section, title } = task;
-        const taskStatus = taskListItemStatus?.[section];
         const isActive = activeTask === section;
         return (
           <button
@@ -46,12 +37,6 @@ const TaskList: React.FC<TaskListProps> = ({
             } hover:bg-bc-light-grey-200`}
             onClick={(e) => handleTaskClick(e, section)}
           >
-            <div
-              className={`min-w-4 mr-2.5 flex align-middle `}
-              data-testid={`${section}-tasklist-check`}
-            >
-              {taskStatus && <CheckCircle />}
-            </div>
             <span
               className={`no-underline whitespace-nowrap ${
                 isActive ? "text-bc-link-blue" : "text-bc-text"

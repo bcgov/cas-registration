@@ -115,8 +115,14 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
       />,
     );
 
@@ -148,8 +154,14 @@ describe("the SingleStepTaskListForm component", () => {
         uiSchema={uiSchema}
         formData={mockFormData}
         mode={FormMode.READ_ONLY}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
         inlineMessage={"Testing inline message"}
       />,
     );
@@ -223,8 +235,14 @@ describe("the SingleStepTaskListForm component", () => {
         uiSchema={uiSchema}
         formData={mockFormData}
         mode={FormMode.READ_ONLY}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
       />,
     );
     const editButton = screen.getByRole("button", { name: "Edit" });
@@ -254,8 +272,14 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={mockFormData}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
       />,
     );
 
@@ -271,8 +295,14 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
       />,
     );
 
@@ -290,8 +320,14 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
       />,
     );
 
@@ -401,8 +437,14 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
         error={"Name: Facility with this Name already exists"}
       />,
     );
@@ -417,8 +459,14 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
         allowEdit={false}
       />,
     );
