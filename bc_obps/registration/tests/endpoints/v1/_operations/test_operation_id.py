@@ -332,7 +332,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             # this updates the existing contact (contact2)
             type='Single Facility Operation',
             naics_code_id=operation.naics_code_id,
-            # reporting_activities=[],
+            # activity=[],
             regulated_products=[],
             # operation_has_multiple_operators=False,
             operator_id=operator.id,
@@ -383,7 +383,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=operation.naics_code_id,
-            # reporting_activities=[],
+            # activity=[],
             regulated_products=[],
             # operation_has_multiple_operators=False,
             documents=[],
@@ -448,7 +448,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             operator_id=operator.id,
             documents=[],
             regulated_products=[],
-            # reporting_activities=[],
+            # activity=[],
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -483,7 +483,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
-            # reporting_activities=[],
+            # activity=[],
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -525,7 +525,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
-            # reporting_activities=[],
+            # activity=[],
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -558,7 +558,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
-            # reporting_activities=[],
+            # activity=[],
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
@@ -606,7 +606,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
-            # reporting_activities=[],
+            # activity=[],
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
@@ -655,7 +655,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[regulated_product.id],
-            # reporting_activities=[],
+            # activity=[],
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
@@ -703,7 +703,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             documents=[],
             regulated_products=[],
             naics_code_id=operation.naics_code_id,
-            # reporting_activities=[1],
+            # activity=[1],
         )
         put_response_1 = TestUtils.mock_put_with_auth_role(
             self,
@@ -726,7 +726,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             operator_id=operator.id,
             naics_code_id=operation.naics_code_id,
             regulated_products=[],
-            # reporting_activities=[],
+            # activity=[],
             is_external_point_of_contact=True,
             external_point_of_contact_first_name='Bart',
             external_point_of_contact_last_name='Simpson',
