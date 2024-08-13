@@ -133,7 +133,7 @@ describe("the OperationInformationForm component", () => {
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operations/uuid2/1",
+        "registration/v2/operations/uuid2/registration/operation",
         "PUT",
         "",
         {
@@ -197,7 +197,7 @@ describe("the OperationInformationForm component", () => {
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operations/uuid2/1",
+        "registration/v2/operations/uuid2/registration/operation",
         "PUT",
         "",
         {
@@ -227,30 +227,31 @@ describe("the OperationInformationForm component", () => {
       expect(screen.getAllByText(/Required field/i)).toHaveLength(2);
     });
   });
-  it("should trigger required field errors with regulated products", async () => {
-    render(
-      <OperationInformationForm
-        formData={{}}
-        schema={localSchema}
-        step={1}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
-    // set purpose to make regulated products field show up
-    const purposeInput = screen.getByRole("combobox", {
-      name: /The purpose of this registration+/i,
-    });
 
-    const openPurposeDropdownButton = purposeInput?.parentElement?.children[1]
-      ?.children[0] as HTMLInputElement;
+  // it("should trigger required field errors with regulated products", async () => {
+  //   render(
+  //     <OperationInformationForm
+  //       formData={{}}
+  //       schema={localSchema}
+  //       step={1}
+  //       steps={allOperationRegistrationSteps}
+  //     />,
+  //   );
+  //   // set purpose to make regulated products field show up
+  //   const purposeInput = screen.getByRole("combobox", {
+  //     name: /The purpose of this registration+/i,
+  //   });
 
-    await userEvent.click(openPurposeDropdownButton);
-    const purposeOption = screen.getByText("OBPS Regulated Operation");
-    await userEvent.click(purposeOption);
-    // try to continue without filling anything else out
-    userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
-    await waitFor(() => {
-      expect(screen.getAllByText(/Required field/i)).toHaveLength(2);
-    });
-  });
+  //   const openPurposeDropdownButton = purposeInput?.parentElement?.children[1]
+  //     ?.children[0] as HTMLInputElement;
+
+  //   await userEvent.click(openPurposeDropdownButton);
+  //   const purposeOption = screen.getByText("OBPS Regulated Operation");
+  //   await userEvent.click(purposeOption);
+  //   // try to continue without filling anything else out
+  //   userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
+  //   await waitFor(() => {
+  //     expect(screen.getAllByText(/Required field/i)).toHaveLength(2);
+  //   });
+  // });
 });

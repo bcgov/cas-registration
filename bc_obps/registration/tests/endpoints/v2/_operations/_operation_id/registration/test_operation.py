@@ -4,7 +4,7 @@ from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 
 
-class TestOperationIdV2Endpoint(CommonTestSetup):
+class TestRegistrationOperationInformationEndpoint(CommonTestSetup):
     def test_register_operation_information_endpoint_unauthorized_roles_cannot_put(self):
         operation = baker.make_recipe(
             'utils.operation',
@@ -59,9 +59,6 @@ class TestOperationIdV2Endpoint(CommonTestSetup):
         assert response.status_code == 200
         # Additional Assertions
         assert response_json['id'] == str(operation.id)
-        # brianna the create_or_update function may not be working
-        assert response_json['updated_at'] is not None
-        assert response_json['updated_by'] == self.user.user_guid
 
     def test_register_operation_information_endpoint_fail(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)

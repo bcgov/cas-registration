@@ -1,5 +1,6 @@
 from typing import Dict, Union
 from uuid import UUID
+from service.operation_service import OperationService
 from registration.models.registration_purpose import RegistrationPurpose
 from service.data_access_service.registration_purpose_service import registrationpurposeDataAccessService
 from registration.schema.v2.operation import OperationFilterSchema, RegistrationPurposeIn
@@ -13,11 +14,10 @@ from registration.models import (
 )
 from registration.constants import PAGE_SIZE
 from django.db import transaction
-from registration.utils import check_industry_user_operation_access
 from django.db.models import QuerySet
 
 
-class OperationService:
+class OperationServiceV2:
     @classmethod
     def list_operations(
         cls, user_guid: UUID, filters: OperationFilterSchema = Query(...)
@@ -64,8 +64,7 @@ class OperationService:
     def register_operation_information(
         cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn
     ) -> Operation:
-        check_industry_user_operation_access(user_guid, operation_id)
-        operation: Operation = OperationDataAccessService.get_by_id(operation_id)
+        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
 
         # add the payload's purpose as long as it's not reporting or regulated (will add these later)
         if (

@@ -10,3 +10,12 @@ export enum OperationRegistrationSteps {
 export const allOperationRegistrationSteps: string[] = Object.values(
   OperationRegistrationSteps,
 );
+
+export enum RegistrationPurposes {
+  REPORTING_OPERATION = "Reporting Operation",
+  OBPS_REGULATED_OPERATION = "OBPS Regulated Operation",
+  OPTED_IN_OPERATION = "Opted-in Operation",
+  NEW_ENTRANT_OPERATION = "New Entrant Operation",
+  ELECTRICITY_IMPORT_OPERATION = "Electricity Import Operation",
+  POTENTIAL_REPORTING_OPERATION = "Potential Reporting Operation",
+}

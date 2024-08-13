@@ -22,7 +22,7 @@ const OperationInformationForm = ({
 }: OperationInformationFormProps) => {
   const router = useRouter();
   const handleSubmit = async (data: { formData?: any }) => {
-    const endpoint = `registration/v2/operations/${data.formData?.operation}/1`;
+    const endpoint = `registration/v2/operations/${data.formData?.operation}/registration/operation`;
     const response = await actionHandler(endpoint, "PUT", "", {
       body: JSON.stringify(data.formData),
     });
