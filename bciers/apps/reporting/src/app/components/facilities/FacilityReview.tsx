@@ -66,7 +66,6 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
       try {
         const facilityData = await getReportFacilities(version_id, facility_id);
         const activitiesData = await getAllActivities();
-        console.log("facility data", facilityData);
         const validActivitiesData = Array.isArray(activitiesData)
           ? activitiesData
           : [];
@@ -106,7 +105,6 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     const updatedFacility = {
       ...formData,
       activities: Object.keys(activities).filter((id) => activities[+id]),
-      // products should be included similarly if applicable
     };
 
     const method = "POST";
@@ -135,7 +133,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4" data-testid="facility-review">
         <MultiStepHeader stepIndex={1} steps={customStepNames} />
       </div>
       <div className="w-full flex">

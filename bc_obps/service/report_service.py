@@ -1,14 +1,14 @@
 from uuid import UUID
-
 from django.db import transaction
 from typing import List
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+
+from registration.models import ReportingActivity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.models.facility_report import FacilityReport
-from reporting.schema.report_facility import ReportFacility, ReportFacilityIn
+from reporting.schema.report_facility import FacilityReport, ReportFacilityIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
@@ -109,22 +109,22 @@ class ReportService:
         return report_operation
 
     @classmethod
-    def get_report_facility_by_version_and_id(cls, report_version_id: int, facility_id: int) -> ReportFacility:
+    def get_report_facility_by_version_and_id(cls, report_version_id: int, facility_id: int) -> FacilityReport:
         try:
-            result = ReportFacility.objects.get(report_version__id=report_version_id, id=facility_id)
-        except ReportFacility.DoesNotExist:
+            result = FacilityReport.objects.get(report_version__id=report_version_id, id=facility_id)
+        except FacilityReport.DoesNotExist:
             result = None  # or raise a custom exception if preferred
         return result
 
 
     @classmethod
-    def get_activity_ids_for_facility(cls, facility: ReportFacility) -> List[int]:
+    def get_activity_ids_for_facility(cls, facility: FacilityReport) -> List[int]:
         if facility:
             return list(facility.activities.values_list('id', flat=True))
         return []
 
     @classmethod
-    def save_report_facility(cls, report_version_id: int, data: ReportFacilityIn) -> ReportFacility:
+    def save_report_facility(cls, report_version_id: int, data: ReportFacilityIn) -> FacilityReport:
         """
         Save or update a report facility and its related activities.
 
@@ -137,7 +137,7 @@ class ReportService:
         """
         try:
             # Fetch or create a ReportFacility instance
-            report_facility, created = ReportFacility.objects.update_or_create(
+            report_facility, created = FacilityReport.objects.update_or_create(
                 report_version__id=report_version_id,
                 defaults={
                     'facility_name': data.facility_name.strip(),

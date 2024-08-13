@@ -1,6 +1,6 @@
 import FacilityReview from "./FacilityReview";
 
-export default async function FacilityReviewFormData({
+export default function FacilityReviewFormData({
   version_id,
   facility_id,
 }: {
