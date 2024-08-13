@@ -24,3 +24,8 @@ class ActivityService:
         for s in source_type_data:
             source_type_map[s.source_type.id] = s.source_type.json_key
         return json.dumps({"activityId": activity_id, "sourceTypeMap": source_type_map})
+
+    @classmethod
+    def get_all_activities(cls) -> []:
+        activities = ReportingActivity.objects.all().values('id', 'name', 'applicable_to')
+        return list(activities)

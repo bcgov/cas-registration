@@ -1,4 +1,5 @@
 from ninja import ModelSchema
+
 from reporting.models.report_facility import ReportFacility
 from pydantic import alias_generators
 from typing import List
@@ -19,7 +20,7 @@ class ReportFacilityOut(ModelSchema):
 
     class Meta:
         alias_generator = to_snake
-        model = ReportOperation
+        model = ReportFacility
         fields = [
             'facility_name',
             'facility_type',
@@ -29,7 +30,7 @@ class ReportFacilityOut(ModelSchema):
         ]
 
 
-class ReportOperationIn(ModelSchema):
+class ReportFacilityIn(ModelSchema):
     """
     Schema for the save report activity endpoint request input
     """
@@ -42,7 +43,7 @@ class ReportOperationIn(ModelSchema):
 
     class Meta:
         alias_generator = to_snake
-        model = ReportOperation
+        model = ReportFacility
         fields = [
             'facility_name',
             'facility_type',

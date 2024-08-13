@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Tuple, List, Dict, Union
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -10,6 +10,8 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
+from ..models import ReportFacility
+from ..schema.report_facility import ReportFacilityOut, ReportFacilityIn
 
 
 @router.post(
@@ -24,6 +26,7 @@ from .router import router
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report = ReportService.create_report(payload.operation_id, payload.reporting_year)
     return 201, report.id
+
 
 
 @router.get(
@@ -62,5 +65,104 @@ def save_report(
     description="""Returns json object with current reporting year and due date.""",
 )
 @handle_http_errors()
-def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYearOut]:
-    return 200, ReportingYearService.get_current_reporting_year()  # type: ignore
+def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
+    return 200, ReportingYearService.get_current_reporting_year().reporting_year
+
+
+@router.get(
+    "/report-version/{version_id}/report-facility/{facility_id}",
+    response={200: ReportFacilityOut, 404: Message, 400: Message, 500: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `report_facility` object.
+    Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
+)
+@handle_http_errors()
+def get_report_facility_by_version_and_id(
+        request: HttpRequest,
+        version_id: int,
+        facility_id: int
+) -> Tuple[Literal[200], ReportFacilityOut]:
+    try:
+        # Fetch the facility using the service method
+        report_facility = ReportService.get_report_facility_by_version_and_id(version_id, facility_id)
+
+        if report_facility:
+            # Get associated activity IDs
+            activity_ids = ReportService.get_activity_ids_for_facility(report_facility) or []
+
+            # Prepare the response data
+            response_data = ReportFacilityOut(
+                id=report_facility.id,
+                report_version_id=report_facility.report_version.id,
+                facility_name=report_facility.facility_name,
+                facility_type=report_facility.facility_type,
+                facility_bcghgid=report_facility.facility_bcghgid,
+                activities=activity_ids,
+                products=[]
+            )
+
+            return 200, response_data
+
+        else:
+            # Return 404 if the facility is not found
+            return 404, {"message": "Facility not found"}
+
+    except ValueError as ve:
+        # Handle specific errors (e.g., invalid IDs)
+        return 400, {"message": f"Invalid input: {str(ve)}"}
+
+    except Exception as e:
+        # Handle unexpected errors
+        return 500, {"message": "An unexpected error occurred", "details": str(e)}
+
+
+
+@router.post(
+    "/report-version/{version_id}/report-facility/{facility_id}",
+    response={201: ReportFacilityOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Updates the report facility details by version_id and facility_id. The request body should include
+    fields to be updated, such as facility name, type, BC GHG ID, activities, and products. Returns the updated report
+    facility object or an error message if the update fails.""",
+)
+@handle_http_errors()
+def save_report_facility(
+        request: HttpRequest, version_id: int, payload: ReportFacilityIn
+) -> Union[
+    tuple[int, ReportFacilityOut], tuple[int, dict[str, str]]
+]:
+    """
+    Save or update a report facility and its related activities.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        version_id (int): The ID of the report version.
+        payload (ReportFacilityIn): The input data for the report facility.
+
+    Returns:
+        Tuple: HTTP status code and the response data or an error message.
+    """
+    try:
+        # Save or update the report facility using the service layer
+        report_facility = ReportService.save_report_facility(version_id, payload)
+
+        # Prepare the response data
+        response_data = ReportFacilityOut(
+            id=report_facility.id,
+            report_version_id=report_facility.report_version.id,
+            facility_name=report_facility.facility_name,
+            facility_type=report_facility.facility_type,
+            facility_bcghgid=report_facility.facility_bcghgid,
+            activities=list(report_facility.activities.values_list('id', flat=True)),
+            products=list(report_facility.products.values_list('id', flat=True)) or []
+        )
+        return 201, response_data
+
+    except ValueError as ve:
+        return 400, {"message": f"Invalid input: {str(ve)}"}
+
+    except ReportFacility.DoesNotExist:
+        return 404, {"message": "Report facility not found"}
+
+    except Exception as e:
+        return 500, {"message": "An unexpected error occurred", "details": str(e)}
