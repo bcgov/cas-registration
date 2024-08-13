@@ -1,5 +1,5 @@
 from django.db import models
-from registration.models import ReportingActivity, RegulatedProduct
+from registration.models import Activity, RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 
@@ -45,7 +45,7 @@ class ReportOperation(TimeStampedModel):
     )
 
     # We don't create a backwards relation since this is a registration model
-    reporting_activities = models.ManyToManyField(ReportingActivity, related_name="+")
+    activities = models.ManyToManyField(Activity, related_name="+")
     regulated_products = models.ManyToManyField(RegulatedProduct, related_name="+")
 
     class Meta:
