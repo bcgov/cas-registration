@@ -1,8 +1,8 @@
 from ninja import ModelSchema
-
-from reporting.models.report_facility import ReportFacility
 from pydantic import alias_generators
 from typing import List
+
+from reporting.models import FacilityReport
 
 
 def to_camel(string: str) -> str:
@@ -20,14 +20,8 @@ class ReportFacilityOut(ModelSchema):
 
     class Meta:
         alias_generator = to_snake
-        model = ReportFacility
-        fields = [
-            'facility_name',
-            'facility_type',
-            'facility_bcghgid',
-            'activities',
-            'products'
-        ]
+        model = FacilityReport
+        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products']
 
 
 class ReportFacilityIn(ModelSchema):
@@ -43,11 +37,5 @@ class ReportFacilityIn(ModelSchema):
 
     class Meta:
         alias_generator = to_snake
-        model = ReportFacility
-        fields = [
-            'facility_name',
-            'facility_type',
-            'facility_bcghgid',
-            'activities',
-            'products'
-        ]
+        model = FacilityReport
+        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products']

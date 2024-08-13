@@ -238,9 +238,11 @@ class TestOperatorsEndpoint(CommonTestSetup):
             expected_calls.append(
                 mocker.call(
                     AccessRequestStates.DECLINED,
-                    AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
-                    if operator.created_by == user_operator.user
-                    else AccessRequestTypes.ADMIN,
+                    (
+                        AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
+                        if operator.created_by == user_operator.user
+                        else AccessRequestTypes.ADMIN
+                    ),
                     operator.legal_name,
                     user_operator.user.get_full_name(),
                     user_operator.user.email,

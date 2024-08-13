@@ -1,6 +1,6 @@
 from uuid import UUID
 from django.db import transaction
-from typing import List
+from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from registration.models import ReportingActivity, RegulatedProduct
@@ -8,7 +8,7 @@ from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.schema.facility_report import FacilityReport, ReportFacilityIn
+from reporting.schema.facility_report import FacilityReport, FacilityReportIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
@@ -109,13 +109,14 @@ class ReportService:
         return report_operation
 
     @classmethod
-    def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: int) -> FacilityReport:
+    def get_facility_report_by_version_and_id(
+        cls, report_version_id: int, facility_id: int
+    ) -> Optional[FacilityReport]:
         try:
             result = FacilityReport.objects.get(report_version__id=report_version_id, id=facility_id)
         except FacilityReport.DoesNotExist:
-            result = None  # or raise a custom exception if preferred
+            result = None
         return result
-
 
     @classmethod
     def get_activity_ids_for_facility(cls, facility: FacilityReport) -> List[int]:
@@ -124,13 +125,13 @@ class ReportService:
         return []
 
     @classmethod
-    def save_facility_report(cls, report_version_id: int, data: ReportFacilityIn) -> FacilityReport:
+    def save_facility_report(cls, report_version_id: int, data: FacilityReportIn) -> FacilityReport:
         """
         Save or update a report facility and its related activities.
 
         Args:
             report_version_id (int): The ID of the report version.
-            data (ReportFacilityIn): The input data for the report facility.
+            data (FacilityReportIn): The input data for the report facility.
 
         Returns:
             ReportFacility: The updated or created ReportFacility instance.
@@ -143,7 +144,7 @@ class ReportService:
                     'facility_name': data.facility_name.strip(),
                     'facility_type': data.facility_type.strip(),
                     'facility_bcghgid': data.facility_bcghgid.strip(),
-                }
+                },
             )
 
             # Update ManyToMany fields (activities)

@@ -12,7 +12,6 @@ from registration.models import BusinessStructure
 
 
 class OperatorOut(ModelSchema):
-
     """
     Custom schema for the operator form
     """

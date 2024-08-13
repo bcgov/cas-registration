@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, List, Dict, Union
+from typing import Literal, Tuple, Dict, Union
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -11,7 +11,7 @@ from reporting.schema.report_operation import ReportOperationOut, ReportOperatio
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..models import FacilityReport
-from ..schema.facility_report import FacilityReportOut, ReportFacilityIn
+from ..schema.facility_report import FacilityReportOut, FacilityReportIn
 
 
 @router.post(
@@ -26,7 +26,6 @@ from ..schema.facility_report import FacilityReportOut, ReportFacilityIn
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report = ReportService.create_report(payload.operation_id, payload.reporting_year)
     return 201, report.id
-
 
 
 @router.get(
@@ -78,19 +77,18 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
 )
 @handle_http_errors()
 def get_facility_report_by_version_and_id(
-        request: HttpRequest,
-        version_id: int,
-        facility_id: int
-) -> Tuple[Literal[200], FacilityReportOut]:
+    request: HttpRequest, version_id: int, facility_id: int
+) -> Union[
+    Tuple[Literal[200], FacilityReportOut],
+    Tuple[Literal[404], Dict[str, str]],
+    Tuple[Literal[400], Dict[str, str]],
+    Tuple[Literal[500], Dict[str, str]],
+]:
     try:
-        # Fetch the facility using the service method
         facility_report = ReportService.get_facility_report_by_version_and_id(version_id, facility_id)
 
         if facility_report:
-            # Get associated activity IDs
             activity_ids = ReportService.get_activity_ids_for_facility(facility_report) or []
-
-            # Prepare the response data
             response_data = FacilityReportOut(
                 id=facility_report.id,
                 report_version_id=facility_report.report_version.id,
@@ -98,23 +96,18 @@ def get_facility_report_by_version_and_id(
                 facility_type=facility_report.facility_type,
                 facility_bcghgid=facility_report.facility_bcghgid,
                 activities=activity_ids,
-                products=[]
+                products=[],
             )
-
             return 200, response_data
 
         else:
-            # Return 404 if the facility is not found
             return 404, {"message": "Facility not found"}
 
     except ValueError as ve:
-        # Handle specific errors (e.g., invalid IDs)
         return 400, {"message": f"Invalid input: {str(ve)}"}
 
     except Exception as e:
-        # Handle unexpected errors
         return 500, {"message": "An unexpected error occurred", "details": str(e)}
-
 
 
 @router.post(
@@ -127,12 +120,12 @@ def get_facility_report_by_version_and_id(
 )
 @handle_http_errors()
 def save_facility_report(
-        request: HttpRequest, version_id: int, payload: ReportFacilityIn
+    request: HttpRequest, version_id: int, payload: FacilityReportIn
 ) -> Union[
     Tuple[Literal[201], FacilityReportOut],
     Tuple[Literal[400], Dict[str, str]],
     Tuple[Literal[404], Dict[str, str]],
-    Tuple[Literal[500], Dict[str, str]]
+    Tuple[Literal[500], Dict[str, str]],
 ]:
     """
     Save or update a report facility and its related activities.
@@ -140,7 +133,7 @@ def save_facility_report(
     Args:
         request (HttpRequest): The HTTP request object.
         version_id (int): The ID of the report version.
-        payload (ReportFacilityIn): The input data for the report facility.
+        payload (FacilityReportIn): The input data for the report facility.
 
     Returns:
         Tuple: HTTP status code and the response data or an error message.
@@ -157,7 +150,7 @@ def save_facility_report(
             facility_type=facility_report.facility_type,
             facility_bcghgid=facility_report.facility_bcghgid,
             activities=list(facility_report.activities.values_list('id', flat=True)),
-            products=list(facility_report.products.values_list('id', flat=True)) or []
+            products=list(facility_report.products.values_list('id', flat=True)) or [],
         )
         return 201, response_data
 

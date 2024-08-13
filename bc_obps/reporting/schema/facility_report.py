@@ -21,16 +21,10 @@ class FacilityReportOut(ModelSchema):
     class Meta:
         alias_generator = to_snake
         model = FacilityReport
-        fields = [
-            'facility_name',
-            'facility_type',
-            'facility_bcghgid',
-            'activities',
-            'products'
-        ]
+        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products']
 
 
-class ReportFacilityIn(ModelSchema):
+class FacilityReportIn(ModelSchema):
     """
     Schema for the save report activity endpoint request input
     """
@@ -44,10 +38,4 @@ class ReportFacilityIn(ModelSchema):
     class Meta:
         alias_generator = to_snake
         model = FacilityReport
-        fields = [
-            'facility_name',
-            'facility_type',
-            'facility_bcghgid',
-            'activities',
-            'products'
-        ]
+        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products']

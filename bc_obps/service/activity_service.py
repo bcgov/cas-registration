@@ -3,6 +3,7 @@ from reporting.models import Configuration, ConfigurationElement
 from registration.models import ReportingActivity
 from typing import List, Dict, Any
 
+
 class ActivityService:
     @classmethod
     def get_initial_activity_data(request, activity_name: str, report_date: str) -> str:
@@ -27,5 +28,5 @@ class ActivityService:
 
     @classmethod
     def get_all_activities(cls) -> List[Dict[str, Any]]:
-        activities = ReportingActivity.objects.all().values('id', 'name', 'applicable_to')
-        return list(activities)
+        activities = ReportingActivity.objects.all().values("id", "name", "applicable_to")
+        return [dict(activity) for activity in activities]

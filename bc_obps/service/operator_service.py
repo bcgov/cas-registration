@@ -162,9 +162,11 @@ class OperatorService:
                     send_operator_access_request_email(
                         AccessRequestStates.DECLINED,
                         # We send NEW_OPERATOR_AND_ADMIN email to the user who initially created the operator and ADMIN email to all other users
-                        AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
-                        if operator.created_by == user
-                        else AccessRequestTypes.ADMIN,
+                        (
+                            AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
+                            if operator.created_by == user
+                            else AccessRequestTypes.ADMIN
+                        ),
                         operator.legal_name,
                         user.get_full_name(),
                         user.email,

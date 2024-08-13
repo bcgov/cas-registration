@@ -62,7 +62,6 @@ class SelectOperatorIn(Schema):
 
 
 class OperatorExternalDashboardUsersTileData(ModelSchema):
-
     """
     Schema for fields from the Operator model that are needed in ExternalDashboardUsersTileData
     """
