@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { useSession, notFound, useRouter } from "@bciers/testConfig/mocks";
-import Facility from "apps/administration/app/components/facilities/Facility";
+import { useSession, useRouter } from "@bciers/testConfig/mocks";
+import FacilityPage from "apps/administration/app/components/facilities/FacilityPage";
 import { getOperation } from "../operations/mocks";
 import { getFacility } from "./mocks";
 
@@ -18,7 +18,7 @@ describe("Facilities component", () => {
     vi.resetAllMocks();
   });
 
-  it("renders the not found page when given a bad facility id", async () => {
+  it("throws an error when given a bad facility id", async () => {
     getOperation.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
       type: "Single Facility Operation",
@@ -26,26 +26,38 @@ describe("Facilities component", () => {
     getFacility.mockReturnValueOnce({
       error: "yikes",
     });
-    render(
-      await Facility({
-        operationId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-        facilityId: "garbage-bugs-dump-truck-fire",
-      }),
+
+    await expect(async () => {
+      await render(
+        await FacilityPage({
+          operationId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+          facilityId: "garbage-bugs-dump-truck-fire",
+        }),
+      );
+    }).rejects.toThrow(
+      new Error(
+        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
+      ),
     );
-    expect(notFound).toHaveBeenCalled();
   });
 
-  it("renders the not found page when given a bad operation id", async () => {
+  it("throws an error when given a bad operation id", async () => {
     getOperation.mockReturnValueOnce({
       error: "yikes",
     });
-    render(
-      await Facility({
-        operationId: "garbage-bugs-dump-truck-fire",
-        facilityId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-      }),
+
+    await expect(async () => {
+      await render(
+        await FacilityPage({
+          operationId: "garbage-bugs-dump-truck-fire",
+          facilityId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        }),
+      );
+    }).rejects.toThrow(
+      new Error(
+        "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
+      ),
     );
-    expect(notFound).toHaveBeenCalled();
   });
 
   it("renders the SFO create facility form with no form data", async () => {
@@ -55,7 +67,7 @@ describe("Facilities component", () => {
     });
     getFacility.mockReturnValueOnce(undefined);
     render(
-      await Facility({
+      await FacilityPage({
         operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
         facilityId: undefined,
       }),
@@ -63,6 +75,7 @@ describe("Facilities component", () => {
     expect(screen.getByLabelText(/facility name/i)).toHaveValue("");
     expect(screen.queryByText(/well/i)).not.toBeInTheDocument(); // well authorization number is only for LFOs
   });
+
   it("renders the LFO readonly form with form data", async () => {
     getFacility.mockReturnValueOnce({
       name: "Test Facility Name",
@@ -81,7 +94,7 @@ describe("Facilities component", () => {
       type: "Linear Facility Operation",
     });
     render(
-      await Facility({
+      await FacilityPage({
         operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
         facilityId: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
       }),

@@ -40,3 +40,17 @@ class FacilityDataAccessService:
         )
         facility.set_create_or_update(user_guid)
         return facility
+
+    @classmethod
+    def update_facility(
+        cls,
+        facility_id: UUID,
+        user_guid: UUID,
+        facility_data: DictStrAny,
+    ) -> Facility:
+        facility = cls.get_by_id(facility_id)
+        for key, value in facility_data.items():
+            setattr(facility, key, value)
+        facility.set_create_or_update(user_guid)
+        facility.save()
+        return facility
