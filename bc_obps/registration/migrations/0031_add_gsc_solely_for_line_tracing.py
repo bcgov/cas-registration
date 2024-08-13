@@ -5,7 +5,7 @@ def create_new_activity(apps, schema_monitor):
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
     ReportingActivity.objects.create(
         name='General stationary combustion solely for the purpose of line tracing',
-        slug='gsc_solely_line_tracing',
+        slug='gsc_solely_for_line_tracing',
         weight=200.0,
     )
 
