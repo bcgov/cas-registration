@@ -154,6 +154,7 @@ class TestInitialData(TestCase):
         expected_activities = sorted(
             [
                 ('General stationary combustion excluding line tracing', 'all'),
+                ('General stationary combustion solely for the purpose of line tracing', 'all'),
                 ('Fuel combustion by mobile equipment', 'sfo'),
                 ('Aluminum or alumina production', 'sfo'),
                 ('Ammonia production', 'sfo'),
