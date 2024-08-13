@@ -1,5 +1,5 @@
 from django.http import HttpRequest
-from registration.constants import REPORTING_ACTIVITY_TAGS
+from registration.constants import ACTIVITY_TAGS
 from service.data_access_service.activity_service import ActivityDataAccessService
 from common.permissions import authorize
 from ..router import router
@@ -16,7 +16,7 @@ from django.db.models import QuerySet
 @router.get(
     "/reporting_activities",
     response=List[ActivitySchema],
-    tags=REPORTING_ACTIVITY_TAGS,
+    tags=ACTIVITY_TAGS,
     description="""Retrieves a list of reporting activities.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
     auth=authorize("authorized_roles"),
