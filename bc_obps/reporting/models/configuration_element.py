@@ -10,9 +10,7 @@ class ConfigurationElement(BaseModel):
     """Configuration element for reporting"""
 
     # No history needed, these elements are immutable
-    activity = models.ForeignKey(
-        Activity, on_delete=models.DO_NOTHING, related_name="configuration_elements"
-    )
+    activity = models.ForeignKey(Activity, on_delete=models.DO_NOTHING, related_name="configuration_elements")
     source_type = models.ForeignKey(SourceType, on_delete=models.DO_NOTHING, related_name="configuration_elements")
     gas_type = models.ForeignKey(GasType, on_delete=models.DO_NOTHING, related_name="configuration_elements")
     methodology = models.ForeignKey(Methodology, on_delete=models.DO_NOTHING, related_name="configuration_elements")

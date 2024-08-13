@@ -11,9 +11,7 @@ def validate_overlapping_records(
             activity=save_self.activity, source_type=save_self.source_type
         )
     else:
-        all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(
-            activity=save_self.activity
-        )
+        all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(activity=save_self.activity)
     for y in all_ranges:
         if (
             (save_self.valid_from.valid_from >= y.valid_from.valid_from)
