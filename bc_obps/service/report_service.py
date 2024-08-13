@@ -2,7 +2,7 @@ from uuid import UUID
 from registration.models.operation import Operation
 from reporting.models.report import Report
 from registration.models import ReportingActivity, RegulatedProduct
-from reporting.models.report_facility import ReportFacility
+from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from service.data_access_service.facility_service import FacilityDataAccessService
@@ -64,14 +64,15 @@ class ReportService:
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
         for f in facilities:
-            report_facility = ReportFacility.objects.create(
+            facility_report = FacilityReport.objects.create(
+                facility=f,
                 facility_name=f.name,
                 facility_type=f.type,
                 facility_bcghgid=f.bcghg_id,
                 report_version=report_version,
             )
-            report_facility.activities.add(*list(operation.reporting_activities.all()))
-            report_facility.products.add(*list(operation.regulated_products.all()))
+            facility_report.activities.add(*list(operation.reporting_activities.all()))
+            facility_report.products.add(*list(operation.regulated_products.all()))
 
         return report
 

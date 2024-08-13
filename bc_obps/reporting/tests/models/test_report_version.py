@@ -1,4 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.tests.utils.bakers import report_version_baker
 
 
@@ -7,10 +8,17 @@ class ReportVersionTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_object = report_version_baker()
         cls.field_data = [
+            *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
             ("report", "report", None, None),
             ("is_latest_submitted", "is latest submitted", None, None),
             ("status", "status", 1000, None),
-            ("report_facilities", "report facility", None, 0),
+            ("facility_reports", "facility report", None, 0),
             ("report_operation", "report operation", None, None),
+            ("reportactivity_records", "report activity", None, 0),
+            ("reportemission_records", "report emission", None, 0),
+            ("reportfuel_records", "report fuel", None, 0),
+            ("reportmethodology_records", "report methodology", None, 0),
+            ("reportsourcetype_records", "report source type", None, 0),
+            ("reportunit_records", "report unit", None, 0),
         ]

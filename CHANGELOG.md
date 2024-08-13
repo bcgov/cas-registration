@@ -1,3 +1,20 @@
+# [1.9.0](https://github.com/bcgov/cas-registration/compare/v1.8.0...v1.9.0) (2024-08-07)
+
+### Features
+
+- add due date to reporting dashboard ([ee5765a](https://github.com/bcgov/cas-registration/commit/ee5765ab6b6691ea568bea7bee8f3add8c3e8eba))
+
+# [1.8.0](https://github.com/bcgov/cas-registration/compare/v1.7.0...v1.8.0) (2024-08-07)
+
+### Bug Fixes
+
+- don't truncate reporting year table on truncate_dev_data_tables call ([fc86ee3](https://github.com/bcgov/cas-registration/commit/fc86ee34ec04b9cb7a652617fed4a8804a66ce9c))
+
+### Features
+
+- [rebase] Add conditional starting_date field in db and Add Facility form ([81499d1](https://github.com/bcgov/cas-registration/commit/81499d1d2e8bd4152d24aaf814b53be837993dff))
+- add ActivityForm component & gsc page ([0f6a60b](https://github.com/bcgov/cas-registration/commit/0f6a60b0088b332e6531eebb4fe51f40678bc204))
+
 # [1.7.0](https://github.com/bcgov/cas-registration/compare/v1.6.0...v1.7.0) (2024-08-01)
 
 ### Bug Fixes

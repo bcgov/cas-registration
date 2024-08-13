@@ -20,6 +20,7 @@ import {
   operationReviewSchema,
   operationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
+import safeJsonParse from "@bciers/utils/safeJsonParse";
 
 interface Props {
   formData: any;
@@ -30,7 +31,7 @@ const submitHandler = async (data: { formData?: any }, version_id: number) => {
   const method = "POST";
   const endpoint = `reporting/report-version/${version_id}/report-operation`;
   const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
-  const formDataObject = JSON.parse(JSON.stringify(data.formData));
+  const formDataObject = safeJsonParse(JSON.stringify(data.formData));
   await actionHandler(endpoint, method, pathToRevalidate, {
     body: JSON.stringify(formDataObject),
     headers: {

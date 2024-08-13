@@ -36,8 +36,9 @@ class TestUserIdEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_get_user_with_invalid_user_id(self):
+        TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         response = TestUtils.mock_get_with_auth_role(
-            self, endpoint=custom_reverse_lazy("get_user", kwargs={"user_id": '99999'}), role_name="cas_admin"
+            self, endpoint=custom_reverse_lazy("get_user", kwargs={"user_id": '99999'}), role_name="industry_user"
         )
         assert response.status_code == 422
         assert (

@@ -6,16 +6,29 @@ ReportingYear {
     IntegerField reporting_year
     DateTimeField reporting_window_start
     DateTimeField reporting_window_end
+    DateTimeField report_due_date
     CharField description
 }
 Report {
     BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
     ForeignKey operator
     ForeignKey operation
     ForeignKey reporting_year
 }
 ReportVersion {
     BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
     ForeignKey report
     BooleanField is_latest_submitted
     CharField status
@@ -27,6 +40,12 @@ SourceType {
 }
 ReportOperation {
     BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
     OneToOneField report_version
     CharField operator_legal_name
     CharField operator_trade_name
@@ -38,8 +57,15 @@ ReportOperation {
     ManyToManyField reporting_activities
     ManyToManyField regulated_products
 }
-ReportFacility {
+FacilityReport {
     BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey facility
     ForeignKey report_version
     CharField facility_name
     CharField facility_type
@@ -100,16 +126,109 @@ ActivitySourceTypeJsonSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
+ReportActivity {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    JSONField json_data
+    ForeignKey report_version
+    ForeignKey facility_report
+    ForeignKey activity_base_schema
+    ForeignKey activity
+}
+ReportSourceType {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    JSONField json_data
+    ForeignKey report_version
+    ForeignKey activity_source_type_base_schema
+    ForeignKey source_type
+    ForeignKey report_activity
+}
+ReportUnit {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    JSONField json_data
+    ForeignKey report_version
+    ForeignKey report_source_type
+}
+ReportFuel {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    JSONField json_data
+    ForeignKey report_version
+    ForeignKey report_source_type
+    ForeignKey report_unit
+    ForeignKey fuel_type
+}
+ReportEmission {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    JSONField json_data
+    ForeignKey report_version
+    ForeignKey gas_type
+    ForeignKey report_source_type
+    ForeignKey report_fuel
+}
+ReportMethodology {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    JSONField json_data
+    ForeignKey report_version
+    OneToOneField report_emission
+}
+Report }|--|| User : created_by
+Report }|--|| User : updated_by
+Report }|--|| User : archived_by
 Report }|--|| Operator : operator
 Report }|--|| Operation : operation
 Report }|--|| ReportingYear : reporting_year
+ReportVersion }|--|| User : created_by
+ReportVersion }|--|| User : updated_by
+ReportVersion }|--|| User : archived_by
 ReportVersion }|--|| Report : report
+ReportOperation }|--|| User : created_by
+ReportOperation }|--|| User : updated_by
+ReportOperation }|--|| User : archived_by
 ReportOperation ||--|| ReportVersion : report_version
 ReportOperation }|--|{ ReportingActivity : reporting_activities
 ReportOperation }|--|{ RegulatedProduct : regulated_products
-ReportFacility }|--|| ReportVersion : report_version
-ReportFacility }|--|{ ReportingActivity : activities
-ReportFacility }|--|{ RegulatedProduct : products
+FacilityReport }|--|| User : created_by
+FacilityReport }|--|| User : updated_by
+FacilityReport }|--|| User : archived_by
+FacilityReport }|--|| Facility : facility
+FacilityReport }|--|| ReportVersion : report_version
+FacilityReport }|--|{ ReportingActivity : activities
+FacilityReport }|--|{ RegulatedProduct : products
 ConfigurationElement }|--|| ReportingActivity : reporting_activity
 ConfigurationElement }|--|| SourceType : source_type
 ConfigurationElement }|--|| GasType : gas_type
@@ -124,3 +243,41 @@ ActivitySourceTypeJsonSchema }|--|| ReportingActivity : reporting_activity
 ActivitySourceTypeJsonSchema }|--|| SourceType : source_type
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_from
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_to
+ReportActivity }|--|| User : created_by
+ReportActivity }|--|| User : updated_by
+ReportActivity }|--|| User : archived_by
+ReportActivity }|--|| ReportVersion : report_version
+ReportActivity }|--|| FacilityReport : facility_report
+ReportActivity }|--|| ActivityJsonSchema : activity_base_schema
+ReportActivity }|--|| ReportingActivity : activity
+ReportSourceType }|--|| User : created_by
+ReportSourceType }|--|| User : updated_by
+ReportSourceType }|--|| User : archived_by
+ReportSourceType }|--|| ReportVersion : report_version
+ReportSourceType }|--|| ActivitySourceTypeJsonSchema : activity_source_type_base_schema
+ReportSourceType }|--|| SourceType : source_type
+ReportSourceType }|--|| ReportActivity : report_activity
+ReportUnit }|--|| User : created_by
+ReportUnit }|--|| User : updated_by
+ReportUnit }|--|| User : archived_by
+ReportUnit }|--|| ReportVersion : report_version
+ReportUnit }|--|| ReportSourceType : report_source_type
+ReportFuel }|--|| User : created_by
+ReportFuel }|--|| User : updated_by
+ReportFuel }|--|| User : archived_by
+ReportFuel }|--|| ReportVersion : report_version
+ReportFuel }|--|| ReportSourceType : report_source_type
+ReportFuel }|--|| ReportUnit : report_unit
+ReportFuel }|--|| FuelType : fuel_type
+ReportEmission }|--|| User : created_by
+ReportEmission }|--|| User : updated_by
+ReportEmission }|--|| User : archived_by
+ReportEmission }|--|| ReportVersion : report_version
+ReportEmission }|--|| GasType : gas_type
+ReportEmission }|--|| ReportSourceType : report_source_type
+ReportEmission }|--|| ReportFuel : report_fuel
+ReportMethodology }|--|| User : created_by
+ReportMethodology }|--|| User : updated_by
+ReportMethodology }|--|| User : archived_by
+ReportMethodology }|--|| ReportVersion : report_version
+ReportMethodology ||--|| ReportEmission : report_emission

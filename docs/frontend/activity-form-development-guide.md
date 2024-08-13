@@ -17,7 +17,7 @@ In this example we are creating a config element that ends up like this in the d
 
 ```
   ConfigurationElement(
-      reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+      reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion excluding line tracing').id,
       source_type_id=SourceType.objects.get(
           name='General stationary combustion of fuel or waste with production of useful energy'
       ).id,
@@ -56,7 +56,7 @@ Once the schemas are created, they need to be added to the database in the migra
 On the frontend:
 
 - Create a directory for the activity under `bceidbusiness/industry_user_admin/activities`
-- Add a page.tsx route file - see the general_stationary_combustion directory for an example
+- Add a page.tsx route file - see the gsc_excluding_line_tracing directory for an example
 - Add a component for the activity under `components/activities` - see the generalStationaryCombustion.tsx file for an example
 - Create a uiSchema in the activity component. These will eventually live in the database, but for ease of development they can live here for now.
 - The ActivityForm.tsx file is a generic component to render the form it _shouldn't_ need any changes

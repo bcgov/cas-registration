@@ -6,6 +6,7 @@ import { actionHandler } from "@bciers/actions";
 import { Alert, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import safeJsonParse from "@bciers/utils/safeJsonParse";
 
 const tasklistData: TaskListElement[] = [
   {
@@ -24,7 +25,7 @@ const tasklistData: TaskListElement[] = [
         elements: [
           {
             type: "Page",
-            title: "General stationary combustion",
+            title: "General stationary combustion excluding line tracing",
           },
           { type: "Page", title: "Mobile combustion", isActive: true },
           { type: "Page", title: "Other 1..", isChecked: true },
@@ -99,7 +100,7 @@ export default function ActivityForm({
         "GET",
         "",
       );
-      setJsonSchema(JSON.parse(schemaData).schema);
+      setJsonSchema(safeJsonParse(schemaData).schema);
       const sourceTypeFormData = (formState?.sourceTypes as any) || {};
       // Add an empty sourceType for each selected Source Type (show first item by default)
       selectedKeys.forEach((k: number) => {

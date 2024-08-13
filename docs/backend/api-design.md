@@ -6,8 +6,8 @@ The goal of API design is to separate concerns as much as possible.
 
 Endpoints are app-specific (e.g. `registration/api/operators/{operator_id}/request-access`) and should contain as little logic as possible. They should only:
 
-- handle role-based authorization using the @authorize decorator
-- handle http errors using the @handle_http_errors decorator (placed below @authorize or else it will catch auth errors)
+- handle role-based authorization using the authorize function
+- handle http errors using the @handle_http_errors decorator
 - send http responses
 - use services
 
@@ -18,8 +18,8 @@ For example:
     "/operators/{operator_id}/request-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
     url_name="request_access",
+    auth=authorize("industry_user"),
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def request_access(request, payload: SelectOperatorIn):
 
@@ -85,9 +85,9 @@ When creating a new API endpoint, you need to define several key components to e
 
 1. **Define the Route**: Specify the HTTP method (GET, POST, PUT, DELETE) and the endpoint path. The path should be self-documenting and follow the file structure conventions.([API endpoint best practices](https://restfulapi.net/resource-naming/))
 
-2. **Authorization**: Use the `@authorize` decorator to handle role-based authorization. This ensures that only users with the appropriate roles can access the endpoint.
+2. **Authorization**: Use the `authorize` function and pass it to auth parameter of router to handle role-based authorization. This ensures that only users with the appropriate roles can access the endpoint.
 
-3. **Error Handling**: Apply the `@handle_http_errors` decorator to manage HTTP errors. This should be placed below the @authorize decorator to catch authorization errors correctly.
+3. **Error Handling**: Apply the `@handle_http_errors` decorator to manage HTTP errors.
 
 4. **Service Calls**: Use services to handle the business logic and database interactions. Ensure that the service methods are designed to perform atomic transactions when necessary.
 

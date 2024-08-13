@@ -12,6 +12,7 @@ import { ContentItem } from "@bciers/types/tiles";
 import getUUIDFromEndpoint from "@bciers/utils/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
+import safeJsonParse from "libs/utils/safeJsonParse";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
@@ -52,7 +53,7 @@ export async function actionHandler(
   // Create a FormData object from the body if it's a string to pass to Sentry
   const formData = new FormData();
   if (options?.body && typeof options.body === "string")
-    for (const [key, value] of Object.entries(JSON.parse(options.body)))
+    for (const [key, value] of Object.entries(safeJsonParse(options.body)))
       formData.append(key, value as any);
 
   return Sentry.withServerActionInstrumentation(
@@ -148,7 +149,7 @@ export async function fetchDashboardData(url: string) {
     // Pretty-print the data
     const data = JSON.stringify(response[0].data.tiles, null, 2);
     // Parse data to object
-    const object = JSON.parse(data);
+    const object = safeJsonParse(data);
     // Assert the object as ContentType
     return object as ContentItem[];
   } catch (error) {

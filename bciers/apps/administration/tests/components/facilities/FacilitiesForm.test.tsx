@@ -407,7 +407,7 @@ describe("FacilitiesForm component", () => {
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith(
-        `/operations/${operationId}/facilities/${facilityId}?facilitiesTitle=${facilityName}`,
+        `/operations/${operationId}/facilities/${facilityId}?facilities_title=${facilityName}`,
         {
           shallow: true,
         },
@@ -503,7 +503,7 @@ describe("FacilitiesForm component", () => {
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith(
-        `/operations/${operationId}/facilities/${facilityId}?facilitiesTitle=${facilityName}`,
+        `/operations/${operationId}/facilities/${facilityId}?facilities_title=${facilityName}`,
         {
           shallow: true,
         },

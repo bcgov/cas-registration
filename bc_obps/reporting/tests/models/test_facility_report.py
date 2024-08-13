@@ -1,26 +1,34 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import ReportingActivity, RegulatedProduct
-from reporting.models import ReportFacility
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from registration.tests.utils.bakers import facility_baker
+from reporting.models import FacilityReport
 from reporting.tests.utils.bakers import report_version_baker
 
 
-class ReportFacilityModelTest(BaseTestCase):
+class FacilityReportModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = ReportFacility.objects.create(
-            facility_name="Test Facility 1",
-            facility_type="SFO",
-            facility_bcghgid="this is a non-conforming bcghgid",
+        f = facility_baker()
+
+        cls.test_object = FacilityReport.objects.create(
+            facility=f,
+            facility_name=f.name,
+            facility_type=f.type,
+            facility_bcghgid=f.bcghg_id,
             report_version=report_version_baker(),
         )
         cls.test_object.activities.add(ReportingActivity.objects.first())
         cls.test_object.products.add(RegulatedProduct.objects.first())
         cls.field_data = [
+            *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
             ("report_version", "report version", None, None),
+            ("facility", "facility", None, None),
             ("facility_name", "facility name", 1000, None),
             ("facility_type", "facility type", 1000, None),
             ("facility_bcghgid", "facility bcghgid", 1000, None),
             ("activities", "activities", None, 1),
             ("products", "products", None, 1),
+            ("reportactivity_records", "report activity", None, 0),
         ]

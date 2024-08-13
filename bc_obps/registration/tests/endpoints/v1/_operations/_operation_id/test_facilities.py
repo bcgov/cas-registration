@@ -152,6 +152,8 @@ class TestFacilitiesEndpoint(CommonTestSetup):
 
     # POST
     def test_post_new_malformed_facility(self):
+        owning_operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, owning_operator)
         response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", self.content_type, {"garbage": "i am bad data"}
         )

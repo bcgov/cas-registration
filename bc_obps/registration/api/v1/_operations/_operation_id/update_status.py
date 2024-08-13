@@ -1,15 +1,13 @@
 from typing import Literal, Tuple
 from uuid import UUID
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from service.operation_service import OperationService
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import handle_http_errors
 from registration.api.router import router
-from registration.models import (
-    AppRole,
-    Operation,
-)
+from registration.models import Operation
 from registration.schema.v1 import (
     OperationUpdateStatusIn,
     OperationUpdateStatusOut,
@@ -26,8 +24,8 @@ from ninja.responses import codes_4xx, codes_5xx
     When an operation is approved or declined, it is marked as verified with the current timestamp and the user who performed the action.
     If the operation is approved, a unique BORO ID is generated, and the associated operator is approved if not already.
     An email notification is sent to the relevant external user based on the new status of the operation.""",
+    auth=authorize("authorized_irc_user"),
 )
-@authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
 def update_operation_status(
     request: HttpRequest, operation_id: UUID, payload: OperationUpdateStatusIn

@@ -1,9 +1,9 @@
 from django.db import models
-from common.models.base_model import BaseModel
+from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report import Report
 
 
-class ReportVersion(BaseModel):
+class ReportVersion(TimeStampedModel):
 
     report = models.ForeignKey(
         Report,

@@ -1,16 +1,28 @@
-from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity, RegulatedProduct
+from registration.models.facility import Facility
+from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import ReportVersion
 
 
-class ReportFacility(BaseModel):
+class FacilityReport(TimeStampedModel):
+    '''
+    Model representing a report for a single facility.
+    A report (each report version) may contain multiple facility reports.
+    '''
+
+    facility = models.ForeignKey(
+        Facility,
+        on_delete=models.DO_NOTHING,
+        db_comment="The facility record this report was created for, at the time the report was filled out.",
+        related_name="facility_reports",
+    )
 
     report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
         db_comment="The report this facility information is related to",
-        related_name="report_facilities",
+        related_name="facility_reports",
     )
 
     facility_name = models.CharField(
@@ -36,5 +48,5 @@ class ReportFacility(BaseModel):
 
     class Meta:
         db_table_comment = "A table to store individual facility information as part of a report"
-        db_table = 'erc"."report_facility'
+        db_table = 'erc"."facility_report'
         app_label = 'reporting'

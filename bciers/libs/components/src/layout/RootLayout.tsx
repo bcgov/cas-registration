@@ -13,13 +13,20 @@ import { Header } from "@bciers/components";
 import { Bread } from "@bciers/components";
 import { Main } from "@bciers/components/server";
 
-export const metadata: Metadata = {
+const rootMetadata: Metadata = {
   title: "CAS OBPS",
   description:
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
   icons: {
-    icon: "/img/favicon.ico",
+    icon: "/favicon.ico",
   },
+};
+
+export const generateMetadata = (zone: string): Metadata => {
+  return {
+    ...rootMetadata,
+    title: `${rootMetadata.title} | ${zone}`,
+  };
 };
 
 export const viewport: Viewport = {

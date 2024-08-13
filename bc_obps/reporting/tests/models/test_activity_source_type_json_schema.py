@@ -27,6 +27,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             ("has_fuel", "has fuel", None, None),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
+            ("reportsourcetype_records", "report source type", None, 0),
         ]
 
     # Throws when a matching activity, source_type, json_schema has an overlapping date range

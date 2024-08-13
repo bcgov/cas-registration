@@ -21,6 +21,7 @@ class ActivityJsonSchemaTest(BaseTestCase):
             ("json_schema", "json schema", None, None),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
+            ("reportactivity_records", "report activity", None, 0),
         ]
 
     # Throws when a matching activity, source_type, json_schema has an overlapping date range
