@@ -1,16 +1,18 @@
 from uuid import UUID
+
+from django.db import transaction
+from typing import List
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from registration.models.operation import Operation
 from reporting.models.report import Report
-from registration.models import ReportingActivity, RegulatedProduct
-from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
+from reporting.models.facility_report import FacilityReport
+from reporting.schema.report_facility import ReportFacility, ReportFacilityIn
+from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
-from django.db import transaction
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
-from reporting.schema.report_operation import ReportOperationIn
-from reporting.schema.report_facility import ReportFacilityIn
 
 
 class ReportService:
@@ -106,28 +108,57 @@ class ReportService:
 
         return report_operation
 
-  @classmethod
-    def get_report_facility_by_version_id(cls, report_version_id: int) -> ReportFacility:
-        return ReportFacility.objects.get(report_version__id=report_version_id)
+    @classmethod
+    def get_report_facility_by_version_and_id(cls, report_version_id: int, facility_id: int) -> ReportFacility:
+        try:
+            result = ReportFacility.objects.get(report_version__id=report_version_id, id=facility_id)
+        except ReportFacility.DoesNotExist:
+            result = None  # or raise a custom exception if preferred
+        return result
+
+
+    @classmethod
+    def get_activity_ids_for_facility(cls, facility: ReportFacility) -> List[int]:
+        if facility:
+            return list(facility.activities.values_list('id', flat=True))
+        return []
 
     @classmethod
     def save_report_facility(cls, report_version_id: int, data: ReportFacilityIn) -> ReportFacility:
-        report_facility = ReportFacility.objects.get(report_version__id=report_version_id)
+        """
+        Save or update a report facility and its related activities.
 
-        # Updating fields from data
-        report_facility.facility_name = data.facility_name
-        report_facility.facility_type = data.facility_type
-        report_facility.facility_bcghgid = data.facility_bcghgid
+        Args:
+            report_version_id (int): The ID of the report version.
+            data (ReportFacilityIn): The input data for the report facility.
 
-        # Fetch and set ManyToMany fields
-        activities = ReportingActivity.objects.filter(name__in=data.activities)
-        products = RegulatedProduct.objects.filter(name__in=data.products)
+        Returns:
+            ReportFacility: The updated or created ReportFacility instance.
+        """
+        try:
+            # Fetch or create a ReportFacility instance
+            report_facility, created = ReportFacility.objects.update_or_create(
+                report_version__id=report_version_id,
+                defaults={
+                    'facility_name': data.facility_name.strip(),
+                    'facility_type': data.facility_type.strip(),
+                    'facility_bcghgid': data.facility_bcghgid.strip(),
+                }
+            )
 
-        # Set ManyToMany relationships
-        report_facility.reporting_activities.set(reporting_activities)
-        report_facility.regulated_products.set(regulated_products)
+            # Update ManyToMany fields (activities)
+            if data.activities:
+                activities = ReportingActivity.objects.filter(id__in=data.activities)
+                report_facility.activities.set(activities)
 
-        # Save the updated report operation
-        report_facility.save()
+            # Save the updated ReportFacility instance
+            report_facility.save()
 
-        return report_facility
+            return report_facility
+
+        except ObjectDoesNotExist:
+            raise ValueError("Report facility not found.")
+        except ValidationError as ve:
+            raise ve
+        except Exception as e:
+            raise Exception(f"An unexpected error occurred: {str(e)}")
