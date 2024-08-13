@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0032_delete_reporting_activity_model'),
+        ('registration', '0031_activity_model'),
         ('reporting', '0006_delete_report_operation'),
     ]
 
