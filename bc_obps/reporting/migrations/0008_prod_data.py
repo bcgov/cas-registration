@@ -640,7 +640,7 @@ def reverse_init_reporting_years(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0006_reinit'),
+        ('reporting', '0007_reinit'),
     ]
 
     operations = [

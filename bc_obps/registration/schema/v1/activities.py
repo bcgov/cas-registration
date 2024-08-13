@@ -1,12 +1,12 @@
 from ninja import ModelSchema
-from registration.models import ReportingActivity
+from registration.models import Activity
 
 
-class ReportingActivitySchema(ModelSchema):
+class ActivitySchema(ModelSchema):
     """
     Schema for the ReportingActivity model
     """
 
     class Config:
-        model = ReportingActivity
+        model = Activity
         model_fields = ["name", "applicable_to"]
