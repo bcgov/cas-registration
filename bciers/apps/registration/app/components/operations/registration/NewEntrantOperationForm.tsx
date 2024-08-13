@@ -23,7 +23,7 @@ const NewEntrantOperationForm = ({
 }: NewEntrantOperationFormProps) => {
   const [error, setError] = useState(undefined);
   const handleSubmit = async (e: IChangeEvent) => {
-    const method = "POST";
+    const method = "PUT";
     const endpoint = "registration/statutory-declarations";
     const body = {
       operation_id: operation,
