@@ -1,0 +1,12 @@
+[
+  {
+    "model": "reporting.reportfacility",
+    "fields": {
+      "id": 1,
+      "facility_name": "Facility1",
+      "facility_type": "SFO",
+      "facility_bcghgid": "BCGHGID12345",
+      "report_version_id": 1
+    }
+  }
+]

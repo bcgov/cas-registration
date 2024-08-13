@@ -19,9 +19,9 @@ from ninja.responses import codes_4xx, codes_5xx
 )
 @handle_http_errors()
 def get_initial_activity_data(
-    request: HttpRequest,
-    activity_name: str,
-    report_date: str,
+        request: HttpRequest,
+        activity_name: str,
+        report_date: str,
 ) -> Tuple[int, str]:
     return 200, ActivityService.get_initial_activity_data(activity_name, report_date)
 
