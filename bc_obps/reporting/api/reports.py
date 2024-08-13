@@ -10,7 +10,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
-from ..models import ReportFacility
+from ..models import FacilityReport
 from ..schema.report_facility import ReportFacilityOut, ReportFacilityIn
 
 
@@ -161,7 +161,7 @@ def save_report_facility(
     except ValueError as ve:
         return 400, {"message": f"Invalid input: {str(ve)}"}
 
-    except ReportFacility.DoesNotExist:
+    except FacilityReport.DoesNotExist:
         return 404, {"message": "Report facility not found"}
 
     except Exception as e:
