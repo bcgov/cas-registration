@@ -5,7 +5,7 @@ import { UUID } from "crypto";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
-import FacilityDataGrid from "apps/administration/app/components/facilities/FacilityDataGrid";
+import FacilitiesDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { FacilityInitialData } from "apps/administration/app/components/facilities/types";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { facilitiesLfoSchema } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
@@ -80,7 +80,7 @@ const FacilityInformationForm = ({
 
   const FacilityDataGridMemo = useMemo(
     () => (
-      <FacilityDataGrid
+      <FacilitiesDataGrid
         disabled={isSubmitting}
         initialData={initialGridData ?? { rows: [], row_count: 0 }}
         operationId={operation}
