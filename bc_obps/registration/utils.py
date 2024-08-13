@@ -202,20 +202,3 @@ def files_have_same_hash(file1: Optional[ContentFile], file2: Optional[ContentFi
         return hash1.hexdigest() == hash2.hexdigest()
     except Exception as e:
         raise ValueError(f"Error comparing files: {e}")
-
-
-def check_industry_user_operation_access(user_guid: UUID, operation_id: UUID) -> None:
-    """
-    Industry users are only allowed to access operations if the IU is an approved user for their operator, and if the operation belongs to their operator. If an IU is not approved, this decorator raises an error.
-    """
-    from service.data_access_service.operation_service import OperationDataAccessService
-    from service.data_access_service.user_service import UserDataAccessService
-    from service.user_operator_service import UserOperatorService
-
-    user: User = UserDataAccessService.get_by_guid(user_guid)
-    operation: Operation = OperationDataAccessService.get_by_id_for_update(operation_id)
-
-    user_operator: UserOperator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-
-    if not operation.user_has_access(user_guid) or operation.operator_id != user_operator.operator_id:
-        raise Exception(UNAUTHORIZED_MESSAGE)

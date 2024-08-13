@@ -2,7 +2,7 @@ from registration.models.operation import Operation
 from registration.models.regulated_product import RegulatedProduct
 from registration.models.registration_purpose import RegistrationPurpose
 from registration.schema.v2.operation import RegistrationPurposeIn
-from service.operation_service_v2 import OperationService
+from service.operation_service_v2 import OperationServiceV2
 import pytest
 
 from model_bakery import baker
@@ -26,20 +26,23 @@ class TestOperationServiceV2:
         payload = RegistrationPurposeIn(registration_purpose='Reporting Operation')
         with pytest.raises(Exception):
 
-            OperationService.register_operation_information(user.user_guid, operation.id, payload)
+            OperationServiceV2.register_operation_information(user.user_guid, operation.id, payload)
 
     @staticmethod
     def test_assigns_single_selected_purpose():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         payload = RegistrationPurposeIn(registration_purpose='Potential Reporting Operation')
-        OperationService.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
+        OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
 
         registration_purposes = RegistrationPurpose.objects.filter(operation_id=operation.id)
         assert registration_purposes.count() == 1
         assert list(registration_purposes.values_list('registration_purpose', flat=True)) == [
             'Potential Reporting Operation'
         ]
+        operation.refresh_from_db()  # refresh the operation object to get the updated audit columns
+        assert operation.updated_at is not None
+        assert operation.updated_by == approved_user_operator.user
 
     @staticmethod
     def test_assigns_selected_and_additional_purpose():
@@ -47,7 +50,7 @@ class TestOperationServiceV2:
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
 
         payload = RegistrationPurposeIn(registration_purpose='OBPS Regulated Operation', regulated_products=[1, 2, 6])
-        OperationService.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
+        OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
 
         registration_purposes = RegistrationPurpose.objects.filter(operation_id=operation.id)
         assert registration_purposes.count() == 2
@@ -68,7 +71,7 @@ class TestOperationServiceV2:
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
 
         payload = RegistrationPurposeIn(registration_purpose='New Entrant Operation', regulated_products=[4])
-        OperationService.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
+        OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
 
         registration_purposes = RegistrationPurpose.objects.filter(operation_id=operation.id)
         assert registration_purposes.count() == 3
@@ -90,7 +93,7 @@ class TestOperationServiceV2:
         # operation for a different user_operator
         baker.make_recipe('utils.operation')
 
-        result = OperationService.list_current_users_operations(approved_user_operator.user.user_guid)
+        result = OperationServiceV2.list_current_users_operations(approved_user_operator.user.user_guid)
         assert Operation.objects.count() == 2
         assert len(result) == 1
         assert result[0] == users_operation

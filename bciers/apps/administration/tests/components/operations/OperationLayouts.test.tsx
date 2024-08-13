@@ -36,6 +36,6 @@ describe("Operations component", () => {
     expect(
       screen.getByRole("link", { name: "Add and Register an Operation" }),
     ).toHaveAttribute("href", "../registration/register-an-operation");
-    expect(screen.getByText(/I'm a little teapot/i)).toBeVisible();
+    expect(screen.getByText(/Im a little teapot/i)).toBeVisible();
   });
 });

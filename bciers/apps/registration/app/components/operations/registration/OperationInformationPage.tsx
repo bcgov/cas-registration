@@ -7,6 +7,8 @@ import {
   getCurrentUsersOperations,
   getRegistrationPurposes,
 } from "@bciers/actions/api";
+import safeJsonParse from "libs/utils/safeJsonParse";
+import { RegistrationPurposes } from "./enums";
 
 export const createOperationInformationSchema = (
   schema: RJSFSchema,
@@ -17,7 +19,7 @@ export const createOperationInformationSchema = (
   }[],
   operations: { id: UUID; name: string }[],
 ) => {
-  const localSchema = JSON.parse(JSON.stringify(schema));
+  const localSchema = safeJsonParse(JSON.stringify(schema));
 
   // add purposes from db to schema
   localSchema.properties.registration_purpose.anyOf = purposes.map(
@@ -33,18 +35,37 @@ export const createOperationInformationSchema = (
     title: operation.name,
   }));
 
-  localSchema.dependencies.registration_purpose.allOf.map(
-    (allOf: { [key: string]: any }) => {
-      const regulatedProductsSchema = allOf.then.properties.regulated_products;
-      regulatedProductsSchema.items.enum = regulatedProducts.map(
-        (product) => product.id,
-      );
-      regulatedProductsSchema.items.enumNames = regulatedProducts.map(
-        (product) => product.name,
-      );
-    },
+  // add regulated products
+  const regulatedProductsEnum = regulatedProducts.map((product) => product.id);
+  const regulatedProductsEnumNames = regulatedProducts.map(
+    (product) => product.name,
   );
 
+  const oneOfOptions = purposes.map((purpose) => {
+    return {
+      // required: ["regulated_products"],
+      properties: {
+        registration_purpose: {
+          type: "string",
+          const: purpose,
+        },
+        ...(purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
+          purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION && {
+            regulated_products: {
+              title: "Regulated Product Name(s)",
+              type: "array",
+              // minItems: 1,
+              items: {
+                enum: regulatedProductsEnum,
+                enumNames: regulatedProductsEnumNames,
+              },
+            },
+          }),
+      },
+    };
+  });
+
+  localSchema.dependencies.registration_purpose.oneOf = oneOfOptions;
   return localSchema;
 };
 
