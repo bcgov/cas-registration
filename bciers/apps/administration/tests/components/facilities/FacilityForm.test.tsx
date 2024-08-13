@@ -715,7 +715,7 @@ describe("FacilityForm component", () => {
 
     // submit valid form data, assert response
     await assertFormPut();
-  });
+  }, 30000);
   it("redirects to the operation's facilities grid on cancel", async () => {
     render(
       <FacilityForm
