@@ -24,10 +24,10 @@ const NewEntrantOperationForm = ({
   const [error, setError] = useState(undefined);
   const handleSubmit = async (e: IChangeEvent) => {
     const method = "POST";
-    const endpoint = "registration/tbd";
+    const endpoint = "registration/statutory-declarations";
     const body = {
-      ...e.formData,
       operation_id: operation,
+      statutory_declaration: e.formData.statutory_declaration,
     };
     const response = await actionHandler(endpoint, method, "", {
       body: JSON.stringify(body),
