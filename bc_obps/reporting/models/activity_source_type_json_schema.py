@@ -10,7 +10,7 @@ class ActivitySourceTypeJsonSchema(BaseModel):
     """Intersection table for Activity-SourceType-JsonSchema"""
 
     # No history needed, these elements are immutable
-    reporting_activity = models.ForeignKey(Activity, on_delete=models.DO_NOTHING, related_name="+")
+    activity = models.ForeignKey(Activity, on_delete=models.DO_NOTHING, related_name="+")
     source_type = models.ForeignKey(SourceType, on_delete=models.DO_NOTHING, related_name="+")
     json_schema = models.JSONField(
         db_comment="The json schema for a specific activity-source type pair. This defines the shape of the data collected for the source type",
