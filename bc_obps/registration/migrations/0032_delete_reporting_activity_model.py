@@ -11,5 +11,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-      migrations.DeleteModel("ReportingActivity"),
+      migrations.DeleteModel(name='ReportingActivity'),
+      migrations.DeleteModel(
+            name='HistoricalReportingActivity',
+        ),
     ]

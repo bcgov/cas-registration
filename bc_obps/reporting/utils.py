@@ -8,11 +8,11 @@ def validate_overlapping_records(
 ) -> None:
     if hasattr(object_class, "source_type"):
         all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(
-            reporting_activity=save_self.reporting_activity, source_type=save_self.source_type
+            activity=save_self.activity, source_type=save_self.source_type
         )
     else:
         all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(
-            reporting_activity=save_self.reporting_activity
+            activity=save_self.activity
         )
     for y in all_ranges:
         if (

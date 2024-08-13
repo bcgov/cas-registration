@@ -7,7 +7,6 @@ from . import (
     naics_codes,
     operators,
     regulated_products,
-    reporting_activities,
     operations,
     user_operators,
     users,

@@ -6,6 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from registration.models import ReportingActivity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
+from registration.models import Activity, RegulatedProduct
+from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.schema.facility_report import FacilityReport, FacilityReportIn
@@ -27,7 +29,7 @@ class ReportService:
 
         operation = (
             Operation.objects.select_related('operator')
-            .prefetch_related('reporting_activities', 'regulated_products')
+            .prefetch_related('activities', 'regulated_products')
             .get(id=operation_id)
         )
 
@@ -62,7 +64,7 @@ class ReportService:
             ),
             report_version=report_version,
         )
-        report_operation.reporting_activities.add(*list(operation.reporting_activities.all()))
+        report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
         for f in facilities:
@@ -73,7 +75,7 @@ class ReportService:
                 facility_bcghgid=f.bcghg_id,
                 report_version=report_version,
             )
-            facility_report.activities.add(*list(operation.reporting_activities.all()))
+            facility_report.activities.add(*list(operation.activities.all()))
             facility_report.products.add(*list(operation.regulated_products.all()))
 
         return report
@@ -96,11 +98,11 @@ class ReportService:
         report_operation.operation_representative_name = data.operation_representative_name
 
         # Fetch and set ManyToMany fields
-        reporting_activities = ReportingActivity.objects.filter(name__in=data.reporting_activities)
+        activities = Activity.objects.filter(name__in=data.activities)
         regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
 
         # Set ManyToMany relationships
-        report_operation.reporting_activities.set(reporting_activities)
+        report_operation.activities.set(activities)
         report_operation.regulated_products.set(regulated_products)
 
         # Save the updated report operation
