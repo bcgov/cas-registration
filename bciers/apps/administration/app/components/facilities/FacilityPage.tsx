@@ -3,9 +3,8 @@ import {
   facilitiesUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
 import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
-import FacilitiesForm from "./FacilitiesForm";
+import FacilityForm from "./FacilityForm";
 import { UUID } from "crypto";
-import { notFound } from "next/navigation";
 import getFacility from "./getFacility";
 import getOperation from "../operations/getOperation";
 
@@ -22,16 +21,20 @@ export default async function Facility({
   if (facilityId) {
     facilityFormData = await getFacility(facilityId);
     if (facilityFormData?.error) {
-      return notFound();
+      throw new Error(
+        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
+      );
     }
   }
   const operation = await getOperation(operationId);
   if (operation.error) {
-    return notFound();
+    throw new Error(
+      "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
+    );
   }
   const isCreating = Object.keys(facilityFormData).length === 0;
   return (
-    <FacilitiesForm
+    <FacilityForm
       schema={
         operation.type === "Single Facility Operation"
           ? facilitiesSchemaSfo

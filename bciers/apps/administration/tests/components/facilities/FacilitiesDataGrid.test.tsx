@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import FacilityDataGrid from "apps/administration/app/components/facilities/FacilityDataGrid";
+import FacilityDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "../helpers/extractParams";
 

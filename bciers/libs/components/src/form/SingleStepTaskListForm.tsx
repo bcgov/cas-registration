@@ -40,18 +40,12 @@ const SingleStepTaskListForm = ({
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
+  const [formState, setFormState] = useState(formData);
   const [isDisabled, setIsDisabled] = useState(
     disabled || mode === FormMode.READ_ONLY,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isLiveValidate, setIsLiveValidate] = useState(false);
-  // Form section status to track if each section is validated
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [formSectionStatus, setFormSectionStatus] = useState<{
-    [key: string]: boolean;
-  }>({});
 
   const formSections = schema.properties as RJSFSchema;
   const formSectionList = Object.keys(formSections);
@@ -64,34 +58,11 @@ const SingleStepTaskListForm = ({
 
   const formRef = createRef<any>();
 
-  // useEffect(() => {
-  //   // Do not validate on component mount if there is no formData
-  //   if (!formData || Object.keys(formData).length === 0 || !formRef?.current)
-  //     return;
-
-  //   // If there is formData, validate the form sections and
-  //   // set the formSectionStatus on component mount
-  //   const validator = formRef?.current.state.schemaUtils.getValidator();
-  //   const errorData = validator.validateFormData(formData, schema);
-  //   const errorSchema = errorData.errorSchema;
-
-  //   const formSectionErrorList = formSectionList.reduce(
-  //     (acc: { [key: string]: boolean }, section: string) => {
-  //       const sectionErrors = errorSchema?.[section] ?? {};
-  //       const isValid = Object.keys(sectionErrors).length === 0;
-  //       acc[section] = isValid;
-  //       return acc;
-  //     },
-  //     {},
-  //   );
-
-  //   setIsLiveValidate(true);
-  //   setFormSectionStatus(formSectionErrorList);
-  // }, []);
-
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async (e: IChangeEvent) => {
     setIsSubmitting(true);
+    // Update the form state with the new data so we don't use stale data on edit
+    setFormState(e.formData);
     e.formData = createUnnestedFormData(e.formData, formSectionList);
     const response = await onSubmit(e); // Pass the event to the parent component
     setIsSubmitting(false);
@@ -108,35 +79,8 @@ const SingleStepTaskListForm = ({
     // ⚠️ Warning ⚠️ - be mindful of performance issues using this with complex forms
     // If onChange is provided, pass the event back to the parent component
     if (onChange) onChange(e);
-    // // Use schemaUtils validator to validate form data but not trigger validation
-    // // So that we can validate the task list sections separately
-    // const validator = e.schemaUtils.getValidator();
-    // const errorData = validator.validateFormData(e.formData, e.schema);
-    // const errorSchema = errorData.errorSchema;
-
-    // // Get the section keys from the error schema and set the newSectionErrorList
-    // const newSectionErrorList = Object.keys(errorSchema).reduce(
-    //   (acc: { [key: string]: boolean }, section: string) => {
-    //     acc[section] = false;
-    //     return acc;
-    //   },
-    //   {},
-    // );
-
-    // // Re-validate the errors in the previous state and update the newSectionErrorList
-    // Object.keys(formSectionStatus).forEach((section) => {
-    //   const sectionErrors = errorSchema?.[section] ?? {};
-    //   const isValid = Object.keys(sectionErrors).length === 0;
-    //   newSectionErrorList[section] = isValid;
-    // });
-
-    // setFormSectionStatus(newSectionErrorList);
   };
 
-  // const handleError = () => {
-  //   // Enable live validation on first error eg. onSubmit with empty required fields
-  //   // if (!isLiveValidate) setIsLiveValidate(true);
-  // };
   const isFormDisabled = disabled || isDisabled || isSubmitting;
 
   return (
@@ -156,7 +100,6 @@ const SingleStepTaskListForm = ({
         // Hide the task list on mobile
         className="hidden sm:block"
         taskListItems={taskListItems}
-        taskListItemStatus={formSectionStatus}
       />
       <div className="w-full">
         <FormBase
@@ -164,11 +107,10 @@ const SingleStepTaskListForm = ({
           disabled={isFormDisabled}
           schema={schema}
           uiSchema={uiSchema}
-          formData={formData}
+          formData={formState}
           onChange={handleFormChange}
           // onError={handleError}
           onSubmit={submitHandler}
-          liveValidate={isLiveValidate && !isFormDisabled}
           omitExtraData={true}
         >
           {inlineMessage && <div className="mt-10 mb-5">{inlineMessage}</div>}

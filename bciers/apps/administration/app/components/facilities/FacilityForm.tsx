@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { actionHandler } from "@bciers/actions";
 import { FormMode } from "@bciers/utils/enums";
+import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 export interface FacilityFormData {
   [key: string]: any;
@@ -17,7 +18,7 @@ interface Props {
   isCreating?: boolean;
 }
 
-export default function FacilitiesForm({
+export default function FacilityForm({
   formData,
   schema,
   uiSchema,
@@ -27,18 +28,27 @@ export default function FacilitiesForm({
   const [error, setError] = useState(undefined);
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
+  // 🛸 build the route url with breadcrumbs pattern
+  const queryString = serializeSearchParams(searchParams);
+
   return (
     <SingleStepTaskListForm
       error={error}
-      disabled={!isCreating}
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
       mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
+        // Reset error state on form submission
+        setError(undefined);
         const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating ? "registration/facilities" : `tbd`;
-        const pathToRevalidate = endpoint; // for now the endpoint is the same as the path to revalidate
+        const endpoint = isCreating
+          ? "registration/facilities"
+          : `registration/facilities/${formData?.id}`;
+        const pathToRevalidate = isCreating
+          ? `/operations/${params.operationId}/facilities`
+          : `/operations/${params.operationId}/facilities/${formData?.id}`;
         const body = {
           ...data.formData,
           operation_id: params.operationId,
@@ -57,14 +67,18 @@ export default function FacilitiesForm({
           return { error: response.error };
         }
         if (isCreating) {
-          router.replace(
+          window.history.replaceState(
+            null,
+            "",
             `/operations/${params.operationId}/facilities/${response.id}?facilities_title=${response.name}`,
-            // @ts-ignore
-            { shallow: true },
           );
         }
       }}
-      onCancel={() => console.log("cancelled")}
+      onCancel={() =>
+        router.replace(
+          `/operations/${params.operationId}/facilities${queryString}`,
+        )
+      }
     />
   );
 }

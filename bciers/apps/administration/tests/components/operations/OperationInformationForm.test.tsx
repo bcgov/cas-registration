@@ -55,16 +55,16 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Operation Type/i)).toBeVisible();
   });
 
-  it("should have unchecked task list sections when no formData is provided", async () => {
-    render(<OperationInformationForm formData={{}} schema={testSchema} />);
+  // it("should have unchecked task list sections when no formData is provided", async () => {
+  //   render(<OperationInformationForm formData={{}} schema={testSchema} />);
 
-    expect(screen.getByTestId("section1-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-    expect(screen.getByTestId("section2-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-  });
+  //  expect(screen.getByTestId("section1-tasklist-check")).not.toContainHTML(
+  //    "svg",
+  //  );
+  //  expect(screen.getByTestId("section2-tasklist-check")).not.toContainHTML(
+  //    "svg",
+  //  );
+  //});
 
   // it("should have checked task list sections when formData is provided", async () => {
   //   render(
