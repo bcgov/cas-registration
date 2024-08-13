@@ -9,9 +9,14 @@ class Activity(BaseModel):
         LFO = "lfo"
         ALL = "all"
 
-    name = models.CharField(max_length=1000, db_comment="The name of an activity. The activity names come from Schedule A of the British Columbia Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA")
+    name = models.CharField(
+        max_length=1000,
+        db_comment="The name of an activity. The activity names come from Schedule A of the British Columbia Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA",
+    )
     applicable_to = models.CharField(
-        max_length=1000, choices=Applicability.choices, db_comment="Which type of facility the activity applies to. An activity can be valid for only a Single Facility Operation, only a Linear Facility Operation or it can apply to both"
+        max_length=1000,
+        choices=Applicability.choices,
+        db_comment="Which type of facility the activity applies to. An activity can be valid for only a Single Facility Operation, only a Linear Facility Operation or it can apply to both",
     )
     slug = models.CharField(
         max_length=50,

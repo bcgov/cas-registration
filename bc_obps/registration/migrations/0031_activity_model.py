@@ -6,12 +6,10 @@ from django.db import migrations, models
 
 # This migration creates a new Activity model that will replace the ReportingActivity model
 
+
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('registration', '0030_slug_and_weight_on_activity_model'),
-        ('reporting', '0004_V1_6_0')
-    ]
+    dependencies = [('registration', '0030_slug_and_weight_on_activity_model'), ('reporting', '0004_V1_6_0')]
 
     operations = [
         migrations.CreateModel(
@@ -157,7 +155,8 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='HistoricalOperation_reporting_activities',
         ),
-        migrations.RunSQL("""
+        migrations.RunSQL(
+            """
             INSERT INTO erc.activity (
                 name,
                 applicable_to,
@@ -171,9 +170,11 @@ class Migration(migrations.Migration):
                 weight
             FROM
                 erc.reporting_activity;
-        """, reverse_sql="""
+        """,
+            reverse_sql="""
             truncate erc.activity restart identity cascade;
-        """),
+        """,
+        ),
         migrations.DeleteModel(name='ReportingActivity'),
         migrations.DeleteModel(
             name='HistoricalReportingActivity',
