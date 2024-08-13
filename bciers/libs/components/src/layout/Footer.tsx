@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import footerLinks from "@/app/data/layout/footer.json";
+import footerLinks from "@bciers/data/footer.json";
 
 const links = footerLinks.map((link, index) => (
   <Link

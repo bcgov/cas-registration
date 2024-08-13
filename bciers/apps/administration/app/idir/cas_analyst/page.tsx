@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonSpinner";
 import { auth } from "@/dashboard/auth";
 import { IDP } from "@bciers/utils/enums";
-import User from "@/app/components/routes/profile/Page";
+import User from "@/administration/app/components/profile/ProfilePage";
 
 // 🏗️ Sync server component: dashboard\profile
 export default async function Page() {

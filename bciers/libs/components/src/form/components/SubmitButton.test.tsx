@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
-import SubmitButton from "@/app/components/form/SubmitButton";
+import SubmitButton from "@bciers/components/form/components/SubmitButton";
 
 const defaultProps = {
   label: "i am a nice label",
