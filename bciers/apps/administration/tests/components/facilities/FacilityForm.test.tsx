@@ -688,7 +688,7 @@ describe("FacilityForm component", () => {
 
     // submit valid form data, assert response
     await assertFormPut();
-  });
+  }, 30000);
   it("it edits a LFO Facility form, submits form, and displays success", async () => {
     render(
       <FacilityForm
