@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import ReportingActivity
+from registration.models import Activity
 from reporting.models import ConfigurationElement, SourceType, GasType, Methodology
 from reporting.tests.utils.bakers import (
     configuration_baker,
@@ -12,7 +12,7 @@ class ConfigurationElementTest(BaseTestCase):
     def setUpTestData(cls):
         config = configuration_baker({'slug': '5025', 'valid_from': '5025-01-01', 'valid_to': '5025-12-31'})
         cls.test_object = ConfigurationElement.objects.create(
-            reporting_activity=ReportingActivity.objects.get(pk=1),
+            activity=Activity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
             gas_type=GasType.objects.get(pk=1),
             methodology=Methodology.objects.get(pk=1),
@@ -21,7 +21,7 @@ class ConfigurationElementTest(BaseTestCase):
         )
         cls.field_data = [
             ("id", "ID", None, None),
-            ("reporting_activity", "reporting activity", None, None),
+            ("activity", "activity", None, None),
             ("source_type", "source type", None, None),
             ("gas_type", "gas type", None, None),
             ("methodology", "methodology", None, None),
@@ -32,7 +32,7 @@ class ConfigurationElementTest(BaseTestCase):
 
     def testDuplicateConfigElementForDateRange(self):
         invalid_record = ConfigurationElement(
-            reporting_activity=self.test_object.reporting_activity,
+            activity=self.test_object.activity,
             source_type=self.test_object.source_type,
             gas_type=self.test_object.gas_type,
             methodology=self.test_object.methodology,
@@ -47,7 +47,7 @@ class ConfigurationElementTest(BaseTestCase):
     def testValidInsert(self):
         config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})
         valid_record = ConfigurationElement(
-            reporting_activity=self.test_object.reporting_activity,
+            activity=self.test_object.activity,
             source_type=self.test_object.source_type,
             gas_type=self.test_object.gas_type,
             methodology=self.test_object.methodology,

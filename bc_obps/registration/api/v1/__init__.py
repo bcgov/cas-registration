@@ -9,6 +9,7 @@ from . import (
     regulated_products,
     operations,
     user_operators,
+    reporting_activities,
     users,
     facilities,
     contacts,

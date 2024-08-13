@@ -1,8 +1,8 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import ReportingActivity
+from registration.models import Activity
 
 
-class ReportingActivityModelTest(BaseTestCase):
+class ActivityModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.field_data = [
@@ -15,6 +15,6 @@ class ReportingActivityModelTest(BaseTestCase):
             ("configuration_elements", "configuration element", None, None),
             ("reportactivity_records", "report activity", None, 0),
         ]
-        cls.test_object = ReportingActivity.objects.create(
-            name="test activity", applicable_to=ReportingActivity.Applicability.ALL, slug="test_activity", weight=100.0
+        cls.test_object = Activity.objects.create(
+            name="test activity", applicable_to=Activity.Applicability.ALL, slug="test_activity", weight=100.0
         )

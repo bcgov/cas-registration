@@ -11,7 +11,7 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
-from reporting.tests.utils.bakers import report_version_baker, reporting_activity_baker, source_type_baker
+from reporting.tests.utils.bakers import report_version_baker, activity_baker, source_type_baker
 
 
 def facility_report_baker(**props):
@@ -27,7 +27,7 @@ def report_activity_baker(**props):
     report_version = props.get('report_version') or report_version_baker()
 
     default_props = {
-        "activity": reporting_activity_baker(),
+        "activity": activity_baker(),
         "activity_base_schema": ActivityJsonSchema.objects.first(),
         "report_version": report_version,
         "json_data": "{'test':'report_activity'}",

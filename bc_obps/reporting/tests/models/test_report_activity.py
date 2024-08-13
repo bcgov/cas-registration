@@ -16,7 +16,7 @@ class ReportActivityModelTest(BaseTestCase):
             report_version=report_version,
             json_data="{'test': 1}",
             activity_base_schema=ActivityJsonSchema.objects.first(),
-            activity=ActivityJsonSchema.objects.first().reporting_activity,
+            activity=ActivityJsonSchema.objects.first().activity,
             facility_report=facility_report_baker(report_version=report_version),
         )
         cls.field_data = [

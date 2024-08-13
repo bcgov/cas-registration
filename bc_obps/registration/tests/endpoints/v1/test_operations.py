@@ -334,7 +334,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     #     naics_code = baker.make(NaicsCode)
     #     contact = baker.make(Contact)
     #     regulated_products = baker.make(RegulatedProduct, _quantity=2)
-    #     # reporting_activities = baker.make(ReportingActivity, _quantity=2)
+    #     # activities = baker.make(Activity, _quantity=2)
     #     operator = operator_baker()
     #     mock_operation = OperationCreateIn(
     #         name='Springfield Nuclear Power Plant',
@@ -376,7 +376,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     #         #         "mo_mailing_postal_code": "V1V 1V1",
     #         #     },
     #         # ],
-    #         # reporting_activities=reporting_activities,
+    #         # activities=activities,
     #         regulated_products=regulated_products,
     #         contacts=[contact.id],
     #         operator_id=operator.id,
@@ -430,7 +430,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             name='My New Operation',
             type='Type 1',
             regulated_products=[],
-            # reporting_activities=[],
+            # activities=[],
         )
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)

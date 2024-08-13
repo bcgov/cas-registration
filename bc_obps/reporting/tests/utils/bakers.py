@@ -1,7 +1,7 @@
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from reporting.models import configuration_element
 from reporting.models.gas_type import GasType
-from registration.models import ReportingActivity
+from registration.models import Activity
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.models.reporting_year import ReportingYear
@@ -33,11 +33,11 @@ def report_version_baker(**props) -> ReportVersion:
     return version
 
 
-def reporting_activity_baker(custom_properties=None) -> ReportingActivity:
+def activity_baker(custom_properties=None) -> Activity:
     properties = {}
     if custom_properties:
         properties.update(custom_properties)
-    return baker.make(ReportingActivity, **properties)
+    return baker.make(Activity, **properties)
 
 
 def source_type_baker(custom_properties=None) -> SourceType:
