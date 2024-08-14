@@ -7,7 +7,6 @@ import {
   facilitiesLfoUiSchema,
 } from "../../data/jsonSchema/facilitiesLfo";
 import { UUID } from "crypto";
-import { notFound } from "next/navigation";
 import FacilityForm from "./FacilityForm";
 import getFacility from "./getFacility";
 import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
@@ -23,14 +22,6 @@ export default async function Facility({
 }) {
   let facilityFormData: { [key: string]: any } | { error: string } = {};
 
-  if (facilityId) {
-    facilityFormData = await getFacility(facilityId);
-    if (facilityFormData?.error) {
-      throw new Error(
-        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
-      );
-    }
-  }
   const operation = await getOperation(operationId);
   if (operation.error) {
     throw new Error(
@@ -46,7 +37,9 @@ export default async function Facility({
     facilityFormData = await getFacility(facilityId);
     isCreating = Object.keys(facilityFormData).length === 0;
     if (facilityFormData?.error) {
-      return notFound();
+      throw new Error(
+        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
+      );
     }
   } else if (isSfo) {
     // Pre-populate facility name and type for SFO Operations

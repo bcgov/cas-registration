@@ -75,7 +75,7 @@ const lfoFormData = {
 };
 
 const defaultFillFormValues = {
-  name: "test",
+  name: "test facility name",
   type_sfo: "Single Facility Operation",
   type_lfo: "Large Facility",
   well_authorization_numbers: [355],
@@ -102,44 +102,46 @@ const defaultUpdateFormValues = {
   starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 
-const sfoResponsePost = {
-  name: "test",
-  type: "Single Facility",
-  is_current_year: false,
-  latitude_of_largest_emissions: 48.3,
-  longitude_of_largest_emissions: 123.32,
-  operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-};
+const sfoResponsePost = [
+  {
+    name: "test facility name",
+    type: "Single Facility",
+    is_current_year: false,
+    latitude_of_largest_emissions: 48.3,
+    longitude_of_largest_emissions: 123.32,
+    operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+  },
+];
 
-const lfoResponsePost = {
-  name: "test",
-  type: "Large Facility",
-  well_authorization_numbers: [355],
-  is_current_year: true,
-  starting_date: "2024-07-07T09:00:00.000Z",
-  street_address: "address",
-  municipality: "city",
-  province: "AB",
-  postal_code: "H0H0H0",
-  latitude_of_largest_emissions: 48.3,
-  longitude_of_largest_emissions: 123.32,
-  operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-};
+const lfoResponsePost = [
+  {
+    name: "test facility name",
+    type: "Large Facility",
+    well_authorization_numbers: [355],
+    is_current_year: true,
+    starting_date: "2024-07-07T09:00:00.000Z",
+    street_address: "address",
+    municipality: "city",
+    province: "AB",
+    postal_code: "H0H0H0",
+    latitude_of_largest_emissions: 48.3,
+    longitude_of_largest_emissions: 123.32,
+    operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+  },
+];
 
 // ⛏️ Helper function to check mandatory field values
 const checkMandatoryFieldValues = async (schema: RJSFSchema) => {
-  expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue(
-    defaultFillFormValues.name,
-  );
-  if (schema === facilitiesLfoSchema) {
+  const isLfoFacility = schema === facilitiesLfoSchema;
+  if (isLfoFacility) {
+    expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue(
+      defaultFillFormValues.name,
+    );
     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
       defaultFillFormValues.type_lfo,
     );
-  } else {
-    expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
-      defaultFillFormValues.type_sfo,
-    );
   }
+
   expect(
     screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
   ).toHaveValue(defaultFillFormValues.latitude_of_largest_emissions);
@@ -170,18 +172,22 @@ const checkOptionalFieldValues = ({
 
 // ⛏️ Helper function to edit form fields
 export const editFormFields = async (schema: RJSFSchema) => {
-  const nameInput = screen.getByLabelText(/Facility Name+/i);
-  await userEvent.clear(nameInput);
-  await userEvent.type(nameInput, defaultUpdateFormValues.name);
+  const isLfoFacility = schema === facilitiesLfoSchema;
+  if (isLfoFacility) {
+    // edit the facility name
+    const nameInput = screen.getByLabelText(/Facility Name+/i);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, defaultUpdateFormValues.name);
 
-  const typeInput = screen.getByLabelText(/Facility Type+/i);
-  await userEvent.click(typeInput);
-  // Select the last option in the dropdown
-  const typeOptions = screen.getAllByRole("option");
-  const lastTypeOption = typeOptions[typeOptions.length - 1];
-  await userEvent.click(lastTypeOption);
+    const typeInput = screen.getByLabelText(/Facility Type+/i);
+    await userEvent.click(typeInput);
+    // Select the last option in the dropdown
+    const typeOptions = screen.getAllByRole("option");
+    const lastTypeOption = typeOptions[typeOptions.length - 1];
+    await userEvent.click(lastTypeOption);
+  }
 
-  if (schema === facilitiesLfoSchema) {
+  if (isLfoFacility) {
     // edit the well authorization number
     const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
     await userEvent.clear(firstWellAuthInput); // clear the existing value
@@ -228,21 +234,24 @@ export const editFormFields = async (schema: RJSFSchema) => {
 
 // ⛏️ Helper function to fill form mandatory fields
 const fillMandatoryFields = async (schema: RJSFSchema) => {
-  await userEvent.type(
-    screen.getByLabelText(/Facility Name+/i),
-    defaultFillFormValues.name,
-  );
-  // fill type
-  const comboBoxInput = screen.getAllByRole("combobox");
-  const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
-    ?.children[1]?.children[0] as HTMLInputElement;
-  await userEvent.click(openFacilityTypeDropdownButton);
-  const selectText =
-    schema === facilitiesLfoSchema
-      ? defaultFillFormValues.type_lfo
-      : defaultFillFormValues.type_sfo;
-  const typeOption = screen.getByText(selectText);
-  await userEvent.click(typeOption);
+  const isLfoFacility = schema === facilitiesLfoSchema;
+  if (isLfoFacility) {
+    await userEvent.type(
+      screen.getByLabelText(/Facility Name+/i),
+      defaultFillFormValues.name,
+    );
+    // fill type
+    const comboBoxInput = screen.getAllByRole("combobox");
+    const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
+      ?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openFacilityTypeDropdownButton);
+    const selectText =
+      schema === facilitiesLfoSchema
+        ? defaultFillFormValues.type_lfo
+        : defaultFillFormValues.type_sfo;
+    const typeOption = screen.getByText(selectText);
+    await userEvent.click(typeOption);
+  }
 
   fireEvent.change(
     screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
@@ -344,12 +353,12 @@ describe("FacilityForm component", () => {
   });
 
   it("renders the empty SFO facility form when creating a new facility", async () => {
-    const { container } = render( 
+    const { container } = render(
       <FacilityForm
-      schema={facilitiesSfoSchema}
-      uiSchema={facilitiesSfoUiSchema}
-      formData={{}}
-      isCreating
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
+        formData={{}}
+        isCreating
       />,
     );
     // form fields and headings
@@ -387,7 +396,7 @@ describe("FacilityForm component", () => {
     expect(submitButton).toBeEnabled();
   });
   it("renders the empty LFO facility form when creating a new facility", async () => {
-  const{container}=  render(
+    const { container } = render(
       <FacilityForm
         schema={facilitiesLfoSchema}
         uiSchema={facilitiesLfoUiSchema}
@@ -435,8 +444,8 @@ describe("FacilityForm component", () => {
   it("loads existing readonly SFO form data", async () => {
     const { container } = render(
       <FacilityForm
-        schema={facilitiesLfoSchema}
-        uiSchema={facilitiesLfoUiSchema}
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={sfoFormData}
       />,
     );
@@ -528,8 +537,8 @@ describe("FacilityForm component", () => {
   it("does not allow SFO submission if there are validation errors (empty form data)", async () => {
     render(
       <FacilityForm
-        schema={facilitiesLfoSchema}
-        uiSchema={facilitiesLfoUiSchema}
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={{}}
         isCreating
       />,
@@ -577,7 +586,7 @@ describe("FacilityForm component", () => {
     render(
       <FacilityForm
         schema={facilitiesLfoSchema}
-        uiSchema={facilitiesLfoUiSchema}  
+        uiSchema={facilitiesLfoUiSchema}
         formData={{}}
         isCreating
       />,
@@ -645,8 +654,8 @@ describe("FacilityForm component", () => {
         schema={facilitiesSfoSchema}
         uiSchema={facilitiesSfoUiSchema}
         formData={{
-          name: "Test Name",
-          type: "Single Facility",
+          name: "test facility name",
+          type: "Single Facility Operation",
         }}
       />,
     );
@@ -657,42 +666,6 @@ describe("FacilityForm component", () => {
 
     // submit valid form data, assert response
     await assertFormPost(sfoResponsePost);
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    actionHandler.mockReturnValueOnce([
-      {
-        id: facilityId,
-        name: facilityName,
-        error: null,
-      },
-    ]);
-    // fill year and starting date
-    const year = screen.getByLabelText(/Did this facility begin operations+/i);
-    await userEvent.click(year);
-    await userEvent.type(
-      screen.getByLabelText(/Date of facility starting operations+/i),
-      "20240101",
-    );
-
-    // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
-    fireEvent.change(
-      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-      { target: { value: 0.1 } },
-    );
-    fireEvent.change(
-      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-      { target: { value: 0.1 } },
-    );
-
-    userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith(
-        `/operations/${operationId}/facilities/${facilityId}?facilities_title=${facilityName}`,
-        {
-          shallow: true,
-        },
-      );
-    });
   });
   it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
     render(
@@ -718,7 +691,7 @@ describe("FacilityForm component", () => {
     render(
       <FacilityForm
         schema={facilitiesSfoSchema}
-        uiSchema={facilitiesLfoUiSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={sfoFormData}
       />,
     );
@@ -773,7 +746,7 @@ describe("FacilityForm component", () => {
     render(
       <FacilityForm
         schema={facilitiesSfoSchema}
-        uiSchema={facilitiesLfoUiSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={{}}
         isCreating
       />,
