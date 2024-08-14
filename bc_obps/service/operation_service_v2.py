@@ -7,13 +7,11 @@ from registration.schema.v2.operation import OperationFilterSchema, Registration
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from django.db.models import Q
+from django.db import transaction
 from django.core.paginator import Paginator
 from ninja import Query
-from registration.models import (
-    Operation,
-)
+from registration.models import Operation
 from registration.constants import PAGE_SIZE
-from django.db import transaction
 from django.db.models import QuerySet
 
 
@@ -89,5 +87,14 @@ class OperationServiceV2:
             if payload.regulated_products:
                 operation.regulated_products.set(payload.regulated_products)
 
+        operation.set_create_or_update(user_guid)
+        return operation
+
+    @classmethod
+    @transaction.atomic()
+    def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation.status = Operation.Statuses(status)
+        operation.save(update_fields=['status'])
         operation.set_create_or_update(user_guid)
         return operation
