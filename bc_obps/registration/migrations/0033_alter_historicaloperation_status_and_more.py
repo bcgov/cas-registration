@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0031_historicalregistrationpurpose_registrationpurpose'),
+        ('registration', '0032_add_gsc_solely_for_line_tracing'),
     ]
 
     operations = [
