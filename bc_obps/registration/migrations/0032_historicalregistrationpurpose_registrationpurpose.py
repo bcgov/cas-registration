@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0030_slug_and_weight_on_activity_model'),
+        ('registration', '0031_activity_model'),
     ]
 
     operations = [
