@@ -169,7 +169,8 @@ class Migration(migrations.Migration):
                 slug,
                 weight
             FROM
-                erc.reporting_activity;
+                erc.reporting_activity
+                order by weight asc;
         """,
             reverse_sql="""
             truncate erc.activity restart identity cascade;
