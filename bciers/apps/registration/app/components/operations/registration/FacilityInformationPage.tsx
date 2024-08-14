@@ -22,7 +22,6 @@ const FacilityInformationPage = async ({
   step: number;
   steps: string[];
 }) => {
-
   const isOperationSfo = operationType === OperationTypes.SFO;
   const initialGridData = await fetchFacilitiesPageData(
     operation,
@@ -54,6 +53,7 @@ const FacilityInformationPage = async ({
 
   return (
     <FacilityInformationForm
+      facilityId={facilityId}
       isCreating={!isOperationSfo && !facilityId}
       initialGridData={initialGridData}
       formData={formData}

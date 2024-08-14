@@ -6,7 +6,6 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
-import { OperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -66,7 +65,7 @@ describe("the FacilityInformationPage component", () => {
         operationType: "Single Facility Operation",
         searchParams: {},
         step: 2,
-        steps: OperationRegistrationSteps,
+        steps: allOperationRegistrationSteps,
       }),
     );
 
@@ -108,7 +107,7 @@ describe("the FacilityInformationPage component", () => {
         operationType: "Linear Facility Operation",
         searchParams: {},
         step: 2,
-        steps: OperationRegistrationSteps,
+        steps: allOperationRegistrationSteps,
       }),
     );
 
@@ -131,7 +130,7 @@ describe("the FacilityInformationPage component", () => {
         operationType: "Linear Facility Operation",
         searchParams: {},
         step: 2,
-        steps: OperationRegistrationSteps,
+        steps: allOperationRegistrationSteps,
       }),
     );
 
