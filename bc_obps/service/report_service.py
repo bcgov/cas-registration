@@ -8,7 +8,7 @@ from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.schema.report_facility import FacilityReport, ReportFacilityIn
+from reporting.schema.facility_report import FacilityReport, ReportFacilityIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
@@ -109,7 +109,7 @@ class ReportService:
         return report_operation
 
     @classmethod
-    def get_report_facility_by_version_and_id(cls, report_version_id: int, facility_id: int) -> FacilityReport:
+    def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: int) -> FacilityReport:
         try:
             result = FacilityReport.objects.get(report_version__id=report_version_id, id=facility_id)
         except FacilityReport.DoesNotExist:
@@ -124,7 +124,7 @@ class ReportService:
         return []
 
     @classmethod
-    def save_report_facility(cls, report_version_id: int, data: ReportFacilityIn) -> FacilityReport:
+    def save_facility_report(cls, report_version_id: int, data: ReportFacilityIn) -> FacilityReport:
         """
         Save or update a report facility and its related activities.
 

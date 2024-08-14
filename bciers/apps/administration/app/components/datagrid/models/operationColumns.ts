@@ -17,7 +17,7 @@ const operationColumns = (
     { field: "bcghg_id", headerName: "BC GHG ID", width: 200 },
     { field: "type", headerName: "Operation Type", width: 200 },
     {
-      field: "facilities",
+      field: "facility",
       headerName: "Facilities",
       renderCell: FacilitiesActionCell,
       sortable: false,

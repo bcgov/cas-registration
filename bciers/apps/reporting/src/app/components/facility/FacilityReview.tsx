@@ -30,11 +30,11 @@ interface Activity {
   id: number;
 }
 
-const getReportFacilities = async (version_id: number, facility_id: number) => {
+const getFacilityReport = async (version_id: number, facility_id: number) => {
   return actionHandler(
-    `reporting/report-version/${version_id}/report-facility/${facility_id}`,
+    `reporting/report-version/${version_id}/facility-report/${facility_id}`,
     "GET",
-    `reporting/report-version/${version_id}/report-facility/${facility_id}`,
+    `reporting/report-version/${version_id}/facility-report/${facility_id}`,
   );
 };
 
@@ -64,7 +64,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const facilityData = await getReportFacilities(version_id, facility_id);
+        const facilityData = await getFacilityReport(version_id, facility_id);
         const activitiesData = await getAllActivities();
         const validActivitiesData = Array.isArray(activitiesData)
           ? activitiesData
@@ -108,8 +108,8 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     };
 
     const method = "POST";
-    const endpoint = `reporting/report-version/${version_id}/report-facility/${facility_id}`;
-    const pathToRevalidate = `reporting/report-version/${version_id}/report-facility/${facility_id}`;
+    const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
+    const pathToRevalidate = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
     const formDataObject = JSON.parse(JSON.stringify(updatedFacility));
 
     try {
