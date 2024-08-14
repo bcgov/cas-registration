@@ -13,7 +13,6 @@ const RegistrationSubmissionPage = ({
 }) => {
   return (
     <RegistrationSubmissionForm
-      formData={{}}
       operation={operation}
       schema={submissionSchema}
       step={step}
