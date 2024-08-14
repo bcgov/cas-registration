@@ -8,9 +8,11 @@ from registration.decorators import handle_http_errors
 from ..router import router
 from registration.schema.v1 import (
     OperationCreateIn,
-    OperationPaginatedOut,
     OperationCreateOut,
+    OperationPaginatedOut,
     OperationFilterSchema,
+    OperationUpdateOut,
+    OperationStatutoryDeclarationIn,
 )
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx
@@ -49,3 +51,26 @@ def list_operations(
 @handle_http_errors()
 def create_operation(request: HttpRequest, payload: OperationCreateIn) -> Tuple[Literal[201], DictStrAny]:
     return 201, OperationService.create_operation(get_current_user_guid(request), payload)
+
+
+##### PUT #####
+
+
+@router.put(
+    "/statutory-declarations",
+    response={201: OperationUpdateOut, codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    description="Creates or replaces a statutory declaration document for an Operation",
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def create_or_replace_statutory_declarations(
+    request: HttpRequest, payload: OperationStatutoryDeclarationIn
+) -> Tuple[Literal[201], OperationUpdateOut]:
+    return (
+        201,
+        OperationService.save_statutory_declaration(
+            user_guid=get_current_user_guid(request),
+            payload=payload,
+        ),
+    )

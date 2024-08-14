@@ -8,7 +8,13 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from service.document_service import DocumentService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
-from registration.schema.v1.operation import OperationCreateIn, OperationFilterSchema, OperationUpdateIn
+from registration.schema.v1.operation import (
+    OperationCreateIn,
+    OperationFilterSchema,
+    OperationUpdateIn,
+    OperationUpdateOut,
+    OperationStatutoryDeclarationIn,
+)
 from service.data_access_service.operation_service import OperationDataAccessService
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -117,22 +123,37 @@ class OperationService:
     @classmethod
     @transaction.atomic()
     def create_or_replace_statutory_declaration(
-        cls, user_guid: UUID, payload: OperationUpdateIn, existing_statutory_document: Optional[Document]
+        cls, user_guid: UUID, payload: OperationStatutoryDeclarationIn, existing_statutory_document: Optional[Document]
     ) -> Optional[Document]:
-
         # if there is an existing statutory declaration document, check if the new one is different
         if existing_statutory_document:
             # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
             if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
                 existing_statutory_document.delete()
                 return DocumentDataAccessService.create_document(
-                    user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
+                    user_guid,
+                    payload.statutory_declaration,  # type: ignore[arg-type] # mypy is not aware of the schema validator
+                    "signed_statutory_declaration",
                 )
             return None
         # if there is no existing statutory declaration document, create a new one
         return DocumentDataAccessService.create_document(
             user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
         )
+
+    @classmethod
+    def save_statutory_declaration(
+        cls, user_guid: UUID, payload: OperationStatutoryDeclarationIn
+    ) -> OperationUpdateOut:
+        operation_id = payload.operation_id
+        existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(operation_id)
+        document = cls.create_or_replace_statutory_declaration(
+            user_guid, payload, existing_statutory_document=existing_statutory_document
+        )
+        operation = OperationDataAccessService.get_by_id(operation_id)
+        if document:
+            operation.documents.set([document])
+        return OperationUpdateOut(name=operation.name)
 
     @classmethod
     @transaction.atomic()
@@ -170,8 +191,15 @@ class OperationService:
             existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(
                 operation_id
             )
+            stat_dec_payload = OperationStatutoryDeclarationIn(
+                operation_id=operation_id, statutory_declaration=payload_statutory_declaration
+            )
             # If document is new or has changed, we need to set it to the operation
-            document = cls.create_or_replace_statutory_declaration(user_guid, payload, existing_statutory_document)
+            document = cls.create_or_replace_statutory_declaration(
+                user_guid,
+                stat_dec_payload,
+                existing_statutory_document,
+            )
             if document:
                 operation.documents.set([document])
 
@@ -218,9 +246,11 @@ class OperationService:
         base_qs = OperationDataAccessService.get_all_operations_for_user(user)
         list_of_filters = [
             Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
-            Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
-            if bc_obps_regulated_operation
-            else Q(),
+            (
+                Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
+                if bc_obps_regulated_operation
+                else Q()
+            ),
             Q(name__icontains=name) if name else Q(),
             Q(operator__legal_name__icontains=operator) if operator else Q(),
             Q(status__icontains=status) if status else Q(),
@@ -268,4 +298,5 @@ class OperationService:
         # if payload.operation_has_multiple_operators:
         #     create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
 
+        return {"name": operation.name, "id": operation.id}
         return {"name": operation.name, "id": operation.id}
