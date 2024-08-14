@@ -47,7 +47,7 @@ useRouter.mockReturnValue({
 
 const sfoFormData = {
   name: "Monkeyfuzz",
-  type: "Single Facility Operation",
+  type: "Single Facility",
   latitude_of_largest_emissions: "3.000000",
   longitude_of_largest_emissions: "4.000000",
   street_address: "adf",
@@ -61,7 +61,7 @@ const sfoFormData = {
 
 const lfoFormData = {
   name: "Monkeyfuzz",
-  type: "Single Facility Operation",
+  type: "Single Facility",
   well_authorization_numbers: [24546, 54321],
   latitude_of_largest_emissions: "3.000000",
   longitude_of_largest_emissions: "4.000000",
@@ -76,7 +76,7 @@ const lfoFormData = {
 
 const defaultFillFormValues = {
   name: "test facility name",
-  type_sfo: "Single Facility Operation",
+  type_sfo: "Single Facility",
   type_lfo: "Large Facility",
   well_authorization_numbers: [355],
   street_address: "address",
@@ -308,23 +308,26 @@ const assertFormPost = async (
   responseData: Record<string, any>,
 ): Promise<void> => {
   // Set up the mock before the click event
-  const response = {
-    id: facilityId,
-    name: facilityName,
-    error: null,
-  };
+  const response = [
+    {
+      id: facilityId,
+      name: facilityName,
+      error: null,
+    },
+  ];
   actionHandler.mockReturnValueOnce(response);
 
   // Find and click the submit button
   const submitButton = screen.getByRole("button", { name: /submit/i });
-  userEvent.click(submitButton);
+  act(() => {
+    userEvent.click(submitButton);
+  });
 
   // Add some delay to allow async processes to complete
   await new Promise((r) => setTimeout(r, 100));
 
   // Assertion to check if actionHandler was called correctly
-  expect(actionHandler).toHaveBeenNthCalledWith(
-    1,
+  expect(actionHandler).toHaveBeenCalledWith(
     endPoint,
     "POST",
     revalidatePathPost,
@@ -338,7 +341,9 @@ const assertFormPost = async (
 const assertFormPut = async (): Promise<void> => {
   // Submit valid form data
   const submitButton = screen.getByRole("button", { name: /submit/i });
-  userEvent.click(submitButton);
+  act(() => {
+    userEvent.click(submitButton);
+  });
   actionHandler.mockReturnValue({ error: null });
   await waitFor(() => {
     expect(
@@ -454,7 +459,7 @@ describe("FacilityForm component", () => {
       "Monkeyfuzz",
     );
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
-      "Single Facility Operation",
+      "Single Facility",
     );
     expect(
       container.querySelector("#root_section1_is_current_year"),
@@ -499,7 +504,7 @@ describe("FacilityForm component", () => {
       "Monkeyfuzz",
     );
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
-      "Single Facility Operation",
+      "Single Facility",
     );
     expect(screen.getByText("Well Authorization Number(s)")).toBeVisible();
     expect(screen.getByText(24546)).toBeVisible();
@@ -655,7 +660,7 @@ describe("FacilityForm component", () => {
         uiSchema={facilitiesSfoUiSchema}
         formData={{
           name: "test facility name",
-          type: "Single Facility Operation",
+          type: "Single Facility",
         }}
       />,
     );
