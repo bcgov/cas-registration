@@ -129,7 +129,10 @@ def get_report_facility_by_version_and_id(
 def save_report_facility(
         request: HttpRequest, version_id: int, payload: ReportFacilityIn
 ) -> Union[
-    tuple[int, ReportFacilityOut], tuple[int, dict[str, str]]
+    Tuple[Literal[201], ReportFacilityOut],
+    Tuple[Literal[400], Dict[str, str]],
+    Tuple[Literal[404], Dict[str, str]],
+    Tuple[Literal[500], Dict[str, str]]
 ]:
     """
     Save or update a report facility and its related activities.

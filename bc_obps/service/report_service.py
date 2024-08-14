@@ -137,7 +137,7 @@ class ReportService:
         """
         try:
             # Fetch or create a ReportFacility instance
-            report_facility, created = FacilityReport.objects.update_or_create(
+            report_facility, _ = FacilityReport.objects.update_or_create(
                 report_version__id=report_version_id,
                 defaults={
                     'facility_name': data.facility_name.strip(),
