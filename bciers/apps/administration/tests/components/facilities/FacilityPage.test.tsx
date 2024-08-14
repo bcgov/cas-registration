@@ -60,19 +60,25 @@ describe("Facilities component", () => {
     );
   });
 
-  it("renders the SFO create facility form with no form data", async () => {
+  it("renders the SFO create facility form with pre-populated fields", async () => {
     getOperation.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
       type: "Single Facility Operation",
+      name: "Test Operation Name",
     });
     getFacility.mockReturnValueOnce(undefined);
-    render(
+    const { container } = render(
       await FacilityPage({
         operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
         facilityId: undefined,
       }),
     );
-    expect(screen.getByLabelText(/facility name/i)).toHaveValue("");
+    expect(container.querySelector("#root_section1_name")).toHaveTextContent(
+      "Test Operation Name",
+    );
+    expect(container.querySelector("#root_section1_type")).toHaveTextContent(
+      "Single Facility",
+    );
     expect(screen.queryByText(/well/i)).not.toBeInTheDocument(); // well authorization number is only for LFOs
   });
 

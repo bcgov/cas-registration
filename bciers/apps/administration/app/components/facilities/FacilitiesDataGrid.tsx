@@ -12,23 +12,28 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 
 import { useSearchParams } from "next/navigation";
 const FacilitiesDataGrid = ({
+  disabled,
   operationId,
   initialData,
+  sx,
 }: {
+  disabled?: boolean;
   operationId: string;
   initialData: {
     rows: FacilityRow[];
     row_count: number;
   };
+  sx?: { [key: string]: any };
 }) => {
   const searchParams = useSearchParams();
   const operationsTitle = searchParams.get("operations_title") as string;
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
-        return `/operations/${operationId}/facilities/${params.row.id}?operations_title=${operationsTitle}&facilities_title=${params.row.name}`;
+        return `/administration/operations/${operationId}/facilities/${params.row.id}?operationsTitle=${operationsTitle}&facilitiesTitle=${params.row.name}`;
       },
       cellText: "View Details",
+      useWindowLocation: true,
     });
   const ActionCell = useMemo(() => createFacilitiesActionCell(), []);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
@@ -48,9 +53,11 @@ const FacilitiesDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
+      disabled={disabled}
       fetchPageData={createFetchFacilitiesPageData(operationId)}
       paginationMode="server"
       initialData={initialData}
+      sx={sx}
     />
   );
 };

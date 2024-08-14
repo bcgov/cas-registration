@@ -2,7 +2,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { QueryParams } from "@bciers/testConfig/types";
-import DataGrid from "@bciers/components/datagrid/DataGrid";
+import DataGrid from "apps/registration1/app/components/datagrid/DataGrid";
 import { GridColDef } from "@mui/x-data-grid";
 
 const extractParams = (mockCall: string, paramToExtract: string) => {

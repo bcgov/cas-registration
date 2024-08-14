@@ -24,6 +24,16 @@ export enum OperationStatus {
   CHANGES_REQUESTED = "Changes Requested",
 }
 
+export enum OperationTypes {
+  SFO = "Single Facility Operation",
+  LFO = "Linear Facility Operation",
+}
+
+export enum FacilityTypes {
+  SFO = "Single Facility",
+  LFO = "Linear Facility",
+}
+
 export enum OperatorStatus {
   DRAFT = "Draft",
   PENDING = "Pending",

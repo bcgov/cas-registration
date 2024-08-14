@@ -4,15 +4,25 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 const ActionCellFactory = ({
   generateHref,
   cellText,
+  useWindowLocation = false,
 }: {
   generateHref: (params: GridRenderCellParams) => string;
   cellText: string;
+  useWindowLocation?: boolean;
 }) => {
   const renderCell = (params: GridRenderCellParams) => {
+    const href = generateHref(params);
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      // Use this to get around issues with shared datagrids and links to other apps/zones
+      // ie registration app to administration app
+      window.location.href = href;
+    };
     return (
       <Link
         className="no-underline text-bc-link-blue whitespace-normal"
-        href={generateHref(params)}
+        onClick={useWindowLocation ? handleClick : undefined}
+        href={href}
       >
         {cellText}
       </Link>

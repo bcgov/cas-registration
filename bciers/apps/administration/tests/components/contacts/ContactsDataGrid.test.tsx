@@ -1,15 +1,17 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import ContactsDataGrid from "apps/administration/app/components/contacts/ContactsDataGrid";
+import { useSearchParams } from "@bciers/testConfig/mocks";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "../helpers/extractParams";
 
-const mockReplace = vi.fn();
-useRouter.mockReturnValue({
-  query: {},
-  replace: mockReplace,
-});
+const mockReplace = vi.spyOn(global.history, "replaceState");
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
@@ -117,36 +119,54 @@ describe("ContactsDataGrid component", () => {
     const firstNameHeader = screen.getByRole("columnheader", {
       name: "First Name",
     });
-    firstNameHeader.click();
+    act(() => {
+      firstNameHeader.click();
+    });
 
-    expect(extractParams(mockReplace.mock.calls[1], "sort_field")).toBe(
-      "first_name",
-    );
-    expect(extractParams(mockReplace.mock.calls[1], "sort_order")).toBe("asc");
+    expect(
+      extractParams(String(mockReplace.mock.calls[0][2]), "sort_field"),
+    ).toBe("first_name");
+    expect(
+      extractParams(String(mockReplace.mock.calls[0][2]), "sort_order"),
+    ).toBe("asc");
 
     // click on the same column header again
-    firstNameHeader.click();
-    expect(extractParams(mockReplace.mock.calls[2], "sort_field")).toBe(
-      "first_name",
-    );
-    expect(extractParams(mockReplace.mock.calls[2], "sort_order")).toBe("desc");
+    act(() => {
+      firstNameHeader.click();
+    });
+    expect(
+      extractParams(String(mockReplace.mock.calls[1][2]), "sort_field"),
+    ).toBe("first_name");
+    expect(
+      extractParams(String(mockReplace.mock.calls[1][2]), "sort_order"),
+    ).toBe("desc");
 
     // click on the second column header
     const lastNameHeader = screen.getByRole("columnheader", {
       name: "Last Name",
     });
-    lastNameHeader.click();
-    expect(extractParams(mockReplace.mock.calls[3], "sort_field")).toBe(
-      "last_name",
-    );
-    expect(extractParams(mockReplace.mock.calls[3], "sort_order")).toBe("asc");
+    act(() => {
+      lastNameHeader.click();
+    });
+
+    expect(
+      extractParams(String(mockReplace.mock.calls[2][2]), "sort_field"),
+    ).toBe("last_name");
+    expect(
+      extractParams(String(mockReplace.mock.calls[2][2]), "sort_order"),
+    ).toBe("asc");
 
     // click on the same column header again
-    lastNameHeader.click();
-    expect(extractParams(mockReplace.mock.calls[4], "sort_field")).toBe(
-      "last_name",
-    );
-    expect(extractParams(mockReplace.mock.calls[4], "sort_order")).toBe("desc");
+    act(() => {
+      lastNameHeader.click();
+    });
+
+    expect(
+      extractParams(String(mockReplace.mock.calls[3][2]), "sort_field"),
+    ).toBe("last_name");
+    expect(
+      extractParams(String(mockReplace.mock.calls[3][2]), "sort_order"),
+    ).toBe("desc");
   });
   it("makes API call with correct params when filtering", async () => {
     render(
@@ -161,7 +181,15 @@ describe("ContactsDataGrid component", () => {
     });
     expect(searchInput).toHaveValue("john");
 
-    // check that the API call was made with the correct params
-    expect(extractParams(mockReplace.mock.calls[1], "first_name")).toBe("john");
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      // check that the API call was made with the correct params
+      expect(extractParams(String(mockReplace.mock.calls), "first_name")).toBe(
+        "john",
+      );
+    });
   });
 });

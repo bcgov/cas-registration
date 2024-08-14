@@ -49,6 +49,7 @@ export default function FacilityForm({
         const pathToRevalidate = isCreating
           ? `/operations/${params.operationId}/facilities`
           : `/operations/${params.operationId}/facilities/${formData?.id}`;
+
         const body = {
           ...data.formData,
           operation_id: params.operationId,
@@ -58,10 +59,11 @@ export default function FacilityForm({
           method,
           pathToRevalidate,
           {
-            body: JSON.stringify(body),
+            body: JSON.stringify(isCreating ? [body] : body),
           },
         );
-        if (response.error) {
+        console.log("response", response);
+        if (response?.error) {
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
@@ -70,7 +72,7 @@ export default function FacilityForm({
           window.history.replaceState(
             null,
             "",
-            `/operations/${params.operationId}/facilities/${response.id}?facilities_title=${response.name}`,
+            `/administration/operations/${params.operationId}/facilities/${response[0].id}?facilities_title=${response[0].name}`,
           );
         }
       }}

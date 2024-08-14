@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { TextField } from "@mui/material";
 import OutsideClickHandler from "react-outside-click-handler";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
-import debounce from "lodash.debounce";
 
 const SearchCell = ({
   field,
@@ -19,33 +18,9 @@ const SearchCell = ({
   setLastFocusedField: (field: string | null) => void;
 }) => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
   const [searchState, setSearchState] = useState(searchParams.get(field) || "");
-
-  useEffect(() => {
-    const debounced = debounce(() => {
-      const params = new URLSearchParams(searchParams);
-
-      if (searchState) {
-        // Set the search term in the URL
-        params.set(field, searchState);
-      } else {
-        // Remove the search term from the URL
-        params.delete(field);
-      }
-
-      window.history.replaceState(
-        {},
-        "",
-        `${window.location.pathname}?${params.toString()}`,
-      );
-    }, 400);
-
-    debounced();
-
-    return () => {
-      debounced.cancel();
-    };
-  }, [searchState]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
@@ -64,10 +39,8 @@ const SearchCell = ({
     setLastFocusedField(field);
 
     // Update the URL with the new search term
+    replace(`${pathname}?${params.toString()}`);
     setSearchState(searchTerm);
-
-    // Need shallow routing to prevent page reload
-    // window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
   };
 
   const handleResetFocus = () => {
@@ -85,6 +58,7 @@ const SearchCell = ({
           value={searchState}
           type="text"
           aria-label={`${fieldLabel} search field`}
+          id={field}
           inputRef={(input) => {
             if (isFocused) {
               input?.focus();

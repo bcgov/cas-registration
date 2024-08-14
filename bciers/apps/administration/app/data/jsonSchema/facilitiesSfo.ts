@@ -1,6 +1,6 @@
-import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
+import { facilitiesLfoUiSchema } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 
 const currentYear = new Date().getFullYear();
 
@@ -12,10 +12,12 @@ const section1: RJSFSchema = {
     name: {
       type: "string",
       title: "Facility Name",
+      readOnly: true,
     },
     type: {
       type: "string",
       title: "Facility Type",
+      readOnly: true,
       anyOf: [
         {
           const: "Single Facility",
@@ -93,7 +95,7 @@ const section2: RJSFSchema = {
   },
 };
 
-export const facilitiesSchemaSfo: RJSFSchema = {
+export const facilitiesSfoSchema: RJSFSchema = {
   type: "object",
   required: ["section1", "section2"],
   properties: {
@@ -102,34 +104,15 @@ export const facilitiesSchemaSfo: RJSFSchema = {
   },
 };
 
-export const facilitiesUiSchema = {
-  "ui:FieldTemplate": SectionFieldTemplate,
-  "ui: options": {
-    label: false,
-  },
+export const facilitiesSfoUiSchema = {
+  ...facilitiesLfoUiSchema,
   section1: {
-    "ui:FieldTemplate": SectionFieldTemplate,
+    ...facilitiesLfoUiSchema.section1,
+    name: {
+      "ui:widget": "ReadOnlyWidget",
+    },
     type: {
-      "ui:widget": "ComboBox",
-    },
-    is_current_year: {
-      "ui:widget": "ToggleWidget",
-    },
-    starting_date: {
-      "ui:widget": "DateWidget",
-      "ui:options": {
-        maxDate: new Date(),
-        minDate: new Date(currentYear - 1, 0, 1),
-      },
-    },
-  },
-  section2: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-    province: {
-      "ui:widget": "ComboBox",
-    },
-    postal_code: {
-      "ui:widget": "PostalCodeWidget",
+      "ui:widget": "ReadOnlyWidget",
     },
   },
 };

@@ -239,3 +239,11 @@ class FacilityService:
 
         # Return the updated facility instance
         return facility
+
+    @classmethod
+    @transaction.atomic()
+    def create_facilities_with_ownership(cls, user_guid: UUID, payload: list[FacilityIn]) -> list[Facility]:
+        facilities = []
+        for facility_data in payload:
+            facilities.append(cls.create_facility_with_ownership(user_guid, facility_data))
+        return facilities
