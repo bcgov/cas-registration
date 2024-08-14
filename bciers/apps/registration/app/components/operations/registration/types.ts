@@ -11,7 +11,11 @@ export interface OperationRepresentativeFormData {}
 
 export interface RegistrationPurposeFormData {}
 
-export interface RegistrationSubmissionFormData {}
+export interface RegistrationSubmissionFormData {
+  acknowledgement_of_review: boolean;
+  acknowledgement_of_records: boolean;
+  acknowledgement_of_information: boolean;
+}
 
 export interface OperationRegistrationFormProps {
   operation: UUID | "create";

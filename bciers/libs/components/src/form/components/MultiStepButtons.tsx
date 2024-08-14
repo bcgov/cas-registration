@@ -14,6 +14,7 @@ interface SubmitButtonProps {
   steps: string[];
   allowBackNavigation?: boolean;
   submitButtonText?: string;
+  submitButtonDisabled?: boolean;
 }
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
@@ -26,6 +27,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   stepIndex,
   steps,
   submitButtonText,
+  submitButtonDisabled,
 }) => {
   const isFinalStep = stepIndex === steps.length - 1;
   const isDisabled = disabled || isSubmitting;
@@ -64,7 +66,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             <Button
               variant="contained"
               type="button"
-              disabled={isFinalStep || isSubmitting}
+              disabled={submitButtonDisabled ?? (isFinalStep || isSubmitting)}
             >
               {isSubmitting ? "Save and Continue" : "Next"}
             </Button>
@@ -74,7 +76,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             <Button
               type="submit"
               aria-disabled={isDisabled}
-              disabled={isDisabled}
+              disabled={submitButtonDisabled ?? isDisabled}
               variant="contained"
             >
               {!isFinalStep
