@@ -19,6 +19,7 @@ import { FacilityInformationFormData } from "apps/registration/app/components/op
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 
 interface FacilityInformationFormProps {
+  facilityId?: UUID;
   formData: FacilityInformationFormData;
   initialGridData?: FacilityInitialData;
   isCreating: boolean;
@@ -55,6 +56,7 @@ const createUnnestedArrayFormData = (
 };
 
 const FacilityInformationForm = ({
+  facilityId,
   formData,
   initialGridData,
   isCreating,
@@ -101,20 +103,29 @@ const FacilityInformationForm = ({
     async (e: IChangeEvent) => {
       setIsSubmitting(true);
       const method = isCreating ? "POST" : "PUT";
-      const endpoint = isCreating ? "registration/facilities" : `tbd`;
+      const endpoint = isCreating
+        ? "registration/facilities"
+        : `registration/facilities/${facilityId}`;
+
+      const sfoFormData = isOperationSfo && {
+        ...createUnnestedFormData(e.formData, formSectionListLFo),
+        operation_id: operation,
+        facility_id: facilityId,
+      };
+
+      // We may want to update the PUT route to accept an array of facilities
+      // just as we do in the POST route
+      const sfoBody = isCreating ? [sfoFormData] : sfoFormData;
 
       const body = isOperationSfo
-        ? [
-            {
-              ...createUnnestedFormData(e.formData, formSectionListLFo),
-              operation_id: operation,
-            },
-          ]
-        : createUnnestedArrayFormData(
+        ? sfoBody
+        : // Facilities POST route expects an array of facilities
+          createUnnestedArrayFormData(
             e.formData.facility_information_array,
             formSectionListLFo,
             operation,
           );
+
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
       });
@@ -124,13 +135,13 @@ const FacilityInformationForm = ({
         return { error: response.error };
       }
     },
-    [operation, isOperationSfo, formSectionListLFo],
+    [operation, isOperationSfo, formSectionListLFo, isCreating, facilityId],
   );
 
   return (
     <MultiStepBase
       allowBackNavigation
-      baseUrl={`/operation/${operation}`}
+      baseUrl={`/register-an-operation/${operation}`}
       baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
       formData={formState}
