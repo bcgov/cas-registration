@@ -62,17 +62,17 @@ export default function FacilityForm({
             body: JSON.stringify(isCreating ? [body] : body),
           },
         );
+        console.log("response", response);
         if (response?.error) {
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
         }
         if (isCreating) {
-          console.log("response", response);
           window.history.replaceState(
             null,
             "",
-            `/administration/operations/${params.operationId}/facilities/${response[0].id}?facilities_title=${response.name}`,
+            `/administration/operations/${params.operationId}/facilities/${response[0].id}?facilities_title=${response[0].name}`,
           );
         }
       }}
