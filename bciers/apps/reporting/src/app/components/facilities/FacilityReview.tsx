@@ -131,6 +131,14 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     }
   };
 
+  const buttonContent = isLoading ? (
+    <CircularProgress data-testid="progressbar" role="progress" size={24} />
+  ) : isSuccess ? (
+    "Success"
+  ) : (
+    "Save"
+  );
+
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -197,17 +205,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
                 aria-disabled={isLoading}
                 disabled={isLoading}
               >
-                {isLoading ? (
-                  <CircularProgress
-                    data-testid="progressbar"
-                    role="progressbar"
-                    size={24}
-                  />
-                ) : isSuccess ? (
-                  "Success"
-                ) : (
-                  "Save"
-                )}
+                {buttonContent}
               </Button>
             </div>
           </FormBase>

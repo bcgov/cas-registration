@@ -1,7 +1,7 @@
 import json
 from reporting.models import Configuration, ConfigurationElement
 from registration.models import ReportingActivity
-
+from typing import List, Dict, Any
 
 class ActivityService:
     @classmethod
@@ -26,6 +26,6 @@ class ActivityService:
         return json.dumps({"activityId": activity_id, "sourceTypeMap": source_type_map})
 
     @classmethod
-    def get_all_activities(cls) -> []:
+    def get_all_activities(cls) -> List[Dict[str, Any]]:
         activities = ReportingActivity.objects.all().values('id', 'name', 'applicable_to')
         return list(activities)
