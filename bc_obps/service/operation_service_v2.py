@@ -12,7 +12,7 @@ from registration.models import (
 from registration.constants import PAGE_SIZE
 
 
-class OperationService:
+class OperationServiceV2:
     @classmethod
     def list_operations(
         cls, user_guid: UUID, filters: OperationFilterSchema = Query(...)
