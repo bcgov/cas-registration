@@ -30,6 +30,7 @@ class Operation(TimeStampedModel):
         APPROVED = "Approved"
         DECLINED = "Declined"
         CHANGES_REQUESTED = "Changes Requested"
+        REGISTERED = "Registered"
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
