@@ -13,7 +13,7 @@ def to_snake(string: str) -> str:
     return alias_generators.to_snake(string)
 
 
-class ReportFacilityOut(ModelSchema):
+class FacilityReportOut(ModelSchema):
     """
     Schema for the get report facility endpoint request output
     """

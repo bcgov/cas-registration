@@ -11,7 +11,7 @@ from reporting.schema.report_operation import ReportOperationOut, ReportOperatio
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..models import FacilityReport
-from ..schema.report_facility import ReportFacilityOut, ReportFacilityIn
+from ..schema.facility_report import FacilityReportOut, ReportFacilityIn
 
 
 @router.post(
@@ -70,33 +70,33 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
 
 
 @router.get(
-    "/report-version/{version_id}/report-facility/{facility_id}",
-    response={200: ReportFacilityOut, 404: Message, 400: Message, 500: Message},
+    "/report-version/{version_id}/facility-report/{facility_id}",
+    response={200: FacilityReportOut, 404: Message, 400: Message, 500: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `report_facility` object.
+    description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
 )
 @handle_http_errors()
-def get_report_facility_by_version_and_id(
+def get_facility_report_by_version_and_id(
         request: HttpRequest,
         version_id: int,
         facility_id: int
-) -> Tuple[Literal[200], ReportFacilityOut]:
+) -> Tuple[Literal[200], FacilityReportOut]:
     try:
         # Fetch the facility using the service method
-        report_facility = ReportService.get_report_facility_by_version_and_id(version_id, facility_id)
+        facility_report = ReportService.get_facility_report_by_version_and_id(version_id, facility_id)
 
-        if report_facility:
+        if facility_report:
             # Get associated activity IDs
-            activity_ids = ReportService.get_activity_ids_for_facility(report_facility) or []
+            activity_ids = ReportService.get_activity_ids_for_facility(facility_report) or []
 
             # Prepare the response data
-            response_data = ReportFacilityOut(
-                id=report_facility.id,
-                report_version_id=report_facility.report_version.id,
-                facility_name=report_facility.facility_name,
-                facility_type=report_facility.facility_type,
-                facility_bcghgid=report_facility.facility_bcghgid,
+            response_data = FacilityReportOut(
+                id=facility_report.id,
+                report_version_id=facility_report.report_version.id,
+                facility_name=facility_report.facility_name,
+                facility_type=facility_report.facility_type,
+                facility_bcghgid=facility_report.facility_bcghgid,
                 activities=activity_ids,
                 products=[]
             )
@@ -118,18 +118,18 @@ def get_report_facility_by_version_and_id(
 
 
 @router.post(
-    "/report-version/{version_id}/report-facility/{facility_id}",
-    response={201: ReportFacilityOut, custom_codes_4xx: Message},
+    "/report-version/{version_id}/facility-report/{facility_id}",
+    response={201: FacilityReportOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates the report facility details by version_id and facility_id. The request body should include
     fields to be updated, such as facility name, type, BC GHG ID, activities, and products. Returns the updated report
     facility object or an error message if the update fails.""",
 )
 @handle_http_errors()
-def save_report_facility(
+def save_facility_report(
         request: HttpRequest, version_id: int, payload: ReportFacilityIn
 ) -> Union[
-    Tuple[Literal[201], ReportFacilityOut],
+    Tuple[Literal[201], FacilityReportOut],
     Tuple[Literal[400], Dict[str, str]],
     Tuple[Literal[404], Dict[str, str]],
     Tuple[Literal[500], Dict[str, str]]
@@ -147,17 +147,17 @@ def save_report_facility(
     """
     try:
         # Save or update the report facility using the service layer
-        report_facility = ReportService.save_report_facility(version_id, payload)
+        facility_report = ReportService.save_facility_report(version_id, payload)
 
         # Prepare the response data
-        response_data = ReportFacilityOut(
-            id=report_facility.id,
-            report_version_id=report_facility.report_version.id,
-            facility_name=report_facility.facility_name,
-            facility_type=report_facility.facility_type,
-            facility_bcghgid=report_facility.facility_bcghgid,
-            activities=list(report_facility.activities.values_list('id', flat=True)),
-            products=list(report_facility.products.values_list('id', flat=True)) or []
+        response_data = FacilityReportOut(
+            id=facility_report.id,
+            report_version_id=facility_report.report_version.id,
+            facility_name=facility_report.facility_name,
+            facility_type=facility_report.facility_type,
+            facility_bcghgid=facility_report.facility_bcghgid,
+            activities=list(facility_report.activities.values_list('id', flat=True)),
+            products=list(facility_report.products.values_list('id', flat=True)) or []
         )
         return 201, response_data
 
