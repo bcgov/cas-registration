@@ -24,7 +24,7 @@ const OperationRegistrationPage = async ({
 }) => {
   // const purpose = operationFormData?.registration_purpose;
   // hardcoding a value for development; remove value and ts-ignores when feature is implemented
-  const purpose = "Opted-in Operation";
+  const purpose = "New Entrant Operation";
 
   // Remove steps that aren't applicable to the registration based on purpose
   let steps = allOperationRegistrationSteps;

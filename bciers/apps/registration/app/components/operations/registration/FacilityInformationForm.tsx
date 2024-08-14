@@ -103,6 +103,7 @@ const FacilityInformationForm = ({
     async (e: IChangeEvent) => {
       setIsSubmitting(true);
       const method = isCreating ? "POST" : "PUT";
+
       const endpoint = isCreating
         ? "registration/facilities"
         : `registration/facilities/${facilityId}`;
