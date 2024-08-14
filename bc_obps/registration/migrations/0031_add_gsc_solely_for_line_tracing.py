@@ -7,6 +7,7 @@ def create_new_activity(apps, schema_monitor):
         name='General stationary combustion solely for the purpose of line tracing',
         slug='gsc_solely_for_line_tracing',
         weight=200.0,
+        applicable_to='all',
     )
 
 
