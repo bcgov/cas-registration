@@ -1,7 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import OperationRegistrationPage from "apps/registration/app/components/operations/OperationRegistrationPage";
-import { useSession } from "@bciers/testConfig/mocks";
-import { actionHandler } from "@bciers/testConfig/mocks";
+import {
+  actionHandler,
+  useSearchParams,
+  useSession,
+} from "@bciers/testConfig/mocks";
 
 export const fetchFormEnums = () => {
   // Regulated products
@@ -51,6 +54,18 @@ describe("the OperationRegistrationPage component", () => {
   });
 
   it("should render the Facility Information Form", async () => {
+    useSearchParams.mockReturnValue({
+      searchParams: {
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        operationsTitle: "Test Operation",
+        step: 3,
+      },
+      get: vi.fn(),
+    });
+    actionHandler.mockReturnValue({
+      items: [],
+      count: 0,
+    });
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",

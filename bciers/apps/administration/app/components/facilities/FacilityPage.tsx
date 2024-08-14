@@ -1,12 +1,16 @@
 import {
-  facilitiesSchemaSfo,
-  facilitiesUiSchema,
+  facilitiesSfoSchema,
+  facilitiesSfoUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
-import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
-import FacilityForm from "./FacilityForm";
+import {
+  facilitiesLfoSchema,
+  facilitiesLfoUiSchema,
+} from "../../data/jsonSchema/facilitiesLfo";
 import { UUID } from "crypto";
+import FacilityForm from "./FacilityForm";
 import getFacility from "./getFacility";
-import getOperation from "../operations/getOperation";
+import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
+import { getOperation } from "@bciers/actions/api";
 
 // 🧩 Main component
 export default async function Facility({
@@ -18,29 +22,37 @@ export default async function Facility({
 }) {
   let facilityFormData: { [key: string]: any } | { error: string } = {};
 
-  if (facilityId) {
-    facilityFormData = await getFacility(facilityId);
-    if (facilityFormData?.error) {
-      throw new Error(
-        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
-      );
-    }
-  }
   const operation = await getOperation(operationId);
   if (operation.error) {
     throw new Error(
       "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
     );
   }
-  const isCreating = Object.keys(facilityFormData).length === 0;
+
+  const isSfo = operation.type === OperationTypes.SFO;
+
+  let isCreating = true;
+
+  if (facilityId) {
+    facilityFormData = await getFacility(facilityId);
+    isCreating = Object.keys(facilityFormData).length === 0;
+    if (facilityFormData?.error) {
+      throw new Error(
+        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
+      );
+    }
+  } else if (isSfo) {
+    // Pre-populate facility name and type for SFO Operations
+    facilityFormData = {
+      name: operation.name,
+      type: FacilityTypes.SFO,
+    };
+  }
+
   return (
     <FacilityForm
-      schema={
-        operation.type === "Single Facility Operation"
-          ? facilitiesSchemaSfo
-          : facilitiesSchemaLfo
-      }
-      uiSchema={facilitiesUiSchema}
+      schema={isSfo ? facilitiesSfoSchema : facilitiesLfoSchema}
+      uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
       formData={facilityFormData}
       isCreating={isCreating}
     />

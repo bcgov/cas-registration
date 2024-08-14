@@ -132,7 +132,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         # IRC users can't post
         for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
             response = TestUtils.mock_post_with_auth_role(
-                self, role, self.content_type, mock_facility, custom_reverse_lazy("create_facility")
+                self, role, self.content_type, [mock_facility], custom_reverse_lazy("create_facilities")
             )
             assert response.status_code == 401
 
@@ -146,7 +146,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         }
 
         response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_facility, custom_reverse_lazy("create_facility")
+            self, "industry_user", self.content_type, [mock_facility], custom_reverse_lazy("create_facilities")
         )
         assert response.status_code == 401
 
@@ -175,8 +175,8 @@ class TestFacilitiesEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_facility,
-            custom_reverse_lazy("create_facility"),
+            [mock_facility],
+            custom_reverse_lazy("create_facilities"),
         )
         assert post_response.status_code == 422
         assert post_response.json().get('message') == "Name: Facility with this Name already exists."
@@ -198,12 +198,12 @@ class TestFacilitiesEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_facility,
-            custom_reverse_lazy("create_facility"),
+            [mock_facility],
+            custom_reverse_lazy("create_facilities"),
         )
         assert post_response.status_code == 201
-        assert post_response.json().get('name') == "zip"
-        assert post_response.json().get('id') is not None
+        assert post_response.json()[0].get('name') == "zip"
+        assert post_response.json()[0].get('id') is not None
 
     def test_post_new_sfo_facility_with_address(self):
         owning_operator = operator_baker()
@@ -223,8 +223,8 @@ class TestFacilitiesEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_facility,
-            custom_reverse_lazy("create_facility"),
+            [mock_facility],
+            custom_reverse_lazy("create_facilities"),
         )
         assert post_response.status_code == 201
         assert Facility.objects.count() == 1

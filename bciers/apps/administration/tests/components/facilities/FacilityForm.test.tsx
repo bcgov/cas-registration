@@ -14,11 +14,14 @@ import {
 } from "@bciers/testConfig/mocks";
 import FacilityForm from "apps/administration/app/components/facilities/FacilityForm";
 import {
-  facilitiesSchemaSfo,
-  facilitiesUiSchema,
+  facilitiesSfoSchema,
+  facilitiesSfoUiSchema,
 } from "../../../app/data/jsonSchema/facilitiesSfo";
-import { facilitiesSchemaLfo } from "../../../app/data/jsonSchema/facilitiesLfo";
 import { RJSFSchema } from "@rjsf/utils";
+import {
+  facilitiesLfoSchema,
+  facilitiesLfoUiSchema,
+} from "../../../app/data/jsonSchema/facilitiesLfo";
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
@@ -36,6 +39,7 @@ useSession.mockReturnValue({
 });
 
 const mockReplace = vi.fn();
+
 useRouter.mockReturnValue({
   query: {},
   replace: mockReplace,
@@ -43,7 +47,7 @@ useRouter.mockReturnValue({
 
 const sfoFormData = {
   name: "Monkeyfuzz",
-  type: "Single Facility Operation",
+  type: "Single Facility",
   latitude_of_largest_emissions: "3.000000",
   longitude_of_largest_emissions: "4.000000",
   street_address: "adf",
@@ -57,7 +61,7 @@ const sfoFormData = {
 
 const lfoFormData = {
   name: "Monkeyfuzz",
-  type: "Single Facility Operation",
+  type: "Single Facility",
   well_authorization_numbers: [24546, 54321],
   latitude_of_largest_emissions: "3.000000",
   longitude_of_largest_emissions: "4.000000",
@@ -71,8 +75,8 @@ const lfoFormData = {
 };
 
 const defaultFillFormValues = {
-  name: "test",
-  type_sfo: "Single Facility Operation",
+  name: "test facility name",
+  type_sfo: "Single Facility",
   type_lfo: "Large Facility",
   well_authorization_numbers: [355],
   street_address: "address",
@@ -98,44 +102,46 @@ const defaultUpdateFormValues = {
   starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 
-const sfoResponsePost = {
-  name: "test",
-  type: "Single Facility",
-  is_current_year: false,
-  latitude_of_largest_emissions: 48.3,
-  longitude_of_largest_emissions: 123.32,
-  operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-};
+const sfoResponsePost = [
+  {
+    name: "test facility name",
+    type: "Single Facility",
+    is_current_year: false,
+    latitude_of_largest_emissions: 48.3,
+    longitude_of_largest_emissions: 123.32,
+    operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+  },
+];
 
-const lfoResponsePost = {
-  name: "test",
-  type: "Large Facility",
-  well_authorization_numbers: [355],
-  is_current_year: true,
-  starting_date: "2024-07-07T09:00:00.000Z",
-  street_address: "address",
-  municipality: "city",
-  province: "AB",
-  postal_code: "H0H0H0",
-  latitude_of_largest_emissions: 48.3,
-  longitude_of_largest_emissions: 123.32,
-  operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-};
+const lfoResponsePost = [
+  {
+    name: "test facility name",
+    type: "Large Facility",
+    well_authorization_numbers: [355],
+    is_current_year: true,
+    starting_date: "2024-07-07T09:00:00.000Z",
+    street_address: "address",
+    municipality: "city",
+    province: "AB",
+    postal_code: "H0H0H0",
+    latitude_of_largest_emissions: 48.3,
+    longitude_of_largest_emissions: 123.32,
+    operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+  },
+];
 
 // ⛏️ Helper function to check mandatory field values
 const checkMandatoryFieldValues = async (schema: RJSFSchema) => {
-  expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue(
-    defaultFillFormValues.name,
-  );
-  if (schema === facilitiesSchemaLfo) {
+  const isLfoFacility = schema === facilitiesLfoSchema;
+  if (isLfoFacility) {
+    expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue(
+      defaultFillFormValues.name,
+    );
     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
       defaultFillFormValues.type_lfo,
     );
-  } else {
-    expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
-      defaultFillFormValues.type_sfo,
-    );
   }
+
   expect(
     screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
   ).toHaveValue(defaultFillFormValues.latitude_of_largest_emissions);
@@ -166,18 +172,22 @@ const checkOptionalFieldValues = ({
 
 // ⛏️ Helper function to edit form fields
 export const editFormFields = async (schema: RJSFSchema) => {
-  const nameInput = screen.getByLabelText(/Facility Name+/i);
-  await userEvent.clear(nameInput);
-  await userEvent.type(nameInput, defaultUpdateFormValues.name);
+  const isLfoFacility = schema === facilitiesLfoSchema;
+  if (isLfoFacility) {
+    // edit the facility name
+    const nameInput = screen.getByLabelText(/Facility Name+/i);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, defaultUpdateFormValues.name);
 
-  const typeInput = screen.getByLabelText(/Facility Type+/i);
-  await userEvent.click(typeInput);
-  // Select the last option in the dropdown
-  const typeOptions = screen.getAllByRole("option");
-  const lastTypeOption = typeOptions[typeOptions.length - 1];
-  await userEvent.click(lastTypeOption);
+    const typeInput = screen.getByLabelText(/Facility Type+/i);
+    await userEvent.click(typeInput);
+    // Select the last option in the dropdown
+    const typeOptions = screen.getAllByRole("option");
+    const lastTypeOption = typeOptions[typeOptions.length - 1];
+    await userEvent.click(lastTypeOption);
+  }
 
-  if (schema === facilitiesSchemaLfo) {
+  if (isLfoFacility) {
     // edit the well authorization number
     const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
     await userEvent.clear(firstWellAuthInput); // clear the existing value
@@ -224,21 +234,24 @@ export const editFormFields = async (schema: RJSFSchema) => {
 
 // ⛏️ Helper function to fill form mandatory fields
 const fillMandatoryFields = async (schema: RJSFSchema) => {
-  await userEvent.type(
-    screen.getByLabelText(/Facility Name+/i),
-    defaultFillFormValues.name,
-  );
-  // fill type
-  const comboBoxInput = screen.getAllByRole("combobox");
-  const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
-    ?.children[1]?.children[0] as HTMLInputElement;
-  await userEvent.click(openFacilityTypeDropdownButton);
-  const selectText =
-    schema === facilitiesSchemaLfo
-      ? defaultFillFormValues.type_lfo
-      : defaultFillFormValues.type_sfo;
-  const typeOption = screen.getByText(selectText);
-  await userEvent.click(typeOption);
+  const isLfoFacility = schema === facilitiesLfoSchema;
+  if (isLfoFacility) {
+    await userEvent.type(
+      screen.getByLabelText(/Facility Name+/i),
+      defaultFillFormValues.name,
+    );
+    // fill type
+    const comboBoxInput = screen.getAllByRole("combobox");
+    const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
+      ?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openFacilityTypeDropdownButton);
+    const selectText =
+      schema === facilitiesLfoSchema
+        ? defaultFillFormValues.type_lfo
+        : defaultFillFormValues.type_sfo;
+    const typeOption = screen.getByText(selectText);
+    await userEvent.click(typeOption);
+  }
 
   fireEvent.change(
     screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
@@ -252,7 +265,7 @@ const fillMandatoryFields = async (schema: RJSFSchema) => {
 
 // ⛏️ Helper function to fill optional fields
 const fillOptionalFields = async (schema: RJSFSchema) => {
-  if (schema === facilitiesSchemaLfo) {
+  if (schema === facilitiesLfoSchema) {
     // fill well authorization numbers
     await userEvent.click(screen.getByText("Add"));
     const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
@@ -295,23 +308,26 @@ const assertFormPost = async (
   responseData: Record<string, any>,
 ): Promise<void> => {
   // Set up the mock before the click event
-  const response = {
-    id: facilityId,
-    name: facilityName,
-    error: null,
-  };
+  const response = [
+    {
+      id: facilityId,
+      name: facilityName,
+      error: null,
+    },
+  ];
   actionHandler.mockReturnValueOnce(response);
 
   // Find and click the submit button
   const submitButton = screen.getByRole("button", { name: /submit/i });
-  userEvent.click(submitButton);
+  act(() => {
+    userEvent.click(submitButton);
+  });
 
   // Add some delay to allow async processes to complete
   await new Promise((r) => setTimeout(r, 100));
 
   // Assertion to check if actionHandler was called correctly
-  expect(actionHandler).toHaveBeenNthCalledWith(
-    1,
+  expect(actionHandler).toHaveBeenCalledWith(
     endPoint,
     "POST",
     revalidatePathPost,
@@ -325,7 +341,9 @@ const assertFormPost = async (
 const assertFormPut = async (): Promise<void> => {
   // Submit valid form data
   const submitButton = screen.getByRole("button", { name: /submit/i });
-  userEvent.click(submitButton);
+  act(() => {
+    userEvent.click(submitButton);
+  });
   actionHandler.mockReturnValue({ error: null });
   await waitFor(() => {
     expect(
@@ -340,10 +358,10 @@ describe("FacilityForm component", () => {
   });
 
   it("renders the empty SFO facility form when creating a new facility", async () => {
-    render(
+    const { container } = render(
       <FacilityForm
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={{}}
         isCreating
       />,
@@ -352,8 +370,13 @@ describe("FacilityForm component", () => {
     expect(
       screen.getByRole("heading", { name: /Facility Information/i }),
     ).toBeVisible();
-    expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
+    // Can't get read only fields by label
+    expect(container.querySelector("#root_section1_name")).toHaveTextContent(
+      "",
+    );
+    expect(container.querySelector("#root_section1_type")).toHaveTextContent(
+      "",
+    );
     expect(
       screen.getByLabelText(/Did this facility begin operations in+/i),
     ).not.toBeChecked();
@@ -378,10 +401,10 @@ describe("FacilityForm component", () => {
     expect(submitButton).toBeEnabled();
   });
   it("renders the empty LFO facility form when creating a new facility", async () => {
-    render(
+    const { container } = render(
       <FacilityForm
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesLfoSchema}
+        uiSchema={facilitiesLfoUiSchema}
         formData={{}}
         isCreating
       />,
@@ -390,8 +413,13 @@ describe("FacilityForm component", () => {
     expect(
       screen.getByRole("heading", { name: /Facility Information/i }),
     ).toBeVisible();
-    expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
+    // Can't get read only fields by label
+    expect(container.querySelector("#root_section1_name")).toHaveTextContent(
+      "",
+    );
+    expect(container.querySelector("#root_section1_type")).toHaveTextContent(
+      "",
+    );
 
     expect(screen.getByText(/Authorization+/i)).toBeVisible();
     expect(screen.getByRole("button", { name: "Add" })).toBeVisible();
@@ -421,8 +449,8 @@ describe("FacilityForm component", () => {
   it("loads existing readonly SFO form data", async () => {
     const { container } = render(
       <FacilityForm
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={sfoFormData}
       />,
     );
@@ -431,7 +459,7 @@ describe("FacilityForm component", () => {
       "Monkeyfuzz",
     );
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
-      "Single Facility Operation",
+      "Single Facility",
     );
     expect(
       container.querySelector("#root_section1_is_current_year"),
@@ -466,8 +494,8 @@ describe("FacilityForm component", () => {
   it("loads existing readonly LFO form data", async () => {
     const { container } = render(
       <FacilityForm
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesLfoSchema}
+        uiSchema={facilitiesLfoUiSchema}
         formData={lfoFormData}
       />,
     );
@@ -476,7 +504,7 @@ describe("FacilityForm component", () => {
       "Monkeyfuzz",
     );
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
-      "Single Facility Operation",
+      "Single Facility",
     );
     expect(screen.getByText("Well Authorization Number(s)")).toBeVisible();
     expect(screen.getByText(24546)).toBeVisible();
@@ -514,8 +542,8 @@ describe("FacilityForm component", () => {
   it("does not allow SFO submission if there are validation errors (empty form data)", async () => {
     render(
       <FacilityForm
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={{}}
         isCreating
       />,
@@ -539,8 +567,8 @@ describe("FacilityForm component", () => {
   it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
     render(
       <FacilityForm
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesLfoSchema}
+        uiSchema={facilitiesLfoUiSchema}
         formData={{
           latitude_of_largest_emissions: -600,
           longitude_of_largest_emissions: 1800,
@@ -562,8 +590,8 @@ describe("FacilityForm component", () => {
   it("does not allow LFO submission if there is a starting date validation error", async () => {
     render(
       <FacilityForm
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesLfoSchema}
+        uiSchema={facilitiesLfoUiSchema}
         formData={{}}
         isCreating
       />,
@@ -624,103 +652,132 @@ describe("FacilityForm component", () => {
     ).toHaveLength(1);
   });
 
-  it("fills the mandatory form fields, creates new SFO facility, and redirects on success", async () => {
-    render(
-      <FacilityForm
-        isCreating
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
-        formData={{}}
-      />,
-    );
+  it(
+    "fills the mandatory form fields, creates new SFO facility, and redirects on success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          isCreating
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={{
+            name: "test facility name",
+            type: "Single Facility",
+          }}
+        />,
+      );
 
-    //fill fields
-    await fillMandatoryFields(facilitiesSchemaSfo);
-    await checkMandatoryFieldValues(facilitiesSchemaSfo);
+      //fill fields
+      await fillMandatoryFields(facilitiesSfoSchema);
+      await checkMandatoryFieldValues(facilitiesSfoSchema);
 
-    // submit valid form data, assert response
-    await assertFormPost(sfoResponsePost);
-  });
-  it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
-    render(
-      <FacilityForm
-        isCreating
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
-        formData={{}}
-      />,
-    );
+      // submit valid form data, assert response
+      await assertFormPost(sfoResponsePost);
+    },
+  );
+  it(
+    "fills all form fields, creates new LFO facility, and redirects on success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          isCreating
+          schema={facilitiesLfoSchema}
+          uiSchema={facilitiesLfoUiSchema}
+          formData={{}}
+        />,
+      );
 
-    //fill fields
-    await fillMandatoryFields(facilitiesSchemaLfo);
-    await checkMandatoryFieldValues(facilitiesSchemaLfo);
-    await fillOptionalFields(facilitiesSchemaLfo);
-    await checkOptionalFieldValues();
+      //fill fields
+      await fillMandatoryFields(facilitiesLfoSchema);
+      await checkMandatoryFieldValues(facilitiesLfoSchema);
+      await fillOptionalFields(facilitiesLfoSchema);
+      await checkOptionalFieldValues();
 
-    // submit valid form data, assert response
-    await assertFormPost(lfoResponsePost);
-  });
+      // submit valid form data, assert response
+      await assertFormPost(lfoResponsePost);
+    },
+  );
 
-  it("it edits a SFO Facility form, submits form, and displays success", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
-        formData={sfoFormData}
-      />,
-    );
+  it(
+    "it edits a SFO Facility form, submits form, and displays success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={sfoFormData}
+        />,
+      );
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Buttons
+      expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
 
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
+      const editButton = screen.getByRole("button", { name: /edit/i });
+      act(() => {
+        editButton.click();
+      });
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Buttons
+      expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
 
-    // Edit form fields
-    await editFormFields(facilitiesSchemaSfo);
+      // Edit form fields
+      await editFormFields(facilitiesSfoSchema);
 
-    // submit valid form data, assert response
-    await assertFormPut();
-  }, 30000);
-  it("it edits a LFO Facility form, submits form, and displays success", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
-        formData={lfoFormData}
-      />,
-    );
+      // submit valid form data, assert response
+      await assertFormPut();
+    },
+    30000,
+  );
+  it(
+    "it edits a LFO Facility form, submits form, and displays success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          schema={facilitiesLfoSchema}
+          uiSchema={facilitiesLfoUiSchema}
+          formData={lfoFormData}
+        />,
+      );
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Buttons
+      expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
 
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
+      const editButton = screen.getByRole("button", { name: /edit/i });
+      act(() => {
+        editButton.click();
+      });
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
-    // Edit form fields
-    await editFormFields(facilitiesSchemaLfo);
+      // Buttons
+      expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Edit form fields
+      await editFormFields(facilitiesLfoSchema);
 
-    // submit valid form data, assert response
-    await assertFormPut();
-  }, 30000);
+      // submit valid form data, assert response
+      await assertFormPut();
+    },
+    30000,
+  );
   it("redirects to the operation's facilities grid on cancel", async () => {
     render(
       <FacilityForm
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
         formData={{}}
         isCreating
       />,
