@@ -1,4 +1,5 @@
 from typing import List, Optional, Union
+from uuid import UUID
 from registration.schema.v1.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, FilterSchema, ModelSchema, Schema
@@ -165,3 +166,13 @@ class OperationFilterSchema(FilterSchema):
     page: Union[int, float, str] = 1
     sort_field: Optional[str] = "created_at"
     sort_order: Optional[str] = "desc"
+
+
+class OperationStatutoryDeclarationIn(Schema):
+    operation_id: UUID
+    statutory_declaration: str
+
+    @field_validator("statutory_declaration")
+    @classmethod
+    def validate_statutory_declaration(cls, value: str) -> ContentFile:
+        return data_url_to_file(value)
