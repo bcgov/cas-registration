@@ -6,10 +6,9 @@ import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TaskList from "@bciers/components/form/components/TaskList";
-import Snackbar from "@mui/material/Snackbar";
-import { GREEN_SNACKBAR_COLOR } from "@bciers/styles";
 import { createNestedFormData, createUnnestedFormData } from "./formDataUtils";
 import { FormMode } from "@bciers/utils/enums";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -141,16 +140,10 @@ const SingleStepTaskListForm = ({
 
   return (
     <div className="w-full flex flex-row mt-8">
-      <Snackbar
-        open={isSnackbarOpen}
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
         message="Your edits were saved successfully"
-        autoHideDuration={5000}
-        onClose={() => setIsSnackbarOpen(false)}
-        sx={{
-          "& .MuiSnackbarContent-root": {
-            backgroundColor: GREEN_SNACKBAR_COLOR,
-          },
-        }}
+        setIsSnackbarOpen={setIsSnackbarOpen}
       />
       <TaskList
         // Hide the task list on mobile
