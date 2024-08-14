@@ -10,7 +10,7 @@ import { UUID } from "crypto";
 useSession.mockReturnValue({
   data: {
     user: {
-      app_role: "industry_user_admin",
+      app_role: "industry_user",
     },
   },
 });
@@ -27,7 +27,7 @@ const acknowledgementOfInformationRegex =
 const defaultProps = {
   formData: {},
   operation: "002d5a9e-32a6-4191-938c-2c02bfec592d" as UUID,
-  step: 5,
+  step: allOperationRegistrationSteps.length,
   steps: allOperationRegistrationSteps,
   schema: submissionSchema,
 };
