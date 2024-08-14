@@ -4,12 +4,12 @@ import { GenerateNewEntrantFormMessage } from "apps/registration/app/components/
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
 export const newEntrantOperationSchema: RJSFSchema = {
-  title: "When is this operation’s date of First Shipment?",
+  title: "New Entrant Operation",
   type: "object",
   required: ["operation_date_of_first_shipment", "statutory_declaration"],
   properties: {
     operation_date_of_first_shipment: {
-      title: "Date of First Shipment",
+      title: "When is this operation’s date of First Shipment?",
       type: "string",
       enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
       default: "On or after April 1, 2024",
