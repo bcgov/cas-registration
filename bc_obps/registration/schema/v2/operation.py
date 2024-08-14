@@ -5,6 +5,17 @@ from registration.models import Operation
 #### Operation schemas
 
 
+class RegistrationPurposeIn(Schema):
+    registration_purpose: str
+    regulated_products: Optional[list] = None
+
+
+class OperationUpdateOut(ModelSchema):
+    class Meta:
+        model = Operation
+        fields = ['id', 'name']
+
+
 class OperationFilterSchema(FilterSchema):
     bcghg_id: Optional[str] = None
     name: Optional[str] = None
@@ -32,3 +43,9 @@ class OperationListOut(ModelSchema):
 class OperationPaginatedOut(Schema):
     data: List[OperationListOut]
     row_count: int
+
+
+class OperationCurrentOut(ModelSchema):
+    class Meta:
+        model = Operation
+        fields = ["id", "name"]

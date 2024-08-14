@@ -6,7 +6,7 @@ export default function Page({
   params,
   searchParams,
 }: {
-  params: Readonly<{ operation: UUID | "create"; step: string }>;
+  params: Readonly<{ operation: UUID; step: string }>;
   searchParams: any;
 }) {
   const { operation, step } = params;

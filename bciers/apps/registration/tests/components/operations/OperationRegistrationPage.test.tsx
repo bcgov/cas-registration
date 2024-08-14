@@ -3,11 +3,21 @@ import OperationRegistrationPage from "apps/registration/app/components/operatio
 import { useSession } from "@bciers/testConfig/mocks";
 import { actionHandler } from "@bciers/testConfig/mocks";
 
-const fetchFormEnums = () => {
+export const fetchFormEnums = () => {
   // Regulated products
   actionHandler.mockResolvedValueOnce([
     { id: 1, name: "BC-specific refinery complexity throughput" },
     { id: 2, name: "Cement equivalent" },
+  ]);
+  // Operations
+  actionHandler.mockResolvedValueOnce([
+    { id: 1, name: "Operation 1" },
+    { id: 2, name: "Operation 2" },
+  ]);
+  // Purposes
+  actionHandler.mockResolvedValueOnce([
+    "New Entrant Application",
+    "Potential Reporting Operation",
   ]);
 };
 
@@ -23,26 +33,14 @@ describe("the OperationRegistrationPage component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  it("should render the Registration Purpose Form", async () => {
+
+  it("should render the Operation Information Form", async () => {
     fetchFormEnums();
     render(
       await OperationRegistrationPage({
-        operation: "create",
         step: 1,
-        searchParams: {},
-      }),
-    );
-
-    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
-      "Registration Purpose",
-    );
-  });
-
-  it("should render the Operation Information Form", async () => {
-    render(
-      await OperationRegistrationPage({
-        operation: "create",
-        step: 2,
+        // @ts-ignore
+        operation: undefined, // the first step won't have an operation parameter because operation hasn't been selected yet
         searchParams: {},
       }),
     );
@@ -56,7 +54,7 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 3,
+        step: 2,
         searchParams: {},
       }),
     );
@@ -66,25 +64,13 @@ describe("the OperationRegistrationPage component", () => {
     );
   });
 
-  it("should render the New Entrant Form", async () => {
-    render(
-      await OperationRegistrationPage({
-        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 4,
-        searchParams: {},
-      }),
-    );
-
-    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
-      "New Entrant Operation",
-    );
-  });
+  // add tests for new entrant and opt-in pages when created
 
   it("should render the Operation Representative Form", async () => {
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 5,
+        step: 3,
         searchParams: {},
       }),
     );
@@ -98,7 +84,7 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 6,
+        step: 4,
         searchParams: {},
       }),
     );

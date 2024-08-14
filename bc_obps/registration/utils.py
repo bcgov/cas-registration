@@ -23,6 +23,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from ninja.types import DictStrAny
 
+
 logger = logging.getLogger(__name__)
 
 TModel = TypeVar('TModel', bound=models.Model)

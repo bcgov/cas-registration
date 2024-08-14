@@ -4,13 +4,9 @@ import {
   NewEntrantOperationPage,
   OperationInformationPage,
   OperationRepresentativePage,
-  RegistrationPurposePage,
   RegistrationSubmissionPage,
 } from "@/registration/app/components/operations/registration";
-import {
-  OperationRegistrationSteps,
-  OperationRegistrationNewEntrantSteps,
-} from "@/registration/app/components/operations/registration/enums";
+import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
@@ -20,16 +16,22 @@ const OperationRegistrationPage = async ({
   searchParams,
 }: {
   step: number;
-  operation: UUID | "create";
+  operation: UUID;
   searchParams: FacilitiesSearchParams;
 }) => {
-  // const isNewEntrantOperation = operationFormData?.type === "New Entrant Operation";
-  const isNewEntrantOperation = true;
+  // const purpose = operationFormData?.registration_purpose;
+  // hardcoding a value for development; remove value and ts-ignores when feature is implemented
+  const purpose = "Reporting Operation";
 
-  // New entrant operations have an additional page
-  const steps = isNewEntrantOperation
-    ? OperationRegistrationNewEntrantSteps
-    : OperationRegistrationSteps;
+  // Remove steps that aren't applicable to the registration based on purpose
+  let steps = allOperationRegistrationSteps;
+  // @ts-ignore
+  if (purpose !== "New Entrant Operation")
+    steps = steps.filter((e) => e !== "New Entrant Application");
+  // @ts-ignore
+  if (purpose !== "Opted-in Operation")
+    steps = steps.filter((e) => e !== "Opt-in Application");
+
   const stepIndex = step - 1;
   const formSectionName = steps[stepIndex];
 
@@ -40,8 +42,6 @@ const OperationRegistrationPage = async ({
   };
 
   switch (formSectionName) {
-    case "Registration Purpose":
-      return RegistrationPurposePage(defaultProps);
     case "Operation Information":
       return OperationInformationPage(defaultProps);
     case "Facility Information":
@@ -51,6 +51,7 @@ const OperationRegistrationPage = async ({
       });
     case "New Entrant Operation":
       return NewEntrantOperationPage(defaultProps);
+    // to add opt in page
     case "Operation Representative":
       return OperationRepresentativePage(defaultProps);
     case "Submission":

@@ -13,7 +13,7 @@ import { IChangeEvent } from "@rjsf/core";
 interface MultiStepBaseProps {
   allowBackNavigation?: boolean;
   allowEdit?: boolean;
-  baseUrl: string;
+  baseUrl?: string;
   baseUrlParams?: string;
   cancelUrl: string;
   children?: React.ReactNode;
@@ -54,6 +54,7 @@ const MultiStepBase = ({
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
   const router = useRouter();
   const isNotFinalStep = step !== steps?.length;
 
@@ -63,16 +64,14 @@ const MultiStepBase = ({
   const submitHandler = async (data: any) => {
     setIsSubmitting(true);
     const response = await onSubmit(data);
-
     // If there is an error, set isSubmitting to false to re-enable submit buttons
     // and allow user to attempt to re-submit the form
     if (response?.error) {
       setIsSubmitting(false);
-    } else if (isNotFinalStep) {
+    } else if (isNotFinalStep && baseUrl && baseUrlParams) {
       const nextStepUrl = `${baseUrl}/${step + 1}${
         baseUrlParams ? `?${baseUrlParams}` : ""
       }`;
-
       router.push(nextStepUrl);
     }
   };
@@ -114,14 +113,15 @@ const MultiStepBase = ({
           <div className="min-h-[48px] box-border">
             {error && <Alert severity="error">{error}</Alert>}
           </div>
+
           <MultiStepButtons
             disabled={isDisabled}
             isSubmitting={isSubmitting}
             stepIndex={stepIndex}
             steps={steps}
-            baseUrl={baseUrl}
             cancelUrl={cancelUrl}
             allowBackNavigation={allowBackNavigation && steps.length > 1}
+            baseUrl={baseUrl}
             submitButtonText={submitButtonText}
           />
         </div>
