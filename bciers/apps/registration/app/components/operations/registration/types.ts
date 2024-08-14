@@ -14,7 +14,7 @@ export interface RegistrationPurposeFormData {}
 export interface RegistrationSubmissionFormData {}
 
 export interface OperationRegistrationFormProps {
-  operation: UUID | "create";
+  operation: UUID;
   schema: RJSFSchema;
   step: number;
   steps: string[];

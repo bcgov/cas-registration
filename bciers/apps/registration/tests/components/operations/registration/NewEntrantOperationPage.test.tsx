@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import NewEntrantOperationPage from "apps/registration/app/components/operations/registration/NewEntrantOperationPage";
 import { useSession } from "@bciers/testConfig/mocks";
-import { OperationRegistrationNewEntrantSteps } from "@/registration/app/components/operations/registration/enums";
+import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -20,7 +20,7 @@ describe("the NewEntrantOperationPage component", () => {
       await NewEntrantOperationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         step: 4,
-        steps: OperationRegistrationNewEntrantSteps,
+        steps: allOperationRegistrationSteps,
       }),
     );
 

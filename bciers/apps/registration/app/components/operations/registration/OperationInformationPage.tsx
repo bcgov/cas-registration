@@ -1,27 +1,97 @@
 import { UUID } from "crypto";
-import { validate as isValidUUID } from "uuid";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import { operationInformationSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/operationInformation";
+import { RJSFSchema } from "@rjsf/utils";
+import {
+  getRegulatedProducts,
+  getCurrentUsersOperations,
+  getRegistrationPurposes,
+} from "@bciers/actions/api";
+import safeJsonParse from "libs/utils/safeJsonParse";
+import { RegistrationPurposes } from "./enums";
 
-const OperationInformationPage = ({
-  operation,
+export const createOperationInformationSchema = (
+  schema: RJSFSchema,
+  purposes: string[],
+  regulatedProducts: {
+    id: number;
+    name: string;
+  }[],
+  operations: { id: UUID; name: string }[],
+) => {
+  const localSchema = safeJsonParse(JSON.stringify(schema));
+
+  // add purposes from db to schema
+  localSchema.properties.registration_purpose.anyOf = purposes.map(
+    (purpose) => ({
+      const: purpose,
+      title: purpose,
+    }),
+  );
+
+  // add operations from db to schema
+  localSchema.properties.operation.anyOf = operations.map((operation) => ({
+    const: operation.id,
+    title: operation.name,
+  }));
+
+  // add regulated products
+  const regulatedProductsEnum = regulatedProducts.map((product) => product.id);
+  const regulatedProductsEnumNames = regulatedProducts.map(
+    (product) => product.name,
+  );
+
+  const oneOfOptions = purposes.map((purpose) => {
+    return {
+      // required: ["regulated_products"],
+      properties: {
+        registration_purpose: {
+          type: "string",
+          const: purpose,
+        },
+        ...(purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
+          purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION && {
+            regulated_products: {
+              title: "Regulated Product Name(s)",
+              type: "array",
+              // minItems: 1,
+              items: {
+                enum: regulatedProductsEnum,
+                enumNames: regulatedProductsEnumNames,
+              },
+            },
+          }),
+      },
+    };
+  });
+
+  localSchema.dependencies.registration_purpose.oneOf = oneOfOptions;
+  return localSchema;
+};
+
+const OperationInformationPage = async ({
   step,
   steps,
 }: {
-  operation: UUID | "create";
   step: number;
   steps: string[];
 }) => {
-  // Don't fetch operation if UUID is invalid or operation === "create"
-  if (operation && isValidUUID(operation)) {
-    // Fetch formData data here
-  }
+  const regulatedProducts: { id: number; name: string }[] =
+    await getRegulatedProducts();
+  const operations = await getCurrentUsersOperations();
+  const registrationPurposes = await getRegistrationPurposes();
+
+  const formSchema = createOperationInformationSchema(
+    operationInformationSchema,
+    registrationPurposes,
+    regulatedProducts,
+    operations,
+  );
 
   return (
     <OperationInformationForm
       formData={{}}
-      operation={operation}
-      schema={operationInformationSchema}
+      schema={formSchema}
       step={step}
       steps={steps}
     />

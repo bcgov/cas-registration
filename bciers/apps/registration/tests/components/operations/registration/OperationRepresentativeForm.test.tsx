@@ -4,7 +4,7 @@ import React from "react";
 import { useSession } from "@bciers/testConfig/mocks";
 import { operationRepresentativeSchema } from "@/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
 import OperationRepresentativeForm from "apps/registration/app/components/operations/registration/OperationRepresentativeForm";
-import { OperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
+import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -26,7 +26,7 @@ describe("the OperationRepresentativeForm component", () => {
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={operationRepresentativeSchema}
         step={3}
-        steps={OperationRegistrationSteps}
+        steps={allOperationRegistrationSteps}
       />,
     );
 

@@ -11,7 +11,7 @@
             "title": "Register an Operation",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/registration/operation/create/1"
+            "href": "/registration/register-an-operation"
           },
           {
             "title": "Report an Event",

@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "apps/registration/app/components/operations/registration/OperationInformationPage";
 import { useSession } from "@bciers/testConfig/mocks";
-import { OperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
+import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
+
+import { fetchFormEnums } from "../OperationRegistrationPage.test";
 
 useSession.mockReturnValue({
   data: {
@@ -16,11 +18,12 @@ describe("the OperationInformationPage component", () => {
     vi.clearAllMocks();
   });
   it("should render the OperationInformationPage component", async () => {
+    fetchFormEnums();
+
     render(
       await OperationInformationPage({
-        operation: "create",
         step: 2,
-        steps: OperationRegistrationSteps,
+        steps: allOperationRegistrationSteps,
       }),
     );
 

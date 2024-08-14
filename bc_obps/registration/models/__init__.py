@@ -24,6 +24,7 @@ from .facility_ownership_timeline import FacilityOwnershipTimeline
 from .multiple_operator import MultipleOperator
 from .operation_ownership_timeline import OperationOwnershipTimeline
 from .well_authorization_number import WellAuthorizationNumber
+from .registration_purpose import RegistrationPurpose
 
 __all__ = [
     "Address",
@@ -51,4 +52,5 @@ __all__ = [
     "UserOperator",
     "User",
     "WellAuthorizationNumber",
+    "RegistrationPurpose",
 ]
