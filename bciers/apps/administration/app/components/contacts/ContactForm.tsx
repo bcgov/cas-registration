@@ -24,7 +24,6 @@ const NewOperationMessage = () => (
     operation information form
   </>
 );
-
 export default function ContactForm({
   formData,
   schema,
@@ -35,17 +34,15 @@ export default function ContactForm({
   const router = useRouter();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
+  const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const [key, setKey] = useState(Math.random());
-  // Keep track of the selected user to compare with the new selected user; Otherwise, we will fall into an infinite loop
   const [selectedUser, setSelectedUser] = useState("");
 
-  // Populate form data using the selected user data
   const handleSelectUserChange = async (userId: UUID) => {
     try {
       setSelectedUser(userId);
       const userData: ContactFormData = await getUserData(userId);
       setFormState(userData);
-      // Hack to trigger a re-render to update the form data
       setKey(Math.random());
     } catch (err) {
       setError("Failed to fetch user data!" as any);
@@ -59,21 +56,21 @@ export default function ContactForm({
       schema={schema}
       uiSchema={uiSchema}
       formData={formState}
-      mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
+      mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       allowEdit={allowEdit}
-      inlineMessage={isCreating && <NewOperationMessage />}
+      inlineMessage={isCreatingState && <NewOperationMessage />}
       onSubmit={async (data: { formData?: any }) => {
-        setFormState(data.formData);
-        const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating
+        const method = isCreatingState ? "POST" : "PUT";
+        const endpoint = isCreatingState
           ? "registration/contacts"
-          : `registration/contacts/${formData.id}`;
-        const pathToRevalidate = isCreating
+          : `registration/contacts/${formState.id}`;
+        const pathToRevalidate = isCreatingState
           ? "/contacts"
-          : `/contacts/${formData.id}`;
+          : `/contacts/${formState.id}`;
         const body = {
           ...data.formData,
         };
+
         const response = await actionHandler(
           endpoint,
           method,
@@ -82,12 +79,23 @@ export default function ContactForm({
             body: JSON.stringify(body),
           },
         );
+
         if (response.error) {
           setError(response.error);
-          // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
+        } else {
+          // Update formState with the new ID from the response
+          const updatedFormState = {
+            ...formState, // Retain the current form state
+            ...data.formData, // Merge in the form data
+            id: response.id, // add the id from the response
+          };
+          // Set the updated form state
+          setFormState(updatedFormState);
         }
-        if (isCreating) {
+
+        if (isCreatingState) {
+          setIsCreatingState(false);
           window.history.replaceState(
             null,
             "",
@@ -100,7 +108,6 @@ export default function ContactForm({
       onChange={(e: IChangeEvent) => {
         let newSelectedUser = e.formData?.section1?.selected_user;
         if (newSelectedUser && newSelectedUser !== selectedUser) {
-          // Only fetch user data if the selected user has changed
           handleSelectUserChange(e.formData.section1.selected_user);
         }
       }}
