@@ -520,8 +520,10 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     Remove initial data from erc.configuration_element
     '''
     Configuration = apps.get_model('reporting', 'Configuration')
+    ReportingActivity = apps.get_model('reporting', 'ReportingActivity')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion excluding line tracing').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
