@@ -10,7 +10,6 @@ import {
 } from "@/registration/app/components/operations/registration";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { getOperation } from "@bciers/actions/api";
-
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
 const OperationRegistrationPage = async ({
@@ -59,7 +58,7 @@ const OperationRegistrationPage = async ({
         operationName: operationData?.name,
         operationType: operationData?.type,
       });
-    case "New Entrant Operation":
+    case "New Entrant Application":
       return NewEntrantOperationPage(defaultProps);
     case "Opt-in Application":
       return OptedInOperationPage(defaultProps);
