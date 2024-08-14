@@ -46,24 +46,14 @@ export default function FacilityForm({
         const endpoint = isCreating
           ? "registration/facilities"
           : `registration/facilities/${formData?.id}`;
-        const pathToRevalidate = isCreating
-          ? `/operations/${params.operationId}/facilities`
-          : `/operations/${params.operationId}/facilities/${formData?.id}`;
 
-        const body = [
-          {
-            ...data.formData,
-            operation_id: params.operationId,
-          },
-        ];
-        const response = await actionHandler(
-          endpoint,
-          method,
-          pathToRevalidate,
-          {
-            body: JSON.stringify(body),
-          },
-        );
+        const body = {
+          ...data.formData,
+          operation_id: params.operationId,
+        };
+        const response = await actionHandler(endpoint, method, "", {
+          body: JSON.stringify(isCreating ? [body] : body),
+        });
         if (response?.error) {
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
