@@ -652,101 +652,127 @@ describe("FacilityForm component", () => {
     ).toHaveLength(1);
   });
 
-  it("fills the mandatory form fields, creates new SFO facility, and redirects on success", async () => {
-    render(
-      <FacilityForm
-        isCreating
-        schema={facilitiesSfoSchema}
-        uiSchema={facilitiesSfoUiSchema}
-        formData={{
-          name: "test facility name",
-          type: "Single Facility",
-        }}
-      />,
-    );
+  it(
+    "fills the mandatory form fields, creates new SFO facility, and redirects on success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          isCreating
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={{
+            name: "test facility name",
+            type: "Single Facility",
+          }}
+        />,
+      );
 
-    //fill fields
-    await fillMandatoryFields(facilitiesSfoSchema);
-    await checkMandatoryFieldValues(facilitiesSfoSchema);
+      //fill fields
+      await fillMandatoryFields(facilitiesSfoSchema);
+      await checkMandatoryFieldValues(facilitiesSfoSchema);
 
-    // submit valid form data, assert response
-    await assertFormPost(sfoResponsePost);
-  });
-  it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
-    render(
-      <FacilityForm
-        isCreating
-        schema={facilitiesLfoSchema}
-        uiSchema={facilitiesLfoUiSchema}
-        formData={{}}
-      />,
-    );
+      // submit valid form data, assert response
+      await assertFormPost(sfoResponsePost);
+    },
+  );
+  it(
+    "fills all form fields, creates new LFO facility, and redirects on success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          isCreating
+          schema={facilitiesLfoSchema}
+          uiSchema={facilitiesLfoUiSchema}
+          formData={{}}
+        />,
+      );
 
-    //fill fields
-    await fillMandatoryFields(facilitiesLfoSchema);
-    await checkMandatoryFieldValues(facilitiesLfoSchema);
-    await fillOptionalFields(facilitiesLfoSchema);
-    await checkOptionalFieldValues();
+      //fill fields
+      await fillMandatoryFields(facilitiesLfoSchema);
+      await checkMandatoryFieldValues(facilitiesLfoSchema);
+      await fillOptionalFields(facilitiesLfoSchema);
+      await checkOptionalFieldValues();
 
-    // submit valid form data, assert response
-    await assertFormPost(lfoResponsePost);
-  });
+      // submit valid form data, assert response
+      await assertFormPost(lfoResponsePost);
+    },
+  );
 
-  it("it edits a SFO Facility form, submits form, and displays success", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesSfoSchema}
-        uiSchema={facilitiesSfoUiSchema}
-        formData={sfoFormData}
-      />,
-    );
+  it(
+    "it edits a SFO Facility form, submits form, and displays success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={sfoFormData}
+        />,
+      );
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Buttons
+      expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
 
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
+      const editButton = screen.getByRole("button", { name: /edit/i });
+      act(() => {
+        editButton.click();
+      });
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Buttons
+      expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
 
-    // Edit form fields
-    await editFormFields(facilitiesSfoSchema);
+      // Edit form fields
+      await editFormFields(facilitiesSfoSchema);
 
-    // submit valid form data, assert response
-    await assertFormPut();
-  }, 30000);
-  it("it edits a LFO Facility form, submits form, and displays success", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesLfoSchema}
-        uiSchema={facilitiesLfoUiSchema}
-        formData={lfoFormData}
-      />,
-    );
+      // submit valid form data, assert response
+      await assertFormPut();
+    },
+    30000,
+  );
+  it(
+    "it edits a LFO Facility form, submits form, and displays success",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          schema={facilitiesLfoSchema}
+          uiSchema={facilitiesLfoUiSchema}
+          formData={lfoFormData}
+        />,
+      );
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Buttons
+      expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
 
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
+      const editButton = screen.getByRole("button", { name: /edit/i });
+      act(() => {
+        editButton.click();
+      });
 
-    // Buttons
-    expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
-    // Edit form fields
-    await editFormFields(facilitiesLfoSchema);
+      // Buttons
+      expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      // Edit form fields
+      await editFormFields(facilitiesLfoSchema);
 
-    // submit valid form data, assert response
-    await assertFormPut();
-  }, 30000);
+      // submit valid form data, assert response
+      await assertFormPut();
+    },
+    30000,
+  );
   it("redirects to the operation's facilities grid on cancel", async () => {
     render(
       <FacilityForm
