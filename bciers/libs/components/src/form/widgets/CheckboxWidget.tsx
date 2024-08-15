@@ -24,7 +24,7 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
           }
         />
       </div>
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
     </div>
   );
 };
