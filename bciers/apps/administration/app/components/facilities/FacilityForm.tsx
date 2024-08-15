@@ -43,11 +43,6 @@ export default function FacilityForm({
         const updatedFormData = { ...formState, ...data.formData };
         setFormState(updatedFormData);
 
-        const body = {
-          ...updatedFormData,
-          operation_id: params.operationId,
-        };
-
         const method = isCreatingState ? "POST" : "PUT";
         const endpoint = isCreatingState
           ? "registration/facilities"
@@ -55,6 +50,10 @@ export default function FacilityForm({
         const pathToRevalidate = isCreatingState
           ? `/operations/${params.operationId}/facilities`
           : `/operations/${params.operationId}/facilities/${formState.id}`;
+        const body = {
+          ...data.formData,
+          operation_id: params.operationId,
+        };
 
         const response = await actionHandler(
           endpoint,
@@ -71,11 +70,11 @@ export default function FacilityForm({
         }
 
         if (isCreatingState) {
+          setIsCreatingState(false);
           setFormState((prevState) => ({
             ...prevState,
             id: response[0].id,
           }));
-          setIsCreatingState(false);
         }
 
         const facilityId = isCreatingState ? response[0].id : formState.id;
