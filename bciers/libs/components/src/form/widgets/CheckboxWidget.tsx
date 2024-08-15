@@ -1,5 +1,6 @@
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 const CheckboxWidget: React.FC<WidgetProps> = ({
   disabled,
@@ -10,12 +11,12 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
   required,
 }) => {
   return (
-    <div className="flex">
-      <div className="flex flex-col justify-start [&>span]:pt-0">
+    <FormControlLabel
+      control={
         <Checkbox
-          id={id}
           checked={typeof value === "undefined" ? false : value}
           value={value}
+          inputProps={{ id }}
           required={required}
           aria-label={label}
           disabled={disabled}
@@ -23,9 +24,9 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
             onChange(event.target.checked)
           }
         />
-      </div>
-      <label htmlFor={id}>{label}</label>
-    </div>
+      }
+      label={label}
+    />
   );
 };
 
