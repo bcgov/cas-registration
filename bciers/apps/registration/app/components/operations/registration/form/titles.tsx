@@ -1,3 +1,5 @@
+import { ggerrLink } from "@bciers/utils/urls";
+
 const GenerateNewEntrantFormMessage = (
   date: string,
   applicationUrl: string,
@@ -6,7 +8,10 @@ const GenerateNewEntrantFormMessage = (
     <div className="max-w-[900px]">
       <p>
         For a definition of the Date of First Shipment, please refer to the{" "}
-        <a href="/tbd">GGERR</a>.
+        <a href={ggerrLink} target="_blank" rel="noopener noreferrer">
+          GGERR
+        </a>
+        .
       </p>
       <p>
         Please download and complete the following application form template to
