@@ -12,13 +12,14 @@ import {
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { tasklistData } from "@reporting/src/app/components/facilities/TaskListElements";
+import { tasklistData } from "@reporting/src/app/components/facility/TaskListElements";
 import {
   facilityReviewUiSchema,
   facilitySchema,
 } from "@reporting/src/data/jsonSchema/facilities";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
+import { IChangeEvent } from "@rjsf/core";
 
 interface Props {
   version_id: number;
@@ -75,7 +76,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
 
         const activityMap: Record<number, boolean> = {};
         validActivitiesData.forEach((activity: Activity) => {
-          activityMap[activity.id] = facilityData.activities.includes(
+          activityMap[activity.id] = facilityData.activities?.includes(
             activity.id,
           );
         });
@@ -94,10 +95,24 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     event: React.ChangeEvent<HTMLInputElement>,
     id: number,
   ) => {
+    const isChecked = event.target.checked;
     setActivities((prevActivities) => ({
       ...prevActivities,
-      [id]: event.target.checked,
+      [id]: isChecked,
     }));
+
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      activities: isChecked
+        ? [...(prevFormData.activities || []), id]
+        : prevFormData.activities?.filter(
+            (activityId: number) => activityId !== id,
+          ),
+    }));
+  };
+
+  const handleFormChange = (event: IChangeEvent<any, RJSFSchema, any>) => {
+    setFormData(event.formData);
   };
 
   const handleSave = async () => {
@@ -122,19 +137,21 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
       });
 
       setIsSuccess(true);
-      alert("Facility updated successfully!");
     } catch (error: any) {
       console.error("Error updating facility:", error);
       setErrorList([error.message || "An error occurred"]);
     } finally {
       setIsLoading(false);
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
     }
   };
 
   const buttonContent = isLoading ? (
     <CircularProgress data-testid="progressbar" role="progress" size={24} />
   ) : isSuccess ? (
-    "Success"
+    "✅ Success"
   ) : (
     "Save"
   );
@@ -151,7 +168,8 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
             schema={facilityReviewSchema}
             uiSchema={facilityReviewUiSchema}
             formData={formData}
-            onSubmit={handleSave} // Use handleSave directly
+            onSubmit={handleSave}
+            onChange={handleFormChange}
           >
             {errorList.length > 0 &&
               errorList.map((error, index) => (

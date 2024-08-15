@@ -1,4 +1,5 @@
 from typing import Literal, Tuple, List, Dict, Union
+from typing import Literal, Tuple, Dict, Union
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -127,7 +128,7 @@ def get_facility_report_by_version_and_id(
 )
 @handle_http_errors()
 def save_facility_report(
-        request: HttpRequest, version_id: int, payload: ReportFacilityIn
+        request: HttpRequest, version_id: int, payload: FacilityReportIn
 ) -> Union[
     Tuple[Literal[201], FacilityReportOut],
     Tuple[Literal[400], Dict[str, str]],
@@ -140,7 +141,7 @@ def save_facility_report(
     Args:
         request (HttpRequest): The HTTP request object.
         version_id (int): The ID of the report version.
-        payload (ReportFacilityIn): The input data for the report facility.
+        payload (FacilityReportIn): The input data for the report facility.
 
     Returns:
         Tuple: HTTP status code and the response data or an error message.

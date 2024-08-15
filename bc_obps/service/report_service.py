@@ -8,7 +8,7 @@ from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.schema.facility_report import FacilityReport, ReportFacilityIn
+from reporting.schema.facility_report import FacilityReport, FacilityReportIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
@@ -124,13 +124,13 @@ class ReportService:
         return []
 
     @classmethod
-    def save_facility_report(cls, report_version_id: int, data: ReportFacilityIn) -> FacilityReport:
+    def save_facility_report(cls, report_version_id: int, data: FacilityReportIn) -> FacilityReport:
         """
         Save or update a report facility and its related activities.
 
         Args:
             report_version_id (int): The ID of the report version.
-            data (ReportFacilityIn): The input data for the report facility.
+            data (FacilityReportIn): The input data for the report facility.
 
         Returns:
             ReportFacility: The updated or created ReportFacility instance.

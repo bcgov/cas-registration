@@ -1,4 +1,4 @@
-import FacilityReviewFormData from "../../../../../../components/facilities/FacilityReviewFormData";
+import FacilityReviewFormData from "@reporting/src/app/components/facility/FacilityReviewFormData";
 
 export default async function Page({
   params,

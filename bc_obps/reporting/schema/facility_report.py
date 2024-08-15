@@ -30,7 +30,7 @@ class FacilityReportOut(ModelSchema):
         ]
 
 
-class ReportFacilityIn(ModelSchema):
+class FacilityReportIn(ModelSchema):
     """
     Schema for the save report activity endpoint request input
     """
