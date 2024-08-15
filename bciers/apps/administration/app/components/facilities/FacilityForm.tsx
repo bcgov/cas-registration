@@ -26,6 +26,8 @@ export default function FacilityForm({
 }: Readonly<Props>) {
   // @ ts-ignore
   const [error, setError] = useState(undefined);
+  const [formState, setFormState] = useState(formData ?? {});
+  const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -38,15 +40,15 @@ export default function FacilityForm({
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
-      mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
+      mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
         // Reset error state on form submission
         setError(undefined);
-        const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating
+        const method = isCreatingState ? "POST" : "PUT";
+        const endpoint = isCreatingState
           ? "registration/facilities"
           : `registration/facilities/${formData?.id}`;
-        const pathToRevalidate = isCreating
+        const pathToRevalidate = isCreatingState
           ? `/operations/${params.operationId}/facilities`
           : `/operations/${params.operationId}/facilities/${formData?.id}`;
 
@@ -59,16 +61,26 @@ export default function FacilityForm({
           method,
           pathToRevalidate,
           {
-            body: JSON.stringify(isCreating ? [body] : body),
+            body: JSON.stringify(isCreatingState ? [body] : body),
           },
         );
-        console.log("response", response);
         if (response?.error) {
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
+        } else {
+          // Update formState with the new ID from the response
+          const updatedFormState = {
+            ...formState, // Retain the current form state
+            ...data.formData, // Merge in the form data
+            id: response.id, // Add the ID from the response
+          };
+
+          // Set the updated form state
+          setFormState(updatedFormState);
         }
-        if (isCreating) {
+        if (isCreatingState) {
+          setIsCreatingState(false);
           window.history.replaceState(
             null,
             "",
