@@ -47,14 +47,14 @@ export const submissionUiSchema: UiSchema = {
   },
   acknowledgement_of_review: {
     "ui:FieldTemplate": BasicFieldTemplate,
-    "ui:widget": "checkbox",
+    "ui:widget": "CheckboxWidget",
   },
   acknowledgement_of_records: {
     "ui:FieldTemplate": BasicFieldTemplate,
-    "ui:widget": "checkbox",
+    "ui:widget": "CheckboxWidget",
   },
   acknowledgement_of_information: {
     "ui:FieldTemplate": BasicFieldTemplate,
-    "ui:widget": "checkbox",
+    "ui:widget": "CheckboxWidget",
   },
 };

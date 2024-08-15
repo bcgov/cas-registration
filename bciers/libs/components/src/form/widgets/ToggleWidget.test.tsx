@@ -29,7 +29,10 @@ describe("RJSF ToggleWidget", () => {
     render(
       <FormBase schema={toggleFieldSchema} uiSchema={toggleFieldUiSchema} />,
     );
-    expect(screen.getByLabelText(toggleFieldLabel)).toBeVisible();
+
+    const checkbox = screen.getByRole("checkbox").parentElement?.children[1];
+
+    expect(checkbox).toBeVisible();
   });
 
   it("should be unchecked by default", async () => {
