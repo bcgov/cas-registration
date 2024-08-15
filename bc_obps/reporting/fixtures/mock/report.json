@@ -1,0 +1,20 @@
+[
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 1,
+      "operation_id": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "operator_id": "685d581b-5698-411f-ae00-de1d97334a71",
+      "reporting_year_id": 2024
+    }
+  },
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 2,
+      "operation_id": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "operator_id": "685d581b-5698-411f-ae00-de1d97334a71",
+      "reporting_year_id": 2024
+    }
+  }
+]
