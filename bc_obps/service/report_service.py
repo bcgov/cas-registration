@@ -1,15 +1,18 @@
 from uuid import UUID
+from django.db import transaction
+from typing import List, Optional
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+
+from registration.models import ReportingActivity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
-from registration.models import ReportingActivity, RegulatedProduct
-from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
+from reporting.schema.facility_report import FacilityReport, FacilityReportIn
+from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
-from django.db import transaction
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
-from reporting.schema.report_operation import ReportOperationIn
 
 
 class ReportService:
@@ -104,3 +107,59 @@ class ReportService:
         report_operation.save()
 
         return report_operation
+
+    @classmethod
+    def get_facility_report_by_version_and_id(
+        cls, report_version_id: int, facility_id: int
+    ) -> Optional[FacilityReport]:
+        try:
+            result = FacilityReport.objects.get(report_version__id=report_version_id, id=facility_id)
+        except FacilityReport.DoesNotExist:
+            result = None
+        return result
+
+    @classmethod
+    def get_activity_ids_for_facility(cls, facility: FacilityReport) -> List[int]:
+        if facility:
+            return list(facility.activities.values_list('id', flat=True))
+        return []
+
+    @classmethod
+    def save_facility_report(cls, report_version_id: int, data: FacilityReportIn) -> FacilityReport:
+        """
+        Save or update a report facility and its related activities.
+
+        Args:
+            report_version_id (int): The ID of the report version.
+            data (FacilityReportIn): The input data for the report facility.
+
+        Returns:
+            ReportFacility: The updated or created ReportFacility instance.
+        """
+        try:
+            # Fetch or create a ReportFacility instance
+            report_facility, _ = FacilityReport.objects.update_or_create(
+                report_version__id=report_version_id,
+                defaults={
+                    'facility_name': data.facility_name.strip(),
+                    'facility_type': data.facility_type.strip(),
+                    'facility_bcghgid': data.facility_bcghgid.strip(),
+                },
+            )
+
+            # Update ManyToMany fields (activities)
+            if data.activities:
+                activities = ReportingActivity.objects.filter(id__in=data.activities)
+                report_facility.activities.set(activities)
+
+            # Save the updated ReportFacility instance
+            report_facility.save()
+
+            return report_facility
+
+        except ObjectDoesNotExist:
+            raise ValueError("Report facility not found.")
+        except ValidationError as ve:
+            raise ve
+        except Exception as e:
+            raise Exception(f"An unexpected error occurred: {str(e)}")
