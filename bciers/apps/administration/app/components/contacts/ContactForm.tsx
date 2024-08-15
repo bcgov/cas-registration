@@ -86,20 +86,14 @@ export default function ContactForm({
         if (response.error) {
           setError(response.error);
           return { error: response.error };
-        } else {
-          if (method === "POST") {
-            // Update formState with the new ID from the response
-            const updatedFormState = {
-              ...formState, // Retain the current form state
-              id: response.id, // add the id from the response
-            };
-            // Set the updated form state
-            setFormState(updatedFormState);
-          }
         }
 
         if (isCreatingState) {
           setIsCreatingState(false);
+          setFormState((prevState) => ({
+            ...prevState,
+            id: response.id,
+          }));
         } else {
           setKey(Math.random());
         }
