@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@mui/material";
+import { Button, Alert } from "@mui/material";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { Alert } from "@mui/material";
 import FormBase from "./FormBase";
 import MultiStepHeader from "./components/MultiStepHeader";
 import MultiStepButtons from "./components/MultiStepButtons";
@@ -28,6 +27,7 @@ interface MultiStepBaseProps {
   setErrorReset?: (error: undefined) => void;
   submitButtonText?: string;
   uiSchema: UiSchema;
+  submitButtonDisabled?: boolean;
 }
 
 // Modified MultiStepFormBase meant to facilitate more modularized Multi-step forms
@@ -51,6 +51,7 @@ const MultiStepBase = ({
   steps,
   submitButtonText,
   uiSchema,
+  submitButtonDisabled,
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -123,6 +124,7 @@ const MultiStepBase = ({
             allowBackNavigation={allowBackNavigation && steps.length > 1}
             baseUrl={baseUrl}
             submitButtonText={submitButtonText}
+            submitButtonDisabled={submitButtonDisabled}
           />
         </div>
       </FormBase>

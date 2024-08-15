@@ -49,3 +49,9 @@ class OperationCurrentOut(ModelSchema):
     class Meta:
         model = Operation
         fields = ["id", "name"]
+
+
+class OperationRegistrationSubmissionIn(Schema):
+    acknowledgement_of_review: bool
+    acknowledgement_of_records: bool
+    acknowledgement_of_information: bool

@@ -54,6 +54,12 @@ class TestUtils:
             endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
         )
 
+    def mock_patch_with_auth_role(self, role_name, content_type, data, endpoint=None):
+        TestUtils.save_app_role(self, role_name)
+        return TestUtils.client.patch(
+            endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
+
     def authorize_current_user_as_operator_user(self, operator):
         return baker.make(
             UserOperator,
