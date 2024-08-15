@@ -17,9 +17,9 @@ class ParentOperatorIn(Schema):
     po_cra_business_number: int
     po_bc_corporate_registry_number: str = Field(pattern=BC_CORPORATE_REGISTRY_REGEX)
     po_business_structure: str
-    po_website: Optional[str] = (
-        ""  # This is a URLField in the model, but we don't need to validate it here if not passed in
-    )
+    po_website: Optional[
+        str
+    ] = ""  # This is a URLField in the model, but we don't need to validate it here if not passed in
     po_physical_street_address: str
     po_physical_municipality: str
     po_physical_province: str

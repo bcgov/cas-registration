@@ -1,6 +1,6 @@
 from uuid import UUID
 from django.db import transaction
-from typing import List
+from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from registration.models import ReportingActivity, RegulatedProduct
@@ -109,11 +109,13 @@ class ReportService:
         return report_operation
 
     @classmethod
-    def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: int) -> FacilityReport:
+    def get_facility_report_by_version_and_id(
+        cls, report_version_id: int, facility_id: int
+    ) -> Optional[FacilityReport]:
         try:
             result = FacilityReport.objects.get(report_version__id=report_version_id, id=facility_id)
         except FacilityReport.DoesNotExist:
-            result = None  # or raise a custom exception if preferred
+            result = None
         return result
 
     @classmethod
