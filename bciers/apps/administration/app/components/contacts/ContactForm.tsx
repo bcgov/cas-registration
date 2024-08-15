@@ -60,6 +60,9 @@ export default function ContactForm({
       allowEdit={allowEdit}
       inlineMessage={isCreatingState && <NewOperationMessage />}
       onSubmit={async (data: { formData?: any }) => {
+        const updatedFormData = { ...formState, ...data.formData };
+        setFormState(updatedFormData);
+
         const method = isCreatingState ? "POST" : "PUT";
         const endpoint = isCreatingState
           ? "registration/contacts"
@@ -84,26 +87,26 @@ export default function ContactForm({
           setError(response.error);
           return { error: response.error };
         } else {
-          // Update formState with the new ID from the response
-          const updatedFormState = {
-            ...formState, // Retain the current form state
-            ...data.formData, // Merge in the form data
-            id: response.id, // add the id from the response
-          };
-          // Set the updated form state
-          setFormState(updatedFormState);
+          if (method === "POST") {
+            // Update formState with the new ID from the response
+            const updatedFormState = {
+              ...formState, // Retain the current form state
+              id: response.id, // add the id from the response
+            };
+            // Set the updated form state
+            setFormState(updatedFormState);
+          }
         }
 
         if (isCreatingState) {
           setIsCreatingState(false);
-          window.history.replaceState(
-            null,
-            "",
-            `/administration/contacts/${response.id}?contacts_title=${response.first_name} ${response.last_name}`,
-          );
         } else {
           setKey(Math.random());
         }
+        const replaceUrl = `/administration/contacts/${
+          method === "POST" ? response.id : formState.id
+        }?contacts_title=${response.first_name} ${response.last_name}`;
+        window.history.replaceState(null, "", replaceUrl);
       }}
       onChange={(e: IChangeEvent) => {
         let newSelectedUser = e.formData?.section1?.selected_user;

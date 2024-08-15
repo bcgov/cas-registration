@@ -30,7 +30,7 @@ const FacilitiesDataGrid = ({
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
-        return `/administration/operations/${operationId}/facilities/${params.row.id}?operationsTitle=${operationsTitle}&facilitiesTitle=${params.row.name}`;
+        return `/administration/operations/${operationId}/facilities/${params.row.id}?operations_title=${operationsTitle}&facilities_title=${params.row.name}`;
       },
       cellText: "View Details",
       useWindowLocation: true,
