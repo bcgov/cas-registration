@@ -12,7 +12,7 @@ export interface FacilityInitialData {
 
 export interface FacilitiesSearchParams {
   [key: string]: string | number | undefined;
-  operationsTitle?: string;
+  operations_title?: string;
   bcghg_id?: string;
   type?: string;
   name?: string;
