@@ -13,11 +13,11 @@ Use the data in the excel file to create the configurations in the database. (ex
 Example:
 
 In this example we are creating a config element that ends up like this in the database:
-(reporting_activity_id, source_type_id, gas_type_id, methodology_id. valid_from_id, valid_to_id) = (1,1,1,1,1,1,1)
+(activity_id, source_type_id, gas_type_id, methodology_id. valid_from_id, valid_to_id) = (1,1,1,1,1,1,1)
 
 ```
   ConfigurationElement(
-      reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion excluding line tracing').id,
+      activity_id=Activity.objects.get(name='General stationary combustion excluding line tracing').id,
       source_type_id=SourceType.objects.get(
           name='General stationary combustion of fuel or waste with production of useful energy'
       ).id,

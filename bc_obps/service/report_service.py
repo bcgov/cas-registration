@@ -3,14 +3,13 @@ from django.db import transaction
 from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from registration.models import ReportingActivity, RegulatedProduct
+from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
-from registration.models import Activity, RegulatedProduct
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.schema.facility_report import FacilityReport, FacilityReportIn
+from reporting.schema.facility_report import FacilityReportIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
@@ -151,7 +150,7 @@ class ReportService:
 
             # Update ManyToMany fields (activities)
             if data.activities:
-                activities = ReportingActivity.objects.filter(id__in=data.activities)
+                activities = Activity.objects.filter(id__in=data.activities)
                 report_facility.activities.set(activities)
 
             # Save the updated ReportFacility instance

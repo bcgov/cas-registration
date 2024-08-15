@@ -28,5 +28,5 @@ class ActivityService:
 
     @classmethod
     def get_all_activities(cls) -> List[Dict[str, Any]]:
-        activities = ReportingActivity.objects.all().values("id", "name", "applicable_to")
+        activities = Activity.objects.all().values("id", "name", "applicable_to")
         return [dict(activity) for activity in activities]

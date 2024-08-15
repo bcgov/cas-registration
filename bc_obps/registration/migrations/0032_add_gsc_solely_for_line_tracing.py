@@ -2,8 +2,8 @@ from django.db import migrations
 
 
 def create_new_activity(apps, schema_monitor):
-    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
-    ReportingActivity.objects.create(
+    Activity = apps.get_model('registration', 'Activity')
+    Activity.objects.create(
         name='General stationary combustion solely for the purpose of line tracing',
         slug='gsc_solely_for_line_tracing',
         weight=200.0,
@@ -12,16 +12,14 @@ def create_new_activity(apps, schema_monitor):
 
 
 def delete_new_activity(apps, schema_monitor):
-    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
-    ReportingActivity.objects.filter(
-        name='General stationary combustion solely for the purpose of line tracing'
-    ).delete()
+    Activity = apps.get_model('registration', 'Activity')
+    Activity.objects.filter(name='General stationary combustion solely for the purpose of line tracing').delete()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0031_historicalregistrationpurpose_registrationpurpose'),
+        ('registration', '0031_activity_model'),
     ]
 
     operations = [
