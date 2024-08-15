@@ -1,3 +1,4 @@
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import BasicFieldTemplate from "@bciers/components/form/fields/BasicFieldTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
@@ -5,7 +6,17 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 export const submissionSchema: RJSFSchema = {
   title: "Submission",
   type: "object",
+  required: [
+    "acknowledgement_of_review",
+    "acknowledgement_of_records",
+    "acknowledgement_of_information",
+  ],
   properties: {
+    submission_note: {
+      title:
+        "Before clicking 'Submit', please confirm that you understand and agree with the following statements:",
+      type: "string",
+    },
     acknowledgement_of_review: {
       title:
         "I certify that I have reviewed the registration, and that I have exercised due diligence to ensure that the information included in the registration is true and complete.",
@@ -30,6 +41,10 @@ export const submissionSchema: RJSFSchema = {
 export const submissionUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  submission_note: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:classNames": "mt-2 mb-5",
+  },
   acknowledgement_of_review: {
     "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "checkbox",

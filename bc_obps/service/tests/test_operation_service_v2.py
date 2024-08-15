@@ -97,3 +97,17 @@ class TestOperationServiceV2:
         assert Operation.objects.count() == 2
         assert len(result) == 1
         assert result[0] == users_operation
+
+    @staticmethod
+    def test_update_status():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        users_operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+        )
+        updated_operation = OperationServiceV2.update_status(
+            approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
+        )
+        updated_operation.refresh_from_db()
+        assert updated_operation.status == Operation.Statuses.REGISTERED
+        assert updated_operation.updated_by == approved_user_operator.user
+        assert updated_operation.updated_at is not None
