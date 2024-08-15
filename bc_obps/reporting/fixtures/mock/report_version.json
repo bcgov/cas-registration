@@ -1,0 +1,20 @@
+[
+  {
+    "model": "reporting.reportversion",
+    "pk": 1,
+    "fields": {
+      "is_latest_submitted": true,
+      "status": "active",
+      "report_id": 1
+    }
+  },
+  {
+    "model": "reporting.reportversion",
+    "pk": 2,
+    "fields": {
+      "is_latest_submitted": false,
+      "status": "draft",
+      "report_id": 2
+    }
+  }
+]
