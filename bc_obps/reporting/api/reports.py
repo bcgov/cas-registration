@@ -1,4 +1,3 @@
-from typing import Literal, Tuple, List, Dict, Union
 from typing import Literal, Tuple, Dict, Union
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
@@ -12,7 +11,7 @@ from reporting.schema.report_operation import ReportOperationOut, ReportOperatio
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..models import FacilityReport
-from ..schema.facility_report import FacilityReportOut, ReportFacilityIn
+from ..schema.facility_report import FacilityReportOut, FacilityReportIn
 
 
 @router.post(
