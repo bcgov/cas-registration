@@ -55,7 +55,7 @@ const Submission = ({
           <Link className="link-button-blue my-4" href="/tbd">
             Report a change
           </Link>
-          <Link className="link-button-outlined" href="/tbd">
+          <Link className="link-button-outlined" href="/">
             Return to Dashboard
           </Link>
         </div>
