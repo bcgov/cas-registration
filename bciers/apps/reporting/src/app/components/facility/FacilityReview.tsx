@@ -88,7 +88,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
       }
     };
 
-    fetchData().then((r) => console.log());
+    fetchData().then(() => console.log());
   }, [version_id, facility_id]);
 
   const handleCheckboxChange = (
@@ -111,7 +111,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     }));
   };
 
-  const handleFormChange = (event: IChangeEvent<any, RJSFSchema, any>) => {
+  const handleFormChange = (event: IChangeEvent) => {
     setFormData(event.formData);
   };
 
