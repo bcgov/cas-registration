@@ -13,7 +13,6 @@ class Command(BaseCommand):
             f'{fixture_base_dir}/report.json',
             f'{fixture_base_dir}/report_version.json',
             f'{fixture_base_dir}/facility_report.json',
-
         ]
 
         for fixture in fixtures:

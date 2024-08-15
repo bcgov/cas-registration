@@ -249,9 +249,9 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
         first_valid_config_elements: Optional[ConfigurationElement] = valid_config_elements.first()
         if first_valid_config_elements:
             rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
-            rjsf_schema['properties']['sourceTypes']['properties'][
-                first_valid_config_elements.source_type.json_key
-            ] = build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id, report_date)
+            rjsf_schema['properties']['sourceTypes']['properties'][first_valid_config_elements.source_type.json_key] = (
+                build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id, report_date)
+            )
 
     # If there are multiple config elements for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
@@ -272,9 +272,9 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
         for source_type in source_types:
             try:
                 valid_config_element = valid_config_elements.get(source_type__id=source_type)
-                rjsf_schema['properties']['sourceTypes']['properties'][
-                    valid_config_element.source_type.json_key
-                ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id, report_date)
+                rjsf_schema['properties']['sourceTypes']['properties'][valid_config_element.source_type.json_key] = (
+                    build_source_type_schema(config_id, activity, valid_config_element.source_type_id, report_date)
+                )
             except Exception:
                 raise Exception(
                     f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}'

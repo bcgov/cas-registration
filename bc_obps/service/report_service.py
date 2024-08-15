@@ -116,7 +116,6 @@ class ReportService:
             result = None  # or raise a custom exception if preferred
         return result
 
-
     @classmethod
     def get_activity_ids_for_facility(cls, facility: FacilityReport) -> List[int]:
         if facility:
@@ -143,7 +142,7 @@ class ReportService:
                     'facility_name': data.facility_name.strip(),
                     'facility_type': data.facility_type.strip(),
                     'facility_bcghgid': data.facility_bcghgid.strip(),
-                }
+                },
             )
 
             # Update ManyToMany fields (activities)

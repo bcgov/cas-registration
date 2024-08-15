@@ -3,7 +3,6 @@ from .router import router
 from registration.decorators import handle_http_errors
 from django.http import HttpRequest
 from typing import Tuple
-from typing import List
 
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx, codes_5xx
@@ -19,9 +18,9 @@ from ninja.responses import codes_4xx, codes_5xx
 )
 @handle_http_errors()
 def get_initial_activity_data(
-        request: HttpRequest,
-        activity_name: str,
-        report_date: str,
+    request: HttpRequest,
+    activity_name: str,
+    report_date: str,
 ) -> Tuple[int, str]:
     return 200, ActivityService.get_initial_activity_data(activity_name, report_date)
 
@@ -32,7 +31,5 @@ def get_initial_activity_data(
     url_name="get_activities",
 )
 @handle_http_errors()
-def get_activities(
-        request: HttpRequest
-) -> Tuple[int, list]:
+def get_activities(request: HttpRequest) -> Tuple[int, list]:
     return 200, ActivityService.get_all_activities()

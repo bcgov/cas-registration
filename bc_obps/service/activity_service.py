@@ -3,6 +3,7 @@ from reporting.models import Configuration, ConfigurationElement
 from registration.models import ReportingActivity
 from typing import List, Dict, Any
 
+
 class ActivityService:
     @classmethod
     def get_initial_activity_data(request, activity_name: str, report_date: str) -> str:

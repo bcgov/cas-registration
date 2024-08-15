@@ -17,6 +17,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.schema.v1 import UserOperatorOut
 
+
 # GET
 @router.get(
     "/user-operators/{uuid:user_operator_id}",

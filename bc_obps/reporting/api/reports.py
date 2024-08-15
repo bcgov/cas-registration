@@ -29,7 +29,6 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     return 201, report.id
 
 
-
 @router.get(
     "/report-version/{version_id}/report-operation",
     response={200: ReportOperationOut, custom_codes_4xx: Message},
@@ -79,9 +78,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
 )
 @handle_http_errors()
 def get_facility_report_by_version_and_id(
-        request: HttpRequest,
-        version_id: int,
-        facility_id: int
+    request: HttpRequest, version_id: int, facility_id: int
 ) -> Tuple[Literal[200], FacilityReportOut]:
     try:
         # Fetch the facility using the service method
@@ -99,7 +96,7 @@ def get_facility_report_by_version_and_id(
                 facility_type=facility_report.facility_type,
                 facility_bcghgid=facility_report.facility_bcghgid,
                 activities=activity_ids,
-                products=[]
+                products=[],
             )
 
             return 200, response_data
@@ -117,7 +114,6 @@ def get_facility_report_by_version_and_id(
         return 500, {"message": "An unexpected error occurred", "details": str(e)}
 
 
-
 @router.post(
     "/report-version/{version_id}/facility-report/{facility_id}",
     response={201: FacilityReportOut, custom_codes_4xx: Message},
@@ -127,13 +123,11 @@ def get_facility_report_by_version_and_id(
     facility object or an error message if the update fails.""",
 )
 @handle_http_errors()
-def save_facility_report(
-        request: HttpRequest, version_id: int, payload: FacilityReportIn
-) -> Union[
+def save_facility_report(request: HttpRequest, version_id: int, payload: FacilityReportIn) -> Union[
     Tuple[Literal[201], FacilityReportOut],
     Tuple[Literal[400], Dict[str, str]],
     Tuple[Literal[404], Dict[str, str]],
-    Tuple[Literal[500], Dict[str, str]]
+    Tuple[Literal[500], Dict[str, str]],
 ]:
     """
     Save or update a report facility and its related activities.
@@ -158,7 +152,7 @@ def save_facility_report(
             facility_type=facility_report.facility_type,
             facility_bcghgid=facility_report.facility_bcghgid,
             activities=list(facility_report.activities.values_list('id', flat=True)),
-            products=list(facility_report.products.values_list('id', flat=True)) or []
+            products=list(facility_report.products.values_list('id', flat=True)) or [],
         )
         return 201, response_data
 

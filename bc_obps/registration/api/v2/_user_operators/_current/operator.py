@@ -16,6 +16,7 @@ from registration.api.router import router
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 # this endpoint retrieves data about both the user-operator and the operator
 
+
 ## GET
 @router.get(
     "/v2/user-operators/current/operator",
