@@ -705,6 +705,42 @@ describe("FacilityForm component", () => {
   );
 
   it(
+    "creates a new facility, edits it, and submits the updated facility",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          isCreating
+          schema={facilitiesSfoSchema}
+          uiSchema={facilitiesSfoUiSchema}
+          formData={{
+            name: "test facility name",
+            type: "Single Facility",
+          }}
+        />,
+      );
+
+      //fill fields
+      await fillMandatoryFields(facilitiesSfoSchema);
+      await checkMandatoryFieldValues(facilitiesSfoSchema);
+
+      // assert first invocation: POST
+      await assertFormPost(sfoResponsePost);
+
+      // edit the form
+      const editButton = screen.getByRole("button", { name: /edit/i });
+      act(() => {
+        editButton.click();
+      });
+      await editFormFields(facilitiesSfoSchema);
+
+      // assert first invocation: PUT
+      await assertFormPut();
+    },
+  );
+  it(
     "it edits a SFO Facility form, submits form, and displays success",
     {
       timeout: 20000,
@@ -737,7 +773,6 @@ describe("FacilityForm component", () => {
       // submit valid form data, assert response
       await assertFormPut();
     },
-    30000,
   );
   it(
     "it edits a LFO Facility form, submits form, and displays success",
@@ -771,7 +806,6 @@ describe("FacilityForm component", () => {
       // submit valid form data, assert response
       await assertFormPut();
     },
-    30000,
   );
   it("redirects to the operation's facilities grid on cancel", async () => {
     render(
