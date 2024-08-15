@@ -32,7 +32,7 @@ useSession.mockReturnValue({
 useSearchParams.mockReturnValue({
   searchParams: {
     operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-    operationsTitle: "Test Operation",
+    operations_title: "Test Operation",
     step: 3,
   },
   get: vi.fn(),

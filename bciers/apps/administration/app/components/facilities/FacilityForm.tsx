@@ -24,12 +24,12 @@ export default function FacilityForm({
   uiSchema,
   isCreating,
 }: Readonly<Props>) {
-  // @ ts-ignore
   const [error, setError] = useState(undefined);
+  const [formState, setFormState] = useState(formData ?? {});
+  const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
-  // 🛸 build the route url with breadcrumbs pattern
   const queryString = serializeSearchParams(searchParams);
 
   return (
@@ -37,44 +37,50 @@ export default function FacilityForm({
       error={error}
       schema={schema}
       uiSchema={uiSchema}
-      formData={formData}
-      mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
+      formData={formState}
+      mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
-        // Reset error state on form submission
-        setError(undefined);
-        const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating
-          ? "registration/facilities"
-          : `registration/facilities/${formData?.id}`;
-        const pathToRevalidate = isCreating
-          ? `/operations/${params.operationId}/facilities`
-          : `/operations/${params.operationId}/facilities/${formData?.id}`;
+        const updatedFormData = { ...formState, ...data.formData };
+        setFormState(updatedFormData);
 
+        const method = isCreatingState ? "POST" : "PUT";
+        const endpoint = isCreatingState
+          ? "registration/facilities"
+          : `registration/facilities/${formState.id}`;
+        const pathToRevalidate = isCreatingState
+          ? `/operations/${params.operationId}/facilities`
+          : `/operations/${params.operationId}/facilities/${formState.id}`;
         const body = {
           ...data.formData,
           operation_id: params.operationId,
         };
+
         const response = await actionHandler(
           endpoint,
           method,
           pathToRevalidate,
           {
-            body: JSON.stringify(isCreating ? [body] : body),
+            body: JSON.stringify(isCreatingState ? [body] : body),
           },
         );
-        console.log("response", response);
+
         if (response?.error) {
           setError(response.error);
-          // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
         }
-        if (isCreating) {
-          window.history.replaceState(
-            null,
-            "",
-            `/administration/operations/${params.operationId}/facilities/${response[0].id}?facilities_title=${response[0].name}`,
-          );
+
+        if (isCreatingState) {
+          setIsCreatingState(false);
+          setFormState((prevState) => ({
+            ...prevState,
+            id: response[0].id,
+          }));
         }
+
+        const facilityId = isCreatingState ? response[0].id : formState.id;
+        const facilityName = isCreatingState ? response[0].name : response.name;
+        const replaceUrl = `/administration/operations/${params.operationId}/facilities/${facilityId}${queryString}&facilities_title=${facilityName}`;
+        window.history.replaceState(null, "", replaceUrl);
       }}
       onCancel={() =>
         router.replace(

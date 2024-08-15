@@ -23,6 +23,6 @@ const mockUiSchema = {
 describe("RJSF BasicFieldTemplate", () => {
   it("should render a field", async () => {
     render(<FormBase schema={mockSchema} uiSchema={mockUiSchema} />);
-    expect(screen.getByLabelText("Test Field")).toBeVisible();
+    expect(screen.getAllByLabelText("Test Field")[1]).toBeVisible();
   });
 });

@@ -54,7 +54,7 @@ const FacilityInformationPage = async ({
   return (
     <FacilityInformationForm
       facilityId={facilityId}
-      isCreating={!isOperationSfo && !facilityId}
+      isCreating={!isOperationSfo || !facilityId}
       initialGridData={initialGridData}
       formData={formData}
       operation={operation}
