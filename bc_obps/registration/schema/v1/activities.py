@@ -4,7 +4,7 @@ from registration.models import Activity
 
 class ActivitySchema(ModelSchema):
     """
-    Schema for the ReportingActivity model
+    Schema for the ActivitySchema model
     """
 
     class Config:
