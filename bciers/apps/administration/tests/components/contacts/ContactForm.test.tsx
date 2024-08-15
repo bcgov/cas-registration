@@ -236,6 +236,114 @@ describe("ContactForm component", () => {
       );
     },
   );
+  it(
+    "creates a new contact, edits it, and submits the updated contact",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <ContactForm
+          schema={contactsSchema}
+          uiSchema={contactsUiSchema}
+          formData={{}}
+          isCreating
+        />,
+      );
+
+      let response = {
+        id: 123,
+        first_name: "John",
+        last_name: "Doe",
+        error: null,
+      };
+      actionHandler.mockReturnValueOnce(response);
+
+      // Switch off the user combobox(so it doesn't raise form error)
+      await userEvent.click(
+        screen.getByLabelText(/Is this contact a user in BCIERS/i),
+      );
+
+      // Personal Information
+      await userEvent.type(screen.getByLabelText(/First Name/i), "John");
+      await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
+      // Work Information
+      await userEvent.type(
+        screen.getByLabelText(/Job Title \/ Position/i),
+        "Senior Officer",
+      );
+      // Contact Information
+      await userEvent.type(
+        screen.getByLabelText(/Business Email Address/i),
+        "john.doe@example.com",
+      );
+      await userEvent.type(
+        screen.getByLabelText(/Business Telephone Number/i),
+        "+16044011234",
+      );
+
+      // Submit
+      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      // assert first invocation: POST
+      expect(actionHandler).toHaveBeenNthCalledWith(
+        1,
+        "registration/contacts",
+        "POST",
+        "/contacts",
+        {
+          body: JSON.stringify({
+            existing_bciers_user: false,
+            first_name: "John",
+            last_name: "Doe",
+            position_title: "Senior Officer",
+            email: "john.doe@example.com",
+            phone_number: "+1 1 604 401 1234",
+          }),
+        },
+      );
+
+      // switch to edit mode
+      await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+
+      // update Personal Information
+      const firstNameField = screen.getByLabelText(/First Name/i);
+      await userEvent.clear(firstNameField);
+      await userEvent.type(firstNameField, "John updated");
+      const lastNameField = screen.getByLabelText(/Last Name/i);
+      await userEvent.clear(lastNameField);
+      await userEvent.type(lastNameField, "Doe updated");
+
+      response = {
+        id: 123,
+        first_name: "John updated",
+        last_name: "Doe updated",
+        error: null,
+      };
+      actionHandler.mockReturnValueOnce(response);
+
+      // Submit
+      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      // assert second invocation: PUT
+      expect(actionHandler).toHaveBeenNthCalledWith(
+        2,
+        "registration/contacts/123",
+        "PUT",
+        "/contacts/123",
+        {
+          body: JSON.stringify({
+            existing_bciers_user: false,
+            first_name: "John updated",
+            last_name: "Doe updated",
+            position_title: "Senior Officer",
+            email: "john.doe@example.com",
+            phone_number: "+1 1 604 401 1234",
+          }),
+        },
+      );
+    },
+  );
   it("updates existing contact form data and hits the correct endpoint", async () => {
     const readOnlyContactSchema = createContactSchema([], false);
     render(
