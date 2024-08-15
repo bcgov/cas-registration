@@ -1,11 +1,15 @@
 from uuid import UUID
 from typing import List, Optional, Union
+from uuid import UUID
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation
 from service.data_access_service.facility_service import FacilityDataAccessService
 from registration.enums.enums import OperationTypes
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.registration_purpose import RegistrationPurpose
+from pydantic import field_validator
+from django.core.files.base import ContentFile
+from registration.utils import data_url_to_file
 
 #### Operation schemas
 
@@ -101,3 +105,12 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_producing_gger_schedule_a1_regulated_product: bool = Field(...)
     meets_reporting_and_regulated_obligations: bool = Field(...)
     meets_notification_to_director_on_criteria_change: bool = Field(...)
+    
+class OperationStatutoryDeclarationIn(Schema):
+    operation_id: UUID
+    statutory_declaration: str
+
+    @field_validator("statutory_declaration")
+    @classmethod
+    def validate_statutory_declaration(cls, value: str) -> ContentFile:
+        return data_url_to_file(value)

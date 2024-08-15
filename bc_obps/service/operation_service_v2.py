@@ -1,4 +1,16 @@
 from typing import Dict, List, Optional, Union
+from django.db.models import QuerySet
+from registration.constants import PAGE_SIZE
+from registration.models import Operation
+from ninja import Query
+from django.core.paginator import Paginator
+from django.db import transaction
+from django.db.models import Q
+from service.data_access_service.document_service import DocumentDataAccessService
+from service.document_service import DocumentService
+from service.data_access_service.operation_service import OperationDataAccessService
+from service.data_access_service.user_service import UserDataAccessService
+from typing import Dict, Union
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
@@ -7,18 +19,14 @@ from registration.models.registration_purpose import RegistrationPurpose
 from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
 from registration.schema.v2.operation import (
     OperationFilterSchema,
+    OperationUpdateOut,
     OptedInOperationDetailIn,
+    OperationStatutoryDeclarationIn,
     RegistrationPurposeIn,
 )
-from service.data_access_service.user_service import UserDataAccessService
-from service.data_access_service.operation_service import OperationDataAccessService
-from django.db.models import Q
-from django.db import transaction
-from django.core.paginator import Paginator
-from ninja import Query
-from registration.models import Operation
-from registration.constants import PAGE_SIZE
-from django.db.models import QuerySet
+from registration.utils import (
+    files_have_same_hash,
+)
 
 
 class OperationServiceV2:
@@ -126,3 +134,25 @@ class OperationServiceV2:
     def get_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Optional[OptedInOperationDetail]:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         return operation.opted_in_operation
+    
+    @classmethod
+    def create_or_replace_statutory_declaration(
+        cls, user_guid: UUID, payload: OperationStatutoryDeclarationIn
+    ) -> OperationUpdateOut:
+        operation_id = payload.operation_id
+        existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(operation_id)
+        operation = OperationDataAccessService.get_by_id(operation_id)
+        # if there is an existing statutory declaration document, check if the new one is different
+        if existing_statutory_document:
+            # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
+            if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
+                existing_statutory_document.delete()
+            else:
+                return OperationUpdateOut(name=operation.name)
+        # if there is no existing statutory declaration document, create a new one
+        document = DocumentDataAccessService.create_document(
+            user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
+        )
+        if document:
+            operation.documents.set([document])
+        return OperationUpdateOut(name=operation.name)

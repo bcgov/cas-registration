@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from service.operation_service import OperationService
+from service.operation_service_v2 import OperationServiceV2
 from registration.decorators import handle_http_errors
 from ..router import router
 from registration.schema.v1 import (
@@ -11,9 +12,8 @@ from registration.schema.v1 import (
     OperationCreateOut,
     OperationPaginatedOut,
     OperationFilterSchema,
-    OperationUpdateOut,
-    OperationStatutoryDeclarationIn,
 )
+from registration.schema.v2.operation import OperationStatutoryDeclarationIn, OperationUpdateOut
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx
 from ninja import Query
@@ -69,7 +69,7 @@ def create_or_replace_statutory_declarations(
 ) -> Tuple[Literal[201], OperationUpdateOut]:
     return (
         201,
-        OperationService.save_statutory_declaration(
+        OperationServiceV2.create_or_replace_statutory_declaration(
             user_guid=get_current_user_guid(request),
             payload=payload,
         ),
