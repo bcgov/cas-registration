@@ -10,7 +10,7 @@ import {
 } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-import Submission from "apps/registration/app/components/operations/registration/Submission";
+import Success from "apps/registration/app/components/operations/registration/Success";
 
 // Check if all checkboxes are checked
 const allChecked = (formData: RegistrationSubmissionFormData) => {
@@ -59,7 +59,7 @@ const RegistrationSubmissionForm = ({
   return (
     <>
       {isSubmitted ? (
-        <Submission operation={operation} />
+        <Success step={step} steps={steps} />
       ) : (
         <>
           <MultiStepBase
