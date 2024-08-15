@@ -13,4 +13,10 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='SourceType',
         ),
+        migrations.DeleteModel(
+            name='ReportOperation',
+        ),
+        migrations.DeleteModel(
+            name='ReportFacility',
+        ),
     ]

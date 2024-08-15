@@ -9,7 +9,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [('registration', '0030_slug_and_weight_on_activity_model'), ('reporting', '0004_V1_6_0')]
+    dependencies = [('registration', '0030_slug_and_weight_on_activity_model'), ('reporting', '0006_V1_9_0')]
 
     operations = [
         migrations.CreateModel(

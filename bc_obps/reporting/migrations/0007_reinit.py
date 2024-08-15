@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0031_activity_model'),
-        ('reporting', '0006_delete_report_operation'),
+        ('reporting', '0006_V1_9_0'),
     ]
 
     operations = [
@@ -379,18 +379,6 @@ class Migration(migrations.Migration):
                 'db_table': 'erc"."source_type',
                 'db_table_comment': 'Source types',
             },
-        ),
-        migrations.RemoveField(
-            model_name='reportfacility',
-            name='activities',
-        ),
-        migrations.RemoveField(
-            model_name='reportfacility',
-            name='products',
-        ),
-        migrations.RemoveField(
-            model_name='reportfacility',
-            name='report',
         ),
         migrations.AlterModelTableComment(
             name='report',
@@ -1217,8 +1205,5 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='reporting.sourcetype'
             ),
-        ),
-        migrations.DeleteModel(
-            name='ReportFacility',
         ),
     ]
