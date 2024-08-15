@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
 import { actionHandler, useSession } from "@bciers/testConfig/mocks";
@@ -32,6 +32,47 @@ const defaultProps = {
   schema: submissionSchema,
 };
 
+const checkAllCheckboxesAndSubmit = async () => {
+  expect(
+    screen.getByRole("button", {
+      name: /submit/i,
+    }),
+  ).toBeDisabled();
+
+  act(() => {
+    // click all checkboxes
+    screen.getAllByRole("checkbox").forEach((checkbox) => {
+      checkbox.click();
+    });
+  });
+
+  const submitButton = screen.getByRole("button", {
+    name: /submit/i,
+  });
+  expect(submitButton).not.toBeDisabled();
+  actionHandler.mockResolvedValueOnce({});
+  act(() => {
+    submitButton.click();
+  });
+
+  expect(actionHandler).toHaveBeenCalledTimes(1);
+};
+
+const verifySuccessPage = async () => {
+  await waitFor(() => {
+    expect(screen.getByText("Registration complete")).toBeVisible();
+  });
+
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "If yes, and you have not reported it yet, please report it in the Report a Change page. Otherwise, no further action is required and this registration is complete.",
+  );
+
+  expect(screen.getByRole("link", { name: "Report a change" })).toBeVisible();
+  expect(
+    screen.getByRole("link", { name: "Return to Dashboard" }),
+  ).toBeVisible();
+};
+
 describe("the RegistrationSubmissionForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,30 +95,12 @@ describe("the RegistrationSubmissionForm component", () => {
       }),
     ).toBeDisabled();
   });
-  it("should allow the user to mark all checkboxes and submit the form", () => {
+
+  it("should allow the user to mark all checkboxes and submit the form", async () => {
     render(<RegistrationSubmissionForm {...defaultProps} />);
 
-    expect(
-      screen.getByRole("button", {
-        name: /submit/i,
-      }),
-    ).toBeDisabled();
+    await checkAllCheckboxesAndSubmit();
 
-    act(() => {
-      // click all checkboxes
-      screen.getAllByRole("checkbox").forEach((checkbox) => {
-        checkbox.click();
-      });
-    });
-
-    const submitButton = screen.getByRole("button", {
-      name: /submit/i,
-    });
-    expect(submitButton).not.toBeDisabled();
-    actionHandler.mockResolvedValueOnce({});
-    act(() => {
-      submitButton.click();
-    });
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/v2/operations/${defaultProps.operation}/registration/submission`,
       "PATCH",
@@ -93,91 +116,61 @@ describe("the RegistrationSubmissionForm component", () => {
   });
 
   it("should render the Submission component when the form is submitted", async () => {
-    render(
-      <RegistrationSubmissionForm
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
-        schema={submissionSchema}
-        step={5}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
+    render(<RegistrationSubmissionForm {...defaultProps} />);
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
+    await checkAllCheckboxesAndSubmit();
 
-    await act(async () => {
-      submitButton.click();
-    });
-
-    expect(screen.getByText("Registration complete")).toBeVisible();
-    expect(
-      screen.getByText("This operation has been registered"),
-    ).toBeVisible();
-
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "If yes, and you have not reported it yet, please report it in the Report a Change page. Otherwise, no further action is required and this registration is complete.",
-    );
-
-    expect(screen.getByRole("link", { name: "Report a change" })).toBeVisible();
-    expect(
-      screen.getByRole("link", { name: "Return to Dashboard" }),
-    ).toBeVisible();
+    await verifySuccessPage();
   });
 
   it("should render the Submission message with the correct years (older date)", async () => {
-    render(
-      <RegistrationSubmissionForm
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
-        schema={submissionSchema}
-        step={5}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
-
     // Using old date to show this is working
     const date = new Date(2000, 8, 12);
-
-    vi.useFakeTimers();
     vi.setSystemTime(date);
 
-    expect(Date.now()).toBe(date.valueOf());
+    render(<RegistrationSubmissionForm {...defaultProps} />);
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
+    await checkAllCheckboxesAndSubmit();
 
-    await act(async () => {
-      submitButton.click();
-    });
+    await verifySuccessPage();
 
     const submissionDateMessage = screen.getByTestId("submission-date-message");
     expect(submissionDateMessage).toHaveTextContent(
       "Did your operation or facility have any of the following changes in 1999 or 2000?",
     );
-    vi.useRealTimers();
   });
 
   it("should render the message with the correct years (recent date)", async () => {
-    render(
-      <RegistrationSubmissionForm
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
-        schema={submissionSchema}
-        step={5}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
+    const newerDate = new Date(2024, 8, 12);
+    vi.setSystemTime(newerDate);
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
+    render(<RegistrationSubmissionForm {...defaultProps} />);
 
-    await act(async () => {
-      submitButton.click();
-    });
+    await checkAllCheckboxesAndSubmit();
+
+    await verifySuccessPage();
 
     const submissionDateMessage = screen.getByTestId("submission-date-message");
-    const newerDate = new Date(2024, 8, 12);
-    vi.useFakeTimers();
-    vi.setSystemTime(newerDate);
 
     expect(submissionDateMessage).toHaveTextContent(
       "Did your operation or facility have any of the following changes in 2023 or 2024?",
     );
-    vi.useRealTimers();
+  });
+
+  it("should render the Submission message with the correct years (future date)", async () => {
+    const futureDate = new Date(2035, 8, 12);
+    vi.setSystemTime(futureDate);
+
+    render(<RegistrationSubmissionForm {...defaultProps} />);
+
+    await checkAllCheckboxesAndSubmit();
+
+    await verifySuccessPage();
+
+    const submissionDateMessage = screen.getByTestId("submission-date-message");
+
+    expect(submissionDateMessage).toHaveTextContent(
+      "Did your operation or facility have any of the following changes in 2034 or 2035?",
+    );
   });
 });
