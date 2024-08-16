@@ -1,6 +1,5 @@
 from uuid import UUID
 from typing import List, Optional, Union
-from uuid import UUID
 from ninja import Field, FilterSchema, ModelSchema, Schema
 <<<<<<< HEAD
 from registration.models import Operation
@@ -166,7 +165,6 @@ class OperationOut(ModelSchema):
 
 
 class OperationStatutoryDeclarationIn(Schema):
-    operation_id: UUID
     statutory_declaration: str
 
     @field_validator("statutory_declaration")
