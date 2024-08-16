@@ -4,7 +4,7 @@ from registration.models import (
     BcObpsRegulatedOperation,
     Document,
     NaicsCode,
-    ReportingActivity,
+    Activity,
     RegulatedProduct,
     Operator,
     Operation,
@@ -46,13 +46,11 @@ class OperationModelTest(BaseTestCase):
             ]
         )
 
-        cls.test_object.reporting_activities.set(
+        cls.test_object.activities.set(
             [
-                ReportingActivity.objects.create(
-                    name="test", applicable_to=ReportingActivity.Applicability.ALL, slug="test", weight=100
-                ),
-                ReportingActivity.objects.create(
-                    name="test2", applicable_to=ReportingActivity.Applicability.LFO, slug="test2", weight=200
+                Activity.objects.create(name="test", applicable_to=Activity.Applicability.ALL, slug="test", weight=100),
+                Activity.objects.create(
+                    name="test2", applicable_to=Activity.Applicability.LFO, slug="test2", weight=200
                 ),
             ]
         )
@@ -69,7 +67,7 @@ class OperationModelTest(BaseTestCase):
             ("type", "type", 1000, None),
             ("naics_code", "naics code", None, None),
             ("regulated_products", "regulated products", None, 2),
-            ("reporting_activities", "reporting activities", None, 2),
+            ("activities", "activities", None, 2),
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
             ("opt_in", "opt in", None, None),

@@ -88,10 +88,10 @@ def handle_gas_types(
 
     # Fetch all relevant configuration elements with a single query
     fetched_configuration_elements = list(
-        ConfigurationElement.objects.select_related('reporting_activity', 'source_type', 'gas_type', 'methodology')
+        ConfigurationElement.objects.select_related('activity', 'source_type', 'gas_type', 'methodology')
         .prefetch_related(Prefetch("reporting_fields", to_attr="prefetched_reporting_fields"))
         .filter(
-            reporting_activity=activity_id,
+            activity=activity_id,
             source_type=source_type_id,
             gas_type__id__in=gas_type_ids,
             valid_from__lte=config_id,
@@ -178,7 +178,7 @@ def build_source_type_schema(
 ) -> Dict:
     try:
         source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
-            reporting_activity_id=activity_id,
+            activity_id=activity_id,
             source_type_id=source_type_id,
             valid_from__lte=config_id,
             valid_to__gte=config_id,
@@ -192,7 +192,7 @@ def build_source_type_schema(
     config_element_for_gas_types = (
         ConfigurationElement.objects.select_related('gas_type')
         .filter(
-            reporting_activity_id=activity_id,
+            activity_id=activity_id,
             source_type_id=source_type_id,
             valid_from__lte=config_id,
             valid_to__gte=config_id,
@@ -227,7 +227,7 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
     # Get activity schema
     try:
         activity_schema = ActivityJsonSchema.objects.only('json_schema').get(
-            reporting_activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
+            activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
         )
     except Exception:
         raise Exception(f'No schema found for activity_id {activity} & report_date {report_date}')
@@ -236,7 +236,7 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
     # Fetch valid config elements for the activity
     valid_config_elements = (
         ConfigurationElement.objects.select_related('source_type')
-        .filter(reporting_activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id)
+        .filter(activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id)
         .order_by('source_type__id')
         .distinct('source_type__id')
     )

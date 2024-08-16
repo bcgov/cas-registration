@@ -11,7 +11,7 @@ class Command(BaseCommand):
             "document_type",
             "naics_code",
             "regulated_product",
-            "reporting_activity",
+            "activity",
             "reporting_year",
             "user",  # This table has some seeded data (for e2e tests) that should not be truncated
         ]

@@ -5,7 +5,7 @@ import naics from "./scenarios/backend/naics.js";
 import operation from "./scenarios/backend/operation.js";
 import operator from "./scenarios/backend/operator.js";
 import regulated_products from "./scenarios/backend/regulated_products.js";
-import reporting_activities from "./scenarios/backend/reporting_activities.js";
+import activities from "./scenarios/backend/activities.js";
 import user from "./scenarios/backend/user.js";
 import user_operator from "./scenarios/backend/user_operator.js";
 
@@ -76,6 +76,6 @@ export default function () {
     business_structures();
     naics();
     regulated_products();
-    reporting_activities();
+    activities();
   }
 }

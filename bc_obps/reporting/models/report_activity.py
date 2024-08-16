@@ -1,5 +1,5 @@
 from django.db import models
-from registration.models.reporting_activity import ReportingActivity
+from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_data_base_model import ReportDataBaseModel
@@ -21,7 +21,7 @@ class ReportActivity(ReportDataBaseModel):
         db_comment="The activity base schema used to render the form that collected this data",
     )
     activity = models.ForeignKey(
-        ReportingActivity,
+        Activity,
         on_delete=models.PROTECT,
         related_name='%(class)s_records',
         db_comment="The reporting activity this data applies to",

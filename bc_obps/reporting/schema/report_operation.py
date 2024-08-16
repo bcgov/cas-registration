@@ -27,7 +27,7 @@ class ReportOperationOut(ModelSchema):
             'operation_type',
             'operation_bcghgid',
             'bc_obps_regulated_operation_id',
-            'reporting_activities',
+            'activities',
             'regulated_products',
             'operation_representative_name',
         ]
@@ -44,7 +44,7 @@ class ReportOperationIn(ModelSchema):
     operation_type: str
     operation_bcghgid: str
     bc_obps_regulated_operation_id: str
-    reporting_activities: List[str]
+    activities: List[str]
     regulated_products: List[str]
     operation_representative_name: str
 
@@ -58,7 +58,7 @@ class ReportOperationIn(ModelSchema):
             'operation_type',
             'operation_bcghgid',
             'bc_obps_regulated_operation_id',
-            'reporting_activities',
+            'activities',
             'regulated_products',
             'operation_representative_name',
         ]

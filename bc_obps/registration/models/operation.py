@@ -12,7 +12,7 @@ from registration.models import (
     Document,
     Contact,
     RegulatedProduct,
-    ReportingActivity,
+    Activity,
     BcObpsRegulatedOperation,
     DocumentType,
     UserOperator,
@@ -122,14 +122,14 @@ class Operation(TimeStampedModel):
         blank=True,
         related_name='%(class)ss',
     )
-    reporting_activities = models.ManyToManyField(
-        ReportingActivity,
+    activities = models.ManyToManyField(
+        Activity,
         blank=True,
         related_name='%(class)ss',
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
-        m2m_fields=[regulated_products, reporting_activities, documents],
+        m2m_fields=[regulated_products, activities, documents],
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 

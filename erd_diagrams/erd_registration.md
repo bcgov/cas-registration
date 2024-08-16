@@ -407,7 +407,7 @@ NaicsCode {
     CharField naics_code
     CharField naics_description
 }
-HistoricalReportingActivity {
+HistoricalActivity {
     BigIntegerField id
     CharField name
     CharField applicable_to
@@ -419,7 +419,7 @@ HistoricalReportingActivity {
     CharField history_change_reason
     CharField history_type
 }
-ReportingActivity {
+Activity {
     BigAutoField id
     CharField name
     CharField applicable_to
@@ -468,10 +468,10 @@ HistoricalOperation_regulated_products {
     ForeignKey history
     AutoField m2m_history_id
 }
-HistoricalOperation_reporting_activities {
+HistoricalOperation_activities {
     BigIntegerField id
     ForeignKey operation
-    ForeignKey reportingactivity
+    ForeignKey activity
     ForeignKey history
     AutoField m2m_history_id
 }
@@ -499,7 +499,7 @@ Operation {
     OneToOneField bc_obps_regulated_operation
     ManyToManyField documents
     ManyToManyField regulated_products
-    ManyToManyField reporting_activities
+    ManyToManyField activities
 }
 HistoricalWellAuthorizationNumber {
     DateTimeField created_at
@@ -835,9 +835,9 @@ HistoricalOperation_documents }|--|| HistoricalOperation : history
 HistoricalOperation_regulated_products }|--|| Operation : operation
 HistoricalOperation_regulated_products }|--|| RegulatedProduct : regulatedproduct
 HistoricalOperation_regulated_products }|--|| HistoricalOperation : history
-HistoricalOperation_reporting_activities }|--|| Operation : operation
-HistoricalOperation_reporting_activities }|--|| ReportingActivity : reportingactivity
-HistoricalOperation_reporting_activities }|--|| HistoricalOperation : history
+HistoricalOperation_activities }|--|| Operation : operation
+HistoricalOperation_activities }|--|| Activity : activity
+HistoricalOperation_activities }|--|| HistoricalOperation : history
 Operation }|--|| User : created_by
 Operation }|--|| User : updated_by
 Operation }|--|| User : archived_by
@@ -848,7 +848,7 @@ Operation }|--|| Contact : point_of_contact
 Operation ||--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
 Operation }|--|{ Document : documents
 Operation }|--|{ RegulatedProduct : regulated_products
-Operation }|--|{ ReportingActivity : reporting_activities
+Operation }|--|{ Activity : activities
 HistoricalWellAuthorizationNumber }|--|| User : created_by
 HistoricalWellAuthorizationNumber }|--|| User : updated_by
 HistoricalWellAuthorizationNumber }|--|| User : archived_by

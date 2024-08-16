@@ -16,7 +16,7 @@ from .operator import Operator
 from .user_operator import UserOperator
 from .regulated_product import RegulatedProduct
 from .naics_code import NaicsCode
-from .reporting_activity import ReportingActivity
+from .activity import Activity
 from .operation import Operation
 from .facility import Facility
 from .event import Event
@@ -46,7 +46,7 @@ __all__ = [
     "ParentOperator",
     "PartnerOperator",
     "RegulatedProduct",
-    "ReportingActivity",
+    "Activity",
     "TimeStampedModel",
     "UserAndContactCommonInfo",
     "UserOperator",

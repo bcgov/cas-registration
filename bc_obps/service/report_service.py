@@ -3,12 +3,13 @@ from django.db import transaction
 from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from registration.models import ReportingActivity, RegulatedProduct
+from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
+from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.schema.facility_report import FacilityReport, FacilityReportIn
+from reporting.schema.facility_report import FacilityReportIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
@@ -27,7 +28,7 @@ class ReportService:
 
         operation = (
             Operation.objects.select_related('operator')
-            .prefetch_related('reporting_activities', 'regulated_products')
+            .prefetch_related('activities', 'regulated_products')
             .get(id=operation_id)
         )
 
@@ -62,7 +63,7 @@ class ReportService:
             ),
             report_version=report_version,
         )
-        report_operation.reporting_activities.add(*list(operation.reporting_activities.all()))
+        report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
         for f in facilities:
@@ -73,7 +74,7 @@ class ReportService:
                 facility_bcghgid=f.bcghg_id,
                 report_version=report_version,
             )
-            facility_report.activities.add(*list(operation.reporting_activities.all()))
+            facility_report.activities.add(*list(operation.activities.all()))
             facility_report.products.add(*list(operation.regulated_products.all()))
 
         return report
@@ -96,11 +97,11 @@ class ReportService:
         report_operation.operation_representative_name = data.operation_representative_name
 
         # Fetch and set ManyToMany fields
-        reporting_activities = ReportingActivity.objects.filter(name__in=data.reporting_activities)
+        activities = Activity.objects.filter(name__in=data.activities)
         regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
 
         # Set ManyToMany relationships
-        report_operation.reporting_activities.set(reporting_activities)
+        report_operation.activities.set(activities)
         report_operation.regulated_products.set(regulated_products)
 
         # Save the updated report operation
@@ -149,7 +150,7 @@ class ReportService:
 
             # Update ManyToMany fields (activities)
             if data.activities:
-                activities = ReportingActivity.objects.filter(id__in=data.activities)
+                activities = Activity.objects.filter(id__in=data.activities)
                 report_facility.activities.set(activities)
 
             # Save the updated ReportFacility instance

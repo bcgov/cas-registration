@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from model_bakery import baker
 from registration.models.regulated_product import RegulatedProduct
-from registration.models.reporting_activity import ReportingActivity
+from registration.models.activity import Activity
 from registration.tests.utils.bakers import (
     bc_obps_regulated_operation_baker,
     operation_baker,
@@ -69,9 +69,9 @@ class TestReportService(TestCase):
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
 
             operation = operation_baker(type="lfo", bc_obps_regulated_operation=bc_obps_regulated_operation_baker())
-            operation.reporting_activities.add(
-                ReportingActivity.objects.get(name='Magnesium production'),
-                ReportingActivity.objects.get(name='Hydrogen production'),
+            operation.activities.add(
+                Activity.objects.get(name='Magnesium production'),
+                Activity.objects.get(name='Hydrogen production'),
             )
             operation.regulated_products.add(
                 RegulatedProduct.objects.get(name='Cement equivalent'),
@@ -105,7 +105,7 @@ class TestReportService(TestCase):
                     report_version.report_operation.operation_bcghgid,
                     report_version.report_operation.bc_obps_regulated_operation_id,
                     report_version.report_operation.operation_representative_name,
-                    report_version.report_operation.reporting_activities.count(),
+                    report_version.report_operation.activities.count(),
                 ),
                 (
                     operation.operator.legal_name,

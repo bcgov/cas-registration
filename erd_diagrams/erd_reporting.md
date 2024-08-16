@@ -54,7 +54,7 @@ ReportOperation {
     CharField operation_bcghgid
     CharField bc_obps_regulated_operation_id
     CharField operation_representative_name
-    ManyToManyField reporting_activities
+    ManyToManyField activities
     ManyToManyField regulated_products
 }
 FacilityReport {
@@ -101,7 +101,7 @@ Configuration {
 }
 ConfigurationElement {
     BigAutoField id
-    ForeignKey reporting_activity
+    ForeignKey activity
     ForeignKey source_type
     ForeignKey gas_type
     ForeignKey methodology
@@ -111,14 +111,14 @@ ConfigurationElement {
 }
 ActivityJsonSchema {
     BigAutoField id
-    ForeignKey reporting_activity
+    ForeignKey activity
     JSONField json_schema
     ForeignKey valid_from
     ForeignKey valid_to
 }
 ActivitySourceTypeJsonSchema {
     BigAutoField id
-    ForeignKey reporting_activity
+    ForeignKey activity
     ForeignKey source_type
     JSONField json_schema
     BooleanField has_unit
@@ -220,26 +220,26 @@ ReportOperation }|--|| User : created_by
 ReportOperation }|--|| User : updated_by
 ReportOperation }|--|| User : archived_by
 ReportOperation ||--|| ReportVersion : report_version
-ReportOperation }|--|{ ReportingActivity : reporting_activities
+ReportOperation }|--|{ Activity : activities
 ReportOperation }|--|{ RegulatedProduct : regulated_products
 FacilityReport }|--|| User : created_by
 FacilityReport }|--|| User : updated_by
 FacilityReport }|--|| User : archived_by
 FacilityReport }|--|| Facility : facility
 FacilityReport }|--|| ReportVersion : report_version
-FacilityReport }|--|{ ReportingActivity : activities
+FacilityReport }|--|{ Activity : activities
 FacilityReport }|--|{ RegulatedProduct : products
-ConfigurationElement }|--|| ReportingActivity : reporting_activity
+ConfigurationElement }|--|| Activity : activity
 ConfigurationElement }|--|| SourceType : source_type
 ConfigurationElement }|--|| GasType : gas_type
 ConfigurationElement }|--|| Methodology : methodology
 ConfigurationElement }|--|| Configuration : valid_from
 ConfigurationElement }|--|| Configuration : valid_to
 ConfigurationElement }|--|{ ReportingField : reporting_fields
-ActivityJsonSchema }|--|| ReportingActivity : reporting_activity
+ActivityJsonSchema }|--|| Activity : activity
 ActivityJsonSchema }|--|| Configuration : valid_from
 ActivityJsonSchema }|--|| Configuration : valid_to
-ActivitySourceTypeJsonSchema }|--|| ReportingActivity : reporting_activity
+ActivitySourceTypeJsonSchema }|--|| Activity : activity
 ActivitySourceTypeJsonSchema }|--|| SourceType : source_type
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_from
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_to
@@ -249,7 +249,7 @@ ReportActivity }|--|| User : archived_by
 ReportActivity }|--|| ReportVersion : report_version
 ReportActivity }|--|| FacilityReport : facility_report
 ReportActivity }|--|| ActivityJsonSchema : activity_base_schema
-ReportActivity }|--|| ReportingActivity : activity
+ReportActivity }|--|| Activity : activity
 ReportSourceType }|--|| User : created_by
 ReportSourceType }|--|| User : updated_by
 ReportSourceType }|--|| User : archived_by

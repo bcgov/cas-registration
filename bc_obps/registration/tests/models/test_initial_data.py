@@ -4,7 +4,7 @@ from registration.models import (
     BusinessStructure,
     DocumentType,
     NaicsCode,
-    ReportingActivity,
+    Activity,
     RegulatedProduct,
     AppRole,
 )
@@ -150,7 +150,7 @@ class TestInitialData(TestCase):
         self.assertEqual(len(existing_products), len(expected_products))
         self.assertEqual(existing_products, expected_products)
 
-    def test_reporting_activity_initial_data(self):
+    def test_activity_initial_data(self):
         expected_activities = sorted(
             [
                 ('General stationary combustion excluding line tracing', 'all'),
@@ -190,6 +190,6 @@ class TestInitialData(TestCase):
                 ('LNG activities', 'lfo'),
             ]
         )
-        existing_activities = sorted(list(ReportingActivity.objects.values_list('name', 'applicable_to')))
+        existing_activities = sorted(list(Activity.objects.values_list('name', 'applicable_to')))
         self.assertEqual(len(existing_activities), len(expected_activities))
         self.assertEqual(existing_activities, expected_activities)
