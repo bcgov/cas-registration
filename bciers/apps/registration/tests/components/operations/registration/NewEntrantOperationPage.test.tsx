@@ -18,9 +18,8 @@ describe("the NewEntrantOperationPage component", () => {
   it("should render the NewEntrantOperationPage component", async () => {
     render(
       await NewEntrantOperationPage({
-        formData: {},
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 2,
+        step: 3,
         steps: allOperationRegistrationSteps,
       }),
     );

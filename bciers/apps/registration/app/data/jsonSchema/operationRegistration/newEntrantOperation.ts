@@ -81,11 +81,17 @@ export const newEntrantOperationUiSchema: UiSchema = {
   },
   on_or_before_march_31_section: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": GenerateNewEntrantFormMessage("March 31, 2024", "tbd"),
+    "ui:title": GenerateNewEntrantFormMessage(
+      "on or before March 31, 2024",
+      "url-1-tbd",
+    ),
   },
   on_or_after_april_1_section: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": GenerateNewEntrantFormMessage("April 1, 2024", "tbd"),
+    "ui:title": GenerateNewEntrantFormMessage(
+      "on or after April 1, 2024",
+      "url-2-tbd",
+    ),
   },
   statutory_declaration: {
     "ui:widget": "FileWidget",

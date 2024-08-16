@@ -1,7 +1,7 @@
 import { ggerrLink } from "@bciers/utils/urls";
 
 const GenerateNewEntrantFormMessage = (
-  date: string,
+  dateMessage: string,
   applicationUrl: string,
 ) => {
   return (
@@ -16,7 +16,8 @@ const GenerateNewEntrantFormMessage = (
       <p>
         Please download and complete the following application form template to
         receive designation as a New Entrant in the B.C. OBPS. This application
-        form is for operations with a date of First Shipment <b>{date}</b>.
+        form is for operations with a date of First Shipment{" "}
+        <b>{dateMessage}</b>.
       </p>
       <p>
         Download <a href={applicationUrl}>application form template</a>
