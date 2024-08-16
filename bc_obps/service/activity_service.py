@@ -1,7 +1,7 @@
 import json
 from reporting.models import Configuration, ConfigurationElement
-from registration.models import ReportingActivity
 from typing import List, Dict, Any
+from registration.models import Activity
 
 
 class ActivityService:
@@ -13,11 +13,11 @@ class ActivityService:
             raise Exception('Cannot fetch activity data without activity name')
         # Get
         source_type_map: dict[int, str] = {}
-        activity_id = ReportingActivity.objects.get(name=activity_name).id
+        activity_id = Activity.objects.get(name=activity_name).id
         config = Configuration.objects.get(valid_from__lte=report_date, valid_to__gte=report_date)
         source_type_data = (
             ConfigurationElement.objects.select_related('source_type')
-            .filter(reporting_activity_id=activity_id, valid_from__lte=config, valid_to__gte=config)
+            .filter(activity_id=activity_id, valid_from__lte=config, valid_to__gte=config)
             .order_by('source_type__id')
             .distinct('source_type__id')
             .only('source_type__id', 'source_type__json_key')
@@ -28,5 +28,5 @@ class ActivityService:
 
     @classmethod
     def get_all_activities(cls) -> List[Dict[str, Any]]:
-        activities = ReportingActivity.objects.all().values("id", "name", "applicable_to")
+        activities = Activity.objects.all().values("id", "name", "applicable_to")
         return [dict(activity) for activity in activities]

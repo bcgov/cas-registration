@@ -15,7 +15,7 @@ from registration.models import (
     Operation,
     ParentOperator,
     AppRole,
-    ReportingActivity,
+    Activity,
     MultipleOperator,
     BcObpsRegulatedOperation,
 )
@@ -29,7 +29,7 @@ admin.site.register(Operator)
 admin.site.register(UserOperator)
 admin.site.register(ParentOperator)
 admin.site.register(RegulatedProduct)
-admin.site.register(ReportingActivity)
+admin.site.register(Activity)
 admin.site.register(MultipleOperator)
 admin.site.register(Address)
 admin.site.register(BcObpsRegulatedOperation)

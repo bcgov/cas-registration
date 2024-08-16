@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import ReportingActivity
+from registration.models import Activity
 from reporting.models import ActivitySourceTypeJsonSchema, SourceType
 from reporting.tests.utils.bakers import configuration_baker
 import pytest
@@ -10,7 +10,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
     def setUpTestData(cls):
         config = configuration_baker({'slug': '5025', 'valid_from': '5025-01-01', 'valid_to': '5025-12-31'})
         cls.test_object = ActivitySourceTypeJsonSchema.objects.create(
-            reporting_activity=ReportingActivity.objects.get(pk=1),
+            activity=Activity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
             json_schema='{}',
             has_unit=True,
@@ -20,7 +20,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
         )
         cls.field_data = [
             ("id", "ID", None, None),
-            ("reporting_activity", "reporting activity", None, None),
+            ("activity", "activity", None, None),
             ("source_type", "source type", None, None),
             ("json_schema", "json schema", None, None),
             ("has_unit", "has unit", None, None),
@@ -33,7 +33,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
     # Throws when a matching activity, source_type, json_schema has an overlapping date range
     def testDuplicateJsonSchemaForDateRange(self):
         invalid_record = ActivitySourceTypeJsonSchema(
-            reporting_activity=self.test_object.reporting_activity,
+            activity=self.test_object.activity,
             source_type=self.test_object.source_type,
             json_schema='{}',
             has_unit=True,
@@ -49,7 +49,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
     def testValidInsert(self):
         config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})
         valid_record = ActivitySourceTypeJsonSchema(
-            reporting_activity=self.test_object.reporting_activity,
+            activity=self.test_object.activity,
             source_type=self.test_object.source_type,
             json_schema='{}',
             has_unit=True,

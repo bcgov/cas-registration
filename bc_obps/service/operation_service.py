@@ -264,7 +264,7 @@ class OperationService:
         operation: Operation = OperationDataAccessService.create_operation(user_guid, payload_dict, payload.regulated_products)  # type: ignore[attr-defined]
 
         # Not needed for MVP
-        # operation.reporting_activities.set(payload.reporting_activities)
+        # operation.activities.set(payload.activities)
         # if payload.operation_has_multiple_operators:
         #     create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
 

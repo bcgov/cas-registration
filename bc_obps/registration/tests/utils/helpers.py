@@ -9,7 +9,7 @@ from registration.models import (
     NaicsCode,
     Operator,
     RegulatedProduct,
-    ReportingActivity,
+    Activity,
     User,
     UserOperator,
     WellAuthorizationNumber,
@@ -196,14 +196,14 @@ class TestUtils:
 
     @staticmethod
     def mock_OperationCreateIn(operator: Operator = None):
-        reporting_activities = baker.make(ReportingActivity, _quantity=2)
+        activities = baker.make(Activity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         point_of_contact = baker.make(Contact)
         return OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code=1,
-            reporting_activities=reporting_activities,
+            activities=activities,
             regulated_products=regulated_products,
             point_of_contact=point_of_contact.id,
             is_external_point_of_contact=False,

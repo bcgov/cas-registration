@@ -237,7 +237,7 @@ def init_source_type_data(apps, schema_monitor):
 
 def reverse_init_source_type_data(apps, schema_monitor):
     '''
-    Remove initial data from erc.reportingactivity
+    Remove initial data from erc.source_type
     '''
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.filter(
@@ -640,7 +640,7 @@ def reverse_init_reporting_years(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0006_reinit'),
+        ('reporting', '0007_reinit'),
     ]
 
     operations = [
