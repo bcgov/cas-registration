@@ -57,7 +57,7 @@ def create_operation(request: HttpRequest, payload: OperationCreateIn) -> Tuple[
 
 
 @router.put(
-    "/statutory-declarations",
+    "/operations/statutory-declarations",
     response={201: OperationUpdateOut, codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Creates or replaces a statutory declaration document for an Operation",
