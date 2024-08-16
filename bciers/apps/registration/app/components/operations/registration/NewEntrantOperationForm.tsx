@@ -24,9 +24,8 @@ const NewEntrantOperationForm = ({
   const [error, setError] = useState(undefined);
   const handleSubmit = async (e: IChangeEvent) => {
     const method = "PUT";
-    const endpoint = "registration/operations/statutory-declarations";
+    const endpoint = `registration/v2/operations/${operation}/registration/statutory-declaration`;
     const body = {
-      operation_id: operation,
       statutory_declaration: e.formData.statutory_declaration,
     };
     const response = await actionHandler(endpoint, method, "", {

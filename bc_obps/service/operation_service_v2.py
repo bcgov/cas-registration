@@ -137,9 +137,8 @@ class OperationServiceV2:
     
     @classmethod
     def create_or_replace_statutory_declaration(
-        cls, user_guid: UUID, payload: OperationStatutoryDeclarationIn
+        cls, user_guid: UUID, operation_id: UUID, payload: OperationStatutoryDeclarationIn
     ) -> OperationUpdateOut:
-        operation_id = payload.operation_id
         existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(operation_id)
         operation = OperationDataAccessService.get_by_id(operation_id)
         # if there is an existing statutory declaration document, check if the new one is different

@@ -10,7 +10,6 @@ from registration.api.router import router
 from registration.models import Operation
 from registration.schema.v2.operation import (
     OperationOut,
-    OperationStatutoryDeclarationOut,
 )
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx
@@ -30,17 +29,4 @@ from ninja.responses import codes_4xx
 )
 @handle_http_errors()
 def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
-
-
-@router.get(
-    "/v2/operations/statutory-declarations/{operation_id}",
-    response={200: OperationStatutoryDeclarationOut, codes_4xx: Message},
-    tags=OPERATION_TAGS,
-    description="""Retrieves the statutory declaration document of a specific operation by its ID. The endpoint checks if the current user is authorized to access the operation.
-    Industry users can only access operations they are permitted to view. If an unauthorized user attempts to access the operation, an error is raised.""",
-    auth=authorize("approved_authorized_roles"),
-)
-@handle_http_errors()
-def get_operation_statutory_declaration(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
