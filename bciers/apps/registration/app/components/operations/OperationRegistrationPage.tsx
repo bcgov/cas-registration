@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import {
   FacilityInformationPage,
@@ -9,7 +8,7 @@ import {
   OptedInOperationPage,
 } from "@/registration/app/components/operations/registration";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
-import { getOperation } from "@bciers/actions/api";
+import { getOperationV2 } from "@bciers/actions/api";
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
 const OperationRegistrationPage = async ({
@@ -36,7 +35,7 @@ const OperationRegistrationPage = async ({
   let operationData;
 
   if (operation && isValidUUID(operation)) {
-    operationData = await getOperation(operation);
+    operationData = await getOperationV2(operation);
   }
 
   const stepIndex = step - 1;
@@ -63,7 +62,6 @@ const OperationRegistrationPage = async ({
     case "New Entrant Application":
       return NewEntrantOperationPage({
         ...defaultProps,
-        formData: operationData,
       });
     // to add opt in page
     case "Operation Representative":

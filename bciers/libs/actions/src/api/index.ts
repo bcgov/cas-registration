@@ -1,8 +1,10 @@
 export { default as getBusinessStructures } from "./getBusinessStructures";
+export { default as getCurrentUsersOperations } from "./getCurrentUsersOperations";
 export { default as getNaicsCodes } from "./getNaicsCodes";
 export { default as getOperation } from "./getOperation";
+export { default as getOperationV2 } from "./getOperationV2";
+export { default as getOperationStatutoryDeclaration } from "./getOperationStatutoryDeclaration";
 export { default as getRegulatedProducts } from "./getRegulatedProducts";
 export { default as getReportingActivities } from "./getReportingActivities";
-export { default as getCurrentUsersOperations } from "./getCurrentUsersOperations";
 export { default as getRegistrationPurposes } from "./getRegistrationPurposes";
 export { default as getOptedInOperationDetail } from "./getOptedInOperationDetail";
