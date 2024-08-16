@@ -9,7 +9,6 @@ const NewEntrantOperationPage = async ({
   step,
   steps,
 }: {
-  formData: { [key: string]: any };
   operation: UUID;
   step: number;
   steps: string[];

@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import {
   FacilityInformationPage,
