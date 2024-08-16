@@ -226,6 +226,7 @@ const FileWidget = ({
         id={id}
         name={id}
         ref={hiddenFileInput}
+        data-testid={id}
         onChange={handleChange}
         style={{ display: "none" }}
         type="file"
