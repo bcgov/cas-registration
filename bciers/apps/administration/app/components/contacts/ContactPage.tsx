@@ -1,6 +1,9 @@
 import getContact from "./getContact";
 import ContactForm from "./ContactForm";
-import { contactsUiSchema } from "../../data/jsonSchema/contact";
+import {
+  contactsSchema,
+  contactsUiSchema,
+} from "../../data/jsonSchema/contact";
 import { ContactFormData, UserOperatorUser } from "./types";
 import getUserOperatorUsers from "./getUserOperatorUsers";
 import { createContactSchema } from "./createContactSchema";
@@ -59,7 +62,11 @@ export default async function ContactPage({
         {isCreating ? "Add Contact" : "Contact Details"}
       </h2>
       <ContactForm
-        schema={createContactSchema(userOperatorUsers, isCreating)}
+        schema={createContactSchema(
+          contactsSchema,
+          userOperatorUsers,
+          isCreating,
+        )}
         uiSchema={contactsUiSchema}
         formData={contactFormData}
         isCreating={isCreating}

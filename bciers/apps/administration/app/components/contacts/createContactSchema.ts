@@ -1,13 +1,14 @@
-import { contactsSchema } from "./../../data/jsonSchema/contact";
+import { RJSFSchema } from "@rjsf/utils";
 import { UserOperatorUser } from "./types";
 import safeJsonParse from "libs/utils/safeJsonParse";
 
 // 🛠️ Function to create a contact schema with updated enum values
 export const createContactSchema = (
+  schema: RJSFSchema,
   userOperatorUsers: UserOperatorUser[],
   isCreating?: boolean,
 ) => {
-  const localSchema = safeJsonParse(JSON.stringify(contactsSchema)); // deep copy
+  const localSchema = safeJsonParse(JSON.stringify(schema)); // deep copy
 
   // For now, we show the `existing_bciers_user` toggle and `selected_user` combobox only when creating a new contact
   if (isCreating) {
