@@ -178,6 +178,12 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
             'utils.operation',
         )
         roles = ["cas_pending", "cas_analyst", "cas_admin", "industry_user"]
+class TestOperationStatutoryDeclarationEndpoint(CommonTestSetup):
+    def test_register_operation_statutory_declaration_endpoint_unauthorized_roles_cannot_get(self):
+        operation = baker.make_recipe(
+            'utils.operation',
+        )
+        roles = ["cas_pending", "industry_user"]
         for role in roles:
             response = TestUtils.mock_get_with_auth_role(
                 self,
@@ -342,3 +348,40 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
             ),
         )
         assert response.status_code == 422
+
+    def test_register_operation_statutory_declaration_endpoint_users_can_only_get_their_operations(self):
+        operation = baker.make_recipe(
+            'utils.operation',
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("get_operation_statutory_declaration", kwargs={'operation_id': operation.id}),
+        )
+        assert response.status_code == 401
+
+    def test_register_operation_statutory_declaration_endpoint_malformed_id(self):
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("get_operation_statutory_declaration", kwargs={'operation_id': "bad_id"}),
+        )
+
+        # Assert
+        assert response.status_code == 401
+
+    def test_register_operation_statutory_declaration_endpoint_success(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("get_operation_statutory_declaration", kwargs={'operation_id': operation.id}),
+        )
+        response_json = response.json()
+
+        # Assert
+        assert response.status_code == 200
+        # Additional Assertions
+        assert response_json['id'] == str(operation.id)
