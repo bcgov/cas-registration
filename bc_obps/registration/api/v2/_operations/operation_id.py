@@ -28,5 +28,5 @@ from ninja.responses import codes_4xx
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
+def get_operation_v2(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
