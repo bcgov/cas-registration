@@ -27,6 +27,76 @@ const contactFormData = {
   postal_code: "A1B 2C3",
 };
 
+export const checkEmptyContactForm = () => {
+  expect(
+    screen.getByRole("heading", { name: /Personal Information/i }),
+  ).toBeVisible();
+  expect(
+    screen.getByLabelText(/Is this contact a user in BCIERS/i),
+  ).toBeChecked();
+  expect(screen.getByLabelText(/Select the user/i)).toHaveValue("");
+  expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
+
+  expect(
+    screen.getByRole("heading", { name: /Work Information/i }),
+  ).toBeVisible();
+  expect(screen.getByLabelText(/Job Title \/ Position/i)).toHaveValue("");
+
+  expect(
+    screen.getByRole("heading", { name: /Contact Information/i }),
+  ).toBeVisible();
+  expect(screen.getByLabelText(/Business Email Address/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Business Telephone Number/i)).toHaveValue("");
+
+  expect(
+    screen.getByRole("heading", { name: /Address Information/i }),
+  ).toBeVisible();
+  expect(screen.getByLabelText(/Business Mailing Address/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Municipality/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Province/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Postal Code/i)).toHaveValue("");
+};
+export const fillContactForm = async () => {
+  // Switch off the user combobox(so it doesn't raise form error)
+  await userEvent.click(
+    screen.getByLabelText(/Is this contact a user in BCIERS/i),
+  );
+
+  // Personal Information
+  await userEvent.type(screen.getByLabelText(/First Name/i), "John");
+  await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
+  // Work Information
+  await userEvent.type(
+    screen.getByLabelText(/Job Title \/ Position/i),
+    "Senior Officer",
+  );
+  // Contact Information
+  await userEvent.type(
+    screen.getByLabelText(/Business Email Address/i),
+    "john.doe@example.com",
+  );
+  await userEvent.type(
+    screen.getByLabelText(/Business Telephone Number/i),
+    "+16044011234",
+  );
+  // Address Information
+  await userEvent.type(
+    screen.getByLabelText(/Business Mailing Address/i),
+    "123 Main St",
+  );
+  await userEvent.type(screen.getByLabelText(/Municipality/i), "Cityville");
+  // province
+  const provinceComboBoxInput = screen.getByRole("combobox", {
+    name: /province/i,
+  });
+  const openProvinceDropdownButton = provinceComboBoxInput.parentElement
+    ?.children[1]?.children[0] as HTMLInputElement;
+  await userEvent.click(openProvinceDropdownButton);
+  await userEvent.click(screen.getByText(/alberta/i));
+  await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
+};
+
 describe("ContactForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -42,34 +112,7 @@ describe("ContactForm component", () => {
       />,
     );
     // form fields and headings
-    expect(
-      screen.getByRole("heading", { name: /Personal Information/i }),
-    ).toBeVisible();
-    expect(
-      screen.getByLabelText(/Is this contact a user in BCIERS/i),
-    ).toBeChecked();
-    expect(screen.getByLabelText(/Select the user/i)).toHaveValue("");
-    expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
-
-    expect(
-      screen.getByRole("heading", { name: /Work Information/i }),
-    ).toBeVisible();
-    expect(screen.getByLabelText(/Job Title \/ Position/i)).toHaveValue("");
-
-    expect(
-      screen.getByRole("heading", { name: /Contact Information/i }),
-    ).toBeVisible();
-    expect(screen.getByLabelText(/Business Email Address/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Business Telephone Number/i)).toHaveValue("");
-
-    expect(
-      screen.getByRole("heading", { name: /Address Information/i }),
-    ).toBeVisible();
-    expect(screen.getByLabelText(/Business Mailing Address/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Municipality/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Province/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Postal Code/i)).toHaveValue("");
+    checkEmptyContactForm();
 
     // Inline message
     expect(
@@ -83,7 +126,11 @@ describe("ContactForm component", () => {
     expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
   });
   it("loads existing readonly contact form data", async () => {
-    const readOnlyContactSchema = createContactSchema([], false);
+    const readOnlyContactSchema = createContactSchema(
+      contactsSchema,
+      [],
+      false,
+    );
     const { container } = render(
       <ContactForm
         schema={readOnlyContactSchema}
@@ -174,43 +221,7 @@ describe("ContactForm component", () => {
       };
       actionHandler.mockReturnValueOnce(response);
 
-      // Switch off the user combobox(so it doesn't raise form error)
-      await userEvent.click(
-        screen.getByLabelText(/Is this contact a user in BCIERS/i),
-      );
-
-      // Personal Information
-      await userEvent.type(screen.getByLabelText(/First Name/i), "John");
-      await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
-      // Work Information
-      await userEvent.type(
-        screen.getByLabelText(/Job Title \/ Position/i),
-        "Senior Officer",
-      );
-      // Contact Information
-      await userEvent.type(
-        screen.getByLabelText(/Business Email Address/i),
-        "john.doe@example.com",
-      );
-      await userEvent.type(
-        screen.getByLabelText(/Business Telephone Number/i),
-        "+16044011234",
-      );
-      // Address Information
-      await userEvent.type(
-        screen.getByLabelText(/Business Mailing Address/i),
-        "123 Main St",
-      );
-      await userEvent.type(screen.getByLabelText(/Municipality/i), "Cityville");
-      // province
-      const provinceComboBoxInput = screen.getByRole("combobox", {
-        name: /province/i,
-      });
-      const openProvinceDropdownButton = provinceComboBoxInput.parentElement
-        ?.children[1]?.children[0] as HTMLInputElement;
-      await userEvent.click(openProvinceDropdownButton);
-      await userEvent.click(screen.getByText(/alberta/i));
-      await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
+      await fillContactForm();
       // Submit
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
@@ -345,7 +356,11 @@ describe("ContactForm component", () => {
     },
   );
   it("updates existing contact form data and hits the correct endpoint", async () => {
-    const readOnlyContactSchema = createContactSchema([], false);
+    const readOnlyContactSchema = createContactSchema(
+      contactsSchema,
+      [],
+      false,
+    );
     render(
       <ContactForm
         schema={readOnlyContactSchema}
