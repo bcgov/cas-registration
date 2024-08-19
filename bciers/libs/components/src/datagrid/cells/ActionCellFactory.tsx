@@ -20,7 +20,7 @@ const ActionCellFactory = ({
     };
     return (
       <Link
-        className="no-underline text-bc-link-blue whitespace-normal"
+        className="action-cell-text"
         onClick={useWindowLocation ? handleClick : undefined}
         href={href}
       >
