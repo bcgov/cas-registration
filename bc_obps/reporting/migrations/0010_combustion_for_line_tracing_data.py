@@ -796,7 +796,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units__isnull=True)
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units='kg/fuel units')
     )
     # CO2 - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(
@@ -1369,7 +1369,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units__isnull=True)
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units='kg/fuel units')
     )
     # CO2 - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(
