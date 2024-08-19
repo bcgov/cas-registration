@@ -6,10 +6,17 @@ const OperationFacilitiesActionCell = () => {
   const renderCell = (params: GridRenderCellParams) => {
     const operationType = params.row.type;
     const isSfo = operationType === OperationTypes.SFO;
-    const sfoFacilityId = params.row.sfo_facility_id ?? "add-facility";
-    const actionText = isSfo ? "View Facility" : "View Facilities";
+    const sfoFacilityId = params.row.sfo_facility_id;
+    let actionText = "View Facilities";
+
+    if (isSfo && !sfoFacilityId) {
+      actionText = "Edit details";
+    } else if (isSfo) {
+      actionText = "View Facility";
+    }
+
     const baseUrl = `operations/${params.row.id}/facilities`;
-    const sfoUrl = `${baseUrl}/${sfoFacilityId}`;
+    const sfoUrl = `${baseUrl}/${sfoFacilityId ?? "add-facility"}`;
 
     return (
       <div>
