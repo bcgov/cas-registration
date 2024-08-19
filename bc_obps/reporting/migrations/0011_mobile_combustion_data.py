@@ -376,7 +376,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     import os
 
     cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_excluding_line_tracing/with_useful_energy.json') as mfuel_st:
+    with open(f'{cwd}/reporting/json_schemas/2024/fuel_combustion_mobile/combustion_by_equipment.json') as mfuel_st:
         schema = json.load(mfuel_st)
 
     ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
@@ -390,6 +390,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Fuel combustion by mobile equipment that is part of the facility'
                 ).id,
+                has_unit=False,
                 json_schema=schema,
                 valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
