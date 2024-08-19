@@ -28,15 +28,15 @@ spec:
         - name: {{ template "cas-bciers.fullname" . }}-administration-frontend
           env:
             - name: KEYCLOAK_CLIENT_SECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: keycloak-gold-client-secret
-                    key: kcClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
             - name: NEXTAUTH_SECRET
               valueFrom:
-                  secretKeyRef:
-                    name: cas-bciers-nextauth
-                    key: nextauth-secret
+                secretKeyRef:
+                  name: cas-bciers-nextauth
+                  key: nextauth-secret
           envFrom:
             - configMapRef:
                 name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
