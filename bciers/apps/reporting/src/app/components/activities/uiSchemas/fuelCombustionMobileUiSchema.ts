@@ -34,7 +34,7 @@ const uiSchema = {
         items: {
           "ui:order": [
             "fuelName",
-            "fuelUnit",
+            "fuelClassification",
             "fuelDescription",
             "q1FuelAmount",
             "q2FuelAmount",
@@ -46,7 +46,7 @@ const uiSchema = {
           fuelName: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
-          fuelUnit: {
+          fuelClassification: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
           fuelDescription: {
