@@ -88,7 +88,7 @@ def get_facility_report_by_version_and_id(
         facility_report = ReportService.get_facility_report_by_version_and_id(version_id, facility_id)
 
         if facility_report:
-            activity_ids = ReportService.get_activity_ids_for_facility(facility_report) or []
+            activity_ids = ReportService.get_activity_ids_for_facility(facility_id) or []
             response_data = FacilityReportOut(
                 id=facility_report.id,
                 report_version_id=facility_report.report_version.id,
@@ -120,7 +120,7 @@ def get_facility_report_by_version_and_id(
 )
 @handle_http_errors()
 def save_facility_report(
-    request: HttpRequest, version_id: int, payload: FacilityReportIn
+    request: HttpRequest, version_id: int, facility_id: int, payload: FacilityReportIn
 ) -> Union[
     Tuple[Literal[201], FacilityReportOut],
     Tuple[Literal[400], Dict[str, str]],
@@ -133,18 +133,19 @@ def save_facility_report(
     Args:
         request (HttpRequest): The HTTP request object.
         version_id (int): The ID of the report version.
+        facility_id (int): The ID of the facility.
         payload (FacilityReportIn): The input data for the report facility.
 
     Returns:
         Tuple: HTTP status code and the response data or an error message.
     """
     try:
-        # Save or update the report facility using the service layer
-        facility_report = ReportService.save_facility_report(version_id, payload)
+        # Fetch the existing facility report or create a new one
+        facility_report = ReportService.save_facility_report(version_id, facility_id, payload)
 
         # Prepare the response data
         response_data = FacilityReportOut(
-            id=facility_report.id,
+            id=facility_id,
             report_version_id=facility_report.report_version.id,
             facility_name=facility_report.facility_name,
             facility_type=facility_report.facility_type,
