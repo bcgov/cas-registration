@@ -59,7 +59,7 @@ def register_operation_information(
 
 @router.put(
     "/v2/operations/{operation_id}/registration/statutory-declaration",
-    response={201: OperationUpdateOut, codes_4xx: Message},
+    response={200: OperationUpdateOut, codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Creates or replaces a statutory declaration document for an Operation",
     auth=authorize("approved_industry_user"),
@@ -67,8 +67,8 @@ def register_operation_information(
 @handle_http_errors()
 def create_or_replace_statutory_declarations(
     request: HttpRequest, operation_id: UUID, payload: OperationStatutoryDeclarationIn
-) -> Tuple[Literal[201], OperationUpdateOut]:
-    return 201, OperationServiceV2.create_or_replace_statutory_declaration(
+) -> Tuple[Literal[200], OperationUpdateOut]:
+    return 200, OperationServiceV2.create_or_replace_statutory_declaration(
         get_current_user_guid(request), operation_id, payload
     )
 

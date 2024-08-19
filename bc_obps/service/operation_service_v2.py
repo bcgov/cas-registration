@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Union
 from django.db.models import QuerySet
-from registration.constants import PAGE_SIZE
+from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from registration.models import Operation
 from ninja import Query
 from django.core.paginator import Paginator
@@ -141,6 +141,11 @@ class OperationServiceV2:
     ) -> OperationUpdateOut:
         existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(operation_id)
         operation = OperationDataAccessService.get_by_id(operation_id)
+
+        # industry users can only edit operations that belong to their operator
+        if not operation.user_has_access(user_guid):
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
         # if there is an existing statutory declaration document, check if the new one is different
         if existing_statutory_document:
             # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
