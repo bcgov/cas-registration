@@ -144,6 +144,10 @@ class TestInitialData(TestCase):
                 'Wood products: veneer',
                 'Wood products: wood chips (including hog fuel)',
                 'Wood products: wood pellets',
+                'Forged steel balls: less than 3.5 inches diameter',
+                'Forged steel balls: greater than 4 inches diameter',
+                'Mining: critical mineral, other than copper',
+                'Smelting: critical mineral, other than aluminun and lead-zinc',
             ]
         )
         existing_products = sorted(list(RegulatedProduct.objects.values_list('name', flat=True)))
@@ -153,8 +157,8 @@ class TestInitialData(TestCase):
     def test_activity_initial_data(self):
         expected_activities = sorted(
             [
-                ('General stationary combustion excluding line tracing', 'all'),
-                ('General stationary combustion solely for the purpose of line tracing', 'all'),
+                ('General stationary combustion excluding line tracing', 'sfo'),
+                ('General stationary combustion solely for the purpose of line tracing', 'sfo'),
                 ('Fuel combustion by mobile equipment', 'sfo'),
                 ('Aluminum or alumina production', 'sfo'),
                 ('Ammonia production', 'sfo'),
@@ -183,10 +187,25 @@ class TestInitialData(TestCase):
                 ('Carbonate use', 'sfo'),
                 ('Oil and gas extraction and gas processing activities', 'lfo'),
                 ('Carbon dioxide transportation and oil transmission', 'lfo'),
+                ('General stationary combustion, other than non-compression and non-processing combustion', 'lfo'),
+                ('General stationary non-compression and non-processing combustion', 'lfo'),
                 ('Electricity transmission', 'lfo'),
-                ('Natural gas transmission', 'lfo'),
-                ('Natural gas distribution', 'lfo'),
-                ('Natural gas storage', 'lfo'),
+                (
+                    'Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities',
+                    'lfo',
+                ),
+                (
+                    'Non-compression and non-processing activities that are oil and gas extraction and gas processing activities',
+                    'lfo',
+                ),
+                (
+                    'Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities',
+                    'lfo',
+                ),
+                (
+                    'Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission',
+                    'lfo',
+                ),
                 ('LNG activities', 'lfo'),
             ]
         )
