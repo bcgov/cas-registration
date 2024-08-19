@@ -33,9 +33,9 @@ spec:
                   key: kcClientSecret
             - name: NEXTAUTH_SECRET
               valueFrom:
-                  secretKeyRef:
-                    name: cas-bciers-nextauth
-                    key: nextauth-secret
+                secretKeyRef:
+                  name: cas-bciers-nextauth
+                  key: nextauth-secret
           envFrom:
             - configMapRef:
                 name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
