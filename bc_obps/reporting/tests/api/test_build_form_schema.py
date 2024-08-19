@@ -90,16 +90,17 @@ class TestBuildFormSchema:
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
 
     def test_single_mandatory_source_type(self):
-        response = client.get(f'{pytest.endpoint}?activity=2&report_date=2024-05-01')
+        response = client.get(f'{pytest.endpoint}?activity=3&report_date=2024-05-01')
         assert response.status_code == 200
         # 1 schema is automatically added to the sourceTypes object when there is only 1 valid sourceType for the activity
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 1
 
     def test_source_type_schema_no_units(self):
-        response = client.get(f'{pytest.endpoint}?activity=2&report_date=2024-05-01')
+        response = client.get(f'{pytest.endpoint}?activity=3&report_date=2024-05-01')
         assert response.status_code == 200
         response_object = json.loads(response.json())
         source_type_key = list(response_object['schema']['properties']['sourceTypes']['properties'].keys())[0]
+        print(source_type_key)
         # No units in schema
         assert (
             'units'
