@@ -67,7 +67,7 @@ def register_operation_information(
 @handle_http_errors()
 def create_or_replace_statutory_declarations(
     request: HttpRequest, operation_id: UUID, payload: OperationStatutoryDeclarationIn
-) -> Tuple[Literal[200], OperationUpdateOut]:
+) -> Tuple[Literal[200], Operation]:
     return 200, OperationServiceV2.create_or_replace_statutory_declaration(
         get_current_user_guid(request), operation_id, payload
     )

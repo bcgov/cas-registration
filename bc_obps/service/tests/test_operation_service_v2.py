@@ -3,7 +3,8 @@ from registration.models.operation import Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.regulated_product import RegulatedProduct
 from registration.models.registration_purpose import RegistrationPurpose
-from registration.schema.v2.operation import RegistrationPurposeIn
+from registration.schema.v2.operation import RegistrationPurposeIn, OperationStatutoryDeclarationIn
+from registration.tests.constants import MOCK_DATA_URL
 from service.operation_service_v2 import OperationServiceV2
 import pytest
 
@@ -166,3 +167,21 @@ class TestOperationServiceV2:
         operation = baker.make_recipe('utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
+    # Uncomment this skip to test file uploads locally
+    @pytest.mark.skip(
+        reason="This test passes locally but will fail in CI since we don't have Google Cloud Storage set up for CI"
+    )
+    def test_create_or_replace_statutory_declaration():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        users_operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+        )
+        payload = OperationStatutoryDeclarationIn(statutory_declaration=MOCK_DATA_URL)
+        operation = OperationServiceV2.create_or_replace_statutory_declaration(
+            approved_user_operator.user.user_guid, users_operation.id, payload
+        )
+        operation.refresh_from_db()
+        # Just returning the operation without the statutory_declaration due to performance reasons
+        assert operation.id == users_operation.id
+        assert operation.updated_by == approved_user_operator.user
+        assert operation.updated_at is not None

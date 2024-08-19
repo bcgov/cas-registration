@@ -19,7 +19,6 @@ from registration.models.registration_purpose import RegistrationPurpose
 from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
 from registration.schema.v2.operation import (
     OperationFilterSchema,
-    OperationUpdateOut,
     OptedInOperationDetailIn,
     OperationStatutoryDeclarationIn,
     RegistrationPurposeIn,
@@ -138,7 +137,7 @@ class OperationServiceV2:
     @classmethod
     def create_or_replace_statutory_declaration(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationStatutoryDeclarationIn
-    ) -> OperationUpdateOut:
+    ) -> Operation:
         existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(operation_id)
         operation = OperationDataAccessService.get_by_id(operation_id)
 
@@ -152,11 +151,12 @@ class OperationServiceV2:
             if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
                 existing_statutory_document.delete()
             else:
-                return OperationUpdateOut(name=operation.name)
+                return operation
         # if there is no existing statutory declaration document, create a new one
         document = DocumentDataAccessService.create_document(
             user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
         )
         if document:
             operation.documents.set([document])
-        return OperationUpdateOut(name=operation.name)
+        operation.set_create_or_update(user_guid)
+        return operation
