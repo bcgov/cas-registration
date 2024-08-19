@@ -1,20 +1,13 @@
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { OperationStatus } from "@bciers/utils/enums";
+import { OperationTypes } from "@bciers/utils/enums";
 
-const OperationsActionCell = () => {
+const OperationFacilitiesActionCell = () => {
   const renderCell = (params: GridRenderCellParams) => {
-    let actionText;
-    switch (params.row.status) {
-      case OperationStatus.NOT_STARTED:
-        actionText = "Start Registration";
-        break;
-      case OperationStatus.DRAFT:
-        actionText = "Continue";
-        break;
-      default:
-        actionText = "View Operation Information";
-    }
+    const operationType = params.row.type;
+    const isSfo = operationType === OperationTypes.SFO;
+    const actionText = isSfo ? "View Facility" : "View Facilities";
+    const lfoUrl = `operations/${params.row.id}/facilities`;
 
     return (
       <div>
@@ -22,7 +15,7 @@ const OperationsActionCell = () => {
         <Link
           className="action-cell-text"
           href={{
-            pathname: `operations/${params.row.id}`,
+            pathname: lfoUrl,
             query: {
               operations_title: `${params.row.name}`,
             },
@@ -37,4 +30,4 @@ const OperationsActionCell = () => {
   return renderCell;
 };
 
-export default OperationsActionCell;
+export default OperationFacilitiesActionCell;

@@ -44,6 +44,9 @@
   .emission-array-header {
     @apply text-base py-2 w-full font-bold text-bc-bg-blue;
   }
+  .action-cell-text {
+    @apply no-underline text-bc-link-blue whitespace-normal;
+  }
   /* Use the following classes to style links as buttons */
   .link-button-base {
     @apply w-fit no-underline text-lg py-[5px] px-[15px] rounded flex items-center text-base leading-7;
