@@ -120,26 +120,30 @@ class ReportService:
         return result
 
     @classmethod
-    def get_activity_ids_for_facility(cls, facility: FacilityReport) -> List[int]:
-        if facility:
+    def get_activity_ids_for_facility(cls, facility_id: int) -> List[int]:
+        try:
+            facility = FacilityReport.objects.get(id=facility_id)
             return list(facility.activities.values_list('id', flat=True))
-        return []
+        except FacilityReport.DoesNotExist:
+            return []
 
     @classmethod
-    def save_facility_report(cls, report_version_id: int, data: FacilityReportIn) -> FacilityReport:
+    def save_facility_report(cls, report_version_id: int, facility_id: int, data: FacilityReportIn) -> FacilityReport:
         """
-        Save or update a report facility and its related activities.
+        Save or update a facility report and its related activities.
 
         Args:
             report_version_id (int): The ID of the report version.
-            data (FacilityReportIn): The input data for the report facility.
+            facility_id (int): The ID of the facility.
+            data (FacilityReportIn): The input data for the facility report.
 
         Returns:
-            ReportFacility: The updated or created ReportFacility instance.
+            FacilityReport: The updated or created FacilityReport instance.
         """
         try:
-            # Fetch or create a ReportFacility instance
-            report_facility, _ = FacilityReport.objects.update_or_create(
+            # Fetch or create a FacilityReport instance
+            facility_report, _ = FacilityReport.objects.update_or_create(
+                id=facility_id,
                 report_version__id=report_version_id,
                 defaults={
                     'facility_name': data.facility_name.strip(),
@@ -150,16 +154,15 @@ class ReportService:
 
             # Update ManyToMany fields (activities)
             if data.activities:
-                activities = Activity.objects.filter(id__in=data.activities)
-                report_facility.activities.set(activities)
+                facility_report.activities.set(Activity.objects.filter(id__in=data.activities))
 
-            # Save the updated ReportFacility instance
-            report_facility.save()
+            # Save the updated FacilityReport instance
+            facility_report.save()
 
-            return report_facility
+            return facility_report
 
         except ObjectDoesNotExist:
-            raise ValueError("Report facility not found.")
+            raise ValueError("Facility report not found.")
         except ValidationError as ve:
             raise ve
         except Exception as e:
