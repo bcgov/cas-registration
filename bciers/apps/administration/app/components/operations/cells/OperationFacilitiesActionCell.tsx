@@ -6,8 +6,10 @@ const OperationFacilitiesActionCell = () => {
   const renderCell = (params: GridRenderCellParams) => {
     const operationType = params.row.type;
     const isSfo = operationType === OperationTypes.SFO;
+    const sfoFacilityId = params.row.sfo_facility_id ?? "add-facility";
     const actionText = isSfo ? "View Facility" : "View Facilities";
-    const lfoUrl = `operations/${params.row.id}/facilities`;
+    const baseUrl = `operations/${params.row.id}/facilities`;
+    const sfoUrl = `${baseUrl}/${sfoFacilityId}`;
 
     return (
       <div>
@@ -15,7 +17,7 @@ const OperationFacilitiesActionCell = () => {
         <Link
           className="action-cell-text"
           href={{
-            pathname: lfoUrl,
+            pathname: isSfo ? sfoUrl : baseUrl,
             query: {
               operations_title: `${params.row.name}`,
             },
