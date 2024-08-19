@@ -13,7 +13,7 @@ const OperationsActionCell = () => {
         actionText = "Continue";
         break;
       default:
-        actionText = "View Operation Information";
+        actionText = "View Operation";
     }
 
     return (
