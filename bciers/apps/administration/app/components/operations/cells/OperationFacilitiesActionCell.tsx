@@ -19,20 +19,17 @@ const OperationFacilitiesActionCell = () => {
     const sfoUrl = `${baseUrl}/${sfoFacilityId ?? "add-facility"}`;
 
     return (
-      <div>
-        {/* 🔗 Add link with href query parameter with row's descriptive text*/}
-        <Link
-          className="action-cell-text"
-          href={{
-            pathname: isSfo ? sfoUrl : baseUrl,
-            query: {
-              operations_title: `${params.row.name}`,
-            },
-          }}
-        >
-          {actionText}
-        </Link>
-      </div>
+      <Link
+        className="action-cell-text"
+        href={{
+          pathname: isSfo ? sfoUrl : baseUrl,
+          query: {
+            operations_title: `${params.row.name}`,
+          },
+        }}
+      >
+        {actionText}
+      </Link>
     );
   };
 
