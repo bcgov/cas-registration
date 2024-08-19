@@ -10,11 +10,13 @@ const OperationFacilitiesActionCell = () => {
     let actionText = "View Facilities";
 
     if (isSfo && !sfoFacilityId) {
+      // Show edit details for SFO operations without a facility
       actionText = "Edit details";
     } else if (isSfo) {
       actionText = "View Facility";
     }
 
+    // LFO sees the datagrid, SFO goes straight to the facility since there is only one
     const baseUrl = `operations/${params.row.id}/facilities`;
     const sfoUrl = `${baseUrl}/${sfoFacilityId ?? "add-facility"}`;
 
