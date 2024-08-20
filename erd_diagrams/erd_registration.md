@@ -613,14 +613,11 @@ HistoricalEvent {
     DateTimeField archived_at
     UUIDField id
     DateTimeField effective_date
-    CharField type
-    JSONField additional_data
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
     ForeignKey archived_by
     ForeignKey operation
-    ForeignKey facility
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
@@ -635,10 +632,8 @@ Event {
     DateTimeField archived_at
     UUIDField id
     ForeignKey operation
-    ForeignKey facility
     DateTimeField effective_date
-    CharField type
-    JSONField additional_data
+    ManyToManyField facilities
 }
 HistoricalFacilityOwnershipTimeline {
     BigIntegerField id
@@ -917,12 +912,11 @@ HistoricalEvent }|--|| User : created_by
 HistoricalEvent }|--|| User : updated_by
 HistoricalEvent }|--|| User : archived_by
 HistoricalEvent }|--|| Operation : operation
-HistoricalEvent }|--|| Facility : facility
 Event }|--|| User : created_by
 Event }|--|| User : updated_by
 Event }|--|| User : archived_by
 Event }|--|| Operation : operation
-Event }|--|| Facility : facility
+Event }|--|{ Facility : facilities
 HistoricalFacilityOwnershipTimeline }|--|| User : created_by
 HistoricalFacilityOwnershipTimeline }|--|| User : updated_by
 HistoricalFacilityOwnershipTimeline }|--|| User : archived_by
