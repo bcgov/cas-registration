@@ -3,7 +3,7 @@ from uuid import UUID
 from ninja.types import DictStrAny
 
 
-class registrationpurposeDataAccessService:
+class RegistrationPurposeDataAccessService:
     @classmethod
     def create_registration_purpose(
         cls,
