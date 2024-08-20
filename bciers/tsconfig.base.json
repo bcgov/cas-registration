@@ -17,9 +17,9 @@
     "types": ["vitest/globals"],
     "paths": {
       "@/*": ["apps/registration1/*"],
+      "@/administration/*": ["apps/administration/*"],
       "@/coam/*": ["apps/coam/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
-      "@/administration/*": ["apps/administration/*"],
       "@/registration/*": ["apps/registration/*"],
       "@bciers/actions": ["libs/actions/src/index.ts"],
       "@bciers/actions/*": ["libs/actions/src/*"],
