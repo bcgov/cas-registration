@@ -5,20 +5,20 @@
     "fields": {
       "name": "External Reporting Dashboard",
       "data": {
-        "dashboard": "reporting",
+        "dashboard": "reporting/reports",
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
             "title": "Submit Annual Report(s)",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/reporting/operations"
+            "href": "/reporting/reports"
           },
           {
             "title": "View Past Submissions",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/reporting/tbd"
+            "href": "/reporting/reports/previous-years"
           }
         ]
       }

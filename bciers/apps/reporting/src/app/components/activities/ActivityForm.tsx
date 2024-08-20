@@ -89,7 +89,6 @@ export default function ActivityForm({
   );
 
   useEffect(() => {
-    console.log("HERE");
     let isFetching = true;
     const fetchSchemaData = async (
       selectedSourceTypes: string,
