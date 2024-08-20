@@ -142,7 +142,7 @@ The Bread.tsx component in the `bciers/libs/components/src/navigation` directory
 
 For instance, when dealing with UUID breadcrumbs from dynamic folders, the component passes the name associated with the UUID record via the query string. The Bread component utilizes the translateNumericPart function to handle UUID segments, identifying the correct query string parameter and rendering the name instead of the UUID number.
 
-The pattern for the query string parameter should follow the format `{name-of-preceding-folder}Title`. For example, the OperationDataGridPage is displayed from the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations`, and the View Details link includes the parameter `?operations_title` for the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations/[operatorId]`.
+The pattern for the query string parameter should follow the format `{name-of-preceding-folder}_title`. For example, the OperationDataGridPage is displayed from the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations`, and the View Details link includes the parameter `?operations_title` for the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations/[operatorId]`.
 
 ## Styling
 
