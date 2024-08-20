@@ -520,8 +520,12 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     Remove initial data from erc.configuration_element
     '''
     Configuration = apps.get_model('reporting', 'Configuration')
+    ReportingActivity = apps.get_model('reporting', 'ReportingActivity')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
+        reporting_activity_id=ReportingActivity.objects.get(
+            name='General stationary combustion excluding line tracing'
+        ).id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
@@ -553,7 +557,9 @@ def init_reporting_field_data(apps, schema_monitor):
                 field_type='number',
                 field_units=None,
             ),
-            ReportingField(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Measured Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
             ReportingField(field_name='Description', field_type='string', field_units=None),
             ReportingField(
                 field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/GJ'
@@ -756,7 +762,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units__isnull=True)
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units='kg/fuel units')
     )
     # CO2 - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(
@@ -1251,7 +1257,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units__isnull=True)
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units='kg/fuel units')
     )
     # CO2 - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(

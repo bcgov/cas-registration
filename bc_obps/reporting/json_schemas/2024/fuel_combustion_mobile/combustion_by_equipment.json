@@ -1,0 +1,73 @@
+{
+  "type": "object",
+  "title": "Fuel combustion by mobile equipment that is part of the facility",
+  "properties": {
+    "fuels": {
+      "title": "Fuel Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fuelName": {
+            "title": "Fuel Name",
+            "maxLength": 200,
+            "type": "string"
+          },
+          "fuelClassification": {
+            "title": "Fuel Classification",
+            "maxLength": 200,
+            "type": "string"
+          },
+          "fuelDescription": {
+            "title": "Fuel Description",
+            "maxLength": 500,
+            "type": "string"
+          },
+          "q1FuelAmount": {
+            "title": "Q1 Fuel Amount",
+            "type": "number"
+          },
+          "q2FuelAmount": {
+            "title": "Q2 Fuel Amount",
+            "type": "number"
+          },
+          "q3FuelAmount": {
+            "title": "Q3 Fuel Amount",
+            "type": "number"
+          },
+          "q4FuelAmount": {
+            "title": "Q4 Fuel Amount",
+            "type": "number"
+          },
+          "annualFuelAmount": {
+            "title": "Annual Fuel Amount",
+            "type": "number"
+          },
+          "emissions": {
+            "title": "Emission Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "gasType": {
+                  "title": "Gas Type",
+                  "type": "string",
+                  "enum": []
+                },
+                "emission": {
+                  "title": "Emission",
+                  "type": "number"
+                },
+                "equivalentEmission": {
+                  "title": "Equivalent Emission",
+                  "type": "number",
+                  "readOnly": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
