@@ -19,8 +19,7 @@ from ninja.responses import codes_4xx
 
 
 @router.get(
-    ## need to rename, this was causing errors when fetching /v2/operations/current
-    "/v2/operation/{operation_id}",
+    "/v2/operations/{uuid:operation_id}",
     response={200: OperationOut, codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the details of a specific operation by its ID. The endpoint checks if the current user is authorized to access the operation.
