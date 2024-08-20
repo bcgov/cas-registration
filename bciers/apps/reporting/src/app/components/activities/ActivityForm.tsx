@@ -89,6 +89,7 @@ export default function ActivityForm({
   );
 
   useEffect(() => {
+    console.log("HERE");
     let isFetching = true;
     const fetchSchemaData = async (
       selectedSourceTypes: string,
@@ -102,13 +103,18 @@ export default function ActivityForm({
       );
       setJsonSchema(safeJsonParse(schemaData).schema);
       const sourceTypeFormData = (formState?.sourceTypes as any) || {};
-      // Add an empty sourceType for each selected Source Type (show first item by default)
-      selectedKeys.forEach((k: number) => {
-        if (!formState?.sourceTypes[`${sourceTypeMap[k]}`])
-          sourceTypeFormData[`${sourceTypeMap[k]}`] =
-            defaultEmptySourceTypeState;
-      });
-
+      // Add an empty sourceType object by default if there is only one sourceType
+      if (Object.entries(sourceTypeMap).length === 1) {
+        sourceTypeFormData[`${Object.values(sourceTypeMap)[0]}`] =
+          defaultEmptySourceTypeState;
+      } else {
+        // Add an empty sourceType for each selected Source Type (show first item by default)
+        selectedKeys.forEach((k: number) => {
+          if (!formState?.sourceTypes[`${sourceTypeMap[k]}`])
+            sourceTypeFormData[`${sourceTypeMap[k]}`] =
+              defaultEmptySourceTypeState;
+        });
+      }
       if (isFetching)
         setFormState({ ...formState, sourceTypes: sourceTypeFormData });
     };

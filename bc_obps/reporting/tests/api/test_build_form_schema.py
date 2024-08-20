@@ -89,13 +89,28 @@ class TestBuildFormSchema:
         # 2 schemas in the sourceTypes object
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
 
-    # Add this test when Mobile Combustion configs are added
-    # def test_single_mandatory_source_type(self):
-    #     Add test for when an activity has a single valid source type. In that case, the source type is added automatically since it is mandatory
+    def test_single_mandatory_source_type(self):
+        response = client.get(f'{pytest.endpoint}?activity=3&report_date=2024-05-01')
+        assert response.status_code == 200
+        # 1 schema is automatically added to the sourceTypes object when there is only 1 valid sourceType for the activity
+        assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 1
 
-    # Add this test when Mobile Combustion configs are added
-    # def test_source_type_schema_no_units(self):
-    #     Add test for source type schema shape when there are no units in the schema
+    def test_source_type_schema_no_units(self):
+        response = client.get(f'{pytest.endpoint}?activity=3&report_date=2024-05-01')
+        assert response.status_code == 200
+        response_object = json.loads(response.json())
+        source_type_key = list(response_object['schema']['properties']['sourceTypes']['properties'].keys())[0]
+        print(source_type_key)
+        # No units in schema
+        assert (
+            'units'
+            not in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
+        )
+        # Source Type properties has a child fuel object
+        assert (
+            'fuels'
+            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
+        )
 
     # Add this test when Alumina Production configs are added
     # def test_source_type_schema_only_emissions(self):

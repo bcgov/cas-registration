@@ -583,6 +583,7 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Input/output'),
             Methodology(name='Heat Input/Default EF'),
             Methodology(name='Measured EF'),
+            Methodology(name='Site-specific EF'),
         ]
     )
 
@@ -594,22 +595,23 @@ def reverse_init_methodology_data(apps, schema_monitor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Methodology.objects.filter(
         name__in=[
-            'Default HHV/Default EF'
-            'Default EF'
-            'Measured HHV/Default EF'
-            'Measured Steam/Default EF'
-            'Measured CC'
-            'Measured Steam/Measured EF'
-            'Alternative Parameter Measurement'
-            'Replacement Methodology'
-            'Anode Consumption'
-            'Slope method'
-            'Overvoltage method'
-            'C2F6 anode effects'
-            'Inventory'
-            'Input/output'
-            'Heat Input/Default EF'
-            'Measured EF'
+            'Default HHV/Default EF',
+            'Default EF',
+            'Measured HHV/Default EF',
+            'Measured Steam/Default EF',
+            'Measured CC',
+            'Measured Steam/Measured EF',
+            'Alternative Parameter Measurement',
+            'Replacement Methodology',
+            'Anode Consumption',
+            'Slope method',
+            'Overvoltage method',
+            'C2F6 anode effects',
+            'Inventory',
+            'Input/output',
+            'Heat Input/Default EF',
+            'Measured EF',
+            'Site-specific EF',
         ]
     ).delete()
 
