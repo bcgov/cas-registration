@@ -1,6 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import provinceOptions from "@bciers/data/provinces.json";
+import InlineArrayFieldTemplate from "@bciers/components/form/fields/InlineArrayFieldTemplate";
 
 const currentYear = new Date().getFullYear();
 
@@ -27,7 +28,7 @@ const section1: RJSFSchema = {
       items: {
         type: "number",
       },
-      title: "Well Authorization Number(s)",
+      title: "BC Energy Regulator Well Authorization Number(s)",
     },
     is_current_year: {
       type: "boolean",
@@ -129,6 +130,12 @@ export const facilitiesLfoUiSchema = {
       "ui:options": {
         maxDate: new Date(),
         minDate: new Date(currentYear - 1, 0, 1),
+      },
+    },
+    well_authorization_numbers: {
+      "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
+      "ui:options": {
+        arrayAddLabel: "Add Well Authorization Number",
       },
     },
   },
