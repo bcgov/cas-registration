@@ -21,6 +21,7 @@ const NewEntrantOperationForm = ({
   step,
   steps,
 }: NewEntrantOperationFormProps) => {
+  const baseUrl = `/register-an-operation/${operation}`;
   const [error, setError] = useState(undefined);
   const handleSubmit = async (e: IChangeEvent) => {
     const method = "PUT";
@@ -28,7 +29,7 @@ const NewEntrantOperationForm = ({
     const body = {
       statutory_declaration: e.formData.statutory_declaration,
     };
-    const response = await actionHandler(endpoint, method, "", {
+    const response = await actionHandler(endpoint, method, `${baseUrl}/3`, {
       body: JSON.stringify(body),
     });
 
@@ -41,7 +42,7 @@ const NewEntrantOperationForm = ({
   return (
     <MultiStepBase
       allowBackNavigation
-      baseUrl={`/register-an-operation/${operation}`}
+      baseUrl={baseUrl}
       baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
       error={error}
