@@ -1,21 +1,17 @@
 from uuid import UUID
 from typing import List, Optional, Union
 from ninja import Field, FilterSchema, ModelSchema, Schema
-<<<<<<< HEAD
 from registration.models import Operation
 from service.data_access_service.facility_service import FacilityDataAccessService
 from registration.enums.enums import OperationTypes
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.registration_purpose import RegistrationPurpose
-=======
 from registration.models import Operation, Operator, User
->>>>>>> c9f5644f4 (refactor: create new get api for statutory declarations)
 from pydantic import field_validator
 from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
-from ninja.types import DictStrAny
-from registration.schema.v1.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url
+from typing import Dict as DictStrAny
 
 
 #### Operation schemas

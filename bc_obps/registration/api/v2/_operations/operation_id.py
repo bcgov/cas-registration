@@ -8,8 +8,8 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.models import Operation
-from registration.schema.v2.operation import (
-    OperationOut,
+from registration.schema.v1.operation import (
+    OperationOutBase,
 )
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx
@@ -20,10 +20,11 @@ from ninja.responses import codes_4xx
 
 @router.get(
     "/v2/operations/{uuid:operation_id}",
-    response={200: OperationOut, codes_4xx: Message},
+    response={200: OperationOutBase, codes_4xx: Message},
     tags=OPERATION_TAGS,
-    description="""Retrieves the details of a specific operation by its ID. The endpoint checks if the current user is authorized to access the operation.
-    Industry users can only access operations they are permitted to view. If an unauthorized user attempts to access the operation, an error is raised.""",
+    description="""Retrieves the details of a specific operation by its ID. Unlike the v1 endpoint, this endpoint does not
+    return the statutory_declaration field as it can be quite large and cause slow requests. If you need the statutory_declaration field,
+    use the  operations/{operation_id}/registration/statutory-declaration endpoint or v1 of this endpoint""",
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
