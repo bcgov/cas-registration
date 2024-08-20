@@ -1,5 +1,5 @@
 from typing import Optional
-from registration.models import Event, Contact, Operator
+from registration.models import Event, Contact, Operator, Operation, Facility
 from django.db import models
 from simple_history.models import HistoricalRecords
 
@@ -16,6 +16,10 @@ class Transfer(Event):
         NOT_SURE = "Not Sure"
 
     description = models.TextField(db_comment="Description of the transfer or change in designated operator.")
+    operation = models.ForeignKey(
+        Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="transfers"
+    )
+    facilities = models.ManyToManyField(Facility, blank=True, related_name="transfers")
     future_designated_operator = models.CharField(
         max_length=1000,
         choices=FutureDesignatedOperatorChoices,
@@ -34,15 +38,18 @@ class Transfer(Event):
         db_comment="Contact information for the other operator.",
     )
     status = models.CharField(
-        max_length=1000,
+        max_length=100,
         choices=Statuses,
         default=Statuses.PENDING,
-        db_comment="The status of the request to transfer an entity.",
     )
     history = HistoricalRecords(
         table_name='erc_history"."transfer_event_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
+
+    class Meta:
+        db_table_comment = "Transfer events for operations and/or facilities."
+        db_table = 'erc"."transfers'
 
     @staticmethod
     def _validate_string(value: Optional[str]) -> None:

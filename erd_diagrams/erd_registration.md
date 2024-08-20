@@ -607,34 +607,6 @@ Facility {
     DecimalField longitude_of_largest_emissions
     ManyToManyField well_authorization_numbers
 }
-HistoricalEvent {
-    DateTimeField created_at
-    DateTimeField updated_at
-    DateTimeField archived_at
-    UUIDField id
-    DateTimeField effective_date
-    UUIDField history_user_id
-    ForeignKey created_by
-    ForeignKey updated_by
-    ForeignKey archived_by
-    ForeignKey operation
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-Event {
-    ForeignKey created_by
-    DateTimeField created_at
-    ForeignKey updated_by
-    DateTimeField updated_at
-    ForeignKey archived_by
-    DateTimeField archived_at
-    UUIDField id
-    ForeignKey operation
-    DateTimeField effective_date
-    ManyToManyField facilities
-}
 HistoricalFacilityOwnershipTimeline {
     BigIntegerField id
     DateTimeField created_at
@@ -772,13 +744,13 @@ RegistrationPurpose {
     ForeignKey operation
 }
 HistoricalClosure {
-    ForeignKey event_ptr
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
     UUIDField id
     DateTimeField effective_date
-    TextField event
+    TextField description
+    CharField status
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
@@ -797,20 +769,20 @@ Closure {
     ForeignKey archived_by
     DateTimeField archived_at
     UUIDField id
-    ForeignKey operation
     DateTimeField effective_date
+    TextField description
+    CharField status
+    ForeignKey operation
     ManyToManyField facilities
-    OneToOneField event_ptr
-    TextField event
 }
 HistoricalTemporaryShutdown {
-    ForeignKey event_ptr
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
     UUIDField id
     DateTimeField effective_date
     TextField description
+    CharField status
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
@@ -829,14 +801,13 @@ TemporaryShutdown {
     ForeignKey archived_by
     DateTimeField archived_at
     UUIDField id
-    ForeignKey operation
     DateTimeField effective_date
-    ManyToManyField facilities
-    OneToOneField event_ptr
     TextField description
+    CharField status
+    ForeignKey operation
+    ManyToManyField facilities
 }
 HistoricalTransfer {
-    ForeignKey event_ptr
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
@@ -865,23 +836,22 @@ Transfer {
     ForeignKey archived_by
     DateTimeField archived_at
     UUIDField id
-    ForeignKey operation
     DateTimeField effective_date
-    ManyToManyField facilities
-    OneToOneField event_ptr
     TextField description
+    ForeignKey operation
     CharField future_designated_operator
     ForeignKey other_operator
     ForeignKey other_operator_contact
     CharField status
+    ManyToManyField facilities
 }
 HistoricalRestart {
-    ForeignKey event_ptr
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
     UUIDField id
     DateTimeField effective_date
+    CharField status
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
@@ -900,10 +870,10 @@ Restart {
     ForeignKey archived_by
     DateTimeField archived_at
     UUIDField id
-    ForeignKey operation
     DateTimeField effective_date
+    CharField status
+    ForeignKey operation
     ManyToManyField facilities
-    OneToOneField event_ptr
 }
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
@@ -1042,15 +1012,6 @@ Facility }|--|| User : updated_by
 Facility }|--|| User : archived_by
 Facility }|--|| Address : address
 Facility }|--|{ WellAuthorizationNumber : well_authorization_numbers
-HistoricalEvent }|--|| User : created_by
-HistoricalEvent }|--|| User : updated_by
-HistoricalEvent }|--|| User : archived_by
-HistoricalEvent }|--|| Operation : operation
-Event }|--|| User : created_by
-Event }|--|| User : updated_by
-Event }|--|| User : archived_by
-Event }|--|| Operation : operation
-Event }|--|{ Facility : facilities
 HistoricalFacilityOwnershipTimeline }|--|| User : created_by
 HistoricalFacilityOwnershipTimeline }|--|| User : updated_by
 HistoricalFacilityOwnershipTimeline }|--|| User : archived_by
@@ -1093,7 +1054,6 @@ RegistrationPurpose }|--|| User : created_by
 RegistrationPurpose }|--|| User : updated_by
 RegistrationPurpose }|--|| User : archived_by
 RegistrationPurpose }|--|| Operation : operation
-HistoricalClosure }|--|| Event : event_ptr
 HistoricalClosure }|--|| User : created_by
 HistoricalClosure }|--|| User : updated_by
 HistoricalClosure }|--|| User : archived_by
@@ -1103,8 +1063,6 @@ Closure }|--|| User : updated_by
 Closure }|--|| User : archived_by
 Closure }|--|| Operation : operation
 Closure }|--|{ Facility : facilities
-Closure ||--|| Event : event_ptr
-HistoricalTemporaryShutdown }|--|| Event : event_ptr
 HistoricalTemporaryShutdown }|--|| User : created_by
 HistoricalTemporaryShutdown }|--|| User : updated_by
 HistoricalTemporaryShutdown }|--|| User : archived_by
@@ -1114,8 +1072,6 @@ TemporaryShutdown }|--|| User : updated_by
 TemporaryShutdown }|--|| User : archived_by
 TemporaryShutdown }|--|| Operation : operation
 TemporaryShutdown }|--|{ Facility : facilities
-TemporaryShutdown ||--|| Event : event_ptr
-HistoricalTransfer }|--|| Event : event_ptr
 HistoricalTransfer }|--|| User : created_by
 HistoricalTransfer }|--|| User : updated_by
 HistoricalTransfer }|--|| User : archived_by
@@ -1126,11 +1082,9 @@ Transfer }|--|| User : created_by
 Transfer }|--|| User : updated_by
 Transfer }|--|| User : archived_by
 Transfer }|--|| Operation : operation
-Transfer }|--|{ Facility : facilities
-Transfer ||--|| Event : event_ptr
 Transfer }|--|| Operator : other_operator
 Transfer }|--|| Contact : other_operator_contact
-HistoricalRestart }|--|| Event : event_ptr
+Transfer }|--|{ Facility : facilities
 HistoricalRestart }|--|| User : created_by
 HistoricalRestart }|--|| User : updated_by
 HistoricalRestart }|--|| User : archived_by
@@ -1140,4 +1094,3 @@ Restart }|--|| User : updated_by
 Restart }|--|| User : archived_by
 Restart }|--|| Operation : operation
 Restart }|--|{ Facility : facilities
-Restart ||--|| Event : event_ptr
