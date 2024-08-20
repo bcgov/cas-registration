@@ -3,7 +3,7 @@ import { actionHandler } from "@bciers/actions";
 // 🛠️ Function to get an operator by operator id
 export default async function getOperator(id: string) {
   try {
-    return actionHandler(
+    return await actionHandler(
       `registration/operators/${id}`,
       "GET",
       `/select-operator/confirm/${id}`,
