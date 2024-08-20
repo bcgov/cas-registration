@@ -1,4 +1,4 @@
-import GeneralStationaryCombustion from "../../../../components/activities/generalStationaryCombustion";
+import GeneralStationaryCombustion from "../../../../../../../../components/activities/generalStationaryCombustion";
 import { Suspense } from "react";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "libs/utils/safeJsonParse";

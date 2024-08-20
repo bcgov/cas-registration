@@ -1,4 +1,4 @@
-import FuelCombustionByMobile from "../../../../components/activities/fuelCombustionByMobile";
+import FuelCombustionByMobile from "../../../../../../../../components/activities/fuelCombustionByMobile";
 import { Suspense } from "react";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "libs/utils/safeJsonParse";
