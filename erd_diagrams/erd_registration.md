@@ -771,6 +771,140 @@ RegistrationPurpose {
     CharField registration_purpose
     ForeignKey operation
 }
+HistoricalClosure {
+    ForeignKey event_ptr
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    TextField event
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+Closure {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    ForeignKey operation
+    DateTimeField effective_date
+    ManyToManyField facilities
+    OneToOneField event_ptr
+    TextField event
+}
+HistoricalTemporaryShutdown {
+    ForeignKey event_ptr
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    TextField description
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+TemporaryShutdown {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    ForeignKey operation
+    DateTimeField effective_date
+    ManyToManyField facilities
+    OneToOneField event_ptr
+    TextField description
+}
+HistoricalTransfer {
+    ForeignKey event_ptr
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    TextField description
+    CharField future_designated_operator
+    CharField status
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    ForeignKey other_operator
+    ForeignKey other_operator_contact
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+Transfer {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    ForeignKey operation
+    DateTimeField effective_date
+    ManyToManyField facilities
+    OneToOneField event_ptr
+    TextField description
+    CharField future_designated_operator
+    ForeignKey other_operator
+    ForeignKey other_operator_contact
+    CharField status
+}
+HistoricalRestart {
+    ForeignKey event_ptr
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+Restart {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    ForeignKey operation
+    DateTimeField effective_date
+    ManyToManyField facilities
+    OneToOneField event_ptr
+}
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
 HistoricalDocument }|--|| User : archived_by
@@ -959,3 +1093,51 @@ RegistrationPurpose }|--|| User : created_by
 RegistrationPurpose }|--|| User : updated_by
 RegistrationPurpose }|--|| User : archived_by
 RegistrationPurpose }|--|| Operation : operation
+HistoricalClosure }|--|| Event : event_ptr
+HistoricalClosure }|--|| User : created_by
+HistoricalClosure }|--|| User : updated_by
+HistoricalClosure }|--|| User : archived_by
+HistoricalClosure }|--|| Operation : operation
+Closure }|--|| User : created_by
+Closure }|--|| User : updated_by
+Closure }|--|| User : archived_by
+Closure }|--|| Operation : operation
+Closure }|--|{ Facility : facilities
+Closure ||--|| Event : event_ptr
+HistoricalTemporaryShutdown }|--|| Event : event_ptr
+HistoricalTemporaryShutdown }|--|| User : created_by
+HistoricalTemporaryShutdown }|--|| User : updated_by
+HistoricalTemporaryShutdown }|--|| User : archived_by
+HistoricalTemporaryShutdown }|--|| Operation : operation
+TemporaryShutdown }|--|| User : created_by
+TemporaryShutdown }|--|| User : updated_by
+TemporaryShutdown }|--|| User : archived_by
+TemporaryShutdown }|--|| Operation : operation
+TemporaryShutdown }|--|{ Facility : facilities
+TemporaryShutdown ||--|| Event : event_ptr
+HistoricalTransfer }|--|| Event : event_ptr
+HistoricalTransfer }|--|| User : created_by
+HistoricalTransfer }|--|| User : updated_by
+HistoricalTransfer }|--|| User : archived_by
+HistoricalTransfer }|--|| Operation : operation
+HistoricalTransfer }|--|| Operator : other_operator
+HistoricalTransfer }|--|| Contact : other_operator_contact
+Transfer }|--|| User : created_by
+Transfer }|--|| User : updated_by
+Transfer }|--|| User : archived_by
+Transfer }|--|| Operation : operation
+Transfer }|--|{ Facility : facilities
+Transfer ||--|| Event : event_ptr
+Transfer }|--|| Operator : other_operator
+Transfer }|--|| Contact : other_operator_contact
+HistoricalRestart }|--|| Event : event_ptr
+HistoricalRestart }|--|| User : created_by
+HistoricalRestart }|--|| User : updated_by
+HistoricalRestart }|--|| User : archived_by
+HistoricalRestart }|--|| Operation : operation
+Restart }|--|| User : created_by
+Restart }|--|| User : updated_by
+Restart }|--|| User : archived_by
+Restart }|--|| Operation : operation
+Restart }|--|{ Facility : facilities
+Restart ||--|| Event : event_ptr

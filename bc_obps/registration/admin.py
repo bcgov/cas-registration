@@ -78,4 +78,4 @@ class OperationOwnershipTimelineAdmin(admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('id', 'facility', 'operation', 'effective_date', 'type', 'additional_data')
+    list_display = ('id', 'operation', 'effective_date')
