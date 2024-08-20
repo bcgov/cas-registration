@@ -31,13 +31,13 @@ Goals:
 
 For each facility:
 
-| Page                                       | URL                                                              | Comments                                                                       |
-| ------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Review facility information                | `/reports/{version_id}/facilities/{facility_id}/review`          |                                                                                |
-| Activities Information (for each activity) | `/reports/{version_id}/facilities/{id}/activities/{activity_id}` | The activity ID will let us fetch the proper configuration and build the forms |
-| Non-attributable emissions                 | `/reports/{version_id}/facilities/{id}/non-attributable`         |                                                                                |
-| Emissions Summary                          | `/reports/{version_id}/facilities/{id}/summary`                  |                                                                                |
-| Production Data                            | `/reports/{version_id}/facilities/{id}/production`               |                                                                                |
+| Page                                       | URL                                                                | Comments                                                                         |
+| ------------------------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| Review facility information                | `/reports/{version_id}/facilities/{facility_id}/review`            |                                                                                  |
+| Activities Information (for each activity) | `/reports/{version_id}/facilities/{id}/activities/{activity_slug}` | The activity slug will let us fetch the proper configuration and build the forms |
+| Non-attributable emissions                 | `/reports/{version_id}/facilities/{id}/non-attributable`           |                                                                                  |
+| Emissions Summary                          | `/reports/{version_id}/facilities/{id}/summary`                    |                                                                                  |
+| Production Data                            | `/reports/{version_id}/facilities/{id}/production`                 |                                                                                  |
 
 ## Other Pages (Compliance, Sign-off, Submit...)
 
