@@ -49,17 +49,17 @@
           },
           {
             "title": "Reporting",
-            "href": "/reporting",
+            "href": "/reporting/reports",
             "icon": "File",
             "content": "Submit, view and edit your annual reports or previous years’ reports.",
             "links": [
               {
                 "title": "Submit Annual Report(s)",
-                "href": "/reporting/operations"
+                "href": "/reporting/reports"
               },
               {
                 "title": "View Past Submissions",
-                "href": "/reporting/tbd"
+                "href": "/reporting/reports/previous-years"
               }
             ]
           },
