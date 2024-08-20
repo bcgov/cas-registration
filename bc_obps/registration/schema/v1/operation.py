@@ -71,7 +71,9 @@ class OperationListOut(ModelSchema):
         from_attributes = True
 
 
-class OperationOut(ModelSchema):
+# Base class for OperationOut which was created so we could omit statutory_declaration field in OperationOut for v2
+# due to long response times
+class OperationOutBase(ModelSchema):
     naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
     first_name: Optional[str] = Field(None, alias="point_of_contact.first_name")
     last_name: Optional[str] = Field(None, alias="point_of_contact.last_name")
@@ -82,20 +84,9 @@ class OperationOut(ModelSchema):
     municipality: Optional[str] = Field(None, alias="point_of_contact.address.municipality")
     province: Optional[str] = Field(None, alias="point_of_contact.address.province")
     postal_code: Optional[str] = Field(None, alias="point_of_contact.address.postal_code")
-    # Not using Multiple operators for MVP
-    # operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
-    # multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
-    statutory_declaration: Optional[str] = None
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     bcghg_id: Optional[str] = None
     operator: Optional[OperatorForOperationOut] = None
-
-    @staticmethod
-    def resolve_statutory_declaration(obj: Operation) -> Optional[str]:
-        statutory_declaration = obj.get_statutory_declaration()
-        if statutory_declaration:
-            return file_to_data_url(statutory_declaration)
-        return None
 
     @staticmethod
     def resolve_bcghg_id(obj: Operation) -> str:
@@ -131,6 +122,17 @@ class OperationOut(ModelSchema):
             'status',
         ]
         from_attributes = True
+
+
+class OperationOut(OperationOutBase):
+    statutory_declaration: Optional[str] = None
+
+    @staticmethod
+    def resolve_statutory_declaration(obj: Operation) -> Optional[str]:
+        statutory_declaration = obj.get_statutory_declaration()
+        if statutory_declaration:
+            return file_to_data_url(statutory_declaration)
+        return None
 
 
 # Not using Multiple operators for MVP
