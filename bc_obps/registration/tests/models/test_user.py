@@ -107,7 +107,10 @@ class UserModelTest(BaseTestCase):
             ("facilityreport_archived", "facility report", None, None),
             ("registrationpurpose_created", "registration purpose", None, None),
             ("registrationpurpose_updated", "registration purpose", None, None),
-            ("registrationpurpose_updated", "registration purpose", None, None),
+            ("registrationpurpose_archived", "registration purpose", None, None),
+            ("optedinoperationdetail_created", "opted in operation detail", None, None),
+            ("optedinoperationdetail_updated", "opted in operation detail", None, None),
+            ("optedinoperationdetail_archived", "opted in operation detail", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
