@@ -1,7 +1,10 @@
 from django.contrib import admin
 from registration.models import (
     Address,
-    Event,
+    Restart,
+    Closure,
+    TemporaryShutdown,
+    Transfer,
     Facility,
     FacilityOwnershipTimeline,
     OperationOwnershipTimeline,
@@ -33,6 +36,10 @@ admin.site.register(Activity)
 admin.site.register(MultipleOperator)
 admin.site.register(Address)
 admin.site.register(BcObpsRegulatedOperation)
+admin.site.register(Closure)
+admin.site.register(TemporaryShutdown)
+admin.site.register(Transfer)
+admin.site.register(Restart)
 
 
 @admin.register(Operation)
@@ -74,8 +81,3 @@ class OperationOwnershipTimelineAdmin(admin.ModelAdmin):
         'start_date',
         'end_date',
     )
-
-
-@admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
-    list_display = ('id', 'operation', 'effective_date')

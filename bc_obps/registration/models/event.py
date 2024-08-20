@@ -1,25 +1,23 @@
 import uuid
 from django.db import models
-from registration.models import Facility, Operation, TimeStampedModel
-from simple_history.models import HistoricalRecords
+from registration.models import TimeStampedModel
 from datetime import datetime
 
 
 class Event(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the event")
-    operation = models.ForeignKey(Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="events")
-    facilities = models.ManyToManyField(Facility, blank=True, related_name="events")
+    # operation = models.ForeignKey(Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="events")
+    # facilities = models.ManyToManyField(Facility, blank=True, related_name="events")
     effective_date = models.DateTimeField(db_comment="The effective date of the event")
-    history = HistoricalRecords(
-        table_name='erc_history"."event_history',
-        history_user_id_field=models.UUIDField(null=True, blank=True),
-    )
+    status = models.CharField(
+        max_length=100, choices=[], db_comment="The status of the event or transfer request."
+    )  # placeholder for choices defined in the models that inherit Event
 
     class Meta:
-        db_table_comment = (
-            "Concrete base model for all specific types of events (restart, shutdown, temporary closure, transfer)."
-        )
-        db_table = 'erc"."event'
+        abstract = True  # Event is an abstract base model
+        # db_table_comment = (
+        #     "Concrete base model for all specific types of events (restart, shutdown, temporary closure, transfer)."
+        # )
         # constraints = [
         #     # Ensure that an event is associated with either an operation or a facility, but not both.
         #     models.CheckConstraint(
