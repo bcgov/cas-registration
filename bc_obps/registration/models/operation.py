@@ -16,6 +16,7 @@ from registration.models import (
     BcObpsRegulatedOperation,
     DocumentType,
     UserOperator,
+    OptedInOperationDetail,
 )
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
@@ -126,6 +127,15 @@ class Operation(TimeStampedModel):
         Activity,
         blank=True,
         related_name='%(class)ss',
+    )
+
+    opted_in_operation = models.OneToOneField(
+        OptedInOperationDetail,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        db_comment="Details about the operation if it is opted in",
+        related_name="operation",
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
