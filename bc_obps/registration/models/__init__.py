@@ -17,6 +17,7 @@ from .user_operator import UserOperator
 from .regulated_product import RegulatedProduct
 from .naics_code import NaicsCode
 from .activity import Activity
+from .opted_in_operation_detail import OptedInOperationDetail
 from .operation import Operation
 from .facility import Facility
 from .event import Event
@@ -53,4 +54,5 @@ __all__ = [
     "User",
     "WellAuthorizationNumber",
     "RegistrationPurpose",
+    "OptedInOperationDetail",
 ]

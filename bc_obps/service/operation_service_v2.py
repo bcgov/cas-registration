@@ -98,3 +98,20 @@ class OperationServiceV2:
         operation.save(update_fields=['status'])
         operation.set_create_or_update(user_guid)
         return operation
+
+    @classmethod
+    @transaction.atomic()
+    def update_opted_in_operation_detail(
+        cls, user_guid: UUID, operation_id: UUID, payload: OperationRegistrationOptedInOperationDetailIn
+    ) -> OptedInOperationDetail:
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        if not operation.opted_in_operation:
+            raise Exception("Operation does not have an opted-in operation.")
+        return OptedInOperationDataAccessService.update_opted_in_operation_detail(
+            user_guid, operation.opted_in_operation.id, payload.dict()
+        )
+
+    @classmethod
+    def get_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Optional[OptedInOperationDetail]:
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        return operation.opted_in_operation
