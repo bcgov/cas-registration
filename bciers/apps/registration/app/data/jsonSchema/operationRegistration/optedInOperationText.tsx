@@ -19,7 +19,7 @@ const optedInOperationPreface = (
   </div>
 );
 
-const hasEmissionsForSection3Text = (
+const meetsSection3EmissionsRequirementsText = (
   <span>
     Does this operation have emissions that are attributable for the purposes of
     section 3 of{" "}
@@ -33,7 +33,7 @@ const hasEmissionsForSection3Text = (
   </span>
 );
 
-const isEntireOperationOptedInForDesignationText = (
+const meetsEntireOperationRequirementsText = (
   <span>
     Designation as an opt-in can only be granted to an entire operation (i.e.
     not a part or certain segment of an operation). Do you confirm that the
@@ -41,7 +41,7 @@ const isEntireOperationOptedInForDesignationText = (
   </span>
 );
 
-const hasEmissionsForSection6Text = (
+const meetsSection6EmissionsRequirementsText = (
   <span>
     Does this operation have emissions that are attributable for the purposes of
     section 6 of{" "}
@@ -55,7 +55,8 @@ const hasEmissionsForSection6Text = (
   </span>
 );
 
-const primaryEconomicActivityText = (
+// using underscore between numbers made ESLint throw an error
+const meetsNaicsCode1122562ClassificationRequirementsText = (
   <span>
     Is this operation&rsquo;s primary economic activity classified by the
     following{" "}
@@ -68,7 +69,7 @@ const primaryEconomicActivityText = (
   </span>
 );
 
-const producesRegulatedProductInGgerrText = (
+const meetsProducingGgerScheduleA1RegulatedProductText = (
   <span>
     Does this operation produce a regulated product listed in Table 1 of
     Schedule A.1 of{" "}
@@ -82,7 +83,7 @@ const producesRegulatedProductInGgerrText = (
   </span>
 );
 
-const isCapableOfFulfillingReportingAndRegulatedObligationsText = (
+const meetsReportingAndRegulatedObligationsText = (
   <span>
     Is this operation capable of fulfilling the obligations of a reporting
     operation and a regulated operation under the{" "}
@@ -96,7 +97,7 @@ const isCapableOfFulfillingReportingAndRegulatedObligationsText = (
   </span>
 );
 
-const willNotifyDirectorIfCriteriaNotMetText = (
+const meetsNotificationToDirectorOnCriteriaChangeText = (
   <span>
     Will the operator notify the Director as soon as possible if this operation
     ceases to meet any of the criteria for the designation of the operation as a
@@ -106,11 +107,11 @@ const willNotifyDirectorIfCriteriaNotMetText = (
 
 export {
   optedInOperationPreface,
-  hasEmissionsForSection3Text,
-  isEntireOperationOptedInForDesignationText,
-  hasEmissionsForSection6Text,
-  primaryEconomicActivityText,
-  producesRegulatedProductInGgerrText,
-  isCapableOfFulfillingReportingAndRegulatedObligationsText,
-  willNotifyDirectorIfCriteriaNotMetText,
+  meetsSection3EmissionsRequirementsText,
+  meetsEntireOperationRequirementsText,
+  meetsSection6EmissionsRequirementsText,
+  meetsNaicsCode1122562ClassificationRequirementsText,
+  meetsProducingGgerScheduleA1RegulatedProductText,
+  meetsReportingAndRegulatedObligationsText,
+  meetsNotificationToDirectorOnCriteriaChangeText,
 };

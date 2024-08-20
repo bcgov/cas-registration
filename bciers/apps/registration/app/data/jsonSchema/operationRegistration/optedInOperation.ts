@@ -3,27 +3,27 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import {
   optedInOperationPreface,
-  hasEmissionsForSection3Text,
-  isEntireOperationOptedInForDesignationText,
-  hasEmissionsForSection6Text,
-  primaryEconomicActivityText,
-  producesRegulatedProductInGgerrText,
-  isCapableOfFulfillingReportingAndRegulatedObligationsText,
-  willNotifyDirectorIfCriteriaNotMetText,
+  meetsSection3EmissionsRequirementsText,
+  meetsEntireOperationRequirementsText,
+  meetsSection6EmissionsRequirementsText,
+  meetsNaicsCode1122562ClassificationRequirementsText,
+  meetsProducingGgerScheduleA1RegulatedProductText,
+  meetsReportingAndRegulatedObligationsText,
+  meetsNotificationToDirectorOnCriteriaChangeText,
 } from "./optedInOperationText";
 
 export const optedInOperationSchema: RJSFSchema = {
   title: "Opt-In Application",
   type: "object",
   required: [
-    "has_emissions_for_section_3",
-    "is_electricity_import_operation",
-    "is_entire_operation_opted_in_for_designation",
-    "has_emissions_for_section_6",
-    "is_primary_economic_activity_classified_by_naics_11_22_562",
-    "produces_regulated_product_in_ggerr",
-    "is_capable_of_fulfilling_reporting_and_regulated_obligations",
-    "will_notify_director_if_criteria_not_met",
+    "meets_section_3_emissions_requirements",
+    "meets_electricity_import_operation_criteria",
+    "meets_entire_operation_requirements",
+    "meets_section_6_emissions_requirements",
+    "meets_naics_code_11_22_562_classification_requirements",
+    "meets_producing_gger_schedule_a1_regulated_product",
+    "meets_reporting_and_regulated_obligations",
+    "meets_notification_to_director_on_criteria_change",
   ],
   properties: {
     opt_in_operation: {
@@ -36,28 +36,28 @@ export const optedInOperationSchema: RJSFSchema = {
       type: "string",
       readOnly: true,
     },
-    has_emissions_for_section_3: {
+    meets_section_3_emissions_requirements: {
       type: "boolean",
     },
-    is_electricity_import_operation: {
+    meets_electricity_import_operation_criteria: {
       type: "boolean",
     },
-    is_entire_operation_opted_in_for_designation: {
+    meets_entire_operation_requirements: {
       type: "boolean",
     },
-    has_emissions_for_section_6: {
+    meets_section_6_emissions_requirements: {
       type: "boolean",
     },
-    is_primary_economic_activity_classified_by_naics_11_22_562: {
+    meets_naics_code_11_22_562_classification_requirements: {
       type: "boolean",
     },
-    produces_regulated_product_in_ggerr: {
+    meets_producing_gger_schedule_a1_regulated_product: {
       type: "boolean",
     },
-    is_capable_of_fulfilling_reporting_and_regulated_obligations: {
+    meets_reporting_and_regulated_obligations: {
       type: "boolean",
     },
-    will_notify_director_if_criteria_not_met: {
+    meets_notification_to_director_on_criteria_change: {
       type: "boolean",
     },
   },
@@ -79,43 +79,43 @@ export const optedInOperationUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": optedInOperationPreface,
   },
-  has_emissions_for_section_3: {
-    "ui:title": hasEmissionsForSection3Text,
+  meets_section_3_emissions_requirements: {
+    "ui:title": meetsSection3EmissionsRequirementsText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },
-  is_electricity_import_operation: {
-    "ui:title": "Is this operation is an electricity import operation?",
+  meets_electricity_import_operation_criteria: {
+    "ui:title": "Is this operation an electricity import operation?",
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },
-  is_entire_operation_opted_in_for_designation: {
-    "ui:title": isEntireOperationOptedInForDesignationText,
+  meets_entire_operation_requirements: {
+    "ui:title": meetsEntireOperationRequirementsText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },
-  has_emissions_for_section_6: {
-    "ui:title": hasEmissionsForSection6Text,
+  meets_section_6_emissions_requirements: {
+    "ui:title": meetsSection6EmissionsRequirementsText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },
-  is_primary_economic_activity_classified_by_naics_11_22_562: {
-    "ui:title": primaryEconomicActivityText,
+  meets_naics_code_11_22_562_classification_requirements: {
+    "ui:title": meetsNaicsCode1122562ClassificationRequirementsText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },
-  produces_regulated_product_in_ggerr: {
-    "ui:title": producesRegulatedProductInGgerrText,
+  meets_producing_gger_schedule_a1_regulated_product: {
+    "ui:title": meetsProducingGgerScheduleA1RegulatedProductText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },
-  is_capable_of_fulfilling_reporting_and_regulated_obligations: {
-    "ui:title": isCapableOfFulfillingReportingAndRegulatedObligationsText,
+  meets_reporting_and_regulated_obligations: {
+    "ui:title": meetsReportingAndRegulatedObligationsText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },
-  will_notify_director_if_criteria_not_met: {
-    "ui:title": willNotifyDirectorIfCriteriaNotMetText,
+  meets_notification_to_director_on_criteria_change: {
+    "ui:title": meetsNotificationToDirectorOnCriteriaChangeText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
   },

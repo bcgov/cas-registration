@@ -1,24 +1,36 @@
 import { UUID } from "crypto";
+import { validate as isValidUUID } from "uuid";
 import OptedInOperationForm from "apps/registration/app/components/operations/registration/OptedInOperationForm";
 import { optedInOperationSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/optedInOperation";
+import { getOptedInOperationDetail } from "@bciers/actions/api";
 
-const OptedInOperationPage = ({
+const OptedInOperationPage = async ({
   operation,
   step,
   steps,
-  formData,
 }: {
   operation: UUID;
   step: number;
   steps: string[];
   formData: {};
 }) => {
-  // TODO: We need to figure out how to get the operation data(all data at once instead of individual calls)?!?!
+  let formData;
+  if (operation && isValidUUID(operation)) {
+    formData = await getOptedInOperationDetail(operation);
+  }
+
+  if ("error" in formData) {
+    return (
+      <div>
+        <p>Sorry, Something went wrong. Please try again later!</p>
+      </div>
+    );
+  }
   return (
     <OptedInOperationForm
-      formData={{}}
       operation={operation}
       schema={optedInOperationSchema}
+      formData={formData}
       step={step}
       steps={steps}
     />
