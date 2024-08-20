@@ -1,9 +1,15 @@
-from typing import Dict, Union
+from typing import Dict, List, Optional, Union
 from uuid import UUID
+from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
 from service.operation_service import OperationService
 from registration.models.registration_purpose import RegistrationPurpose
-from service.data_access_service.registration_purpose_service import registrationpurposeDataAccessService
-from registration.schema.v2.operation import OperationFilterSchema, RegistrationPurposeIn
+from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
+from registration.schema.v2.operation import (
+    OperationFilterSchema,
+    OperationRegistrationOptedInOperationDetailIn,
+    RegistrationPurposeIn,
+)
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from django.db.models import Q
@@ -64,29 +70,34 @@ class OperationServiceV2:
     ) -> Operation:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
 
+        purpose_choice = next(
+            (choice for choice in RegistrationPurpose.Purposes if choice.value == payload.registration_purpose), None
+        )
+        purposes: List[RegistrationPurpose.Purposes] = []
         # add the payload's purpose as long as it's not reporting or regulated (will add these later)
-        if (
-            payload.registration_purpose != RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION
-            and payload.registration_purpose != RegistrationPurpose.Purposes.REPORTING_OPERATION
-        ):
-            registrationpurposeDataAccessService.create_registration_purpose(
-                user_guid, operation_id, payload.dict(include={'registration_purpose'})
-            )
-
-        if (
-            payload.registration_purpose != RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION
-            and payload.registration_purpose != RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION
-        ):
-            for purpose in [
+        if purpose_choice in [
+            RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
+            RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
+        ]:
+            purposes.append(purpose_choice)
+        else:
+            reporting_and_regulated_purposes = [
                 RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
                 RegistrationPurpose.Purposes.REPORTING_OPERATION,
-            ]:
-                registrationpurposeDataAccessService.create_registration_purpose(
-                    user_guid, operation_id, {'registration_purpose': purpose}
-                )
+            ]
+            if purpose_choice and purpose_choice not in reporting_and_regulated_purposes:
+                reporting_and_regulated_purposes.append(purpose_choice)
+            purposes.extend(reporting_and_regulated_purposes)
             if payload.regulated_products:
                 operation.regulated_products.set(payload.regulated_products)
 
+        for purpose in purposes:
+            RegistrationPurposeDataAccessService.create_registration_purpose(
+                user_guid, operation_id, {'registration_purpose': purpose}
+            )
+            if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
+                operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
+                operation.save(update_fields=['opted_in_operation'])
         operation.set_create_or_update(user_guid)
         return operation
 
