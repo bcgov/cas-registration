@@ -25,6 +25,18 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --immutable
         working-directory: ./bciers
+  check-nx-affected:
+    needs: [install-dev-tools]
+    runs-on: ubuntu-latest
+    outputs:
+      NX_AFFECTED_E2E: ${{steps.nx_affected.outputs.NX_AFFECTED_E2E}}
+    steps:
+      - uses: actions/checkout@v4
+      - name: check nx affected target e2e:ci projects and save output
+        run: |
+          NX_AFFECTED_E2E=$(nx show projects --affected --with-target e2e:ci --base=develop --json)
+          echo "NX_AFFECTED_E2E=$NX_AFFECTED_E2E" >> "$GITHUB_ENV"
+        working-directory: ./bciers
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
   build-registration:
@@ -47,6 +59,7 @@ jobs:
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
   test-e2e:
+    if: contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')
     needs: [build-registration1, install-dev-tools]
     uses: ./.github/workflows/test-e2e.yaml
     secrets: inherit
