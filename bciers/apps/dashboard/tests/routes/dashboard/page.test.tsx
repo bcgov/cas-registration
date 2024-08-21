@@ -2,6 +2,12 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import DashboardPage from "../../../app/dashboard/page";
 import { auth } from "@bciers/testConfig/mocks";
+const roles = [
+  "cas_admin",
+  "cas_analyst",
+  "industry_user",
+  "industry_user_admin",
+];
 
 const tiles = [
   {
@@ -89,7 +95,9 @@ const tiles = [
 ];
 
 const noteContent =
-  "Important: Please always ensure that the information in Registration is complete and accurate before submit or amend reports in Reporting.";
+  "Important: Please always ensure that the information in Registration is complete and accurate before submitting or amending reports in Reporting.";
+
+const msgContent = "Welcome to B.C. Industrial Emissions Reporting System";
 
 vi.mock("@bciers/actions", () => ({
   fetchDashboardData: vi.fn(() => tiles),
@@ -238,4 +246,31 @@ describe("Registration dashboard page", () => {
 
     expect(screen.queryByTestId("note")).not.toBeInTheDocument();
   });
+
+  it("renders the dashboard-pending-message card for cas_pending role", async () => {
+    auth.mockReturnValueOnce({
+      user: { app_role: "cas_pending" },
+    });
+
+    render(await DashboardPage());
+
+    const msg = screen.getByTestId("dashboard-pending-message");
+    expect(msg).toBeVisible();
+    expect(msg).toHaveTextContent(msgContent);
+  });
+
+  it.each(roles)(
+    "does not render the dashboard-pending-message card for role: %s",
+    async (role) => {
+      auth.mockReturnValueOnce({
+        user: { app_role: role },
+      });
+
+      render(await DashboardPage());
+
+      expect(
+        screen.queryByTestId("dashboard-pending-message"),
+      ).not.toBeInTheDocument();
+    },
+  );
 });
