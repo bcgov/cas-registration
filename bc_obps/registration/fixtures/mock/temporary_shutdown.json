@@ -1,0 +1,35 @@
+[
+  {
+    "model": "registration.temporaryshutdown",
+    "fields": {
+      "created_by": "279c80cf-5781-4c28-8727-40a133d17c0d",
+      "created_at": "2024-07-05T23:25:37.892Z",
+      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "effective_date": "2024-08-21T09:00:00Z",
+      "description": "Shutting down for the day because we can't find our keys to unlock the building"
+    }
+  },
+  {
+    "model": "registration.temporaryshutdown",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-08-20T18:23:08.327Z",
+      "effective_date": "2026-01-10T09:00:00Z",
+      "facilities": [
+        "459b80f9-b5f3-48aa-9727-90c30eaf3a58",
+        "f486f2fb-62ed-438d-bb3e-0819b51e3aeb"
+      ],
+      "description": ""
+    }
+  },
+  {
+    "model": "registration.temporaryshutdown",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-08-20T18:23:08.327Z",
+      "effective_date": "2026-01-10T09:00:00Z",
+      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "description": "It's Pretzel Day!"
+    }
+  }
+]
