@@ -207,6 +207,11 @@ def files_have_same_hash(file1: Optional[ContentFile], file2: Optional[ContentFi
 
 
 class CustomPagination(PageNumberPagination):
+    """
+    Custom pagination class that allows for custom page sizes.
+    If paginate_result is set to True, the page size will be set to the default page size, otherwise it will be set to the total count of the queryset (no pagination).
+    """
+
     def paginate_queryset(
         self,
         queryset: QuerySet,
@@ -214,7 +219,7 @@ class CustomPagination(PageNumberPagination):
         **params: Any,
     ) -> Any:
         paginate_result = params.get('paginate_result')
-        page_size = queryset.count() if not paginate_result else self.page_size
+        page_size = self.page_size if paginate_result else queryset.count()
         offset = (pagination.page - 1) * page_size
         return {
             "items": queryset[offset : offset + page_size],
