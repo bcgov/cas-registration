@@ -4,9 +4,10 @@ import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import { Operator } from "./types";
 import ConfirmSelectedOperatorForm from "./ConfirmSelectedOperatorForm";
 
-import getOperator from "./getOperator";
-import getOperatorHasAdmin from "./getOperatorHasAdmin";
-import getOperatorAccessDeclined from "./getOperatorAccessDeclined";
+import getOperator from "@/administration/app/components/operators/getOperator";
+
+import getOperatorHasAdmin from "@/administration/app/components/operators/getOperatorHasAdmin";
+import getOperatorAccessDeclined from "@/administration/app/components/operators/getOperatorAccessDeclined";
 
 export default async function ConfirmSelectedOperator({
   params,

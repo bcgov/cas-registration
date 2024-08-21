@@ -1,7 +1,7 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { Operator } from "./types";
-import getOperator from "./getOperator";
-import getOperatorHasAdmin from "./getOperatorHasAdmin";
+import getOperator from "@/administration/app/components/operators/getOperator";
+import getOperatorHasAdmin from "@/administration/app/components/operators/getOperatorHasAdmin";
 
 export default async function AccessRequestReceived({
   params,
