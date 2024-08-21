@@ -57,13 +57,17 @@ const handleStartReport = async (
   reportingYear: number,
 ): Promise<string> => {
   try {
-    const reportId = await actionHandler("reporting/reports", "POST", "", {
-      body: JSON.stringify({
-        operation_id: operationId,
-        reporting_year: reportingYear,
-      }),
-    });
-
+    const reportId = await actionHandler(
+      "reporting/create-report",
+      "POST",
+      "",
+      {
+        body: JSON.stringify({
+          operation_id: operationId,
+          reporting_year: reportingYear,
+        }),
+      },
+    );
     return reportId;
   } catch (error) {
     throw error;
@@ -79,9 +83,7 @@ const ActionCell = (params: GridRenderCellParams) => {
     return (
       <Button
         color="primary"
-        onClick={() =>
-          router.push(`operations/${reportId}/review-operator-data`)
-        }
+        onClick={() => router.push(`reports/${reportId}/review-operator-data`)}
       >
         Continue
       </Button>
@@ -97,7 +99,7 @@ const ActionCell = (params: GridRenderCellParams) => {
           OperationId,
           reportingYearObj.reporting_year,
         );
-        router.push(`operations/${newReportId}/review-operator-data`);
+        router.push(`reports/${newReportId}/review-operator-data`);
       }}
     >
       Start

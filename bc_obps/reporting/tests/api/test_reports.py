@@ -4,13 +4,13 @@ from typing import Any
 from django.http import HttpResponse
 from django.test import Client
 from registration.tests.utils.bakers import operation_baker
-from reporting.models.report import Report
+from reporting.models import Report, ReportVersion
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 
 
 @pytest.mark.django_db
 class TestReportsEndpoint:
-    endpoint_under_test = "/api/reporting/reports"
+    endpoint_under_test = "/api/reporting/create-report"
     client = Client()
 
     def send_post_request(self, request_data: dict[str, Any]) -> HttpResponse:
@@ -59,6 +59,7 @@ class TestReportsEndpoint:
         reporting_year = reporting_year_baker()
 
         assert Report.objects.count() == 0
+        assert ReportVersion.objects.count() == 0
 
         request_data = {
             "operation_id": str(operation.id),
@@ -67,5 +68,6 @@ class TestReportsEndpoint:
         response = self.send_post_request(request_data)
 
         assert Report.objects.count() == 1
+        assert ReportVersion.objects.count() == 1
         assert response.status_code == 201
-        assert response.json() == Report.objects.first().id
+        assert response.json() == ReportVersion.objects.first().id
