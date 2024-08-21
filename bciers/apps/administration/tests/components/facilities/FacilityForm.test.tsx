@@ -267,7 +267,7 @@ const fillMandatoryFields = async (schema: RJSFSchema) => {
 const fillOptionalFields = async (schema: RJSFSchema) => {
   if (schema === facilitiesLfoSchema) {
     // fill well authorization numbers
-    await userEvent.click(screen.getByText("Add"));
+    await userEvent.click(screen.getByText("Add Well Authorization Number"));
     const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
     // have to use fireEvent for number fields
     fireEvent.change(firstWellAuthInput, {
@@ -421,8 +421,8 @@ describe("FacilityForm component", () => {
       "",
     );
 
-    expect(screen.getByText(/Authorization+/i)).toBeVisible();
-    expect(screen.getByRole("button", { name: "Add" })).toBeVisible();
+    expect(screen.getByText(/BC Energy Regulator Well Authorization+/i)).toBeVisible();
+    expect(screen.getByRole("button", { name: "Add Well Authorization Number" })).toBeVisible();
     expect(
       screen.getByLabelText(/Did this facility begin operations in+/i),
     ).not.toBeChecked();
@@ -506,7 +506,7 @@ describe("FacilityForm component", () => {
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
       "Single Facility",
     );
-    expect(screen.getByText("Well Authorization Number(s)")).toBeVisible();
+    expect(screen.getByText("BC Energy Regulator Well Authorization Number(s)")).toBeVisible();
     expect(screen.getByText(24546)).toBeVisible();
     expect(screen.getByText(54321)).toBeVisible();
     expect(
