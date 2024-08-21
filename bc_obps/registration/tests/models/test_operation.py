@@ -83,10 +83,13 @@ class OperationModelTest(BaseTestCase):
             ("multiple_operator", "multiple operator", None, None),
             ("facility_ownerships", "facility ownership timeline", None, None),
             ("ownerships", "operation ownership timeline", None, None),
-            ("events", "event", None, None),
             ("report", "report", None, None),
             ("registration_purposes", "registration purpose", None, None),
             ("opted_in_operation", "opted in operation", None, None),
+            ("transfers", "transfer", None, None),
+            ("restarts", "restart", None, None),
+            ("closures", "closure", None, None),
+            ("temporary_shutdowns", "temporary shutdown", None, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
