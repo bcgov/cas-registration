@@ -13,8 +13,20 @@ from ninja.responses import codes_4xx
 ##### GET #####
 
 
+REGISTRATION_PURPOSES_LITERALS = Literal[
+    RegistrationPurpose.Purposes.REPORTING_OPERATION,
+    RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
+    RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION,
+    RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
+    RegistrationPurpose.Purposes.OPTED_IN_OPERATION,
+    RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
+]
+
+
 @router.get(
-    "/registration_purposes", response={200: List[str], codes_4xx: Message}, auth=authorize("approved_authorized_roles")
+    "/registration_purposes",
+    response={200: List[REGISTRATION_PURPOSES_LITERALS], codes_4xx: Message},
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[str]]:
