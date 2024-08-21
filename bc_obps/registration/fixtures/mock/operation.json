@@ -90,6 +90,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
