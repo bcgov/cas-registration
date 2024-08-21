@@ -57,7 +57,7 @@ describe("withAuthorizationDashboard middleware", () => {
     expect(result?.status).toBe(200);
   });
 
-  it("redirects to the registration profile page if the user has no app role", async () => {
+  it("redirects to the administration profile page if the user has no app role", async () => {
     getToken.mockResolvedValue(mockBaseToken);
     const nextUrl = new NextURL(`${domain}/dashboard`);
 
@@ -89,23 +89,6 @@ describe("withAuthorizationDashboard middleware", () => {
       instance(mockedRequest),
       mockNextFetchEvent,
     );
-    expect(result?.status).toBe(200);
-  });
-
-  it("redirects to the registration page if the user has cas_pending app role", async () => {
-    getToken.mockResolvedValue(mockCasPendingToken);
-    const nextUrl = new NextURL(`${domain}/dashboard`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
-    nextUrl.pathname = "/registration";
-    expect(NextResponse.rewrite).toHaveBeenCalledOnce();
-    expect(NextResponse.rewrite).toHaveBeenCalledWith(nextUrl);
-
     expect(result?.status).toBe(200);
   });
 
@@ -141,7 +124,36 @@ describe("withAuthorizationDashboard middleware", () => {
     expect(result?.status).toBe(307);
   });
 
-  it("Redirects authenticated cas_user to the common dashboard if the route is /onboarding", async () => {
+  it("redirects authenticated, authorized cas_user to the common dashboard if the route is /", async () => {
+    getToken.mockResolvedValue(mockCasUserToken);
+    const nextUrl = new NextURL(domain);
+
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    when(mockedRequest.url).thenReturn(domain);
+
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
+    expect(result?.status).toBe(307);
+  });
+
+  it("calls NextMiddleware for authenticated, authorized cas_user if the route is /dashboard", async () => {
+    getToken.mockResolvedValue(mockCasUserToken);
+    const nextUrl = new NextURL(`${domain}/dashboard`);
+
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+    expect(result?.status).toBe(200);
+  });
+
+  it("redirects authenticated, authorized cas_user to the common dashboard if the route is /onboarding", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
     const nextUrl = new NextURL("/onboarding", domain);
 
@@ -157,8 +169,8 @@ describe("withAuthorizationDashboard middleware", () => {
     expect(result?.status).toBe(307);
   });
 
-  it("Redirects authenticated cas_user to the common dashboard if the route is /", async () => {
-    getToken.mockResolvedValue(mockCasUserToken);
+  it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /", async () => {
+    getToken.mockResolvedValue(mockCasPendingToken);
     const nextUrl = new NextURL(domain);
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
@@ -171,5 +183,45 @@ describe("withAuthorizationDashboard middleware", () => {
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
+  });
+
+  it("calls NextMiddleware for authenticated, NON-authorized cas_user if the route is /dashboard", async () => {
+    getToken.mockResolvedValue(mockCasPendingToken);
+    const nextUrl = new NextURL(`${domain}/dashboard`);
+
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+    expect(result?.status).toBe(200);
+  });
+
+  it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /administration, /coam, /onboarding, /registration, /reporting", async () => {
+    getToken.mockResolvedValue(mockCasPendingToken);
+    const paths = [
+      "/administration",
+      "/coam",
+      "/onboarding",
+      "/registration",
+      "/reporting",
+    ];
+
+    for (const path of paths) {
+      const nextUrl = new NextURL(path, domain);
+
+      when(mockedRequest.nextUrl).thenReturn(nextUrl);
+      when(mockedRequest.url).thenReturn(domain);
+
+      const result = await middleware(
+        instance(mockedRequest),
+        mockNextFetchEvent,
+      );
+      expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
+      expect(result?.status).toBe(307);
+    }
+
+    expect(NextResponse.redirect).toHaveBeenCalledTimes(paths.length);
   });
 });
