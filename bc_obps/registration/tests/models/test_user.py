@@ -72,9 +72,6 @@ class UserModelTest(BaseTestCase):
             ("operationownershiptimeline_created", "operation ownership timeline", None, None),
             ("operationownershiptimeline_updated", "operation ownership timeline", None, None),
             ("operationownershiptimeline_archived", "operation ownership timeline", None, None),
-            ("event_created", "event", None, None),
-            ("event_updated", "event", None, None),
-            ("event_archived", "event", None, None),
             ("reportactivity_created", "report activity", None, None),
             ("reportactivity_updated", "report activity", None, None),
             ("reportactivity_archived", "report activity", None, None),
@@ -111,6 +108,18 @@ class UserModelTest(BaseTestCase):
             ("optedinoperationdetail_created", "opted in operation detail", None, None),
             ("optedinoperationdetail_updated", "opted in operation detail", None, None),
             ("optedinoperationdetail_archived", "opted in operation detail", None, None),
+            ("closure_created", "closure", None, None),
+            ("closure_updated", "closure", None, None),
+            ("closure_archived", "closure", None, None),
+            ("restart_created", "restart", None, None),
+            ("restart_updated", "restart", None, None),
+            ("restart_archived", "restart", None, None),
+            ("temporaryshutdown_created", "temporary shutdown", None, None),
+            ("temporaryshutdown_updated", "temporary shutdown", None, None),
+            ("temporaryshutdown_archived", "temporary shutdown", None, None),
+            ("transfer_created", "transfer", None, None),
+            ("transfer_updated", "transfer", None, None),
+            ("transfer_archived", "transfer", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
