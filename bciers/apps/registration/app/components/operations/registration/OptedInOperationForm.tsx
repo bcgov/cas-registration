@@ -32,7 +32,9 @@ const OptedInOperationForm = ({
 
   //To run the check on initial load when the form already has data
   useEffect(() => {
-    setSubmitButtonDisabled(!allQuestionsAnswered(formData));
+    if (formData) {
+      setSubmitButtonDisabled(!allQuestionsAnswered(formData));
+    }
   }, []);
 
   const handleChange = (e: IChangeEvent) => {

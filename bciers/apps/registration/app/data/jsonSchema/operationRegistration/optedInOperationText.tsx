@@ -86,12 +86,12 @@ const meetsProducingGgerScheduleA1RegulatedProductText = (
 const meetsReportingAndRegulatedObligationsText = (
   <span>
     Is this operation capable of fulfilling the obligations of a reporting
-    operation and a regulated operation under the{" "}
+    operation and a regulated operation under{" "}
     <a
       href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01"
       target="_blank"
     >
-      Act
+      the Act
     </a>{" "}
     and the regulations?
   </span>

@@ -12,14 +12,13 @@ const OptedInOperationPage = async ({
   operation: UUID;
   step: number;
   steps: string[];
-  formData: {};
 }) => {
   let formData;
   if (operation && isValidUUID(operation)) {
     formData = await getOptedInOperationDetail(operation);
   }
 
-  if ("error" in formData) {
+  if (formData && "error" in formData) {
     return (
       <div>
         <p>Sorry, Something went wrong. Please try again later!</p>

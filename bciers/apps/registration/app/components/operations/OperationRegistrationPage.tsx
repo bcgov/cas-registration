@@ -62,7 +62,7 @@ const OperationRegistrationPage = async ({
     case "New Entrant Operation":
       return NewEntrantOperationPage(defaultProps);
     case "Opt-in Application":
-      return OptedInOperationPage({ ...defaultProps, formData: operationData });
+      return OptedInOperationPage(defaultProps);
     case "Operation Representative":
       return OperationRepresentativePage(defaultProps);
     case "Submission":
