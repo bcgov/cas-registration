@@ -2,21 +2,14 @@ from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.schema.v2.operation import OperationRepresentativeIn
-from registration.schema.v1.operation import OperationUpdateOut
+from registration.schema.v2.operation import OperationUpdateOut
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
-
 from registration.api.utils.current_user_utils import get_current_user_guid
-
-
 from registration.decorators import handle_http_errors
-
 from registration.api.router import router
-from registration.models import (
-    Operation,
-)
+from registration.models import Operation
 from common.permissions import authorize
-
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
@@ -25,7 +18,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     "/v2/operations/{operation_id}/registration/operation-representative",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=V2,
-    description="""Updates an operation with operation representative(s). User may create new contacts to use as represenatives if desired.
+    description="""Updates an operation with operation representative(s). User may create new contacts to use as representatives if desired.
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
     auth=authorize("approved_industry_user"),
 )

@@ -128,7 +128,7 @@ class TestOperationServiceV2:
         assert updated_operation.status == Operation.Statuses.REGISTERED
         assert updated_operation.updated_by == approved_user_operator.user
         assert updated_operation.updated_at is not None
-        
+
     @staticmethod
     def test_list_current_users_operations():
 
