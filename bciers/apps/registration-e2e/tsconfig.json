@@ -7,13 +7,11 @@
     "sourceMap": false
   },
   "include": [
-    "**/*.ts",
-    "**/*.js",
+    "./**/*",
     "playwright.config.ts",
     "src/**/*.spec.ts",
     "src/**/*.spec.js",
-    "src/**/*.test.ts",
-    "src/**/*.test.js",
     "src/**/*.d.ts"
-  ]
+  ],
+  "exclude": [".next", "node_modules"]
 }
