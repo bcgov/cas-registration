@@ -108,7 +108,6 @@ class Operation(TimeStampedModel):
         Contact,
         blank=True,
         related_name='operations_contacts',
-        db_comment="Many-to-many relationship with contacts (contacts used only in registration 2)",
     )
     status = models.CharField(
         max_length=1000,

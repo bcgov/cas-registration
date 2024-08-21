@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0034_alter_historicaloperation_status_and_more'),
+        ('registration', '0033_alter_historicaloperation_status_and_more'),
     ]
 
     operations = [
@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
             name='contacts',
             field=models.ManyToManyField(
                 blank=True,
-                db_comment='Many-to-many relationship with contacts (contacts used only in registration 2)',
                 related_name='operations_contacts',
                 to='registration.contact',
             ),
