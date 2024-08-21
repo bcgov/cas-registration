@@ -47,28 +47,25 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/registration",
+        "cwd": "apps/registration-e2e",
         "command": "happo-e2e -- playwright test"
       }
+    },
+    "e2e:ci": {
+      "//": "This target is used by the CI pipeline to detect NX affected apps that we want to run e2e on"
     },
     "e2e:ui": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/registration",
+        "cwd": "apps/registration-e2e",
         "command": "happo-e2e -- playwright test --ui"
       }
     },
     "e2e:report": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/registration",
+        "cwd": "apps/registration-e2e",
         "command": "playwright show-report"
-      }
-    },
-    "e2e:sequential": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "playwright test --workers=1 bciers/apps/registration/e2e/*"
       }
     }
   }
