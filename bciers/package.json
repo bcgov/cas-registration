@@ -8,6 +8,7 @@
     "dev": "nx dev reporting",
     "dash": "nx dev dashboard -p 3000",
     "dash:build": "nx build dashboard",
+    "dash:test": "nx run dashboard:test",
     "admin": "nx dev administration -p 4001",
     "admin:build": "nx build administration",
     "admin:e2e": "nx run administration:e2e",
