@@ -1,10 +1,7 @@
-from typing import Literal, Optional, Tuple
+from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.schema.v2.operation import (
-    OperationRegistrationOptedInOperationDetailIn,
-    OperationRegistrationOptedInOperationDetailOut,
     OperationUpdateOut,
     RegistrationPurposeIn,
     OperationRegistrationSubmissionIn,
@@ -55,36 +52,4 @@ def operation_registration_submission(
         raise Exception("All checkboxes must be checked to submit the registration.")
     return 200, OperationServiceV2.update_status(
         get_current_user_guid(request), operation_id, Operation.Statuses.REGISTERED
-    )
-
-
-@router.get(
-    "/v2/operations/{operation_id}/registration/opted-in-operation-detail",
-    response={200: OperationRegistrationOptedInOperationDetailOut, custom_codes_4xx: Message},
-    tags=V2,
-    description="""Get the opted-in operation details of a specific operation by its ID.
-    The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
-    auth=authorize('approved_industry_user'),
-)
-@handle_http_errors()
-def operation_registration_get_opted_in_operation_detail(
-    request: HttpRequest, operation_id: UUID
-) -> Tuple[Literal[200], Optional[OptedInOperationDetail]]:
-    return 200, OperationServiceV2.get_opted_in_operation_detail(get_current_user_guid(request), operation_id)
-
-
-@router.put(
-    "/v2/operations/{operation_id}/registration/opted-in-operation-detail",
-    response={200: OperationRegistrationOptedInOperationDetailOut, custom_codes_4xx: Message},
-    tags=V2,
-    description="""Updates the opted-in operation details of a specific operation by its ID.
-    The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
-    auth=authorize('approved_industry_user'),
-)
-@handle_http_errors()
-def operation_registration_update_opted_in_operation_detail(
-    request: HttpRequest, operation_id: UUID, payload: OperationRegistrationOptedInOperationDetailIn
-) -> Tuple[Literal[200, 400], OptedInOperationDetail]:
-    return 200, OperationServiceV2.update_opted_in_operation_detail(
-        get_current_user_guid(request), operation_id, payload
     )
