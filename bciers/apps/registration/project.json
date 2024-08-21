@@ -52,6 +52,7 @@
       }
     },
     "e2e:ci": {
+      "executor": "nx:run-commands",
       "//": "This target is used by the CI pipeline to detect NX affected apps that we want to run e2e on"
     },
     "e2e:ui": {
