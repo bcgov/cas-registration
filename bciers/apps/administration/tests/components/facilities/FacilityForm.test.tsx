@@ -421,8 +421,12 @@ describe("FacilityForm component", () => {
       "",
     );
 
-    expect(screen.getByText(/BC Energy Regulator Well Authorization+/i)).toBeVisible();
-    expect(screen.getByRole("button", { name: "Add Well Authorization Number" })).toBeVisible();
+    expect(
+      screen.getByText(/BC Energy Regulator Well Authorization+/i),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Add Well Authorization Number" }),
+    ).toBeVisible();
     expect(
       screen.getByLabelText(/Did this facility begin operations in+/i),
     ).not.toBeChecked();
@@ -506,7 +510,9 @@ describe("FacilityForm component", () => {
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
       "Single Facility",
     );
-    expect(screen.getByText("BC Energy Regulator Well Authorization Number(s)")).toBeVisible();
+    expect(
+      screen.getByText("BC Energy Regulator Well Authorization Number(s)"),
+    ).toBeVisible();
     expect(screen.getByText(24546)).toBeVisible();
     expect(screen.getByText(54321)).toBeVisible();
     expect(
