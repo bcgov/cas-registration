@@ -1,6 +1,7 @@
 from typing import Optional
 from registration.models import Event, Operation, Facility
 from django.db import models
+from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 
 
@@ -24,6 +25,13 @@ class TemporaryShutdown(Event):
         Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="temporary_shutdowns"
     )
     facilities = models.ManyToManyField(Facility, blank=True, related_name="temporary_shutdowns")
+
+    def clean(self) -> None:
+        super().clean()
+
+        # Check that either 'operation' or 'facilities' is populated, but not both
+        if bool(self.operation) == bool(self.facilities.exists()):
+            raise ValidationError("Exactly one of 'operation' or 'facilities' must be populated.")
 
     class Meta:
         db_table_comment = "Temporary shutdown events for operations and/or facilities."
