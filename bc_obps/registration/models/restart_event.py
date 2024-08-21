@@ -1,5 +1,6 @@
 from registration.models import Event, Operation, Facility
 from django.db import models
+from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 
 
@@ -16,6 +17,13 @@ class Restart(Event):
         table_name='erc_history"."restart_event_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
+
+    def clean(self) -> None:
+        super().clean()
+
+        # Check that either 'operation' or 'facilities' is populated, but not both
+        if bool(self.operation) == bool(self.facilities.exists()):
+            raise ValidationError("Exactly one of 'operation' or 'facilities' must be populated.")
 
     class Meta:
         db_table_comment = (

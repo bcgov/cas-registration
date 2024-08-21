@@ -1,6 +1,6 @@
-from typing import Optional
 from registration.models import Event, Operation, Facility
 from django.db import models
+from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 
 
@@ -19,11 +19,13 @@ class Closure(Event):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
+    def clean(self) -> None:
+        super().clean()
+
+        # Check that either 'operation' or 'facilities' is populated, but not both
+        if bool(self.operation) == bool(self.facilities.exists()):
+            raise ValidationError("Exactly one of 'operation' or 'facilities' must be populated.")
+
     class Meta:
         db_table_comment = "Closure events for operations and/or facilities."
         db_table = 'erc"."closures'
-
-    @staticmethod
-    def _validate_string(value: Optional[str]) -> None:
-        if not isinstance(value, str) or not value:
-            raise ValueError("Value must be a non-empty string")
