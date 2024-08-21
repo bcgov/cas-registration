@@ -19,7 +19,7 @@ from service.data_access_service.reporting_year import ReportingYearDataAccessSe
 class ReportService:
     @classmethod
     @transaction.atomic()
-    def create_report(cls, operation_id: UUID, reporting_year: int) -> Report:
+    def create_report(cls, operation_id: UUID, reporting_year: int) -> int:
 
         if ReportDataAccessService.report_exists(operation_id, reporting_year):
             raise Exception("A report already exists for this operation and year, unable to create a new one.")
@@ -77,7 +77,7 @@ class ReportService:
             facility_report.activities.add(*list(operation.activities.all()))
             facility_report.products.add(*list(operation.regulated_products.all()))
 
-        return report
+        return report_version.id
 
     @classmethod
     def get_report_operation_by_version_id(cls, report_version_id: int) -> ReportOperation:

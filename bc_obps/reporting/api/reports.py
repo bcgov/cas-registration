@@ -10,12 +10,12 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
-from ..models import FacilityReport
+from ..models import FacilityReport, ReportingYear
 from ..schema.facility_report import FacilityReportOut, FacilityReportIn
 
 
 @router.post(
-    "/reports",
+    "/create-report",
     response={201: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
@@ -24,8 +24,8 @@ from ..schema.facility_report import FacilityReportOut, FacilityReportIn
 )
 @handle_http_errors()
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
-    report = ReportService.create_report(payload.operation_id, payload.reporting_year)
-    return 201, report.id
+    report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
+    return 201, report_version_id
 
 
 @router.get(
@@ -64,8 +64,8 @@ def save_report(
     description="""Returns json object with current reporting year and due date.""",
 )
 @handle_http_errors()
-def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
-    return 200, ReportingYearService.get_current_reporting_year().reporting_year
+def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYear]:
+    return 200, ReportingYearService.get_current_reporting_year()
 
 
 @router.get(

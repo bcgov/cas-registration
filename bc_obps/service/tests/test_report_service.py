@@ -10,7 +10,7 @@ from registration.tests.utils.bakers import (
     operator_baker,
     facility_baker,
 )
-from reporting.models.reporting_year import ReportingYear
+from reporting.models import ReportingYear, ReportVersion
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from service.report_service import ReportService
 
@@ -80,7 +80,8 @@ class TestReportService(TestCase):
             )
             reporting_year = reporting_year_baker(reporting_year=2101)
 
-            report = ReportService.create_report(operation.id, reporting_year=2101)
+            report_version_id = ReportService.create_report(operation.id, reporting_year=2101)
+            report = ReportVersion.objects.get(pk=report_version_id).report
 
             # Testing the report data
             self.assertEqual(report.operation.id, operation.id)
