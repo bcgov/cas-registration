@@ -6,6 +6,7 @@ import {
   OperationInformationPage,
   OperationRepresentativePage,
   RegistrationSubmissionPage,
+  OptedInOperationPage,
 } from "@/registration/app/components/operations/registration";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { getOperation } from "@bciers/actions/api";
@@ -23,7 +24,7 @@ const OperationRegistrationPage = async ({
 }) => {
   // const purpose = operationFormData?.registration_purpose;
   // hardcoding a value for development; remove value and ts-ignores when feature is implemented
-  const purpose = "Reporting Operation";
+  const purpose = "Opted-in Operation";
 
   // Remove steps that aren't applicable to the registration based on purpose
   let steps = allOperationRegistrationSteps;
@@ -60,7 +61,8 @@ const OperationRegistrationPage = async ({
       });
     case "New Entrant Operation":
       return NewEntrantOperationPage(defaultProps);
-    // to add opt in page
+    case "Opt-in Application":
+      return OptedInOperationPage(defaultProps);
     case "Operation Representative":
       return OperationRepresentativePage(defaultProps);
     case "Submission":

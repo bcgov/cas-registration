@@ -426,6 +426,45 @@ Activity {
     CharField slug
     FloatField weight
 }
+HistoricalOptedInOperationDetail {
+    BigIntegerField id
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    BooleanField meets_section_3_emissions_requirements
+    BooleanField meets_electricity_import_operation_criteria
+    BooleanField meets_entire_operation_requirements
+    BooleanField meets_section_6_emissions_requirements
+    BooleanField meets_naics_code_11_22_562_classification_requirements
+    BooleanField meets_producing_gger_schedule_a1_regulated_product
+    BooleanField meets_reporting_and_regulated_obligations
+    BooleanField meets_notification_to_director_on_criteria_change
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+OptedInOperationDetail {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    BooleanField meets_section_3_emissions_requirements
+    BooleanField meets_electricity_import_operation_criteria
+    BooleanField meets_entire_operation_requirements
+    BooleanField meets_section_6_emissions_requirements
+    BooleanField meets_naics_code_11_22_562_classification_requirements
+    BooleanField meets_producing_gger_schedule_a1_regulated_product
+    BooleanField meets_reporting_and_regulated_obligations
+    BooleanField meets_notification_to_director_on_criteria_change
+}
 HistoricalOperation {
     DateTimeField created_at
     DateTimeField updated_at
@@ -449,6 +488,7 @@ HistoricalOperation {
     ForeignKey verified_by
     ForeignKey point_of_contact
     ForeignKey bc_obps_regulated_operation
+    ForeignKey opted_in_operation
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
@@ -497,6 +537,7 @@ Operation {
     ForeignKey point_of_contact
     CharField status
     OneToOneField bc_obps_regulated_operation
+    OneToOneField opted_in_operation
     ManyToManyField documents
     ManyToManyField regulated_products
     ManyToManyField activities
@@ -821,6 +862,12 @@ UserOperator }|--|| User : archived_by
 UserOperator }|--|| User : user
 UserOperator }|--|| Operator : operator
 UserOperator }|--|| User : verified_by
+HistoricalOptedInOperationDetail }|--|| User : created_by
+HistoricalOptedInOperationDetail }|--|| User : updated_by
+HistoricalOptedInOperationDetail }|--|| User : archived_by
+OptedInOperationDetail }|--|| User : created_by
+OptedInOperationDetail }|--|| User : updated_by
+OptedInOperationDetail }|--|| User : archived_by
 HistoricalOperation }|--|| User : created_by
 HistoricalOperation }|--|| User : updated_by
 HistoricalOperation }|--|| User : archived_by
@@ -829,6 +876,7 @@ HistoricalOperation }|--|| NaicsCode : naics_code
 HistoricalOperation }|--|| User : verified_by
 HistoricalOperation }|--|| Contact : point_of_contact
 HistoricalOperation }|--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
+HistoricalOperation }|--|| OptedInOperationDetail : opted_in_operation
 HistoricalOperation_documents }|--|| Operation : operation
 HistoricalOperation_documents }|--|| Document : document
 HistoricalOperation_documents }|--|| HistoricalOperation : history
@@ -846,6 +894,7 @@ Operation }|--|| NaicsCode : naics_code
 Operation }|--|| User : verified_by
 Operation }|--|| Contact : point_of_contact
 Operation ||--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
+Operation ||--|| OptedInOperationDetail : opted_in_operation
 Operation }|--|{ Document : documents
 Operation }|--|{ RegulatedProduct : regulated_products
 Operation }|--|{ Activity : activities

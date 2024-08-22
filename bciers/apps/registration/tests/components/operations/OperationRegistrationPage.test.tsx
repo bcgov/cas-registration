@@ -57,8 +57,8 @@ describe("the OperationRegistrationPage component", () => {
     useSearchParams.mockReturnValue({
       searchParams: {
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        operations_title: "Test Operation",
-        step: 3,
+        operationsTitle: "Test Operation",
+        step: 2,
       },
       get: vi.fn(),
     });
@@ -85,7 +85,7 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 3,
+        step: 4,
         searchParams: {},
       }),
     );
@@ -99,7 +99,7 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 4,
+        step: 5,
         searchParams: {},
       }),
     );

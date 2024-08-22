@@ -6,5 +6,7 @@ export { default as OperationInformationForm } from "./OperationInformationForm"
 export { default as OperationInformationPage } from "./OperationInformationPage";
 export { default as OperationRepresentativeForm } from "./OperationRepresentativeForm";
 export { default as OperationRepresentativePage } from "./OperationRepresentativePage";
+export { default as OptedInOperationForm } from "./OptedInOperationForm";
+export { default as OptedInOperationPage } from "./OptedInOperationPage";
 export { default as RegistrationSubmissionForm } from "./RegistrationSubmissionForm";
 export { default as RegistrationSubmissionPage } from "./RegistrationSubmissionPage";
