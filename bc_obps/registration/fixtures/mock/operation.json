@@ -55,6 +55,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "c0743c09-82fa-4186-91aa-4b5412e3415c",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],

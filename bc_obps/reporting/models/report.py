@@ -32,3 +32,6 @@ class Report(TimeStampedModel):
         db_table_comment = "A table to store report instances. Each operation has at most one report per year."
         db_table = 'erc"."report'
         app_label = 'reporting'
+        constraints = [
+            models.UniqueConstraint(name="unique_report_per_reporting_year", fields=['operation', 'reporting_year'])
+        ]
