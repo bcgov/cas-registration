@@ -87,9 +87,9 @@ jobs:
       [build-backend, build-registration1, install-dev-tools, check-nx-affected]
     uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
-  happo-finalize:
+  e2e-finalize:
     needs: [test-registration1-e2e]
-    uses: ./.github/workflows/happo-finalize.yaml
+    uses: ./.github/workflows/e2e-finalize.yaml
     secrets: inherit
   zap-owasp:
     # We will need to set up registration part 2 and reporting to get zap scanned
