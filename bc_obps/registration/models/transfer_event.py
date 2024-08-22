@@ -59,6 +59,9 @@ class Transfer(Event):
         db_table_comment = "Transfer events for operations and/or facilities."
         db_table = 'erc"."transfers'
 
+    def __str__(self) -> str:
+        return f"Transfer event\nEffective date {self.effective_date}, status {self.status}, description {self.description}, operation {self.operation}, facilities {self.facilities}, other operator {self.other_operator}, other operator's contact {self.other_operator_contact}, future designated operator {self.future_designated_operator}"
+
     @staticmethod
     def _validate_string(value: Optional[str]) -> None:
         if not isinstance(value, str) or not value:
