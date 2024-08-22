@@ -6,12 +6,10 @@ from service.data_access_service.facility_service import FacilityDataAccessServi
 from registration.enums.enums import OperationTypes
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.registration_purpose import RegistrationPurpose
-from registration.models import Operation, Operator, User
 from pydantic import field_validator
 from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
-from typing import Dict as DictStrAny
 
 
 #### Operation schemas
@@ -108,56 +106,6 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_producing_gger_schedule_a1_regulated_product: bool = Field(...)
     meets_reporting_and_regulated_obligations: bool = Field(...)
     meets_notification_to_director_on_criteria_change: bool = Field(...)
-    
-class OperationOut(ModelSchema):
-    naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
-    first_name: Optional[str] = Field(None, alias="point_of_contact.first_name")
-    last_name: Optional[str] = Field(None, alias="point_of_contact.last_name")
-    email: Optional[str] = Field(None, alias="point_of_contact.email")
-    phone_number: Optional[str] = None  # can't use resolvers with aliases, so handling everything in the resolver
-    position_title: Optional[str] = Field(None, alias="point_of_contact.position_title")
-    street_address: Optional[str] = Field(None, alias="point_of_contact.address.street_address")
-    municipality: Optional[str] = Field(None, alias="point_of_contact.address.municipality")
-    province: Optional[str] = Field(None, alias="point_of_contact.address.province")
-    postal_code: Optional[str] = Field(None, alias="point_of_contact.address.postal_code")
-    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
-    bcghg_id: Optional[str] = None
-    operator: Optional[OperatorForOperationOut] = None
-
-    @staticmethod
-    def resolve_bcghg_id(obj: Operation) -> str:
-        return obj.bcghg_id or ""
-
-    @staticmethod
-    def resolve_phone_number(obj: Operation) -> Optional[str]:
-        # PhoneNumberField returns a PhoneNumber object and we need a string
-        if not obj.point_of_contact:
-            return None
-        return str(obj.point_of_contact.phone_number)
-
-    @staticmethod
-    def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
-        """
-        Only return operator details if the user is an IRC user
-        """
-        request = context.get('request')
-        if request:
-            user: User = request.current_user
-            if user.is_irc_user():
-                return obj.operator
-        return None
-
-    class Config:
-        model = Operation
-        model_fields = [
-            "id",
-            'name',
-            'type',
-            'opt_in',
-            'regulated_products',
-            'status',
-        ]
-        from_attributes = True
 
 
 class OperationStatutoryDeclarationIn(Schema):

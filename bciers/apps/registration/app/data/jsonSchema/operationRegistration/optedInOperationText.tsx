@@ -3,7 +3,7 @@ import {
   readinessConsiderationsLink,
   actLink,
   naicsLink,
-  ggerLink,
+  ggerrLink,
 } from "@bciers/utils/urls";
 
 const optedInOperationPreface = (
@@ -66,7 +66,7 @@ const meetsProducingGgerScheduleA1RegulatedProductText = (
   <span>
     Does this operation produce a regulated product listed in Table 1 of
     Schedule A.1 of{" "}
-    <a href={ggerLink} target="_blank">
+    <a href={ggerrLink} target="_blank">
       the GGERR
     </a>
     ?
