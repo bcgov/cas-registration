@@ -77,7 +77,7 @@ class OperationRegistrationSubmissionIn(Schema):
     acknowledgement_of_information: bool
 
 
-class OperationRegistrationOptedInOperationDetailOut(ModelSchema):
+class OptedInOperationDetailOut(ModelSchema):
     class Meta:
         model = OptedInOperationDetail
         fields = [
@@ -92,7 +92,7 @@ class OperationRegistrationOptedInOperationDetailOut(ModelSchema):
         ]
 
 
-class OperationRegistrationOptedInOperationDetailIn(OperationRegistrationOptedInOperationDetailOut):
+class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_section_3_emissions_requirements: bool = Field(...)
     meets_electricity_import_operation_criteria: bool = Field(...)
     meets_entire_operation_requirements: bool = Field(...)

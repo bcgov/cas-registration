@@ -3,8 +3,8 @@ from uuid import UUID
 from django.http import HttpRequest
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.schema.v2.operation import (
-    OperationRegistrationOptedInOperationDetailIn,
-    OperationRegistrationOptedInOperationDetailOut,
+    OptedInOperationDetailIn,
+    OptedInOperationDetailOut,
 )
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
@@ -18,7 +18,7 @@ from registration.schema.generic import Message
 
 @router.get(
     "/v2/operations/{operation_id}/registration/opted-in-operation-detail",
-    response={200: OperationRegistrationOptedInOperationDetailOut, custom_codes_4xx: Message},
+    response={200: OptedInOperationDetailOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Get the opted-in operation details of a specific operation by its ID.
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
@@ -33,7 +33,7 @@ def operation_registration_get_opted_in_operation_detail(
 
 @router.put(
     "/v2/operations/{operation_id}/registration/opted-in-operation-detail",
-    response={200: OperationRegistrationOptedInOperationDetailOut, custom_codes_4xx: Message},
+    response={200: OptedInOperationDetailOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Updates the opted-in operation details of a specific operation by its ID.
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
@@ -41,7 +41,7 @@ def operation_registration_get_opted_in_operation_detail(
 )
 @handle_http_errors()
 def operation_registration_update_opted_in_operation_detail(
-    request: HttpRequest, operation_id: UUID, payload: OperationRegistrationOptedInOperationDetailIn
+    request: HttpRequest, operation_id: UUID, payload: OptedInOperationDetailIn
 ) -> Tuple[Literal[200, 400], OptedInOperationDetail]:
     return 200, OperationServiceV2.update_opted_in_operation_detail(
         get_current_user_guid(request), operation_id, payload

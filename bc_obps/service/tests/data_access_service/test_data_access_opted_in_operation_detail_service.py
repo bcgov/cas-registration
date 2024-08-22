@@ -1,6 +1,6 @@
 import pytest
 from model_bakery import baker
-from registration.schema.v2.operation import OperationRegistrationOptedInOperationDetailIn, RegistrationPurposeIn
+from registration.schema.v2.operation import OptedInOperationDetailIn, RegistrationPurposeIn
 from service.operation_service_v2 import OperationServiceV2
 
 pytestmark = pytest.mark.django_db
@@ -18,7 +18,7 @@ class TestDataAccessOptedInOperationService:
         OperationServiceV2.register_operation_information(
             approved_user_operator.user.user_guid, users_operation.id, purpose_payload
         )
-        opted_in_operation_detail_payload = OperationRegistrationOptedInOperationDetailIn(
+        opted_in_operation_detail_payload = OptedInOperationDetailIn(
             meets_section_3_emissions_requirements=True,
             meets_electricity_import_operation_criteria=True,
             meets_entire_operation_requirements=True,

@@ -7,7 +7,7 @@ from registration.models.registration_purpose import RegistrationPurpose
 from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
 from registration.schema.v2.operation import (
     OperationFilterSchema,
-    OperationRegistrationOptedInOperationDetailIn,
+    OptedInOperationDetailIn,
     RegistrationPurposeIn,
 )
 from service.data_access_service.user_service import UserDataAccessService
@@ -113,7 +113,7 @@ class OperationServiceV2:
     @classmethod
     @transaction.atomic()
     def update_opted_in_operation_detail(
-        cls, user_guid: UUID, operation_id: UUID, payload: OperationRegistrationOptedInOperationDetailIn
+        cls, user_guid: UUID, operation_id: UUID, payload: OptedInOperationDetailIn
     ) -> OptedInOperationDetail:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         if not operation.opted_in_operation:
