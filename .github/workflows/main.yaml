@@ -90,6 +90,7 @@ jobs:
   happo-finalize:
     needs: [test-registration1-e2e]
     uses: ./.github/workflows/happo-finalize.yaml
+    secrets: inherit
   zap-owasp:
     # We will need to set up registration part 2 and reporting to get zap scanned
     needs: [build-backend, build-registration1, install-dev-tools]
