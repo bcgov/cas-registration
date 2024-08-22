@@ -7,6 +7,7 @@ import { auth } from "@/dashboard/auth";
 import { FrontEndRoles } from "@bciers/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
+import evalDashboardRules from "@bciers/utils/evalDashboardRules";
 
 export default async function Page() {
   const session = await auth();
@@ -16,9 +17,12 @@ export default async function Page() {
 
   // 🚀 API fetch dashboard tiles
   // 🚩 Source: bc_obps/common/fixtures/dashboard/bciers/[IdProviderType]
-  const data = (await fetchDashboardData(
+  let data = (await fetchDashboardData(
     "common/dashboard-data?dashboard=bciers",
   )) as ContentItem[];
+
+  // Evaluate display conditions in the dashboard data
+  data = await evalDashboardRules(data);
 
   return (
     <div>
