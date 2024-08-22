@@ -69,7 +69,7 @@ jobs:
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
       - name: 🎭 Run Playwright Tests
-        run: nx run ${{ inputs.nx_project }}:e2e -- --project=${{ matrix.project }}
+        run: yarn nx run ${{ inputs.nx_project }}:e2e -- --project=${{ matrix.project }}
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
