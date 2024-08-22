@@ -47,8 +47,10 @@ class OperationListOut(ModelSchema):
     def resolve_sfo_facility_id(obj: Operation) -> Optional[UUID]:
         # Resolve a single facility id for SFO operations
         facilities = FacilityDataAccessService.get_current_facilities_by_operation(obj)
-        if obj.type == OperationTypes.SFO.value and len(facilities) > 0:
-            return facilities[0].id
+        if obj.type == OperationTypes.SFO.value and facilities:
+            first_facility = facilities.first()
+            if first_facility:
+                return first_facility.pk
         return None
 
 
