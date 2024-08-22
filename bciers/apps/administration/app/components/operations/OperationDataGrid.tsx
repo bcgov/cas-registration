@@ -2,21 +2,13 @@
 
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
+import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
+import OperationFacilitiesActionCell from "apps/administration/app/components/operations/cells/OperationFacilitiesActionCell";
 import operationColumns from "../datagrid/models/operationColumns";
 import operationGroupColumns from "../datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";
-import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import fetchOperationsPageData from "./fetchOperationsPageData";
-import { GridRenderCellParams } from "@mui/x-data-grid";
-
-const FacilitiesActionCell = ActionCellFactory({
-  generateHref: (params: GridRenderCellParams) => {
-    return `operations/${params.row.id}/facilities?operations_title=${params.row.name}`;
-  },
-  cellText: "View Facilities",
-});
 
 const OperationDataGrid = ({
   initialData,
@@ -40,7 +32,7 @@ const OperationDataGrid = ({
       operationColumns(
         isInternalUser,
         OperationsActionCell(),
-        FacilitiesActionCell,
+        OperationFacilitiesActionCell(),
       ),
     [OperationsActionCell, isInternalUser],
   );

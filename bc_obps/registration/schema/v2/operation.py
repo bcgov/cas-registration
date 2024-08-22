@@ -1,6 +1,9 @@
+from uuid import UUID
 from typing import List, Optional, Union
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation
+from service.data_access_service.facility_service import FacilityDataAccessService
+from registration.enums.enums import OperationTypes
 
 #### Operation schemas
 
@@ -28,6 +31,7 @@ class OperationFilterSchema(FilterSchema):
 
 class OperationListOut(ModelSchema):
     operator: str = Field(..., alias="operator.legal_name")
+    sfo_facility_id: Optional[UUID] = None
 
     class Config:
         model = Operation
@@ -38,6 +42,16 @@ class OperationListOut(ModelSchema):
             'type',
         ]
         from_attributes = True
+
+    @staticmethod
+    def resolve_sfo_facility_id(obj: Operation) -> Optional[UUID]:
+        # Resolve a single facility id for SFO operations
+        facilities = FacilityDataAccessService.get_current_facilities_by_operation(obj)
+        if obj.type == OperationTypes.SFO.value and facilities:
+            first_facility = facilities.first()
+            if first_facility:
+                return first_facility.pk
+        return None
 
 
 class OperationPaginatedOut(Schema):
