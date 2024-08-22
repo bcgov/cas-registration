@@ -148,7 +148,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLink).toHaveAttribute(
       "href",
-      "operations/1/facilities/facility-test-id?operations_title=Operation+1",
+      "operations/1/facilities/facility-test-id?operations_title=Operation+1&facilities_title=Operation+1",
     );
   });
 
@@ -163,7 +163,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLink[0]).toHaveAttribute(
       "href",
-      "operations/3/facilities/add-facility?operations_title=Operation+3",
+      "operations/3/facilities/add-facility?operations_title=Operation+3&facilities_title=Operation+3",
     );
   });
 
