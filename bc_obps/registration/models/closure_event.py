@@ -29,3 +29,6 @@ class Closure(Event):
     class Meta:
         db_table_comment = "Closure events for operations and/or facilities."
         db_table = 'erc"."closures'
+
+    def __str__(self) -> str:
+        return f"Closure event - Effective date {self.effective_date}, status {self.status}, description {self.description}, operation {self.operation}, facilities {self.facilities}"
