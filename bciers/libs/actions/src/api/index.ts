@@ -5,3 +5,4 @@ export { default as getRegulatedProducts } from "./getRegulatedProducts";
 export { default as getReportingActivities } from "./getReportingActivities";
 export { default as getCurrentUsersOperations } from "./getCurrentUsersOperations";
 export { default as getRegistrationPurposes } from "./getRegistrationPurposes";
+export { default as getOptedInOperationDetail } from "./getOptedInOperationDetail";

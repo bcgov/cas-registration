@@ -4,13 +4,19 @@ from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation
 from service.data_access_service.facility_service import FacilityDataAccessService
 from registration.enums.enums import OperationTypes
+from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.models.registration_purpose import RegistrationPurpose
 
 #### Operation schemas
 
 
-class RegistrationPurposeIn(Schema):
-    registration_purpose: str
+class RegistrationPurposeIn(ModelSchema):
+    registration_purpose: RegistrationPurpose.Purposes
     regulated_products: Optional[list] = None
+
+    class Meta:
+        model = RegistrationPurpose
+        fields = ["registration_purpose"]
 
 
 class OperationUpdateOut(ModelSchema):
@@ -69,3 +75,29 @@ class OperationRegistrationSubmissionIn(Schema):
     acknowledgement_of_review: bool
     acknowledgement_of_records: bool
     acknowledgement_of_information: bool
+
+
+class OptedInOperationDetailOut(ModelSchema):
+    class Meta:
+        model = OptedInOperationDetail
+        fields = [
+            "meets_section_3_emissions_requirements",
+            "meets_electricity_import_operation_criteria",
+            "meets_entire_operation_requirements",
+            "meets_section_6_emissions_requirements",
+            "meets_naics_code_11_22_562_classification_requirements",
+            "meets_producing_gger_schedule_a1_regulated_product",
+            "meets_reporting_and_regulated_obligations",
+            "meets_notification_to_director_on_criteria_change",
+        ]
+
+
+class OptedInOperationDetailIn(OptedInOperationDetailOut):
+    meets_section_3_emissions_requirements: bool = Field(...)
+    meets_electricity_import_operation_criteria: bool = Field(...)
+    meets_entire_operation_requirements: bool = Field(...)
+    meets_section_6_emissions_requirements: bool = Field(...)
+    meets_naics_code_11_22_562_classification_requirements: bool = Field(...)
+    meets_producing_gger_schedule_a1_regulated_product: bool = Field(...)
+    meets_reporting_and_regulated_obligations: bool = Field(...)
+    meets_notification_to_director_on_criteria_change: bool = Field(...)

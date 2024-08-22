@@ -1,4 +1,5 @@
 from registration.models.app_role import AppRole
+from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.user import User
 from registration.models.user_operator import UserOperator
 from registration.models.naics_code import NaicsCode
@@ -75,4 +76,16 @@ operator_for_approved_user_operator = Recipe(
 
 approved_user_operator = Recipe(
     UserOperator, status=UserOperator.Statuses.APPROVED, operator=foreign_key(operator_for_approved_user_operator)
+)
+
+opted_in_operation_detail = Recipe(
+    OptedInOperationDetail,
+    meets_section_3_emissions_requirements=True,
+    meets_electricity_import_operation_criteria=True,
+    meets_entire_operation_requirements=True,
+    meets_section_6_emissions_requirements=True,
+    meets_naics_code_11_22_562_classification_requirements=True,
+    meets_producing_gger_schedule_a1_regulated_product=False,
+    meets_reporting_and_regulated_obligations=False,
+    meets_notification_to_director_on_criteria_change=False,
 )

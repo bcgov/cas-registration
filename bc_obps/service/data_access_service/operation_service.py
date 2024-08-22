@@ -35,9 +35,14 @@ class OperationDataAccessService:
                 "operator__bc_corporate_registry_number",
                 "operator__business_structure",
                 "operator__website",
+                "opted_in_operation",
             )
             .select_related(
-                "operator__physical_address", "operator__mailing_address", "point_of_contact__address", "naics_code"
+                "operator__physical_address",
+                "operator__mailing_address",
+                "point_of_contact__address",
+                "naics_code",
+                "opted_in_operation",
             )
             .prefetch_related("operator__parent_operators", "regulated_products")
             .get(id=operation_id)
