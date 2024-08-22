@@ -62,7 +62,7 @@ export default async function ConfirmSelectedOperator({
         {hasAdmin ? declinedHasAdminJSX : declinedNoAdminJSX}
         <span className="text-sm">
           <Link
-            href="/dashboard/select-operator"
+            href="/select-operator"
             className="underline hover:no-underline text-sm"
             style={{ color: BC_GOV_LINKS_COLOR }}
           >
