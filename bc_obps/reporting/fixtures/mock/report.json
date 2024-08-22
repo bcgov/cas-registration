@@ -12,7 +12,7 @@
     "model": "reporting.report",
     "fields": {
       "id": 2,
-      "operation_id": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "operation_id": "c0743c09-82fa-4186-91aa-4b5412e3415c",
       "operator_id": "685d581b-5698-411f-ae00-de1d97334a71",
       "reporting_year_id": 2024
     }

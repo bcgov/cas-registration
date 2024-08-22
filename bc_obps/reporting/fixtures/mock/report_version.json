@@ -3,7 +3,7 @@
     "model": "reporting.reportversion",
     "pk": 1,
     "fields": {
-      "is_latest_submitted": true,
+      "is_latest_submitted": false,
       "status": "active",
       "report_id": 1
     }
@@ -12,9 +12,9 @@
     "model": "reporting.reportversion",
     "pk": 2,
     "fields": {
-      "is_latest_submitted": false,
+      "is_latest_submitted": true,
       "status": "draft",
-      "report_id": 2
+      "report_id": 1
     }
   }
 ]
