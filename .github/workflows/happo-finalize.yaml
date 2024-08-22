@@ -3,6 +3,13 @@ name: Happo finalize
 on:
   workflow_call:
 
+env:
+  PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+
 jobs:
   happo-finalize:
     runs-on: ubuntu-latest
@@ -16,4 +23,4 @@ jobs:
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
           HAPPO_NONCE: ${{ github.sha }}
         run: npx happo-e2e finalize
-        working-directory: ./bciers/apps/registration1
+        working-directory: ./bciers
