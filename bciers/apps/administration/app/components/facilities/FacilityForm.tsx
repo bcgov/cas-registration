@@ -6,6 +6,7 @@ import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListFo
 import { actionHandler } from "@bciers/actions";
 import { FormMode } from "@bciers/utils/enums";
 import serializeSearchParams from "@bciers/utils/serializeSearchParams";
+import { FacilityTypes } from "@bciers/utils/enums";
 
 export interface FacilityFormData {
   [key: string]: any;
@@ -31,6 +32,7 @@ export default function FacilityForm({
   const params = useParams();
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
+  const isSfo = formState.type === FacilityTypes.SFO;
 
   return (
     <SingleStepTaskListForm
@@ -84,7 +86,9 @@ export default function FacilityForm({
       }}
       onCancel={() =>
         router.replace(
-          `/operations/${params.operationId}/facilities${queryString}`,
+          isSfo
+            ? `/operations`
+            : `/operations/${params.operationId}/facilities${queryString}`,
         )
       }
     />
