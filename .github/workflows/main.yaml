@@ -96,6 +96,23 @@ jobs:
       nx_project: administration
       image_url: ghcr.io/bcgov/cas-admin-frontend
     secrets: inherit
+  test-coam-e2e:
+    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
+    needs: [build-backend, build-coam, install-dev-tools, check-nx-affected]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      nx_project: coam
+      image_url: ghcr.io/bcgov/cas-coam-frontend
+    secrets: inherit
+  test-dashboard-e2e:
+    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard')}}
+    needs:
+      [build-backend, build-dashboard, install-dev-tools, check-nx-affected]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      nx_project: dashboard
+      image_url: ghcr.io/bcgov/cas-dashboard-frontend
+    secrets: inherit
   test-registration1-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
     needs:
