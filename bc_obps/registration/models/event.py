@@ -15,7 +15,7 @@ class Event(TimeStampedModel):
         abstract = True  # Event is an abstract base model
 
     def __str__(self) -> str:
-        return f"Event: effective date {self.effective_date}"
+        return f"Effective date {self.effective_date}, status {self.status}"
 
     @staticmethod
     def _validate_datetime(value: str) -> None:

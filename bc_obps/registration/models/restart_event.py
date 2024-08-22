@@ -25,6 +25,9 @@ class Restart(Event):
         if bool(self.operation) == bool(self.facilities.exists()):
             raise ValidationError("Exactly one of 'operation' or 'facilities' must be populated.")
 
+    def __str__(self) -> str:
+        return f"Restart event - Effective date {self.effective_date}, status {self.status}, operation {self.operation}, facilities {self.facilities}"
+
     class Meta:
         db_table_comment = (
             "Restart events for operations and/or facilities after they have been closed or temporarily shutdown."
