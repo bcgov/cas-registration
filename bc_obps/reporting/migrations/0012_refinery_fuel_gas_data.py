@@ -314,8 +314,8 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
-    # CH4
-    ConfigurationElement(
+    # #CH4 - Default HHV/Default EF - Fuel Default High Heating Value
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -324,8 +324,24 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Fuel Default High Heating Value', field_units__isnull=True)
+    )
+    # CH4 - Default HHV/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -334,8 +350,11 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/fuel units')
+    )
+    # CH4 - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -344,8 +363,26 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(
+            field_name='Fuel Annual Weighted Average High Heating Value', field_units__isnull=True
+        )
+    )
+    # CH4 - Measured HHV/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Measured EF - Unit-Fuel-CH4 Measured Emission Factor
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -354,8 +391,11 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Measured EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Emission Factor', field_units='kg/fuel units')
+    )
+    # CH4 - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -364,8 +404,35 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel Annual Steam Generated', field_units__isnull=True)
+    )
+    # CH4 - Measured Steam/Default EF - Boiler Ratio
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Boiler Ratio', field_units__isnull=True))
+    # CH4 - Measured Steam/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Heat Input/Default EF - Unit-Fuel Heat Input
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -374,8 +441,22 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Unit-Fuel Heat Input', field_units__isnull=True))
+    # CH4 - Heat Input/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Alternative Parameter Measurement - Description
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -384,8 +465,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+    # CH4 - Replacement Methodology - Description
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -394,9 +476,10 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    # N2O
-    ConfigurationElement(
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+
+    # N2O - Default HHV/Default EF - Fuel Default High Heating Value
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -405,8 +488,24 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Fuel Default High Heating Value', field_units__isnull=True)
+    )
+    # N2O - Default HHV/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -415,8 +514,11 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/fuel units')
+    )
+    # N2O - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -425,8 +527,26 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(
+            field_name='Fuel Annual Weighted Average High Heating Value', field_units__isnull=True
+        )
+    )
+    # N2O - Measured HHV/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Measured EF - Unit-Fuel-N2O Measured Emission Factor
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -435,8 +555,11 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Measured EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Emission Factor', field_units='kg/fuel units')
+    )
+    # N2O - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -445,8 +568,35 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel Annual Steam Generated', field_units__isnull=True)
+    )
+    # N2O - Measured Steam/Default EF - Boiler Ratio
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Boiler Ratio', field_units__isnull=True))
+    # N2O - Measured Steam/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Heat Input/Default EF - Unit-Fuel Heat Input
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -455,8 +605,22 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Unit-Fuel Heat Input', field_units__isnull=True))
+    # N2O - Heat Input/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Alternative Parameter Measurement - Description
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -465,8 +629,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
-    ConfigurationElement(
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+    # N2O - Replacement Methodology - Description
+    ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Refinery fuel gas combustion').id,
         source_type_id=SourceType.objects.get(
             name='Combustion of refinery fuel gas, still gas, flexigas or associated gas'
@@ -475,7 +640,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ),
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
 
 def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
