@@ -114,6 +114,7 @@ class TestOperationServiceV2:
         assert operation.opted_in_operation is not None
         assert OptedInOperationDetail.objects.count() == 1
 
+    @staticmethod
     def test_update_status():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_operation = baker.make_recipe(
