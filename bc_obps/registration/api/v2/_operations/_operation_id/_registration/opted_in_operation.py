@@ -25,7 +25,9 @@ from registration.schema.generic import Message
     auth=authorize('approved_industry_user'),
 )
 @handle_http_errors()
-def operation_registration_get_opted_in_operation_detail(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Optional[OptedInOperationDetail]]:
+def operation_registration_get_opted_in_operation_detail(
+    request: HttpRequest, operation_id: UUID
+) -> Tuple[Literal[200], Optional[OptedInOperationDetail]]:
     return 200, OperationServiceV2.get_opted_in_operation_detail(get_current_user_guid(request), operation_id)
 
 
@@ -41,4 +43,6 @@ def operation_registration_get_opted_in_operation_detail(request: HttpRequest, o
 def operation_registration_update_opted_in_operation_detail(
     request: HttpRequest, operation_id: UUID, payload: OperationRegistrationOptedInOperationDetailIn
 ) -> Tuple[Literal[200, 400], OptedInOperationDetail]:
-    return 200, OperationServiceV2.update_opted_in_operation_detail(get_current_user_guid(request), operation_id, payload)
+    return 200, OperationServiceV2.update_opted_in_operation_detail(
+        get_current_user_guid(request), operation_id, payload
+    )
