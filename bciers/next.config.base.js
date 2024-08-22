@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const logAndReturnConfig = (config) => {
-  console.log("Next.js base config is being loaded");
   return config;
 };
 module.exports = logAndReturnConfig({

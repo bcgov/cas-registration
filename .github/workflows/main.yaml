@@ -17,6 +17,9 @@ env:
   PGUSER: postgres
 
 jobs:
+  # Possibly remove this job as check-nx-affected installs dev tools as well?
+  # The tools are still installed between jobs however because of different runners
+  # Enable corepack wasn't working in the check-nx-affected job
   install-dev-tools:
     runs-on: ubuntu-latest
     steps:
@@ -29,15 +32,24 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NX_AFFECTED_E2E: ${{steps.check-nx-affected.outputs.NX_AFFECTED_E2E}}
+      OUTPUT_2: ${{steps.check-nx-affected.outputs.OUTPUT_2}}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: check nx affected target e2e:ci projects and save output
+      - run: yarn install --immutable
+      - name: check nx affected target e2e:ci projects and save output to JSON array
+        id: check-nx-affected
         run: |
-          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=develop --json)
-          echo "NX_AFFECTED_E2E=$NX_AFFECTED_E2E" >> "$GITHUB_ENV"
+          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop)
+          OUTPUT_2="test"
+          echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
+          echo "OUTPUT_2="$OUTPUT_2"" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
+        shell: bash
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
   build-registration:
@@ -59,9 +71,23 @@ jobs:
     needs: [build-backend, install-dev-tools]
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
+  test-affected-output:
+    needs: [check-nx-affected]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "NX_AFFECTED_E2E" ${{toJSON(needs.check-nx-affected.outputs.NX_AFFECTED_E2E)}}
+          echo "OUTPUT_2" ${{toJSON(needs.check-nx-affected.outputs.OUTPUT_2)}}
+          echo "CONTAINS" ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
+      - name: Checkout
+        if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: echo "Run Registration1 E2E tests"
   test-e2e:
-    if: contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')
-    needs: [build-registration1, install-dev-tools]
+    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
+    needs: [build-registration1, install-dev-tools, check-nx-affected]
     uses: ./.github/workflows/test-e2e.yaml
     secrets: inherit
   zap-owasp:
