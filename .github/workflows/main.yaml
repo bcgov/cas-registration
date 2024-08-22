@@ -68,20 +68,6 @@ jobs:
     needs: [build-backend, install-dev-tools]
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
-  # test-affected-output:
-  #   needs: [check-nx-affected]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: |
-  #         echo "NX_AFFECTED_E2E" ${{toJSON(needs.check-nx-affected.outputs.NX_AFFECTED_E2E)}}
-  #         echo "CONTAINS" ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
-  #     - name: Checkout
-  #       if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #     - run: echo "Run Registration1 E2E tests"
-
   test-administration-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
     needs:
