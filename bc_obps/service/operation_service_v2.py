@@ -10,7 +10,6 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from service.document_service import DocumentService
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
-from typing import Dict, Union
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
@@ -133,7 +132,7 @@ class OperationServiceV2:
     def get_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Optional[OptedInOperationDetail]:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         return operation.opted_in_operation
-    
+
     @classmethod
     def create_or_replace_statutory_declaration(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationStatutoryDeclarationIn
