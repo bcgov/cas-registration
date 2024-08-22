@@ -18,7 +18,7 @@
             "maxLength": 200,
             "type": "string"
           },
-          "fuelDescription": {
+          "fuelUnits": {
             "title": "Fuel Units",
             "maxLength": 500,
             "type": "string"
