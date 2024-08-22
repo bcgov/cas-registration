@@ -19,10 +19,8 @@ const OptedInOperationPage = async ({
   }
 
   if (formData && "error" in formData) {
-    return (
-      <div>
-        <p>Sorry, Something went wrong. Please try again later!</p>
-      </div>
+    throw new Error(
+      "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
     );
   }
   return (

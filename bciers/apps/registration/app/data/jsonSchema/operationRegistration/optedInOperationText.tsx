@@ -1,18 +1,20 @@
+import {
+  bcObpsLink,
+  readinessConsiderationsLink,
+  actLink,
+  naicsLink,
+  ggerLink,
+} from "@bciers/utils/urls";
+
 const optedInOperationPreface = (
   <div>
     Complete the following fields to apply to be an Opt-in Operation in the B.C.
     OBPS. Ensure that you have read through{" "}
-    <a
-      href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system"
-      target="_blank"
-    >
+    <a href={bcObpsLink} target="_blank">
       our website
     </a>{" "}
     and{" "}
-    <a
-      href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/readiness_considerations_for_opted-in_operations.pdf"
-      target="_blank"
-    >
+    <a href={readinessConsiderationsLink} target="_blank">
       Readiness Considerations
     </a>{" "}
     prior to applying.
@@ -23,10 +25,7 @@ const meetsSection3EmissionsRequirementsText = (
   <span>
     Does this operation have emissions that are attributable for the purposes of
     section 3 of{" "}
-    <a
-      href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01"
-      target="_blank"
-    >
+    <a href={actLink} target="_blank">
       the Act
     </a>
     ?
@@ -45,10 +44,7 @@ const meetsSection6EmissionsRequirementsText = (
   <span>
     Does this operation have emissions that are attributable for the purposes of
     section 6 of{" "}
-    <a
-      href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01"
-      target="_blank"
-    >
+    <a href={actLink} target="_blank">
       the Act
     </a>
     ?
@@ -60,10 +56,7 @@ const meetsNaicsCode1122562ClassificationRequirementsText = (
   <span>
     Is this operation&rsquo;s primary economic activity classified by the
     following{" "}
-    <a
-      href="https://www.statcan.gc.ca/en/subjects/standard/naics/2022/v1/index"
-      target="_blank"
-    >
+    <a href={naicsLink} target="_blank">
       NAICS Code - 11, 22, or 562?
     </a>
   </span>
@@ -73,10 +66,7 @@ const meetsProducingGgerScheduleA1RegulatedProductText = (
   <span>
     Does this operation produce a regulated product listed in Table 1 of
     Schedule A.1 of{" "}
-    <a
-      href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015"
-      target="_blank"
-    >
+    <a href={ggerLink} target="_blank">
       the GGERR
     </a>
     ?
@@ -87,10 +77,7 @@ const meetsReportingAndRegulatedObligationsText = (
   <span>
     Is this operation capable of fulfilling the obligations of a reporting
     operation and a regulated operation under{" "}
-    <a
-      href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01"
-      target="_blank"
-    >
+    <a href={actLink} target="_blank">
       the Act
     </a>{" "}
     and the regulations?
