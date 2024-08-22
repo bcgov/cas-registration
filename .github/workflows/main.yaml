@@ -83,9 +83,13 @@ jobs:
   #     - run: echo "Run Registration1 E2E tests"
   test-registration1-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
-    needs: [build-registration1, install-dev-tools, check-nx-affected]
-    uses: ./.github/workflows/test-registration1- e2e.yaml
+    needs:
+      [build-backend, build-registration1, install-dev-tools, check-nx-affected]
+    uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
+  happo-finalize:
+    needs: [test-registration1-e2e]
+    uses: ./.github/workflows/happo-finalize.yaml
   zap-owasp:
     # We will need to set up registration part 2 and reporting to get zap scanned
     needs: [build-backend, build-registration1, install-dev-tools]
