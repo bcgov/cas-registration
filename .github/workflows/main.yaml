@@ -32,7 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NX_AFFECTED_E2E: ${{steps.check-nx-affected.outputs.NX_AFFECTED_E2E}}
-      OUTPUT_2: ${{steps.check-nx-affected.outputs.OUTPUT_2}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,13 +40,11 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --immutable
-      - name: check nx affected target e2e:ci projects and save output to JSON array
+      - name: check nx affected target e2e:ci projects and save output
         id: check-nx-affected
         run: |
           NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop)
-          OUTPUT_2="test"
           echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
-          echo "OUTPUT_2="$OUTPUT_2"" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
         shell: bash
   build-backend:
@@ -71,24 +68,23 @@ jobs:
     needs: [build-backend, install-dev-tools]
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
-  test-affected-output:
-    needs: [check-nx-affected]
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "NX_AFFECTED_E2E" ${{toJSON(needs.check-nx-affected.outputs.NX_AFFECTED_E2E)}}
-          echo "OUTPUT_2" ${{toJSON(needs.check-nx-affected.outputs.OUTPUT_2)}}
-          echo "CONTAINS" ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
-      - name: Checkout
-        if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: echo "Run Registration1 E2E tests"
-  test-e2e:
+  # test-affected-output:
+  #   needs: [check-nx-affected]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: |
+  #         echo "NX_AFFECTED_E2E" ${{toJSON(needs.check-nx-affected.outputs.NX_AFFECTED_E2E)}}
+  #         echo "CONTAINS" ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
+  #     - name: Checkout
+  #       if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #     - run: echo "Run Registration1 E2E tests"
+  test-registration1-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
     needs: [build-registration1, install-dev-tools, check-nx-affected]
-    uses: ./.github/workflows/test-e2e.yaml
+    uses: ./.github/workflows/test-registration1- e2e.yaml
     secrets: inherit
   zap-owasp:
     # We will need to set up registration part 2 and reporting to get zap scanned
