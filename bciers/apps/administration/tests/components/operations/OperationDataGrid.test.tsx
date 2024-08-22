@@ -21,6 +21,7 @@ const mockResponse = {
       name: "Operation 1",
       bcghg_id: "1-211113-0001",
       type: "Single Facility Operation",
+      sfo_facility_id: "facility-test-id",
     },
     {
       id: 2,
@@ -28,6 +29,15 @@ const mockResponse = {
       name: "Operation 2",
       bcghg_id: "2",
       type: "Linear Facility Operation",
+      sfo_facility_id: null,
+    },
+    {
+      id: 3,
+      operator: "FakeOperator",
+      name: "Operation 3",
+      bcghg_id: "3",
+      type: "Single Facility Operation",
+      sfo_facility_id: null,
     },
   ],
   row_count: 2,
@@ -65,16 +75,16 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(0);
     expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
-    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(1);
+    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(2);
     expect(
       screen.getAllByRole("link", { name: /View Facilities/i }),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     expect(
-      screen.getAllByRole("link", { name: /View Operation Information/i }),
-    ).toHaveLength(2);
+      screen.getAllByRole("link", { name: /View Operation/i }),
+    ).toHaveLength(3);
   });
 
-  it("renders the OperationsDataGrid grid for external users", async () => {
+  it("renders the OperationsDataGrid grid for internal users", async () => {
     render(
       <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
@@ -100,34 +110,60 @@ describe("OperationsDataGrid component", () => {
 
     // Check data displays
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
-    expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(2);
+    expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(3);
     expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
-    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(1);
-    expect(
-      screen.getAllByRole("link", { name: /View Facilities/i }),
-    ).toHaveLength(2);
+    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: /Edit details/i })).toHaveLength(
+      1,
+    );
 
     expect(
-      screen.getAllByRole("link", { name: /View Operation Information/i }),
-    ).toHaveLength(2);
+      screen.getAllByRole("link", { name: /View Operation/i }),
+    ).toHaveLength(3);
   });
 
-  it("renders the correct url for the facilities link", async () => {
+  it("renders the correct url for the LFO facilities link", async () => {
     render(
       <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
 
-    const facilitiesLinks = screen.getAllByRole("link", {
+    const facilitiesLink = screen.getByRole("link", {
       name: /View Facilities/i,
     });
 
-    expect(facilitiesLinks[0]).toHaveAttribute(
+    expect(facilitiesLink).toHaveAttribute(
       "href",
-      "operations/1/facilities?operations_title=Operation 1",
+      "operations/2/facilities?operations_title=Operation+2",
     );
-    expect(facilitiesLinks[1]).toHaveAttribute(
+  });
+
+  it("renders the correct url for the SFO facilities link", async () => {
+    render(
+      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+    );
+
+    const facilityLink = screen.getByRole("link", {
+      name: /View Facility/i,
+    });
+
+    expect(facilityLink).toHaveAttribute(
       "href",
-      "operations/2/facilities?operations_title=Operation 2",
+      "operations/1/facilities/facility-test-id?operations_title=Operation+1&facilities_title=Operation+1",
+    );
+  });
+
+  it("renders the correct url for the SFO facilities link when no facility id is present", async () => {
+    render(
+      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+    );
+
+    const facilityLink = screen.getAllByRole("link", {
+      name: /Edit details/i,
+    });
+
+    expect(facilityLink[0]).toHaveAttribute(
+      "href",
+      "operations/3/facilities/add-facility?operations_title=Operation+3&facilities_title=Operation+3",
     );
   });
 
@@ -137,7 +173,7 @@ describe("OperationsDataGrid component", () => {
     );
 
     const operationInfoLinks = screen.getAllByRole("link", {
-      name: /View Operation Information/i,
+      name: /View Operation/i,
     });
 
     expect(operationInfoLinks[0]).toHaveAttribute(

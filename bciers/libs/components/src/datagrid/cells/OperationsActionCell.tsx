@@ -13,14 +13,14 @@ const OperationsActionCell = () => {
         actionText = "Continue";
         break;
       default:
-        actionText = "View Operation Information";
+        actionText = "View Operation";
     }
 
     return (
       <div>
         {/* 🔗 Add link with href query parameter with row's descriptive text*/}
         <Link
-          className="no-underline text-bc-link-blue whitespace-normal"
+          className="action-cell-text"
           href={{
             pathname: `operations/${params.row.id}`,
             query: {
