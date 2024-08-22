@@ -9,9 +9,11 @@ on:
       nx_project:
         description: "Nx project to test"
         required: true
+        type: string
       image_url:
         description: "Docker image URL minus the tag which will be the pull request sha"
         required: true
+        type: string
 
 env:
   PGUSER: postgres
@@ -67,8 +69,7 @@ jobs:
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
       - name: 🎭 Run Playwright Tests
-        run: |
-          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} bciers/apps/${{ inputs.nx_project }}-e2e/tests/*
+        run: nx run ${{ inputs.nx_project }}:e2e -- --project=${{ matrix.project }}
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
@@ -99,7 +100,7 @@ jobs:
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
           HAPPO_NONCE: ${{ github.sha }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
-        working-directory: ./bciers/apps/registration1
+        working-directory: ./bciers
       - name: 💾 save ${{ matrix.project }} report artifact
         # prefer to upload the report only in case of test failure
         if: failure()
