@@ -24,9 +24,8 @@ class TestInitialData(TestCase):
                 'Heat Input/Default EF',
                 'Measured EF',
                 'Site-specific EF',
-                'Annual Weighted Average Carbon Content',
-                'Annual Weighted Average Molecular Weight',
-                'Molar Volume Conversion Factor',
+                'CEMS',
+                'Measured CC and MW',
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list('name', flat=True)))
