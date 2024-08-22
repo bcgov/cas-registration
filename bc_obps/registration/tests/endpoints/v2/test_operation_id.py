@@ -23,6 +23,7 @@ class TestOperationRepresentativeEndpoint(CommonTestSetup):
                 ),
             )
             assert response.status_code == 401
+            assert response.json().get('detail') == 'Unauthorized'
 
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
@@ -41,14 +42,13 @@ class TestOperationRepresentativeEndpoint(CommonTestSetup):
             custom_reverse_lazy("register_operation_operation_representative", kwargs={'operation_id': operation.id}),
         )
         assert response.status_code == 401
+        assert response.json().get('message') == 'Unauthorized.'
 
     def test_register_operation_operation_representative_endpoint_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         contacts = baker.make_recipe('utils.contact', _quantity=3)
-        contact_ids = []
-        for contact in contacts:
-            contact_ids.append(contact.id)
+        contact_ids = [contact.id for contact in contacts]
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
@@ -78,3 +78,4 @@ class TestOperationRepresentativeEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 422
+        assert response.json().get('detail')[0].get('msg') == 'Input should be a valid list'

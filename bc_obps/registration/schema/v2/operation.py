@@ -21,20 +21,6 @@ class OperationRepresentativeIn(Schema):
     operation_representatives: Optional[List[int]] = []
     new_operation_representatives: Optional[List[ContactIn]] = []
 
-    # @model_validator(mode='after')
-    # @classmethod
-    # def check_representatives_included(cls, data: 'OperationRepresentativeIn') -> 'OperationRepresentativeIn':
-    #     breakpoint()
-    #     # Check that representatives are given (they're both optional above because either one or the other is fine)
-    #     if (
-    #         hasattr(data, 'operation_representatives')
-    #         and len(data.operation_representatives) < 1
-    #         and hasattr(data, 'new_operation_representatives')
-    #         and len(data.new_operation_representatives) < 1
-    #     ):
-    #         raise Exception(ValidationError, "Operation representatives must be given")
-    #     return data
-
 
     class Meta:
         model = RegistrationPurpose

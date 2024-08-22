@@ -27,11 +27,9 @@ class TestOperationServiceV2:
 
         baker.make_recipe('utils.contact', _quantity=5)
 
-        payload = OperationRepresentativeIn(
-            operation_representatives=Contact.objects.all().values_list('id', flat=True)
-        )
+        payload = OperationRepresentativeIn(operation_representatives=Contact.objects.values_list('id', flat=True))
 
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match='Unauthorized'):
             OperationServiceV2.register_operation_operation_representative(
                 approved_user_operator.user.user_guid, random_operation.id, payload
             )
@@ -149,9 +147,7 @@ class TestOperationServiceV2:
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', operator=operator)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
 
-        payload = OperationRepresentativeIn(
-            operation_representatives=Contact.objects.all().values_list('id', flat=True)
-        )
+        payload = OperationRepresentativeIn(operation_representatives=Contact.objects.values_list('id', flat=True))
 
         OperationServiceV2.register_operation_operation_representative(
             approved_user_operator.user.user_guid, operation.id, payload
@@ -197,10 +193,11 @@ class TestOperationServiceV2:
         assert approved_user_operator.operator.contacts.count() == 2
         assert operation.contacts.count() == 2
         assert Address.objects.count() == 2  # 1 is the contact's, 1 is from the operation baker recipe
-        assert operation.contacts.first().first_name == 'John'
-        assert operation.contacts.first().address.street_address == '13 Street'
-        assert operation.contacts.first().created_at is not None
-        assert operation.contacts.first().created_by == approved_user_operator.user
+        first_operation_contact = operation.contacts.first()
+        assert first_operation_contact.first_name == 'John'
+        assert first_operation_contact.address.street_address == '13 Street'
+        assert first_operation_contact.created_at is not None
+        assert first_operation_contact.created_by == approved_user_operator.user
         assert operation.contacts.last().first_name == 'Fruit'
         assert operation.contacts.last().address is None
 
@@ -215,7 +212,7 @@ class TestOperationServiceV2:
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
 
         payload = OperationRepresentativeIn(
-            operation_representatives=Contact.objects.all().values_list('id', flat=True),
+            operation_representatives=Contact.objects.values_list('id', flat=True),
             new_operation_representatives=[
                 ContactIn(
                     first_name="John",
