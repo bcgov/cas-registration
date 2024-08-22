@@ -17,14 +17,16 @@ from registration.utils import file_to_data_url
 
 class RegistrationPurposeIn(ModelSchema):
     registration_purpose: RegistrationPurpose.Purposes
-class OperationRepresentativeIn(Schema):
-    operation_representatives: Optional[List[int]] = []
-    new_operation_representatives: Optional[List[ContactIn]] = []
-
+    regulated_products: Optional[list] = None
 
     class Meta:
         model = RegistrationPurpose
         fields = ["registration_purpose"]
+
+
+class OperationRepresentativeIn(Schema):
+    operation_representatives: Optional[List[int]] = []
+    new_operation_representatives: Optional[List[ContactIn]] = []
 
 
 class OperationUpdateOut(ModelSchema):
