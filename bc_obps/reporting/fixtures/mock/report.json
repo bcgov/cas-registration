@@ -3,8 +3,8 @@
     "model": "reporting.report",
     "fields": {
       "id": 1,
-      "operation_id": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
-      "operator_id": "685d581b-5698-411f-ae00-de1d97334a71",
+      "operation_id": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
       "reporting_year_id": 2024
     }
   },
@@ -12,8 +12,8 @@
     "model": "reporting.report",
     "fields": {
       "id": 2,
-      "operation_id": "c0743c09-82fa-4186-91aa-4b5412e3415c",
-      "operator_id": "685d581b-5698-411f-ae00-de1d97334a71",
+      "operation_id": "002d5a9e-32a6-4191-938c-2c02bfec592d",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
       "reporting_year_id": 2024
     }
   }
