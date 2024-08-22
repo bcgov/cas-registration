@@ -81,11 +81,35 @@ jobs:
   #       with:
   #         fetch-depth: 0
   #     - run: echo "Run Registration1 E2E tests"
+
+  test-administration-e2e:
+    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
+    needs:
+      [
+        build-backend,
+        build-administration,
+        install-dev-tools,
+        check-nx-affected,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      nx_project: administration
+      image_url: ghcr.io/bcgov/cas-admin-frontend
+    secrets: inherit
   test-registration1-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
     needs:
       [build-backend, build-registration1, install-dev-tools, check-nx-affected]
     uses: ./.github/workflows/test-registration1-e2e.yaml
+    secrets: inherit
+  test-registration-e2e:
+    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
+    needs:
+      [build-backend, build-registration, install-dev-tools, check-nx-affected]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      nx_project: registration
+      image_url: ghcr.io/bcgov/cas-reg-frontend
     secrets: inherit
   e2e-finalize:
     needs: [test-registration1-e2e]
