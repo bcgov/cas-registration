@@ -37,6 +37,9 @@ class TemporaryShutdown(Event):
         db_table_comment = "Temporary shutdown events for operations and/or facilities."
         db_table = 'erc"."temporary_shutdowns'
 
+    def __str__(self) -> str:
+        return f"Temporary shutdown event - Effective date {self.effective_date}, status {self.status}, description {self.description}, operation {self.operation}, facilities {self.facilities}"
+
     @staticmethod
     def _validate_string(value: Optional[str]) -> None:
         if not isinstance(value, str) or not value:
