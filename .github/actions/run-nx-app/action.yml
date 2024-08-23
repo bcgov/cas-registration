@@ -27,4 +27,4 @@ runs:
         django_secret_key: ${{ inputs.django_secret_key }}
     - name: start frontend
       shell: bash
-      run: docker run -d --network=host -e "NEXTAUTH_URL_INTERNAL=http://localhost:3000/" -e "NEXTAUTH_URL=http://localhost:3000/" -e "NEXTAUTH_SECRET=${{ inputs.nextauth_secret }}" -e "API_URL=http://127.0.0.1:8000/api/" -e "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" -e "KEYCLOAK_CLIENT_SECRET=${{ inputs.keycloak_client_secret }}" -e "KEYCLOAK_CLIENT_ID=${{ inputs.keycloak_client_id }}" ${{ inputs.image_url }}:${{ github.sha }}
+      run: docker run -d -p 3000:3000 -e "NEXTAUTH_URL_INTERNAL=http://localhost:3000/" -e "NEXTAUTH_URL=http://localhost:3000/" -e "NEXTAUTH_SECRET=${{ inputs.nextauth_secret }}" -e "API_URL=http://127.0.0.1:8000/api/" -e "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" -e "KEYCLOAK_CLIENT_SECRET=${{ inputs.keycloak_client_secret }}" -e "KEYCLOAK_CLIENT_ID=${{ inputs.keycloak_client_id }}" ${{ inputs.image_url }}:${{ github.sha }}
