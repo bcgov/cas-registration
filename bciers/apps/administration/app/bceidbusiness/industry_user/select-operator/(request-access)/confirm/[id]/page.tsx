@@ -1,5 +1,14 @@
-// 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
-
-export default async function Page() {
-  return <div>TBD</div>;
+import ConfirmSelectedOperator from "@/administration/app/components/userOperators/ConfirmSelectedOperator";
+import { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonForm";
+export default async function Page({
+  params,
+}: {
+  readonly params: { id: string };
+}) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ConfirmSelectedOperator params={params} />
+    </Suspense>
+  );
 }
