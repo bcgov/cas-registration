@@ -2547,7 +2547,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0012_gsc_other_than_non_compression')]
+    dependencies = [('reporting', '0013_refinery_fuel_gas_data')]
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
