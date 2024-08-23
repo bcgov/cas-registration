@@ -44,10 +44,8 @@ jobs:
             cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
-
       - name: 🎁 setup dev env
         uses: ./.github/actions/dev-env-setup
-
       - name: 🎁 setup local app
         uses: ./.github/actions/run-nx-app
         with:
