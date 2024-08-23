@@ -10,7 +10,7 @@ import { IDP } from "@bciers/utils/enums";
 import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
 
 /*
-  Middleware to apply business rules.
+  Middleware to apply business rules for routing.
  */
 
 const appName = "administration";
@@ -24,7 +24,6 @@ export const withRulesAppliedAdmin: MiddlewareFactory = (
     // 📏 Industry user rules...
     if (token.identity_provider === IDP.BCEIDBUSINESS) {
       const baseApiUrl = `${process.env.API_URL}registration/`;
-      const baseAppUrl = `${appName}/`;
       const options: RequestInit = {
         cache: "no-store", // Default cache option
         method: "GET",

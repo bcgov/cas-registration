@@ -8,9 +8,9 @@ import { useState } from "react";
 import { Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
-import { SelectOperatorFormData } from "@/administration/app/components/userOperators/types";
-import { selectOperatorUiSchema } from "@/administration/app/data/jsonSchema/selectOperator";
-import { selectOperatorSchema } from "@/administration/app/data/jsonSchema/selectOperator";
+import { SelectOperatorFormData } from "../../../../components/userOperators/types";
+import { selectOperatorUiSchema } from "../../../../data/jsonSchema/selectOperator";
+import { selectOperatorSchema } from "../../../../data/jsonSchema/selectOperator";
 
 import { useSession } from "next-auth/react";
 export default function Page() {
@@ -23,7 +23,7 @@ export default function Page() {
     <>
       <section className="text-center my-auto text-2xl flex flex-col gap-3 mx-auto">
         <p>
-          Hi{" "}
+          Hi,{" "}
           <b>
             {names?.[0]} {names?.[1]}!
           </b>
