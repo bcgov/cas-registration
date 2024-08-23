@@ -1804,7 +1804,7 @@ def init_activity_schema_data(apps, schema_monitor):
     import os
 
     cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_excluding_line_tracing/activity.json') as gsc_st1:
+    with open(f'{cwd}/reporting/json_schemas/2024/gsc_solely_for_line_tracing/activity.json') as gsc_st1:
         schema = json.load(gsc_st1)
 
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
