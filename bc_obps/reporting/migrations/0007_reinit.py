@@ -840,6 +840,12 @@ class Migration(migrations.Migration):
             ),
             preserve_default=False,
         ),
+        migrations.AddConstraint(
+            model_name='report',
+            constraint=models.UniqueConstraint(
+                fields=('operation', 'reporting_year'), name='unique_report_per_reporting_year'
+            ),
+        ),
         migrations.AddField(
             model_name='reportmethodology',
             name='archived_by',
