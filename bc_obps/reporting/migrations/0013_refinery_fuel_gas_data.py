@@ -735,7 +735,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0011_mobile_combustion_data'),
+        ('reporting', '0012_gsc_other_than_non_compression'),
     ]
 
     operations = [
