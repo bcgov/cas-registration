@@ -531,84 +531,6 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-def init_reporting_field_data(apps, schema_monitor):
-    '''
-    Add initial data to erc.reporting_field
-    '''
-
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.bulk_create(
-        [
-            ReportingField(field_name='Fuel Default High Heating Value', field_type='number', field_units=None),
-            ReportingField(
-                field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(
-                field_name='Fuel Annual Weighted Average High Heating Value', field_type='number', field_units=None
-            ),
-            ReportingField(field_name='Unit-Fuel Annual Steam Generated', field_type='number', field_units=None),
-            ReportingField(field_name='Boiler Ratio', field_type='number', field_units=None),
-            ReportingField(field_name='Unit-Fuel-CO2 Emission Factor', field_type='number', field_units='kg/GJ'),
-            ReportingField(
-                field_name='Fuel Annual Weighted Average Carbon Content (weight fraction)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-CO2 Measured Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(field_name='Description', field_type='string', field_units=None),
-            ReportingField(
-                field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-CH4 Measured Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(field_name='Unit-Fuel Heat Input', field_type='number', field_units=None),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Measured Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-        ]
-    )
-
-
-def reverse_init_reporting_field_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.reporting_field
-    '''
-    ReportingField = apps.get_model('reporting', 'ReportingField')
-    ReportingField.objects.filter(
-        field_name__in=[
-            'Unit-Fuel-CO2 Measured Emission Factor'
-            'Unit-Fuel Heat Input'
-            'Unit-Fuel-CO2 Default Emission Factor'
-            'Unit-Fuel-CH4 Measured Emission Factor'
-            'Unit-Fuel Annual Steam Generated'
-            'Description'
-            'Unit-Fuel-CO2 Emission Factor'
-            'Boiler Ratio'
-            'Unit-Fuel-N2O Default Emission Factor'
-            'Unit-Fuel-CH4 Default Emission Factor'
-            'Fuel Annual Weighted Average High Heating Value'
-            'Unit-Fuel-N2O Measured Emission Factor'
-            'Fuel Default High Heating Value'
-            'Fuel Annual Weighted Average Carbon Content (weight fraction)'
-        ]
-    ).delete()
-
-
 def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
     Add initial data to erc.activity_source_type_base_schema
@@ -1718,7 +1640,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
-        migrations.RunPython(init_reporting_field_data, reverse_init_reporting_field_data),
         migrations.RunPython(
             init_configuration_element_reporting_fields_data, reverse_init_configuration_element_reporting_fields_data
         ),

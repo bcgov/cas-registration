@@ -584,6 +584,8 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Heat Input/Default EF'),
             Methodology(name='Measured EF'),
             Methodology(name='Site-specific EF'),
+            Methodology(name='CEMS'),
+            Methodology(name='Measured CC and MW'),
         ]
     )
 
@@ -612,6 +614,8 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Heat Input/Default EF',
             'Measured EF',
             'Site-specific EF',
+            'CEMS',
+            'Measured CC and MW',
         ]
     ).delete()
 
@@ -639,6 +643,92 @@ def reverse_init_reporting_years(apps, schema_editor):
     ReportingYears.objects.filter(reporting_year__in=[2023, 2024]).delete()
 
 
+def init_reporting_field_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.reporting_field
+    '''
+
+    ReportingField = apps.get_model('reporting', 'ReportingField')
+    ReportingField.objects.bulk_create(
+        [
+            ReportingField(field_name='Fuel Default High Heating Value', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(
+                field_name='Fuel Annual Weighted Average High Heating Value', field_type='number', field_units=None
+            ),
+            ReportingField(field_name='Unit-Fuel Annual Steam Generated', field_type='number', field_units=None),
+            ReportingField(field_name='Boiler Ratio', field_type='number', field_units=None),
+            ReportingField(field_name='Unit-Fuel-CO2 Emission Factor', field_type='number', field_units='kg/GJ'),
+            ReportingField(
+                field_name='Fuel Annual Weighted Average Carbon Content (weight fraction)',
+                field_type='number',
+                field_units=None,
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Measured Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(field_name='Description', field_type='string', field_units=None),
+            ReportingField(
+                field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CH4 Measured Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(field_name='Unit-Fuel Heat Input', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-N2O Measured Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(field_name='Annual Weighted Average Carbon Content', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Annual Weighted Average Molecular Weight', field_type='number', field_units=None
+            ),
+            ReportingField(field_name='Molar Volume Conversion Factor', field_type='number', field_units=None),
+        ]
+    )
+
+
+def reverse_init_reporting_field_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.reporting_field
+    '''
+    ReportingField = apps.get_model('reporting', 'ReportingField')
+    ReportingField.objects.filter(
+        field_name__in=[
+            'Unit-Fuel-CO2 Measured Emission Factor',
+            'Unit-Fuel Heat Input',
+            'Unit-Fuel-CO2 Default Emission Factor',
+            'Unit-Fuel-CH4 Measured Emission Factor',
+            'Unit-Fuel Annual Steam Generated',
+            'Description',
+            'Unit-Fuel-CO2 Emission Factor',
+            'Boiler Ratio',
+            'Unit-Fuel-N2O Default Emission Factor',
+            'Unit-Fuel-CH4 Default Emission Factor',
+            'Fuel Annual Weighted Average High Heating Value',
+            'Unit-Fuel-N2O Measured Emission Factor',
+            'Fuel Default High Heating Value',
+            'Fuel Annual Weighted Average Carbon Content (weight fraction)',
+            'Annual Weighted Average Carbon Content',
+            'Annual Weighted Average Molecular Weight',
+            'Molar Volume Conversion Factor',
+        ]
+    ).delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -652,4 +742,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(init_methodology_data, reverse_init_methodology_data),
         migrations.RunPython(init_configuration_data, reverse_init_configuration_data),
         migrations.RunPython(init_reporting_years, reverse_init_reporting_years),
+        migrations.RunPython(init_reporting_field_data, reverse_init_reporting_field_data),
     ]
