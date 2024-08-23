@@ -167,6 +167,7 @@ class TestOperationServiceV2:
         operation = baker.make_recipe('utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
+
     # Uncomment this skip to test file uploads locally
     @pytest.mark.skip(
         reason="This test passes locally but will fail in CI since we don't have Google Cloud Storage set up for CI"

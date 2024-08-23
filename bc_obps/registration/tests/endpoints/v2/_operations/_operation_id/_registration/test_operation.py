@@ -191,6 +191,7 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
             assert response.status_code == 401
             assert response.json()['detail'] == "Unauthorized"
 
+
 class TestGetOperationStatutoryDeclarationEndpoint(CommonTestSetup):
     def test_get_register_operation_statutory_declaration_endpoint_unauthorized_roles_cannot_get(self):
         operation = baker.make_recipe(
