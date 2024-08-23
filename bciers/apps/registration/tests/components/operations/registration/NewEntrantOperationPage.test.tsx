@@ -19,7 +19,7 @@ describe("the NewEntrantOperationPage component", () => {
     render(
       await NewEntrantOperationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 4,
+        step: 3,
         steps: allOperationRegistrationSteps,
       }),
     );

@@ -8,8 +8,8 @@ from registration.decorators import handle_http_errors
 from ..router import router
 from registration.schema.v1 import (
     OperationCreateIn,
-    OperationPaginatedOut,
     OperationCreateOut,
+    OperationPaginatedOut,
     OperationFilterSchema,
 )
 from registration.schema.generic import Message

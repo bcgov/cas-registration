@@ -9,8 +9,7 @@ import {
   OptedInOperationPage,
 } from "@/registration/app/components/operations/registration";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
-import { getOperation } from "@bciers/actions/api";
-
+import { getOperationV2 } from "@bciers/actions/api";
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
 const OperationRegistrationPage = async ({
@@ -24,7 +23,7 @@ const OperationRegistrationPage = async ({
 }) => {
   // const purpose = operationFormData?.registration_purpose;
   // hardcoding a value for development; remove value and ts-ignores when feature is implemented
-  const purpose = "Opted-in Operation";
+  const purpose = "New Entrant Operation";
 
   // Remove steps that aren't applicable to the registration based on purpose
   let steps = allOperationRegistrationSteps;
@@ -37,7 +36,7 @@ const OperationRegistrationPage = async ({
   let operationData;
 
   if (operation && isValidUUID(operation)) {
-    operationData = await getOperation(operation);
+    operationData = await getOperationV2(operation);
   }
 
   const stepIndex = step - 1;
@@ -59,10 +58,13 @@ const OperationRegistrationPage = async ({
         operationName: operationData?.name,
         operationType: operationData?.type,
       });
-    case "New Entrant Operation":
-      return NewEntrantOperationPage(defaultProps);
     case "Opt-in Application":
       return OptedInOperationPage(defaultProps);
+    case "New Entrant Application":
+      return NewEntrantOperationPage({
+        ...defaultProps,
+      });
+    // to add opt in page
     case "Operation Representative":
       return OperationRepresentativePage(defaultProps);
     case "Submission":
