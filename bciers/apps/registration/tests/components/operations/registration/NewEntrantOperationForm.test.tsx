@@ -191,7 +191,7 @@ describe("the NewEntrantOperationForm component", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/statutory-declaration",
       "PUT",
-      "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/3",
+      "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
       {
         body: '{"statutory_declaration":"data:application/pdf;name=test.pdf;base64,dGVzdA=="}',
       },
