@@ -99,6 +99,15 @@ jobs:
       nx_project: dashboard
       image_url: ghcr.io/bcgov/cas-dash-frontend
     secrets: inherit
+  test-reporting-e2e:
+    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
+    needs:
+      [build-backend, build-registration, install-dev-tools, check-nx-affected]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      nx_project: reporting
+      image_url: ghcr.io/bcgov/cas-rep-frontend
+    secrets: inherit
   test-registration1-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
     needs:
