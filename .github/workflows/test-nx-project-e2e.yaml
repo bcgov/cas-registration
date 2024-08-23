@@ -35,13 +35,13 @@ jobs:
             os: ubuntu-latest
             cache_dir: ~/.cache/ms-playwright
           # Commented out because of flakey issues with Firefox in CI
-          # - project: firefox
-          #   os: ubuntu-latest
-          #   cache_dir: ~/.cache/ms-playwright
+          - project: firefox
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
           # Commented out because of flakey issues with webkit in CI
-          # - project: webkit
-          #   os: macos-latest
-          #   cache_dir: ~/Library/Caches/ms-playwright
+          - project: webkit
+            os: macos-latest
+            cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
 
