@@ -172,6 +172,7 @@ class TestOperationServiceV2:
     @pytest.mark.skip(
         reason="This test passes locally but will fail in CI since we don't have Google Cloud Storage set up for CI"
     )
+    @staticmethod
     def test_create_or_replace_statutory_declaration():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_operation = baker.make_recipe(
