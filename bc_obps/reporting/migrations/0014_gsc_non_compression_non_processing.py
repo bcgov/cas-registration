@@ -2547,7 +2547,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0011_mobile_combustion_data')]
+    dependencies = [('reporting', '0013_report_unique_report_per_reporting_year')]
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
