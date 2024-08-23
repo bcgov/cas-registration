@@ -16,5 +16,5 @@ export const actLink =
 export const naicsLink =
   "https://www.statcan.gc.ca/en/subjects/standard/naics/2022/v1/index";
 
-export const ggerLink =
+export const ggerrLink =
   "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015";

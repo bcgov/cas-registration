@@ -10,10 +10,5 @@
   },
   "files": [],
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],
-  "references": [
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ],
   "extends": "../../tsconfig.base.json"
 }

@@ -23,6 +23,9 @@ function InlineFieldTemplate({
   // UI Schema options
   const options = uiSchema?.["ui:options"] || {};
   const isLabel = options?.label !== false;
+  // Allow width override if inline is true
+  const inline = options?.inline;
+  const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
 
   return (
     <div
@@ -36,7 +39,7 @@ function InlineFieldTemplate({
           </label>
         </div>
       )}
-      <div className={`relative flex items-center w-full lg:w-4/12`}>
+      <div className={`relative flex items-center w-full ${cellWidth}`}>
         {children}
       </div>
       {isErrors && (
