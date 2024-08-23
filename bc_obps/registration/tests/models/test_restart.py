@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import Restart
+from registration.models import RestartEvent
 from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
     ADDRESS_FIXTURE,
@@ -27,7 +27,7 @@ class RestartModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = Restart.objects.first()
+        cls.test_object = RestartEvent.objects.first()
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "id", None, None),

@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import Closure
+from registration.models import ClosureEvent
 from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
     ADDRESS_FIXTURE,
@@ -27,7 +27,7 @@ class TemporaryShutdownModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = Closure.objects.first()
+        cls.test_object = ClosureEvent.objects.first()
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "id", None, None),

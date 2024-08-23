@@ -26,10 +26,10 @@ from .multiple_operator import MultipleOperator
 from .operation_ownership_timeline import OperationOwnershipTimeline
 from .well_authorization_number import WellAuthorizationNumber
 from .registration_purpose import RegistrationPurpose
-from .closure_event import Closure
-from .temporary_shutdown_event import TemporaryShutdown
-from .transfer_event import Transfer
-from .restart_event import Restart
+from .closure_event import ClosureEvent
+from .temporary_shutdown_event import TemporaryShutdownEvent
+from .transfer_event import TransferEvent
+from .restart_event import RestartEvent
 
 __all__ = [
     "Address",
@@ -41,10 +41,10 @@ __all__ = [
     "DocumentType",
     "Document",
     "Event",
-    "Transfer",
-    "Restart",
-    "TemporaryShutdown",
-    "Closure",
+    "TransferEvent",
+    "RestartEvent",
+    "TemporaryShutdownEvent",
+    "ClosureEvent",
     "FacilityOwnershipTimeline",
     "Facility",
     "MultipleOperator",

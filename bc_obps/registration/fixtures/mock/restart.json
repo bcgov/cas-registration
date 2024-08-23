@@ -1,6 +1,6 @@
 [
   {
-    "model": "registration.restart",
+    "model": "registration.restartevent",
     "pk": "1a491d98-fde9-482d-9241-0497c15dc517",
     "fields": {
       "created_by": "279c80cf-5781-4c28-8727-40a133d17c0d",
@@ -10,7 +10,7 @@
     }
   },
   {
-    "model": "registration.restart",
+    "model": "registration.restartevent",
     "pk": "a5f04108-886c-4eac-980c-f350714b099f",
     "fields": {
       "created_by": "00000000-0000-0000-0000-000000000005",
@@ -20,7 +20,7 @@
     }
   },
   {
-    "model": "registration.restart",
+    "model": "registration.restartevent",
     "pk": "1363536b-390b-4074-b691-575b678d0c70",
     "fields": {
       "created_by": "00000000-0000-0000-0000-000000000003",
@@ -30,7 +30,7 @@
     }
   },
   {
-    "model": "registration.restart",
+    "model": "registration.restartevent",
     "pk": "375ab674-aba4-4381-a72d-95df0e03867e",
     "fields": {
       "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",

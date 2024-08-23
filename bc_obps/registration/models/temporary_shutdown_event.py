@@ -1,12 +1,11 @@
-from typing import Optional
-from registration.models import Event, Operation, Facility
+from registration.models import Event
 from django.db import models
 from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 
 
-class TemporaryShutdown(Event):
-    class TemporaryShutdownStatus(models.TextChoices):
+class TemporaryShutdownEvent(Event):
+    class TemporaryShutdownStatuses(models.TextChoices):
         TEMPORARILY_SHUTDOWN = "Temporarily Shutdown"
 
     description = models.TextField(
@@ -15,16 +14,14 @@ class TemporaryShutdown(Event):
         db_comment="Rationale for temporary shutdown or other details.",
     )
     status = models.CharField(
-        max_length=100, choices=TemporaryShutdownStatus, default=TemporaryShutdownStatus.TEMPORARILY_SHUTDOWN
+        max_length=100,
+        choices=TemporaryShutdownStatuses.choices,
+        default=TemporaryShutdownStatuses.TEMPORARILY_SHUTDOWN,
     )
     history = HistoricalRecords(
         table_name='erc_history"."temporary_shutdown_event_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
-    operation = models.ForeignKey(
-        Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="temporary_shutdowns"
-    )
-    facilities = models.ManyToManyField(Facility, blank=True, related_name="temporary_shutdowns")
 
     def clean(self) -> None:
         super().clean()
@@ -39,8 +36,3 @@ class TemporaryShutdown(Event):
 
     def __str__(self) -> str:
         return f"Temporary shutdown event - Effective date {self.effective_date}, status {self.status}, description {self.description}, operation {self.operation}, facilities {self.facilities}"
-
-    @staticmethod
-    def _validate_string(value: Optional[str]) -> None:
-        if not isinstance(value, str) or not value:
-            raise ValueError("Value must be a non-empty string")

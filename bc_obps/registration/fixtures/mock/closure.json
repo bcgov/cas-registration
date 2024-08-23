@@ -1,6 +1,6 @@
 [
   {
-    "model": "registration.closure",
+    "model": "registration.closureevent",
     "pk": "87a669d0-66d4-47a2-9c2c-34c9e60740d0",
     "fields": {
       "created_by": "279c80cf-5781-4c28-8727-40a133d17c0d",
@@ -11,7 +11,7 @@
     }
   },
   {
-    "model": "registration.closure",
+    "model": "registration.closureevent",
     "pk": "127ccfbf-c344-4dcd-8c98-bbd9303d22a9",
     "fields": {
       "created_by": "00000000-0000-0000-0000-000000000001",
