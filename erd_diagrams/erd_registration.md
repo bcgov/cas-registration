@@ -743,7 +743,7 @@ RegistrationPurpose {
     CharField registration_purpose
     ForeignKey operation
 }
-HistoricalClosure {
+HistoricalClosureEvent {
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
@@ -761,7 +761,7 @@ HistoricalClosure {
     CharField history_change_reason
     CharField history_type
 }
-Closure {
+ClosureEvent {
     ForeignKey created_by
     DateTimeField created_at
     ForeignKey updated_by
@@ -770,12 +770,12 @@ Closure {
     DateTimeField archived_at
     UUIDField id
     DateTimeField effective_date
+    ForeignKey operation
     TextField description
     CharField status
-    ForeignKey operation
     ManyToManyField facilities
 }
-HistoricalTemporaryShutdown {
+HistoricalTemporaryShutdownEvent {
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
@@ -793,7 +793,7 @@ HistoricalTemporaryShutdown {
     CharField history_change_reason
     CharField history_type
 }
-TemporaryShutdown {
+TemporaryShutdownEvent {
     ForeignKey created_by
     DateTimeField created_at
     ForeignKey updated_by
@@ -802,12 +802,12 @@ TemporaryShutdown {
     DateTimeField archived_at
     UUIDField id
     DateTimeField effective_date
+    ForeignKey operation
     TextField description
     CharField status
-    ForeignKey operation
     ManyToManyField facilities
 }
-HistoricalTransfer {
+HistoricalTransferEvent {
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
@@ -828,7 +828,7 @@ HistoricalTransfer {
     CharField history_change_reason
     CharField history_type
 }
-Transfer {
+TransferEvent {
     ForeignKey created_by
     DateTimeField created_at
     ForeignKey updated_by
@@ -837,15 +837,15 @@ Transfer {
     DateTimeField archived_at
     UUIDField id
     DateTimeField effective_date
-    TextField description
     ForeignKey operation
+    TextField description
     CharField future_designated_operator
     ForeignKey other_operator
     ForeignKey other_operator_contact
     CharField status
     ManyToManyField facilities
 }
-HistoricalRestart {
+HistoricalRestartEvent {
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
@@ -862,7 +862,7 @@ HistoricalRestart {
     CharField history_change_reason
     CharField history_type
 }
-Restart {
+RestartEvent {
     ForeignKey created_by
     DateTimeField created_at
     ForeignKey updated_by
@@ -1054,43 +1054,43 @@ RegistrationPurpose }|--|| User : created_by
 RegistrationPurpose }|--|| User : updated_by
 RegistrationPurpose }|--|| User : archived_by
 RegistrationPurpose }|--|| Operation : operation
-HistoricalClosure }|--|| User : created_by
-HistoricalClosure }|--|| User : updated_by
-HistoricalClosure }|--|| User : archived_by
-HistoricalClosure }|--|| Operation : operation
-Closure }|--|| User : created_by
-Closure }|--|| User : updated_by
-Closure }|--|| User : archived_by
-Closure }|--|| Operation : operation
-Closure }|--|{ Facility : facilities
-HistoricalTemporaryShutdown }|--|| User : created_by
-HistoricalTemporaryShutdown }|--|| User : updated_by
-HistoricalTemporaryShutdown }|--|| User : archived_by
-HistoricalTemporaryShutdown }|--|| Operation : operation
-TemporaryShutdown }|--|| User : created_by
-TemporaryShutdown }|--|| User : updated_by
-TemporaryShutdown }|--|| User : archived_by
-TemporaryShutdown }|--|| Operation : operation
-TemporaryShutdown }|--|{ Facility : facilities
-HistoricalTransfer }|--|| User : created_by
-HistoricalTransfer }|--|| User : updated_by
-HistoricalTransfer }|--|| User : archived_by
-HistoricalTransfer }|--|| Operation : operation
-HistoricalTransfer }|--|| Operator : other_operator
-HistoricalTransfer }|--|| Contact : other_operator_contact
-Transfer }|--|| User : created_by
-Transfer }|--|| User : updated_by
-Transfer }|--|| User : archived_by
-Transfer }|--|| Operation : operation
-Transfer }|--|| Operator : other_operator
-Transfer }|--|| Contact : other_operator_contact
-Transfer }|--|{ Facility : facilities
-HistoricalRestart }|--|| User : created_by
-HistoricalRestart }|--|| User : updated_by
-HistoricalRestart }|--|| User : archived_by
-HistoricalRestart }|--|| Operation : operation
-Restart }|--|| User : created_by
-Restart }|--|| User : updated_by
-Restart }|--|| User : archived_by
-Restart }|--|| Operation : operation
-Restart }|--|{ Facility : facilities
+HistoricalClosureEvent }|--|| User : created_by
+HistoricalClosureEvent }|--|| User : updated_by
+HistoricalClosureEvent }|--|| User : archived_by
+HistoricalClosureEvent }|--|| Operation : operation
+ClosureEvent }|--|| User : created_by
+ClosureEvent }|--|| User : updated_by
+ClosureEvent }|--|| User : archived_by
+ClosureEvent }|--|| Operation : operation
+ClosureEvent }|--|{ Facility : facilities
+HistoricalTemporaryShutdownEvent }|--|| User : created_by
+HistoricalTemporaryShutdownEvent }|--|| User : updated_by
+HistoricalTemporaryShutdownEvent }|--|| User : archived_by
+HistoricalTemporaryShutdownEvent }|--|| Operation : operation
+TemporaryShutdownEvent }|--|| User : created_by
+TemporaryShutdownEvent }|--|| User : updated_by
+TemporaryShutdownEvent }|--|| User : archived_by
+TemporaryShutdownEvent }|--|| Operation : operation
+TemporaryShutdownEvent }|--|{ Facility : facilities
+HistoricalTransferEvent }|--|| User : created_by
+HistoricalTransferEvent }|--|| User : updated_by
+HistoricalTransferEvent }|--|| User : archived_by
+HistoricalTransferEvent }|--|| Operation : operation
+HistoricalTransferEvent }|--|| Operator : other_operator
+HistoricalTransferEvent }|--|| Contact : other_operator_contact
+TransferEvent }|--|| User : created_by
+TransferEvent }|--|| User : updated_by
+TransferEvent }|--|| User : archived_by
+TransferEvent }|--|| Operation : operation
+TransferEvent }|--|| Operator : other_operator
+TransferEvent }|--|| Contact : other_operator_contact
+TransferEvent }|--|{ Facility : facilities
+HistoricalRestartEvent }|--|| User : created_by
+HistoricalRestartEvent }|--|| User : updated_by
+HistoricalRestartEvent }|--|| User : archived_by
+HistoricalRestartEvent }|--|| Operation : operation
+RestartEvent }|--|| User : created_by
+RestartEvent }|--|| User : updated_by
+RestartEvent }|--|| User : archived_by
+RestartEvent }|--|| Operation : operation
+RestartEvent }|--|{ Facility : facilities

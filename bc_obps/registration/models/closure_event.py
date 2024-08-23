@@ -1,19 +1,15 @@
-from registration.models import Event, Operation, Facility
+from registration.models import Event
 from django.db import models
 from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 
 
-class Closure(Event):
-    class ClosureStatus(models.TextChoices):
+class ClosureEvent(Event):
+    class ClosureStatuses(models.TextChoices):
         CLOSED = "Closed"
 
     description = models.TextField(null=True, blank=True, db_comment="Rationale for closure or other details.")
-    status = models.CharField(max_length=100, choices=ClosureStatus, default=ClosureStatus.CLOSED)
-    operation = models.ForeignKey(
-        Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="closures"
-    )
-    facilities = models.ManyToManyField(Facility, blank=True, related_name="closures")
+    status = models.CharField(max_length=100, choices=ClosureStatuses.choices, default=ClosureStatuses.CLOSED)
     history = HistoricalRecords(
         table_name='erc_history"."closure_event_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),

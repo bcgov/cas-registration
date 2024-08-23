@@ -1,10 +1,10 @@
 from django.contrib import admin
 from registration.models import (
     Address,
-    Restart,
-    Closure,
-    TemporaryShutdown,
-    Transfer,
+    RestartEvent,
+    ClosureEvent,
+    TemporaryShutdownEvent,
+    TransferEvent,
     Facility,
     FacilityOwnershipTimeline,
     OperationOwnershipTimeline,
@@ -36,10 +36,10 @@ admin.site.register(Activity)
 admin.site.register(MultipleOperator)
 admin.site.register(Address)
 admin.site.register(BcObpsRegulatedOperation)
-admin.site.register(Closure)
-admin.site.register(TemporaryShutdown)
-admin.site.register(Transfer)
-admin.site.register(Restart)
+admin.site.register(ClosureEvent)
+admin.site.register(TemporaryShutdownEvent)
+admin.site.register(TransferEvent)
+admin.site.register(RestartEvent)
 
 
 @admin.register(Operation)

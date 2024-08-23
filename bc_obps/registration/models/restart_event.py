@@ -4,11 +4,11 @@ from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 
 
-class Restart(Event):
-    class RestartStatus(models.TextChoices):
+class RestartEvent(Event):
+    class RestartStatuses(models.TextChoices):
         RESTARTED = "Restarted"
 
-    status = models.CharField(max_length=100, choices=RestartStatus, default=RestartStatus.RESTARTED)
+    status = models.CharField(max_length=100, choices=RestartStatuses.choices, default=RestartStatuses.RESTARTED)
     operation = models.ForeignKey(
         Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="restarts"
     )
