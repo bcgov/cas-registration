@@ -29,7 +29,7 @@ const NewEntrantOperationForm = ({
     const body = {
       statutory_declaration: e.formData.statutory_declaration,
     };
-    const response = await actionHandler(endpoint, method, `${baseUrl}/3`, {
+    const response = await actionHandler(endpoint, method, baseUrl, {
       body: JSON.stringify(body),
     });
 
@@ -43,7 +43,6 @@ const NewEntrantOperationForm = ({
     <MultiStepBase
       allowBackNavigation
       baseUrl={baseUrl}
-      baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
       error={error}
       formData={formData}
