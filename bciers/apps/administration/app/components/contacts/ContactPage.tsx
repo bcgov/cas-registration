@@ -21,27 +21,13 @@ export default async function ContactPage({
 
   if (contactId) {
     contactFormData = await getContact(contactId);
-    if ("error" in contactFormData) {
-      return (
-        <div>
-          <h3>Contact Information Not Found</h3>
-          <p>
-            Sorry, we couldn&apos;t find the contact information you were
-            looking for.
-          </p>
-        </div>
-      );
-    }
+    if (contactFormData && "error" in contactFormData)
+      throw new Error("Failed to retrieve contact information");
   } else {
     // Retrieves the list of users associated with the operator of the current user
     userOperatorUsers = await getUserOperatorUsers("/contacts/add-contact");
-    if ("error" in userOperatorUsers) {
-      return (
-        <div>
-          <h3>Failed to Retrieve User Information</h3>
-        </div>
-      );
-    }
+    if (userOperatorUsers && "error" in userOperatorUsers)
+      throw new Error("Failed to retrieve user information");
   }
 
   const noteMsg = isCreating

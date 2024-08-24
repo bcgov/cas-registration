@@ -24,11 +24,6 @@ export const operationRepresentativeSchema: RJSFSchema = {
       items: {},
       title: "Operation Representative",
     },
-    operation_representative_add: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
-      type: "object",
-      readOnly: true,
-    },
     new_operation_representatives: {
       type: "array",
       items: {},
@@ -43,7 +38,6 @@ export const operationRepresentativeUiSchema: UiSchema = {
   "ui:order": [
     "operation_representative_preface",
     "operation_representatives",
-    "operation_representative_add",
     "new_operation_representatives",
   ],
   operation_representative_preface: {
@@ -53,10 +47,9 @@ export const operationRepresentativeUiSchema: UiSchema = {
 
   operation_representatives: {
     "ui:widget": "MultiSelectWidget",
-  },
-  operation_representative_add: {
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": operationRepresentativeAdd,
+    // RJSF has "ui:help" but it doesn't play nice with the MultiSelectWidget that is why we are using a custom name ("ui:helperText")
+    "ui:helperText": operationRepresentativeAdd,
+    "ui:placeholder": "Select an individual",
   },
   new_operation_representatives: {
     items: contactsUiSchema,
