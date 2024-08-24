@@ -38,7 +38,7 @@ class RestartEventModelTest(EventBaseModelMixin):
             ("facilities", "facilities", None, None),
         ]
         super().setUpTestData()
-    
+
     def test_event_with_operation_only(self):
         self.create_event_with_operation_only()
 

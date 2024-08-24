@@ -15,7 +15,9 @@ class TransferEvent(EventBaseModel):
         OTHER_OPERATOR = "Other Operator"
         NOT_SURE = "Not Sure"
 
-    description = models.TextField(null=True, blank=True, db_comment="Description of the transfer or change in designated operator.")
+    description = models.TextField(
+        null=True, blank=True, db_comment="Description of the transfer or change in designated operator."
+    )
     future_designated_operator = models.CharField(
         max_length=1000,
         choices=FutureDesignatedOperatorChoices.choices,

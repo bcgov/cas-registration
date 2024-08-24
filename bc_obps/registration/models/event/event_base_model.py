@@ -11,5 +11,3 @@ class EventBaseModel(TimeStampedModel):
 
     class Meta:
         abstract = True
-
-
