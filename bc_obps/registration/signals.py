@@ -11,7 +11,9 @@ from registration.models.event.transfer_event import TransferEvent
 event_models: List[Any] = [ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]
 
 
-def validate_event_constraints(instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]) -> None:
+def validate_event_constraints(
+    instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]
+) -> None:
     """
     Validates that the given event instance does not have both an operation and facilities set simultaneously.
     Raises:
@@ -28,7 +30,12 @@ def create_m2m_signal_handler(model: Union[ClosureEvent, RestartEvent, Temporary
     """
 
     @receiver(m2m_changed, sender=model.facilities.through)
-    def validate_facilities_m2m_constraint(sender: Any, instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent], action: str, **kwargs: Dict) -> None:
+    def validate_facilities_m2m_constraint(
+        sender: Any,
+        instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
+        action: str,
+        **kwargs: Dict
+    ) -> None:
         """
         Signal handler to validate that the event does not have both an operation and facilities set simultaneously
         when changes are made to the ManyToMany relationship with facilities.
@@ -46,7 +53,9 @@ def create_m2m_signal_handler(model: Union[ClosureEvent, RestartEvent, Temporary
             validate_event_constraints(instance)
 
 
-def create_pre_save_signal_handler(model: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]) -> None:
+def create_pre_save_signal_handler(
+    model: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]
+) -> None:
     """
     Creates and registers a pre_save signal handler for the specified model to validate
     that the event does not have both an operation and facilities set simultaneously before saving.
@@ -54,7 +63,9 @@ def create_pre_save_signal_handler(model: Union[ClosureEvent, RestartEvent, Temp
 
     @receiver(pre_save, sender=model)
     def validate_operation_and_facilities_constraint(
-        sender: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent], instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent], **kwargs: Dict
+        sender: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
+        instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
+        **kwargs: Dict
     ) -> None:
         """
         Signal handler to validate that the event does not have both an operation and facilities set simultaneously

@@ -45,10 +45,18 @@ class TransferEventModelTest(EventBaseModelMixin):
         super().setUpTestData()
 
     def test_event_with_operation_only(self):
-        self.create_event_with_operation_only(future_designated_operator="My Operator", other_operator=operator_baker(), other_operator_contact=contact_baker())
+        self.create_event_with_operation_only(
+            future_designated_operator="My Operator",
+            other_operator=operator_baker(),
+            other_operator_contact=contact_baker(),
+        )
 
     def test_event_with_facilities_only(self):
-        self.create_event_with_facilities_only(future_designated_operator="My Operator", other_operator=operator_baker(), other_operator_contact=contact_baker())
+        self.create_event_with_facilities_only(
+            future_designated_operator="My Operator",
+            other_operator=operator_baker(),
+            other_operator_contact=contact_baker(),
+        )
 
     def test_event_with_operation_and_adding_facilities_raises_error(self):
         self.create_event_with_operation_and_adding_facilities_raises_error()

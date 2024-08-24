@@ -14,7 +14,9 @@ class RestartEvent(EventBaseModel):
     )
 
     class Meta:
-        db_table_comment = "Restart events for operations and/or facilities after they have been closed or temporarily shutdown."
+        db_table_comment = (
+            "Restart events for operations and/or facilities after they have been closed or temporarily shutdown."
+        )
         db_table = 'erc"."restart_event'
         default_related_name = "restart_events"
 
