@@ -86,10 +86,10 @@ class OperationModelTest(BaseTestCase):
             ("report", "report", None, None),
             ("registration_purposes", "registration purpose", None, None),
             ("opted_in_operation", "opted in operation", None, None),
-            ("transfers", "transfer", None, None),
-            ("restarts", "restart", None, None),
-            ("closures", "closure", None, None),
-            ("temporary_shutdowns", "temporary shutdown", None, None),
+            ("transfer_events", "transfer event", None, None),
+            ("restart_events", "restart event", None, None),
+            ("closure_events", "closure event", None, None),
+            ("temporary_shutdown_events", "temporary shutdown event", None, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
