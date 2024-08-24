@@ -1,4 +1,3 @@
-from common.tests.utils.helpers import BaseTestCase
 from registration.models import TransferEvent
 from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
@@ -9,11 +8,14 @@ from registration.tests.constants import (
     OPERATION_FIXTURE,
     CONTACT_FIXTURE,
     FACILITY_FIXTURE,
-    TRANSFER_FIXTURE,
+    TRANSFER_EVENT_FIXTURE,
 )
+from registration.tests.models.event.event_base_model_mixin import EventBaseModelMixin
+from registration.tests.utils.bakers import contact_baker, operator_baker
 
 
-class TemporaryShutdownModelTest(BaseTestCase):
+class TransferEventModelTest(EventBaseModelMixin):
+    model = TransferEvent
     fixtures = [
         USER_FIXTURE,
         ADDRESS_FIXTURE,
@@ -22,12 +24,12 @@ class TemporaryShutdownModelTest(BaseTestCase):
         BC_OBPS_REGULATED_OPERATION_FIXTURE,
         OPERATION_FIXTURE,
         FACILITY_FIXTURE,
-        TRANSFER_FIXTURE,
+        TRANSFER_EVENT_FIXTURE,
     ]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = TransferEvent.objects.first()
+        cls.test_object = cls.model.objects.first()
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "id", None, None),
@@ -40,3 +42,16 @@ class TemporaryShutdownModelTest(BaseTestCase):
             ("other_operator_contact", "other operator contact", None, None),
             ("future_designated_operator", "future designated operator", None, None),
         ]
+        super().setUpTestData()
+
+    def test_event_with_operation_only(self):
+        self.create_event_with_operation_only(future_designated_operator="My Operator", other_operator=operator_baker(), other_operator_contact=contact_baker())
+
+    def test_event_with_facilities_only(self):
+        self.create_event_with_facilities_only(future_designated_operator="My Operator", other_operator=operator_baker(), other_operator_contact=contact_baker())
+
+    def test_event_with_operation_and_adding_facilities_raises_error(self):
+        self.create_event_with_operation_and_adding_facilities_raises_error()
+
+    def test_event_with_facilities_and_adding_operation_raises_error(self):
+        self.create_event_with_facilities_and_adding_operation_raises_error()

@@ -1,4 +1,3 @@
-from common.tests.utils.helpers import BaseTestCase
 from registration.models import RestartEvent
 from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
@@ -9,11 +8,13 @@ from registration.tests.constants import (
     OPERATION_FIXTURE,
     CONTACT_FIXTURE,
     FACILITY_FIXTURE,
-    RESTART_FIXTURE,
+    RESTART_EVENT_FIXTURE,
 )
+from registration.tests.models.event.event_base_model_mixin import EventBaseModelMixin
 
 
-class RestartModelTest(BaseTestCase):
+class RestartEventModelTest(EventBaseModelMixin):
+    model = RestartEvent
     fixtures = [
         USER_FIXTURE,
         ADDRESS_FIXTURE,
@@ -22,12 +23,12 @@ class RestartModelTest(BaseTestCase):
         BC_OBPS_REGULATED_OPERATION_FIXTURE,
         OPERATION_FIXTURE,
         FACILITY_FIXTURE,
-        RESTART_FIXTURE,
+        RESTART_EVENT_FIXTURE,
     ]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = RestartEvent.objects.first()
+        cls.test_object = cls.model.objects.first()
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "id", None, None),
@@ -36,3 +37,16 @@ class RestartModelTest(BaseTestCase):
             ("operation", "operation", None, None),
             ("facilities", "facilities", None, None),
         ]
+        super().setUpTestData()
+    
+    def test_event_with_operation_only(self):
+        self.create_event_with_operation_only()
+
+    def test_event_with_facilities_only(self):
+        self.create_event_with_facilities_only()
+
+    def test_event_with_operation_and_adding_facilities_raises_error(self):
+        self.create_event_with_operation_and_adding_facilities_raises_error()
+
+    def test_event_with_facilities_and_adding_operation_raises_error(self):
+        self.create_event_with_facilities_and_adding_operation_raises_error()

@@ -1,4 +1,3 @@
-from common.tests.utils.helpers import BaseTestCase
 from registration.models import TemporaryShutdownEvent
 from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
@@ -9,11 +8,13 @@ from registration.tests.constants import (
     OPERATION_FIXTURE,
     CONTACT_FIXTURE,
     FACILITY_FIXTURE,
-    TEMPORARY_SHUTDOWN_FIXTURE,
+    TEMPORARY_SHUTDOWN_EVENT_FIXTURE,
 )
+from registration.tests.models.event.event_base_model_mixin import EventBaseModelMixin
 
 
-class TemporaryShutdownModelTest(BaseTestCase):
+class TemporaryShutdownEventModelTest(EventBaseModelMixin):
+    model = TemporaryShutdownEvent
     fixtures = [
         USER_FIXTURE,
         ADDRESS_FIXTURE,
@@ -22,12 +23,12 @@ class TemporaryShutdownModelTest(BaseTestCase):
         BC_OBPS_REGULATED_OPERATION_FIXTURE,
         OPERATION_FIXTURE,
         FACILITY_FIXTURE,
-        TEMPORARY_SHUTDOWN_FIXTURE,
+        TEMPORARY_SHUTDOWN_EVENT_FIXTURE,
     ]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = TemporaryShutdownEvent.objects.first()
+        cls.test_object = cls.model.objects.first()
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "id", None, None),
@@ -37,3 +38,16 @@ class TemporaryShutdownModelTest(BaseTestCase):
             ("operation", "operation", None, None),
             ("facilities", "facilities", None, None),
         ]
+        super().setUpTestData()
+
+    def test_event_with_operation_only(self):
+        self.create_event_with_operation_only()
+
+    def test_event_with_facilities_only(self):
+        self.create_event_with_facilities_only()
+
+    def test_event_with_operation_and_adding_facilities_raises_error(self):
+        self.create_event_with_operation_and_adding_facilities_raises_error()
+
+    def test_event_with_facilities_and_adding_operation_raises_error(self):
+        self.create_event_with_facilities_and_adding_operation_raises_error()

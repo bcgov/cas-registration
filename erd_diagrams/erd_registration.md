@@ -775,6 +775,36 @@ ClosureEvent {
     CharField status
     ManyToManyField facilities
 }
+HistoricalRestartEvent {
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    CharField status
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+RestartEvent {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    ForeignKey operation
+    CharField status
+    ManyToManyField facilities
+}
 HistoricalTemporaryShutdownEvent {
     DateTimeField created_at
     DateTimeField updated_at
@@ -843,36 +873,6 @@ TransferEvent {
     ForeignKey other_operator
     ForeignKey other_operator_contact
     CharField status
-    ManyToManyField facilities
-}
-HistoricalRestartEvent {
-    DateTimeField created_at
-    DateTimeField updated_at
-    DateTimeField archived_at
-    UUIDField id
-    DateTimeField effective_date
-    CharField status
-    UUIDField history_user_id
-    ForeignKey created_by
-    ForeignKey updated_by
-    ForeignKey archived_by
-    ForeignKey operation
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-RestartEvent {
-    ForeignKey created_by
-    DateTimeField created_at
-    ForeignKey updated_by
-    DateTimeField updated_at
-    ForeignKey archived_by
-    DateTimeField archived_at
-    UUIDField id
-    DateTimeField effective_date
-    CharField status
-    ForeignKey operation
     ManyToManyField facilities
 }
 HistoricalDocument }|--|| User : created_by
@@ -1063,6 +1063,15 @@ ClosureEvent }|--|| User : updated_by
 ClosureEvent }|--|| User : archived_by
 ClosureEvent }|--|| Operation : operation
 ClosureEvent }|--|{ Facility : facilities
+HistoricalRestartEvent }|--|| User : created_by
+HistoricalRestartEvent }|--|| User : updated_by
+HistoricalRestartEvent }|--|| User : archived_by
+HistoricalRestartEvent }|--|| Operation : operation
+RestartEvent }|--|| User : created_by
+RestartEvent }|--|| User : updated_by
+RestartEvent }|--|| User : archived_by
+RestartEvent }|--|| Operation : operation
+RestartEvent }|--|{ Facility : facilities
 HistoricalTemporaryShutdownEvent }|--|| User : created_by
 HistoricalTemporaryShutdownEvent }|--|| User : updated_by
 HistoricalTemporaryShutdownEvent }|--|| User : archived_by
@@ -1085,12 +1094,3 @@ TransferEvent }|--|| Operation : operation
 TransferEvent }|--|| Operator : other_operator
 TransferEvent }|--|| Contact : other_operator_contact
 TransferEvent }|--|{ Facility : facilities
-HistoricalRestartEvent }|--|| User : created_by
-HistoricalRestartEvent }|--|| User : updated_by
-HistoricalRestartEvent }|--|| User : archived_by
-HistoricalRestartEvent }|--|| Operation : operation
-RestartEvent }|--|| User : created_by
-RestartEvent }|--|| User : updated_by
-RestartEvent }|--|| User : archived_by
-RestartEvent }|--|| Operation : operation
-RestartEvent }|--|{ Facility : facilities
