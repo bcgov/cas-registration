@@ -7,7 +7,7 @@ import {
   OperationRegistrationFormProps,
 } from "apps/registration/app/components/operations/registration/types";
 import { actionHandler } from "@bciers/actions";
-import { UUID } from "crypto";
+import { IChangeEvent } from "@rjsf/core";
 import { contactsSchema } from "@/administration/app/data/jsonSchema/contact";
 import { RJSFSchema } from "@rjsf/utils";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
@@ -39,47 +39,42 @@ const OperationRepresentativeForm = ({
   step,
   steps,
 }: OperationRepresentativeFormProps) => {
-  const handleSubmit = async (
-    operation_id: UUID,
-    data: { formData?: { [key: string]: any } },
-  ) => {
+  const handleSubmit = async (e: IChangeEvent) => {
     // unnest the contact data
-    const hasNewReps = data.formData?.new_operation_representatives.length > 0;
+    const hasNewReps = e.formData?.new_operation_representatives.length > 0;
     let unnestedNewReps = [];
     if (hasNewReps) {
       const contactFormSections = contactsSchema.properties as RJSFSchema;
       const contactFormSectionList = Object.keys(contactFormSections);
-      unnestedNewReps = data.formData?.new_operation_representatives.map(
+      unnestedNewReps = e.formData?.new_operation_representatives.map(
         (representative: { [key: string]: any }) => {
           return createUnnestedFormData(representative, contactFormSectionList);
         },
       );
     }
-    const endpoint = `registration/v2/operations/${operation_id}/registration/operation-representative`;
+    const endpoint = `registration/v2/operations/${operation}/registration/operation-representative`;
     const response = await actionHandler(endpoint, "PUT", "", {
       body: JSON.stringify({
-        ...data.formData,
+        ...e.formData,
         ...(hasNewReps && { new_operation_representatives: unnestedNewReps }),
       }),
     });
     return response;
   };
   return (
-    <>
-      <MultiStepBase
-        allowBackNavigation
-        baseUrl={`/register-an-operation/${operation}`}
-        baseUrlParams={`title=${operation}`}
-        cancelUrl="/"
-        formData={formData}
-        onSubmit={(data) => handleSubmit(operation, data)}
-        schema={schema}
-        step={step}
-        steps={steps}
-        uiSchema={operationRepresentativeUiSchema}
-        customValidate={customValidate}
-      ></MultiStepBase>
-    </>
+    <MultiStepBase
+      allowBackNavigation
+      baseUrl={`/register-an-operation/${operation}`}
+      baseUrlParams={`title=${operation}`}
+      cancelUrl="/"
+      formData={formData}
+      onSubmit={handleSubmit}
+      schema={schema}
+      step={step}
+      steps={steps}
+      uiSchema={operationRepresentativeUiSchema}
+      customValidate={customValidate}
+    ></MultiStepBase>
   );
 };
 

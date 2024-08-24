@@ -3,5 +3,5 @@ export const operationRepresentativePreface = (
 );
 
 export const operationRepresentativeAdd = (
-  <div>Don&apos;t see the individual? Add them below.</div>
+  <i>Don&apos;t see the individual? Add them below.</i>
 );

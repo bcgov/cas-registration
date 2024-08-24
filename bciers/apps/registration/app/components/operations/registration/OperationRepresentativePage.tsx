@@ -5,18 +5,15 @@ import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
 import { contactsSchema } from "@/administration/app/data/jsonSchema/contact";
 import { createContactSchema } from "@/administration/app/components/contacts/createContactSchema";
-import { UserOperatorUser } from "@/administration/app/components/contacts/types";
+import {
+  ContactRow,
+  UserOperatorUser,
+} from "@/administration/app/components/contacts/types";
 import getUserOperatorUsers from "@/administration/app/components/contacts/getUserOperatorUsers";
-
-interface Contact {
-  id: string;
-  first_name: string;
-  last_name: string;
-}
 
 export const createOperationRepresentativeSchema = (
   schema: RJSFSchema,
-  contactOptions: Contact[],
+  contactOptions: ContactRow[],
   userOperatorUsers: UserOperatorUser[],
 ) => {
   // set up options for contact selection dropdown
@@ -47,17 +44,18 @@ const OperationRepresentativePage = async ({
   step: number;
   steps: string[];
 }) => {
-  let contacts: { items: []; count: number } | { error: string };
+  let contacts: { items: ContactRow[]; count: number } | { error: string };
   contacts = await getContacts();
   let userOperatorUsers: UserOperatorUser[] | { error: string };
-  userOperatorUsers = await getUserOperatorUsers("/contacts/add-contact");
-  if ("error" in contacts || "error" in userOperatorUsers) {
-    return (
-      <div>
-        <h3>Failed to Retrieve Contact or User Information</h3>
-      </div>
-    );
-  }
+  userOperatorUsers = await getUserOperatorUsers(
+    `registration/register-an-operation/${operation}/4`,
+  );
+  if (
+    (contacts && "error" in contacts) ||
+    (userOperatorUsers && "error" in userOperatorUsers)
+  )
+    throw new Error("Failed to Retrieve Contact or User Information");
+
   return (
     <OperationRepresentativeForm
       formData={{}}
