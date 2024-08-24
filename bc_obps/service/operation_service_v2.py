@@ -159,7 +159,8 @@ class OperationServiceV2:
             operation.documents.set([document])
         operation.set_create_or_update(user_guid)
         return operation
-    
+
+    @classmethod
     @transaction.atomic()
     def register_operation_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeIn
