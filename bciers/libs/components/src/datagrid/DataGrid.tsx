@@ -67,7 +67,7 @@ const DataGrid: React.FC<Props> = ({
   const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
   const [loading, setLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
-  const isRowsEmpty = rows.length === 0;
+  const isRowsEmpty = !rows || rows.length === 0;
   const searchParams = useSearchParams();
   const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
 
