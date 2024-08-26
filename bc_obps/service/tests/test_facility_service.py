@@ -7,7 +7,7 @@ from registration.models import (
     Operation,
     User,
     AppRole,
-    FacilityOwnershipTimeline,
+    FacilityDesignatedOperationTimeline,
     UserOperator,
     WellAuthorizationNumber,
 )
@@ -30,7 +30,7 @@ class TestGetIfAuthorized:
         user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 
         facility = facility_baker()
-        baker.make(FacilityOwnershipTimeline, operation=operation_baker(), facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=operation_baker(), facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
         assert result == facility
@@ -48,7 +48,7 @@ class TestGetIfAuthorized:
         )
         owning_operation: Operation = operation_baker(operator.id)
         facility = facility_baker()
-        baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
         assert result == facility
@@ -67,7 +67,7 @@ class TestGetIfAuthorized:
         )
         owning_operation: Operation = operation_baker(owning_operator.id)
         facility = baker.make(Facility, latitude_of_largest_emissions=5, longitude_of_largest_emissions=5)
-        baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             FacilityService.get_if_authorized(user.user_guid, facility.id)
@@ -170,7 +170,7 @@ class TestCreateFacilityWithOwnership:
         assert Facility.objects.count() == 1
 
         assert Address.objects.count() == 1  # operation_baker() creates an address (mandatory for the operator)
-        assert len(FacilityOwnershipTimeline.objects.all()) == 1
+        assert len(FacilityDesignatedOperationTimeline.objects.all()) == 1
         assert Facility.objects.get(name="zip") is not None
 
     @staticmethod
@@ -204,7 +204,7 @@ class TestCreateFacilityWithOwnership:
             Address.objects.count() == 2
         )  # 2 because operation_baker() created an address (mandatory) for the operator
         assert WellAuthorizationNumber.objects.count() == 2
-        assert len(FacilityOwnershipTimeline.objects.all()) == 1
+        assert len(FacilityDesignatedOperationTimeline.objects.all()) == 1
         assert Facility.objects.get(name="zip") is not None
 
 
@@ -264,7 +264,7 @@ class TestUpdateFacility:
             facility.well_authorization_numbers.set(well_auth_objs)
 
         # Link the created facility with an operation
-        baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         return user, owning_operation, facility
 

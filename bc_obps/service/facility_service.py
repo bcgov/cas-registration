@@ -8,7 +8,9 @@ from ninja import Query
 from registration.models import Facility
 from registration.schema.v1.facility import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
-from service.data_access_service.facility_ownership_timeline_service import FacilityOwnershipTimelineDataAccessService
+from service.data_access_service.facility_ownership_timeline_service import (
+    FacilityDesignatedOperationTimelineDataAccessService,
+)
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.data_access_service.address_service import AddressDataAccessService
@@ -155,7 +157,7 @@ class FacilityService:
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = (
             FacilityDataAccessService.get_all_facilities_for_user(user)
-            .filter(ownerships__operation_id=operation_id)
+            .filter(designated_operations__operation_id=operation_id)
             .distinct()
         )
         return filters.filter(base_qs).order_by(sort_by)
@@ -164,7 +166,7 @@ class FacilityService:
     def get_if_authorized(cls, user_guid: UUID, facility_id: UUID) -> Facility:
         """Retrieve a facility if the user is authorized to access it."""
         facility: Facility = FacilityDataAccessService.get_by_id(facility_id)
-        owner: Operation = facility.current_owner
+        owner: Operation = facility.current_designed_operation
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user() and not owner.user_has_access(user.user_guid):
             raise Exception(UNAUTHORIZED_MESSAGE)
@@ -183,7 +185,7 @@ class FacilityService:
             facility_data['address'] = cls.create_address(address_data)
 
         facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
-        FacilityOwnershipTimelineDataAccessService.create_facility_ownership_timeline(
+        FacilityDesignatedOperationTimelineDataAccessService.create_facility_ownership_timeline(
             user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
         )
 

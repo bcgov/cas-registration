@@ -1,6 +1,6 @@
 import math
 from datetime import datetime
-from registration.models.facility_ownership_timeline import FacilityOwnershipTimeline
+from registration.models.facility_designated_operator_timeline import FacilityDesignatedOperationTimeline
 from model_bakery import baker
 from registration.models import UserOperator, Facility, Operation, WellAuthorizationNumber
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -106,7 +106,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         owning_operation: Operation = operation_baker(operator.id)
         facility = facility_baker()
 
-        baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
         response = TestUtils.mock_get_with_auth_role(
             self,
             endpoint=custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id}),
@@ -117,7 +117,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
     def test_industry_users_cannot_get_other_users_facilities(self):
         facility = facility_baker()
-        baker.make(FacilityOwnershipTimeline, operation=operation_baker(), facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=operation_baker(), facility=facility)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
