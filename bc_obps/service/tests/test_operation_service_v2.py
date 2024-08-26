@@ -129,17 +129,23 @@ class TestOperationServiceV2:
         assert updated_operation.updated_at is not None
 
     @staticmethod
-    def test_list_current_users_operations():
+    def test_list_current_users_unregistered_operations():
 
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        users_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        users_unregistered_operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.PENDING
+        )
+        # operation with a registered status
+        baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.REGISTERED
+        )
         # operation for a different user_operator
-        baker.make_recipe('utils.operation')
+        baker.make_recipe('utils.operation', status=Operation.Statuses.PENDING)
 
-        result = OperationServiceV2.list_current_users_operations(approved_user_operator.user.user_guid)
-        assert Operation.objects.count() == 2
+        result = OperationServiceV2.list_current_users_unregistered_operations(approved_user_operator.user.user_guid)
+        assert Operation.objects.count() == 3
         assert len(result) == 1
-        assert result[0] == users_operation
+        assert result[0] == users_unregistered_operation
 
     @staticmethod
     def test_assign_existing_contacts_to_operation():
