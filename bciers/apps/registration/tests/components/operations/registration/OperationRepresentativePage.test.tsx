@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useSession } from "@bciers/testConfig/mocks";
-import { actionHandler } from "@bciers/testConfig/mocks";
+import { useSession, actionHandler } from "@bciers/testConfig/mocks";
 import { OperationRepresentativePage } from "@/registration/app/components/operations/registration";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
@@ -36,7 +35,7 @@ describe("the OperationRepresentativePage component", () => {
     vi.clearAllMocks();
   });
 
-  it("should render the Operation Represenative Form", async () => {
+  it("should render the Operation Representative Form", async () => {
     // contacts
     actionHandler.mockResolvedValueOnce(contactsMockResponse);
 
@@ -62,17 +61,15 @@ describe("the OperationRepresentativePage component", () => {
 
     // users
     actionHandler.mockResolvedValueOnce({ error: "oops!" });
-    render(
-      await OperationRepresentativePage({
-        step: 5,
-        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        steps: allOperationRegistrationSteps,
-      }),
-    );
-
-    expect(
-      screen.getByText("Failed to Retrieve Contact or User Information"),
-    ).toBeVisible();
+    await expect(async () => {
+      render(
+        await OperationRepresentativePage({
+          step: 5,
+          operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+          steps: allOperationRegistrationSteps,
+        }),
+      );
+    }).rejects.toThrow("Failed to Retrieve Contact or User Information");
   });
 
   it("renders the appropriate error component when getContacts fails", async () => {
@@ -81,17 +78,14 @@ describe("the OperationRepresentativePage component", () => {
 
     // users
     actionHandler.mockResolvedValueOnce(usersMockResponse);
-    // fetchFormEnums({ error: "oops!" });
-    render(
-      await OperationRepresentativePage({
-        step: 5,
-        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        steps: allOperationRegistrationSteps,
-      }),
-    );
-
-    expect(
-      screen.getByText("Failed to Retrieve Contact or User Information"),
-    ).toBeVisible();
+    await expect(async () => {
+      render(
+        await OperationRepresentativePage({
+          step: 5,
+          operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+          steps: allOperationRegistrationSteps,
+        }),
+      );
+    }).rejects.toThrow("Failed to Retrieve Contact or User Information");
   });
 });

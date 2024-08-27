@@ -7,11 +7,6 @@ import OperationRepresentativeForm from "apps/registration/app/components/operat
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { createOperationRepresentativeSchema } from "@/registration/app/components/operations/registration/OperationRepresentativePage";
 import userEvent from "@testing-library/user-event";
-import {
-  checkEmptyContactForm,
-  fillContactForm,
-  // eslint-disable-next-line import/extensions
-} from "@/administration/tests/components/contacts/ContactForm.test";
 
 useSession.mockReturnValue({
   data: {
@@ -41,17 +36,69 @@ const testSchema = createOperationRepresentativeSchema(
       last_name: "last 2",
     },
   ],
-  [
-    {
-      id: "00000000-0000-0000-0000-000000000001",
-      full_name: "Samantha Garcia",
-    },
-    {
-      id: "279c80cf-5781-4c28-8727-40a133d17c0d",
-      full_name: "Wednesday Addams",
-    },
-  ],
 );
+
+export const checkEmptyContactForm = () => {
+  expect(
+    screen.getByRole("heading", { name: /Personal Information/i }),
+  ).toBeVisible();
+  expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
+
+  expect(
+    screen.getByRole("heading", { name: /Work Information/i }),
+  ).toBeVisible();
+  expect(screen.getByLabelText(/Job Title \/ Position/i)).toHaveValue("");
+
+  expect(
+    screen.getByRole("heading", { name: /Contact Information/i }),
+  ).toBeVisible();
+  expect(screen.getByLabelText(/Business Email Address/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Business Telephone Number/i)).toHaveValue("");
+
+  expect(
+    screen.getByRole("heading", { name: /Address Information/i }),
+  ).toBeVisible();
+  expect(screen.getByLabelText(/Business Mailing Address/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Municipality/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Province/i)).toHaveValue("");
+  expect(screen.getByLabelText(/Postal Code/i)).toHaveValue("");
+};
+
+export const fillContactForm = async () => {
+  // Personal Information
+  await userEvent.type(screen.getByLabelText(/First Name/i), "John");
+  await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
+  // Work Information
+  await userEvent.type(
+    screen.getByLabelText(/Job Title \/ Position/i),
+    "Senior Officer",
+  );
+  // Contact Information
+  await userEvent.type(
+    screen.getByLabelText(/Business Email Address/i),
+    "john.doe@example.com",
+  );
+  await userEvent.type(
+    screen.getByLabelText(/Business Telephone Number/i),
+    "+16044011234",
+  );
+  // Address Information
+  await userEvent.type(
+    screen.getByLabelText(/Business Mailing Address/i),
+    "123 Main St",
+  );
+  await userEvent.type(screen.getByLabelText(/Municipality/i), "Cityville");
+  // province
+  const provinceComboBoxInput = screen.getByRole("combobox", {
+    name: /province/i,
+  });
+  const openProvinceDropdownButton = provinceComboBoxInput.parentElement
+    ?.children[1]?.children[0] as HTMLInputElement;
+  await userEvent.click(openProvinceDropdownButton);
+  await userEvent.click(screen.getByText(/alberta/i));
+  await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
+};
 
 describe("the OperationRepresentativeForm component", () => {
   beforeEach(() => {
@@ -74,7 +121,9 @@ describe("the OperationRepresentativeForm component", () => {
     );
     expect(screen.getByLabelText(/Operation Representative/i)).toBeVisible();
     userEvent.click(
-      screen.getByRole("button", { name: "Add another representative" }),
+      screen.getByRole("button", {
+        name: "Add Another Operation Representative",
+      }),
     );
     await waitFor(() => {
       expect(screen.getByText(/Operation Representative 1/i)).toBeVisible();
@@ -113,7 +162,7 @@ describe("the OperationRepresentativeForm component", () => {
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/operation_representative",
+        "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
         "PUT",
         "",
         {
@@ -155,7 +204,7 @@ describe("the OperationRepresentativeForm component", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/operation_representative",
+        "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
         "PUT",
         "",
         {
@@ -163,24 +212,15 @@ describe("the OperationRepresentativeForm component", () => {
             operation_representatives: [],
             new_operation_representatives: [
               {
-                section1: {
-                  existing_bciers_user: false,
-                  first_name: "John",
-                  last_name: "Doe",
-                },
-                section2: {
-                  position_title: "Senior Officer",
-                },
-                section3: {
-                  email: "john.doe@example.com",
-                  phone_number: "+1 1 604 401 1234",
-                },
-                section4: {
-                  street_address: "123 Main St",
-                  municipality: "Cityville",
-                  province: "AB",
-                  postal_code: "A1B2C3",
-                },
+                first_name: "John",
+                last_name: "Doe",
+                position_title: "Senior Officer",
+                email: "john.doe@example.com",
+                phone_number: "+1 1 604 401 1234",
+                street_address: "123 Main St",
+                municipality: "Cityville",
+                province: "AB",
+                postal_code: "A1B2C3",
               },
             ],
           }),
@@ -215,7 +255,7 @@ describe("the OperationRepresentativeForm component", () => {
     await userEvent.click(screen.getByRole("button", { name: /add/i }));
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
-      expect(screen.getAllByText(/Required field/i)).toHaveLength(6);
+      expect(screen.getAllByText(/Required field/i)).toHaveLength(5);
     });
   });
 });
