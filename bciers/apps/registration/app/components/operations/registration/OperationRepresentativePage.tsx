@@ -14,7 +14,11 @@ import getUserOperatorUsers from "@/administration/app/components/contacts/getUs
 
 export const createOperationRepresentativeSchema = (
   schema: RJSFSchema,
-  contactOptions: ContactRow[],
+  contactOptions: {
+    id: string;
+    first_name: string;
+    last_name: string;
+  }[],
 ) => {
   // set up options for contact selection dropdown
   const localSchema = JSON.parse(JSON.stringify(schema));

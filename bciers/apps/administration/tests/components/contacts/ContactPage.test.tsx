@@ -35,31 +35,26 @@ describe("Contact component", () => {
     getContact.mockReturnValueOnce({
       error: "Do not attempt to contact this contact",
     });
-    render(
-      await ContactPage({
-        contactId,
-      }),
-    );
-    expect(screen.getByText("Contact Information Not Found")).toBeVisible();
-    expect(
-      screen.getByText(
-        "Sorry, we couldn't find the contact information you were looking for.",
-      ),
-    ).toBeVisible();
+    await expect(async () => {
+      render(
+        await ContactPage({
+          contactId,
+        }),
+      );
+    }).rejects.toThrow("Failed to retrieve contact information");
   });
 
   it("renders the appropriate error component when getUserOperatorUsers fails", async () => {
     getUserOperatorUsers.mockReturnValueOnce({
       error: "No users found",
     });
-    render(
-      await ContactPage({
-        contactId: undefined,
-      }),
-    );
-    expect(
-      screen.getByText("Failed to Retrieve User Information"),
-    ).toBeVisible();
+    await expect(async () => {
+      render(
+        await ContactPage({
+          contactId: undefined,
+        }),
+      );
+    }).rejects.toThrow("Failed to retrieve user information");
   });
   it("renders the Contact component in create mode", async () => {
     getUserOperatorUsers.mockReturnValueOnce([]);
