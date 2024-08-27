@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import WarningIcon from "@mui/icons-material/Warning";
-import RequestAccessButton from "@/administration/app/components/buttons/RequestAccessButton";
+import RequestAccessButton from "../buttons/RequestAccessButton";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
 import Button from "@mui/material/Button";

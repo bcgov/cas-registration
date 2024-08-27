@@ -2,7 +2,6 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
-import { validate as isValidUUID } from "uuid";
 import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 // 📐 type for breadcrumb props
@@ -11,6 +10,12 @@ type TBreadCrumbProps = {
   capitalizeLinks: boolean;
   defaultLinks?: { label: string; href: string }[];
   zone?: string;
+};
+// 🛠️ Custom function to validate UUID using regex
+const isValidUUID = (segment: string): boolean => {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(segment);
 };
 
 // 🛠️ Function to un-slugify and capitalize a string
