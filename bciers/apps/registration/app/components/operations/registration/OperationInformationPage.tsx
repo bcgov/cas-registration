@@ -43,7 +43,6 @@ export const createOperationInformationSchema = (
 
   const oneOfOptions = purposes.map((purpose) => {
     return {
-      // required: ["regulated_products"],
       properties: {
         registration_purpose: {
           type: "string",
@@ -54,7 +53,7 @@ export const createOperationInformationSchema = (
             regulated_products: {
               title: "Regulated Product Name(s)",
               type: "array",
-              // minItems: 1,
+              minItems: 1,
               items: {
                 enum: regulatedProductsEnum,
                 enumNames: regulatedProductsEnumNames,

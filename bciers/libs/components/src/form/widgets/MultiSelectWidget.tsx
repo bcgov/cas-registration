@@ -43,11 +43,22 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   value,
   uiSchema,
 }) => {
+  const isValue = value && value.length !== 0 && value?.[0] !== undefined;
   const fieldSchema = schema.items as FieldSchema;
 
   const options = mapOptions(fieldSchema);
 
-  const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
+  const handleChange = (
+    e: React.ChangeEvent<{}>,
+    option: Array<Option>,
+    reason: string,
+  ) => {
+    if (reason === "clear" && e.type === "click") {
+      onChange(undefined);
+    }
+    if (option.length === 0) {
+      onChange(undefined);
+    }
     onChange(option.map((o: Option) => o.id));
   };
 
@@ -55,7 +66,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
     ? `${uiSchema["ui:placeholder"]}...`
     : "";
 
-  const displayPlaceholder = value?.length === 0;
+  const displayPlaceholder = !isValue;
 
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
@@ -76,14 +87,23 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       filterSelectedOptions
       autoHighlight
       options={options}
-      value={value.map((val: string | number) => {
-        return options.find((option: Option) => option.id === val);
-      })}
+      value={
+        isValue
+          ? value.map((val: string | number) => {
+              return options.find((option: Option) => option.id === val);
+            })
+          : undefined
+      }
       sx={styles}
       isOptionEqualToValue={(option: Option, val: Option) => {
         return option.id === val.id;
       }}
       onChange={handleChange}
+      onInputChange={(_, val) => {
+        if (!value || val?.[0] === undefined || val.length === 0) {
+          onChange(undefined);
+        }
+      }}
       getOptionLabel={(option: Option) => String(option.label)}
       renderInput={(params) => (
         <TextField
