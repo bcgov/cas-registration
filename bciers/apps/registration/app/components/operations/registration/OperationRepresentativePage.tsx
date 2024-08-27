@@ -1,10 +1,11 @@
 import { UUID } from "crypto";
 import OperationRepresentativeForm from "apps/registration/app/components/operations/registration/OperationRepresentativeForm";
-import { operationRepresentativeSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
+import {
+  operationRepresentativeSchema,
+  tempContactsSchema,
+} from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
 import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
-import { contactsSchema } from "@/administration/app/data/jsonSchema/contact";
-import { createContactSchema } from "@/administration/app/components/contacts/createContactSchema";
 import {
   ContactRow,
   UserOperatorUser,
@@ -14,7 +15,6 @@ import getUserOperatorUsers from "@/administration/app/components/contacts/getUs
 export const createOperationRepresentativeSchema = (
   schema: RJSFSchema,
   contactOptions: ContactRow[],
-  userOperatorUsers: UserOperatorUser[],
 ) => {
   // set up options for contact selection dropdown
   const localSchema = JSON.parse(JSON.stringify(schema));
@@ -30,7 +30,7 @@ export const createOperationRepresentativeSchema = (
 
   // create add contact section
   localSchema.properties.new_operation_representatives.items =
-    createContactSchema(contactsSchema, userOperatorUsers, true);
+    tempContactsSchema;
 
   return localSchema;
 };
@@ -63,7 +63,6 @@ const OperationRepresentativePage = async ({
       schema={createOperationRepresentativeSchema(
         operationRepresentativeSchema,
         contacts?.items,
-        userOperatorUsers,
       )}
       step={step}
       steps={steps}

@@ -14,7 +14,7 @@ import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 
 interface OperationRepresentativeFormProps
   extends OperationRegistrationFormProps {
-  formData: OperationRepresentativeFormData;
+  formData: OperationRepresentativeFormData | {};
 }
 
 function customValidate(
