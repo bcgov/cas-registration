@@ -2,8 +2,10 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
-
+import {
+  checkNoValidationErrorIsTriggered,
+  checkComboBoxWidgetValidationStyles,
+} from "@/tests/helpers/form";
 const multiSelectFieldLabel = "MultiSelectWidget test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;
 
@@ -230,67 +232,63 @@ describe("RJSF MultiSelectWidget", () => {
     expect(screen.getByText(/no options/i)).toBeVisible();
   });
 
-  // TODO: This is currently broken in MultiSelectWidget
-  // https://github.com/bcgov/cas-registration/issues/1602
-  // A required array field required minItems to be set to 1 which currently breaks MultiSelectWidget
-  //
-  // it("should show an error message when the combo box is required and no value is selected", async () => {
-  //   render(
-  //     <FormBase
-  //       schema={multiSelectFieldSchema}
-  //       uiSchema={multiSelectFieldUiSchema}
-  //     />,
-  //   );
-  //
-  //   const submitButton = screen.getByRole("button", { name: "Submit" });
-  //
-  //   await userEvent.click(submitButton);
-  //
-  //   expect(screen.getByText("Required field")).toBeVisible();
-  // });
 
-  // This works because required field functionality is broken
-  // it("should not show an error message when the combo box is required and a value is selected", async () => {
-  //   render(
-  //     <FormBase
-  //       schema={multiSelectFieldSchema}
-  //       uiSchema={multiSelectFieldUiSchema}
-  //       formData={{ multiSelectTestField: ["option_2"] }}
-  //     />,
-  //   );
-  //
-  //   const submitButton = screen.getByRole("button", { name: "Submit" });
-  //
-  //   await userEvent.click(submitButton);
-  //
-  //   expect(screen.queryByText("Required field")).toBeNull();
-  // });
+  it("should show an error message when the combo box is required and no value is selected", async () => {
+    render(
+      <FormBase
+        schema={multiSelectFieldSchema}
+        uiSchema={multiSelectFieldUiSchema}
+      />,
+    );
 
-  // it("should show an error message when the combo box is required and an invalid value is typed", async () => {
-  //   render(
-  //     <FormBase
-  //       schema={multiSelectFieldSchema}
-  //       uiSchema={multiSelectFieldUiSchema}
-  //     />,
-  //   );
-  //
-  //   const multiSelectInput = screen.getByRole("combobox") as HTMLInputElement;
-  //
-  //   await userEvent.type(multiSelectInput, "Invalid option{enter}");
-  //
-  //   const submitButton = screen.getByRole("button", { name: "Submit" });
-  //
-  //   await userEvent.click(submitButton);
-  //
-  //   expect(screen.queryByText("Required field")).toBeVisible();
-  // });
+    const submitButton = screen.getByRole("button", { name: "Submit" });
 
-  // it("should have the correct styles when the validation error is shown", async () => {
-  //   checkComboBoxWidgetValidationStyles(
-  //     <FormBase
-  //       schema={multiSelectFieldSchema}
-  //       uiSchema={multiSelectFieldUiSchema}
-  //     />,
-  //   );
-  // });
+    await userEvent.click(submitButton);
+
+    expect(screen.getByText("Required field")).toBeVisible();
+  });
+
+  it("should not show an error message when the combo box is required and a value is selected", async () => {
+    render(
+      <FormBase
+        schema={multiSelectFieldSchema}
+        uiSchema={multiSelectFieldUiSchema}
+        formData={{ multiSelectTestField: ["option_2"] }}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await userEvent.click(submitButton);
+
+    expect(screen.queryByText("Required field")).toBeNull();
+  });
+
+  it("should show an error message when the combo box is required and an invalid value is typed", async () => {
+    render(
+      <FormBase
+        schema={multiSelectFieldSchema}
+        uiSchema={multiSelectFieldUiSchema}
+      />,
+    );
+
+    const multiSelectInput = screen.getByRole("combobox") as HTMLInputElement;
+
+    await userEvent.type(multiSelectInput, "Invalid option{enter}");
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await userEvent.click(submitButton);
+
+    expect(screen.queryByText("Required field")).toBeVisible();
+  });
+
+  it("should have the correct styles when the validation error is shown", async () => {
+    checkComboBoxWidgetValidationStyles(
+      <FormBase
+        schema={multiSelectFieldSchema}
+        uiSchema={multiSelectFieldUiSchema}
+      />,
+    );
+  });
 });
