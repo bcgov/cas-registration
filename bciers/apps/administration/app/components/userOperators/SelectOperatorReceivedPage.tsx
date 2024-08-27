@@ -3,7 +3,7 @@ import { Operator } from "./types";
 import getOperator from "@/administration/app/components/operators/getOperator";
 import getOperatorHasAdmin from "@/administration/app/components/operators/getOperatorHasAdmin";
 
-export default async function AccessRequestReceived({
+export default async function SelectOperatorReceivedPage({
   params,
 }: {
   readonly params: { id: string; step: string };

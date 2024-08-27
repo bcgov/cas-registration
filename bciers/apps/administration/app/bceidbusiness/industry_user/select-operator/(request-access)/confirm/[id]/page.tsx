@@ -1,14 +1,10 @@
-import ConfirmSelectedOperator from "@/administration/app/components/userOperators/ConfirmSelectedOperator";
+import SelectOperatorConfirmPage from "@/administration/app/components/userOperators/SelectOperatorConfirmPage";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
-export default async function Page({
-  params,
-}: {
-  readonly params: { id: string };
-}) {
+export default function Page({ params }: { readonly params: { id: string } }) {
   return (
     <Suspense fallback={<Loading />}>
-      <ConfirmSelectedOperator params={params} />
+      <SelectOperatorConfirmPage params={params} />
     </Suspense>
   );
 }

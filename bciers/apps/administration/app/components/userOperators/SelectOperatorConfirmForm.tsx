@@ -22,7 +22,7 @@ interface ConfirmSelectedOperatorFormProps {
   hasAdmin: boolean;
 }
 
-export default function ConfirmSelectedOperatorForm({
+export default function SelectOperatorConfirmForm({
   operator,
   hasAdmin,
 }: Readonly<ConfirmSelectedOperatorFormProps>) {
@@ -38,7 +38,10 @@ export default function ConfirmSelectedOperatorForm({
         approve your access request.
       </p>
       <p>Please confirm below if you would like to submit an access request.</p>
-      <RequestAccessButton operatorId={operator.id} />
+      <RequestAccessButton
+        operatorId={operator.id}
+        operatorName={operator.legal_name}
+      />
     </>
   );
 
