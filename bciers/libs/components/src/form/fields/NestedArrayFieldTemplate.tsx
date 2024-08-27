@@ -22,7 +22,7 @@ const NestedArrayFieldTemplate = ({
   const verticalBorder = uiSchema?.["ui:options"]?.verticalBorder
     ? {
         borderLeft: "6px solid #003366",
-        marginLeft: "1rem",
+        marginLeft: "0.5rem",
         paddingLeft: "1rem",
         height: "50%",
       }
