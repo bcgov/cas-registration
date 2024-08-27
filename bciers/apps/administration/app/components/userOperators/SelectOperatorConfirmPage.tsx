@@ -2,14 +2,14 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import { Operator } from "./types";
-import ConfirmSelectedOperatorForm from "./ConfirmSelectedOperatorForm";
+import SelectOperatorConfirmForm from "./SelectOperatorConfirmForm";
 
 import getOperator from "@/administration/app/components/operators/getOperator";
 
 import getOperatorHasAdmin from "@/administration/app/components/operators/getOperatorHasAdmin";
 import getOperatorAccessDeclined from "@/administration/app/components/operators/getOperatorAccessDeclined";
 
-export default async function ConfirmSelectedOperator({
+export default async function SelectOperatorConfirmPage({
   params,
 }: Readonly<{
   params: { id: string };
@@ -80,7 +80,5 @@ export default async function ConfirmSelectedOperator({
     return <div>Server Error. Please try again later.</div>;
   }
 
-  return (
-    <ConfirmSelectedOperatorForm hasAdmin={hasAdmin} operator={operator} />
-  );
+  return <SelectOperatorConfirmForm hasAdmin={hasAdmin} operator={operator} />;
 }
