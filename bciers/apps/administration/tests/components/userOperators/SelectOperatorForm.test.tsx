@@ -103,13 +103,15 @@ describe("Select Operator Form", () => {
     actionHandler.mockResolvedValueOnce([responseLegalName]);
     // Wait for the operator's legal name to appear in the dropdown options
     await waitFor(async () => {
-      const element = screen.getByText(/Operator 1/i);
-      expect(element).toBeVisible();
+      expect(searchField).toHaveValue("Operator");
+    });
+    await waitFor(async () => {
+      expect(screen.getByText(operatorLegalName)).toBeVisible();
     });
     // Select the operator from the dropdown
-    const operator = screen.getByText(operatorLegalName);
+    const operator1 = screen.getByText(operatorLegalName);
     await act(async () => {
-      await userEvent.click(operator);
+      await userEvent.click(operator1);
     });
     // Verify that the search field contains the operator's legal name
     expect(searchField).toHaveValue(operatorLegalName);
