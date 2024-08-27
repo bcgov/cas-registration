@@ -29,12 +29,17 @@ def create_m2m_signal_handler(model: Union[ClosureEvent, RestartEvent, Temporary
     that the event does not have both an operation and facilities set simultaneously.
     """
 
-    @receiver(m2m_changed, sender=model.facilities.through)
+    @receiver(
+        m2m_changed,
+        sender=model.facilities.through,
+        weak=False,
+        dispatch_uid=f"{model.__class__.__name__}_m2m_facilities_changed",
+    )
     def validate_facilities_m2m_constraint(
         sender: Any,
         instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
         action: str,
-        **kwargs: Dict
+        **kwargs: Dict,
     ) -> None:
         """
         Signal handler to validate that the event does not have both an operation and facilities set simultaneously
@@ -61,11 +66,11 @@ def create_pre_save_signal_handler(
     that the event does not have both an operation and facilities set simultaneously before saving.
     """
 
-    @receiver(pre_save, sender=model)
+    @receiver(pre_save, sender=model, weak=False, dispatch_uid=f"{model.__class__.__name__}_pre_save")
     def validate_operation_and_facilities_constraint(
         sender: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
         instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
-        **kwargs: Dict
+        **kwargs: Dict,
     ) -> None:
         """
         Signal handler to validate that the event does not have both an operation and facilities set simultaneously
