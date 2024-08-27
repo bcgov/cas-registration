@@ -46,6 +46,7 @@ class TransferEventModelTest(EventBaseModelMixin):
 
     def test_event_with_operation_only(self):
         self.create_event_with_operation_only(
+            description="Why the transfer is happening",
             future_designated_operator="My Operator",
             other_operator=operator_baker(),
             other_operator_contact=contact_baker(),
@@ -53,6 +54,7 @@ class TransferEventModelTest(EventBaseModelMixin):
 
     def test_event_with_facilities_only(self):
         self.create_event_with_facilities_only(
+            description="Why the transfer is happening returns",
             future_designated_operator="My Operator",
             other_operator=operator_baker(),
             other_operator_contact=contact_baker(),
