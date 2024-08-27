@@ -72,9 +72,6 @@ class UserModelTest(BaseTestCase):
             ("operationownershiptimeline_created", "operation ownership timeline", None, None),
             ("operationownershiptimeline_updated", "operation ownership timeline", None, None),
             ("operationownershiptimeline_archived", "operation ownership timeline", None, None),
-            ("event_created", "event", None, None),
-            ("event_updated", "event", None, None),
-            ("event_archived", "event", None, None),
             ("reportactivity_created", "report activity", None, None),
             ("reportactivity_updated", "report activity", None, None),
             ("reportactivity_archived", "report activity", None, None),
@@ -111,6 +108,18 @@ class UserModelTest(BaseTestCase):
             ("optedinoperationdetail_created", "opted in operation detail", None, None),
             ("optedinoperationdetail_updated", "opted in operation detail", None, None),
             ("optedinoperationdetail_archived", "opted in operation detail", None, None),
+            ("closureevent_created", "closure event", None, None),
+            ("closureevent_updated", "closure event", None, None),
+            ("closureevent_archived", "closure event", None, None),
+            ("restartevent_created", "restart event", None, None),
+            ("restartevent_updated", "restart event", None, None),
+            ("restartevent_archived", "restart event", None, None),
+            ("temporaryshutdownevent_created", "temporary shutdown event", None, None),
+            ("temporaryshutdownevent_updated", "temporary shutdown event", None, None),
+            ("temporaryshutdownevent_archived", "temporary shutdown event", None, None),
+            ("transferevent_created", "transfer event", None, None),
+            ("transferevent_updated", "transfer event", None, None),
+            ("transferevent_archived", "transfer event", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
