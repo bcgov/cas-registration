@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Autocomplete, Chip, MenuItem, TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
@@ -48,6 +49,12 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
 
   const options = mapOptions(fieldSchema);
 
+  useEffect(() => {
+    if (!isValue) {
+      onChange(undefined);
+    }
+  }, []);
+
   const handleChange = (
     e: React.ChangeEvent<{}>,
     option: Array<Option>,
@@ -56,7 +63,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
     if (reason === "clear" && e.type === "click") {
       onChange(undefined);
     }
-    if (option.length === 0) {
+    if (!option || option.length === 0) {
       onChange(undefined);
     }
     onChange(option.map((o: Option) => o.id));
@@ -99,11 +106,6 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
         return option.id === val.id;
       }}
       onChange={handleChange}
-      onInputChange={(_, val) => {
-        if (!value || val?.[0] === undefined || val.length === 0) {
-          onChange(undefined);
-        }
-      }}
       getOptionLabel={(option: Option) => String(option.label)}
       renderInput={(params) => (
         <TextField
