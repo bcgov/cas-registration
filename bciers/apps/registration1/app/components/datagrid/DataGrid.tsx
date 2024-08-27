@@ -48,7 +48,7 @@ const DataGrid: React.FC<Props> = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const isRowsEmpty = rows.length === 0;
+  const isRowsEmpty = !rows || rows.length === 0;
 
   useEffect(() => {
     setIsComponentMounted(true);
@@ -70,7 +70,7 @@ const DataGrid: React.FC<Props> = ({
         // fetch data from server
         const pageData = await fetchPageData(params);
         setRows(pageData.rows);
-        setRowCount(pageData.row_count);
+        setRowCount(pageData?.row_count);
       };
 
       fetchData().then(() => setLoading(false));

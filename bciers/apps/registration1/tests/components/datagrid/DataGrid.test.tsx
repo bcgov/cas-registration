@@ -92,6 +92,18 @@ describe("The DataGrid component", () => {
     expect(screen.getByText(/No records found/i)).toBeInTheDocument();
   });
 
+  it("renders an empty grid with overlay when data is undefined", async () => {
+    render(
+      <DataGrid
+        columns={defaultColumns}
+        initialData={{ rows: undefined, row_count: undefined }}
+      />,
+    );
+    expect(screen.getAllByRole("columnheader")).toHaveLength(3);
+    expect(screen.getAllByRole("row")).toHaveLength(1);
+    expect(screen.getByText(/No records found/i)).toBeInTheDocument();
+  });
+
   it("sorts the column data and updates the URL", async () => {
     render(
       <DataGrid columns={defaultColumns} initialData={defaultInitialData} />,
