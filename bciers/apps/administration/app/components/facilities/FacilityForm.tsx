@@ -69,6 +69,8 @@ export default function FacilityForm({
         if (response?.error) {
           setError(response.error);
           return { error: response.error };
+        } else {
+          setError(undefined);
         }
 
         if (isCreatingState) {

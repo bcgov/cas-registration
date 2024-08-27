@@ -62,7 +62,7 @@ const InlineArrayFieldTemplate = ({
                 },
               }}
 
-              {i !== 0 && !disabled && (
+              {!disabled && (
                 <button
                   onClick={item.onDropIndexClick(item.index)}
                   className="border-none bg-transparent py-4 absolute -right-12"
