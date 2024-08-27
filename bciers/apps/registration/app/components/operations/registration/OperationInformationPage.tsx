@@ -43,6 +43,7 @@ export const createOperationInformationSchema = (
 
   const oneOfOptions = purposes.map((purpose) => {
     return {
+      required: ["regulated_products"],
       properties: {
         registration_purpose: {
           type: "string",
