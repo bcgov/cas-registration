@@ -607,39 +607,6 @@ Facility {
     DecimalField longitude_of_largest_emissions
     ManyToManyField well_authorization_numbers
 }
-HistoricalEvent {
-    DateTimeField created_at
-    DateTimeField updated_at
-    DateTimeField archived_at
-    UUIDField id
-    DateTimeField effective_date
-    CharField type
-    JSONField additional_data
-    UUIDField history_user_id
-    ForeignKey created_by
-    ForeignKey updated_by
-    ForeignKey archived_by
-    ForeignKey operation
-    ForeignKey facility
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-Event {
-    ForeignKey created_by
-    DateTimeField created_at
-    ForeignKey updated_by
-    DateTimeField updated_at
-    ForeignKey archived_by
-    DateTimeField archived_at
-    UUIDField id
-    ForeignKey operation
-    ForeignKey facility
-    DateTimeField effective_date
-    CharField type
-    JSONField additional_data
-}
 HistoricalFacilityOwnershipTimeline {
     BigIntegerField id
     DateTimeField created_at
@@ -775,6 +742,138 @@ RegistrationPurpose {
     DateTimeField archived_at
     CharField registration_purpose
     ForeignKey operation
+}
+HistoricalClosureEvent {
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    TextField description
+    CharField status
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+ClosureEvent {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    ForeignKey operation
+    TextField description
+    CharField status
+    ManyToManyField facilities
+}
+HistoricalRestartEvent {
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    CharField status
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+RestartEvent {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    ForeignKey operation
+    CharField status
+    ManyToManyField facilities
+}
+HistoricalTemporaryShutdownEvent {
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    TextField description
+    CharField status
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+TemporaryShutdownEvent {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    ForeignKey operation
+    TextField description
+    CharField status
+    ManyToManyField facilities
+}
+HistoricalTransferEvent {
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    TextField description
+    CharField future_designated_operator
+    CharField status
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    ForeignKey other_operator
+    ForeignKey other_operator_contact
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+TransferEvent {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    UUIDField id
+    DateTimeField effective_date
+    ForeignKey operation
+    TextField description
+    CharField future_designated_operator
+    ForeignKey other_operator
+    ForeignKey other_operator_contact
+    CharField status
+    ManyToManyField facilities
 }
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
@@ -913,16 +1012,6 @@ Facility }|--|| User : updated_by
 Facility }|--|| User : archived_by
 Facility }|--|| Address : address
 Facility }|--|{ WellAuthorizationNumber : well_authorization_numbers
-HistoricalEvent }|--|| User : created_by
-HistoricalEvent }|--|| User : updated_by
-HistoricalEvent }|--|| User : archived_by
-HistoricalEvent }|--|| Operation : operation
-HistoricalEvent }|--|| Facility : facility
-Event }|--|| User : created_by
-Event }|--|| User : updated_by
-Event }|--|| User : archived_by
-Event }|--|| Operation : operation
-Event }|--|| Facility : facility
 HistoricalFacilityOwnershipTimeline }|--|| User : created_by
 HistoricalFacilityOwnershipTimeline }|--|| User : updated_by
 HistoricalFacilityOwnershipTimeline }|--|| User : archived_by
@@ -965,3 +1054,43 @@ RegistrationPurpose }|--|| User : created_by
 RegistrationPurpose }|--|| User : updated_by
 RegistrationPurpose }|--|| User : archived_by
 RegistrationPurpose }|--|| Operation : operation
+HistoricalClosureEvent }|--|| User : created_by
+HistoricalClosureEvent }|--|| User : updated_by
+HistoricalClosureEvent }|--|| User : archived_by
+HistoricalClosureEvent }|--|| Operation : operation
+ClosureEvent }|--|| User : created_by
+ClosureEvent }|--|| User : updated_by
+ClosureEvent }|--|| User : archived_by
+ClosureEvent }|--|| Operation : operation
+ClosureEvent }|--|{ Facility : facilities
+HistoricalRestartEvent }|--|| User : created_by
+HistoricalRestartEvent }|--|| User : updated_by
+HistoricalRestartEvent }|--|| User : archived_by
+HistoricalRestartEvent }|--|| Operation : operation
+RestartEvent }|--|| User : created_by
+RestartEvent }|--|| User : updated_by
+RestartEvent }|--|| User : archived_by
+RestartEvent }|--|| Operation : operation
+RestartEvent }|--|{ Facility : facilities
+HistoricalTemporaryShutdownEvent }|--|| User : created_by
+HistoricalTemporaryShutdownEvent }|--|| User : updated_by
+HistoricalTemporaryShutdownEvent }|--|| User : archived_by
+HistoricalTemporaryShutdownEvent }|--|| Operation : operation
+TemporaryShutdownEvent }|--|| User : created_by
+TemporaryShutdownEvent }|--|| User : updated_by
+TemporaryShutdownEvent }|--|| User : archived_by
+TemporaryShutdownEvent }|--|| Operation : operation
+TemporaryShutdownEvent }|--|{ Facility : facilities
+HistoricalTransferEvent }|--|| User : created_by
+HistoricalTransferEvent }|--|| User : updated_by
+HistoricalTransferEvent }|--|| User : archived_by
+HistoricalTransferEvent }|--|| Operation : operation
+HistoricalTransferEvent }|--|| Operator : other_operator
+HistoricalTransferEvent }|--|| Contact : other_operator_contact
+TransferEvent }|--|| User : created_by
+TransferEvent }|--|| User : updated_by
+TransferEvent }|--|| User : archived_by
+TransferEvent }|--|| Operation : operation
+TransferEvent }|--|| Operator : other_operator
+TransferEvent }|--|| Contact : other_operator_contact
+TransferEvent }|--|{ Facility : facilities
