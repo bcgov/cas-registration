@@ -7,7 +7,7 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import {
   operationRepresentativeAdd,
   operationRepresentativePreface,
-} from "./titles";
+} from "./operationRepresentativeText";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 import provinceOptions from "@bciers/data/provinces.json";
 
