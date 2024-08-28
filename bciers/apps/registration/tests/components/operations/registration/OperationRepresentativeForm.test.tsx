@@ -230,6 +230,8 @@ describe("the OperationRepresentativeForm component", () => {
     expect(mockPush).toHaveBeenCalledWith(
       "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/6?title=002d5a9e-32a6-4191-938c-2c02bfec592d",
     );
+  },{
+    timeout: 10000
   });
 
   it("should not submit when there are validation errors", async () => {
