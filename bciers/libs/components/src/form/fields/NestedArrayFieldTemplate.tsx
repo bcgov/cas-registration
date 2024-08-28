@@ -25,6 +25,7 @@ const NestedArrayFieldTemplate = ({
         marginLeft: "1rem",
         paddingLeft: "1rem",
         height: "50%",
+        backgroundColor: "transparent",
       }
     : {};
 
