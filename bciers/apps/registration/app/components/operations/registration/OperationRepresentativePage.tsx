@@ -15,7 +15,7 @@ import getUserOperatorUsers from "@/administration/app/components/contacts/getUs
 export const createOperationRepresentativeSchema = (
   schema: RJSFSchema,
   contactOptions: {
-    id: string;
+    id: number;
     first_name: string;
     last_name: string;
   }[],
