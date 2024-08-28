@@ -33,7 +33,7 @@ const NewEntrantOperationForm = ({
       body: JSON.stringify(body),
     });
 
-    if (response.error) {
+    if (!response || response?.error) {
       setError(response.error);
       return { error: response.error };
     }
