@@ -1,3 +1,4 @@
+from typing import Dict, Union
 from registration.models.parent_operator import ParentOperator
 from registration.models.partner_operator import PartnerOperator
 from registration.schema.v2.partner_operator import PartnerOperatorIn
@@ -5,14 +6,18 @@ from service.data_access_service.partner_operator_service import PartnerOperator
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.parent_operator_service import ParentOperatorService
 from service.data_access_service.user_service import UserDataAccessService
+from registration.constants import PAGE_SIZE
 from registration.models import Operator
 from service.data_access_service.operator_service import OperatorDataAccessService
 from uuid import UUID
+from ninja import Query
+from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import Q
 from registration.models import (
     Address,
 )
-from registration.schema.v2.operator import OperatorIn
+from registration.schema.v2.operator import OperatorIn, OperatorFilterSchema
 from registration.schema.v2.parent_operator import ParentOperatorIn
 from django.db.models import QuerySet
 
@@ -107,3 +112,33 @@ class OperatorServiceV2:
         cls.upsert_parent_operators(operator, parent_operator_data, user_guid)
 
         return operator
+
+    @classmethod
+    def list_operators(cls, filters: OperatorFilterSchema = Query(...)) -> Dict[str, Union[list[Operator], int]]:
+        legal_name = filters.legal_name
+        business_structure = filters.business_structure
+        cra_business_number = filters.cra_business_number
+        bc_corporate_registry_number = filters.bc_corporate_registry_number
+        page = filters.page
+        sort_field = filters.sort_field
+        sort_order = filters.sort_order
+        sort_direction = "-" if sort_order == "desc" else ""
+        base_qs = OperatorDataAccessService.get_all_operators()
+        list_of_filters = [
+            Q(legal_name__icontains=legal_name) if legal_name else Q(),
+            Q(business_structure__icontains=business_structure) if business_structure else Q(),
+            Q(cra_business_number__icontains=cra_business_number) if cra_business_number else Q(),
+            Q(bc_corporate_registry_number__icontains=bc_corporate_registry_number)
+            if bc_corporate_registry_number
+            else Q(),
+        ]
+        qs = base_qs.filter(*list_of_filters).order_by(f"{sort_direction}{sort_field}")
+        paginator = Paginator(qs, PAGE_SIZE)
+        try:
+            page = paginator.validate_number(page)
+        except Exception:
+            page = 1
+        return {
+            "data": [(operation) for operation in paginator.page(page).object_list],
+            "row_count": paginator.count,
+        }

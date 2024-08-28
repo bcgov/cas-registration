@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from registration.models.partner_operator import PartnerOperator
 from registration.schema.v2.partner_operator import PartnerOperatorIn, PartnerOperatorOut
 from registration.models.parent_operator import ParentOperator
@@ -6,13 +6,22 @@ from registration.schema.v2.parent_operator import ParentOperatorIn, ParentOpera
 from registration.models.operator import Operator
 from registration.schema.v1.business_structure import validate_business_structure
 from registration.schema.validators import validate_cra_business_number
-from ninja import ModelSchema, Field
+from ninja import ModelSchema, FilterSchema, Field, Schema
 from pydantic import field_validator
 from registration.models import BusinessStructure
 
 
-class OperatorOut(ModelSchema):
+class OperatorFilterSchema(FilterSchema):
+    legal_name: Optional[str] = None
+    business_structure: Optional[str] = None
+    cra_business_number: Optional[str] = None
+    bc_corporate_registry_number: Optional[str] = None
+    page: Union[int, float, str] = 1
+    sort_field: Optional[str] = "created_at"
+    sort_order: Optional[str] = "desc"
 
+
+class OperatorOut(ModelSchema):
     """
     Custom schema for the operator form
     """
@@ -53,6 +62,24 @@ class OperatorOut(ModelSchema):
             'bc_corporate_registry_number',
             'mailing_address',
         ]
+
+
+class OperatorListOut(ModelSchema):
+    class Config:
+        model = Operator
+        model_fields = [
+            'id',
+            'legal_name',
+            'business_structure',
+            'cra_business_number',
+            'bc_corporate_registry_number',
+        ]
+        from_attributes = True
+
+
+class OperatorPaginatedOut(Schema):
+    data: List[OperatorListOut]
+    row_count: int
 
 
 class OperatorIn(ModelSchema):
