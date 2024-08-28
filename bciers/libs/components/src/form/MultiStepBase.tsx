@@ -70,7 +70,7 @@ const MultiStepBase = ({
 
     // If there is an error, set isSubmitting to false to re-enable submit buttons
     // and allow user to attempt to re-submit the form
-    if (!response || response?.error) {
+    if (response?.error) {
       setIsSubmitting(false);
     } else if (isNotFinalStep && baseUrl && baseUrlParams) {
       const nextStepUrl = `${baseUrl}/${step + 1}${

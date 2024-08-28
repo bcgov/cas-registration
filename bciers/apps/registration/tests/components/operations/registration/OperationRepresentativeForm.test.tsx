@@ -181,58 +181,64 @@ describe("the OperationRepresentativeForm component", () => {
     );
   });
 
-  it("should submit when a new contact is added", async () => {
-    render(
-      <OperationRepresentativeForm
-        formData={{}}
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
-        schema={testSchema}
-        step={5}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
-    actionHandler.mockReturnValueOnce({
-      id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-      name: "Operation 2",
-      error: undefined,
-    });
-
-    await userEvent.click(screen.getByRole("button", { name: /add/i }));
-    await fillContactForm();
-    // Submit
-    userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
-        "PUT",
-        "",
-        {
-          body: JSON.stringify({
-            operation_representatives: [],
-            new_operation_representatives: [
-              {
-                first_name: "John",
-                last_name: "Doe",
-                position_title: "Senior Officer",
-                email: "john.doe@example.com",
-                phone_number: "+1 1 604 401 1234",
-                street_address: "123 Main St",
-                municipality: "Cityville",
-                province: "AB",
-                postal_code: "A1B2C3",
-              },
-            ],
-          }),
-        },
+  it(
+    "should submit when a new contact is added",
+    async () => {
+      render(
+        <OperationRepresentativeForm
+          formData={{}}
+          operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+          schema={testSchema}
+          step={5}
+          steps={allOperationRegistrationSteps}
+        />,
       );
-    });
-    expect(mockPush).toHaveBeenCalledWith(
-      "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/6?title=002d5a9e-32a6-4191-938c-2c02bfec592d",
-    );
-  },{
-    timeout: 10000
-  });
+      actionHandler.mockReturnValueOnce({
+        id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        name: "Operation 2",
+        error: undefined,
+      });
+
+      await userEvent.click(screen.getByRole("button", { name: /add/i }));
+      await fillContactForm();
+      // Submit
+      userEvent.click(
+        screen.getByRole("button", { name: /save and continue/i }),
+      );
+
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenCalledWith(
+          "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
+          "PUT",
+          "",
+          {
+            body: JSON.stringify({
+              operation_representatives: [],
+              new_operation_representatives: [
+                {
+                  first_name: "John",
+                  last_name: "Doe",
+                  position_title: "Senior Officer",
+                  email: "john.doe@example.com",
+                  phone_number: "+1 1 604 401 1234",
+                  street_address: "123 Main St",
+                  municipality: "Cityville",
+                  province: "AB",
+                  postal_code: "A1B2C3",
+                },
+              ],
+            }),
+          },
+        );
+      });
+      expect(mockPush).toHaveBeenCalledWith(
+        "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/6?title=002d5a9e-32a6-4191-938c-2c02bfec592d",
+      );
+    },
+    {
+      timeout: 10000,
+    },
+  );
 
   it("should not submit when there are validation errors", async () => {
     render(

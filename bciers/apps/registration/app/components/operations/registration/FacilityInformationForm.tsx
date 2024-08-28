@@ -130,7 +130,7 @@ const FacilityInformationForm = ({
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
       });
-      if (response.error) {
+      if (!response || response?.error) {
         setError(response.error);
         setIsSubmitting(false);
         return { error: response.error };
