@@ -11,9 +11,9 @@ from django.core.files.base import ContentFile
 
 
 class OperationCreateOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ["id", "name"]
+        fields = ["id", "name"]
 
 
 class OperationCreateIn(ModelSchema):
@@ -21,16 +21,16 @@ class OperationCreateIn(ModelSchema):
     # operation_has_multiple_operators: Optional[bool] = False
     # multiple_operators_array: Optional[list] = None
 
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
+        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
         populate_by_name = True
 
 
 class OperationUpdateOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ["name"]
+        fields = ["name"]
 
 
 class OperationUpdateIn(ModelSchema):
@@ -55,9 +55,9 @@ class OperationUpdateIn(ModelSchema):
             return data_url_to_file(value)
         return None
 
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ['name', 'type', 'naics_code', 'opt_in', 'point_of_contact', 'regulated_products']
+        fields = ['name', 'type', 'naics_code', 'opt_in', 'point_of_contact', 'regulated_products']
         populate_by_name = True
 
 
@@ -65,9 +65,9 @@ class OperationListOut(ModelSchema):
     operator: str = Field(..., alias="operator.legal_name")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
 
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
+        fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
         from_attributes = True
 
 
@@ -111,9 +111,9 @@ class OperationOutBase(ModelSchema):
                 return obj.operator
         return None
 
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = [
+        fields = [
             "id",
             'name',
             'type',
@@ -141,16 +141,16 @@ class OperationOut(OperationOutBase):
 
 
 class OperationUpdateStatusIn(ModelSchema):
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ["status"]
+        fields = ["status"]
         from_attributes = True
 
 
 class OperationUpdateStatusOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ["id"]
+        fields = ["id"]
 
 
 class OperationPaginatedOut(Schema):

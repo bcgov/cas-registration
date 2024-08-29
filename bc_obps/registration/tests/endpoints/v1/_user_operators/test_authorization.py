@@ -84,13 +84,12 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
             )
             assert response.status_code == 401
 
-        mock_data = TestUtils.mock_UserOperatorOperatorIn()
-        mock_data.business_structure = mock_data.business_structure.pk  # a to bypass double validation by the schema
+        mock_data = TestUtils.mock_create_user_operator_operator()
         response = TestUtils.mock_post_with_auth_role(
             self,
             'cas_pending',
             self.content_type,
-            mock_data.model_dump_json(),
+            mock_data,
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
@@ -98,7 +97,7 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
             self,
             'cas_analyst',
             self.content_type,
-            mock_data.model_dump_json(),
+            mock_data,
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
@@ -106,7 +105,7 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
             self,
             'cas_admin',
             self.content_type,
-            mock_data.model_dump_json(),
+            mock_data,
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401

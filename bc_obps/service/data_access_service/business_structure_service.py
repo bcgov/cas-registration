@@ -12,6 +12,6 @@ class BusinessStructureDataAccessService:
         if cached_data:
             return cached_data
         else:
-            business_structures = BusinessStructure.objects.only(*BusinessStructureOut.Config.model_fields)
+            business_structures = BusinessStructure.objects.only(*BusinessStructureOut.Meta.fields)
             cache.set("business_structures", business_structures, 60 * 60 * 24 * 1)  # 1 day
             return business_structures

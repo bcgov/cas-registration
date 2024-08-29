@@ -155,7 +155,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
 
     def test_unauthorized_roles_cannot_update_operations(self):
         operation = operation_baker()
-        mock_operation = TestUtils.mock_OperationUpdateIn()
+        mock_operation = TestUtils.mock_update_operation_payload()
         # IRC users can't put
         roles = ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']
         # unapproved industry users cannot put
@@ -164,14 +164,14 @@ class TestOperationIdEndpoint(CommonTestSetup):
                 self,
                 role,
                 self.content_type,
-                mock_operation.model_dump_json(),
+                mock_operation,
                 custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
                 + "?submit=false&form_section=1",
             )
             assert response.status_code == 401
 
     def test_industry_users_can_only_put_their_own_operations(self):
-        mock_payload = TestUtils.mock_OperationUpdateIn()
+        mock_payload = TestUtils.mock_update_operation_payload()
         random_operator = operator_baker()
         the_users_operator = operator_baker()
         user_operator = baker.make(
@@ -188,7 +188,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_payload.model_dump_json(),
+            mock_payload,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": random_operation.id})
             + "?submit=false&form_section=1",
         )
@@ -231,7 +231,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         )
 
     def test_industry_user_update_operation_without_submit(self):
-        payload = TestUtils.mock_OperationUpdateIn()
+        payload = TestUtils.mock_update_operation_payload()
         operator = operator_baker()
         operation = operation_baker(operator.pk)
 
@@ -246,7 +246,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            payload.model_dump_json(),
+            payload,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
@@ -261,7 +261,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert get_response["status"] == Operation.Statuses.DRAFT
 
     def test_industry_user_update_operation_with_submit(self):
-        payload = TestUtils.mock_OperationUpdateIn()
+        payload = TestUtils.mock_update_operation_payload()
         operator = operator_baker()
         operation = operation_baker(operator.pk)
 
@@ -279,7 +279,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            payload.model_dump_json(),
+            payload,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -290,8 +290,8 @@ class TestOperationIdEndpoint(CommonTestSetup):
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.CONFIRMATION,
             operator_legal_name=operation.operator.legal_name,
-            operation_name=payload.name,
-            opted_in=payload.opt_in,
+            operation_name=payload['name'],
+            opted_in=None,
             operation_creator=operation.created_by,
             point_of_contact=operation.point_of_contact,
         )
@@ -300,7 +300,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
         ).json()
         assert get_response["status"] == Operation.Statuses.PENDING
-        assert get_response["name"] == payload.name
+        assert get_response["name"] == payload['name']
         operation_after_put = Operation.objects.get(id=get_response["id"])
         assert operation_after_put.submission_date is not None
 
@@ -757,7 +757,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         user_operator = user_operator_baker(
             {'user': self.user, 'operator': operator, 'status': UserOperator.Statuses.PENDING}
         )
-        mock_update_operation = TestUtils.mock_OperationUpdateIn()
+        mock_update_operation = TestUtils.mock_update_operation_payload()
 
         # PENDING user
 
@@ -765,7 +765,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_update_operation.model_dump_json(),
+            mock_update_operation,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
@@ -778,7 +778,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_update_operation.model_dump_json(),
+            mock_update_operation,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
@@ -792,7 +792,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_update_operation.model_dump_json(),
+            mock_update_operation,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )

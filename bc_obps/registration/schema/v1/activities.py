@@ -7,6 +7,6 @@ class ActivitySchema(ModelSchema):
     Schema for the ActivitySchema model
     """
 
-    class Config:
+    class Meta:
         model = Activity
-        model_fields = ["name", "applicable_to"]
+        fields = ["name", "applicable_to"]
