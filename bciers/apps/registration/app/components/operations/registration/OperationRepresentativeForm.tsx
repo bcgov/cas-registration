@@ -80,7 +80,7 @@ const OperationRepresentativeForm = ({
       steps={steps}
       uiSchema={operationRepresentativeUiSchema}
       customValidate={customValidate}
-    ></MultiStepBase>
+    />
   );
 };
 

@@ -131,8 +131,7 @@ export const operationRepresentativeUiSchema: UiSchema = {
 
   operation_representatives: {
     "ui:widget": "MultiSelectWidget",
-    // RJSF has "ui:help" but it doesn't play nice with the MultiSelectWidget that is why we are using a custom name ("ui:helperText")
-    "ui:helperText": operationRepresentativeAdd,
+    "ui:help": operationRepresentativeAdd,
     "ui:placeholder": "Select an individual",
   },
   new_operation_representatives: {
