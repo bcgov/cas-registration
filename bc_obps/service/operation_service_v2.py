@@ -22,9 +22,9 @@ from registration.schema.v2.operation import (
     OperationStatutoryDeclarationIn,
     RegistrationPurposeIn,
 )
-from registration.utils import (
-    files_have_same_hash,
-)
+from registration.utils import files_have_same_hash
+from service.contact_service import ContactService
+from registration.schema.v2.operation import OperationRepresentativeIn
 
 
 class OperationServiceV2:
@@ -157,5 +157,25 @@ class OperationServiceV2:
         )
         if document:
             operation.documents.set([document])
+        operation.set_create_or_update(user_guid)
+        return operation
+
+    @classmethod
+    @transaction.atomic()
+    def register_operation_operation_representative(
+        cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeIn
+    ) -> Operation:
+        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
+
+        contact_ids_to_add_to_operation: List = []
+        if payload.operation_representatives:  # Existing contacts
+            contact_ids_to_add_to_operation.extend(payload.operation_representatives)
+        if payload.new_operation_representatives:
+            for contact in payload.new_operation_representatives:
+                new_contact = ContactService.create_contact(user_guid, contact)
+                contact_ids_to_add_to_operation.append(new_contact.id)
+
+        # add the new and existing contacts to the operaTION
+        operation.contacts.set(contact_ids_to_add_to_operation)
         operation.set_create_or_update(user_guid)
         return operation

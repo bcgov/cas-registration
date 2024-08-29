@@ -82,6 +82,11 @@ describe("the OperationRegistrationPage component", () => {
   // add tests for new entrant and opt-in pages when created
 
   it("should render the Operation Representative Form", async () => {
+    // contacts
+    actionHandler.mockResolvedValueOnce([]);
+
+    // users
+    actionHandler.mockResolvedValueOnce([]);
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",

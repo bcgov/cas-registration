@@ -102,7 +102,12 @@ class Operation(TimeStampedModel):
         related_name="operations",
         blank=True,
         null=True,
-        db_comment="Foreign key to the contact that is the point of contact",
+        db_comment="Foreign key to the contact that is the point of contact (point of contact is only used in registration 1)",
+    )
+    contacts = models.ManyToManyField(
+        Contact,
+        blank=True,
+        related_name='operations_contacts',
     )
     status = models.CharField(
         max_length=1000,

@@ -20,13 +20,17 @@ export interface FieldSchema {
 
 export const mapOptions = (fieldSchema: FieldSchema) => {
   // Using enum and enumNames as anyOf was triggering a lot of validation errors for multiselect
-  // If no enumNames are provided, use the enum values as the names. The enumNames will not be saved in the formData.
   const enumValues = fieldSchema?.enum;
-  const enumNames = fieldSchema?.enumNames;
-  return enumValues.map((enumValue: string | number, index: number) => ({
-    id: enumValue,
-    label: enumNames?.[index] ?? enumValue,
-  }));
+  if (enumValues) {
+    const enumNames = fieldSchema?.enumNames;
+    // If no enumNames are provided, use the enum values as the names. The enumNames will not be saved in the formData.
+    return enumValues.map((enumValue: string | number, index: number) => ({
+      id: enumValue,
+      label: enumNames?.[index] ?? enumValue,
+    }));
+  } else {
+    return [];
+  }
 };
 
 const MultiSelectWidget: React.FC<WidgetProps> = ({
@@ -83,6 +87,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       getOptionLabel={(option: Option) => String(option.label)}
       renderInput={(params) => (
         <TextField
+          helperText={uiSchema?.["ui:helperText"]}
           {...params}
           placeholder={displayPlaceholder ? placeholder : ""}
         />

@@ -28,6 +28,7 @@ interface MultiStepBaseProps {
   submitButtonText?: string;
   uiSchema: UiSchema;
   submitButtonDisabled?: boolean;
+  customValidate?: any;
 }
 
 // Modified MultiStepFormBase meant to facilitate more modularized Multi-step forms
@@ -52,6 +53,7 @@ const MultiStepBase = ({
   submitButtonText,
   uiSchema,
   submitButtonDisabled,
+  customValidate,
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -65,6 +67,7 @@ const MultiStepBase = ({
   const submitHandler = async (data: any) => {
     setIsSubmitting(true);
     const response = await onSubmit(data);
+
     // If there is an error, set isSubmitting to false to re-enable submit buttons
     // and allow user to attempt to re-submit the form
     if (response?.error) {
@@ -108,6 +111,7 @@ const MultiStepBase = ({
         onSubmit={submitHandler}
         formData={formData}
         setErrorReset={setErrorReset}
+        customValidate={customValidate}
       >
         <div className="flex flex-col flex-grow justify-end">
           {children}

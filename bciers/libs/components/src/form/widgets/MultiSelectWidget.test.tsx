@@ -203,6 +203,33 @@ describe("RJSF MultiSelectWidget", () => {
     await checkNoValidationErrorIsTriggered();
   });
 
+  it("shows no options when no options are given", async () => {
+    render(
+      <FormBase
+        schema={
+          {
+            type: "object",
+            required: ["multiSelectTestField"],
+            properties: {
+              multiSelectTestField: {
+                type: "array",
+                title: multiSelectFieldLabel,
+                items: {
+                  type: "string",
+                  enum: undefined,
+                },
+              },
+            },
+          } as RJSFSchema
+        }
+        uiSchema={multiSelectFieldUiSchema}
+      />,
+    );
+    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
+    await userEvent.click(openMultiSelectButton);
+    expect(screen.getByText(/no options/i)).toBeVisible();
+  });
+
   // TODO: This is currently broken in MultiSelectWidget
   // https://github.com/bcgov/cas-registration/issues/1602
   // A required array field required minItems to be set to 1 which currently breaks MultiSelectWidget

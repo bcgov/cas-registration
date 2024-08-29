@@ -1,11 +1,10 @@
-from registration.models.registration_purpose import RegistrationPurpose
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 
 
-class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
-    def test_register_operation_information_endpoint_unauthorized_roles_cannot_put(self):
+class TestOperationRepresentativeEndpoint(CommonTestSetup):
+    def test_register_operation_operation_representative_endpoint_unauthorized_roles_cannot_put(self):
         operation = baker.make_recipe(
             'utils.operation',
         )
@@ -17,12 +16,14 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
                 role,
                 self.content_type,
                 {
-                    'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
+                    'operation_representatives': [1, 2, 3],
                 },
-                custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+                custom_reverse_lazy(
+                    "register_operation_operation_representative", kwargs={'operation_id': operation.id}
+                ),
             )
             assert response.status_code == 401
-            assert response.json()['detail'] == "Unauthorized"
+            assert response.json().get('detail') == 'Unauthorized'
 
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
@@ -36,32 +37,33 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {
-                'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
+                'operation_representatives': [1, 2, 3],
             },
-            custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+            custom_reverse_lazy("register_operation_operation_representative", kwargs={'operation_id': operation.id}),
         )
         assert response.status_code == 401
+        assert response.json().get('message') == 'Unauthorized.'
 
-    def test_register_operation_information_endpoint_success(self):
+    def test_register_operation_operation_representative_endpoint_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        contacts = baker.make_recipe('utils.contact', _quantity=3)
+        contact_ids = [contact.id for contact in contacts]
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
             self.content_type,
             {
-                'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
+                'operation_representatives': contact_ids,
             },
-            custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+            custom_reverse_lazy("register_operation_operation_representative", kwargs={'operation_id': operation.id}),
         )
-        response_json = response.json()
 
         # Assert
         assert response.status_code == 200
-        # Additional Assertions
-        assert response_json['id'] == str(operation.id)
+        assert response.json().get('name') == operation.name
 
-    def test_register_operation_information_endpoint_fail(self):
+    def test_register_operation_operation_representative_endpoint_bad_data(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_put_with_auth_role(
@@ -69,10 +71,11 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {
-                'bad data': 'im bad',
+                'operation_representatives': 'i should be a list',
             },
-            custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+            custom_reverse_lazy("register_operation_operation_representative", kwargs={'operation_id': operation.id}),
         )
 
         # Assert
         assert response.status_code == 422
+        assert response.json().get('detail')[0].get('msg') == 'Input should be a valid list'

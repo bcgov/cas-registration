@@ -28,33 +28,44 @@ function InlineFieldTemplate({
   const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
 
   return (
-    <div
-      className={`mb-4 md:mb-2 flex flex-col md:flex-row items-start md:items-center ${classNames}`}
-    >
-      {isLabel && (
-        <div className="w-full lg:w-3/12">
-          <label htmlFor={id} className="font-bold">
-            {label}
-            {required && "*"}
-          </label>
-        </div>
-      )}
-      <div className={`relative flex items-center w-full ${cellWidth}`}>
-        {children}
-      </div>
-      {isErrors && (
-        <div
-          className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
-          role="alert"
-        >
-          <div className="hidden md:block mr-3">
-            <AlertIcon />
+    <div className="mb-4 md:mb-2">
+      <div
+        className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
+      >
+        {isLabel && (
+          <div className="w-full lg:w-3/12">
+            <label htmlFor={id} className="font-bold">
+              {label}
+              {required && "*"}
+            </label>
           </div>
-          <span>{error}</span>
+        )}
+        <div className={`relative flex items-center w-full ${cellWidth}`}>
+          {children}
         </div>
-      )}
-      {description}
-      {help}
+        {isErrors && (
+          <div
+            className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+            role="alert"
+          >
+            <div className="hidden md:block mr-3">
+              <AlertIcon />
+            </div>
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+      <div
+        className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
+      >
+        {isLabel && <div className="w-full lg:w-3/12" />}
+        {description || help ? (
+          <div className={`relative flex items-center w-full ${cellWidth}`}>
+            {description}
+            {help}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
