@@ -50,6 +50,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   const options = mapOptions(fieldSchema);
 
   useEffect(() => {
+    // If minItems is set to 1, RJSF will pass an array with one undefined value [undefined] which causes errors
     if (!isValue) {
       onChange(undefined);
     }
@@ -60,13 +61,14 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
     option: Array<Option>,
     reason: string,
   ) => {
+    // Clear button was clicked
     if (reason === "clear" && e.type === "click") {
-      onChange(undefined);
+      return onChange(undefined);
     }
     if (!option || option.length === 0) {
-      onChange(undefined);
+      return onChange(undefined);
     }
-    onChange(option.map((o: Option) => o.id));
+    return onChange(option.map((o: Option) => o.id));
   };
 
   const placeholder = uiSchema?.["ui:placeholder"]
@@ -94,13 +96,9 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       filterSelectedOptions
       autoHighlight
       options={options}
-      value={
-        isValue
-          ? value.map((val: string | number) => {
-              return options.find((option: Option) => option.id === val);
-            })
-          : undefined
-      }
+      value={value?.map((val: string | number) => {
+        return options.find((option: Option) => option.id === val);
+      })}
       sx={styles}
       isOptionEqualToValue={(option: Option, val: Option) => {
         return option.id === val.id;
