@@ -26,6 +26,9 @@ class TestInitialData(TestCase):
                 'Site-specific EF',
                 'CEMS',
                 'Measured CC and MW',
+                'Calcination Fraction',
+                'Mass of Output Carbonates',
+                'Alternative Parameter Methodology',
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list('name', flat=True)))
