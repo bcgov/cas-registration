@@ -44,15 +44,17 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   value,
   uiSchema,
 }) => {
+  const isRequired = schema?.minItems;
   const isValue = value && value.length !== 0 && value?.[0] !== undefined;
   const fieldSchema = schema.items as FieldSchema;
+  const defaultValue = isRequired ? [] : undefined;
 
   const options = mapOptions(fieldSchema);
 
   useEffect(() => {
     // If minItems is set to 1, RJSF will pass an array with one undefined value [undefined] which causes errors
     if (!isValue) {
-      onChange(undefined);
+      onChange(defaultValue);
     }
   }, []);
 
@@ -63,10 +65,10 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   ) => {
     // Clear button was clicked
     if (reason === "clear" && e.type === "click") {
-      return onChange(undefined);
+      return onChange(defaultValue);
     }
     if (!option || option.length === 0) {
-      return onChange(undefined);
+      return onChange(defaultValue);
     }
     return onChange(option.map((o: Option) => o.id));
   };
@@ -97,14 +99,14 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       autoHighlight
       options={options}
       value={value?.map((val: string | number) => {
-        return options.find((option: Option) => option.id === val);
+        return options.find((option: Option) => option?.id === val);
       })}
       sx={styles}
       isOptionEqualToValue={(option: Option, val: Option) => {
-        return option.id === val.id;
+        return option?.id === val?.id;
       }}
       onChange={handleChange}
-      getOptionLabel={(option: Option) => String(option.label)}
+      getOptionLabel={(option: Option) => option && String(option.label)}
       renderInput={(params) => (
         <TextField
           helperText={uiSchema?.["ui:helperText"]}
@@ -115,23 +117,25 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       renderTags={(renderOptions: Array<Option>, getTagProps: any) => {
         return renderOptions.map((option: Option, index: number) => {
           return (
-            <Chip
-              {...getTagProps}
-              key={option.id}
-              label={option.label}
-              {...getTagProps({
-                index,
-              })}
-            />
+            option && (
+              <Chip
+                {...getTagProps}
+                key={option.id}
+                label={option.label}
+                {...getTagProps({
+                  index,
+                })}
+              />
+            )
           );
         });
       }}
       renderOption={(renderProps, option: Option) => {
-        return (
+        return option ? (
           <MenuItem {...renderProps} key={option.id} value={option.id}>
             {option.label}
           </MenuItem>
-        );
+        ) : null;
       }}
     />
   );

@@ -232,7 +232,6 @@ describe("RJSF MultiSelectWidget", () => {
     expect(screen.getByText(/no options/i)).toBeVisible();
   });
 
-
   it("should show an error message when the combo box is required and no value is selected", async () => {
     render(
       <FormBase
