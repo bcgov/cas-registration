@@ -7,9 +7,9 @@ from registration.models import AppRole, User
 class UserIn(ModelSchema):
     identity_provider: str
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = [
+        fields = [
             "first_name",
             "last_name",
             "position_title",
@@ -21,15 +21,15 @@ class UserIn(ModelSchema):
 
 
 class UserUpdateIn(ModelSchema):
-    class Config:
+    class Meta:
         model = User
-        model_fields = ["first_name", "last_name", "position_title", "phone_number"]
+        fields = ["first_name", "last_name", "position_title", "phone_number"]
 
 
 class UserAppRoleOut(ModelSchema):
-    class Config:
+    class Meta:
         model = AppRole
-        model_fields = ['role_name']
+        fields = ['role_name']
 
 
 class UserOut(ModelSchema):
@@ -42,9 +42,9 @@ class UserOut(ModelSchema):
             return None
         return str(obj.phone_number)
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = ["first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name"]
+        fields = ["first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name"]
 
 
 class UserExternalDashboardUsersTileData(ModelSchema):
@@ -52,9 +52,9 @@ class UserExternalDashboardUsersTileData(ModelSchema):
     Schema for fields from the User model that are needed in ExternalDashboardUsersTileData
     """
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = ["first_name", "last_name", "email", "user_guid"]
+        fields = ["first_name", "last_name", "email", "user_guid"]
 
 
 class UserContactPageOut(ModelSchema):

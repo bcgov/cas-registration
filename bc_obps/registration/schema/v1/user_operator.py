@@ -18,17 +18,17 @@ class PendingUserOperatorOut(ModelSchema):
     operatorStatus: str = Field(..., alias="operator.status")
     operatorLegalName: str = Field(..., alias="operator.legal_name")
 
-    class Config:
+    class Meta:
         model = UserOperator
-        model_fields = ["id", "status"]
+        fields = ["id", "status"]
 
 
 class UserOperatorStatusUpdate(ModelSchema):
     role: Optional[str] = None
 
-    class Config:
+    class Meta:
         model = UserOperator
-        model_fields = ["status"]
+        fields = ["status"]
 
 
 class IsApprovedUserOperator(Schema):
@@ -92,9 +92,9 @@ class UserOperatorOut(ModelSchema):
     def resolve_phone_number(obj: UserOperator) -> str:
         return str(obj.user.phone_number)
 
-    class Config:
+    class Meta:
         model = UserOperator
-        model_fields = ["role", "status"]
+        fields = ["role", "status"]
 
 
 class UserOperatorOperatorIn(Schema):
@@ -149,9 +149,9 @@ class UserOperatorContactIn(ModelSchema):
     last_name: Optional[str] = None
     user_operator_id: UUID
 
-    class Config:
+    class Meta:
         model = Contact
-        model_exclude = ["id", "documents", "business_role", "address", "email", "phone_number", *AUDIT_FIELDS]
+        exclude = ["id", "documents", "business_role", "address", "email", "phone_number", *AUDIT_FIELDS]
         # whether an aliased field may be populated by its name as given by the model attribute, as well as the alias
         populate_by_name = True
 
@@ -164,9 +164,9 @@ class ExternalDashboardUsersTileData(ModelSchema):
     user: UserExternalDashboardUsersTileData
     operator: OperatorExternalDashboardUsersTileData
 
-    class Config:
+    class Meta:
         model = UserOperator
-        model_fields = ["role", "status", "id"]
+        fields = ["role", "status", "id"]
 
 
 class UserOperatorListOut(Schema):

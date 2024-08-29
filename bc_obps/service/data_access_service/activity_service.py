@@ -14,6 +14,6 @@ class ActivityDataAccessService:
         if cached_data:
             return cached_data
         else:
-            activities = Activity.objects.only(*ActivitySchema.Config.model_fields)
+            activities = Activity.objects.only(*ActivitySchema.Meta.fields)
             cache.set("activities", activities, 60 * 60 * 24 * 1)
             return activities

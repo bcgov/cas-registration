@@ -226,10 +226,10 @@ class TestUpdateOperatorV2:
         assert updated_operator.mailing_address.street_address == 'balloons'
 
         assert updated_operator.parent_operators.count() == 2
-        parent_operator_1 = updated_operator.parent_operators.all()[0]
+        parent_operator_1 = updated_operator.parent_operators.first()
         assert parent_operator_1.legal_name == 'balloons legally'
         assert parent_operator_1.mailing_address.street_address == 'edited street address'
-        parent_operator_2 = updated_operator.parent_operators.all()[1]
+        parent_operator_2 = updated_operator.parent_operators.last()
         assert parent_operator_2.legal_name == 'i used to be a foreign operator'
         assert parent_operator_2.mailing_address.street_address == 'new'
 
