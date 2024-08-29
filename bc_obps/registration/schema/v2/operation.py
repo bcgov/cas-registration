@@ -1,5 +1,6 @@
 from uuid import UUID
 from typing import List, Optional, Union
+from registration.schema.v1.contact import ContactIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation
 from service.data_access_service.facility_service import FacilityDataAccessService
@@ -11,7 +12,6 @@ from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
 
-
 #### Operation schemas
 
 
@@ -22,6 +22,11 @@ class RegistrationPurposeIn(ModelSchema):
     class Meta:
         model = RegistrationPurpose
         fields = ["registration_purpose"]
+
+
+class OperationRepresentativeIn(Schema):
+    operation_representatives: Optional[List[int]] = []
+    new_operation_representatives: Optional[List[ContactIn]] = []
 
 
 class OperationUpdateOut(ModelSchema):

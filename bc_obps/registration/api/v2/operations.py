@@ -24,5 +24,4 @@ from ninja.types import DictStrAny
 def list_operations_v2(
     request: HttpRequest, filters: OperationFilterSchema = Query(...)
 ) -> Tuple[Literal[200], DictStrAny]:
-
     return 200, OperationServiceV2.list_operations(get_current_user_guid(request), filters)

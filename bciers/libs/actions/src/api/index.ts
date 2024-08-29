@@ -8,3 +8,4 @@ export { default as getRegulatedProducts } from "./getRegulatedProducts";
 export { default as getReportingActivities } from "./getReportingActivities";
 export { default as getRegistrationPurposes } from "./getRegistrationPurposes";
 export { default as getOptedInOperationDetail } from "./getOptedInOperationDetail";
+export { default as getContacts } from "./getContacts";
