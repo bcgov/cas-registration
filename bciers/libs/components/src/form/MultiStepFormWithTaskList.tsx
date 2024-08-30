@@ -129,7 +129,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
       </div>
       <div className="w-full flex">
         <ReportingTaskList elements={taskList} />
-        <div className="w-full md:max-w-[60%]">
+        <div className="w-full">
           <FormBase
             schema={schema}
             uiSchema={uiSchema}
@@ -137,23 +137,21 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
             onError={handleFormError}
             formData={formData}
           >
-            <div>
-              <MultiStepTaskListButton
-                stepIndex={currentStep}
-                steps={steps}
-                allowBackNavigation={currentStep > 0}
-                baseUrl={baseUrl}
-                cancelUrl={cancelUrl}
-                isSubmitting={isSubmitting}
-                submitButtonText="Save and Continue"
-                submitButtonDisabled={isSubmitting}
-                onSaveAndContinue={() => {
-                  if (!hasErrors) {
-                    handleNextTask(); // Only proceed to the next task if there are no errors
-                  }
-                }}
-              />
-            </div>
+            <MultiStepTaskListButton
+              stepIndex={currentStep}
+              steps={steps}
+              allowBackNavigation={currentStep > 0}
+              baseUrl={baseUrl}
+              cancelUrl={cancelUrl}
+              isSubmitting={isSubmitting}
+              submitButtonText="Save and Continue"
+              submitButtonDisabled={isSubmitting}
+              onSaveAndContinue={() => {
+                if (!hasErrors) {
+                  handleNextTask(); // Only proceed to the next task if there are no errors
+                }
+              }}
+            />
           </FormBase>
         </div>
       </div>

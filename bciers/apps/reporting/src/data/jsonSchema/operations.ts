@@ -1,16 +1,29 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import { dateInfo, purposeNote } from "./reviewOperationInformationText";
+const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
+
 export const operationReviewSchema: RJSFSchema = {
   type: "object",
-  required: [
-    "operator_legal_name",
-    "operator_trade_name",
-    "operation_name",
-    "operation_type",
-    "operation_bcghgid",
-    "operation_representative_name",
-  ],
+  title: "Review operation information",
+
   properties: {
+    purpose_note: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      type: "object",
+      readOnly: true,
+    },
+    operation_representative_name: {
+      type: "string",
+      title: "Operation representative",
+    },
+
+    date_info: {
+      type: "object",
+      readOnly: true,
+    },
+
     operator_legal_name: { type: "string", title: "Operator legal name" },
     operator_trade_name: { type: "string", title: "Operator trade name" },
     operation_name: { type: "string", title: "Operation name" },
@@ -32,50 +45,56 @@ export const operationReviewSchema: RJSFSchema = {
       items: { type: "string" },
       uniqueItems: true,
     },
-    operation_representative_name: {
-      type: "string",
-      title: "Operation representative",
-    },
   },
 };
 
 export const operationReviewUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
   operator_legal_name: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
   },
   operator_trade_name: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
   },
   operation_name: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
+  },
+  purpose_note: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": purposeNote,
+  },
+
+  date_info: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": dateInfo,
   },
   operation_type: {
     "ui:widget": "select",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
     "ui:placeholder": "Operation type",
   },
   operation_bcghgid: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
     "ui:placeholder": "BCGHG ID",
   },
   bc_obps_regulated_operation_id: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
     "ui:placeholder": "BORO ID",
   },
   reporting_activities: {
     "ui:widget": "MultiSelectWidget",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
     "ui:placeholder": "Reporting activities",
   },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
     "ui:placeholder": "Regulated products",
   },
   operation_representative_name: {
     "ui:widget": "select",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
   },
   "ui:submitButtonOptions": {
     props: {

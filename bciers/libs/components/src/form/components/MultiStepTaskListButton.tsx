@@ -64,6 +64,7 @@ const MultiStepTaskListButton: React.FC<MultiStepTaskListButtonProps> = ({
               <Button
                 variant="contained"
                 color="primary"
+                type="submit"
                 onClick={onSaveAndContinue} // Calls function to handle save and continue
                 disabled={isDisabled}
               >
