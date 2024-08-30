@@ -35,6 +35,7 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Frontend
           fail_action: false
+        continue-on-error: ${{ matrix.attempt != 3 }}
       - name: ZAP Backend Scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
@@ -45,4 +46,4 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
-    continue-on-error: ${{ matrix.attempt != 3 }}
+        continue-on-error: ${{ matrix.attempt != 3 }}
