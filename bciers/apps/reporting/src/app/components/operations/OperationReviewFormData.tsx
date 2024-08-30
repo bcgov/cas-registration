@@ -22,9 +22,9 @@ export default async function OperationReviewFormData({
 }: {
   version_id: number;
 }) {
-  const reportOperation = await getReportOperation(version_id);
-  const allActivities = await getAllActivities();
-  const allRegulatedProducts = await getAllRegulatedProducts();
+  const reportOperation = (await getReportOperation(version_id)) || null;
+  const allActivities = (await getAllActivities()) || [];
+  const allRegulatedProducts = (await getAllRegulatedProducts()) || [];
 
   return (
     <OperationReview

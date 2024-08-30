@@ -18,6 +18,7 @@ interface Props {
   formData: any;
   cancelUrl: string;
   baseUrl: string;
+  onSubmit: (data: any) => Promise<void>; // Add onSubmit prop
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -29,6 +30,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   formData,
   cancelUrl,
   baseUrl,
+  onSubmit, // Destructure onSubmit prop
 }) => {
   const [currentStep, setCurrentStep] = useState(initialStep);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,30 +100,21 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
     }
   };
 
-  // Handle moving to the previous step
-  // const handlePreviousStep = () => {
-  //   if (currentStep > 0) {
-  //     setCurrentStep(currentStep - 1);
-  //
-  //     const updatedTasks = taskList.map((section, index) => ({
-  //       ...section,
-  //       elements: (section.elements ?? []).map((task, idx) => ({
-  //         ...task,
-  //         isActive: index === 0 && idx === 0 && currentStep === initialStep - 1,
-  //       })),
-  //     }));
-  //
-  //     setTaskList(updatedTasks);
-  //   }
-  // };
-
   // Handle form submission
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async (data: any) => {
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await onSubmit(data); // Call the onSubmit prop function
+      // Proceed to the next task or step only after successful submission
       handleNextTask();
-    }, 1000); // Simulate submission delay
+    } catch (error) {
+      // Consider using a proper logging library
+      console.error("Submission failed:", error);
+      setHasErrors(true);
+      // Handle errors or notify the user
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Handle form errors
@@ -140,7 +133,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
           <FormBase
             schema={schema}
             uiSchema={uiSchema}
-            onSubmit={handleFormSubmit}
+            onSubmit={handleFormSubmit} // Pass handleFormSubmit to FormBase
             onError={handleFormError}
             formData={formData}
           >
@@ -154,7 +147,11 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
                 isSubmitting={isSubmitting}
                 submitButtonText="Save and Continue"
                 submitButtonDisabled={isSubmitting}
-                onSaveAndContinue={handleNextTask}
+                onSaveAndContinue={() => {
+                  if (!hasErrors) {
+                    handleNextTask(); // Only proceed to the next task if there are no errors
+                  }
+                }}
               />
             </div>
           </FormBase>

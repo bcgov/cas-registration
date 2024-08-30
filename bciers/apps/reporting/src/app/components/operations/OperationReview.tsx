@@ -8,6 +8,8 @@ import {
   operationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import safeJsonParse from "@bciers/utils/safeJsonParse";
+import { actionHandler } from "@bciers/actions";
 
 interface Props {
   formData: any;
@@ -41,7 +43,54 @@ export default function OperationReview({
   const [uiSchema] = useState<any>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
 
+  const submitHandler = async (
+    data: { formData?: any },
+    version_id: number,
+  ) => {
+    const method = "POST";
+    const endpoint = `reporting/report-version/${version_id}/report-operation`;
+    const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
+
+    // Extract the formData from the input
+    const formDataObject = safeJsonParse(JSON.stringify(data.formData));
+
+    // Prepare the data to be sent to the server
+    const preparedData = {
+      ...formDataObject,
+      reporting_activities: formDataObject.reporting_activities?.map(
+        (activity: any) => {
+          // Find the activity ID if it's an ID, otherwise map to name
+          return allActivities.find((a) => a.name === activity)?.id || activity;
+        },
+      ),
+      regulated_products: formDataObject.regulated_products?.map(
+        (product: any) => {
+          // Find the product ID if it's an ID, otherwise map to name
+          return (
+            allRegulatedProducts.find((p) => p.name === product)?.id || product
+          );
+        },
+      ),
+    };
+
+    try {
+      await actionHandler(endpoint, method, pathToRevalidate, {
+        body: JSON.stringify(preparedData),
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+      });
+      // Handle successful save
+
+      // Optionally, you can provide user feedback or navigate to another page
+    } catch (error) {}
+  };
+
   useEffect(() => {
+    if (!formData) {
+      return;
+    }
     // Ensure formData fields are arrays
     const activities = formData.activities || [];
     const products = formData.regulated_products || [];
@@ -92,6 +141,12 @@ export default function OperationReview({
           enum: [formData.operation_representative_name || ""],
           enumNames: [formData.operation_representative_name || ""],
         },
+        operation_type: {
+          type: "string",
+          title: "Operation type",
+          enum: [formData.operation_type || ""],
+          enumNames: [formData.operation_type || ""],
+        },
       },
     }));
 
@@ -104,6 +159,10 @@ export default function OperationReview({
 
     setFormDataState(updatedFormData);
   }, [allActivities, allRegulatedProducts, formData]);
+
+  if (!formData || formData.error) {
+    return <div>No version ID found(TBD)</div>;
+  }
 
   return (
     <MultiStepFormWithTaskList
@@ -120,6 +179,7 @@ export default function OperationReview({
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
+      onSubmit={(data) => submitHandler(data, formData.version_id)} // Pass the version_id to submitHandler
     />
   );
 }
