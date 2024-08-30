@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "title": "Pulping and chemical recovery",
+  "properties": {
+    "emissions": {
+      "type": "array",
+      "title": "Emissions",
+      "items": {
+        "title": "Pulping and chemical recovery",
+        "type": "object",
+        "properties": {
+          "carbonateName": {
+            "type": "string",
+            "title": "Carbonate Name"
+          },
+          "annualAmount": {
+            "type": "number",
+            "title": "Annual Amount (t)"
+          },
+          "purityOfCarbonate": {
+            "type": "number",
+            "title": "Purity Of Carbonate (Weight Fraction)"
+          },
+          "methodology": {
+            "title": "Methodology",
+            "type": "string",
+            "enum": [
+              "Solids-HHV",
+              "Solids-CC",
+              "Make-up Chemical Use Methodology",
+              "Alternative Parameter Methodology",
+              "Replacement Methodology"
+            ]
+          },
+          "gasType": {
+            "type": "string",
+            "title": "Gas Type",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emission",
+            "type": "number"
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "number",
+            "readOnly": true
+          }
+        }
+      }
+    }
+  }
+}
