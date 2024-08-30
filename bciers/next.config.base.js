@@ -11,7 +11,6 @@ module.exports = logAndReturnConfig({
       bodySizeLimit: "25mb",
     },
   },
-
   //use modularizeImports properties to optimize the imports in the application
   modularizeImports: {
     "@mui/icons-material": {
