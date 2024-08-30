@@ -43,11 +43,11 @@ runs:
     - name: Start services with Docker Compose
       working-directory: ./bciers
       run: |
-        docker-compose up -d
+        docker compose up -d
       shell: bash
 
     - name: Wait for services to be healthy
       working-directory: ./bciers
       run: |
-        docker-compose ps
+        docker compose ps
       shell: bash
