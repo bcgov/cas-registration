@@ -85,9 +85,10 @@ class ReportService:
 
     @classmethod
     def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperation:
+        # Fetch the existing report operation
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
 
-        # Updating fields from data
+        # Update fields from data
         report_operation.operator_legal_name = data.operator_legal_name
         report_operation.operator_trade_name = data.operator_trade_name
         report_operation.operation_name = data.operation_name
@@ -100,12 +101,13 @@ class ReportService:
         activities = Activity.objects.filter(name__in=data.activities)
         regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
 
-        # Set ManyToMany relationships
         report_operation.activities.set(activities)
         report_operation.regulated_products.set(regulated_products)
-
         # Save the updated report operation
-        report_operation.save()
+        try:
+            report_operation.save()
+        except Exception as e:
+            print("Error saving report operation:", e)
 
         return report_operation
 

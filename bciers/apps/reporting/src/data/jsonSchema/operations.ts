@@ -1,71 +1,125 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import { purposeNote } from "./reviewOperationInformationText";
+const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const operationReviewSchema: RJSFSchema = {
   type: "object",
+  title: "Review operation information",
+  required: [
+    "operation_representative_name",
+    "operation_bcghgid",
+    "operation_representative_name",
+    "operation_name",
+  ],
+
   properties: {
+    purpose_note: {
+      type: "object",
+      readOnly: true,
+    },
+    operation_report_type: {
+      type: "string",
+      title: "Please select what type of report are you filling",
+      enum: [
+        "Annual emissions report",
+        "Regulated partial year operation",
+        "Simple Report",
+      ],
+    },
+    operation_representative_name: {
+      type: "string",
+      title: "Operation representative",
+    },
+
+    date_info: {
+      type: "object",
+      readOnly: true,
+    },
+
     operator_legal_name: { type: "string", title: "Operator legal name" },
     operator_trade_name: { type: "string", title: "Operator trade name" },
     operation_name: { type: "string", title: "Operation name" },
     operation_type: {
       type: "string",
       title: "Operation type",
-      enum: ["Linear facility operation"],
     },
     operation_bcghgid: { type: "string", title: "BCGHG ID" },
     bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
-    reporting_activities: {
+    activities: {
       type: "array",
       title: "Reporting activities",
-      items: { type: "string" },
-      uniqueItems: true,
     },
     regulated_products: {
       type: "array",
       title: "Regulated products",
-      items: { type: "string" },
-      uniqueItems: true,
-    },
-    operation_representative_name: {
-      type: "string",
-      title: "Operation representative",
-      enum: ["sam smith", "belinda g"],
     },
   },
 };
 
 export const operationReviewUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
   operator_legal_name: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
   },
   operator_trade_name: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
   },
   operation_name: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
+  },
+  purpose_note: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": purposeNote,
+  },
+
+  date_info: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:options": {
+      style: { variant: "body2", color: "#38598A", fontSize: "16px" },
+    },
   },
   operation_type: {
     "ui:widget": "select",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
+    "ui:placeholder": "Operation type",
+  },
+  operation_report_type: {
+    "ui:widget": "select",
+    "ui:options": { style: { width: "100%", textAlign: "justify" } },
+    "ui:placeholder": "Report type",
   },
   operation_bcghgid: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
+    "ui:placeholder": "BCGHG ID",
   },
   bc_obps_regulated_operation_id: {
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
+    "ui:placeholder": "BORO ID",
   },
-  reporting_activities: {
-    "ui:widget": "select",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  activities: {
+    "ui:widget": "MultiSelectWidget",
+    "ui:options": {
+      ...commonUiOptions,
+      label: { style: { verticalAlign: "top" } },
+    },
+    "ui:placeholder": "Reporting activities",
+    uniqueItems: true,
   },
   regulated_products: {
-    "ui:widget": "select",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:widget": "MultiSelectWidget",
+    "ui:options": {
+      ...commonUiOptions,
+      label: { style: { verticalAlign: "top" } },
+    },
+    "ui:placeholder": "Regulated products",
+    uniqueItems: true,
   },
   operation_representative_name: {
     "ui:widget": "select",
-    "ui:options": { style: { width: "100%", textAlign: "left" } },
+    "ui:options": commonUiOptions,
   },
   "ui:submitButtonOptions": {
     props: {
