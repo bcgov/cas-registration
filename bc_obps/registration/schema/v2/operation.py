@@ -1,10 +1,8 @@
 from uuid import UUID
-from typing import List, Optional, Union
+from typing import List, Optional
 from registration.schema.v1.contact import ContactIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation
-from service.data_access_service.facility_service import FacilityDataAccessService
-from registration.enums.enums import OperationTypes
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.registration_purpose import RegistrationPurpose
 from pydantic import field_validator
@@ -36,43 +34,32 @@ class OperationUpdateOut(ModelSchema):
 
 
 class OperationFilterSchema(FilterSchema):
-    bcghg_id: Optional[str] = None
-    name: Optional[str] = None
-    operator: Optional[str] = None
-    type: Optional[str] = None
-    page: Union[int, float, str] = 1
-    sort_field: Optional[str] = "created_at"
-    sort_order: Optional[str] = "desc"
+    # NOTE: we could simply use the `q` parameter to filter by related fields but,
+    # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
+    # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
+    bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__icontains'})
+    name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
+    type: Optional[str] = Field(None, json_schema_extra={'q': 'type__icontains'})
+    status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
+    bc_obps_regulated_operation: Optional[str] = Field(
+        None, json_schema_extra={'q': 'bc_obps_regulated_operation__id__icontains'}
+    )
 
 
 class OperationListOut(ModelSchema):
     operator: str = Field(..., alias="operator.legal_name")
-    sfo_facility_id: Optional[UUID] = None
+    sfo_facility_id: Optional[UUID] = Field(None, alias="sfo_facility_id")  # this is an annotated field in the query
 
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = [
+        fields = [
             'id',
             'name',
             'bcghg_id',
             'type',
+            'status',
+            'bc_obps_regulated_operation',
         ]
-        from_attributes = True
-
-    @staticmethod
-    def resolve_sfo_facility_id(obj: Operation) -> Optional[UUID]:
-        # Resolve a single facility id for SFO operations
-        facilities = FacilityDataAccessService.get_current_facilities_by_operation(obj)
-        if obj.type == OperationTypes.SFO.value and facilities:
-            first_facility = facilities.first()
-            if first_facility:
-                return first_facility.pk
-        return None
-
-
-class OperationPaginatedOut(Schema):
-    data: List[OperationListOut]
-    row_count: int
 
 
 class OperationCurrentOut(ModelSchema):
