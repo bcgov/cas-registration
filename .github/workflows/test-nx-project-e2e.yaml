@@ -113,3 +113,6 @@ jobs:
           name: blob-report-${{ matrix.project }}
           path: bciers/blob-report
           retention-days: 1
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2
