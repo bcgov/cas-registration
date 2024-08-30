@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "title": "Carbonates used but not consumed in other activities set out in column 2",
+  "properties": {
+    "emissions": {
+      "type": "array",
+      "title": "Emissions",
+      "items": {
+        "title": "Carbonate data",
+        "type": "object",
+        "properties": {
+          "methodology": {
+            "title": "Methodology",
+            "type": "string",
+            "enum": [
+              "Calcination Fraction",
+              "Mass of Output Carbonates",
+              "Alternative Parameter Methodology",
+              "Replacement Methodology"
+            ]
+          },
+          "emissions": {
+            "title": "Emissions",
+            "type": "number"
+          },
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "equivalentEmissions": {
+            "title": "Equivalent Emissions",
+            "type": "number"
+          },
+          "carbonateType": {
+            "title": "Carbonate Type",
+            "type": "string",
+            "enum": [
+              "Limestone",
+              "Dolomite",
+              "Ankerite",
+              "Magnesite",
+              "Siderite",
+              "Rhodochrosite",
+              "Sodium carbonate"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
