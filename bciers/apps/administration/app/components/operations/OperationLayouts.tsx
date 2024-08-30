@@ -18,7 +18,11 @@ export const ExternalUserOperationDataGridLayout = ({
 }: {
   children: React.ReactNode;
 }) => (
-  <Layout>
+  <>
+    <Note>
+      <b>Note:</b> View the operations owned by your operator here.
+    </Note>
+    <h1>Operations</h1>
     <div className="w-full flex justify-end">
       <a
         className="link-button-blue"
@@ -28,5 +32,5 @@ export const ExternalUserOperationDataGridLayout = ({
       </a>
     </div>
     {children}
-  </Layout>
+  </>
 );
