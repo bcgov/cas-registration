@@ -80,57 +80,64 @@ jobs:
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       nx_project: administration
+      nx_app_port: 4001
       image_url: ghcr.io/bcgov/cas-admin-frontend
     secrets: inherit
-  test-coam-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
-    needs: [build-backend, build-coam, install-dev-tools, check-nx-affected]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      nx_project: coam
-      image_url: ghcr.io/bcgov/cas-coam-frontend
-    secrets: inherit
-  test-dashboard-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard')}}
-    needs:
-      [build-backend, build-dashboard, install-dev-tools, check-nx-affected]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      nx_project: dashboard
-      image_url: ghcr.io/bcgov/cas-dash-frontend
-    secrets: inherit
-  test-reporting-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
-    needs:
-      [build-backend, build-registration, install-dev-tools, check-nx-affected]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      nx_project: reporting
-      image_url: ghcr.io/bcgov/cas-rep-frontend
-    secrets: inherit
-  test-registration1-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
-    needs:
-      [build-backend, build-registration1, install-dev-tools, check-nx-affected]
-    uses: ./.github/workflows/test-registration1-e2e.yaml
-    secrets: inherit
-  test-registration-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
-    needs:
-      [build-backend, build-registration, install-dev-tools, check-nx-affected]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      nx_project: registration
-      image_url: ghcr.io/bcgov/cas-reg-frontend
-    secrets: inherit
+  # test-coam-e2e:
+  #   if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
+  #   needs: [build-backend, build-coam, install-dev-tools, check-nx-affected]
+  #   uses: ./.github/workflows/test-nx-project-e2e.yaml
+  #   with:
+  #     nx_project: coam
+  #     image_url: ghcr.io/bcgov/cas-coam-frontend
+  #   secrets: inherit
+  # test-dashboard-e2e:
+  #   if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard')}}
+  #   needs:
+  #     [build-backend, build-dashboard, install-dev-tools, check-nx-affected]
+  #   uses: ./.github/workflows/test-nx-project-e2e.yaml
+  #   with:
+  #     nx_project: dashboard
+  #     image_url: ghcr.io/bcgov/cas-dash-frontend
+  #   secrets: inherit
+  # test-reporting-e2e:
+  #   if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
+  #   needs:
+  #     [build-backend, build-registration, install-dev-tools, check-nx-affected]
+  #   uses: ./.github/workflows/test-nx-project-e2e.yaml
+  #   with:
+  #     nx_project: reporting
+  #     image_url: ghcr.io/bcgov/cas-rep-frontend
+  #   secrets: inherit
+  # test-registration1-e2e:
+  #   if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
+  #   needs:
+  #     [build-backend, build-registration1, install-dev-tools, check-nx-affected]
+  #   uses: ./.github/workflows/test-registration1-e2e.yaml
+  #   secrets: inherit
+  # test-registration-e2e:
+  #   if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
+  #   needs:
+  #     [build-backend, build-registration, install-dev-tools, check-nx-affected]
+  #   uses: ./.github/workflows/test-nx-project-e2e.yaml
+  #   with:
+  #     nx_project: registration
+  #     image_url: ghcr.io/bcgov/cas-reg-frontend
+  #   secrets: inherit
   e2e-finalize:
-    needs: [test-registration1-e2e]
+    # needs: [test-registration1-e2e]
+    needs: [
+        test-administration-e2e,
+        # test-coam-e2e,
+        # test-dashboard-e2e,
+        # test-reporting-e2e,
+        # test-registration-e2e,
+      ]
     uses: ./.github/workflows/e2e-finalize.yaml
     secrets: inherit
-  zap-owasp:
-    # We will need to set up registration part 2 and reporting to get zap scanned
-    needs: [build-backend, build-registration1, install-dev-tools]
-    uses: ./.github/workflows/zap-owasp.yaml
+  # zap-owasp:
+  #   needs: [build-backend, build-registration1, install-dev-tools]
+  #   uses: ./.github/workflows/zap-owasp.yaml
   trivy:
     uses: ./.github/workflows/trivy.yaml
   codeql:

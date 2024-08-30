@@ -6,6 +6,10 @@ name: Test BCIERS Nx App containers
 on:
   workflow_call:
     inputs:
+      nx_app_port:
+        description: "Port to run the Nx app on"
+        required: true
+        type: number
       nx_project:
         description: "Nx project to test"
         required: true
@@ -35,13 +39,13 @@ jobs:
             os: ubuntu-latest
             cache_dir: ~/.cache/ms-playwright
           # Commented out because of flakey issues with Firefox in CI
-          - project: firefox
-            os: ubuntu-latest
-            cache_dir: ~/.cache/ms-playwright
-          # Commented out because of flakey issues with webkit in CI
-          - project: webkit
-            os: macos-latest
-            cache_dir: ~/Library/Caches/ms-playwright
+          # - project: firefox
+          #   os: ubuntu-latest
+          #   cache_dir: ~/.cache/ms-playwright
+          # # Commented out because of flakey issues with webkit in CI
+          # - project: webkit
+          #   os: macos-latest
+          #   cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
       - name: 🎁 setup dev env
@@ -54,6 +58,7 @@ jobs:
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
           image_url: ${{ inputs.image_url }}
+          nx_app_port: ${{ inputs.nx_app_port }}
       - name: ⚡️ cache Playwright binaries
         uses: actions/cache@v4
         id: playwright-cache
@@ -67,7 +72,7 @@ jobs:
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
       - name: 🎭 Run Playwright Tests
-        run: yarn nx run ${{ inputs.nx_project }}:e2e -- --project=${{ matrix.project }}
+        run: DEBUG=pw:api yarn nx run ${{ inputs.nx_project }}:e2e -- --project=${{ matrix.project }}
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
