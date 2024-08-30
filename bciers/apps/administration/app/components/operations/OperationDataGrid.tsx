@@ -31,8 +31,8 @@ const OperationDataGrid = ({
     () =>
       operationColumns(
         isInternalUser,
-        OperationsActionCell(),
-        OperationFacilitiesActionCell(),
+        OperationsActionCell(isInternalUser),
+        OperationFacilitiesActionCell(isInternalUser),
       ),
     [OperationsActionCell, isInternalUser],
   );
