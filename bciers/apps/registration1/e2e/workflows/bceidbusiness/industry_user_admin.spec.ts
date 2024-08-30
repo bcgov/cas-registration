@@ -199,7 +199,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🛸 Navigate to an operation with pending status
     await operationsPage.clickViewDetailsButtonByOperationName(
       page,
-      "Operation 14",
+      "Operation 20",
     );
     // 🔍 Assert we are on the operation detail page
     await operationPage.formIsVisible();

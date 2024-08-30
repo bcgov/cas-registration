@@ -374,6 +374,10 @@ export class OperationsPOM {
               OperationStatus.PENDING,
               OperationStatus.APPROVED,
               OperationStatus.DECLINED,
+              // Below values are not possible in Registration1
+              OperationStatus.TEMPORARILY_SHUTDOWN,
+              OperationStatus.TRANSFERRED,
+              OperationStatus.TEMPORARILY_SHUTDOWN,
             ];
             break;
         }
