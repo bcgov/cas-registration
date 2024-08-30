@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  backend:
+    image: ghcr.io/bcgov/cas-reg-backend:${GITHUB_SHA}
+    ports:
+      - "8000:8000"
+    environment:
+      DB_USER: postgres
+      DB_NAME: registration
+      DB_PORT: 5432
+      DB_HOST: localhost
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      ALLOWED_HOSTS: localhost,0.0.0.0,127.0.0.1
+      ENVIRONMENT: dev
+
+  frontend1:
+    image: ghcr.io/bcgov/cas-dash-frontend:${GITHUB_SHA}
+    ports:
+      - "3000:3000"
+    environment:
+      NEXTAUTH_URL_INTERNAL: ${NEXTAUTH_URL_INTERNAL}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      API_URL: ${API_URL}
+      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+
+  frontend2:
+    image: ghcr.io/bcgov/cas-admin-frontend:${GITHUB_SHA}
+    ports:
+      - "4001:4001"
+    environment:
+      NEXTAUTH_URL_INTERNAL: ${NEXTAUTH_URL_INTERNAL}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      API_URL: ${API_URL}
+      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
