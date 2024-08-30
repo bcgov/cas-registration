@@ -32,6 +32,9 @@ class Operation(TimeStampedModel):
         DECLINED = "Declined"
         CHANGES_REQUESTED = "Changes Requested"
         REGISTERED = "Registered"
+        TRANSFERRED = "Transferred"
+        CLOSED = "Closed"
+        TEMPORARILY_SHUTDOWN = "Temporarily Shutdown"
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
