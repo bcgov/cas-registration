@@ -22,7 +22,7 @@ const operatorJSON = {
   mailing_municipality: "test mailing municipality",
   mailing_province: "BC",
   mailing_postal_code: "V0V0V0",
-  website: "http://www.example2.com",
+  website: "https://www.example2.com",
   contacts: [101, 102, 103],
 };
 

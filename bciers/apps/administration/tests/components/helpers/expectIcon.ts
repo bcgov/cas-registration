@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { screen } from "@testing-library/react";
 
 // Helper function to verify that icon is visible and has the expected styles
