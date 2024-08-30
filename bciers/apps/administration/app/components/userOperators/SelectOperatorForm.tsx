@@ -14,11 +14,9 @@ export default function SelectOperatorForm() {
   const [errorList, setErrorList] = useState([] as any[]);
   const router = useRouter();
   const handleSubmit = async (data: { formData?: SelectOperatorFormData }) => {
-    const queryParam = `?${data.formData?.search_type}=${
-      data.formData?.[
-        data.formData?.search_type as keyof SelectOperatorFormData
-      ]
-    }`;
+    const queryParam = `?${data.formData?.search_type}=${data.formData?.[
+      data.formData?.search_type as keyof SelectOperatorFormData
+    ]}`;
 
     const response = await actionHandler(
       `registration/operators${queryParam}`,

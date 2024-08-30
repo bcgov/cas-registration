@@ -28,7 +28,7 @@ const renderSelectOperatorConfirmPage = async () => {
 };
 
 describe("Select Operator Confirm Page", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks();
   });
 
