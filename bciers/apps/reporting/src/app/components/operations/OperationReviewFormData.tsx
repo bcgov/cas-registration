@@ -1,20 +1,25 @@
-import { actionHandler } from "@bciers/actions";
 import OperationReview from "./OperationReview";
-
-export async function getReportOperation(version_id: number) {
-  return actionHandler(
-    `reporting/report-version/${version_id}/report-operation`,
-    "GET",
-    `reporting/report-version/${version_id}/report-operation`,
-  );
-}
+import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
+import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
+import { getAllRegulatedProducts } from "@reporting/src/app/utils/getAllRegulatedProducts";
 
 export default async function OperationReviewFormData({
   version_id,
 }: {
   version_id: number;
 }) {
-  const reportOperation = await getReportOperation(version_id);
-
-  return <OperationReview formData={reportOperation} version_id={version_id} />;
+  const reportOperation = (await getReportingOperation(version_id)) || null;
+  const allActivities = (await getAllActivities()) || [];
+  const allRegulatedProducts = (await getAllRegulatedProducts()) || [];
+  const reportingYear = (await getReportingYear()) || null;
+  return (
+    <OperationReview
+      formData={reportOperation}
+      version_id={version_id}
+      allActivities={allActivities}
+      reportingYear={reportingYear}
+      allRegulatedProducts={allRegulatedProducts}
+    />
+  );
 }

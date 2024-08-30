@@ -1,144 +1,197 @@
 "use client";
-import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-} from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
-import SyncIcon from "@mui/icons-material/Sync";
-import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
-import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
-import { actionHandler } from "@bciers/actions";
-import FormBase from "@bciers/components/form/FormBase";
+
+import React, { useEffect, useState } from "react";
+import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
+import { RJSFSchema } from "@rjsf/utils";
+import { useRouter } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import safeJsonParse from "@bciers/utils/safeJsonParse";
+import { actionHandler } from "@bciers/actions";
+import dayjs from "dayjs";
 
 interface Props {
   formData: any;
   version_id: number;
+  reportingYear: {
+    reporting_year: number;
+    report_due_date: string;
+    reporting_window_end: string;
+  };
+  allActivities: { id: number; name: string }[];
+  allRegulatedProducts: { id: number; name: string }[];
 }
 
-const submitHandler = async (data: { formData?: any }, version_id: number) => {
-  const method = "POST";
-  const endpoint = `reporting/report-version/${version_id}/report-operation`;
-  const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
-  const formDataObject = safeJsonParse(JSON.stringify(data.formData));
-  await actionHandler(endpoint, method, pathToRevalidate, {
-    body: JSON.stringify(formDataObject),
-    headers: {
-      "Content-Type": "application/json",
-      accept: "application/json",
-    },
-  });
+const baseUrl = "/reports";
+const cancelUrl = "/reports";
+
+const taskListElements: TaskListElement[] = [
+  {
+    type: "Section",
+    title: "Operation information",
+    isExpanded: true,
+    elements: [
+      { type: "Page", title: "Review Operation information", isActive: true },
+      { type: "Page", title: "Person responsible" },
+      { type: "Page", title: "Review facilities" },
+    ],
+  },
+];
+
+const formatDate = (dateString: string | number | Date) => {
+  return dayjs(dateString).format("MMM DD YYYY");
 };
 
 export default function OperationReview({
   formData,
   version_id,
-}: Readonly<Props>) {
-  const customStepNames = [
-    "Operation Information",
-    "Facilities Information",
-    "Compliance Summary",
-    "Sign-off & Submit",
-  ];
+  reportingYear,
+  allActivities,
+  allRegulatedProducts,
+}: Props) {
+  const router = useRouter();
+  const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
+  const [uiSchema] = useState<any>(operationReviewUiSchema);
+  const [formDataState, setFormDataState] = useState<any>(formData);
+  const [loading, setLoading] = useState(true);
+  const saveAndContinueUrl = `/reporting/reports/${version_id}/person-responsible`;
+  const reportingWindowEnd = reportingYear?.reporting_window_end
+    ? formatDate(reportingYear.reporting_window_end)
+    : null;
+
+  const submitHandler = async (
+    data: { formData?: any },
+    reportVersionId: number,
+  ) => {
+    const method = "POST";
+    const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
+    const pathToRevalidate = `reporting/report-version/${reportVersionId}/report-operation`;
+
+    // Extract the formData from the input
+    const formDataObject = safeJsonParse(JSON.stringify(data.formData));
+
+    // Ensure activities and regulated_products are present and correctly formatted
+    const preparedData = {
+      ...formDataObject,
+      activities: formDataObject.activities?.map((activityId: any) => {
+        const activityName = allActivities.find((a) => a.id === activityId)
+          ?.name;
+        return activityName || activityId;
+      }),
+      regulated_products: formDataObject.regulated_products?.map(
+        (productId: any) => {
+          const productName = allRegulatedProducts.find(
+            (p) => p.id === productId,
+          )?.name;
+          return productName || productId;
+        },
+      ),
+    };
+
+    try {
+      await actionHandler(endpoint, method, pathToRevalidate, {
+        body: JSON.stringify(preparedData),
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+      });
+      router.push(saveAndContinueUrl);
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!formData || !allActivities || !allRegulatedProducts) {
+      return;
+    }
+
+    const activities = formData.activities || [];
+    const products = formData.regulated_products || [];
+
+    const preselectedActivities = activities;
+    const preselectedProducts = products;
+
+    setSchema((prevSchema) => ({
+      ...prevSchema,
+      properties: {
+        ...prevSchema.properties,
+        activities: {
+          type: "array",
+          title: "Reporting activities",
+          items: {
+            type: "number",
+            enum: allActivities.map((activity) => activity.id),
+            enumNames: allActivities.map((activity) => activity.name),
+          },
+          uniqueItems: true,
+        },
+        regulated_products: {
+          type: "array",
+          title: "Regulated products",
+          items: {
+            type: "number",
+            enum: allRegulatedProducts.map((product) => product.id),
+            enumNames: allRegulatedProducts.map((product) => product.name),
+          },
+          uniqueItems: true,
+        },
+        operation_representative_name: {
+          type: "string",
+          title: "Operation representative",
+          enum: [formData.operation_representative_name || ""],
+        },
+        operation_type: {
+          type: "string",
+          title: "Operation type",
+          enum: [formData.operation_type || ""],
+        },
+        date_info: {
+          type: "object",
+          readOnly: true,
+          title: `Please ensure this information was accurate for ${reportingWindowEnd}`,
+        },
+      },
+    }));
+
+    const updatedFormData = {
+      ...formData,
+      activities: preselectedActivities,
+      regulated_products: preselectedProducts,
+    };
+
+    setFormDataState(updatedFormData);
+    setLoading(false);
+  }, [allActivities, allRegulatedProducts, formData]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!formData || formData.error) {
+    return <div>No version ID found(TBD)</div>;
+  }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <div className="container mx-auto p-4">
-        <MultiStepHeader stepIndex={0} steps={customStepNames} />
-      </div>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Operation Information
-            </Typography>
-            <List component="nav">
-              <ListItem button selected>
-                <ListItemIcon>
-                  <CheckCircleOutline htmlColor="green" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Review operation information"
-                  primaryTypographyProps={{ color: "#1A5A96" }}
-                />
-              </ListItem>
-              <ListItem button>
-                <ListItemText primary="Review facilities" />
-              </ListItem>
-              <ListItem button>
-                <ListItemText primary="Person responsible" />
-              </ListItem>
-            </List>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={9}>
-          <Typography variant="h6" color="#38598A" fontSize="24px" gutterBottom>
-            Review operation information
-          </Typography>
-          <Paper sx={{ p: 2, mb: 3, bgcolor: "#DCE9F6", color: "#313132" }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <InfoIcon sx={{ mr: 1 }} />
-              <Typography variant="body2">
-                The information shown on this page is data entered in
-                registration. You can edit it here but it will only apply to
-                this report. To make edits for all of your reports, please edit
-                this information in registration.
-              </Typography>
-            </Box>
-          </Paper>
-          <Typography
-            variant="body2"
-            color="#38598A"
-            fontSize="16px"
-            gutterBottom
-          >
-            Please ensure this information was accurate for Dec 31 2024
-          </Typography>
-          <FormBase
-            schema={operationReviewSchema}
-            uiSchema={operationReviewUiSchema}
-            formData={formData}
-            onSubmit={(data) => submitHandler(data, version_id)}
-          />
-
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid item xs={12} sm={4}>
-              <Button variant="outlined" startIcon={<SyncIcon />}>
-                Sync latest data from registration
-              </Button>
-              <Box mt={2}>
-                <Button variant="outlined" fullWidth>
-                  Cancel
-                </Button>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}></Grid>
-            <Grid
-              item
-              xs={12}
-              sm={4}
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="flex-start"
-            >
-              <Button variant="contained" color="primary">
-                Continue
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Box>
+    <MultiStepFormWithTaskList
+      initialStep={0}
+      steps={[
+        "Operation Information",
+        "Facilities Information",
+        "Compliance Summary",
+        "Sign-off & Submit",
+      ]}
+      taskListElements={taskListElements}
+      schema={schema}
+      uiSchema={uiSchema}
+      formData={formDataState}
+      baseUrl={baseUrl}
+      cancelUrl={cancelUrl}
+      onSubmit={(data) => submitHandler(data, version_id)}
+    />
   );
 }
