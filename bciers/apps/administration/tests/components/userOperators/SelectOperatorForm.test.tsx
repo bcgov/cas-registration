@@ -6,18 +6,14 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import SelectOperatorForm from "../../../app/components/userOperators/SelectOperatorForm";
-
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
+import SelectOperatorForm from "../../../app/components/userOperators/SelectOperatorForm";
+import { expectLink } from "../helpers/expectLink";
 
-const mockPush = vi.fn(); // Create a mock function for router.push
-useRouter.mockReturnValue({
-  push: mockPush,
-});
-const operatorId = "685d581b-5698-411f-ae00-de1d97334a71";
+import { id, operatorLegalName } from "./constants";
+
 const operatorCRA = "123456789";
-const operatorLegalName = "Operator 1";
 const radioLegalName = "Search by Business Legal Name";
 const radioCRANumber = "Search by Canada Revenue Agency (CRA) Business Number";
 const placeHolderLegalName = "Enter Business Legal Name";
@@ -26,7 +22,7 @@ const buttonLegalName = "Select Operator";
 const buttonCRANumber = "Search Operator";
 const requiredField = "Required field";
 const responseLegalName = {
-  id: operatorId,
+  id: id,
   legal_name: operatorLegalName,
   error: null,
 };
@@ -35,8 +31,12 @@ const responseError = {
   legal_name: null,
   error: "No matching operator found. Retry or add operator.",
 };
-const urlPush = `/select-operator/confirm/${operatorId}?title=${operatorLegalName}`;
+const urlPush = `/select-operator/confirm/${id}?title=${operatorLegalName}`;
 
+const mockPush = vi.fn(); // Create a mock function for router.push method
+useRouter.mockReturnValue({
+  push: mockPush,
+});
 // ⛏️ Helper function to click the submit button
 async function clickSubmitButton(text: string) {
   const submitButton = screen.getByRole("button", { name: text });
@@ -93,6 +93,8 @@ describe("Select Operator Form", () => {
       screen.getByPlaceholderText(placeHolderCRANumber),
     ).toBeInTheDocument();
     expect(screen.getByText(buttonCRANumber)).toBeInTheDocument();
+    // Verify the add operator button is available
+    expectLink("Add Operator", "/select-operator/add-operator");
   });
   it("selects operator by legal name, submits form, and navigates on success", async () => {
     // Get the search field for entering the operator's legal name
@@ -107,6 +109,9 @@ describe("Select Operator Form", () => {
     });
     await waitFor(async () => {
       expect(screen.getByText(operatorLegalName)).toBeVisible();
+    });
+    await waitFor(async () => {
+      expect(screen.getByText("Operator 1")).toBeVisible();
     });
     // Select the operator from the dropdown
     const operator1 = screen.getByText(operatorLegalName);

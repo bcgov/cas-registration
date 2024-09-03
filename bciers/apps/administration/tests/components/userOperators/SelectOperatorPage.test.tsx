@@ -2,28 +2,33 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import SelectOperatorPage from "../../../app/bceidbusiness/industry_user/select-operator/(request-access)/page";
 
-import { useRouter, useSession } from "@bciers/testConfig/mocks";
+import { useSession } from "@bciers/testConfig/mocks";
 import { Session } from "@bciers/testConfig/types";
 
-const mockPush = vi.fn();
-useRouter.mockReturnValue({
-  push: mockPush,
-});
+// ⛏️  Helper function to mock the useSession hook with default values
+const mockUseSession = (
+  fullName: string = "bc-cas-dev secondary",
+  appRole: string = "industry_user",
+) => {
+  useSession.mockReturnValue({
+    data: {
+      user: {
+        full_name: fullName,
+        app_role: appRole,
+      },
+    },
+  } as Session);
+};
 
 describe("Select Operator Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders the page correctly ", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          full_name: "bc-cas-dev secondary",
-          app_role: "industry_user",
-        },
-      },
-    } as Session);
+  it("renders the page correctly", async () => {
+    // Mock the session data
+    mockUseSession();
+    // Render the SelectOperatorPage component
     render(<SelectOperatorPage />);
     // Verify the greeting
     expect(screen.getByText(/Hi,/)).toBeInTheDocument();
@@ -36,10 +41,5 @@ describe("Select Operator Page", () => {
     expect(
       screen.getByText("Select Operator").closest("form"),
     ).toBeInTheDocument();
-    // Verify the add operator button is available
-    expect(screen.getByRole("link", { name: "Add Operator" })).toHaveAttribute(
-      "href",
-      "/select-operator/add-user-operator",
-    );
   });
 });
