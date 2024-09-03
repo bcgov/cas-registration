@@ -64,7 +64,7 @@ export default function SelectOperatorForm() {
         <p>
           Don&apos;t see the operator?{" "}
           <Link
-            href="/select-operator/add-user-operator"
+            href="/select-operator/add-operator"
             className="underline hover:no-underline mr-2"
             style={{ color: BC_GOV_LINKS_COLOR }}
           >

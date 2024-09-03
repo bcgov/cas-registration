@@ -3,13 +3,11 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import SelectOperatorReceivedPage from "@/administration/app/components/userOperators/SelectOperatorReceivedPage";
 
 export default function Page({
-  params,
-}: {
-  readonly params: { id: string; step: string };
-}) {
+  params: { step, id },
+}: Readonly<{ params: { step: string; id: string } }>) {
   return (
     <Suspense fallback={<Loading />}>
-      <SelectOperatorReceivedPage params={params} />
+      <SelectOperatorReceivedPage step={step} id={id} />
     </Suspense>
   );
 }

@@ -17,7 +17,7 @@ export default function RequestAccessButton({
   operatorName,
   isAdminRequest = false,
 }: Readonly<RequestAccessButtonProps>) {
-  const { push } = useRouter();
+  const router = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
 
   const label = isAdminRequest
@@ -34,8 +34,8 @@ export default function RequestAccessButton({
       setErrorList([{ message: response.error }]);
       return;
     }
-    // admin vs. subsequent access request conditionality handled in component
-    push(
+    // admin vs. subsequent access request conditionality handled in component: select-operator/(request-access)/received/[step]/[id]
+    router.push(
       `/select-operator/received/request-access/${operatorId}?title=${operatorName}`,
     );
   };

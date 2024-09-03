@@ -29,7 +29,7 @@ export default function SelectOperatorConfirmForm({
   const [hasConfirmedOperator, setHasConfirmedOperator] = useState(false);
 
   const operatorHasAdminJSX: JSX.Element = (
-    <>
+    <div data-testid="has-admin-message">
       <p>
         Looks like you do not have access to <b>{operator.legal_name}</b>.
       </p>
@@ -42,11 +42,11 @@ export default function SelectOperatorConfirmForm({
         operatorId={operator.id}
         operatorName={operator.legal_name}
       />
-    </>
+    </div>
   );
 
   const operatorHasNoAdmin: JSX.Element = (
-    <>
+    <div data-testid="has-no-admin-message">
       <p>
         Looks like operator <b>{operator.legal_name}</b> does not have
         Administrator access set up.
@@ -64,7 +64,7 @@ export default function SelectOperatorConfirmForm({
         operatorName={operator.legal_name}
         isAdminRequest={true}
       />
-    </>
+    </div>
   );
 
   return (
@@ -76,7 +76,7 @@ export default function SelectOperatorConfirmForm({
           </span>
           <div>{hasAdmin ? operatorHasAdminJSX : operatorHasNoAdmin}</div>
           <Link
-            href=""
+            href="#"
             className="underline hover:no-underline"
             style={{ color: BC_GOV_LINKS_COLOR }}
             onClick={() => setHasConfirmedOperator(false)}
