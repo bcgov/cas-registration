@@ -8,13 +8,8 @@ help: ## Show this help.
 .PHONY: release
 release: ## Tag a release using release-it
 release:
-## grab the release version from release-it, and pass it to the create_empty_migrations script
-	@RELEASE_VERSION=$$(yarn release-it --release-version | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+' | tr '.' '_'); \
-	echo "Navigating to bc_obps directory..."; \
-	cd bc_obps && poetry run python manage.py create_empty_migrations $$RELEASE_VERSION && cd ..; \
-	echo "Running yarn setup and release-it..."; \
-	yarn; \
-	yarn release-it
+	@yarn
+	@yarn release-it
 
 .PHONY: lint_chart
 lint_chart: ## Checks the configured helm chart template definitions against the remote schema
