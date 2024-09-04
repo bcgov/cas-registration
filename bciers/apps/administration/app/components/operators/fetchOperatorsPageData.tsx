@@ -10,11 +10,10 @@ export default async function fetchOperatorsPageData(
     const queryParams = buildQueryParams(searchParams);
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/v2/operators`,
+      `registration/v2/operators${queryParams}`,
       "GET",
       "",
     );
-    console.log("page data: ", pageData);
     return {
       rows: pageData.data,
       row_count: pageData.row_count,

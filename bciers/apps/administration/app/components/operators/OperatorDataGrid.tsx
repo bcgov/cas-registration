@@ -3,12 +3,11 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import OperatorsActionCell from "@bciers/components/datagrid/cells/OperatorsActionCell";
-import { GridRenderCellParams } from "@mui/x-data-grid";
 import fetchOperatorsPageData from "./fetchOperatorsPageData";
 import { OperatorRow } from "./types";
 import operatorColumns from "../datagrid/models/operatorColumns";
+import operatorGroupColumns from "../datagrid/models/operatorGroupColumns";
 
 const OperatorDataGrid = ({
   initialData,
@@ -28,24 +27,19 @@ const OperatorDataGrid = ({
   );
 
   const columns = useMemo(
-    () =>
-      operatorColumns(
-        isInternalUser,
-        OperatorsActionCell(),
-        // FacilitiesActionCell,
-      ),
+    () => operatorColumns(isInternalUser, OperatorsActionCell()),
     [isInternalUser],
   );
 
-  // const columnGroup = useMemo(
-  //   () => operatorGroupColumns(isInternalUser, SearchCell),
-  //   [SearchCell, isInternalUser],
-  // );
+  const columnGroup = useMemo(
+    () => operatorGroupColumns(SearchCell),
+    [SearchCell],
+  );
 
   return (
     <DataGrid
       columns={columns}
-      // columnGroupModel={columnGroup}
+      columnGroupModel={columnGroup}
       fetchPageData={fetchOperatorsPageData}
       paginationMode="server"
       initialData={initialData}

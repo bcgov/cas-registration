@@ -5,7 +5,6 @@ export const OPERATOR_COLUMN_INDEX = 1;
 const operatorColumns = (
   isInternalUser: boolean,
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
-  // FacilitiesActionCell: (params: GridRenderCellParams) => JSX.Element,
 ) => {
   const columns: GridColDef[] = [
     {
