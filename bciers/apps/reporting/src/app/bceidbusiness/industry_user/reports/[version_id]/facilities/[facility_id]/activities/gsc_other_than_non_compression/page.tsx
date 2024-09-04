@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "libs/utils/safeJsonParse";
-import GSCOtherThanNonCompression from "@reporting/src/app/components/activities/gSCOtherThanNonCompression";
+import GSCOtherThanNonCompression from "@reporting/src/app/components/activities/gscOtherThanNonCompression";
 
 export default async function Page() {
   const reportDate = "2024-04-01"; // This should be passed in once we have a path to this page from starting a report
