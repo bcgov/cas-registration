@@ -1,3 +1,23 @@
+# [1.10.0](https://github.com/bcgov/cas-registration/compare/v1.9.0...v1.10.0) (2024-09-04)
+
+### Bug Fixes
+
+- error when there are no table rows ([4a9daad](https://github.com/bcgov/cas-registration/commit/4a9daadc3be3cfef9aca33596bf879b63b5eaf48))
+
+### Features
+
+- add activity page for refinery fuel gas combustion ([ecca331](https://github.com/bcgov/cas-registration/commit/ecca331edaf5d89dae214c0a2a2ba6e6f28518ee))
+- add frontend for carbonate use activity ([4b0e9ce](https://github.com/bcgov/cas-registration/commit/4b0e9ce574c6b4c21692df2ff61bfe0d3c82185d))
+- add fuel combustion by mobile equipment activity page ([c9e081d](https://github.com/bcgov/cas-registration/commit/c9e081db418ab5b67392e2b49fe3bc546a1f74de))
+- add operation registration submission step ([131688d](https://github.com/bcgov/cas-registration/commit/131688d9206fdf68da6bbbd6840bb252f1907ddd))
+- add opted-in operation details ([bd154e6](https://github.com/bcgov/cas-registration/commit/bd154e6bceb2c1e45614450649d0cdc35fff26f6))
+- add status and boro id columns to operation data grid ([c33ff53](https://github.com/bcgov/cas-registration/commit/c33ff531ac958fd5af95171594a3adde6c33b165))
+- adding activity page ([01473f1](https://github.com/bcgov/cas-registration/commit/01473f1459e1ef4ddde35b7eb0b1bbd3cfa2b66d))
+- create registration workflow step 1 form ([34c120d](https://github.com/bcgov/cas-registration/commit/34c120d30d516e9ca5f14d65462e64334f9cf7de))
+- facility form edit ([b146059](https://github.com/bcgov/cas-registration/commit/b146059c53646871d4c571804f2e4203cb9ad121))
+- select an operator ([62b74b8](https://github.com/bcgov/cas-registration/commit/62b74b83cf98d8c03bbb23d1070593cdbcf43c32))
+- user can submit operation rep ([83bf007](https://github.com/bcgov/cas-registration/commit/83bf007754eab9e84112c3f408885381ecb22f97))
+
 # [1.9.0](https://github.com/bcgov/cas-registration/compare/v1.8.0...v1.9.0) (2024-08-07)
 
 ### Features
