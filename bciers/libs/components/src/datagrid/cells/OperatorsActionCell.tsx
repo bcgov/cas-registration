@@ -10,7 +10,7 @@ const OperatorsActionCell = () => {
         actionText = "Continue";
         break;
       default:
-        actionText = "View Operation";
+        actionText = "View Details";
     }
     return (
       <div>
@@ -18,10 +18,11 @@ const OperatorsActionCell = () => {
         <Link
           className="action-cell-text"
           href={{
-            pathname: `operators/${params.row.id}`,
-            query: {
-              operators_title: `${params.row.name}`,
-            },
+            // pathname: `operators/${params.row.id}`,
+            // query: {
+            //   operators_title: `${params.row.name}`,
+            // },
+            pathname: "tbd/for1699",
           }}
         >
           {actionText}

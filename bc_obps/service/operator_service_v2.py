@@ -116,7 +116,7 @@ class OperatorServiceV2:
     @classmethod
     def list_operators(cls, filters: OperatorFilterSchema = Query(...)) -> Dict[str, Union[list[Operator], int]]:
         legal_name = filters.legal_name
-        business_structure = filters.business_structure
+        business_structure_id = filters.business_structure
         cra_business_number = filters.cra_business_number
         bc_corporate_registry_number = filters.bc_corporate_registry_number
         page = filters.page
@@ -126,13 +126,15 @@ class OperatorServiceV2:
         base_qs = OperatorDataAccessService.get_all_operators()
         list_of_filters = [
             Q(legal_name__icontains=legal_name) if legal_name else Q(),
-            Q(business_structure__icontains=business_structure) if business_structure else Q(),
+            Q(business_structure_id__name__icontains=business_structure_id) if business_structure_id else Q(),
             Q(cra_business_number__icontains=cra_business_number) if cra_business_number else Q(),
             Q(bc_corporate_registry_number__icontains=bc_corporate_registry_number)
             if bc_corporate_registry_number
             else Q(),
         ]
+
         qs = base_qs.filter(*list_of_filters).order_by(f"{sort_direction}{sort_field}")
+
         paginator = Paginator(qs, PAGE_SIZE)
         try:
             page = paginator.validate_number(page)
