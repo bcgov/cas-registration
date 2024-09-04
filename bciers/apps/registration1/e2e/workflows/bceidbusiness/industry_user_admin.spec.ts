@@ -394,12 +394,12 @@ test.describe("Test Workflow industry_user_admin", () => {
       "2321999001",
     );
 
-    await tableRowCount(operationsPage.page, 7);
+    await tableRowCount(operationsPage.page, 1);
 
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.SUBMISSION_DATE,
-      "Jan 22, 2024\n7:27:00 a.m. PST",
+      "Jan 28, 2024\n7:27:00 a.m. PST",
     );
 
     await filterTableByFieldId(
