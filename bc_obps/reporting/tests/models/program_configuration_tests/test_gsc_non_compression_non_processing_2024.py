@@ -23,7 +23,6 @@ class GSCNonCompressionNonProcessing2024Test(TestCase):
                 'Measured Steam/Default EF': 3,
                 'Measured CC': 1,
                 'Measured Steam/Measured EF': 2,
-                'CEMS': 0,
                 'Alternative Parameter Measurement': 1,
                 'Replacement Methodology': 1,
             },
