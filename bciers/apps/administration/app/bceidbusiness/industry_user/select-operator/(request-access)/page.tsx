@@ -7,7 +7,7 @@ export default function Page() {
   const names = getUserFullName(session)?.split(" ");
 
   return (
-    <>
+    <div className="container mx-auto">
       <section className="text-center my-auto text-2xl flex flex-col gap-3 mx-auto">
         <p>
           Hi,{" "}
@@ -18,6 +18,6 @@ export default function Page() {
         <p>Which operator would you like to log in to?</p>
       </section>
       <SelectOperatorForm />
-    </>
+    </div>
   );
 }
