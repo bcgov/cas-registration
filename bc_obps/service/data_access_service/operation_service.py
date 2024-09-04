@@ -63,14 +63,12 @@ class OperationDataAccessService:
         user_guid: UUID,
         operation_data: DictStrAny,
         regulated_products: Union[QuerySet[RegulatedProduct], Iterable[RegulatedProduct]],
-        activities: Union[QuerySet[Activity], Iterable[Activity]],
     ) -> Operation:
         operation = Operation.objects.create(
             **operation_data,
             created_by_id=user_guid,
         )
         operation.regulated_products.set(regulated_products)
-        operation.activities.set(activities)
 
         return operation
 

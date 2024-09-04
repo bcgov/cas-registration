@@ -498,6 +498,13 @@ HistoricalOperation {
     CharField history_change_reason
     CharField history_type
 }
+HistoricalOperation_regulated_products {
+    BigIntegerField id
+    ForeignKey operation
+    ForeignKey regulatedproduct
+    ForeignKey history
+    AutoField m2m_history_id
+}
 HistoricalOperation_activities {
     BigIntegerField id
     ForeignKey operation
@@ -509,13 +516,6 @@ HistoricalOperation_documents {
     BigIntegerField id
     ForeignKey operation
     ForeignKey document
-    ForeignKey history
-    AutoField m2m_history_id
-}
-HistoricalOperation_regulated_products {
-    BigIntegerField id
-    ForeignKey operation
-    ForeignKey regulatedproduct
     ForeignKey history
     AutoField m2m_history_id
 }
@@ -614,44 +614,7 @@ Facility {
     DecimalField longitude_of_largest_emissions
     ManyToManyField well_authorization_numbers
 }
-<<<<<<< HEAD
-HistoricalFacilityOwnershipTimeline {
-=======
-HistoricalEvent {
-    DateTimeField created_at
-    DateTimeField updated_at
-    DateTimeField archived_at
-    UUIDField id
-    DateTimeField effective_date
-    CharField type
-    JSONField additional_data
-    UUIDField history_user_id
-    ForeignKey created_by
-    ForeignKey updated_by
-    ForeignKey archived_by
-    ForeignKey operation
-    ForeignKey facility
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-Event {
-    ForeignKey created_by
-    DateTimeField created_at
-    ForeignKey updated_by
-    DateTimeField updated_at
-    ForeignKey archived_by
-    DateTimeField archived_at
-    UUIDField id
-    ForeignKey operation
-    ForeignKey facility
-    DateTimeField effective_date
-    CharField type
-    JSONField additional_data
-}
 HistoricalFacilityDesignatedOperationTimeline {
->>>>>>> 510740059 (chore: db updates for operation form)
     BigIntegerField id
     DateTimeField created_at
     DateTimeField updated_at
@@ -1012,15 +975,15 @@ HistoricalOperation }|--|| User : verified_by
 HistoricalOperation }|--|| Contact : point_of_contact
 HistoricalOperation }|--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
 HistoricalOperation }|--|| OptedInOperationDetail : opted_in_operation
+HistoricalOperation_regulated_products }|--|| Operation : operation
+HistoricalOperation_regulated_products }|--|| RegulatedProduct : regulatedproduct
+HistoricalOperation_regulated_products }|--|| HistoricalOperation : history
 HistoricalOperation_activities }|--|| Operation : operation
 HistoricalOperation_activities }|--|| Activity : activity
 HistoricalOperation_activities }|--|| HistoricalOperation : history
 HistoricalOperation_documents }|--|| Operation : operation
 HistoricalOperation_documents }|--|| Document : document
 HistoricalOperation_documents }|--|| HistoricalOperation : history
-HistoricalOperation_regulated_products }|--|| Operation : operation
-HistoricalOperation_regulated_products }|--|| RegulatedProduct : regulatedproduct
-HistoricalOperation_regulated_products }|--|| HistoricalOperation : history
 Operation }|--|| User : created_by
 Operation }|--|| User : updated_by
 Operation }|--|| User : archived_by
@@ -1051,28 +1014,6 @@ Facility }|--|| User : updated_by
 Facility }|--|| User : archived_by
 Facility }|--|| Address : address
 Facility }|--|{ WellAuthorizationNumber : well_authorization_numbers
-<<<<<<< HEAD
-HistoricalFacilityOwnershipTimeline }|--|| User : created_by
-HistoricalFacilityOwnershipTimeline }|--|| User : updated_by
-HistoricalFacilityOwnershipTimeline }|--|| User : archived_by
-HistoricalFacilityOwnershipTimeline }|--|| Facility : facility
-HistoricalFacilityOwnershipTimeline }|--|| Operation : operation
-FacilityOwnershipTimeline }|--|| User : created_by
-FacilityOwnershipTimeline }|--|| User : updated_by
-FacilityOwnershipTimeline }|--|| User : archived_by
-FacilityOwnershipTimeline }|--|| Facility : facility
-FacilityOwnershipTimeline }|--|| Operation : operation
-=======
-HistoricalEvent }|--|| User : created_by
-HistoricalEvent }|--|| User : updated_by
-HistoricalEvent }|--|| User : archived_by
-HistoricalEvent }|--|| Operation : operation
-HistoricalEvent }|--|| Facility : facility
-Event }|--|| User : created_by
-Event }|--|| User : updated_by
-Event }|--|| User : archived_by
-Event }|--|| Operation : operation
-Event }|--|| Facility : facility
 HistoricalFacilityDesignatedOperationTimeline }|--|| User : created_by
 HistoricalFacilityDesignatedOperationTimeline }|--|| User : updated_by
 HistoricalFacilityDesignatedOperationTimeline }|--|| User : archived_by
@@ -1083,7 +1024,6 @@ FacilityDesignatedOperationTimeline }|--|| User : updated_by
 FacilityDesignatedOperationTimeline }|--|| User : archived_by
 FacilityDesignatedOperationTimeline }|--|| Facility : facility
 FacilityDesignatedOperationTimeline }|--|| Operation : operation
->>>>>>> 510740059 (chore: db updates for operation form)
 HistoricalMultipleOperator }|--|| User : created_by
 HistoricalMultipleOperator }|--|| User : updated_by
 HistoricalMultipleOperator }|--|| User : archived_by

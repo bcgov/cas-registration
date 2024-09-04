@@ -131,7 +131,6 @@ def multiple_operator_baker() -> MultipleOperator:
         operation=operation_baker(),
         bc_corporate_registry_number='abc1234567',
         business_structure=BusinessStructure.objects.first(),
-        website='https://www.example-mo.com',
         cra_business_number=generate_random_cra_business_number(),
     )
 

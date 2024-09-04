@@ -5,10 +5,8 @@ from registration.schema.v1.operation import OperationUpdateStatusOut
 from registration.schema.v2.operation import (
     OperationInformationIn,
     OperationUpdateOut,
-    RegistrationPurposeIn,
     OperationRegistrationSubmissionIn,
     OperationStatutoryDeclarationIn,
-    OperationStatutoryDeclarationOut,
 )
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import OPERATION_TAGS, V2
