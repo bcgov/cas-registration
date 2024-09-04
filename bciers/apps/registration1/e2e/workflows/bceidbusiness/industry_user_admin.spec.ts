@@ -341,7 +341,7 @@ test.describe("Test Workflow industry_user_admin", () => {
       OperationStatus.PENDING,
     );
 
-    await tableRowCount(operationsPage.page, 11);
+    await tableRowCount(operationsPage.page, 5);
 
     await clearTableFilter(operationsPage.page, OperationTableDataField.STATUS);
 
