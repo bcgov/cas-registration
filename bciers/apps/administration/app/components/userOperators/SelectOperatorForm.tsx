@@ -14,9 +14,11 @@ export default function SelectOperatorForm() {
   const [errorList, setErrorList] = useState([] as any[]);
   const router = useRouter();
   const handleSubmit = async (data: { formData?: SelectOperatorFormData }) => {
-    const queryParam = `?${data.formData?.search_type}=${data.formData?.[
-      data.formData?.search_type as keyof SelectOperatorFormData
-    ]}`;
+    const queryParam = `?${data.formData?.search_type}=${
+      data.formData?.[
+        data.formData?.search_type as keyof SelectOperatorFormData
+      ]
+    }`;
 
     const response = await actionHandler(
       `registration/operators${queryParam}`,
@@ -43,34 +45,32 @@ export default function SelectOperatorForm() {
     );
   };
   return (
-    <>
-      <section className="text-center text-2xl flex flex-col">
-        <Form
-          schema={selectOperatorSchema}
-          onSubmit={handleSubmit}
-          uiSchema={selectOperatorUiSchema}
-          className="mx-auto"
+    <section className="text-center text-2xl flex flex-col">
+      <Form
+        schema={selectOperatorSchema}
+        onSubmit={handleSubmit}
+        uiSchema={selectOperatorUiSchema}
+        className="mx-auto"
+      >
+        {errorList.length > 0 &&
+          errorList.map((e: any) => (
+            <Alert key={e.message} severity="error">
+              {e.message}
+            </Alert>
+          ))}
+        <></>
+      </Form>
+      <p>
+        Don&apos;t see the operator?{" "}
+        <Link
+          href="/select-operator/add-operator"
+          className="underline hover:no-underline mr-2"
+          style={{ color: BC_GOV_LINKS_COLOR }}
         >
-          {errorList.length > 0 &&
-            errorList.map((e: any) => (
-              <Alert key={e.message} severity="error">
-                {e.message}
-              </Alert>
-            ))}
-          <></>
-        </Form>
-        <p>
-          Don&apos;t see the operator?{" "}
-          <Link
-            href="/select-operator/add-operator"
-            className="underline hover:no-underline mr-2"
-            style={{ color: BC_GOV_LINKS_COLOR }}
-          >
-            Add Operator
-          </Link>
-          instead
-        </p>
-      </section>
-    </>
+          Add Operator
+        </Link>
+        instead
+      </p>
+    </section>
   );
 }
