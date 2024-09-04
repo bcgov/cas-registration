@@ -30,6 +30,9 @@ class TestInitialData(TestCase):
                 'Mass of Output Carbonates',
                 'Alternative Parameter Methodology',
                 'Feedstock Material Balance',
+                'Solids-HHV',
+                'Solids-CC',
+                'Make-up Chemical Use Methodology',
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list('name', flat=True)))
