@@ -23,6 +23,7 @@
     "pk": "002d5a9e-32a6-4191-938c-2c02bfec592d",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "point_of_contact": 1,
       "documents": [],
       "name": "Operation 2",
       "type": "Linear Facility Operation",
@@ -55,6 +56,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "c0743c09-82fa-4186-91aa-4b5412e3415c",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
