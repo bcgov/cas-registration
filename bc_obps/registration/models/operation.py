@@ -47,6 +47,7 @@ class Operation(TimeStampedModel):
         db_comment="The operator who owns the operation",
         related_name="operations",
     )
+    # brianna do we need this? can't we find out by looking at the foreign keys in the multiple operator table?
     operation_has_multiple_operators = models.BooleanField(
         db_comment="Whether or not the operation has multiple operators", default=False
     )
@@ -110,6 +111,7 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
     )
+    # brianna this should be a foreign key instead?
     documents = models.ManyToManyField(
         Document,
         blank=True,

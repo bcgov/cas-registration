@@ -15,7 +15,7 @@ class TestDataAccessOptedInOperationService:
         )
         # Marking the operation as opted-in
         purpose_payload = RegistrationPurposeIn(registration_purpose='Opted-in Operation')
-        OperationServiceV2.register_operation_information(
+        OperationServiceV2.set_operation_information(
             approved_user_operator.user.user_guid, users_operation.id, purpose_payload
         )
         opted_in_operation_detail_payload = OptedInOperationDetailIn(

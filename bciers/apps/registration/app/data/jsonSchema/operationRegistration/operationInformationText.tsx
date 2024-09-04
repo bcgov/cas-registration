@@ -20,3 +20,8 @@ export const purposeNote = (
 export const operationPreface = (
   <div>Please select the operation to register for.</div>
 );
+export const operationAdd = (
+  <div>
+    <i>Don&apos;t see the operation? Add a new operation.</i>
+  </div>
+);

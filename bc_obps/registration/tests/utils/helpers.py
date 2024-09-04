@@ -1,3 +1,4 @@
+import os
 import pytest
 import json
 from registration.models import (
@@ -21,6 +22,12 @@ from registration.constants import BASE_ENDPOINT
 
 from registration.models.facility_designated_operator_timeline import FacilityDesignatedOperationTimeline
 from registration.tests.utils.bakers import operator_baker, address_baker
+
+
+def requires_env(*envs):
+    env = os.environ.get('ENVIRONMENT', 'test')
+
+    return pytest.mark.skipif(env not in list(envs), reason=f"Not suitable envrionment {env} for current test")
 
 
 class TestUtils:

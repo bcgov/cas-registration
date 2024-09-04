@@ -5,7 +5,7 @@ from model_bakery import baker
 
 
 class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
-    def test_register_operation_information_endpoint_unauthorized_roles_cannot_put(self):
+    def test_register_edit_operation_information_endpoint_unauthorized_roles_cannot_put(self):
         operation = baker.make_recipe(
             'utils.operation',
         )
@@ -19,7 +19,7 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
                 {
                     'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
                 },
-                custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+                custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
             )
             assert response.status_code == 401
             assert response.json()['detail'] == "Unauthorized"
@@ -38,11 +38,11 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
             {
                 'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
             },
-            custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
         )
         assert response.status_code == 401
 
-    def test_register_operation_information_endpoint_success(self):
+    def test_register_edit_operation_information_endpoint_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_put_with_auth_role(
@@ -52,7 +52,7 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
             {
                 'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
             },
-            custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
         )
         response_json = response.json()
 
@@ -61,7 +61,7 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
         # Additional Assertions
         assert response_json['id'] == str(operation.id)
 
-    def test_register_operation_information_endpoint_fail(self):
+    def test_register_edit_operation_information_endpoint_fail(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_put_with_auth_role(
@@ -71,7 +71,7 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
             {
                 'bad data': 'im bad',
             },
-            custom_reverse_lazy("register_operation_information", kwargs={'operation_id': operation.id}),
+            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
         )
 
         # Assert

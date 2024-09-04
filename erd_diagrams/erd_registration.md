@@ -687,22 +687,17 @@ HistoricalMultipleOperator {
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
-    IntegerField operator_index
     CharField legal_name
     CharField trade_name
     IntegerField cra_business_number
     CharField bc_corporate_registry_number
-    CharField website
-    DecimalField percentage_ownership
-    BooleanField mailing_address_same_as_physical
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
     ForeignKey archived_by
     ForeignKey operation
     ForeignKey business_structure
-    ForeignKey physical_address
-    ForeignKey mailing_address
+    ForeignKey attorney_address
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
@@ -717,17 +712,12 @@ MultipleOperator {
     ForeignKey archived_by
     DateTimeField archived_at
     ForeignKey operation
-    IntegerField operator_index
     CharField legal_name
     CharField trade_name
     IntegerField cra_business_number
     CharField bc_corporate_registry_number
     ForeignKey business_structure
-    CharField website
-    DecimalField percentage_ownership
-    ForeignKey physical_address
-    ForeignKey mailing_address
-    BooleanField mailing_address_same_as_physical
+    ForeignKey attorney_address
 }
 HistoricalOperationDesignatedOperatorTimeline {
     BigIntegerField id
@@ -1099,15 +1089,13 @@ HistoricalMultipleOperator }|--|| User : updated_by
 HistoricalMultipleOperator }|--|| User : archived_by
 HistoricalMultipleOperator }|--|| Operation : operation
 HistoricalMultipleOperator }|--|| BusinessStructure : business_structure
-HistoricalMultipleOperator }|--|| Address : physical_address
-HistoricalMultipleOperator }|--|| Address : mailing_address
+HistoricalMultipleOperator }|--|| Address : attorney_address
 MultipleOperator }|--|| User : created_by
 MultipleOperator }|--|| User : updated_by
 MultipleOperator }|--|| User : archived_by
 MultipleOperator }|--|| Operation : operation
 MultipleOperator }|--|| BusinessStructure : business_structure
-MultipleOperator }|--|| Address : physical_address
-MultipleOperator }|--|| Address : mailing_address
+MultipleOperator }|--|| Address : attorney_address
 HistoricalOperationDesignatedOperatorTimeline }|--|| User : created_by
 HistoricalOperationDesignatedOperatorTimeline }|--|| User : updated_by
 HistoricalOperationDesignatedOperatorTimeline }|--|| User : archived_by

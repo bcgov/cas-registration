@@ -1,6 +1,14 @@
 from typing import List, Optional
 from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models.address import Address
+from registration.models.multiple_operator import MultipleOperator
+from registration.schema.v2.multiple_operator import MultipleOperatorIn
+from service.data_access_service.address_service import AddressDataAccessService
+from service.data_access_service.multiple_operator_service import MultipleOperatorService
+from registration.models.user_operator import UserOperator
+from service.user_operator_service import UserOperatorService
+from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from registration.models import Operation
 from ninja import Query
 from django.db import transaction
@@ -17,6 +25,7 @@ from registration.models.registration_purpose import RegistrationPurpose
 from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
 from registration.schema.v2.operation import (
     OperationFilterSchema,
+    OperationInformationIn,
     OptedInOperationDetailIn,
     OperationStatutoryDeclarationIn,
     RegistrationPurposeIn,
@@ -53,9 +62,7 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def register_operation_information(
-        cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn
-    ) -> Operation:
+    def set_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Operation:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
 
         purpose_choice = next(
@@ -161,3 +168,112 @@ class OperationServiceV2:
         operation.contacts.set(contact_ids_to_add_to_operation)
         operation.set_create_or_update(user_guid)
         return operation
+    
+    # @classmethod
+    # @transaction.atomic()
+    # def create_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Dict[str, Union[str, UUID]]:
+
+    #     registration_payload = RegistrationPurposeIn(
+    #         registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products
+    #     )
+    #     cls.set_registration_purpose(user_guid, operation_id, registration_payload)
+
+    @classmethod
+    @transaction.atomic()
+    def create_or_update_operation_v2(
+        cls, user_guid: UUID, payload: OperationInformationIn
+    ) -> Dict[str, Union[str, UUID]]:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        user_operator: UserOperator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+
+        operation_data = payload.dict(
+            include={
+                'name',
+                "type",
+                "naics_code_id",
+                'secondary_naics_code_id',
+                'tertiary_naics_code_id',
+            }
+        )
+        operation_data['operator_id'] = user_operator.operator_id
+
+        operation: Operation = Operation.custom_update_or_create(Operation, user_guid, defaults={**operation_data})
+
+        # set m2m relationships
+        operation.activities.set(payload.activities)
+
+        boundary_map = DocumentService.create_or_replace_operation_document(
+            user_guid, operation.id, payload.boundary_map, 'boundary_map'
+        )
+
+        process_flow_diagram = DocumentService.create_or_replace_operation_document(
+            user_guid, operation.id, payload.boundary_map, 'boundary_map'
+        )
+
+        operation.documents.set([boundary_map, process_flow_diagram])
+
+        # handle multiple operators
+        multiple_operators_data = payload.multiple_operators_array
+        cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
+    def register_operation_information(cls, user_guid: UUID, payload: OperationInformationIn):
+
+        operation: Operation = cls.create_or_update_operation_v2(user_guid, payload)
+
+        registration_payload = RegistrationPurposeIn(
+            registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products
+        )
+        cls.set_registration_purpose(user_guid, operation.id, registration_payload)
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
+    def upsert_multiple_operators(
+        cls, operation: Operation, multiple_operators_data: list[MultipleOperatorIn] | None, user_guid: UUID
+    ) -> None:
+        old_multiple_operators: QuerySet[MultipleOperator] = operation.multiple_operators.all()
+        # if all multiple operators have been removed, archive them
+        if not multiple_operators_data:
+            for old_multiple in old_multiple_operators:
+                old_multiple.set_archive(user_guid)
+            return
+
+        new_multiple_operators = []
+        for mo_data in multiple_operators_data:
+            mo_operator_data: dict = mo_data.dict(
+                include={
+                    'legal_name',
+                    'trade_name',
+                    'business_structure',
+                    'cra_business_number',
+                    'bc_corporate_registry_number',
+                }
+            )
+            # brianna this might cause parent/parnter issues if there's no attorney address--it might have been required?
+            old_address_id = mo_data.attorney_address if hasattr(mo_data, 'attorney_address') else None
+            new_address = mo_data.dict(
+                include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
+            )
+            if old_address_id and not new_address:
+                old_address = Address.objects.get(id=old_address_id)
+                mo_operator_data['attorney_address'] = None
+                old_address.delete()
+
+            if new_address:
+                updated_attorney_address = AddressDataAccessService.upsert_address_from_data(
+                    new_address, old_address_id
+                )
+                mo_operator_data['attorney_address'] = updated_attorney_address
+
+            new_multiple_operators.append(
+                MultipleOperatorService.create_or_update(mo_data.id, operation, user_guid, mo_operator_data)
+            )
+
+        for old_multiple in old_multiple_operators:
+            if old_multiple not in new_multiple_operators:
+                old_multiple.set_archive(user_guid)
