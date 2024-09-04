@@ -7,14 +7,14 @@ import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTempl
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  gscWithProductionOfUsefulEnergy: {
+  gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxWidgetLeft,
     "ui:options": {
       label: false,
     },
   },
-  gscWithoutProductionOfUsefulEnergy: {
+  gscFuelOrWasteLinearFacilitiesWithoutUsefulEnergy: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxWidgetLeft,
     "ui:options": {
@@ -33,7 +33,7 @@ const uiSchema = {
     "ui:options": {
       label: false,
     },
-    gscWithProductionOfUsefulEnergy: {
+    gscFuelOrWasteLinearFacilitiesUsefulEnergy: {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       units: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
@@ -96,7 +96,7 @@ const uiSchema = {
         },
       },
     },
-    gscWithoutProductionOfUsefulEnergy: {
+    gscFuelOrWasteLinearFacilitiesWithoutUsefulEnergy: {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       units: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
