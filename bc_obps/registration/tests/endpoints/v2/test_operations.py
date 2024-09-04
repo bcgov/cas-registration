@@ -17,12 +17,12 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "v2/operations"
+    endpoint = custom_reverse_lazy("list_operations_v2")
 
     # AUTHORIZATION
 
     def test_unauthorized_roles_cannot_list_operations_v2(self):
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', custom_reverse_lazy("list_operations_v2"))
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', self.endpoint)
         assert response.status_code == 401
 
     def test_operations_endpoint_list_operations_v2_paginated(self):
@@ -37,7 +37,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         # save the id of the first paginated response item
         page_1_response_id = response_data[0].get('id')
         assert len(response_data) == PAGE_SIZE
@@ -45,10 +45,10 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('list_operations_v2') + "?page=2&sort_field=created_at&sort_order=desc",
+            self.endpoint + "?page=2&sort_field=created_at&sort_order=desc",
         )
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         # save the id of the first paginated response item
         page_2_response_id = response_data[0].get('id')
         assert len(response_data) == PAGE_SIZE
@@ -59,10 +59,10 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('list_operations_v2') + "?page=2&sort_field=created_at&sort_order=asc",
+            self.endpoint + "?page=2&sort_field=created_at&sort_order=asc",
         )
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         # save the id of the first paginated response item
         page_2_response_id_reverse = response_data[0].get('id')
         assert len(response_data) == PAGE_SIZE
@@ -102,45 +102,37 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
 
         # Get the default page 1 response
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations_v2') + "?type=gouda"
-        )
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?type=gouda")
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         assert len(response_data) == 10
         for item in response_data:
             assert item.get('type') == 'Gouda'
 
         # Test with a status filter that doesn't exist
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations_v2') + "?type=havarti"
-        )
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?type=havarti")
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         assert len(response_data) == 0
 
         # Test with a name filter
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations_v2') + "?name=kwik-e-mart"
-        )
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?name=kwik-e-mart")
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         assert len(response_data) == 1
 
         # Test with a name filter that doesn't exist
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations_v2') + "?name=abc"
-        )
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?name=abc")
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         assert len(response_data) == 0
 
         # Test with multiple filters
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('list_operations_v2') + "?name=kwik&status=dec&bcghg_id=23219990023&type=brie",
+            self.endpoint + "?name=kwik&status=dec&bcghg_id=23219990023&type=brie",
         )
         assert response.status_code == 200
-        response_data = response.json().get('data')
+        response_data = response.json().get('items')
         assert len(response_data) == 1

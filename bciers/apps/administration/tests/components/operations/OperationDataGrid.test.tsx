@@ -21,26 +21,42 @@ const mockResponse = {
       name: "Operation 1",
       bcghg_id: "1-211113-0001",
       type: "Single Facility Operation",
-      sfo_facility_id: "facility-test-id",
+      sfo_facility_id: null,
+      status: "Draft",
+      bc_obps_regulated_operation: "N/A",
     },
     {
       id: 2,
       operator: "FakeOperator",
       name: "Operation 2",
-      bcghg_id: "2",
+      bcghg_id: "1-211113-0002",
       type: "Linear Facility Operation",
       sfo_facility_id: null,
+      status: "Registered",
+      bc_obps_regulated_operation: "24-0001",
     },
     {
       id: 3,
       operator: "FakeOperator",
       name: "Operation 3",
-      bcghg_id: "3",
+      bcghg_id: "1-211113-0003",
       type: "Single Facility Operation",
       sfo_facility_id: null,
+      status: "Not Started",
+      bc_obps_regulated_operation: "N/A",
+    },
+    {
+      id: 4,
+      operator: "FakeOperator",
+      name: "Operation 4",
+      bcghg_id: "1-211113-0004",
+      type: "Single Facility Operation",
+      status: "Draft",
+      sfo_facility_id: "facility-test-id",
+      bc_obps_regulated_operation: "N/A",
     },
   ],
-  row_count: 2,
+  row_count: 4,
 };
 
 describe("OperationsDataGrid component", () => {
@@ -62,26 +78,46 @@ describe("OperationsDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "Operation Type" }),
     ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "BORO ID" })).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
+    ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Operation Type" }),
     ).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "Facilities" }),
     ).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
+    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(5);
 
     // Check data displays
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(0);
+    expect(screen.getByText(/24-0001/i)).toBeVisible();
+    expect(screen.getByText(/Registered/i)).toBeVisible();
+    expect(screen.getByText(/Not Started/i)).toBeVisible();
     expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
-    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(2);
+    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
     expect(
       screen.getAllByRole("link", { name: /View Facilities/i }),
     ).toHaveLength(1);
     expect(
+      screen.getAllByRole("link", { name: /View Facility/i }),
+    ).toHaveLength(1);
+    expect(
       screen.getAllByRole("link", { name: /View Operation/i }),
-    ).toHaveLength(3);
+    ).toHaveLength(1);
+    expect(
+      screen.getAllByRole("link", { name: /Continue Registration/i }),
+    ).toHaveLength(2);
+    expect(
+      screen.getAllByRole("link", { name: /Start Registration/i }),
+    ).toHaveLength(1);
+    expect(screen.getAllByRole("link", { name: /Edit details/i })).toHaveLength(
+      2,
+    );
   });
 
   it("renders the OperationsDataGrid grid for internal users", async () => {
@@ -96,30 +132,36 @@ describe("OperationsDataGrid component", () => {
     expect(
       screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Type" }),
-    ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "BORO ID" })).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
+    ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Operation Type" }),
     ).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "Facilities" }),
     ).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(4);
+    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(6);
 
     // Check data displays
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
-    expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(3);
+    expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(4);
+    expect(screen.getByText(/24-0001/i)).toBeVisible();
+    expect(screen.getByText(/Registered/i)).toBeVisible();
+    expect(screen.getByText(/Not Started/i)).toBeVisible();
+    expect(screen.getAllByText(/Draft/i)).toHaveLength(2);
     expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
-    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: /Edit details/i })).toHaveLength(
-      1,
-    );
+    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
 
     expect(
       screen.getAllByRole("link", { name: /View Operation/i }),
-    ).toHaveLength(3);
+    ).toHaveLength(4);
+    expect(
+      screen.getAllByRole("link", { name: /View Facility/i }),
+    ).toHaveLength(1);
   });
 
   it("renders the correct url for the LFO facilities link", async () => {
@@ -148,13 +190,13 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLink).toHaveAttribute(
       "href",
-      "operations/1/facilities/facility-test-id?operations_title=Operation+1&facilities_title=Operation+1",
+      "operations/4/facilities/facility-test-id?operations_title=Operation+4&facilities_title=Operation+4",
     );
   });
 
   it("renders the correct url for the SFO facilities link when no facility id is present", async () => {
     render(
-      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+      <OperationDataGrid isInternalUser={false} initialData={mockResponse} />,
     );
 
     const facilityLink = screen.getAllByRole("link", {
@@ -163,7 +205,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLink[0]).toHaveAttribute(
       "href",
-      "operations/3/facilities/add-facility?operations_title=Operation+3&facilities_title=Operation+3",
+      "operations/1/facilities/add-facility?operations_title=Operation+1&facilities_title=Operation+1",
     );
   });
 

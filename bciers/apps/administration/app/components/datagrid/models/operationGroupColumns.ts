@@ -28,7 +28,18 @@ const operationGroupColumns = (
       renderHeaderGroup: SearchCell,
       children: [{ field: "type" }],
     },
-
+    {
+      groupId: "bc_obps_regulated_operation",
+      headerName: "BORO ID",
+      renderHeaderGroup: SearchCell,
+      children: [{ field: "bc_obps_regulated_operation" }],
+    },
+    {
+      groupId: "status",
+      headerName: "Status",
+      renderHeaderGroup: SearchCell,
+      children: [{ field: "status" }],
+    },
     {
       groupId: "action",
       headerName: "Action",

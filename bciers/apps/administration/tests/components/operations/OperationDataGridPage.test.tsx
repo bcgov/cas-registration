@@ -5,7 +5,6 @@ import {
   useSearchParams,
 } from "@bciers/testConfig/mocks";
 import Operations from "apps/administration/app/components/operations/OperationDataGridPage";
-import { FrontEndRoles } from "@bciers/utils/enums";
 
 useRouter.mockReturnValue({
   query: {},
@@ -31,6 +30,8 @@ const mockResponse = {
       name: "Operation 1",
       bcghg_id: "1-211113-0001",
       type: "Single Facility Operation",
+      status: "Draft",
+      bc_obps_regulated_operation: "N/A",
     },
     {
       id: 2,
@@ -38,6 +39,8 @@ const mockResponse = {
       name: "Operation 2",
       bcghg_id: "2",
       type: "Linear Facility Operation",
+      status: "Registered",
+      bc_obps_regulated_operation: "24-0001",
     },
   ],
   row_count: 2,
@@ -50,18 +53,14 @@ describe("Operations component", () => {
 
   it("renders a message when there are no operations in the database", async () => {
     fetchOperationsPageData.mockReturnValueOnce(undefined);
-    render(
-      await Operations({ searchParams: {}, role: FrontEndRoles.CAS_ADMIN }),
-    );
+    render(await Operations({ searchParams: {} }));
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
     expect(screen.getByText(/No operations data in database./i)).toBeVisible();
   });
 
   it("renders the OperationDataGrid component when there are operations in the database", async () => {
     fetchOperationsPageData.mockReturnValueOnce(mockResponse);
-    render(
-      await Operations({ searchParams: {}, role: FrontEndRoles.CAS_ADMIN }),
-    );
+    render(await Operations({ searchParams: {} }));
     expect(screen.getByRole("grid")).toBeVisible();
     expect(
       screen.queryByText(/No operations data in database./i),
