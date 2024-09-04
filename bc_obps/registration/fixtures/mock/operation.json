@@ -239,7 +239,7 @@
       "bcghg_id": "23219990013",
       "created_at": "2024-1-20T15:27:00.000Z",
       "regulated_products": [1, 2, 3, 4],
-      "status": "Pending"
+      "status": "Transferred"
     }
   },
   {
@@ -255,7 +255,7 @@
       "opt_in": false,
       "bcghg_id": "23219990014",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Closed",
       "created_at": "2024-1-19T15:27:00.000Z"
     }
   },
@@ -272,7 +272,7 @@
       "opt_in": false,
       "bcghg_id": "23219990015",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Temporarily Shutdown",
       "created_at": "2024-1-18T15:27:00.000Z"
     }
   },
@@ -289,7 +289,7 @@
       "opt_in": false,
       "bcghg_id": "23219990016",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Changes Requested",
       "created_at": "2024-1-17T15:27:00.000Z"
     }
   },
@@ -306,7 +306,7 @@
       "opt_in": false,
       "bcghg_id": "23219990017",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Declined",
       "created_at": "2024-1-16T15:27:00.000Z"
     }
   },
@@ -323,7 +323,7 @@
       "opt_in": false,
       "bcghg_id": "23219990018",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Registered",
       "created_at": "2024-1-15T15:27:00.000Z"
     }
   },

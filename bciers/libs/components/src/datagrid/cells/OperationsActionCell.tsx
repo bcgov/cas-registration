@@ -2,18 +2,18 @@ import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { OperationStatus } from "@bciers/utils/enums";
 
-const OperationsActionCell = () => {
+const OperationsActionCell = (isInternalUser: boolean) => {
   const renderCell = (params: GridRenderCellParams) => {
-    let actionText;
-    switch (params.row.status) {
-      case OperationStatus.NOT_STARTED:
-        actionText = "Start Registration";
-        break;
-      case OperationStatus.DRAFT:
-        actionText = "Continue";
-        break;
-      default:
-        actionText = "View Operation";
+    let actionText = "View Operation";
+    if (!isInternalUser) {
+      switch (params.row.status) {
+        case OperationStatus.NOT_STARTED:
+          actionText = "Start Registration";
+          break;
+        case OperationStatus.DRAFT:
+          actionText = "Continue Registration";
+          break;
+      }
     }
 
     return (

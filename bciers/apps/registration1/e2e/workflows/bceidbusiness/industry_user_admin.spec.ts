@@ -199,7 +199,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🛸 Navigate to an operation with pending status
     await operationsPage.clickViewDetailsButtonByOperationName(
       page,
-      "Operation 14",
+      "Operation 20",
     );
     // 🔍 Assert we are on the operation detail page
     await operationPage.formIsVisible();
@@ -341,7 +341,7 @@ test.describe("Test Workflow industry_user_admin", () => {
       OperationStatus.PENDING,
     );
 
-    await tableRowCount(operationsPage.page, 11);
+    await tableRowCount(operationsPage.page, 5);
 
     await clearTableFilter(operationsPage.page, OperationTableDataField.STATUS);
 
@@ -394,12 +394,12 @@ test.describe("Test Workflow industry_user_admin", () => {
       "2321999001",
     );
 
-    await tableRowCount(operationsPage.page, 7);
+    await tableRowCount(operationsPage.page, 1);
 
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.SUBMISSION_DATE,
-      "Jan 22, 2024\n7:27:00 a.m. PST",
+      "Jan 28, 2024\n7:27:00 a.m. PST",
     );
 
     await filterTableByFieldId(

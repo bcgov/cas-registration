@@ -21,7 +21,11 @@ export enum OperationStatus {
   PENDING = "Pending",
   APPROVED = "Approved",
   DECLINED = "Declined",
+  REGISTERED = "Registered",
   CHANGES_REQUESTED = "Changes Requested",
+  TEMPORARILY_SHUTDOWN = "Temporarily Shutdown",
+  TRANSFERRED = "Transferred",
+  CLOSED = "Closed",
 }
 
 export enum OperationTypes {
