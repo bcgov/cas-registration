@@ -419,16 +419,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
     def test_post_new_operation_without_point_of_contact(self):
-        # new_operation = OperationCreateIn(
-        #     documents=[],
-        #     point_of_contact=None,
-        #     status=Operation.Statuses.NOT_STARTED,
-        #     naics_code_id=NaicsCode.objects.first().id,
-        #     name='My New Operation',
-        #     type='Type 1',
-        #     regulated_products=[],
-        #     # activities=[],
-        # )
         new_operation_payload = {
             "documents": [],
             "point_of_contact": None,
