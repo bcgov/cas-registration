@@ -8,10 +8,28 @@
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
+            "title": "Select Operator",
+            "icon": "Layers",
+            "content": "Select your operator here.",
+            "href": "/administration/select-operator",
+            "condition": {
+              "api": "registration/v2/user-operators/current/operator",
+              "field": "error",
+              "operator": "exists",
+              "value": true
+            }
+          },
+          {
             "title": "My Operator",
             "icon": "Inbox",
             "content": "View or update information of your operator here.",
-            "href": "/administration/my-operator"
+            "href": "/administration/my-operator",
+            "condition": {
+              "api": "registration/v2/user-operators/current/operator",
+              "field": "error",
+              "operator": "notExists",
+              "value": true
+            }
           },
           {
             "title": "Operations",
