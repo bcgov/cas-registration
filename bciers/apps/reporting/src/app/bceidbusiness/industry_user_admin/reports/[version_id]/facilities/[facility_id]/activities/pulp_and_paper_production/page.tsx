@@ -1,5 +1,5 @@
 import { actionHandler } from "@bciers/actions";
-import PulpAndPaperProduction from '@reporting/src/app/components/activities/pulpAndPaperProduction';
+import PulpAndPaperProduction from "@reporting/src/app/components/activities/pulpAndPaperProduction";
 import { Suspense } from "react";
 
 export default async function Page() {
