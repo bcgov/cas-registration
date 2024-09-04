@@ -18,7 +18,7 @@ def init_configuration_element_data(apps, schema_monitor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Configuration = apps.get_model('reporting', 'Configuration')
 
-    # General stationary combustion of fuel or waste with production of useful energy
+    # General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy
     ConfigurationElement.objects.bulk_create(
         [
             # CO2
@@ -27,7 +27,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -39,7 +39,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -51,7 +51,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -63,7 +63,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -75,7 +75,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured CC').id,
@@ -87,7 +87,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
@@ -99,7 +99,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -111,7 +111,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -124,7 +124,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -136,7 +136,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -148,7 +148,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -160,7 +160,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -172,7 +172,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -184,7 +184,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -196,7 +196,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -208,7 +208,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -221,7 +221,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -233,7 +233,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -245,7 +245,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -257,7 +257,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -269,7 +269,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -281,7 +281,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -293,7 +293,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -305,7 +305,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -314,7 +314,7 @@ def init_configuration_element_data(apps, schema_monitor):
             ),
         ]
     )
-    # General stationary combustion of waste without production of useful energy
+    # General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy
     ConfigurationElement.objects.bulk_create(
         [
             # CO2
@@ -323,7 +323,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -335,7 +335,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -347,7 +347,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -359,7 +359,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -371,7 +371,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured CC').id,
@@ -383,7 +383,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
@@ -395,7 +395,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -407,7 +407,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -420,7 +420,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -432,7 +432,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -444,7 +444,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -456,7 +456,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -468,7 +468,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -480,7 +480,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -492,7 +492,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -504,7 +504,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -517,7 +517,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -529,7 +529,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -541,7 +541,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -553,7 +553,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -565,7 +565,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -577,7 +577,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -589,7 +589,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -601,7 +601,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -940,7 +940,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -953,7 +953,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -966,7 +966,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -979,7 +979,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -994,7 +994,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1007,7 +1007,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1020,7 +1020,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1031,7 +1031,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1042,7 +1042,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured CC').id,
@@ -1057,7 +1057,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
@@ -1070,7 +1070,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
@@ -1083,7 +1083,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -1094,7 +1094,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -1106,7 +1106,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1119,7 +1119,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1132,7 +1132,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -1145,7 +1145,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1160,7 +1160,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1173,7 +1173,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -1186,7 +1186,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1199,7 +1199,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1210,7 +1210,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1223,7 +1223,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1234,7 +1234,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1247,7 +1247,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -1258,7 +1258,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -1270,7 +1270,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1283,7 +1283,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1296,7 +1296,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -1309,7 +1309,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1324,7 +1324,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1337,7 +1337,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -1350,7 +1350,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1363,7 +1363,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1374,7 +1374,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1387,7 +1387,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1398,7 +1398,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1411,7 +1411,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -1422,7 +1422,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of fuel or waste with production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -1435,7 +1435,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1448,7 +1448,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1461,7 +1461,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -1474,7 +1474,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1489,7 +1489,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1502,7 +1502,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1515,7 +1515,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1526,7 +1526,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1537,7 +1537,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured CC').id,
@@ -1552,7 +1552,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
@@ -1565,7 +1565,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
@@ -1578,7 +1578,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -1589,7 +1589,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -1601,7 +1601,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1614,7 +1614,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1627,7 +1627,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -1640,7 +1640,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1655,7 +1655,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1668,7 +1668,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -1681,7 +1681,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1694,7 +1694,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1705,7 +1705,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1718,7 +1718,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1729,7 +1729,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1742,7 +1742,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -1753,7 +1753,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -1765,7 +1765,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1778,7 +1778,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
@@ -1791,7 +1791,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
@@ -1804,7 +1804,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1819,7 +1819,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
@@ -1832,7 +1832,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured EF').id,
@@ -1845,7 +1845,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1858,7 +1858,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1869,7 +1869,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
@@ -1882,7 +1882,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1893,7 +1893,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
@@ -1906,7 +1906,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
@@ -1917,7 +1917,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='General stationary non-compression and non-processing combustion').id,
         source_type_id=SourceType.objects.get(
-            name='General stationary combustion of waste without production of useful energy'
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
@@ -2502,7 +2502,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of fuel or waste with production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ).id,
                 json_schema=with_useful_energy_schema,
                 valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
@@ -2513,7 +2513,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                     name='General stationary non-compression and non-processing combustion'
                 ).id,
                 source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
                 ).id,
                 json_schema=without_useful_energy_schema,
                 valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,

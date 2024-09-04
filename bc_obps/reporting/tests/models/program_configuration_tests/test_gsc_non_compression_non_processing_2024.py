@@ -51,8 +51,8 @@ class GSCNonCompressionNonProcessing2024Test(TestCase):
 
         config = {
             'Field gas or process vent gas combustion at a linear facilities operation': gas_config,
-            'General stationary combustion of fuel or waste with production of useful energy': gas_config,
-            'General stationary combustion of waste without production of useful energy': gas_config,
+            'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy': gas_config,
+            'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy': gas_config,
         }
 
         self.assertQuerySetEqual(

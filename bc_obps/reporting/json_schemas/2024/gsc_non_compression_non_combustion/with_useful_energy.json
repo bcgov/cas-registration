@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "title": "General stationary combustion of fuel or waste with production of useful energy",
+  "title": "General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy",
   "properties": {
     "units": {
       "type": "array",
