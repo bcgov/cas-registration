@@ -181,7 +181,8 @@ class OperationServiceV2:
     @classmethod
     @transaction.atomic()
     def create_or_update_operation_v2(
-        cls, user_guid: UUID, payload: OperationInformationIn
+        # brianna better to do as a default arg?
+        cls, user_guid: UUID, operation_id: UUID | None, payload: OperationInformationIn
     ) -> Dict[str, Union[str, UUID]]:
         user = UserDataAccessService.get_by_guid(user_guid)
         user_operator: UserOperator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
@@ -196,8 +197,10 @@ class OperationServiceV2:
             }
         )
         operation_data['operator_id'] = user_operator.operator_id
+        if operation_id:
+            operation_data['pk'] = operation_id
 
-        operation: Operation = Operation.custom_update_or_create(Operation, user_guid, defaults={**operation_data})
+        operation: Operation = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
 
         # set m2m relationships
         operation.activities.set(payload.activities)
@@ -220,9 +223,13 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def register_operation_information(cls, user_guid: UUID, payload: OperationInformationIn):
-
-        operation: Operation = cls.create_or_update_operation_v2(user_guid, payload)
+    def register_operation_information(cls, user_guid: UUID, operation_id: UUID, payload: OperationInformationIn):
+        if operation_id:
+            operation = OperationDataAccessService.get_by_id(operation_id)
+            if not operation.user_has_access(user_guid):
+                raise Exception(UNAUTHORIZED_MESSAGE)
+        
+        operation: Operation = cls.create_or_update_operation_v2(user_guid, operation_id, payload)
 
         registration_payload = RegistrationPurposeIn(
             registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products

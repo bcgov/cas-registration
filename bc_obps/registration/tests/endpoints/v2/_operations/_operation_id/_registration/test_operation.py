@@ -1,10 +1,24 @@
+from registration.tests.constants import MOCK_DATA_URL
 from registration.models.registration_purpose import RegistrationPurpose
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
+import json
 
 
 class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
+    mock_payload = {
+    "registration_purpose": "Reporting Operation",
+    "regulated_products": [1],
+    "name": "op name",
+    "type": "SFO",
+    "naics_code_id": 1,
+    "secondary_naics_code_id": 2,
+    "tertiary_naics_code_id": 3,
+    "activities": [1],
+    "boundary_map": MOCK_DATA_URL,
+    "process_flow_diagram": MOCK_DATA_URL
+}
     def test_register_edit_operation_information_endpoint_unauthorized_roles_cannot_put(self):
         operation = baker.make_recipe(
             'utils.operation',
@@ -16,9 +30,7 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
                 self,
                 role,
                 self.content_type,
-                {
-                    'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-                },
+                json.dumps(self.mock_payload),
                 custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
             )
             assert response.status_code == 401
@@ -30,14 +42,11 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
         operation = baker.make_recipe(
             'utils.operation',
         )
-
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            {
-                'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-            },
+            json.dumps(self.mock_payload),
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
         )
         assert response.status_code == 401
@@ -49,9 +58,7 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            {
-                'registration_purpose': RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-            },
+            json.dumps(self.mock_payload),
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
         )
         response_json = response.json()

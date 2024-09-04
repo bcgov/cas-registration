@@ -53,7 +53,7 @@ class OperationInformationIn(RegistrationPurposeIn, ModelSchema):
 class OperationCreateOut(ModelSchema):
     class Config:
         model = Operation
-        model_fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
+        model_fields = ['id','name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
         populate_by_name = True
 
 

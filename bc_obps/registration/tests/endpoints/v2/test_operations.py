@@ -11,6 +11,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 from registration.tests.utils.bakers import operator_baker
 from registration.utils import custom_reverse_lazy
+import json
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -172,18 +173,19 @@ class TestOperationsCurrentEndpoint(CommonTestSetup):
 
 class TestPostOperationsEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
-    mock_payload = OperationInformationIn(
-        registration_purpose='Reporting Operation',
-        regulated_products=[1],
-        name="string",
-        type="SFO",
-        naics_code_id=1,
-        secondary_naics_code_id=2,
-        tertiary_naics_code_id=3,
-        activities=[1],
-        process_flow_diagram=MOCK_DATA_URL,
-        boundary_map=MOCK_DATA_URL,
-    )
+    mock_payload = {
+    "registration_purpose": "Reporting Operation",
+    "regulated_products": [1],
+    "name": "op name",
+    "type": "SFO",
+    "naics_code_id": 1,
+    "secondary_naics_code_id": 2,
+    "tertiary_naics_code_id": 3,
+    "activities": [1],
+    "boundary_map": MOCK_DATA_URL,
+    "process_flow_diagram": MOCK_DATA_URL
+}
+  
 
     # AUTHORIZATION
 
@@ -191,14 +193,13 @@ class TestPostOperationsEndpoint(CommonTestSetup):
         # IRC users and unapproved industry users can't post
         for role in ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']:
             response = TestUtils.mock_post_with_auth_role(
-                self, role, self.mock_payload, custom_reverse_lazy("register_create_operation_information")
+                self, role, json.dumps(self.mock_payload), custom_reverse_lazy("register_create_operation_information")
             )
             assert response.status_code == 401
 
     # GET
     def test_user_can_post_operation_success(self):
         baker.make_recipe('utils.approved_user_operator', user=self.user)
-
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -207,6 +208,5 @@ class TestPostOperationsEndpoint(CommonTestSetup):
             custom_reverse_lazy("register_create_operation_information"),
         )
         assert response.status_code == 200
-        assert len(response.json()) == 1
-        assert response.json()[0].get('name') == operation.name
-        assert response.json()[0].get('id') == str(operation.id)
+        assert response.json().get('name') == "op name"
+        assert response.json().get('id') is not None

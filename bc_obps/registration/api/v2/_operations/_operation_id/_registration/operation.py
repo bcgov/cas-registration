@@ -35,7 +35,7 @@ from ninja.responses import codes_4xx
 def register_edit_operation_information(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), payload)
+    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id,payload)
 
 
 @router.put(

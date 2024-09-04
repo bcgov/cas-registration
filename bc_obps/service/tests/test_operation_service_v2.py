@@ -326,7 +326,7 @@ class TestOperationServiceV2:
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
         )
-        operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload)
+        operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, None,payload)
         # brianna why do i have to refresh? just a test thing or a problem?
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -374,7 +374,7 @@ class TestOperationServiceV2:
                 mo_postal_code='H0H0H0',
             ),
         ]
-        operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload)
+        operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, None,payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.created_by == approved_user_operator.user
@@ -382,3 +382,6 @@ class TestOperationServiceV2:
         assert MultipleOperator.objects.count() == 2
         assert MultipleOperator.objects.all().first().bc_corporate_registry_number == 'ghj1234567'
         assert MultipleOperator.objects.all().last().bc_corporate_registry_number == None
+
+
+# brianna write edit tests

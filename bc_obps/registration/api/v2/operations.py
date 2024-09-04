@@ -55,4 +55,4 @@ def list_operations_v2(
 def register_create_operation_information(
     request: HttpRequest, payload: OperationInformationIn
 ) -> Tuple[Literal[200], DictStrAny]:
-    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), payload)
+    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload)
