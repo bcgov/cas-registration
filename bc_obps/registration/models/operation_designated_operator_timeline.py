@@ -8,8 +8,8 @@ from simple_history.models import HistoricalRecords
 
 
 class OperationDesignatedOperatorTimeline(TimeStampedModel):
-    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="designated_operators")
-    operator = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, related_name="operation_designated_operators")
+    operation = models.ForeignKey(Operation, on_delete=models.PROTECT, related_name="designated_operators")
+    operator = models.ForeignKey(Operator, on_delete=models.PROTECT, related_name="operation_designated_operators")
     start_date = models.DateTimeField(
         blank=True,
         null=True,

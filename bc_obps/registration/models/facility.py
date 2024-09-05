@@ -30,7 +30,7 @@ class Facility(TimeStampedModel):
     type = models.CharField(max_length=100, choices=Types.choices, db_comment="The type of the facility")
     address = models.ForeignKey(
         Address,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The address of the facility",
         blank=True,
         null=True,
