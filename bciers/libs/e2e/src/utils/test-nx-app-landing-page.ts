@@ -52,14 +52,13 @@ const testNxProjectLandingPage = async (zone: string) => {
     await happoPlaywright.finish();
   });
 
-  //const url = `${process.env.E2E_BASEURL}${zone}`;
-  const url = process.env.E2E_BASEURL as string;
+  const url = `${process.env.E2E_BASEURL}${zone}`;
 
   // 🏷 Annotate test suite as serial
   test.describe.configure({ mode: "serial" });
   test.describe(`Test ${zone} landing page`, () => {
     const storageState = JSON.parse(
-      process.env.E2E_CAS_ADMIN_STORAGE_STATE as string,
+      process.env.E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE as string,
     );
 
     test.use({ storageState: storageState });

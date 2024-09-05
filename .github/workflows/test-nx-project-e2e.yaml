@@ -36,7 +36,7 @@ jobs:
       matrix:
         include:
           - project: chromium
-            os: ubuntu-latest
+            os: ubuntu-24.04
             cache_dir: ~/.cache/ms-playwright
           # Commented out because of flakey issues with Firefox in CI
           # - project: firefox
@@ -48,8 +48,6 @@ jobs:
           #   cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
-      - name: 🎁 setup dev env
-        uses: ./.github/actions/dev-env-setup
       - name: 🎁 setup local app
         uses: ./.github/actions/run-nx-app
         with:
@@ -59,6 +57,15 @@ jobs:
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
           image_url: ${{ inputs.image_url }}
           nx_app_port: ${{ inputs.nx_app_port }}
+      - name: yarn modern
+        shell: bash
+        run: |
+          corepack enable
+      - name: Install yarn dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+        working-directory: ./bciers
+        shell: bash
       - name: ⚡️ cache Playwright binaries
         uses: actions/cache@v4
         id: playwright-cache
@@ -80,7 +87,7 @@ jobs:
           DB_NAME: registration
           DB_PORT: 5432
           DB_HOST: localhost
-          E2E_BASEURL: http://localhost:3000/
+          E2E_BASEURL: http://localhost:4001/
           E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
           E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
           E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
