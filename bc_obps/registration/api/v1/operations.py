@@ -13,7 +13,7 @@ from registration.schema.v1 import (
     OperationFilterSchema,
 )
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from ninja.types import DictStrAny
 
@@ -22,7 +22,7 @@ from ninja.types import DictStrAny
 
 @router.get(
     "/operations",
-    response={200: OperationPaginatedOut, codes_4xx: Message},
+    response={200: OperationPaginatedOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves a paginated list of operations based on the provided filters.
     The endpoint allows authorized users to view operations filtered by various criteria such as BCGHG ID, regulated operation, name, operator, status, and sort order.""",
@@ -40,7 +40,7 @@ def list_operations(
 
 @router.post(
     "/operations",
-    response={201: OperationCreateOut, codes_4xx: Message},
+    response={201: OperationCreateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Creates a new operation for the current user.
     It verifies that an operation with the given BCGHG ID does not already exist and associates the new operation with the current user's approved user-operator.""",

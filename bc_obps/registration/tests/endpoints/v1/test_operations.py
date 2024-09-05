@@ -6,7 +6,6 @@ from registration.models import (
     Operation,
     UserOperator,
 )
-from registration.schema.v1 import OperationCreateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 from registration.tests.utils.bakers import operation_baker, operator_baker, user_operator_baker
@@ -25,11 +24,11 @@ class TestOperationsEndpoint(CommonTestSetup):
     # AUTHORIZATION
 
     def test_unauthorized_roles_cannot_create_new_operation(self):
-        mock_operation = TestUtils.mock_OperationCreateIn()
+        mock_operation = TestUtils.mock_create_operation_payload()
         # IRC users can't post
         for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
             response = TestUtils.mock_post_with_auth_role(
-                self, role, self.content_type, mock_operation.model_dump_json(), custom_reverse_lazy("create_operation")
+                self, role, self.content_type, mock_operation, custom_reverse_lazy("create_operation")
             )
             assert response.status_code == 401
 
@@ -290,12 +289,12 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_authorized_roles_can_post_new_operation(self):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
-        mock_operation = TestUtils.mock_OperationCreateIn()
+        mock_operation = TestUtils.mock_create_operation_payload()
         post_response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            mock_operation.model_dump_json(),
+            mock_operation,
             custom_reverse_lazy("create_operation"),
         )
         assert post_response.status_code == 201
@@ -313,10 +312,8 @@ class TestOperationsEndpoint(CommonTestSetup):
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.DECLINED, operator_id=operator2.id
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
-        mock_operation = TestUtils.mock_OperationCreateIn()
-        post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.model_dump_json()
-        )
+        mock_operation = TestUtils.mock_create_operation_payload()
+        post_response = TestUtils.mock_post_with_auth_role(self, "industry_user", self.content_type, mock_operation)
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
         assert post_response.json().get('id') is not None
@@ -325,7 +322,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response_data = get_response.get('data')[0]
         assert 'status' in get_response_data and get_response_data['status'] == 'Not Started'
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.model_dump_json(), endpoint=None
+            self, "industry_user", self.content_type, mock_operation, endpoint=None
         )
         assert post_response.status_code == 201
 
@@ -407,35 +404,35 @@ class TestOperationsEndpoint(CommonTestSetup):
         operation_instance = operation_baker()
         operation_instance.bcghg_id = 'aaa1234567'
         operation_instance.save(update_fields=['bcghg_id'])
-        mock_operation2 = TestUtils.mock_OperationCreateIn()
-        mock_operation2.bcghg_id = 'aaa1234567'
+        mock_operation2 = TestUtils.mock_create_operation_payload()
+        mock_operation2['bcghg_id'] = 'aaa1234567'
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            mock_operation2.model_dump_json(),
+            mock_operation2,
             custom_reverse_lazy("create_operation"),
         )
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
     def test_post_new_operation_without_point_of_contact(self):
-        new_operation = OperationCreateIn(
-            documents=[],
-            point_of_contact=None,
-            status=Operation.Statuses.NOT_STARTED,
-            naics_code_id=NaicsCode.objects.first().id,
-            name='My New Operation',
-            type='Type 1',
-            regulated_products=[],
+        new_operation_payload = {
+            "documents": [],
+            "point_of_contact": None,
+            "status": Operation.Statuses.NOT_STARTED,
+            "naics_code_id": NaicsCode.objects.first().id,
+            "name": "My New Operation",
+            "type": "Type 1",
+            "regulated_products": [],
             # activities=[],
-        )
+        }
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, data=new_operation.model_dump_json()
+            self, "industry_user", self.content_type, data=new_operation_payload
         )
         assert post_response.status_code == 201
         assert Operation.objects.count() == 1
@@ -450,14 +447,14 @@ class TestOperationsEndpoint(CommonTestSetup):
         user_operator = user_operator_baker(
             {'user': self.user, 'operator': operator, 'status': UserOperator.Statuses.PENDING}
         )
-        mock_create_operation = TestUtils.mock_OperationCreateIn()
+        mock_create_operation = TestUtils.mock_create_operation_payload()
 
         # PENDING user
         post_response_1 = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            mock_create_operation.model_dump_json(),
+            mock_create_operation,
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_1.status_code == 401
@@ -469,7 +466,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_create_operation.model_dump_json(),
+            mock_create_operation,
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_2.status_code == 401
@@ -481,7 +478,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_create_operation.model_dump_json(),
+            mock_create_operation,
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_3.status_code == 201
@@ -489,12 +486,12 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_audit_columns_are_set_on_create_and_update(self):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
-        mock_operation = TestUtils.mock_OperationCreateIn()
+        mock_operation = TestUtils.mock_create_operation_payload()
         post_response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            mock_operation.model_dump_json(),
+            mock_operation,
             custom_reverse_lazy("create_operation"),
         )
 
@@ -507,14 +504,14 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert operation.archived_at is None
         assert operation.archived_by is None
 
-        updated_mock_operation = TestUtils.mock_OperationUpdateIn()
+        updated_mock_operation = TestUtils.mock_update_operation_payload()
         # updated_mock_operation.statutory_declaration = MOCK_DATA_URL
 
         TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
             self.content_type,
-            updated_mock_operation.model_dump_json(),
+            updated_mock_operation,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
