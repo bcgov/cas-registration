@@ -2,7 +2,7 @@ import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { instance, mock, reset, when } from "ts-mockito";
 import middleware from "../middleware";
-import { fetch, getToken } from "@bciers/testConfig/mocks";
+import { getToken } from "@bciers/testConfig/mocks";
 import {
   mockBaseToken,
   mockCasUserToken,
