@@ -1,7 +1,11 @@
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import Operations from "../../operations/Operations";
 import { OperationsSearchParams } from "../../operations/types";
+import dayjs from "dayjs";
 
+const formatDate = (dateString: string | number | Date) => {
+  return dayjs(dateString).format("MMM DD YYYY");
+};
 export default async function OperationsPage({
   searchParams,
 }: {

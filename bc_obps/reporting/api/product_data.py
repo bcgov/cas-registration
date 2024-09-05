@@ -17,5 +17,4 @@ from ninja.responses import codes_4xx, codes_5xx
 )
 @handle_http_errors()
 def get_products(request: HttpRequest) -> Tuple[int, list]:
-    print("fetching ")
     return 200, ProductService.get_all_regulated_products()

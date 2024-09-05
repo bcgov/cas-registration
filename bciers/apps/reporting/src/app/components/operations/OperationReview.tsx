@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
+import { useRouter } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
@@ -10,10 +11,16 @@ import {
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { actionHandler } from "@bciers/actions";
+import dayjs from "dayjs";
 
 interface Props {
   formData: any;
   version_id: number;
+  reportingYear: {
+    reporting_year: number;
+    report_due_date: string;
+    reporting_window_end: string;
+  };
   allActivities: { id: number; name: string }[];
   allRegulatedProducts: { id: number; name: string }[];
 }
@@ -34,14 +41,24 @@ const taskListElements: TaskListElement[] = [
   },
 ];
 
+const formatDate = (dateString: string | number | Date) => {
+  return dayjs(dateString).format("MMM DD YYYY");
+};
 export default function OperationReview({
   formData,
+  version_id,
+  reportingYear,
   allActivities,
   allRegulatedProducts,
 }: Props) {
+  const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema] = useState<any>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
+  const saveAndContinueUrl = `/reporting/reports/${version_id}/person-responsible`;
+  const reporting_window_end = reportingYear?.reporting_window_end
+    ? formatDate(reportingYear.reporting_window_end)
+    : null;
 
   const submitHandler = async (
     data: { formData?: any },
@@ -59,13 +76,11 @@ export default function OperationReview({
       ...formDataObject,
       reporting_activities: formDataObject.reporting_activities?.map(
         (activity: any) => {
-          // Find the activity ID if it's an ID, otherwise map to name
           return allActivities.find((a) => a.name === activity)?.id || activity;
         },
       ),
       regulated_products: formDataObject.regulated_products?.map(
         (product: any) => {
-          // Find the product ID if it's an ID, otherwise map to name
           return (
             allRegulatedProducts.find((p) => p.name === product)?.id || product
           );
@@ -81,10 +96,11 @@ export default function OperationReview({
           accept: "application/json",
         },
       });
-      // Handle successful save
-
-      // Optionally, you can provide user feedback or navigate to another page
-    } catch (error) {}
+      // Navigate to the next URL using Next.js router
+      router.push(saveAndContinueUrl);
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
   };
 
   useEffect(() => {
@@ -118,7 +134,6 @@ export default function OperationReview({
         ...prevSchema.properties,
         reporting_activities: {
           type: "array",
-          enum: allActivities.map((activity) => activity.id),
           title: "Reporting activities",
           items: {
             type: "string",
@@ -139,15 +154,19 @@ export default function OperationReview({
           type: "string",
           title: "Operation representative",
           enum: [formData.operation_representative_name || ""],
-          enumNames: [formData.operation_representative_name || ""],
         },
         operation_type: {
           type: "string",
           title: "Operation type",
           enum: [formData.operation_type || ""],
-          enumNames: [formData.operation_type || ""],
+        },
+        date_info: {
+          type: "object",
+          readOnly: true,
+          title: `Please ensure this information was accurate for ${reporting_window_end}`,
         },
       },
+      required: ["operation_type", "operation_representative_name"], // Add required fields here
     }));
 
     // Ensure formData is updated with preselected values
@@ -179,7 +198,8 @@ export default function OperationReview({
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
-      onSubmit={(data) => submitHandler(data, formData.version_id)} // Pass the version_id to submitHandler
+      saveAndContinueUrl={saveAndContinueUrl}
+      onSubmit={(data) => submitHandler(data, formData.version_id)}
     />
   );
 }

@@ -17,6 +17,14 @@ export async function getReportOperation(version_id: number) {
   );
 }
 
+export async function getReportingYear() {
+  return actionHandler(
+    `reporting/reporting-year`,
+    "GET",
+    `reporting/reporting-year`,
+  );
+}
+
 export default async function OperationReviewFormData({
   version_id,
 }: {
@@ -25,12 +33,13 @@ export default async function OperationReviewFormData({
   const reportOperation = (await getReportOperation(version_id)) || null;
   const allActivities = (await getAllActivities()) || [];
   const allRegulatedProducts = (await getAllRegulatedProducts()) || [];
-
+  const reportingYear = (await getReportingYear()) || null;
   return (
     <OperationReview
       formData={reportOperation}
       version_id={version_id}
       allActivities={allActivities}
+      reportingYear={reportingYear}
       allRegulatedProducts={allRegulatedProducts}
     />
   );

@@ -6,8 +6,8 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { FormBase } from "@bciers/components/form/index";
 import { RJSFSchema } from "@rjsf/utils";
-import MultiStepTaskListButton from "@bciers/components/form/components/MultiStepTaskListButton";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import Link from "next/link";
 
 interface Props {
   initialStep: number;
@@ -16,9 +16,10 @@ interface Props {
   schema: RJSFSchema;
   uiSchema: RJSFSchema;
   formData: any;
-  cancelUrl: string;
-  baseUrl: string;
-  onSubmit: (data: any) => Promise<void>; // Add onSubmit prop
+  baseUrl?: string;
+  cancelUrl?: string; // Make cancelUrl optional
+  saveAndContinueUrl: string;
+  onSubmit: (data: any) => Promise<void>;
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -29,129 +30,49 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   uiSchema,
   formData,
   cancelUrl,
-  baseUrl,
-  onSubmit, // Destructure onSubmit prop
+  saveAndContinueUrl,
+  onSubmit,
 }) => {
-  const [currentStep, setCurrentStep] = useState(initialStep);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [taskList, setTaskList] = useState(taskListElements); // Manage task list state
-  const [hasErrors, setHasErrors] = useState(false); // State to track form errors
+  const [hasErrors, setHasErrors] = useState(false);
 
-  // Helper function to get the currently active task
-  const getCurrentTask = () => {
-    return taskList
-      .flatMap((section) => section.elements ?? [])
-      .find((task) => task.isActive);
-  };
-
-  // Handle moving to the next step
-  const handleNextStep = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-
-      const updatedTasks = taskList.map((section, index) => ({
-        ...section,
-        elements: (section.elements ?? []).map((task, idx) => ({
-          ...task,
-          isActive: index === 0 && idx === 0 && currentStep === initialStep + 1,
-        })),
-      }));
-
-      setTaskList(updatedTasks);
-    }
-  };
-
-  // Handle moving to the next task or step
-  const handleNextTask = () => {
-    if (hasErrors) return; // Prevent proceeding if there are validation errors
-
-    const currentTask = getCurrentTask();
-    if (!currentTask) return;
-
-    const currentSectionIndex = taskList.findIndex((section) =>
-      (section.elements ?? []).includes(currentTask),
-    );
-
-    if (currentSectionIndex === -1) return; // Safeguard for invalid index
-
-    const currentSection = taskList[currentSectionIndex];
-    const currentTaskIndexInSection = (currentSection.elements ?? []).indexOf(
-      currentTask,
-    );
-
-    if (
-      currentTaskIndexInSection <
-      (currentSection.elements ?? []).length - 1
-    ) {
-      const updatedSections = taskList.map((section, index) =>
-        index === currentSectionIndex
-          ? {
-              ...section,
-              elements: (section.elements ?? []).map((task, idx) => ({
-                ...task,
-                isActive: idx === currentTaskIndexInSection + 1,
-              })),
-            }
-          : section,
-      );
-      setTaskList(updatedSections);
-    } else {
-      handleNextStep();
-    }
-  };
-
-  // Handle form submission
-  const handleFormSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    try {
-      await onSubmit(data); // Call the onSubmit prop function
-      // Proceed to the next task or step only after successful submission
-      handleNextTask();
-    } catch (error) {
-      // Consider using a proper logging library
-      console.error("Submission failed:", error);
-      setHasErrors(true);
-      // Handle errors or notify the user
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Handle form errors
   const handleFormError = (errors: any) => {
     setHasErrors(errors.length > 0);
+    if (errors.length > 0) {
+      console.warn("Validation errors:", errors);
+    }
   };
 
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
-        <MultiStepHeader stepIndex={currentStep} steps={steps} />
+        <MultiStepHeader stepIndex={initialStep} steps={steps} />
       </div>
       <div className="w-full flex">
-        <ReportingTaskList elements={taskList} />
+        <ReportingTaskList elements={taskListElements} />
         <div className="w-full">
           <FormBase
             schema={schema}
             uiSchema={uiSchema}
-            onSubmit={handleFormSubmit} // Pass handleFormSubmit to FormBase
+            onSubmit={onSubmit}
             onError={handleFormError}
             formData={formData}
           >
-            <MultiStepTaskListButton
-              stepIndex={currentStep}
-              steps={steps}
-              allowBackNavigation={currentStep > 0}
-              baseUrl={baseUrl}
-              cancelUrl={cancelUrl}
-              isSubmitting={isSubmitting}
-              submitButtonText="Save and Continue"
-              submitButtonDisabled={isSubmitting}
-              onSaveAndContinue={() => {
-                if (!hasErrors) {
-                  handleNextTask(); // Only proceed to the next task if there are no errors
-                }
-              }}
-            />
+            <Box display="flex" justifyContent="space-between" mt={3}>
+              {cancelUrl && (
+                <Link href={cancelUrl} passHref>
+                  <Button variant="outlined">Cancel</Button>
+                </Link>
+              )}
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                Save and Continue
+              </Button>
+            </Box>
           </FormBase>
         </div>
       </div>

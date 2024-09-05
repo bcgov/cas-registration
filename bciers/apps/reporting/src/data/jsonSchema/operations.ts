@@ -1,18 +1,31 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import { dateInfo, purposeNote } from "./reviewOperationInformationText";
+import { purposeNote } from "./reviewOperationInformationText";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const operationReviewSchema: RJSFSchema = {
   type: "object",
   title: "Review operation information",
+  required: [
+    "operation_representative_name",
+    "operation_bcghgid",
+    "regulated_products",
+  ],
 
   properties: {
     purpose_note: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
       type: "object",
       readOnly: true,
+    },
+    operation_report_type: {
+      type: "string",
+      title: "Please select what type of report are you filling",
+      enum: [
+        "Annual emissions report",
+        "Regulated partial year operation",
+        "Simple Report",
+      ],
     },
     operation_representative_name: {
       type: "string",
@@ -67,12 +80,19 @@ export const operationReviewUiSchema = {
 
   date_info: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": dateInfo,
+    "ui:options": {
+      style: { variant: "body2", color: "#38598A", fontSize: "16px" },
+    },
   },
   operation_type: {
     "ui:widget": "select",
     "ui:options": commonUiOptions,
     "ui:placeholder": "Operation type",
+  },
+  operation_report_type: {
+    "ui:widget": "select",
+    "ui:options": { style: { width: "100%", textAlign: "justify" } },
+    "ui:placeholder": "Report type",
   },
   operation_bcghgid: {
     "ui:options": commonUiOptions,
@@ -89,7 +109,10 @@ export const operationReviewUiSchema = {
   },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
-    "ui:options": commonUiOptions,
+    "ui:options": {
+      ...commonUiOptions,
+      label: { style: { verticalAlign: "top" } },
+    },
     "ui:placeholder": "Regulated products",
   },
   operation_representative_name: {
