@@ -43,7 +43,7 @@ class Operation(TimeStampedModel):
     type = models.CharField(max_length=1000, db_comment="The type of an operation")
     operator = models.ForeignKey(
         Operator,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The operator who owns the operation",
         related_name="operations",
     )
@@ -53,7 +53,7 @@ class Operation(TimeStampedModel):
 
     naics_code = models.ForeignKey(
         NaicsCode,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         db_comment="An operation's NAICS code",
         related_name='operations',
@@ -83,7 +83,7 @@ class Operation(TimeStampedModel):
     )
     verified_by = models.ForeignKey(
         User,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The IRC user who verified the operator",
         blank=True,
         null=True,
@@ -101,7 +101,7 @@ class Operation(TimeStampedModel):
     )
     point_of_contact = models.ForeignKey(
         Contact,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         related_name="operations",
         blank=True,
         null=True,
@@ -121,7 +121,7 @@ class Operation(TimeStampedModel):
     # Setting this to OneToOneField instead of ForeignKey because we want to enforce that there is only one BORO ID per operation
     bc_obps_regulated_operation = models.OneToOneField(
         "BcObpsRegulatedOperation",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         db_comment="The BC OBPS regulated operation ID of an operation when operation is approved",

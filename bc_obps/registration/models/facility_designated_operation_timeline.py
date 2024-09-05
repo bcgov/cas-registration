@@ -4,8 +4,8 @@ from simple_history.models import HistoricalRecords
 
 
 class FacilityDesignatedOperationTimeline(TimeStampedModel):
-    facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="designated_operations")
-    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facility_designated_operations")
+    facility = models.ForeignKey(Facility, on_delete=models.PROTECT, related_name="designated_operations")
+    operation = models.ForeignKey(Operation, on_delete=models.PROTECT, related_name="facility_designated_operations")
     start_date = models.DateTimeField(
         blank=True,
         null=True,
