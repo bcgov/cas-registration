@@ -1,6 +1,6 @@
 from typing import List
 from registration.enums.enums import OperationTypes
-from registration.models.facility_ownership_timeline import FacilityOwnershipTimeline
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.schema.v2.operation import OperationListOut
 from service.user_operator_service import UserOperatorService
 from registration.models import Operation, User
@@ -26,7 +26,7 @@ class OperationDataAccessServiceV2:
         facilities_subquery = (
             # Subquery to get the first active facility's pk for each SFO operation.
             # This is more optimized than using a resolver in the schema.
-            FacilityOwnershipTimeline.objects.filter(
+            FacilityDesignatedOperationTimeline.objects.filter(
                 operation_id=OuterRef('pk'), operation__type=OperationTypes.SFO.value, end_date__isnull=True
             )
             .order_by('start_date')

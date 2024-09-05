@@ -4,7 +4,6 @@ from registration.models.operation import Operation
 from registration.schema.v2.operation import OperationFilterSchema, OperationListOut
 from typing import Literal, Tuple
 from registration.schema.v2.operation import OperationCreateOut, OperationInformationIn
-from registration.schema.v2.operation import OperationFilterSchema, OperationPaginatedOut
 from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest

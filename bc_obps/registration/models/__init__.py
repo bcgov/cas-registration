@@ -20,7 +20,7 @@ from .activity import Activity
 from .opted_in_operation_detail import OptedInOperationDetail
 from .operation import Operation
 from .facility import Facility
-from .facility_designated_operator_timeline import FacilityDesignatedOperationTimeline
+from .facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from .multiple_operator import MultipleOperator
 from .operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from .well_authorization_number import WellAuthorizationNumber

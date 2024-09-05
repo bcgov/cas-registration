@@ -20,7 +20,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from registration.tests.utils.bakers import contact_baker, operation_baker, facility_baker
 from registration.constants import BASE_ENDPOINT
 
-from registration.models.facility_designated_operator_timeline import FacilityDesignatedOperationTimeline
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.tests.utils.bakers import operator_baker, address_baker
 
 

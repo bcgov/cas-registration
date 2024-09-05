@@ -1,6 +1,6 @@
 import math
 from datetime import datetime
-from registration.models.facility_designated_operator_timeline import FacilityDesignatedOperationTimeline
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from model_bakery import baker
 from registration.models import UserOperator, Facility, Operation, WellAuthorizationNumber
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils

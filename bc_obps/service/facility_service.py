@@ -1,6 +1,7 @@
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
+from service.data_access_service.facility_ownership_timeline_service import FacilityDesignatedOperationTimelineDataAccessService
 from registration.schema.v1.facility import FacilityFilterSchema
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.facility_service import FacilityDataAccessService
@@ -8,9 +9,6 @@ from ninja import Query
 from registration.models import Facility
 from registration.schema.v1.facility import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
-from service.data_access_service.facility_ownership_timeline_service import (
-    FacilityDesignatedOperationTimelineDataAccessService,
-)
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.data_access_service.address_service import AddressDataAccessService
@@ -185,7 +183,7 @@ class FacilityService:
             facility_data['address'] = cls.create_address(address_data)
 
         facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
-        FacilityDesignatedOperationTimelineDataAccessService.create_facility_ownership_timeline(
+        FacilityDesignatedOperationTimelineDataAccessService.create_facility_designated_operation_timeline(
             user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
         )
 

@@ -149,7 +149,7 @@ def parent_operator_baker() -> ParentOperator:
     )
 
 
-def facility_ownership_timeline_baker(
+def facility_designated_operation_timeline_baker(
     operation_id: uuid.UUID = None, *args, **kwargs
 ) -> FacilityDesignatedOperationTimeline:
     operation_id = operation_id or operation_baker().id

@@ -33,7 +33,8 @@ from registration.schema.v2.operation import (
 from registration.utils import files_have_same_hash
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
-
+from typing import Union, Dict, Literal
+from django.db.models import Q
 
 class OperationServiceV2:
     @classmethod
