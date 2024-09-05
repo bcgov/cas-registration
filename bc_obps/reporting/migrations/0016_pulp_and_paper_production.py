@@ -594,7 +594,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0014_carbonates_use'),
+        ('reporting', '0015_gsc_non_compression_non_processing'),
     ]
 
     operations = [
