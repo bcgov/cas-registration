@@ -24,4 +24,4 @@ from registration.schema.generic import Message
 )
 @handle_http_errors()
 def create_facilities(request: HttpRequest, payload: List[FacilityIn]) -> Tuple[Literal[201], List[Facility]]:
-    return 201, FacilityService.create_facilities_with_ownership(get_current_user_guid(request), payload)
+    return 201, FacilityService.create_facilities_with_designated_operations(get_current_user_guid(request), payload)

@@ -79,7 +79,7 @@ class OperatorModelTest(BaseTestCase):
             ("is_new", "is new", None, None),
             ("operations", "operation", None, None),
             ("user_operators", "user operator", None, 2),
-            ("operation_ownerships", "operation ownership timeline", None, None),
+            ("operation_designated_operators", "operation designated operator timeline", None, None),
             ("report", "report", None, None),
             ("parent_operators", "parent operator", None, None),
             ("partner_operators", "partner operator", None, None),
