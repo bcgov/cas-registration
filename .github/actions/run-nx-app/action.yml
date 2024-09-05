@@ -34,8 +34,8 @@ runs:
         echo "NEXTAUTH_SECRET=${{ inputs.nextauth_secret }}" >> $GITHUB_ENV
         echo "KEYCLOAK_CLIENT_ID=${{ inputs.keycloak_client_id }}" >> $GITHUB_ENV
         echo "KEYCLOAK_CLIENT_SECRET=${{ inputs.keycloak_client_secret }}" >> $GITHUB_ENV
-        echo "NEXTAUTH_URL_INTERNAL=http://localhost:${{ inputs.nx_app_port }}" >> $GITHUB_ENV
-        echo "NEXTAUTH_URL=http://localhost:${{ inputs.nx_app_port }}" >> $GITHUB_ENV
+        echo "NEXTAUTH_URL_INTERNAL=http://localhost:3000" >> $GITHUB_ENV
+        echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
         echo "API_URL=http://127.0.0.1:8000/api/" >> $GITHUB_ENV
         echo "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" >> $GITHUB_ENV
       shell: bash
