@@ -3,7 +3,6 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 export const OPERATOR_COLUMN_INDEX = 1;
 
 const operatorColumns = (
-  isInternalUser: boolean,
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
 ) => {
   const columns: GridColDef[] = [

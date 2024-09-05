@@ -11,7 +11,6 @@ import operatorGroupColumns from "../datagrid/models/operatorGroupColumns";
 
 const OperatorDataGrid = ({
   initialData,
-  isInternalUser = false,
 }: {
   isInternalUser?: boolean;
   initialData: {
@@ -26,10 +25,7 @@ const OperatorDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const columns = useMemo(
-    () => operatorColumns(isInternalUser, OperatorsActionCell()),
-    [isInternalUser],
-  );
+  const columns = useMemo(() => operatorColumns(OperatorsActionCell()), []);
 
   const columnGroup = useMemo(
     () => operatorGroupColumns(SearchCell),
