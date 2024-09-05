@@ -147,7 +147,7 @@ In the following example, the `OperationListOut` schema is defined to include on
 from ninja import ModelSchema
 
 class OperationListOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Operation
-        model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
+        fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
 ```

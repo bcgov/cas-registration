@@ -7,7 +7,6 @@ from registration.models import (
     Contact,
     Facility,
     NaicsCode,
-    Operator,
     RegulatedProduct,
     Activity,
     User,
@@ -15,10 +14,9 @@ from registration.models import (
     WellAuthorizationNumber,
 )
 from model_bakery import baker
-from registration.schema.v1 import OperationCreateIn, OperationUpdateIn, UserOperatorContactIn, UserOperatorOperatorIn
 from django.test import Client
 from phonenumber_field.modelfields import PhoneNumberField
-from registration.tests.utils.bakers import operation_baker, user_operator_baker, facility_baker
+from registration.tests.utils.bakers import contact_baker, operation_baker, facility_baker
 from registration.constants import BASE_ENDPOINT
 
 from registration.models.facility_ownership_timeline import FacilityOwnershipTimeline
@@ -192,77 +190,62 @@ class TestUtils:
         return "+17787777777"
 
     @staticmethod
-    def mock_OperationCreateIn(operator: Operator = None):
+    def mock_create_operation_payload():
+        naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         activities = baker.make(Activity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
-        point_of_contact = baker.make(Contact)
-        return OperationCreateIn(
-            name='Springfield Nuclear Power Plant',
-            type='Single Facility Operation',
-            naics_code=1,
-            activities=activities,
-            regulated_products=regulated_products,
-            point_of_contact=point_of_contact.id,
-            is_external_point_of_contact=False,
-            street_address='19 Evergreen Terrace',
-            municipality='Springfield',
-            province='BC',
-            postal_code='V1V 1V1',
-        )
+        point_of_contact = contact_baker()
+        return {
+            "name": "Springfield Nuclear Power Plant",
+            "type": "Single Facility Operation",
+            "naics_code_id": naics_code.id,
+            "activities": [activity.id for activity in activities],
+            "regulated_products": [product.id for product in regulated_products],
+            "point_of_contact_id": point_of_contact.id,
+            "is_external_point_of_contact": False,
+            "street_address": "19 Evergreen Terrace",
+            "municipality": "Springfield",
+            "province": "BC",
+            "postal_code": "V1V 1V1",
+        }
 
     @staticmethod
-    def mock_OperationUpdateIn():
+    def mock_update_operation_payload():
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         point_of_contact = baker.make(Contact)
         product = baker.make(RegulatedProduct)
         operation = operation_baker()
         operation.regulated_products.set([product.id])
 
-        return OperationUpdateIn(
-            name="New name",
-            point_of_contact_id=point_of_contact.id,
-            type="Single Facility Operation",
-            naics_code_id=naics_code.id,
-            regulated_products=[product.id],
-            point_of_contact=point_of_contact.id,
-            is_external_point_of_contact=False,
-            first_name="Homer",
-            last_name="Simpson",
-            email="homer@email.com",
-            phone_number="+17787777777",
-        )
+        return {
+            "name": "New name",
+            "point_of_contact_id": point_of_contact.id,
+            "type": "Single Facility Operation",
+            "naics_code_id": naics_code.id,
+            "regulated_products": [product.id],
+            "point_of_contact": point_of_contact.id,
+            "is_external_point_of_contact": False,
+            "first_name": "Homer",
+            "last_name": "Simpson",
+            "email": "homer@email.com",
+            "phone_number": "+17787777777",
+        }
 
     @staticmethod
-    def mock_UserOperatorOperatorIn():
-        return UserOperatorOperatorIn(
-            legal_name='test',
-            cra_business_number=333333333,
-            bc_corporate_registry_number='adh1234321',
-            business_structure=BusinessStructure.objects.first().pk,
-            physical_street_address='test',
-            physical_municipality='test',
-            physical_province='test',
-            physical_postal_code='test',
-            mailing_address_same_as_physical=True,
-            operator_has_parent_operators=False,
-        )
-
-    @staticmethod
-    def mock_UserOperatorContactIn():
-        user_operator = user_operator_baker()
-        address = baker.make(
-            Address, street_address='123 st st', municipality='victoria', province='BC', postal_code='h0h0h0'
-        )
-        return UserOperatorContactIn(
-            is_senior_officer=True,
-            user_operator_id=user_operator.id,
-            position_title='test',
-            street_address=address.street_address,
-            municipality=address.municipality,
-            province=address.province,
-            postal_code=address.postal_code,
-            email='test@email.com',
-        )
+    def mock_create_user_operator_operator():
+        return {
+            "legal_name": "test",
+            "cra_business_number": 333333333,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test",
+            "physical_municipality": "test",
+            "physical_province": "test",
+            "physical_postal_code": "test",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+            "parent_operators_array": [],
+        }
 
     @staticmethod
     def create_mock_operator_payload(business_structure: BusinessStructure):

@@ -18,7 +18,7 @@ class OperationDataAccessService:
     def get_by_id_for_operation_out_schema(cls, operation_id: UUID) -> Operation:
         return (
             Operation.objects.only(
-                *OperationOut.Config.model_fields,
+                *OperationOut.Meta.fields,
                 "naics_code",
                 "point_of_contact__address",
                 "point_of_contact__first_name",
@@ -80,7 +80,7 @@ class OperationDataAccessService:
                 Operation.objects.select_related("operator", "bc_obps_regulated_operation")
                 .exclude(status=Operation.Statuses.NOT_STARTED)
                 .exclude(status=Operation.Statuses.DRAFT)
-                .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+                .only(*OperationListOut.Meta.fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             )
         else:
             # Industry users can only see operations associated with their own operator
@@ -88,5 +88,5 @@ class OperationDataAccessService:
         return (
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .filter(operator_id=user_operator.operator_id)
-            .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+            .only(*OperationListOut.Meta.fields, "operator__legal_name", "bc_obps_regulated_operation__id")
         )
