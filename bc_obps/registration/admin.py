@@ -6,8 +6,8 @@ from registration.models import (
     TemporaryShutdownEvent,
     TransferEvent,
     Facility,
-    FacilityOwnershipTimeline,
-    OperationOwnershipTimeline,
+    FacilityDesignatedOperationTimeline,
+    OperationDesignatedOperatorTimeline,
     RegulatedProduct,
     NaicsCode,
     Document,
@@ -67,13 +67,13 @@ class FacilityAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(FacilityOwnershipTimeline)
-class FacilityOwnershipTimelineAdmin(admin.ModelAdmin):
+@admin.register(FacilityDesignatedOperationTimeline)
+class FacilityDesignatedOperationTimelineAdmin(admin.ModelAdmin):
     list_display = ('id', 'facility', 'operation', 'start_date', 'end_date')
 
 
-@admin.register(OperationOwnershipTimeline)
-class OperationOwnershipTimelineAdmin(admin.ModelAdmin):
+@admin.register(OperationDesignatedOperatorTimeline)
+class OperationDesignatedOperatorTimelineAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'operation',

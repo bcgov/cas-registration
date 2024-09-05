@@ -75,4 +75,4 @@ class Facility(TimeStampedModel):
         """
         Returns the current owner(operation) of the facility.
         """
-        return self.ownerships.get(end_date__isnull=True).operation
+        return self.designated_operations.get(end_date__isnull=True).operation

@@ -2,7 +2,7 @@ from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models import Facility
 from registration.tests.utils.bakers import (
     facility_baker,
-    facility_ownership_timeline_baker,
+    facility_designated_operation_timeline_baker,
     operation_baker,
     operator_baker,
 )
@@ -25,7 +25,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
         operation = operation_baker()
-        facility_ownership_timeline_baker(operation_id=operation.id, _quantity=45)
+        facility_designated_operation_timeline_baker(operation_id=operation.id, _quantity=45)
         facilities_url = custom_reverse_lazy('list_facilities', kwargs={'operation_id': operation.id})
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", facilities_url)
@@ -73,7 +73,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
         operation = operation_baker()
-        facility_ownership_timeline_baker(operation_id=operation.id, _quantity=25)
+        facility_designated_operation_timeline_baker(operation_id=operation.id, _quantity=25)
         facilities_url = custom_reverse_lazy('list_facilities', kwargs={'operation_id': operation.id})
 
         # Get the default page 1 response

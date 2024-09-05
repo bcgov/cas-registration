@@ -608,7 +608,7 @@ Facility {
     DecimalField longitude_of_largest_emissions
     ManyToManyField well_authorization_numbers
 }
-HistoricalFacilityOwnershipTimeline {
+HistoricalFacilityDesignatedOperationTimeline {
     BigIntegerField id
     DateTimeField created_at
     DateTimeField updated_at
@@ -626,7 +626,7 @@ HistoricalFacilityOwnershipTimeline {
     CharField history_change_reason
     CharField history_type
 }
-FacilityOwnershipTimeline {
+FacilityDesignatedOperationTimeline {
     BigAutoField id
     ForeignKey created_by
     DateTimeField created_at
@@ -686,7 +686,7 @@ MultipleOperator {
     ForeignKey mailing_address
     BooleanField mailing_address_same_as_physical
 }
-HistoricalOperationOwnershipTimeline {
+HistoricalOperationDesignatedOperatorTimeline {
     BigIntegerField id
     DateTimeField created_at
     DateTimeField updated_at
@@ -704,7 +704,7 @@ HistoricalOperationOwnershipTimeline {
     CharField history_change_reason
     CharField history_type
 }
-OperationOwnershipTimeline {
+OperationDesignatedOperatorTimeline {
     BigAutoField id
     ForeignKey created_by
     DateTimeField created_at
@@ -1014,16 +1014,16 @@ Facility }|--|| User : updated_by
 Facility }|--|| User : archived_by
 Facility }|--|| Address : address
 Facility }|--|{ WellAuthorizationNumber : well_authorization_numbers
-HistoricalFacilityOwnershipTimeline }|--|| User : created_by
-HistoricalFacilityOwnershipTimeline }|--|| User : updated_by
-HistoricalFacilityOwnershipTimeline }|--|| User : archived_by
-HistoricalFacilityOwnershipTimeline }|--|| Facility : facility
-HistoricalFacilityOwnershipTimeline }|--|| Operation : operation
-FacilityOwnershipTimeline }|--|| User : created_by
-FacilityOwnershipTimeline }|--|| User : updated_by
-FacilityOwnershipTimeline }|--|| User : archived_by
-FacilityOwnershipTimeline }|--|| Facility : facility
-FacilityOwnershipTimeline }|--|| Operation : operation
+HistoricalFacilityDesignatedOperationTimeline }|--|| User : created_by
+HistoricalFacilityDesignatedOperationTimeline }|--|| User : updated_by
+HistoricalFacilityDesignatedOperationTimeline }|--|| User : archived_by
+HistoricalFacilityDesignatedOperationTimeline }|--|| Facility : facility
+HistoricalFacilityDesignatedOperationTimeline }|--|| Operation : operation
+FacilityDesignatedOperationTimeline }|--|| User : created_by
+FacilityDesignatedOperationTimeline }|--|| User : updated_by
+FacilityDesignatedOperationTimeline }|--|| User : archived_by
+FacilityDesignatedOperationTimeline }|--|| Facility : facility
+FacilityDesignatedOperationTimeline }|--|| Operation : operation
 HistoricalMultipleOperator }|--|| User : created_by
 HistoricalMultipleOperator }|--|| User : updated_by
 HistoricalMultipleOperator }|--|| User : archived_by
@@ -1038,16 +1038,16 @@ MultipleOperator }|--|| Operation : operation
 MultipleOperator }|--|| BusinessStructure : business_structure
 MultipleOperator }|--|| Address : physical_address
 MultipleOperator }|--|| Address : mailing_address
-HistoricalOperationOwnershipTimeline }|--|| User : created_by
-HistoricalOperationOwnershipTimeline }|--|| User : updated_by
-HistoricalOperationOwnershipTimeline }|--|| User : archived_by
-HistoricalOperationOwnershipTimeline }|--|| Operation : operation
-HistoricalOperationOwnershipTimeline }|--|| Operator : operator
-OperationOwnershipTimeline }|--|| User : created_by
-OperationOwnershipTimeline }|--|| User : updated_by
-OperationOwnershipTimeline }|--|| User : archived_by
-OperationOwnershipTimeline }|--|| Operation : operation
-OperationOwnershipTimeline }|--|| Operator : operator
+HistoricalOperationDesignatedOperatorTimeline }|--|| User : created_by
+HistoricalOperationDesignatedOperatorTimeline }|--|| User : updated_by
+HistoricalOperationDesignatedOperatorTimeline }|--|| User : archived_by
+HistoricalOperationDesignatedOperatorTimeline }|--|| Operation : operation
+HistoricalOperationDesignatedOperatorTimeline }|--|| Operator : operator
+OperationDesignatedOperatorTimeline }|--|| User : created_by
+OperationDesignatedOperatorTimeline }|--|| User : updated_by
+OperationDesignatedOperatorTimeline }|--|| User : archived_by
+OperationDesignatedOperatorTimeline }|--|| Operation : operation
+OperationDesignatedOperatorTimeline }|--|| Operator : operator
 HistoricalRegistrationPurpose }|--|| User : created_by
 HistoricalRegistrationPurpose }|--|| User : updated_by
 HistoricalRegistrationPurpose }|--|| User : archived_by

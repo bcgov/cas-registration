@@ -223,4 +223,4 @@ class Operation(TimeStampedModel):
         """
         Returns the current owner of the operation.
         """
-        return self.ownerships.get(end_date__isnull=True).operator
+        return self.designated_operators.get(end_date__isnull=True).operator
