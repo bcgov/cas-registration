@@ -34,6 +34,7 @@ const notFound = vi.fn();
 const useSession = vi.fn();
 const auth = vi.fn();
 const fetchOperationsPageData = vi.fn();
+const fetchOperatorsPageData = vi.fn();
 
 export {
   actionHandler,
@@ -46,5 +47,6 @@ export {
   useSearchParams,
   useSession,
   fetchOperationsPageData,
+  fetchOperatorsPageData,
   notFound,
 };
