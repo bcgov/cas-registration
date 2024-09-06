@@ -8,7 +8,9 @@ from ninja import Query
 from registration.models import Facility
 from registration.schema.v1.facility import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
-from service.data_access_service.facility_ownership_timeline_service import FacilityOwnershipTimelineDataAccessService
+from service.data_access_service.facility_designated_operation_timeline_service import (
+    FacilityDesignatedOperationTimelineDataAccessService,
+)
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.data_access_service.address_service import AddressDataAccessService
@@ -155,7 +157,7 @@ class FacilityService:
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = (
             FacilityDataAccessService.get_all_facilities_for_user(user)
-            .filter(ownerships__operation_id=operation_id)
+            .filter(designated_operations__operation_id=operation_id)
             .distinct()
         )
         return filters.filter(base_qs).order_by(sort_by)
@@ -172,8 +174,8 @@ class FacilityService:
 
     @classmethod
     @transaction.atomic()
-    def create_facility_with_ownership(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
-        """Create a facility with ownership details."""
+    def create_facility_with_designated_operation(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
+        """Create a facility with designated operation details."""
         operation = OperationDataAccessService.get_by_id(payload.operation_id)
         cls.check_user_access(user_guid, operation)
 
@@ -183,7 +185,7 @@ class FacilityService:
             facility_data['address'] = cls.create_address(address_data)
 
         facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
-        FacilityOwnershipTimelineDataAccessService.create_facility_ownership_timeline(
+        FacilityDesignatedOperationTimelineDataAccessService.create_facility_designated_operation_timeline(
             user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
         )
 
@@ -242,8 +244,8 @@ class FacilityService:
 
     @classmethod
     @transaction.atomic()
-    def create_facilities_with_ownership(cls, user_guid: UUID, payload: list[FacilityIn]) -> list[Facility]:
+    def create_facilities_with_designated_operations(cls, user_guid: UUID, payload: list[FacilityIn]) -> list[Facility]:
         facilities = []
         for facility_data in payload:
-            facilities.append(cls.create_facility_with_ownership(user_guid, facility_data))
+            facilities.append(cls.create_facility_with_designated_operation(user_guid, facility_data))
         return facilities

@@ -17,12 +17,15 @@ class FacilityDataAccessService:
             # Industry users can only see operations associated with their own operator and that are not ended
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             return queryset.filter(
-                ownerships__operation__operator_id=user_operator.operator_id, ownerships__end_date__isnull=True
+                designated_operations__operation__operator_id=user_operator.operator_id,
+                designated_operations__end_date__isnull=True,
             ).distinct()
 
     @classmethod
     def get_current_facilities_by_operation(cls, operation: Operation) -> QuerySet[Facility]:
-        return Facility.objects.filter(ownerships__end_date__isnull=True, ownerships__operation=operation).all()
+        return Facility.objects.filter(
+            designated_operations__end_date__isnull=True, designated_operations__operation=operation
+        ).all()
 
     @classmethod
     def get_by_id(cls, facility_id: UUID) -> Facility:
