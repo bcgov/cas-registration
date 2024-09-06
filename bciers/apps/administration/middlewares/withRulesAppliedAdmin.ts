@@ -6,84 +6,140 @@ import {
 } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-import { IDP } from "@bciers/utils/enums";
-import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
+import { IDP, OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
 
-/*
-  Middleware to apply business rules for routing.
- */
-
+// Constants
 const appName = "administration";
+const baseApiUrl = `${process.env.API_URL}registration/`;
+
+/**
+ * 🛠 Helper to fetch user operator data from the API.
+ *
+ * @param endpoint - The API endpoint to fetch from.
+ * @param token - The user token for authorization.
+ * @returns The parsed JSON data from the response.
+ */
+const fetchUserOperatorData = async (endpoint: string, token: any) => {
+  const options: RequestInit = {
+    cache: "no-store", // ⚙ No caching for API requests
+    method: "GET",
+    headers: new Headers({
+      Authorization: JSON.stringify({ user_guid: token.user_guid }),
+    }),
+  };
+  const response = await fetch(`${baseApiUrl}${endpoint}`, options);
+  if (!response.ok) {
+    throw new Error(`❗ Failed to fetch ${endpoint}: ${response.statusText}`);
+  }
+  return response.json();
+};
+
+/**
+ * 📏 Handles routing for industry users based on the status of their operator.
+ *
+ * @param request - The incoming request object.
+ * @param token - The user's authentication token.
+ * @returns A response if a redirect is required, otherwise null.
+ */
+const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
+  const { pathname } = request.nextUrl;
+
+  // 📏 Rule: Industry users can only see operations if their operator is pending/approved
+  if (pathname.includes("operations")) {
+    const operator = await fetchUserOperatorData(
+      "user-operators/current",
+      token,
+    );
+    if (
+      operator.status !== OperatorStatus.PENDING &&
+      operator.status !== OperatorStatus.APPROVED
+    ) {
+      // 🛸 Redirect to the app's root page (dashboard)
+      return NextResponse.redirect(new URL(`/${appName}`, request.url));
+    }
+  }
+
+  // 📏 Rule: Manage the select-operator flow for industry users
+  if (pathname.endsWith("select-operator")) {
+    try {
+      const userOperator = await fetchUserOperatorData(
+        "user-operators/pending",
+        token,
+      );
+
+      // 🧩 If there is no userOperator, proceed to the next middleware
+      if (!userOperator) {
+        return null; // No redirect required, continue to the next middleware
+      }
+
+      const { status, operatorId, operatorStatus, operatorLegalName } =
+        userOperator;
+
+      if (status === UserOperatorStatus.APPROVED) {
+        // 🛸 Redirect to the user's approved operator
+        return NextResponse.redirect(new URL(`my-operator`, request.url));
+      }
+
+      if (
+        status === UserOperatorStatus.PENDING ||
+        operatorStatus === OperatorStatus.DRAFT
+      ) {
+        // 🛸 Redirect to the request-access operator page
+        return NextResponse.redirect(
+          new URL(
+            `select-operator/received/request-access/${operatorId}?title=${operatorLegalName}`,
+            request.url,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("❗ Error fetching user operator data:", error);
+      // Proceed to next middleware in case of error
+      return null;
+    }
+  }
+
+  // 📏 Rule: Industry users can only see contacts if they have operator access
+  if (pathname.includes("contacts")) {
+    const userOperator = await fetchUserOperatorData(
+      "user-operators/pending",
+      token,
+    );
+    if (userOperator.status !== UserOperatorStatus.APPROVED) {
+      // 🛸 Redirect to the root app router page - dashboard
+      return NextResponse.redirect(new URL(`/${appName}`, request.url));
+    }
+  }
+
+  // 🛸 No redirect required, proceed to the next middleware
+  return null;
+};
+
+/**
+ * 🚀 Middleware to apply business rules for routing in the administration app.
+ */
 export const withRulesAppliedAdmin: MiddlewareFactory = (
   next: NextMiddleware,
 ) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
-    const { pathname } = request.nextUrl;
     const token = await getToken();
 
-    // 📏 Industry user rules...
+    // 📏 Apply industry user-specific routing rules
     if (token.identity_provider === IDP.BCEIDBUSINESS) {
-      const baseApiUrl = `${process.env.API_URL}registration/`;
-      const options: RequestInit = {
-        cache: "no-store", // Default cache option
-        method: "GET",
-        headers: new Headers({
-          Authorization: JSON.stringify({
-            user_guid: token.user_guid,
-          }),
-        }),
-      };
-      if (pathname.includes("operations")) {
-        // 📏 Industry users are only allowed to see their operations if their operator is pending/approved
-        try {
-          const response = await fetch(
-            `${baseApiUrl}user-operators/current`,
-            options,
-          );
-          const operator = await response.json();
-          if (operator.status !== "Pending" && operator.status !== "Approved") {
-            // 🛸 Redirect to root app router page - dashboard
-            return NextResponse.redirect(new URL(`/${appName}`, request.url));
-          }
-        } catch (error) {
-          throw error;
+      try {
+        const response = await handleIndustryUserRoutes(request, token);
+        if (response) {
+          // 🛸 Redirect if a response is returned from the route handler
+          return response;
         }
-      }
-      if (pathname.endsWith("select-operator")) {
-        // 📏 Manage select-operator flow: select; request access; approved
-        try {
-          const response = await fetch(
-            `${baseApiUrl}user-operators/pending`,
-            options,
-          );
-          const userOperator = await response.json();
-          const { status, operatorId, operatorStatus, operatorLegalName } =
-            userOperator;
-
-          if (status === UserOperatorStatus.APPROVED) {
-            // 🛸 Redirect to the approved user's operator - my-operator
-            return NextResponse.redirect(new URL(`my-operator`, request.url));
-          }
-
-          if (
-            status === UserOperatorStatus.PENDING ||
-            operatorStatus === OperatorStatus.DRAFT
-          ) {
-            // 🛸 Redirect to the request access operator
-            return NextResponse.redirect(
-              new URL(
-                `select-operator/received/request-access/${operatorId}?title=${operatorLegalName}`,
-                request.url,
-              ),
-            );
-          }
-        } catch (error) {
-          throw error;
-        }
+      } catch (error) {
+        // ❗ Log error and redirect to the app's root page
+        console.error("Error in withRulesAppliedAdmin middleware:", error);
+        return NextResponse.redirect(new URL(`/${appName}`, request.url));
       }
     }
 
-    // 🛸 Route to next middleware
+    // 🛸 Proceed to the next middleware
     return next(request, _next);
   };
 };
