@@ -14,38 +14,24 @@
             "content": "View or update information of your operator, operations, facilities.",
             "links": [
               {
-                "title": "My Operator",
-                "href": "/administration/my-operator"
-              },
-              {
-                "title": "Operations",
-                "href": "/administration/operations"
-              },
-              {
-                "title": "Contacts",
-                "href": "/administration/contacts"
-              },
-              {
-                "title": "Users and Access Requests",
-                "href": "/administration/tbd"
-              }
-            ],
-            "condition": {
-              "api": "registration/v2/user-operators/current/operator",
-              "field": "error",
-              "operator": "notExists",
-              "value": true
-            }
-          },
-          {
-            "title": "Administration",
-            "href": "/administration",
-            "icon": "Layers",
-            "content": "View or update information of your operator, operations, facilities.",
-            "links": [
-              {
                 "title": "Select an Operator",
-                "href": "/administration/select-operator"
+                "href": "/administration/select-operator",
+                "condition": {
+                  "api": "registration/v2/user-operators/current/operator",
+                  "field": "error",
+                  "operator": "exists",
+                  "value": true
+                }
+              },
+              {
+                "title": "My Operator",
+                "href": "/administration/my-operator",
+                "condition": {
+                  "api": "registration/v2/user-operators/current/operator",
+                  "field": "error",
+                  "operator": "notExists",
+                  "value": true
+                }
               },
               {
                 "title": "Operations",
@@ -53,19 +39,19 @@
               },
               {
                 "title": "Contacts",
-                "href": "/administration/contacts"
+                "href": "/administration/contacts",
+                "condition": {
+                  "api": "registration/v2/user-operators/current/operator",
+                  "field": "error",
+                  "operator": "notExists",
+                  "value": true
+                }
               },
               {
                 "title": "Users and Access Requests",
                 "href": "/administration/tbd"
               }
-            ],
-            "condition": {
-              "api": "registration/v2/user-operators/current/operator",
-              "field": "error",
-              "operator": "exists",
-              "value": true
-            }
+            ]
           },
           {
             "title": "Registration",
