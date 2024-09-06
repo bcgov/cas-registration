@@ -2,7 +2,7 @@ import pytest
 from registration.models.app_role import AppRole
 from registration.tests.utils.bakers import (
     facility_baker,
-    facility_ownership_timeline_baker,
+    facility_designated_operation_timeline_baker,
     operation_baker,
     user_baker,
     user_operator_baker,
@@ -25,10 +25,10 @@ class TestDataAccessFacilityService:
         industry_user = user_baker({'app_role': AppRole.objects.get(role_name='industry_user')})
         users_operation = operation_baker()
         random_operation = operation_baker()
-        users_facility_ownerships = facility_ownership_timeline_baker(
+        users_facility_designated_operations = facility_designated_operation_timeline_baker(
             operation_id=users_operation.id, _quantity=10
         )  # facilities for users operation
-        facility_ownership_timeline_baker(
+        facility_designated_operation_timeline_baker(
             operation_id=random_operation.id, _quantity=10
         )  # facilities for random operation
         # Approved user operator for industry user
@@ -40,5 +40,8 @@ class TestDataAccessFacilityService:
         # make sure user's facilities are only from their operation
         users_facilities_ids = users_facilities.values_list('id', flat=True)
         assert all(
-            [facility_ownership.facility_id in users_facilities_ids for facility_ownership in users_facility_ownerships]
+            [
+                facility_designated_operations.facility_id in users_facilities_ids
+                for facility_designated_operations in users_facility_designated_operations
+            ]
         )

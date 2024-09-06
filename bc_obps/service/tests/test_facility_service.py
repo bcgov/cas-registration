@@ -7,7 +7,7 @@ from registration.models import (
     Operation,
     User,
     AppRole,
-    FacilityOwnershipTimeline,
+    FacilityDesignatedOperationTimeline,
     UserOperator,
     WellAuthorizationNumber,
 )
@@ -30,7 +30,7 @@ class TestGetIfAuthorized:
         user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 
         facility = facility_baker()
-        baker.make(FacilityOwnershipTimeline, operation=operation_baker(), facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=operation_baker(), facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
         assert result == facility
@@ -48,7 +48,7 @@ class TestGetIfAuthorized:
         )
         owning_operation: Operation = operation_baker(operator.id)
         facility = facility_baker()
-        baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
         assert result == facility
@@ -67,13 +67,13 @@ class TestGetIfAuthorized:
         )
         owning_operation: Operation = operation_baker(owning_operator.id)
         facility = baker.make(Facility, latitude_of_largest_emissions=5, longitude_of_largest_emissions=5)
-        baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             FacilityService.get_if_authorized(user.user_guid, facility.id)
 
     @staticmethod
-    def test_create_facilities_with_ownership_create_single_facility():
+    def test_create_facilities_with_designated_operations_create_single_facility():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = operator_baker()
         baker.make(
@@ -94,12 +94,12 @@ class TestGetIfAuthorized:
             )
         ]
 
-        FacilityService.create_facilities_with_ownership(user.user_guid, payload)
+        FacilityService.create_facilities_with_designated_operations(user.user_guid, payload)
 
         assert len(Facility.objects.all()) == 1
 
     @staticmethod
-    def test_create_facilities_with_ownership_create_multiple_facilities():
+    def test_create_facilities_with_designated_operations_create_multiple_facilities():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = operator_baker()
         baker.make(
@@ -139,14 +139,14 @@ class TestGetIfAuthorized:
             ),
         ]
 
-        FacilityService.create_facilities_with_ownership(user.user_guid, payload)
+        FacilityService.create_facilities_with_designated_operations(user.user_guid, payload)
 
         assert len(Facility.objects.all()) == 3
 
 
-class TestCreateFacilityWithOwnership:
+class TestCreateFacilityWithDesignatedOperation:
     @staticmethod
-    def test_create_sfo_facility_with_ownership_without_address():
+    def test_create_sfo_facility_with_designated_operation_without_address():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = operator_baker()
         baker.make(
@@ -166,15 +166,15 @@ class TestCreateFacilityWithOwnership:
             operation_id=owning_operation.id,
         )
 
-        FacilityService.create_facility_with_ownership(user.user_guid, payload)
+        FacilityService.create_facility_with_designated_operation(user.user_guid, payload)
         assert Facility.objects.count() == 1
 
         assert Address.objects.count() == 1  # operation_baker() creates an address (mandatory for the operator)
-        assert len(FacilityOwnershipTimeline.objects.all()) == 1
+        assert len(FacilityDesignatedOperationTimeline.objects.all()) == 1
         assert Facility.objects.get(name="zip") is not None
 
     @staticmethod
-    def test_create_lfo_facility_with_ownership_with_address():
+    def test_create_lfo_facility_with_designated_operation_with_address():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = operator_baker()
         baker.make(
@@ -198,13 +198,13 @@ class TestCreateFacilityWithOwnership:
             well_authorization_numbers=[12345, 654321],
         )
 
-        FacilityService.create_facility_with_ownership(user.user_guid, payload)
+        FacilityService.create_facility_with_designated_operation(user.user_guid, payload)
         assert len(Facility.objects.all()) == 1
         assert (
             Address.objects.count() == 2
         )  # 2 because operation_baker() created an address (mandatory) for the operator
         assert WellAuthorizationNumber.objects.count() == 2
-        assert len(FacilityOwnershipTimeline.objects.all()) == 1
+        assert len(FacilityDesignatedOperationTimeline.objects.all()) == 1
         assert Facility.objects.get(name="zip") is not None
 
 
@@ -264,7 +264,7 @@ class TestUpdateFacility:
             facility.well_authorization_numbers.set(well_auth_objs)
 
         # Link the created facility with an operation
-        baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         return user, owning_operation, facility
 
