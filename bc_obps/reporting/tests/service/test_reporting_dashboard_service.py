@@ -5,13 +5,13 @@ from registration.tests.utils.bakers import operation_baker, operator_baker, use
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
 from service.report_service import ReportService
+from reporting.models.report_version import ReportVersion
 
 
 @pytest.mark.django_db
 class TestReportingDashboardService:
     @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
-    @pytest.mark.skip(reason="flaky test, disabling for now. Added a tech debt card to find out why it's flaky")
     def test_get_operations_for_reporting_dashboard(
         self, mock_get_by_guid: MagicMock | AsyncMock, mock_get_all_operations_for_user: MagicMock | AsyncMock
     ):
@@ -23,12 +23,21 @@ class TestReportingDashboardService:
         operator = operator_baker()
         operations = operation_baker(operator_id=operator.id, _quantity=3)
 
-        r0 = ReportService.create_report(operations[0].id, year.reporting_year)
+        r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
+        r0 = ReportVersion.objects.get(pk=r0_version1_id).report
         latest_r0_revision = report_version_baker(report=r0)
 
-        r1 = ReportService.create_report(operations[1].id, year.reporting_year)
+        r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
+        r1 = ReportVersion.objects.get(pk=r1_version1_id).report
 
         result = ReportingDashboardService.get_operations_for_reporting_dashboard(user.user_guid, 5091).values()
+
+        print(r0.id, result[0]["report_id"])
+        print(operations[0].id, result[0]["id"])
+        print(r1.id, result[1]["report_id"])
+        print(operations[1].id, result[1]["id"])
+        print(result[2]["report_id"])
+        print(operations[2].id, result[2]["id"])
 
         assert len(result) == 3
 
