@@ -37,7 +37,9 @@ const ArrayFieldTemplate = ({
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            <div className="text-bc-bg-blue text-lg flex align-center my-10">
+            <div
+              className={`text-bc-bg-blue text-lg flex align-center ${customTitleName || i !== 0 ? "my-10" : "my-2"}`}
+            >
               {customTitleName && (
                 <span>
                   {customTitleName} {i + 1}
@@ -54,6 +56,7 @@ const ArrayFieldTemplate = ({
                 </button>
               )}
             </div>
+
             {{
               ...item.children,
               props: {

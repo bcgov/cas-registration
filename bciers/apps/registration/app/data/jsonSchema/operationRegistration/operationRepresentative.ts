@@ -128,7 +128,6 @@ export const operationRepresentativeUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": operationRepresentativePreface,
   },
-
   operation_representatives: {
     "ui:widget": "MultiSelectWidget",
     "ui:help": operationRepresentativeAdd,

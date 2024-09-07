@@ -13,7 +13,6 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import SyncIcon from "@mui/icons-material/Sync";
 import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
-import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import {
@@ -21,6 +20,8 @@ import {
   operationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import safeJsonParse from "@bciers/utils/safeJsonParse";
+import ReportSteps from "../navigation/ReportSteps";
+import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 
 interface Props {
   formData: any;
@@ -45,18 +46,9 @@ export default function OperationReview({
   formData,
   version_id,
 }: Readonly<Props>) {
-  const customStepNames = [
-    "Operation Information",
-    "Facilities Information",
-    "Compliance Summary",
-    "Sign-off & Submit",
-  ];
-
   return (
     <Box sx={{ p: 3 }}>
-      <div className="container mx-auto p-4">
-        <MultiStepHeader stepIndex={0} steps={customStepNames} />
-      </div>
+      <ReportSteps />
       <Grid container spacing={3}>
         <Grid item xs={12} md={3}>
           <Paper elevation={3} sx={{ p: 2 }}>
@@ -83,7 +75,12 @@ export default function OperationReview({
           </Paper>
         </Grid>
         <Grid item xs={12} md={9}>
-          <Typography variant="h6" color="#38598A" fontSize="24px" gutterBottom>
+          <Typography
+            variant="h6"
+            color={BC_GOV_BACKGROUND_COLOR_BLUE}
+            fontSize="24px"
+            gutterBottom
+          >
             Review operation information
           </Typography>
           <Paper sx={{ p: 2, mb: 3, bgcolor: "#DCE9F6", color: "#313132" }}>
@@ -95,11 +92,12 @@ export default function OperationReview({
                 this report. To make edits for all of your reports, please edit
                 this information in registration.
               </Typography>
+              ˆ
             </Box>
           </Paper>
           <Typography
             variant="body2"
-            color="#38598A"
+            color={BC_GOV_BACKGROUND_COLOR_BLUE}
             fontSize="16px"
             gutterBottom
           >
