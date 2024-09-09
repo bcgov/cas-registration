@@ -1,6 +1,6 @@
 import OperationInformationForm from "./OperationInformationForm";
 import { getOperation } from "@bciers/actions/api";
-import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation";
+import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import { validate as isValidUUID } from "uuid";
 
 export const ExternalUserLayout = () => {
