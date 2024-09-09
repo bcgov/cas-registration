@@ -7,6 +7,8 @@ import {
 
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
+import { FrontEndRoles } from "@bciers/utils/enums";
+import isInAllowedPath from "@bciers/utils/isInAllowedList";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
 The middleware intercepts requests, and for restricted areas...
@@ -14,32 +16,15 @@ Checks for a valid user session, and extracts user information from the JWT sess
 Based on JWT properties of identity_provider and role, the middleware dynamically rewrites the request URL
 to the appropriate folder structure.
  */
-
-const onboarding = "onboarding";
-const dashboard = "dashboard";
-// Function to check if the path is in the unauthenticated allow list
-const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
-  const authList = ["auth", "unauth", "demo"];
-  return authList.some((path) => pathname.includes(path));
+const paths = {
+  auth: "auth",
+  unauth: "unauth",
+  onboarding: "onboarding",
+  dashboard: "dashboard",
+  profile: "profile",
 };
-
-// Function to check if the path is in the authenticated allow list
-// const isAuthenticatedAllowListedPath = (pathname: string) => {
-//   const allowList = [dashboard, "registration", "reporting"];
-//
-//   // Split the pathname into segments
-//   const segments = pathname.split("/");
-//
-//   // Iterate through each segment
-//   for (const segment of segments) {
-//     // Check if any value in the allowList matches the current segment
-//     if (allowList.includes(segment)) {
-//       return true; // Return true if match found
-//     }
-//   }
-//
-//   return false; // Return false if no match found
-// };
+export const authAllowedPaths = [paths.dashboard, paths.profile];
+const unauthAllowedPaths = [paths.auth, paths.auth];
 
 // Middleware for authorization
 export const withAuthorizationDashboard: MiddlewareFactory = (
@@ -49,7 +34,8 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
     const { pathname } = request.nextUrl;
 
     // Check if the path is in the unauthenticated allow list
-    if (isUnauthenticatedAllowListedPath(pathname)) {
+    if (isInAllowedPath(pathname, unauthAllowedPaths)) {
+      // 🛸 Route to next middleware
       return next(request, _next);
     }
 
@@ -57,39 +43,49 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
     const token = await getToken();
 
     if (token) {
-      // Check for the existence of token.user.app_role
+      // Handle user without token.user.app_role
       if (!token.app_role || token.app_role === "") {
-        // Code to handle the case where app_role is either an empty string or null
-        // route to profile form
-        if (pathname.endsWith("/profile")) {
+        if (pathname.endsWith(`/${paths.profile}`)) {
+          // 🛸 Route to next middleware
           return next(request, _next);
         } else {
+          // 🛸 Redirect to profile
           return NextResponse.redirect(
-            new URL(`/administration/profile`, request.url),
+            new URL(`/administration/${paths.profile}`, request.url),
+          );
+        }
+      }
+      // Handle user with token.user.app_role = cas_pending
+      if (token.app_role === FrontEndRoles.CAS_PENDING) {
+        if (isInAllowedPath(pathname, authAllowedPaths)) {
+          // 🛸 Route to next middleware
+          return next(request, _next);
+        } else {
+          // 🛸 Redirect to dashboard
+          return NextResponse.redirect(
+            new URL(`/${paths.dashboard}`, request.url),
           );
         }
       }
 
-      if (token.app_role.includes("pending")) {
-        if (pathname.endsWith("/dashboard")) {
-          return next(request, _next);
-        } else {
-          return NextResponse.redirect(new URL(`/dashboard`, request.url));
-        }
-      }
-
-      if (pathname === "/" || pathname === `/${onboarding}`) {
-        // redirect authenticated user to common dashboard
-        return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
+      if (pathname === "/" || pathname === `/${paths.onboarding}`) {
+        // 🛸 Redirect to dashboard
+        return NextResponse.redirect(
+          new URL(`/${paths.dashboard}`, request.url),
+        );
       } else {
+        // 🛸 Route to next middleware
         return next(request, _next);
       }
     } else {
-      // Handle unauthenticated requests
-      if (pathname.endsWith(`/${onboarding}`)) {
+      if (pathname.endsWith(`/${paths.onboarding}`)) {
+        // 🛸 Route to next middleware
         return next(request, _next);
       } else {
-        return NextResponse.redirect(new URL(`/${onboarding}`, request.url));
+        // 🛸 Redirect to onboarding
+        return NextResponse.redirect(
+          new URL(`/${paths.onboarding}`, request.url),
+        );
       }
     }
   };

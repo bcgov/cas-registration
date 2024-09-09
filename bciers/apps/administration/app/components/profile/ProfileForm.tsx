@@ -5,7 +5,6 @@ import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import { Button } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
@@ -60,7 +59,6 @@ export default function ProfileForm({ formData, isCreate }: Props) {
   //  Destructuring assignment from data property of the object returned by useSession()
   const { data: session, update } = useSession();
   const idp = session?.identity_provider || "";
-  const router = useRouter();
   // 🛠️ Function to update the session, without reloading the page
   const handleUpdate = async () => {
     // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
@@ -72,8 +70,8 @@ export default function ProfileForm({ formData, isCreate }: Props) {
       setIsSuccess(false);
     }, 3000);
     if (isCreate) {
-      // 🛸 Routing: after the update is complete, navigate to the dashboard
-      router.push("/");
+      // 🛸 Redirect: after the update is complete, navigate to the dashboard
+      window.location.href = "./";
     }
   };
 
