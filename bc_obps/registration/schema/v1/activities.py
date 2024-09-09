@@ -9,4 +9,4 @@ class ActivitySchema(ModelSchema):
 
     class Meta:
         model = Activity
-        fields = ["name", "applicable_to"]
+        fields = ['id', "name", "applicable_to"]
