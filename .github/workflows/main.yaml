@@ -53,6 +53,8 @@ jobs:
     uses: ./.github/workflows/build-registration.yaml
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
+  build-dashboard-e2e:
+    uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration1:
     uses: ./.github/workflows/build-registration1.yaml
   build-reporting:
@@ -73,7 +75,7 @@ jobs:
     needs:
       [
         build-backend,
-        build-dashboard,
+        build-dashboard-e2e,
         build-administration,
         install-dev-tools,
         check-nx-affected,
@@ -89,7 +91,7 @@ jobs:
     needs:
       [
         build-backend,
-        build-dashboard,
+        build-dashboard-e2e,
         build-coam,
         install-dev-tools,
         check-nx-affected,
@@ -105,7 +107,7 @@ jobs:
     needs:
       [
         build-backend,
-        build-dashboard,
+        build-dashboard-e2e,
         build-registration,
         install-dev-tools,
         check-nx-affected,
@@ -127,7 +129,7 @@ jobs:
     needs:
       [
         build-backend,
-        build-dashboard,
+        build-dashboard-e2e,
         build-registration,
         install-dev-tools,
         check-nx-affected,
