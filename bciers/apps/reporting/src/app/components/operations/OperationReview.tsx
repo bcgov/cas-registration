@@ -44,6 +44,7 @@ const taskListElements: TaskListElement[] = [
 const formatDate = (dateString: string | number | Date) => {
   return dayjs(dateString).format("MMM DD YYYY");
 };
+
 export default function OperationReview({
   formData,
   version_id,
@@ -55,6 +56,7 @@ export default function OperationReview({
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema] = useState<any>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
+  const [loading, setLoading] = useState(true);
   const saveAndContinueUrl = `/reporting/reports/${version_id}/person-responsible`;
   const reporting_window_end = reportingYear?.reporting_window_end
     ? formatDate(reportingYear.reporting_window_end)
@@ -71,19 +73,20 @@ export default function OperationReview({
     // Extract the formData from the input
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
 
-    // Prepare the data to be sent to the server
+    // Ensure activities and regulated_products are present and correctly formatted
     const preparedData = {
       ...formDataObject,
-      reporting_activities: formDataObject.reporting_activities?.map(
-        (activity: any) => {
-          return allActivities.find((a) => a.name === activity)?.id || activity;
-        },
-      ),
+      activities: formDataObject.activities?.map((activityId: any) => {
+        const activityName = allActivities.find((a) => a.id === activityId)
+          ?.name;
+        return activityName || activityId;
+      }),
       regulated_products: formDataObject.regulated_products?.map(
-        (product: any) => {
-          return (
-            allRegulatedProducts.find((p) => p.name === product)?.id || product
-          );
+        (productId: any) => {
+          const productName = allRegulatedProducts.find(
+            (p) => p.id === productId,
+          )?.name;
+          return productName || productId;
         },
       ),
     };
@@ -96,7 +99,6 @@ export default function OperationReview({
           accept: "application/json",
         },
       });
-      // Navigate to the next URL using Next.js router
       router.push(saveAndContinueUrl);
     } catch (error) {
       console.error("Submission failed:", error);
@@ -104,51 +106,39 @@ export default function OperationReview({
   };
 
   useEffect(() => {
-    if (!formData) {
+    if (!formData || !allActivities || !allRegulatedProducts) {
       return;
     }
-    // Ensure formData fields are arrays
+
     const activities = formData.activities || [];
     const products = formData.regulated_products || [];
 
-    // Create maps for easy lookups
-    const activityMap = new Map(
-      allActivities.map((activity) => [activity.id, activity.name]),
-    );
-    const productMap = new Map(
-      allRegulatedProducts.map((product) => [product.id, product.name]),
-    );
+    const preselectedActivities = activities;
+    const preselectedProducts = products;
 
-    // Map IDs to names using the maps, handle missing names by defaulting to ID
-    const preselectedActivities = activities.map(
-      (id: number) => activityMap.get(id) || id,
-    );
-    const preselectedProducts = products.map(
-      (id: number) => productMap.get(id) || id,
-    );
-
-    // Update schema dynamically
     setSchema((prevSchema) => ({
       ...prevSchema,
       properties: {
         ...prevSchema.properties,
-        reporting_activities: {
+        activities: {
           type: "array",
           title: "Reporting activities",
           items: {
-            type: "string",
-            enum: allActivities.map((activity) => activity.name),
+            type: "number",
+            enum: allActivities.map((activity) => activity.id),
             enumNames: allActivities.map((activity) => activity.name),
           },
+          uniqueItems: true,
         },
         regulated_products: {
           type: "array",
           title: "Regulated products",
           items: {
-            type: "string",
-            enum: allRegulatedProducts.map((product) => product.name),
+            type: "number",
+            enum: allRegulatedProducts.map((product) => product.id),
             enumNames: allRegulatedProducts.map((product) => product.name),
           },
+          uniqueItems: true,
         },
         operation_representative_name: {
           type: "string",
@@ -166,18 +156,21 @@ export default function OperationReview({
           title: `Please ensure this information was accurate for ${reporting_window_end}`,
         },
       },
-      required: ["operation_type", "operation_representative_name"], // Add required fields here
     }));
 
-    // Ensure formData is updated with preselected values
     const updatedFormData = {
       ...formData,
-      reporting_activities: preselectedActivities,
+      activities: preselectedActivities,
       regulated_products: preselectedProducts,
     };
 
     setFormDataState(updatedFormData);
+    setLoading(false);
   }, [allActivities, allRegulatedProducts, formData]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (!formData || formData.error) {
     return <div>No version ID found(TBD)</div>;
@@ -198,8 +191,7 @@ export default function OperationReview({
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
-      saveAndContinueUrl={saveAndContinueUrl}
-      onSubmit={(data) => submitHandler(data, formData.version_id)}
+      onSubmit={(data) => submitHandler(data, version_id)}
     />
   );
 }

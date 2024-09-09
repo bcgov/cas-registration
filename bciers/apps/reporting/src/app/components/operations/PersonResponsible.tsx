@@ -9,10 +9,6 @@ import {
   personResponsibleUiSchema,
 } from "@reporting/src/data/jsonSchema/personResponsible";
 
-interface Props {
-  version_id: number;
-}
-
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
@@ -29,9 +25,7 @@ const taskListElements: TaskListElement[] = [
   },
 ];
 
-export default function PersonResponsible({ version_id }: Props) {
-  const saveAndContinueUrl = `/reporting/reports/${version_id}/person-responsible`;
-
+export default function PersonResponsible() {
   return (
     <MultiStepFormWithTaskList
       initialStep={0}
@@ -47,11 +41,9 @@ export default function PersonResponsible({ version_id }: Props) {
       formData={{}}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
-      saveAndContinueUrl={saveAndContinueUrl}
       onSubmit={(data: any) => {
         return new Promise<void>((resolve) => {
-          console.log(data);
-          resolve();
+          resolve(data);
         });
       }}
     />

@@ -10,7 +10,8 @@ export const operationReviewSchema: RJSFSchema = {
   required: [
     "operation_representative_name",
     "operation_bcghgid",
-    "regulated_products",
+    "operation_representative_name",
+    "operation_name",
   ],
 
   properties: {
@@ -46,17 +47,13 @@ export const operationReviewSchema: RJSFSchema = {
     },
     operation_bcghgid: { type: "string", title: "BCGHG ID" },
     bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
-    reporting_activities: {
+    activities: {
       type: "array",
       title: "Reporting activities",
-      items: { type: "string" },
-      uniqueItems: true,
     },
     regulated_products: {
       type: "array",
       title: "Regulated products",
-      items: { type: "string" },
-      uniqueItems: true,
     },
   },
 };
@@ -102,10 +99,14 @@ export const operationReviewUiSchema = {
     "ui:options": commonUiOptions,
     "ui:placeholder": "BORO ID",
   },
-  reporting_activities: {
+  activities: {
     "ui:widget": "MultiSelectWidget",
-    "ui:options": commonUiOptions,
+    "ui:options": {
+      ...commonUiOptions,
+      label: { style: { verticalAlign: "top" } },
+    },
     "ui:placeholder": "Reporting activities",
+    uniqueItems: true,
   },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
@@ -114,6 +115,7 @@ export const operationReviewUiSchema = {
       label: { style: { verticalAlign: "top" } },
     },
     "ui:placeholder": "Regulated products",
+    uniqueItems: true,
   },
   operation_representative_name: {
     "ui:widget": "select",
