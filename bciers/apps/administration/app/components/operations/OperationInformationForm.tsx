@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
-import { operationUiSchema } from "../../data/jsonSchema/operationInformation";
+import { administrationOperationInformationUiSchema } from "../../data/jsonSchema/operationInformation";
 import {
   OperationInformationFormData,
   OperationInformationPartialFormData,
@@ -46,7 +46,7 @@ const OperationInformationForm = ({
       disabled
       error={error}
       schema={schema}
-      uiSchema={operationUiSchema}
+      uiSchema={administrationOperationInformationUiSchema}
       formData={formData ?? {}}
       onSubmit={handleSubmit}
       onCancel={() => router.push("/operations")}
