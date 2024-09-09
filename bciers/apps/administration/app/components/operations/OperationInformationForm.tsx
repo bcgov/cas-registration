@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
-import { administrationOperationInformationUiSchema } from "../../data/jsonSchema/operationInformation";
+import { administrationOperationInformationUiSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import {
   OperationInformationFormData,
   OperationInformationPartialFormData,
