@@ -2,6 +2,9 @@ name: "Build and push Docker image for Nx frontend app in /bciers directory"
 description: "Reusable action to build and push a Docker image for an Nx app in the /bciers directory"
 
 inputs:
+  environment:
+    description: "Optional variable to build image for CI environment"
+    required: false
   project:
     description: "Nx project name"
     required: true
@@ -53,12 +56,19 @@ runs:
     - name: Build images
       shell: bash
       env:
+        ENVIRONMENT: ${{ inputs.environment || 'production' }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github_token }}
         INPUT_PUSH: true
         INPUT_TAGS: ${{ steps.meta.outputs.tags }}
         INPUT_LABELS: ${{ steps.meta.output.labels }}
         INPUT_CACHE_FROM: type=local,src=/tmp/.buildx-cache
         INPUT_CACHE_TO: type=local,dest=/tmp/.buildx-cache-new
+        # Only build with HOST env vars for e2e CI dashboard build
+        HOST_ADMINISTRATION: ${{ inputs.environment == 'ci' && inputs.project == 'dashboard' && 'http://localhost:4001' || null }}
+        HOST_COAM: ${{ inputs.environment == 'ci' && inputs.project == 'dashboard' && 'http://localhost:7000' || null }}
+        HOST_REGISTRATION: ${{ inputs.environment == 'ci' && inputs.dashboard == 'registration' && 'http://localhost:4000' || null }}
+        HOST_REPORTING: ${{ inputs.environment == 'ci' && inputs.project == 'dashboard' && 'http://localhost:5000' || null }}
+
       run: |
         npx nx container ${{ inputs.project }} --skip-nx-cache
       working-directory: ./bciers
