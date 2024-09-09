@@ -29,7 +29,8 @@ services:
     network_mode: host
 
   dashboard:
-    image: ghcr.io/bcgov/cas-reg1-frontend:latest
+    # Use the dashboard-e2e image which doesn't use secureCookie and has nextjs rewrite hosts build in
+    image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
       PORT: 3000
       HOSTNAME: localhost

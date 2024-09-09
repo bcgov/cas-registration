@@ -1,0 +1,20 @@
+name: Build Dashboard Docker container
+
+on:
+  workflow_call:
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build dashboard container
+        uses: ./.github/actions/nx-app-build
+        with:
+          environment: ci
+          image_url: ghcr.io/bcgov/cas-dash-e2e-frontend
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          project: dashboard
