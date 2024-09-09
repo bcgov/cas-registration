@@ -4,12 +4,6 @@ import { getOperation } from "./mocks";
 import { actionHandler } from "@bciers/testConfig/mocks";
 
 const fetchFormEnums = () => {
-  // Business structures
-  actionHandler.mockResolvedValueOnce([
-    { name: "General Partnership" },
-    { name: "BC Corporation" },
-  ]);
-
   // Naics codes
   actionHandler.mockResolvedValueOnce([
     {
@@ -23,13 +17,6 @@ const fetchFormEnums = () => {
       naics_description: "Bituminous coal mining",
     },
   ]);
-
-  // Regulated products
-  actionHandler.mockResolvedValueOnce([
-    { id: 1, name: "BC-specific refinery complexity throughput" },
-    { id: 2, name: "Cement equivalent" },
-  ]);
-
   // Reporting activities
   actionHandler.mockResolvedValueOnce([
     {
@@ -38,6 +25,21 @@ const fetchFormEnums = () => {
     },
     { name: "Fuel combustion by mobile equipment", applicable_to: "sfo" },
   ]);
+
+  // Business structures
+  actionHandler.mockResolvedValueOnce([
+    { name: "General Partnership" },
+    { name: "BC Corporation" },
+  ]);
+
+  // Regulated products
+  actionHandler.mockResolvedValueOnce([
+    { id: 1, name: "BC-specific refinery complexity throughput" },
+    { id: 2, name: "Cement equivalent" },
+  ]);
+
+  // Registration purposes
+  actionHandler.mockResolvedValueOnce(["Potential Reporting Operation"]);
 };
 
 const formData = {
@@ -86,7 +88,6 @@ describe("the OperationInformationPage component", () => {
     expect(screen.getByText(/Process Flow Diagram/i)).toBeVisible();
     expect(screen.getByText(/Boundary Map/i)).toBeVisible();
     expect(screen.getByText(/Equipment List/i)).toBeVisible();
-    expect(screen.getByText(/Operation Representative/i)).toBeVisible();
 
     expect(
       screen.getByRole("heading", { name: "Multiple Operators Information" }),
@@ -98,9 +99,9 @@ describe("the OperationInformationPage component", () => {
     expect(
       screen.getByRole("heading", { name: "Registration Information" }),
     ).toBeVisible();
-    expect(screen.getByText(/Registration Category/i)).toBeVisible();
-    expect(screen.getByText(/Regulated Product Names/i)).toBeVisible();
-    expect(screen.getByText(/Forcasted Emissions/i)).toBeVisible();
+    expect(
+      screen.getByText(/The purpose of this registration+/i),
+    ).toBeVisible();
   });
 
   it("should render the form with the correct values when formData is provided", async () => {
