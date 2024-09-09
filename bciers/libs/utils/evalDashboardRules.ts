@@ -9,8 +9,12 @@ import { actionHandler } from "../actions/src/actions";
  * @returns Filtered array of ContentItem objects.
  */
 const evalDashboardRules = async (
-  items: ContentItem[],
+  items: ContentItem[] | null | undefined, // Allow null or undefined
 ): Promise<ContentItem[]> => {
+  // Ensure items is an array, if not default to an empty array
+  if (!Array.isArray(items)) {
+    items = [];
+  }
   const result = await Promise.all(
     items.map(async (item) => {
       // 🧩 Check if the tile (item) has a condition

@@ -15,14 +15,18 @@ export default async function Page() {
   const role = session?.user?.app_role || "";
   const isIndustryUser = role.includes("industry");
 
-  // 🚀 API fetch dashboard tiles
-  // 🚩 Source: bc_obps/common/fixtures/dashboard/bciers/[IdProviderType]
-  let data = (await fetchDashboardData(
-    "common/dashboard-data?dashboard=bciers",
-  )) as ContentItem[];
+  let data: ContentItem[] = [];
 
-  // Evaluate display conditions in the dashboard data
-  data = await evalDashboardRules(data);
+  // Check role before fetching data
+  if (role && role !== FrontEndRoles.CAS_PENDING) {
+    // 🚀 API fetch dashboard tiles
+    // 🚩 Source: bc_obps/common/fixtures/dashboard/bciers/[IdProviderType]
+    data = (await fetchDashboardData(
+      "common/dashboard-data?dashboard=bciers",
+    )) as ContentItem[];
+    // Evaluate display rules in the dashboard data
+    data = await evalDashboardRules(data);
+  }
 
   return (
     <div>
