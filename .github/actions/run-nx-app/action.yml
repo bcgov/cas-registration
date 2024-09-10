@@ -38,6 +38,7 @@ runs:
         echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
         echo "API_URL=http://127.0.0.1:8000/api/" >> $GITHUB_ENV
         echo "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" >> $GITHUB_ENV
+        echo "NX_APP_PORT=${{ inputs.nx_app_port }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Start services with Docker Compose and wait for them to be ready
