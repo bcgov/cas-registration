@@ -83,6 +83,7 @@ jobs:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
+          DB_PASSWORD: postgres
           DB_NAME: registration
           DB_PORT: 5432
           DB_HOST: localhost
