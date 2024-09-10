@@ -17,7 +17,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
     def test_operators_endpoint_list_operators_v2_paginated(self):
         # Create 60 operators with unique corp numbers
         for i in range(60):
-          operator_baker()
+            operator_baker()
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
@@ -54,10 +54,10 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert page_2_response_id != page_2_response_id_reverse
 
     def test_operators_endpoint_list_operators_v2_with_filter(self):
-        operator_baker({"legal_name":'gouda'})
-        operator_baker({"cra_business_number":'118675309'})
+        operator_baker({"legal_name": 'gouda'})
+        operator_baker({"cra_business_number": '118675309'})
         for i in range(60):
-          operator_baker()
+            operator_baker()
 
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(
