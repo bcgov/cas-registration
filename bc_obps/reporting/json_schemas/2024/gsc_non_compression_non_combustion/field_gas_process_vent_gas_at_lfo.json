@@ -34,6 +34,11 @@
                   "type": "string",
                   "enum": []
                 },
+                "fuelClassification": {
+                  "title": "Fuel Classification",
+                  "maxLength": 200,
+                  "type": "string"
+                },
                 "fuelUnit": {
                   "title": "Fuel Unit",
                   "maxLength": 200,
