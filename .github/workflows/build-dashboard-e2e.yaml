@@ -1,4 +1,4 @@
-name: Build Dashboard Docker container
+name: Build Dashboard e2e Docker container built with host env vars
 
 on:
   workflow_call:

@@ -1,9 +1,3 @@
-import { test, expect } from "@playwright/test";
+import testNxProjectLandingPage from "@bciers/e2e/utils/test-nx-app-landing-page";
 
-test("has title", async ({ page }) => {
-  await page.goto("/");
-
-  expect(await page.locator("h1").innerText()).toContain(
-    "B.C. Industrial Emissions Reporting System",
-  );
-});
+testNxProjectLandingPage("registration");

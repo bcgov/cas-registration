@@ -15,6 +15,9 @@ dotenv.config({ path: "./e2e/.env.local" });
 
 const happoPlaywright = require("happo-playwright");
 
+// NOTE:: This is just a quick basic test setup to ensure that the database and auth are working in CI
+// Feel free to delete this or modify it as needed
+
 const testNxProjectLandingPage = async (zone: string) => {
   test.beforeAll(async () => {
     try {
@@ -70,12 +73,9 @@ const testNxProjectLandingPage = async (zone: string) => {
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(page, pageContent, {
-        component: `Authenticated ${zone} page cas_admin`,
+        component: `Authenticated ${zone} page industry_user_admin`,
         variant: "default",
       });
-
-      // ♿️ Analyze accessibility
-      // await analyzeAccessibility(page);
     });
   });
 };
