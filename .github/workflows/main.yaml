@@ -17,17 +17,6 @@ env:
   PGUSER: postgres
 
 jobs:
-  # Possibly remove this job as check-nx-affected installs dev tools as well?
-  # The tools are still installed between jobs however because of different runners
-  # Enable corepack wasn't working in the check-nx-affected job
-  install-dev-tools:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - run: yarn install --immutable
-        working-directory: ./bciers
   check-nx-affected:
     runs-on: ubuntu-latest
     outputs:
@@ -39,7 +28,6 @@ jobs:
           fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - run: yarn install --immutable
       - name: check nx affected target e2e:ci projects and save output
         id: check-nx-affected
         run: |
@@ -64,10 +52,10 @@ jobs:
   build-administration:
     uses: ./.github/workflows/build-administration.yaml
   test-code:
-    needs: [install-dev-tools]
+    needs: [check-nx-affected]
     uses: ./.github/workflows/test-code.yaml
   test-backend:
-    needs: [build-backend, install-dev-tools]
+    needs: [build-backend, check-nx-affected]
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
   test-administration-e2e:
@@ -77,7 +65,6 @@ jobs:
         build-backend,
         build-dashboard-e2e,
         build-administration,
-        install-dev-tools,
         check-nx-affected,
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
@@ -88,14 +75,7 @@ jobs:
     secrets: inherit
   test-coam-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
-    needs:
-      [
-        build-backend,
-        build-dashboard-e2e,
-        build-coam,
-        install-dev-tools,
-        check-nx-affected,
-      ]
+    needs: [build-backend, build-dashboard-e2e, build-coam, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       nx_project: coam
@@ -109,7 +89,6 @@ jobs:
         build-backend,
         build-dashboard-e2e,
         build-registration,
-        install-dev-tools,
         check-nx-affected,
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
@@ -120,8 +99,7 @@ jobs:
     secrets: inherit
   test-registration1-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
-    needs:
-      [build-backend, build-registration1, install-dev-tools, check-nx-affected]
+    needs: [build-backend, build-registration1, check-nx-affected]
     uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
   test-registration-e2e:
@@ -131,7 +109,6 @@ jobs:
         build-backend,
         build-dashboard-e2e,
         build-registration,
-        install-dev-tools,
         check-nx-affected,
       ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
@@ -152,7 +129,7 @@ jobs:
     uses: ./.github/workflows/e2e-finalize.yaml
     secrets: inherit
   zap-owasp:
-    needs: [build-backend, build-registration1, install-dev-tools]
+    needs: [build-backend, build-registration1, check-nx-affected]
     uses: ./.github/workflows/zap-owasp.yaml
   trivy:
     uses: ./.github/workflows/trivy.yaml
