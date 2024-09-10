@@ -56,7 +56,6 @@ const testNxProjectLandingPage = async (zone: string) => {
   });
 
   const url = `${process.env.E2E_BASEURL}${zone}`;
-
   // 🏷 Annotate test suite as serial
   test.describe.configure({ mode: "serial" });
   test.describe(`Test ${zone} landing page`, () => {
