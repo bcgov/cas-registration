@@ -2,7 +2,7 @@ import { devices } from "@playwright/test";
 import { nxE2EPreset } from "@nx/playwright/preset";
 
 // For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env.BASE_URL || "http://127.0.0.1:3000";
+const baseURL = process.env.BASE_URL || "http://localhost:3000";
 
 const playwrightBaseConfig = {
   ...nxE2EPreset(__filename, { testDir: "./tests" }),

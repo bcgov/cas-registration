@@ -29,10 +29,10 @@ services:
     network_mode: host
 
   dashboard:
-    # Use the dashboard-e2e image which doesn't use secureCookie and has nextjs rewrite hosts build in
+    # Use the dashboard-e2e image which has nextjs rewrite hosts built in
     image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
-      CI: true
+      CI: true # This is used to disable secureCookie in the dashboard route.ts file
       PORT: 3000
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000
