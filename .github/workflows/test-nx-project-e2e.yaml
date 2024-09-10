@@ -115,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Store all of the reports separately by reconfiguring the report name
-          name: blob-report-${{ matrix.project }}
+          name: blob-report-${{ inputs.nx_project }}-${{ matrix.project }}
           path: bciers/blob-report
           retention-days: 1
       - name: Dump docker logs on failure

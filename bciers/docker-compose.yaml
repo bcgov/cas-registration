@@ -32,6 +32,7 @@ services:
     # Use the dashboard-e2e image which doesn't use secureCookie and has nextjs rewrite hosts build in
     image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
+      CI: true
       PORT: 3000
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000

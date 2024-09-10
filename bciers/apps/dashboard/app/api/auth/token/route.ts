@@ -1,8 +1,11 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
+const isProduction = process.env.NODE_ENV === "production";
+const isCIBuild = process.env.CI === "true";
+
 const cookieName =
-  process.env.NODE_ENV === "production"
+  isProduction && !isCIBuild
     ? "__Secure-authjs.session-token"
     : "authjs.session-token";
 
