@@ -46,10 +46,10 @@ services:
       - backend
     network_mode: host
 
-  frontend2:
+  nx-app:
     image: ghcr.io/bcgov/cas-admin-frontend:${GITHUB_SHA}
     environment:
-      PORT: 4001
+      PORT: ${NX_APP_PORT}
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000
       NEXTAUTH_URL: http://localhost:3000
