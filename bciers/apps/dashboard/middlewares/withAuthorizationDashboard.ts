@@ -24,7 +24,7 @@ const paths = {
   profile: "profile",
 };
 export const authAllowedPaths = [paths.dashboard, paths.profile];
-const unauthAllowedPaths = [paths.auth, paths.auth];
+const unauthAllowedPaths = [paths.auth, paths.unauth];
 
 // Middleware for authorization
 export const withAuthorizationDashboard: MiddlewareFactory = (
