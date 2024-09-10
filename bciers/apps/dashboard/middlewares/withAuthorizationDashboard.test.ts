@@ -2,6 +2,8 @@ import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { instance, mock, reset, when } from "ts-mockito";
 import middleware from "../middleware";
+import { authAllowedPaths } from "./withAuthorizationDashboard";
+
 import { getToken } from "@bciers/testConfig/mocks";
 import {
   mockBaseToken,
@@ -185,17 +187,21 @@ describe("withAuthorizationDashboard middleware", () => {
     expect(result?.status).toBe(307);
   });
 
-  it("calls NextMiddleware for authenticated, NON-authorized cas_user if the route is /dashboard", async () => {
+  it("calls NextMiddleware for authenticated, NON-authorized cas_user if the route is in the allowed list", async () => {
     getToken.mockResolvedValue(mockCasPendingToken);
-    const nextUrl = new NextURL(`${domain}/dashboard`);
 
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    // Loop through the array of allowed paths
+    for (const allowedPath of authAllowedPaths) {
+      const nextUrl = new NextURL(`${domain}/${allowedPath}`);
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
-    expect(result?.status).toBe(200);
+      when(mockedRequest.nextUrl).thenReturn(nextUrl);
+
+      const result = await middleware(
+        instance(mockedRequest),
+        mockNextFetchEvent,
+      );
+      expect(result?.status).toBe(200);
+    }
   });
 
   it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /administration, /coam, /onboarding, /registration, /reporting", async () => {
