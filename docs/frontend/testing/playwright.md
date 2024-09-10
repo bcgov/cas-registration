@@ -13,7 +13,11 @@ cd bc_obps && make run
 npm install @playwright/test
 ```
 
-2.0 Ensure the client app is running:
+Ensure you have the correct env variables set up in the `bciers/.env.local` file. You can copy the `.env.local.example` file and update the values accordingly.
+
+## Test organization in our monorepo
+
+The e2e tests are organized in separate projects in the `/bciers/apps` directory. Each project has its own `e2e` directory where the tests are located. To run the tests we need to have the `Dashboard` app running due to our auth implementation alongside whichever app we are testing. There are shared utilities in the `bciers/libs/e2e` directory that can be used across all e2e tests.
 
 ## Writing Tests
 
@@ -133,17 +137,24 @@ Playwright will be re-testing the element with the test id of status until the f
 
   1.0 Ensure the server is running:
 
-Start server from new terminal command:
+Start the BCIERS apps and run the backend in two terminals:
 
 ```bash
-cd bciers && yarn devreg1
+cd bci && yarn dev-all
+cd bc_obps && make run
+```
+
+To run Registration1 e2e test, just run the `reg1` app before running the tests:
+
+```bash
+cd bciers && yarn reg1
 cd bc_obps && make run
 ```
 
 2.0 Run the tests:
 
 Run tests from new terminal command:
-Run tests in the background using terminal command:
+Run tests in the background using terminal command `yarn <app shortform>:e2e:ci`. These commands are located in `package.json`:
 
 ```bash
 cd bciers && yarn reg1:e2e
