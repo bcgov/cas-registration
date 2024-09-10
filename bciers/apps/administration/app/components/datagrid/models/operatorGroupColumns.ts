@@ -3,7 +3,6 @@ import {
   GridColumnGroupingModel,
 } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
-import { OPERATOR_COLUMN_INDEX } from "apps/administration/app/components/datagrid/models/operationColumns";
 
 const operationGroupColumns = (
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
