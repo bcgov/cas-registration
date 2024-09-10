@@ -38,12 +38,13 @@ jobs:
           - project: chromium
             os: ubuntu-24.04
             cache_dir: ~/.cache/ms-playwright
-          - project: firefox
-            os: ubuntu-latest
-            cache_dir: ~/.cache/ms-playwright
-          - project: webkit
-            os: macos-latest
-            cache_dir: ~/Library/Caches/ms-playwright
+          # Uncomment these if we want to run tests on other browsers
+          # - project: firefox
+          #   os: ubuntu-latest
+          #   cache_dir: ~/.cache/ms-playwright
+          # - project: webkit
+          #   os: macos-latest
+          #   cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
       - name: 🎁 setup local app
