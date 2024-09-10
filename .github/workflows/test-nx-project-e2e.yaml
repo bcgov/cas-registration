@@ -85,7 +85,7 @@ jobs:
           DB_NAME: registration
           DB_PORT: 5432
           DB_HOST: localhost
-          E2E_BASEURL: http://localhost:4001/
+          E2E_BASEURL: http://localhost:3000/
           E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
           E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
           E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}

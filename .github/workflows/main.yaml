@@ -129,6 +129,7 @@ jobs:
     uses: ./.github/workflows/e2e-finalize.yaml
     secrets: inherit
   zap-owasp:
+    # We will need to set up the BCIERS apps to get zap scanned
     needs: [build-backend, build-registration1, check-nx-affected]
     uses: ./.github/workflows/zap-owasp.yaml
   trivy:
