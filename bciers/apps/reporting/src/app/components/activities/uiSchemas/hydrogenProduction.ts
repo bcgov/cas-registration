@@ -36,7 +36,7 @@ const uiSchema = {
             "ui:widget": "select",
             "ui:options": {
               label: "Gas Type",
-              enumOptions: ["CO2"], // You might want to populate this dynamically
+              enumOptions: ["CO2"],
             },
           },
           emission: {
@@ -44,6 +44,16 @@ const uiSchema = {
           },
           equivalentEmissions: {
             "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          feedstocks: {
+            "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+            "ui:FieldTemplate": FieldTemplate,
+            "ui:options": {
+              arrayAddLabel: "Add Feedstock",
+              title: "Feedstock",
+              label: false,
+              verticalBorder: true,
+            },
           },
           methodology: {
             "ui:FieldTemplate": InlineFieldTemplate,
