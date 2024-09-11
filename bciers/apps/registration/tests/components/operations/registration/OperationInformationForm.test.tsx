@@ -80,9 +80,15 @@ describe("the OperationInformationForm component", () => {
       );
     });
   });
-
+  // brianna is still working on this test
   it("should submit when a purpose without regulated products is selected for an existing operation", async () => {
     fetchFormEnums(); // mock actionHandler calls to populate dropdown options
+
+    actionHandler.mockResolvedValueOnce({
+      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+      name: "Operation 14",
+    }); // mock response from submit handler
+
     render(
       <OperationInformationForm
         // giving formData mocks having selected an existing operation and `handleSelectOperationChange`
@@ -105,16 +111,18 @@ describe("the OperationInformationForm component", () => {
     expect(
       screen.queryByPlaceholderText(/select regulated product/i),
     ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText(/select your operation+/i)).toHaveValue(
+        "Operation actual uuid",
+      );
+      expect(screen.getAllByText(/test.pdf/i)).toHaveLength(3);
+    });
 
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
+
     await waitFor(() => {
-      // mock response from submit handler
-      actionHandler.mockResolvedValueOnce({
-        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-        name: "Operation 14",
-      });
       // LastCalledWith because fetchFormEnums calls the actionHandler multiple times to populate the dropdown options in the form schema
-      expect(actionHandler).toHaveBeenLastCalledWith(
+      expect(actionHandler).toHaveBeenCalledWith(
         "registration/v2/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
         "PUT",
         "",
