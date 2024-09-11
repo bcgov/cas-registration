@@ -101,11 +101,11 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
 
     # CO2 - Alternative Parameter Measurement
     methodology_alt = Methodology.objects.get(name='Alternative Parameter Measurement')
-    config_element_alt, created = ConfigurationElement.objects.get_or_create(
-        activity=activity,
-        source_type=source_type,
-        gas_type=gas_type,
-        methodology=methodology_alt,
+    config_element_alt = ConfigurationElement.objects.get(
+        activity_id=activity.id,
+        source_type_id=source_type.id,
+        gas_type_id=gas_type.id,
+        methodology_id=methodology_alt.id,
         valid_from=valid_from,
         valid_to=valid_to,
     )
@@ -115,20 +115,18 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
 
     # CO2 - Replacement Methodology
     methodology_rep = Methodology.objects.get(name='Replacement Methodology')
-    config_element_rep, created = ConfigurationElement.objects.get_or_create(
-        activity=activity,
-        source_type=source_type,
-        gas_type=gas_type,
-        methodology=methodology_rep,
+    config_element_rep = ConfigurationElement.objects.get(
+        activity_id=activity.id,
+        source_type_id=source_type.id,
+        gas_type_id=gas_type.id,
+        methodology_id=methodology_rep.id,
         valid_from=valid_from,
         valid_to=valid_to,
     )
     config_element_rep.reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Description',
-            field_units__isnull=True,
-        )
+        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
     )
+
 
 
 def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):

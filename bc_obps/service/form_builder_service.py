@@ -25,6 +25,7 @@ def get_custom_methodology_schema_by_id(schema_id: int) -> Dict[str, Any]:
     except CustomMethodologySchema.DoesNotExist:
         raise ValueError(f"CustomMethodologySchema with id {schema_id} does not exist")
 
+
 def handle_methodologies(
     gas_type_id: int,
     activity_id: int,
