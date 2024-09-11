@@ -1,5 +1,6 @@
 from typing import List
 from uuid import UUID
+from common.permissions import authorize
 from django.http import HttpRequest
 from django.db.models import QuerySet
 from ninja import Query
@@ -26,6 +27,7 @@ from .router import router
     tags=DASHBOARD_TAGS,
     description="""Returns a list of operators for the current reporting year, for the current user. Populates
     the main reporting dashboard page.""",
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 @paginate(PageNumberPagination, page_size=PAGE_SIZE)
