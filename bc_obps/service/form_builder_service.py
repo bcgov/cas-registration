@@ -4,8 +4,9 @@ from reporting.models import (
     ConfigurationElement,
     ActivityJsonSchema,
     ActivitySourceTypeJsonSchema,
+    CustomMethodologySchema,
 )
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from django.db.models import QuerySet
 from django.db.models import Prefetch
 from service.data_access_service.fuel_service import FuelTypeDataAccessService
@@ -16,6 +17,13 @@ def str_to_camel_case(st: str) -> str:
     output = ''.join(x for x in st.title() if x.isalnum())
     return output[0].lower() + output[1:]
 
+
+def get_custom_methodology_schema_by_id(schema_id: int) -> Dict[str, Any]:
+    try:
+        custom_schema = CustomMethodologySchema.objects.get(id=schema_id)
+        return custom_schema.json_schema
+    except CustomMethodologySchema.DoesNotExist:
+        raise ValueError(f"CustomMethodologySchema with id {schema_id} does not exist")
 
 def handle_methodologies(
     gas_type_id: int,
@@ -53,19 +61,25 @@ def handle_methodologies(
         # Create methodology object
         methodology_object: Dict = {"properties": {"methodology": {"enum": [methodology_name]}}}
 
+        if config_element_for_methodology.custom_methodology_schema_id:
+            custom_schema = get_custom_methodology_schema_by_id(
+                config_element_for_methodology.custom_methodology_schema_id
+            )
+            methodology_one_of['methodology']['oneOf'].append(custom_schema)
         # Add fields to methodology object
-        for reporting_field in reporting_fields:
-            property_field = str_to_camel_case(reporting_field.field_name)
-            methodology_object['properties'][property_field] = {
-                "type": reporting_field.field_type,
-                "title": reporting_field.field_name,
-            }
-            if reporting_field.field_units:
-                methodology_object['properties'][f"{property_field}FieldUnits"] = {
-                    "type": "string",
-                    "default": reporting_field.field_units,
-                    "title": f"{reporting_field.field_name} Units",
+        else:
+            for reporting_field in reporting_fields:
+                property_field = str_to_camel_case(reporting_field.field_name)
+                methodology_object['properties'][property_field] = {
+                    "type": reporting_field.field_type,
+                    "title": reporting_field.field_name,
                 }
+                if reporting_field.field_units:
+                    methodology_object['properties'][f"{property_field}FieldUnits"] = {
+                        "type": "string",
+                        "default": reporting_field.field_units,
+                        "title": f"{reporting_field.field_name} Units",
+                    }
 
         methodology_one_of['methodology']['oneOf'].append(methodology_object)
 
@@ -94,7 +108,9 @@ def handle_gas_types(
 
     # Fetch all relevant configuration elements with a single query
     fetched_configuration_elements = list(
-        ConfigurationElement.objects.select_related('activity', 'source_type', 'gas_type', 'methodology')
+        ConfigurationElement.objects.select_related(
+            'activity', 'source_type', 'gas_type', 'methodology', 'custom_methodology_schema'
+        )
         .prefetch_related(Prefetch("reporting_fields", to_attr="prefetched_reporting_fields"))
         .filter(
             activity=activity_id,

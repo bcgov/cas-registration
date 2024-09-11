@@ -570,6 +570,7 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Site-specific EF'),
             Methodology(name='CEMS'),
             Methodology(name='Measured CC and MW'),
+            Methodology(name='Feedstock Material Balance'),
         ]
     )
 
@@ -600,6 +601,7 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Site-specific EF',
             'CEMS',
             'Measured CC and MW',
+            'Feedstock Material Balance',
         ]
     ).delete()
 
