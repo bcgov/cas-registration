@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional
 from registration.models.partner_operator import PartnerOperator
 from registration.schema.v2.partner_operator import PartnerOperatorIn, PartnerOperatorOut
 from registration.models.parent_operator import ParentOperator
@@ -12,13 +12,12 @@ from registration.models import BusinessStructure
 
 
 class OperatorFilterSchema(FilterSchema):
-    legal_name: Optional[str] = None
-    business_structure: Optional[str] = None
-    cra_business_number: Optional[str] = None
-    bc_corporate_registry_number: Optional[str] = None
-    page: Union[int, float, str] = 1
-    sort_field: Optional[str] = "created_at"
-    sort_order: Optional[str] = "desc"
+    legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'legal_name__icontains'})
+    business_structure: Optional[str] = Field(None, json_schema_extra={'q': 'business_structure_id__name__icontains'})
+    cra_business_number: Optional[str] = Field(None, json_schema_extra={'q': 'cra_business_number__icontains'})
+    bc_corporate_registry_number: Optional[str] = Field(
+        None, json_schema_extra={'q': 'bc_corporate_registry_number__icontains'}
+    )
 
 
 class OperatorOut(ModelSchema):
@@ -65,9 +64,9 @@ class OperatorOut(ModelSchema):
 
 
 class OperatorListOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = [
+        fields = [
             'id',
             'legal_name',
             'business_structure',
