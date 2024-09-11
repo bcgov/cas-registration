@@ -17,6 +17,7 @@ class TestBcObpsRegulatedOperationModel(BaseTestCase):
             ("issued_at", "issued at", None, None),
             ("comments", "comments", None, None),
             ("operation", "operation", None, None),
+            ("status", "status", None, None),
         ]
 
     def test_check_id_format(self):

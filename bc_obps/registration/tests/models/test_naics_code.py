@@ -14,4 +14,6 @@ class NaicsCodeModelTest(BaseTestCase):
             ("naics_code", "naics code", 1000, None),
             ("naics_description", "naics description", 1000, None),
             ("operations", "operation", None, None),
+            ("operations_naics_secondary", "operation", None, None),
+            ("operations_naics_tertiary", "operation", None, None),
         ]

@@ -9,6 +9,10 @@ from django.core.exceptions import ValidationError
 
 
 class BcObpsRegulatedOperation(BaseModel):
+    class Statuses(models.TextChoices):
+        ACTIVE = "Active"
+        INACTIVE = "Inactive"
+
     id = models.CharField(
         primary_key=True,
         max_length=255,
@@ -21,6 +25,12 @@ class BcObpsRegulatedOperation(BaseModel):
     comments = models.TextField(
         blank=True,
         db_comment="Comments from admins in the case that a BC OBPS Regulated Operation ID is revoked",
+    )
+    status = models.CharField(
+        max_length=1000,
+        choices=Statuses.choices,
+        default=Statuses.ACTIVE,
+        db_comment="The status of an operation.",
     )
     history = HistoricalRecords(
         table_name='erc_history"."bc_obps_regulated_operation_history',
