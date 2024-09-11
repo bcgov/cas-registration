@@ -71,11 +71,13 @@ test.describe("Test Workflow cas_admin", () => {
       );
 
       // 📷 Cheese!
-      const pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
-        component: "Operators Grid cas_admin",
-        variant: "default",
-      });
+      // Disabled due to flakiness - tech debt to resolve:
+      // https://github.com/bcgov/cas-registration/issues/2181
+      // const pageContent = page.locator("html");
+      // await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      //   component: "Operators Grid cas_admin",
+      //   variant: "default",
+      // });
     });
 
     test("Test details view by status", async ({ page }) => {
