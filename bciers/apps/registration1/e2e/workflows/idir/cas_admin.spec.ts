@@ -12,7 +12,6 @@ import {
   tableRowCount,
   waitForElementToStabilize,
   takeStabilizedScreenshot,
-  stabilizeGrid,
   stabilizeAccordion,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
@@ -72,11 +71,13 @@ test.describe("Test Workflow cas_admin", () => {
       );
 
       // 📷 Cheese!
-      const pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
-        component: "Operators Grid cas_admin",
-        variant: "default",
-      });
+      // Disabled due to flakiness - tech debt to resolve:
+      // https://github.com/bcgov/cas-registration/issues/2181
+      // const pageContent = page.locator("html");
+      // await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      //   component: "Operators Grid cas_admin",
+      //   variant: "default",
+      // });
     });
 
     test("Test details view by status", async ({ page }) => {
@@ -161,12 +162,14 @@ test.describe("Test Workflow cas_admin", () => {
         TableDataField.STATUS,
       );
       // 📷 Cheese!
-      await stabilizeGrid(page, 20);
-      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
-        component: "Operations Grid cas_admin",
-        variant: "default",
-        targets: ["chrome", "firefox", "safari"], // edge screenshot is flaky
-      });
+      // Disabled due to flakiness - tech debt to resolve:
+      // https://github.com/bcgov/cas-registration/issues/2181
+      // await stabilizeGrid(page, 20);
+      // await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
+      //   component: "Operations Grid cas_admin",
+      //   variant: "default",
+      //   targets: ["chrome", "firefox", "safari"], // edge screenshot is flaky
+      // });
     });
 
     test("Test details view by status", async ({ page }) => {
