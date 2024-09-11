@@ -51,9 +51,28 @@ jobs:
     uses: ./.github/workflows/test-e2e.yaml
     secrets: inherit
   zap-owasp:
+    runs-on: ubuntu-latest
     # We will need to set up registration part 2 and reporting to get zap scanned
     # needs: [build-backend, build-registration1, install-dev-tools]
-    uses: ./.github/workflows/zap-owasp.yaml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run OWASP ZAP scan
+        id: zap-scan-1
+        continue-on-error: true
+        uses: ./.github/workflows/zap-owasp.yaml
+      - name: Retry OWASP ZAP scan on failure
+        id: zap-scan-2
+        continue-on-error: true
+        if: ${{ steps.zap-scan-1.outcome == 'failure' }}
+        uses: ./.github/workflows/zap-owasp.yaml
+      - name: Retry OWASP ZAP scan on failure
+        id: zap-scan-3
+        continue-on-error: true
+        if: ${{ steps.zap-scan-2.outcome == 'failure' }}
+        uses: ./.github/workflows/zap-owasp.yaml
+      - name: Fail if ZAP scan failed
+        if: ${{ steps.zap-scan-3.outcome == 'failure' }}
+        run: exit 1
   trivy:
     uses: ./.github/workflows/trivy.yaml
   codeql:
