@@ -55,18 +55,15 @@ jobs:
     # We will need to set up registration part 2 and reporting to get zap scanned
     # needs: [build-backend, build-registration1, install-dev-tools]
     steps:
-      - uses: actions/checkout@v4
       - name: Run OWASP ZAP scan
         id: zap-scan-1
         continue-on-error: true
         uses: ./.github/workflows/zap-owasp.yaml
-      - uses: actions/checkout@v4
       - name: Retry OWASP ZAP scan on failure
         id: zap-scan-2
         continue-on-error: true
         if: ${{ steps.zap-scan-1.outcome == 'failure' }}
         uses: ./.github/workflows/zap-owasp.yaml
-      - uses: actions/checkout@v4
       - name: Retry OWASP ZAP scan on failure
         id: zap-scan-3
         continue-on-error: true

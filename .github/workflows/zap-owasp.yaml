@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: test failure
-        run: exit 1
+      # - name: test failure
+      #   run: exit 1
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
@@ -40,3 +40,16 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
+
+  # rerun-on-failure:
+  #   needs: zap-scan
+  #   if: failure() && fromJSON(github.run_attempt) < 3
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - env:
+  #         GH_REPO: ${{ github.repository }}
+  #         GH_TOKEN: ${{ github.token }}
+  #         GH_DEBUG: api
+  # This command will fail until the workflow exists in develop
+  #
+  #       run: gh workflow run retry-workflow.yml -F run_id=${{ github.run_id }}
