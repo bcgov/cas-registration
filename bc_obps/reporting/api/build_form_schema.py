@@ -1,4 +1,5 @@
 from service.form_builder_service import FormBuilderService
+from common.permissions import authorize
 from .router import router
 from registration.decorators import handle_http_errors
 from django.http import HttpRequest
@@ -11,7 +12,10 @@ from ninja.responses import codes_4xx, codes_5xx
 
 
 @router.get(
-    "/build-form-schema", response={200: str, codes_4xx: Message, codes_5xx: Message}, url_name="build_form_schema"
+    "/build-form-schema",
+    response={200: str, codes_4xx: Message, codes_5xx: Message},
+    url_name="build_form_schema",
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 def build_form_schema(
