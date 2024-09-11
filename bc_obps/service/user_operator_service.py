@@ -157,7 +157,7 @@ class UserOperatorService:
                 }
             )
         return UserOperatorPaginatedOut(
-            data=user_operator_list,  # type: ignore[arg-type] # we know this is a list of dictionaries with the correct keys
+            data=user_operator_list,
             row_count=paginator.count,
         )
 
