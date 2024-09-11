@@ -128,7 +128,6 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
     )
 
 
-
 def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
     Remove initial data from erc.configuration_element_reporting_fields
