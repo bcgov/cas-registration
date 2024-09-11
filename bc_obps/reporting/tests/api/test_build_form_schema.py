@@ -1,34 +1,85 @@
-from django.test import Client
 import json
-import pytest
 from reporting.models import FuelType
+from registration.tests.utils.bakers import operator_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.utils import custom_reverse_lazy
 
-pytestmark = pytest.mark.django_db
-client = Client()
-pytest.endpoint = "/api/reporting/build-form-schema"
 
+class TestBuildFormSchema(CommonTestSetup):
+    endpoint = custom_reverse_lazy("build_form_schema")
 
-class TestBuildFormSchema:
+    # AUTHORIZATION
+    def test_unauthorized_users_cannot_get_activity_schema(self):
+        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", self.endpoint)
+        assert response.status_code == 401
+
+    def test_authorized_users_can_get_activity_schema(self):
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        for role in ["cas_admin", "cas_analyst", "industry_user"]:
+            response = TestUtils.mock_get_with_auth_role(
+                self,
+                role,
+                f'{self.endpoint}?activity=1&report_date=2024-05-01',
+            )
+            assert response.status_code == 200
+
     def test_invalid_without_report_date(self):
-        response = client.get('/api/reporting/build-form-schema?activity=1')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=1',
+        )
         assert response.status_code == 422
 
     def test_invalid_without_activity(self):
-        response = client.get('/api/reporting/build-form-schema?report_date=2024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?report_date=2024-05-01',
+        )
         assert response.status_code == 422
 
     def test_except_if_no_valid_configuration(self):
-        response = client.get('/api/reporting/build-form-schema?activity=1&report_date=5024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=1&report_date=5024-05-01',
+        )
         assert response.status_code == 400
         assert response.json().get('message') == "No Configuration found for report_date 5024-05-01"
 
     def test_except_if_no_valid_activity_schema(self):
-        response = client.get('/api/reporting/build-form-schema?activity=0&report_date=2024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=0&report_date=2024-05-01',
+        )
         assert response.status_code == 400
         assert response.json().get('message') == "No schema found for activity_id 0 & report_date 2024-05-01"
 
     def test_except_if_no_valid_source_type_schema(self):
-        response = client.get('/api/reporting/build-form-schema?activity=1&source_types[]=0&report_date=2024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=1&source_types[]=0&report_date=2024-05-01',
+        )
         assert response.status_code == 400
         assert (
             response.json().get('message')
@@ -36,7 +87,14 @@ class TestBuildFormSchema:
         )
 
     def test_returns_activity_schema(self):
-        response = client.get('/api/reporting/build-form-schema?activity=1&report_date=2024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=1&report_date=2024-05-01',
+        )
         assert response.status_code == 200
         response_object = json.loads(response.json())
         assert response_object['schema']['title'] == 'General stationary combustion excluding line tracing'
@@ -46,7 +104,14 @@ class TestBuildFormSchema:
         assert len(response_object['schema']['properties'].keys()) == 2
 
     def test_returns_source_type_schema(self):
-        response = client.get('/api/reporting/build-form-schema?activity=1&source_types[]=1&report_date=2024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=1&source_types[]=1&report_date=2024-05-01',
+        )
         assert response.status_code == 200
         response_object = json.loads(response.json())
         # Source Types object has been created
@@ -94,21 +159,40 @@ class TestBuildFormSchema:
         ]
 
     def test_returns_multiple_source_type_schemas(self):
-        response = client.get(
-            '/api/reporting/build-form-schema?activity=1&source_types[]=1&source_types[]=2&report_date=2024-05-01'
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_date=2024-05-01',
         )
         assert response.status_code == 200
         # 2 schemas in the sourceTypes object
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
 
     def test_single_mandatory_source_type(self):
-        response = client.get('/api/reporting/build-form-schema?activity=3&report_date=2024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=3&report_date=2024-05-01',
+        )
         assert response.status_code == 200
         # 1 schema is automatically added to the sourceTypes object when there is only 1 valid sourceType for the activity
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 1
 
     def test_source_type_schema_no_units(self):
-        response = client.get('/api/reporting/build-form-schema?activity=3&report_date=2024-05-01')
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=3&report_date=2024-05-01',
+        )
         assert response.status_code == 200
         response_object = json.loads(response.json())
         source_type_key = list(response_object['schema']['properties']['sourceTypes']['properties'].keys())[0]
