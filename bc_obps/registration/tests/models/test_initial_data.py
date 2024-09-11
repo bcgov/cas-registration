@@ -56,6 +56,7 @@ class TestInitialData(TestCase):
                 'soce_senior_officer_proof_of_authority',
                 'proof_of_start',
                 'opt_in_signed_statutory_declaration',
+                'equipment_list',
             ]
         )
         existing_types = sorted(list(DocumentType.objects.values_list('name', flat=True)))
