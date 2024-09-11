@@ -12,7 +12,6 @@ import operatorGroupColumns from "../datagrid/models/operatorGroupColumns";
 const OperatorDataGrid = ({
   initialData,
 }: {
-  isInternalUser?: boolean;
   initialData: {
     rows: OperatorRow[];
     row_count: number;

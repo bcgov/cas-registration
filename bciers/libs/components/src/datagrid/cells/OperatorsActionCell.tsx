@@ -1,17 +1,9 @@
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { OperatorStatus } from "@bciers/utils/enums";
 
 const OperatorsActionCell = () => {
   const renderCell = (params: GridRenderCellParams) => {
-    let actionText;
-    switch (params.row.status) {
-      case OperatorStatus.DRAFT:
-        actionText = "Continue";
-        break;
-      default:
-        actionText = "View Details";
-    }
+    const actionText = "View Details";
     return (
       <div>
         {/* 🔗 Add link with href query parameter with row's descriptive text*/}

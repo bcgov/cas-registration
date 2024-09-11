@@ -1,7 +1,6 @@
 import { OperatorRow, OperatorsSearchParams } from "./types";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import { auth } from "@/dashboard/auth";
 import OperatorDataGrid from "./OperatorDataGrid";
 import fetchOperatorsPageData from "./fetchOperatorsPageData";
 
@@ -11,29 +10,20 @@ export default async function Operators({
 }: {
   searchParams: OperatorsSearchParams;
 }) {
-  const session = await auth();
-
-  const role = session?.user?.app_role;
   // Fetch operations data
   const operators: {
     rows: OperatorRow[];
     row_count: number;
   } = await fetchOperatorsPageData(searchParams);
   if (!operators) {
-    return <div>No user operator data in database.</div>;
+    return <div>No operator data in database.</div>;
   }
-
-  const isAuthorizedAdminUser =
-    role?.includes("cas") && !role?.includes("pending");
 
   // Render the DataGrid component
   return (
     <Suspense fallback={<Loading />}>
       <div className="mt-5">
-        <OperatorDataGrid
-          initialData={operators}
-          isInternalUser={isAuthorizedAdminUser}
-        />
+        <OperatorDataGrid initialData={operators} />
       </div>
     </Suspense>
   );

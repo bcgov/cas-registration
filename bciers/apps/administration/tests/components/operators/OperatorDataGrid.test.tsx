@@ -75,24 +75,4 @@ describe("OperatorDataGrid component", () => {
       3,
     );
   });
-
-  // for later when operator details page is created
-  // it("renders the correct url for the operation information link", async () => {
-  //   render(
-  //     <OperatorDataGrid initialData={mockResponse} />,
-  //   );
-
-  //   const operationInfoLinks = screen.getAllByRole("link", {
-  //     name: /View Operation/i,
-  //   });
-
-  //   expect(operationInfoLinks[0]).toHaveAttribute(
-  //     "href",
-  //     "operations/1?operations_title=Operation+1",
-  //   );
-  //   expect(operationInfoLinks[1]).toHaveAttribute(
-  //     "href",
-  //     "operations/2?operations_title=Operation+2",
-  //   );
-  // });
 });
