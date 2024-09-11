@@ -11,9 +11,9 @@ jobs:
   zap-scan:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: test failure
         run: exit 1
-      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
