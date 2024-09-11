@@ -54,7 +54,7 @@ export const createOperationInformationSchema = (
             regulated_products: {
               title: "Regulated Product Name(s)",
               type: "array",
-              // minItems: 1,
+              minItems: 1,
               items: {
                 enum: regulatedProductsEnum,
                 enumNames: regulatedProductsEnumNames,
