@@ -18,7 +18,7 @@ export const fetchFormEnums = () => {
     { id: "uuid2", name: "Operation 2" },
     {
       id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-      name: "Operation actual uuid",
+      name: "Existing Operation",
     },
   ]);
   // Purposes
