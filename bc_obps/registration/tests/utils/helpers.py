@@ -1,3 +1,4 @@
+import os
 import pytest
 import json
 from registration.models import (
@@ -21,6 +22,12 @@ from registration.constants import BASE_ENDPOINT
 
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.tests.utils.bakers import operator_baker, address_baker
+
+
+def requires_env(*envs):
+    env = os.environ.get('ENVIRONMENT', 'test')
+
+    return pytest.mark.skipif(env not in list(envs), reason=f"Not suitable envrionment {env} for current test")
 
 
 class TestUtils:
@@ -132,6 +139,29 @@ class TestUtils:
             facility.well_authorization_numbers.set(well_auth_objs)
 
         return operator, owning_operation, facility
+
+    def create_facility_and_ownership(self, owning_operation):
+        """
+        Creates a facility and associates it with a given operation through FacilityDesignatedOperationTimeline.
+
+        This method performs the following steps:
+        1. **Create a Facility**: Uses the `facility_baker` to generate a new facility instance. This instance represents the entity that will be updated or tested.
+        2. **Associate Facility with Operation**: Uses `baker.make` to create a `FacilityDesignatedOperationTimeline` instance that links the created facility with the provided operation. This sets up the ownership context for the facility, ensuring that it is associated with the specified operation.
+
+        Parameters:
+        - `owning_operation`: The operation instance that the facility will be associated with. This is typically created using `create_and_authorize_operator` or similar methods.
+
+        Returns:
+        - `facility`: The created facility instance.
+        """
+        # Create a facility instance using the facility_baker function
+        facility = facility_baker()
+
+        # Create an ownership timeline linking the facility with the provided operation
+        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
+
+        # Return the created facility instance
+        return facility
 
     def assert_facility_db_state(facility, expect_address=None, expect_well_authorization_numbers=None):
         """

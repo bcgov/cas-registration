@@ -1,3 +1,4 @@
+from registration.models.multiple_operator import MultipleOperator
 from registration.models.app_role import AppRole
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.user import User
@@ -41,6 +42,13 @@ foreign_parent_operator = Recipe(
 
 partner_operator = Recipe(
     PartnerOperator,
+    cra_business_number=generate_random_cra_business_number(),
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    business_structure=BusinessStructure.objects.first(),
+)
+
+multiple_operator = Recipe(
+    MultipleOperator,
     cra_business_number=generate_random_cra_business_number(),
     bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
     business_structure=BusinessStructure.objects.first(),

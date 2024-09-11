@@ -1,3 +1,4 @@
+from registration.tests.constants import MOCK_DATA_URL
 from registration.constants import PAGE_SIZE
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
@@ -9,6 +10,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 from registration.tests.utils.bakers import operator_baker
 from registration.utils import custom_reverse_lazy
+import json
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -136,3 +138,74 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json().get('items')
         assert len(response_data) == 1
+
+
+class TestOperationsCurrentEndpoint(CommonTestSetup):
+    endpoint = CommonTestSetup.base_endpoint + "operations"
+
+    # AUTHORIZATION
+
+    def test_unauthorized_roles_cannot_get_current_operations(self):
+        # IRC users and unapproved industry users can't get
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']:
+            response = TestUtils.mock_get_with_auth_role(
+                self, role, custom_reverse_lazy("list_current_users_operations")
+            )
+            assert response.status_code == 401
+
+    # GET
+    def test_get_current_users_operations(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+
+        # operation for a different user_operator
+        baker.make_recipe('utils.operation')
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy("list_current_users_operations")
+        )
+        assert response.status_code == 200
+        assert len(response.json()) == 1
+        assert response.json()[0].get('name') == operation.name
+        assert response.json()[0].get('id') == str(operation.id)
+
+
+class TestPostOperationsEndpoint(CommonTestSetup):
+    endpoint = CommonTestSetup.base_endpoint + "operations"
+    mock_payload = {
+        "registration_purpose": "Reporting Operation",
+        "regulated_products": [1],
+        "name": "op name",
+        "type": "SFO",
+        "naics_code_id": 1,
+        "secondary_naics_code_id": 2,
+        "tertiary_naics_code_id": 3,
+        "activities": [1],
+        "boundary_map": MOCK_DATA_URL,
+        "process_flow_diagram": MOCK_DATA_URL,
+        "equipment_list": MOCK_DATA_URL,
+    }
+
+    # AUTHORIZATION
+
+    def test_unauthorized_roles_cannot_post(self):
+        # IRC users and unapproved industry users can't post
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']:
+            response = TestUtils.mock_post_with_auth_role(
+                self, role, json.dumps(self.mock_payload), custom_reverse_lazy("register_create_operation_information")
+            )
+            assert response.status_code == 401
+
+    # GET
+    def test_user_can_post_operation_success(self):
+        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            self.mock_payload,
+            custom_reverse_lazy("register_create_operation_information"),
+        )
+        assert response.status_code == 200
+        assert response.json().get('name') == "op name"
+        assert response.json().get('id') is not None

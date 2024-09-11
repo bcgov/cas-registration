@@ -3,7 +3,7 @@ from uuid import UUID
 
 from registration.schema.v1.operation import OperationListOut
 from service.user_operator_service import UserOperatorService
-from registration.models import Operation, RegulatedProduct, User
+from registration.models import Operation, RegulatedProduct, User, Activity
 from registration.schema.v1 import OperationOut
 from django.db.models import QuerySet
 from ninja.types import DictStrAny
@@ -64,13 +64,45 @@ class OperationDataAccessService:
         operation_data: DictStrAny,
         regulated_products: Union[QuerySet[RegulatedProduct], Iterable[RegulatedProduct]],
     ) -> Operation:
-
         operation = Operation.objects.create(
             **operation_data,
             created_by_id=user_guid,
         )
         operation.regulated_products.set(regulated_products)
+
         return operation
+
+    @classmethod
+    def create_operation_v2(
+        cls,
+        user_guid: UUID,
+        operation_data: DictStrAny,
+        activities: Union[QuerySet[Activity], Iterable[Activity]],
+    ) -> Operation:
+        operation = Operation.objects.create(
+            **operation_data,
+            created_by_id=user_guid,
+        )
+        operation.activities.set(activities)
+
+        return operation
+
+    @classmethod
+    def create_or_update_operation_v2(
+        cls,
+        operation_id: int | None,
+        user_guid: UUID,
+        operation_data: DictStrAny,
+        activities: Union[QuerySet[Activity], Iterable[Activity]],
+    ) -> Operation:
+        operation_instance, _ = Operation.objects.update_or_create(
+            id=operation_id,
+            defaults={**operation_data},
+        )
+
+        operation_instance.activities.set(activities)
+        operation_instance.set_create_or_update(user_guid)
+        return operation_instance
 
     @classmethod
     def get_all_operations_for_user(cls, user: User) -> QuerySet[Operation]:
