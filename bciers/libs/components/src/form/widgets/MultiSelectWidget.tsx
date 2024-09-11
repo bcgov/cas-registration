@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Autocomplete, Chip, MenuItem, TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
@@ -51,6 +52,12 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
     onChange(option.map((o: Option) => o.id));
   };
+
+  useEffect(() => {
+    if (!isValue) {
+      onChange([]);
+    }
+  }, []);
 
   const placeholder = uiSchema?.["ui:placeholder"]
     ? `${uiSchema["ui:placeholder"]}...`
