@@ -229,7 +229,6 @@ test.describe("Test Workflow industry_user_admin", () => {
   }) => {
     const dashboardPage = new DashboardPOM(page);
     const userPage = new UsersPOM(page);
-    const pageContent = page.locator("html");
     // 🛸 Navigate to dashboard
     await dashboardPage.route();
     // 🛸 Navigates to user access management tile page
@@ -257,10 +256,13 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🔍 Assert updated row is Pending
     await userPage.rowHasCorrectStatusValue(rowId, UserOperatorStatus.PENDING);
     // 📷 Cheese!
-    await happoPlaywright.screenshot(userPage.page, pageContent, {
-      component: "User Access Management",
-      variant: UserRole.INDUSTRY_USER_ADMIN,
-    });
+    // Disabled due to flakiness - tech debt to resolve:
+    // https://github.com/bcgov/cas-registration/issues/2181
+    // const pageContent = page.locator("html");
+    // await happoPlaywright.screenshot(userPage.page, pageContent, {
+    //   component: "User Access Management",
+    //   variant: UserRole.INDUSTRY_USER_ADMIN,
+    // });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
