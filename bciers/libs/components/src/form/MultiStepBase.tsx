@@ -112,6 +112,7 @@ const MultiStepBase = ({
         formData={formData}
         setErrorReset={setErrorReset}
         customValidate={customValidate}
+        omitExtraData={true}
       >
         <div className="flex flex-col flex-grow justify-end">
           {children}

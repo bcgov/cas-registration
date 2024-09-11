@@ -16,6 +16,7 @@ export const createOperationInformationSchema =
         "activities",
         "boundary_map",
         "process_flow_diagram",
+        "equipment_list",
       ],
       properties: {
         name: { type: "string", title: "Operation Name" },
