@@ -1,6 +1,7 @@
 from uuid import UUID
 from typing import List, Optional
 from registration.schema.v1.contact import ContactIn
+from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
@@ -25,6 +26,43 @@ class RegistrationPurposeIn(ModelSchema):
 class OperationRepresentativeIn(Schema):
     operation_representatives: Optional[List[int]] = []
     new_operation_representatives: Optional[List[ContactIn]] = []
+
+
+class OperationInformationIn(RegistrationPurposeIn, ModelSchema):
+    activities: list[int]
+    process_flow_diagram: str
+    boundary_map: str
+    equipment_list: str
+    naics_code_id: int
+    secondary_naics_code_id: Optional[int] = None
+    tertiary_naics_code_id: Optional[int] = None
+    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+
+    @field_validator("boundary_map")
+    @classmethod
+    def validate_boundary_map(cls, value: str) -> ContentFile:
+        return data_url_to_file(value)
+
+    @field_validator("process_flow_diagram")
+    @classmethod
+    def validate_process_flow_diagram(cls, value: str) -> ContentFile:
+        return data_url_to_file(value)
+
+    @field_validator("equipment_list")
+    @classmethod
+    def validate_equipment_list(cls, value: str) -> ContentFile:
+        return data_url_to_file(value)
+
+    class Meta:
+        model = Operation
+        fields = ["name", 'type']
+
+
+class OperationCreateOut(ModelSchema):
+    class Config:
+        model = Operation
+        model_fields = ['id', 'name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
+        populate_by_name = True
 
 
 class OperationUpdateOut(ModelSchema):
