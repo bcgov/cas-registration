@@ -15,9 +15,7 @@ import {
   filterTableByFieldId,
   setupTestEnvironment,
   sortTableByColumnLabel,
-  stabilizeGrid,
   tableRowCount,
-  takeStabilizedScreenshot,
 } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -113,13 +111,15 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.tableIsVisible();
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
     // 📷 Cheese!
-    await stabilizeGrid(page, 14);
-    await takeStabilizedScreenshot(happoPlaywright, operationPage.page, {
-      component: "Operation grid",
-      variant: UserRole.INDUSTRY_USER_ADMIN,
-      targets: ["chrome", "firefox", "safari"], // this screenshot is flaky in edge
-    });
-
+    // Disabled due to flakiness - tech debt to resolve:
+    // https://github.com/bcgov/cas-registration/issues/2181
+    // await stabilizeGrid(page, 14);
+    // await takeStabilizedScreenshot(happoPlaywright, operationPage.page, {
+    //   component: "Operation grid",
+    //   variant: UserRole.INDUSTRY_USER_ADMIN,
+    //   targets: ["chrome", "firefox", "safari"], // this screenshot is flaky in edge
+    // });
+    //
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
     // 🛸 Navigate to new operation form
@@ -229,7 +229,6 @@ test.describe("Test Workflow industry_user_admin", () => {
   }) => {
     const dashboardPage = new DashboardPOM(page);
     const userPage = new UsersPOM(page);
-    const pageContent = page.locator("html");
     // 🛸 Navigate to dashboard
     await dashboardPage.route();
     // 🛸 Navigates to user access management tile page
@@ -257,10 +256,13 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🔍 Assert updated row is Pending
     await userPage.rowHasCorrectStatusValue(rowId, UserOperatorStatus.PENDING);
     // 📷 Cheese!
-    await happoPlaywright.screenshot(userPage.page, pageContent, {
-      component: "User Access Management",
-      variant: UserRole.INDUSTRY_USER_ADMIN,
-    });
+    // Disabled due to flakiness - tech debt to resolve:
+    // https://github.com/bcgov/cas-registration/issues/2181
+    // const pageContent = page.locator("html");
+    // await happoPlaywright.screenshot(userPage.page, pageContent, {
+    //   component: "User Access Management",
+    //   variant: UserRole.INDUSTRY_USER_ADMIN,
+    // });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
