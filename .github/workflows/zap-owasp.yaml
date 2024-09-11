@@ -10,8 +10,17 @@ env:
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - attempt: 1
+          - attempt: 2
+          - attempt: 3
     steps:
       - uses: actions/checkout@v4
+      - name: test failure
+        run: exit 1
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
@@ -38,3 +47,4 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
+    continue-on-error: ${{ matrix.attempt != 3 }}
