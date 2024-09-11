@@ -2,7 +2,7 @@ import buildQueryParams from "@bciers/utils/buildQueryParams";
 import { OperatorsSearchParams } from "./types";
 import { actionHandler } from "@bciers/actions";
 
-// 🛠️ Function to fetch operations
+// 🛠️ Function to fetch operators
 export default async function fetchOperatorsPageData(
   searchParams: OperatorsSearchParams,
 ) {

@@ -58,9 +58,7 @@ describe("Operators component", () => {
     fetchOperatorsPageData.mockReturnValueOnce(undefined);
     render(await Operators({ searchParams: {} }));
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
-    expect(
-      screen.getByText(/No user operator data in database./i),
-    ).toBeVisible();
+    expect(screen.getByText(/No operator data in database./i)).toBeVisible();
   });
 
   it("renders the OperatorDataGrid component when there are operators in the database", async () => {
@@ -68,7 +66,7 @@ describe("Operators component", () => {
     render(await Operators({ searchParams: {} }));
     expect(screen.getByRole("grid")).toBeVisible();
     expect(
-      screen.queryByText(/No user operator data in database./i),
+      screen.queryByText(/No operator data in database./i),
     ).not.toBeInTheDocument();
   });
 });
