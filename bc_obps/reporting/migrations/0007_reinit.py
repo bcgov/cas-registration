@@ -83,6 +83,13 @@ class Migration(migrations.Migration):
                         db_comment='The unit of measurement for this fuel type (example: kilolitres)', max_length=1000
                     ),
                 ),
+                (
+                    'classification',
+                    models.CharField(
+                        db_comment='The classification (biomass/non-biomass & exempted/non-exempted) applied to the fuel as determined by GGERR Schedule C (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleC)',
+                        max_length=1000,
+                    ),
+                ),
             ],
             options={
                 'db_table': 'erc"."fuel_type',

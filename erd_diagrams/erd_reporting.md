@@ -82,6 +82,7 @@ FuelType {
     BigAutoField id
     CharField name
     CharField unit
+    CharField classification
 }
 Methodology {
     BigAutoField id
