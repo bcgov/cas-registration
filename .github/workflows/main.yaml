@@ -52,7 +52,7 @@ jobs:
     secrets: inherit
   zap-owasp:
     # We will need to set up registration part 2 and reporting to get zap scanned
-    needs: [build-backend, build-registration1, install-dev-tools]
+    # needs: [build-backend, build-registration1, install-dev-tools]
     uses: ./.github/workflows/zap-owasp.yaml
   trivy:
     uses: ./.github/workflows/trivy.yaml
