@@ -1,4 +1,4 @@
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import {
@@ -225,26 +225,31 @@ describe("ContactForm component", () => {
       // Submit
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
-      expect(actionHandler).toHaveBeenNthCalledWith(
-        1,
-        "registration/contacts",
-        "POST",
-        "/contacts",
-        {
-          body: JSON.stringify({
-            existing_bciers_user: false,
-            first_name: "John",
-            last_name: "Doe",
-            position_title: "Senior Officer",
-            email: "john.doe@example.com",
-            phone_number: "+1 1 604 401 1234",
-            street_address: "123 Main St",
-            municipality: "Cityville",
-            province: "AB",
-            postal_code: "A1B2C3",
-          }),
-        },
-      );
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenNthCalledWith(
+          1,
+          "registration/contacts",
+          "POST",
+          "/contacts",
+          {
+            body: JSON.stringify({
+              existing_bciers_user: false,
+              first_name: "John",
+              last_name: "Doe",
+              position_title: "Senior Officer",
+              email: "john.doe@example.com",
+              phone_number: "+1 1 604 401 1234",
+              street_address: "123 Main St",
+              municipality: "Cityville",
+              province: "AB",
+              postal_code: "A1B2C3",
+            }),
+          },
+        );
+        expect(mockReplace).toHaveBeenCalledWith(
+          "/administration/contacts/123?contacts_title=John Doe",
+        );
+      });
     },
   );
   it(
