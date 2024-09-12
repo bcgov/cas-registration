@@ -9,7 +9,7 @@ import {
 
 const multiSelectFieldLabel = "MultiSelectWidget test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;
-const minItemsMessage = "must NOT have fewer than 1 items";
+const minItemsMessage = "Must not have fewer than 1 items";
 
 export const multiSelectFieldSchema = {
   type: "object",
