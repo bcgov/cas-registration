@@ -15,8 +15,8 @@
           },
           "gscUnitType": {
             "title": "GSC Unit Type",
-            "maxLength": 200,
-            "type": "string"
+            "type": "string",
+            "enum": ["Boiler", "Kiln", "Other"]
           },
           "description": {
             "title": "Description",
