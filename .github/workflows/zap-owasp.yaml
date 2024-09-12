@@ -41,14 +41,14 @@ jobs:
           issue_title: OWASP Baseline - Backend
           fail_action: false
 
-  # retry-on-failure:
-  #   needs: zap-scan
-  #   if: failure() && fromJSON(github.run_attempt) < 3
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - env:
-  #         GH_REPO: ${{ github.repository }}
-  #         GH_TOKEN: ${{ github.token }}
-  #         GH_DEBUG: api
-  #       This will fail to fetch the workflow from gh api until merged into develop
-  #       run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}
+  retry-on-failure:
+    needs: zap-scan
+    if: failure() && fromJSON(github.run_attempt) < 3
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: api
+        # This will fail to fetch the workflow from gh api until merged into develop
+        run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}

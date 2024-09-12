@@ -6,7 +6,7 @@ on:
       run_id:
         required: true
 jobs:
-  rerun:
+  retry-on-failure:
     runs-on: ubuntu-latest
     steps:
       - name: rerun ${{ inputs.run_id }}
