@@ -10,8 +10,8 @@
         "properties": {
           "fuelName": {
             "title": "Fuel Name",
-            "maxLength": 200,
-            "type": "string"
+            "type": "string",
+            "enum": []
           },
           "fuelClassification": {
             "title": "Fuel Classification",
