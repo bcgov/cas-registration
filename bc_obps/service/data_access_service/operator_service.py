@@ -12,7 +12,7 @@ class OperatorDataAccessService:
 
     @classmethod
     def get_all_operators(cls) -> QuerySet[Operator]:
-        return Operator.objects.all().exclude(status__icontains="Declined")
+        return Operator.objects.exclude(status=Operator.Statuses.DECLINED)
 
     @classmethod
     def get_operator_by_user_operator_id(cls, user_operator_id: UUID) -> Operator:

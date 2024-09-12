@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const OperatorsActionCell = () => {
-  const renderCell = (params: GridRenderCellParams) => {
+  const renderCell = () => {
     const actionText = "View Details";
     return (
       <div>
@@ -10,10 +9,6 @@ const OperatorsActionCell = () => {
         <Link
           className="action-cell-text"
           href={{
-            // pathname: `operators/${params.row.id}`,
-            // query: {
-            //   operators_title: `${params.row.name}`,
-            // },
             pathname: "tbd/for1699",
           }}
         >
