@@ -100,7 +100,8 @@ export default function ContactForm({
         const replaceUrl = `/administration/contacts/${
           method === "POST" ? response.id : formState.id
         }?contacts_title=${response.first_name} ${response.last_name}`;
-        window.history.replaceState(null, "", replaceUrl);
+        // window.history.replaceState(null, "", replaceUrl);
+        router.replace(replaceUrl);
       }}
       onChange={(e: IChangeEvent) => {
         let newSelectedUser = e.formData?.section1?.selected_user;
