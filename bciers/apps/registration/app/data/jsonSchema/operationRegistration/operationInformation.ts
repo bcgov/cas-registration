@@ -10,7 +10,7 @@ import {
 export const operationInformationSchema: RJSFSchema = {
   title: "Operation Information",
   type: "object",
-  required: ["registration_purpose", "operation", "regulated_products"],
+  required: ["registration_purpose", "operation"],
   properties: {
     purpose_preface: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
