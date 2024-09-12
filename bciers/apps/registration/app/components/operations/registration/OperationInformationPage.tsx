@@ -45,12 +45,9 @@ export const createOperationInformationSchema = (
     const isRegulatedProducts =
       purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
       purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION;
+
     return {
-      // This works:
-      // required: [isRegulatedProducts && "regulated_products"],
-      //
-      // This triggers validation error even when dynamic field isn't displayed:
-      required: ["regulated_products"],
+      required: [isRegulatedProducts && "regulated_products"],
       properties: {
         registration_purpose: {
           type: "string",
