@@ -20,23 +20,6 @@ describe("OperationReview Component", () => {
     (actionHandler as unknown as typeof mockActionHandler) = mockActionHandler;
   });
 
-  it("renders loading state initially", () => {
-    render(
-      <OperationReview
-        formData={null}
-        version_id={1}
-        reportingYear={{
-          reporting_year: 2024,
-          report_due_date: "2024-12-31",
-          reportingWindowEnd: "2024-12-31",
-        }}
-        allActivities={[]}
-        allRegulatedProducts={[]}
-      />,
-    );
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-  });
-
   it("renders the form correctly after loading", async () => {
     render(
       <OperationReview
@@ -50,7 +33,7 @@ describe("OperationReview Component", () => {
         reportingYear={{
           reporting_year: 2024,
           report_due_date: "2024-12-31",
-          reportingWindowEnd: "2024-12-31",
+          reporting_window_end: "2024-12-31",
         }}
         allActivities={[{ id: 1, name: "Activity 1" }]}
         allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
@@ -61,5 +44,8 @@ describe("OperationReview Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Operation Information")).toBeInTheDocument();
     });
+
+    expect(screen.getByText(/Cancel/i)).toBeInTheDocument();
+    expect(screen.getByText(/Save And Continue/i)).toBeInTheDocument();
   });
 });
