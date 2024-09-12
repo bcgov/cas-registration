@@ -9,7 +9,7 @@ import {
 
 const multiSelectFieldLabel = "MultiSelectWidget test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;
-const minItemsMessage = "Must not have fewer than 1 items";
+const expectedMinItemsMessage = "Must not have fewer than 1 items";
 
 export const multiSelectFieldSchema = {
   type: "object",
@@ -247,7 +247,7 @@ describe("RJSF MultiSelectWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText(minItemsMessage)).toBeVisible();
+    expect(screen.getByText(expectedMinItemsMessage)).toBeVisible();
   });
 
   it("should not show an error message when the combo box is required and a value is selected", async () => {
@@ -263,7 +263,7 @@ describe("RJSF MultiSelectWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.queryByText(minItemsMessage)).not.toBeInTheDocument();
+    expect(screen.queryByText(expectedMinItemsMessage)).not.toBeInTheDocument();
   });
 
   it("should show an error message when the combo box is required and an invalid value is typed", async () => {
@@ -282,7 +282,7 @@ describe("RJSF MultiSelectWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.queryByText(minItemsMessage)).toBeVisible();
+    expect(screen.queryByText(expectedMinItemsMessage)).toBeVisible();
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
