@@ -34,7 +34,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormSubmit = async (data: any) => {
-    setIsSubmitting(true); // Show "Saving..." message
+    setIsSubmitting(true);
     try {
       await onSubmit(data);
     } catch (error) {

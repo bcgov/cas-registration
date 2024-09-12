@@ -1,7 +1,6 @@
 from uuid import UUID
 from django.db import transaction
 from typing import List, Optional
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
@@ -104,10 +103,7 @@ class ReportService:
         report_operation.activities.set(activities)
         report_operation.regulated_products.set(regulated_products)
         # Save the updated report operation
-        try:
-            report_operation.save()
-        except Exception as e:
-            print("Error saving report operation:", e)
+        report_operation.save()
 
         return report_operation
 
@@ -123,11 +119,9 @@ class ReportService:
 
     @classmethod
     def get_activity_ids_for_facility(cls, facility_id: int) -> List[int]:
-        try:
-            facility = FacilityReport.objects.get(id=facility_id)
-            return list(facility.activities.values_list('id', flat=True))
-        except FacilityReport.DoesNotExist:
-            return []
+        # Fetch the facility and return the list of activity IDs
+        facility = FacilityReport.objects.get(id=facility_id)
+        return list(facility.activities.values_list('id', flat=True))
 
     @classmethod
     def save_facility_report(cls, report_version_id: int, facility_id: int, data: FacilityReportIn) -> FacilityReport:
@@ -142,30 +136,22 @@ class ReportService:
         Returns:
             FacilityReport: The updated or created FacilityReport instance.
         """
-        try:
-            # Fetch or create a FacilityReport instance
-            facility_report, _ = FacilityReport.objects.update_or_create(
-                id=facility_id,
-                report_version__id=report_version_id,
-                defaults={
-                    'facility_name': data.facility_name.strip(),
-                    'facility_type': data.facility_type.strip(),
-                    'facility_bcghgid': data.facility_bcghgid.strip(),
-                },
-            )
+        # Fetch or create a FacilityReport instance
+        facility_report, _ = FacilityReport.objects.update_or_create(
+            id=facility_id,
+            report_version__id=report_version_id,
+            defaults={
+                'facility_name': data.facility_name.strip(),
+                'facility_type': data.facility_type.strip(),
+                'facility_bcghgid': data.facility_bcghgid.strip(),
+            },
+        )
 
-            # Update ManyToMany fields (activities)
-            if data.activities:
-                facility_report.activities.set(Activity.objects.filter(id__in=data.activities))
+        # Update ManyToMany fields (activities)
+        if data.activities:
+            facility_report.activities.set(Activity.objects.filter(id__in=data.activities))
 
-            # Save the updated FacilityReport instance
-            facility_report.save()
+        # Save the updated FacilityReport instance
+        facility_report.save()
 
-            return facility_report
-
-        except ObjectDoesNotExist:
-            raise ValueError("Facility report not found.")
-        except ValidationError as ve:
-            raise ve
-        except Exception as e:
-            raise Exception(f"An unexpected error occurred: {str(e)}")
+        return facility_report

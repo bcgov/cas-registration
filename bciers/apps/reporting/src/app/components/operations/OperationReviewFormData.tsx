@@ -9,10 +9,10 @@ export default async function OperationReviewFormData({
 }: {
   version_id: number;
 }) {
-  const reportOperation = (await getReportingOperation(version_id)) || null;
-  const allActivities = (await getAllActivities()) || [];
-  const allRegulatedProducts = (await getAllRegulatedProducts()) || [];
-  const reportingYear = (await getReportingYear()) || null;
+  const reportOperation = await getReportingOperation(version_id);
+  const allActivities = await getAllActivities();
+  const allRegulatedProducts = await getAllRegulatedProducts();
+  const reportingYear = await getReportingYear();
   return (
     <OperationReview
       formData={reportOperation}

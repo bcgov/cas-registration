@@ -11,7 +11,7 @@ import {
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { actionHandler } from "@bciers/actions";
-import dayjs from "dayjs";
+import { formatDate } from "@reporting/src/app/utils/formatDate";
 
 interface Props {
   formData: any;
@@ -41,10 +41,6 @@ const taskListElements: TaskListElement[] = [
   },
 ];
 
-const formatDate = (dateString: string | number | Date) => {
-  return dayjs(dateString).format("MMM DD YYYY");
-};
-
 export default function OperationReview({
   formData,
   version_id,
@@ -54,13 +50,12 @@ export default function OperationReview({
 }: Props) {
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
-  const [uiSchema] = useState<any>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const [loading, setLoading] = useState(true);
   const saveAndContinueUrl = `/reporting/reports/${version_id}/person-responsible`;
-  const reportingWindowEnd = reportingYear?.reporting_window_end
-    ? formatDate(reportingYear.reporting_window_end)
-    : null;
+  const reportingWindowEnd = formatDate(
+    reportingYear.reporting_window_end,
+    "MMM DD YYYY",
+  );
 
   const submitHandler = async (
     data: { formData?: any },
@@ -68,40 +63,37 @@ export default function OperationReview({
   ) => {
     const method = "POST";
     const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
-    const pathToRevalidate = `reporting/report-version/${reportVersionId}/report-operation`;
 
-    // Extract the formData from the input
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
 
-    // Ensure activities and regulated_products are present and correctly formatted
     const preparedData = {
       ...formDataObject,
       activities: formDataObject.activities?.map((activityId: any) => {
-        const activityName = allActivities.find((a) => a.id === activityId)
-          ?.name;
-        return activityName || activityId;
+        const activity = allActivities.find((a) => a.id === activityId);
+        if (!activity)
+          throw new Error(`Activity with ID ${activityId} not found`);
+        return activity.name;
       }),
       regulated_products: formDataObject.regulated_products?.map(
         (productId: any) => {
-          const productName = allRegulatedProducts.find(
-            (p) => p.id === productId,
-          )?.name;
-          return productName || productId;
+          const product = allRegulatedProducts.find((p) => p.id === productId);
+          if (!product)
+            throw new Error(`Product with ID ${productId} not found`);
+          return product.name;
         },
       ),
     };
 
-    try {
-      await actionHandler(endpoint, method, pathToRevalidate, {
-        body: JSON.stringify(preparedData),
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-      });
-      router.push(saveAndContinueUrl);
-    } catch (error) {
-      console.error("Submission failed:", error);
+    const response = await actionHandler(endpoint, method, endpoint, {
+      body: JSON.stringify(preparedData),
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    });
+
+    if (response.ok) {
+      router.push(saveAndContinueUrl); // Navigate on success
     }
   };
 
@@ -112,9 +104,6 @@ export default function OperationReview({
 
     const activities = formData.activities || [];
     const products = formData.regulated_products || [];
-
-    const preselectedActivities = activities;
-    const preselectedProducts = products;
 
     setSchema((prevSchema) => ({
       ...prevSchema,
@@ -160,19 +149,15 @@ export default function OperationReview({
 
     const updatedFormData = {
       ...formData,
-      activities: preselectedActivities,
-      regulated_products: preselectedProducts,
+      activities,
+      regulated_products: products,
     };
 
     setFormDataState(updatedFormData);
-    setLoading(false);
-  }, [allActivities, allRegulatedProducts, formData]);
+  }, [allActivities, allRegulatedProducts, formData, reportingWindowEnd]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!formData || formData.error) {
+  if (!formData) {
+    //we need to render another component which we would display if no version Id exist or we want to show an error
     return <div>No version ID found(TBD)</div>;
   }
 
@@ -187,7 +172,7 @@ export default function OperationReview({
       ]}
       taskListElements={taskListElements}
       schema={schema}
-      uiSchema={uiSchema}
+      uiSchema={operationReviewUiSchema}
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
