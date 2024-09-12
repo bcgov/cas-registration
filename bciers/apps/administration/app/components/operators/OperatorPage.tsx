@@ -84,19 +84,21 @@ export const createOperatorSchema = (
 };
 
 // 🧩 Main component
-export default async function Operator() {
+export default async function OperatorPage({
+  isCreating = false,
+}: { isCreating?: boolean } = {}) {
   let operatorFormData: { [key: string]: any } | { error: string } = {};
-  operatorFormData = await getCurrentOperator();
-  if (operatorFormData?.error) {
-    return notFound();
+  if (!isCreating) {
+    operatorFormData = await getCurrentOperator();
+    if (operatorFormData?.error) {
+      throw new Error("Failed to retrieve operator information");
+    }
   }
   const businessStructures: { name: string }[] | { error: string } =
     await getBusinessStructures();
   if ("error" in businessStructures) {
-    return notFound();
+    throw new Error("Failed to retrieve business structure information");
   }
-
-  const isCreating = Object.keys(operatorFormData).length === 0;
 
   return (
     <OperatorForm

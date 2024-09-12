@@ -36,8 +36,8 @@ export default function OperatorForm({
       onSubmit={async (data: { formData?: any }) => {
         const method = isCreating ? "POST" : "PUT";
         const endpoint = isCreating
-          ? "tbd"
-          : `registration/v2/user-operators/current/operator`;
+          ? "registration/v2/user-operators/operators"
+          : "registration/v2/user-operators/current/operator";
         const pathToRevalidate = "administration/operators";
         const response = await actionHandler(
           endpoint,
