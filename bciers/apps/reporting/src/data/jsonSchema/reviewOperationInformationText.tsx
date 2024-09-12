@@ -1,7 +1,8 @@
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Paper, Typography } from "@mui/material";
+import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 export const purposeNote = (
-  <Paper sx={{ p: 2, mb: 3, bgcolor: "#DCE9F6", color: "#313132" }}>
+  <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <InfoIcon sx={{ mr: 1 }} />
       <Typography variant="body2">
@@ -11,13 +12,4 @@ export const purposeNote = (
       </Typography>
     </Box>
   </Paper>
-);
-
-export const dateInfo = (
-  <Typography variant="body2" color="#38598A" fontSize="16px" gutterBottom>
-    Please ensure this information was accurate for{" "}
-    <b>
-      <u>Dec 31 2024</u>
-    </b>
-  </Typography>
 );

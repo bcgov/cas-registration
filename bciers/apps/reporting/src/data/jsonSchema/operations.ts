@@ -2,6 +2,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { purposeNote } from "./reviewOperationInformationText";
+import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const operationReviewSchema: RJSFSchema = {
@@ -78,7 +79,11 @@ export const operationReviewUiSchema = {
   date_info: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:options": {
-      style: { variant: "body2", color: "#38598A", fontSize: "16px" },
+      style: {
+        variant: "body2",
+        color: BC_GOV_BACKGROUND_COLOR_BLUE,
+        fontSize: "16px",
+      },
     },
   },
   operation_type: {
@@ -126,7 +131,7 @@ export const operationReviewUiSchema = {
       className:
         "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary",
       style: {
-        backgroundColor: "#38598A",
+        backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
         color: "white",
         padding: "6px 16px",
         fontSize: "0.875rem",
