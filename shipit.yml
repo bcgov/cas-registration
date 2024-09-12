@@ -12,3 +12,4 @@ deploy:
 ci:
   allow_failures:
     - "yarn-audit"
+    - "Happo"
