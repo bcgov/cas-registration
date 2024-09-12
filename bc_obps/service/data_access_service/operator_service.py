@@ -11,6 +11,10 @@ class OperatorDataAccessService:
         return Operator.objects.get(id=operator_id)
 
     @classmethod
+    def get_all_operators(cls) -> QuerySet[Operator]:
+        return Operator.objects.exclude(status=Operator.Statuses.DECLINED)
+
+    @classmethod
     def get_operator_by_user_operator_id(cls, user_operator_id: UUID) -> Operator:
         from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 

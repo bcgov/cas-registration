@@ -1,3 +1,4 @@
+from typing import Optional
 from registration.models.parent_operator import ParentOperator
 from registration.models.partner_operator import PartnerOperator
 from registration.schema.v2.partner_operator import PartnerOperatorIn
@@ -8,11 +9,12 @@ from service.data_access_service.user_service import UserDataAccessService
 from registration.models import Operator
 from service.data_access_service.operator_service import OperatorDataAccessService
 from uuid import UUID
+from ninja import Query
 from django.db import transaction
 from registration.models import (
     Address,
 )
-from registration.schema.v2.operator import OperatorIn
+from registration.schema.v2.operator import OperatorIn, OperatorFilterSchema
 from registration.schema.v2.parent_operator import ParentOperatorIn
 from django.db.models import QuerySet
 
@@ -107,3 +109,12 @@ class OperatorServiceV2:
         cls.upsert_parent_operators(operator, parent_operator_data, user_guid)
 
         return operator
+
+    @classmethod
+    def list_operators(
+        cls, sort_field: Optional[str], sort_order: Optional[str], filters: OperatorFilterSchema = Query(...)
+    ) -> QuerySet[Operator]:
+        sort_direction = "-" if sort_order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}"
+        base_qs = OperatorDataAccessService.get_all_operators()
+        return filters.filter(base_qs).order_by(sort_by)
