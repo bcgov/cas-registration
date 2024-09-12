@@ -10,6 +10,10 @@ class FuelType(BaseModel):
         max_length=1000,
         db_comment="The unit of measurement for this fuel type (example: kilolitres)",
     )
+    classification = models.CharField(
+        max_length=1000,
+        db_comment="The classification (biomass/non-biomass & exempted/non-exempted) applied to the fuel as determined by GGERR Schedule C (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleC)",
+    )
 
     class Meta:
         db_table_comment = "This table contains the list of fuel types that can be reported."
