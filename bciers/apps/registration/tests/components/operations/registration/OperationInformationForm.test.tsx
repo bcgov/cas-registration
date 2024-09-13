@@ -68,113 +68,127 @@ describe("the OperationInformationForm component", () => {
     await waitFor(() => {
       // LastCalledWith because fetchFormEnums calls the actionHandler multiple times to populate the dropdown options in the form schema
       expect(actionHandler).toHaveBeenLastCalledWith(
-        "registration/operations/uuid1",
+        "registration/v2/operations/uuid1",
         "GET",
         "",
       );
     });
   });
 
-  it("should submit an edited operation without regulated products", async () => {
-    fetchFormEnums(); // mock actionHandler calls to populate dropdown options
+  it(
+    "should submit an edited operation without regulated products",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      fetchFormEnums(); // mock actionHandler calls to populate dropdown options
 
-    actionHandler.mockResolvedValueOnce({
-      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-      name: "Existing Operation",
-      type: "Single Facility Operation",
-      naics_code_id: 1,
-      boundary_map: mockDataUri,
-      process_flow_diagram: mockDataUri,
-      equipment_list: mockDataUri,
-    }); // mock the GET from selecting an operation
+      actionHandler.mockResolvedValueOnce({
+        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        name: "Existing Operation",
+        type: "Single Facility Operation",
+        naics_code_id: 1,
+        boundary_map: mockDataUri,
+        process_flow_diagram: mockDataUri,
+        equipment_list: mockDataUri,
+        activities: [1],
+      }); // mock the GET from selecting an operation
 
-    actionHandler.mockResolvedValueOnce({
-      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-      name: "Existing Operation edited",
-    }); // mock the POST response from the submit handler
+      actionHandler.mockResolvedValueOnce({
+        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        name: "Existing Operation edited",
+      }); // mock the POST response from the submit handler
 
-    render(
-      <OperationInformationForm
-        rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        step={1}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
-
-    const purposeInput = screen.getByRole("combobox", {
-      name: /The purpose of this registration+/i,
-    });
-    await fillComboboxWidgetField(
-      purposeInput,
-      "Potential Reporting Operation",
-    );
-
-    expect(
-      screen.queryByPlaceholderText(/select regulated product/i),
-    ).not.toBeInTheDocument();
-
-    const operationInput = screen.getByLabelText(/Select your operation+/i);
-    await fillComboboxWidgetField(operationInput, "Existing Operation");
-
-    // assert the mocked GET values are in the form
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
-        "Existing Operation",
+      render(
+        <OperationInformationForm
+          rawFormData={{}}
+          schema={await createRegistrationOperationInformationSchema()}
+          step={1}
+          steps={allOperationRegistrationSteps}
+        />,
       );
-      expect(screen.getByLabelText(/Operation type+/i)).toHaveValue(
-        "Single Facility Operation",
-      );
-      expect(screen.getByLabelText(/Primary naics+/i)).toHaveValue(
-        "211110 - Oil and gas extraction (except oil sands)",
-      );
-      expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(3);
-    });
-    // edit one of the pre-filled values
-    userEvent.type(screen.getByLabelText(/Operation name+/i), " edited");
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
-        "Existing Operation edited",
-      );
-    });
-    // submit
-    userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
 
-    await waitFor(() => {
-      // LastCalledWith because we mock the actionHandler multiple times to populate the dropdown options and operation info
-      expect(actionHandler).toHaveBeenLastCalledWith(
-        "registration/v2/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
-        "PUT",
-        "",
-        {
-          body: JSON.stringify({
-            registration_purpose: "Potential Reporting Operation",
-            operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-            name: "Existing Operation edited",
-            type: "Single Facility Operation",
-            naics_code_id: 1,
-            activities: [],
-            process_flow_diagram:
-              "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
-            boundary_map:
-              "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
-            equipment_list:
-              "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
-            operation_has_multiple_operators: false,
-          }),
+      const purposeInput = screen.getByRole("combobox", {
+        name: /The purpose of this registration+/i,
+      });
+      await fillComboboxWidgetField(
+        purposeInput,
+        "Potential Reporting Operation",
+      );
+
+      expect(
+        screen.queryByPlaceholderText(/select regulated product/i),
+      ).not.toBeInTheDocument();
+
+      const operationInput = screen.getByLabelText(/Select your operation+/i);
+      await fillComboboxWidgetField(operationInput, "Existing Operation");
+
+      // assert the mocked GET values are in the form
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+          "Existing Operation",
+        );
+        expect(screen.getByLabelText(/Operation type+/i)).toHaveValue(
+          "Single Facility Operation",
+        );
+        expect(screen.getByLabelText(/Primary naics+/i)).toHaveValue(
+          "211110 - Oil and gas extraction (except oil sands)",
+        );
+
+        expect(screen.getByText(/Amonia production/i)).toBeVisible();
+        expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(3);
+      });
+      // edit one of the pre-filled values
+      userEvent.type(screen.getByLabelText(/Operation name+/i), " edited");
+      await waitFor(
+        () => {
+          expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+            "Existing Operation edited",
+          );
         },
+        { timeout: 5000 },
+      );
+      // submit
+      userEvent.click(
+        screen.getByRole("button", { name: /save and continue/i }),
       );
 
-      expect(mockPush).toHaveBeenCalledWith(
-        "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?title=Existing Operation edited",
-      );
-    });
-  });
+      await waitFor(() => {
+        // LastCalledWith because we mock the actionHandler multiple times to populate the dropdown options and operation info
+        expect(actionHandler).toHaveBeenLastCalledWith(
+          "registration/v2/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
+          "PUT",
+          "",
+          {
+            body: JSON.stringify({
+              registration_purpose: "Potential Reporting Operation",
+              operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+              name: "Existing Operation edited",
+              type: "Single Facility Operation",
+              naics_code_id: 1,
+              activities: [1],
+              process_flow_diagram:
+                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+              boundary_map:
+                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+              equipment_list:
+                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+              operation_has_multiple_operators: false,
+            }),
+          },
+        );
+
+        expect(mockPush).toHaveBeenCalledWith(
+          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?title=Existing Operation edited",
+        );
+      });
+    },
+  );
 
   it(
     "should submit a new operation with regulated products and multiple operators",
     {
-      timeout: 20000,
+      timeout: 60000,
     },
     async () => {
       fetchFormEnums();

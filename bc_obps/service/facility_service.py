@@ -167,7 +167,7 @@ class FacilityService:
     def get_if_authorized(cls, user_guid: UUID, facility_id: UUID) -> Facility:
         """Retrieve a facility if the user is authorized to access it."""
         facility: Facility = FacilityDataAccessService.get_by_id(facility_id)
-        owner: Operation = facility.current_designed_operation
+        owner: Operation = facility.current_designated_operation
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user() and not owner.user_has_access(user.user_guid):
             raise Exception(UNAUTHORIZED_MESSAGE)

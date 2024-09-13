@@ -290,11 +290,6 @@ class TestOperationServiceV2:
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
 
-    # brianna this skip doesn't seem to be doing anything?
-    # Uncomment this skip to test file uploads locally
-    @pytest.mark.skip(
-        reason="This test passes locally but will fail in CI since we don't have Google Cloud Storage set up for CI"
-    )
     @staticmethod
     def test_create_or_replace_statutory_declaration():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
@@ -386,7 +381,6 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         operation = OperationServiceV2.create_or_update_operation_v2(
             approved_user_operator.user.user_guid, None, payload
         )
-        # brianna why do i have to refresh? just a test thing or a problem?
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
@@ -442,8 +436,8 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         assert operation.created_by == approved_user_operator.user
         assert operation.created_at is not None
         assert MultipleOperator.objects.count() == 2
-        assert MultipleOperator.objects.all().first().bc_corporate_registry_number == 'ghj1234567'
-        assert MultipleOperator.objects.all().last().bc_corporate_registry_number is None
+        assert MultipleOperator.objects.first().bc_corporate_registry_number == 'ghj1234567'
+        assert MultipleOperator.objects.last().bc_corporate_registry_number is None
 
     @staticmethod
     def test_update_operation_with_multiple_operators():
