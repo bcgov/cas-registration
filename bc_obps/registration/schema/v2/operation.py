@@ -1,5 +1,7 @@
 from uuid import UUID
 from typing import List, Optional
+from registration.schema.validators import validate_document
+from registration.schema.v1.operator import OperatorForOperationOut
 from registration.schema.v1.contact import ContactIn
 from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
@@ -10,6 +12,8 @@ from pydantic import field_validator
 from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
+from registration.models import Operator, User
+from ninja.types import DictStrAny
 
 #### Operation schemas
 
@@ -30,8 +34,8 @@ class OperationRepresentativeIn(Schema):
 
 class OperationInformationIn(RegistrationPurposeIn, ModelSchema):
     activities: list[int]
-    process_flow_diagram: str
     boundary_map: str
+    process_flow_diagram: str
     equipment_list: str
     naics_code_id: int
     secondary_naics_code_id: Optional[int] = None
@@ -56,6 +60,50 @@ class OperationInformationIn(RegistrationPurposeIn, ModelSchema):
     class Meta:
         model = Operation
         fields = ["name", 'type']
+
+
+class OperationOutV2(ModelSchema):
+    naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
+    secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
+    tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
+    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
+    operator: Optional[OperatorForOperationOut] = None
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
+    equipment_list: Optional[str] = None
+    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+
+    @staticmethod
+    def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
+        """
+        Only return operator details if the user is an IRC user
+        """
+        request = context.get('request')
+        if request:
+            user: User = request.current_user
+            if user.is_irc_user():
+                return obj.operator
+        return None
+
+    @field_validator("boundary_map")
+    @classmethod
+    def validate_boundary_map(cls, value: str) -> Optional[ContentFile]:
+        return validate_document(value)
+
+    @field_validator("process_flow_diagram")
+    @classmethod
+    def validate_process_flow_diagram(cls, value: str) -> Optional[ContentFile]:
+        return validate_document(value)
+
+    @field_validator("equipment_list")
+    @classmethod
+    def validate_equipment_list(cls, value: str) -> Optional[ContentFile]:
+        return validate_document(value)
+
+    class Meta:
+        model = Operation
+        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status', 'activities']
+        from_attributes = True
 
 
 class OperationCreateOut(ModelSchema):

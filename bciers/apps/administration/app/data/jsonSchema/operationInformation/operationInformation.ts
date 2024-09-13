@@ -70,6 +70,7 @@ export const createOperationInformationSchema =
 
         activities: {
           type: "array",
+          minItems: 1,
           items: {
             type: "number",
             enum: reportingActivities.map(

@@ -168,15 +168,6 @@ class OperationServiceV2:
         operation.set_create_or_update(user_guid)
         return operation
 
-    # @classmethod
-    # @transaction.atomic()
-    # def create_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Dict[str, Union[str, UUID]]:
-
-    #     registration_payload = RegistrationPurposeIn(
-    #         registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products
-    #     )
-    #     cls.set_registration_purpose(user_guid, operation_id, registration_payload)
-
     @classmethod
     @transaction.atomic()
     def create_or_update_operation_v2(

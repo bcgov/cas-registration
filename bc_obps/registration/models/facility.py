@@ -71,7 +71,7 @@ class Facility(TimeStampedModel):
         verbose_name_plural = "Facilities"
 
     @property
-    def current_designed_operation(self) -> Operation:
+    def current_designated_operation(self) -> Operation:
         """
         Returns the current designated operation of the facility.
         """

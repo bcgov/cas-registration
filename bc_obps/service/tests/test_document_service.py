@@ -33,17 +33,18 @@ class TestDocumentService:
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map'
         )
         operation.documents.set([existing_document.id])
+        created_at = operation.documents.first().created_at
 
         updated_file = data_url_to_file(MOCK_DATA_URL)
         document = DocumentService.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, updated_file, 'boundary_map'
         )
 
-        # brianna how to check that it wasn't deleted and then recreated?
         assert Document.objects.count() == 1
         assert document.type.name == 'boundary_map'
         # MOCK_DATA_URL's filename is mock.pdf. When adding files to django, the name is appended, so we just check that 'mock' in the name
         assert document.file.name.find("mock") != -1
+        assert document.created_at == created_at
 
     @staticmethod
     def test_update_operation_document():

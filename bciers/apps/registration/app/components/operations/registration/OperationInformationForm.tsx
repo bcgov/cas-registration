@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
-import { getOperation } from "@bciers/actions/api";
+import { getOperationV2 } from "@bciers/actions/api";
 import {
   createNestedFormData,
   createUnnestedFormData,
@@ -82,8 +82,7 @@ const OperationInformationForm = ({
     const operationId = data.section1.operation;
     try {
       setSelectedOperation(operationId);
-      const operationData = await getOperation(operationId);
-
+      const operationData = await getOperationV2(operationId);
       // combine the entered data with the fetched data
       const combinedData = { ...data, section2: operationData };
       setFormState(combinedData);

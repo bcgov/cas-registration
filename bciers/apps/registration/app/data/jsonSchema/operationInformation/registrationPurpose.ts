@@ -73,7 +73,7 @@ export const createRegistrationPurposeSchema = async () => {
             purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
             purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION;
           return {
-            required: [isRegulatedProducts && "regulated_products"],
+            ...(isRegulatedProducts && { required: ["regulated_products"] }),
             properties: {
               registration_purpose: {
                 type: "string",
