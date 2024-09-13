@@ -72,6 +72,11 @@ class OperationOutV2(ModelSchema):
     process_flow_diagram: Optional[str] = None
     equipment_list: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+    registration_purposes: Optional[list] = []
+
+    @staticmethod
+    def resolve_registration_purposes(obj: Operation) -> List[str]:
+        return list(obj.registration_purposes.all().values_list('registration_purpose', flat=True))
 
     @staticmethod
     def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
