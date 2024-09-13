@@ -93,7 +93,7 @@ jobs:
       image_url: "ghcr.io/bcgov/cas-rep-frontend"
     secrets: inherit
   test-registration1-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
+    # if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
     needs: [build-backend, build-registration1, check-nx-affected]
     uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
