@@ -65,6 +65,15 @@ class TestBuildFormSchema:
                 'units'
             ]['items']['properties']
         )
+        # Fetched list of fuels & added to enum
+        assert (
+            len(
+                response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
+                    'units'
+                ]['items']['properties']['fuels']['items']['properties']['fuelName']['enum']
+            )
+            > 0
+        )
         # Created an array object for emissions
         assert (
             'emissions'
