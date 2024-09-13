@@ -1,5 +1,6 @@
 from typing import Literal, Tuple
 from uuid import UUID
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -17,6 +18,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 def get_facility_report_form_data(
@@ -41,6 +43,7 @@ def get_facility_report_form_data(
     description="""Updates the report facility details by version_id and facility_id. The request body should include
     fields to be updated, such as facility name, type, BC GHG ID, activities, and products. Returns the updated report
     facility object or an error message if the update fails.""",
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def save_facility_report(
