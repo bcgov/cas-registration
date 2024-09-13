@@ -23,6 +23,7 @@ export default function ReportingLayout({
 }: {
   children: React.ReactNode;
 }) {
+  console.log("testing nx affected");
   return (
     <RootLayout defaultLinks={defaultLinks} zone={title.toLowerCase()}>
       {children}
