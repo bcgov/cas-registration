@@ -1,6 +1,7 @@
 from django.test import Client
 import json
 import pytest
+from reporting.models import FuelType
 
 pytestmark = pytest.mark.django_db
 client = Client()
@@ -64,6 +65,15 @@ class TestBuildFormSchema:
             in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
                 'units'
             ]['items']['properties']
+        )
+        # Fetched list of fuels & added to enum
+        assert (
+            len(
+                response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
+                    'units'
+                ]['items']['properties']['fuels']['items']['properties']['fuelName']['enum']
+            )
+            == FuelType.objects.count()
         )
         # Created an array object for emissions
         assert (
