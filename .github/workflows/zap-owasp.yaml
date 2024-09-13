@@ -19,7 +19,6 @@ jobs:
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: ZAP Frontend Scan
-        id: zap-frontend-scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,7 +29,6 @@ jobs:
           issue_title: OWASP Baseline - Frontend
           fail_action: false
       - name: ZAP Backend Scan
-        id: zap-backend-scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
