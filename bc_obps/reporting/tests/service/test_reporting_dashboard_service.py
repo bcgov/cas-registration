@@ -32,13 +32,6 @@ class TestReportingDashboardService:
 
         result = ReportingDashboardService.get_operations_for_reporting_dashboard(user.user_guid, 5091).values()
 
-        print(r0.id, result[0]["report_id"])
-        print(operations[0].id, result[0]["id"])
-        print(r1.id, result[1]["report_id"])
-        print(operations[1].id, result[1]["id"])
-        print(result[2]["report_id"])
-        print(operations[2].id, result[2]["id"])
-
         assert len(result) == 3
 
         # Returns the latest version info if there are multiple versions
