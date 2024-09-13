@@ -1,6 +1,3 @@
-//@ts-check
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require("@nx/next");
 
 // The hosts are only available at build time. Routing locally is handled by Next.js while routing on OpenShift is handled by ingress rules.

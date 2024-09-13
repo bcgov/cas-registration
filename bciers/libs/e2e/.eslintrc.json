@@ -1,0 +1,23 @@
+{
+  "extends": ["plugin:@nx/react", "../../.eslintrc.json", "prettier"],
+  "ignorePatterns": ["!**/*"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["libs/e2e/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {}
+    }
+  ]
+}

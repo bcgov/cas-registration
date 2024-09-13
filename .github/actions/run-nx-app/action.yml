@@ -1,0 +1,50 @@
+name: "Local Registration app run"
+description: "Runs the Registration app locally using Docker Compose"
+
+inputs:
+  django_secret_key:
+    description: "Django secret key"
+    required: true
+  keycloak_client_id:
+    description: "Identifier for keycloak dev client"
+    required: true
+  keycloak_client_secret:
+    description: "Keycloak client secret"
+    required: true
+  nextauth_secret:
+    description: "NextAuth client secret"
+    required: true
+  image_url:
+    description: "Docker image URL minus the tag which will be the pull request sha"
+    required: true
+  nx_app_port:
+    description: "Port to run the Nx app on"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check out the repository
+      uses: actions/checkout@v4
+
+    - name: Set environment variables
+      run: |
+        echo "GITHUB_SHA=${{ github.sha }}" >> $GITHUB_ENV
+        echo "DJANGO_SECRET_KEY=${{ inputs.django_secret_key }}" >> $GITHUB_ENV
+        echo "NEXTAUTH_SECRET=${{ inputs.nextauth_secret }}" >> $GITHUB_ENV
+        echo "KEYCLOAK_CLIENT_ID=${{ inputs.keycloak_client_id }}" >> $GITHUB_ENV
+        echo "KEYCLOAK_CLIENT_SECRET=${{ inputs.keycloak_client_secret }}" >> $GITHUB_ENV
+        echo "NEXTAUTH_URL_INTERNAL=http://localhost:3000" >> $GITHUB_ENV
+        echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
+        echo "API_URL=http://127.0.0.1:8000/api/" >> $GITHUB_ENV
+        echo "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" >> $GITHUB_ENV
+        echo "NX_APP_PORT=${{ inputs.nx_app_port }}" >> $GITHUB_ENV
+        echo "IMAGE_URL=${{ inputs.image_url }}" >> $GITHUB_ENV
+
+      shell: bash
+
+    - name: Start services with Docker Compose and wait for them to be ready
+      working-directory: ./bciers
+      run: |
+        docker compose up -d --wait
+      shell: bash

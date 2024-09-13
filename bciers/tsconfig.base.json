@@ -17,9 +17,9 @@
     "types": ["vitest/globals"],
     "paths": {
       "@/*": ["apps/registration1/*"],
+      "@/administration/*": ["apps/administration/*"],
       "@/coam/*": ["apps/coam/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
-      "@/administration/*": ["apps/administration/*"],
       "@/registration/*": ["apps/registration/*"],
       "@bciers/actions": ["libs/actions/src/index.ts"],
       "@bciers/actions/*": ["libs/actions/src/*"],
@@ -28,6 +28,7 @@
       "@bciers/components/*": ["libs/components/src/*"],
       "@bciers/components/server": ["libs/components/src/server.ts"],
       "@bciers/data/*": ["libs/data/*"],
+      "@bciers/e2e/*": ["libs/e2e/src/*"],
       "@bciers/img/*": ["libs/img/*"],
       "@bciers/middlewares": ["libs/middlewares/src/index.ts"],
       "@bciers/styles": ["libs/styles/src/index.ts"],

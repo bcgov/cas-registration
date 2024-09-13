@@ -1,0 +1,125 @@
+# This file is used for tests that use Nx app containers.
+# For tests that don't require containers to be built first, see test-code.yaml
+
+name: Test BCIERS Nx App containers
+
+on:
+  workflow_call:
+    inputs:
+      nx_app_port:
+        description: "Port to run the Nx app on"
+        required: true
+        type: number
+      nx_project:
+        description: "Nx project to test"
+        required: true
+        type: string
+      image_url:
+        description: "Docker image URL minus the tag which will be the pull request sha"
+        required: true
+        type: string
+
+env:
+  PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+
+jobs:
+  e2e-tests:
+    name: 🧪 e2e tests ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            os: ubuntu-24.04
+            cache_dir: ~/.cache/ms-playwright
+          # Uncomment these if we want to run tests on other browsers
+          # - project: firefox
+          #   os: ubuntu-latest
+          #   cache_dir: ~/.cache/ms-playwright
+          # - project: webkit
+          #   os: macos-latest
+          #   cache_dir: ~/Library/Caches/ms-playwright
+    steps:
+      - uses: actions/checkout@v4
+      - name: 🎁 setup local app
+        uses: ./.github/actions/run-nx-app
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
+          keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
+          nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+          image_url: ${{ inputs.image_url }}
+          nx_app_port: ${{ inputs.nx_app_port }}
+      - name: yarn modern
+        shell: bash
+        run: |
+          corepack enable
+      - name: Install yarn dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+        working-directory: ./bciers
+        shell: bash
+      - name: ⚡️ cache Playwright binaries
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ${{ matrix.cache_dir }}
+          key: ${{ runner.os }}-${{ matrix.project }}-ms-playwright-bciers
+
+      - name: 📥 install Playwright ${{ matrix.project }}
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.project }}
+        working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
+
+      - name: 🎭 Run Playwright Tests
+        run: DEBUG=pw:api yarn nx run ${{ inputs.nx_project }}:e2e -- --project=${{ matrix.project }}
+        env:
+          XDEBUG: pw:api,pw:browser*
+          API_URL: http://127.0.0.1:8000/api/
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
+          E2E_BASEURL: http://localhost:3000/
+          E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
+          E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
+          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
+          E2E_CAS_ADMIN_STORAGE_STATE: ${{ secrets.E2E_CAS_ADMIN_STORAGE_STATE}}
+          E2E_CAS_ANALYST_STORAGE_STATE: ${{ secrets.E2E_CAS_ANALYST_STORAGE_STATE}}
+          E2E_CAS_PENDING_STORAGE_STATE: ${{ secrets.E2E_CAS_PENDING_STORAGE_STATE}}
+          E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
+          E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}
+          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
+          E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE}}
+          E2E_INDUSTRY_USER: bc-cas-dev-secondary
+          E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}
+          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
+          E2E_INDUSTRY_USER_STORAGE_STATE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE_STATE}}
+          E2E_NEW_USER: bc-cas-dev-three
+          E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
+          E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
+          E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_NONCE: ${{ github.sha }}
+          SMTP_CONNECTION_STRING: smtp://@localhost:1025
+        working-directory: ./bciers
+      - name: 💾 save ${{ matrix.project }} report artifact
+        # prefer to upload the report only in case of test failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          # Store all of the reports separately by reconfiguring the report name
+          name: blob-report-${{ inputs.nx_project }}-${{ matrix.project }}
+          path: bciers/blob-report
+          retention-days: 1
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2

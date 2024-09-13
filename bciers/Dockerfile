@@ -14,6 +14,17 @@ FROM docker.io/node:20.15 AS runner
 # nx/nextjs builds some files into subfolders based on project name. For a unified container, we supply the project name as a path.
 ARG application_path
 
+# Build args
+# HOST variables are only used in test builds for running e2e in CI
+ARG HOST_ADMINISTRATION
+ARG HOST_COAM
+ARG HOST_REGISTRATION
+ARG HOST_REPORTING
+ENV HOST_ADMINISTRATION=${HOST_ADMINISTRATION}
+ENV HOST_COAM=${HOST_COAM}
+ENV HOST_REGISTRATION=${HOST_REGISTRATION}
+ENV HOST_REPORTING=${HOST_REPORTING}
+
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 ENTRYPOINT ["dumb-init", "--"]

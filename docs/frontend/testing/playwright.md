@@ -13,7 +13,11 @@ cd bc_obps && make run
 npm install @playwright/test
 ```
 
-2.0 Ensure the client app is running:
+Ensure you have the correct env variables set up in the `bciers/.env.local` file. You can copy the `.env.local.example` file and update the values accordingly.
+
+## Test organization in our monorepo
+
+The e2e tests are organized in separate projects in the `/bciers/apps` directory. Each project has its own `e2e` directory where the tests are located. To run the tests we need to have the `Dashboard` app running due to our auth implementation alongside whichever app we are testing. There are shared utilities in the `bciers/libs/e2e` directory that can be used across all e2e tests.
 
 ## Writing Tests
 
@@ -129,21 +133,28 @@ Playwright will be re-testing the element with the test id of status until the f
 #### Prerequisites
 
 - To run playwright end-to-end tests for the first time, you may need to run `yarn playwright install --with-deps` to install the browsers
-  Ensure you have the configuration from file `bciers/apps/registration1/e2e/.env.local.example` in `bciers/apps/registration1/e2e/.env.local` with values reflecting instructions in file `bciers/apps/registration1/e2e/.env.local.example`
+  Ensure you have the configuration from file `bciers/bciers/.env.local.example` in `bciers/bciers/.env.local` with values reflecting instructions in file `bciers/bciers/.env.local.example`
 
   1.0 Ensure the server is running:
 
-Start server from new terminal command:
+For BCIERS app tests the BCIERS apps and run the backend in two terminals:
 
 ```bash
-cd bciers && yarn devreg1
+cd bci && yarn dev-all
+cd bc_obps && make run
+```
+
+To run Registration1 e2e test, just run the `reg1` app before running the tests:
+
+```bash
+cd bciers && yarn reg1
 cd bc_obps && make run
 ```
 
 2.0 Run the tests:
 
 Run tests from new terminal command:
-Run tests in the background using terminal command:
+Run tests in the background using terminal command `yarn <app shortform>:e2e:ci`. These commands are located in `package.json`:
 
 ```bash
 cd bciers && yarn reg1:e2e
