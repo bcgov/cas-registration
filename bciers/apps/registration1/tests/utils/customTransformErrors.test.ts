@@ -108,6 +108,19 @@ const phoneFormatError = [
   },
 ];
 
+const arrayMinItemsError = [
+  {
+    name: "minItems",
+    property: ".array_field",
+    message: "must NOT have fewer than 1 items",
+    params: {
+      limit: 1,
+    },
+    stack: "'Array Field' must NOT have fewer than 1 items",
+    schemaPath: "#/properties/array_field/minItems",
+  },
+];
+
 describe("customTransformErrors", () => {
   it("returns the transformed error message for required field", () => {
     const originalErrorMessage = requiredFieldError[0].message;
@@ -199,5 +212,18 @@ describe("customTransformErrors", () => {
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(customFormatsErrorMessages.phone);
+  });
+
+  it("returns the transformed error message for array minItems", () => {
+    const originalErrorMessage = arrayMinItemsError[0].message;
+    const transformedErrors = customTransformErrors(
+      arrayMinItemsError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe(
+      "Must not have fewer than 1 items",
+    );
   });
 });

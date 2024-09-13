@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Autocomplete, Chip, MenuItem, TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
@@ -43,6 +44,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   value,
   uiSchema,
 }) => {
+  const isValue = value && value.length !== 0 && value?.[0] !== undefined;
   const fieldSchema = schema.items as FieldSchema;
 
   const options = mapOptions(fieldSchema);
@@ -51,11 +53,17 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
     onChange(option.map((o: Option) => o.id));
   };
 
+  useEffect(() => {
+    if (!isValue) {
+      onChange([]);
+    }
+  }, []);
+
   const placeholder = uiSchema?.["ui:placeholder"]
     ? `${uiSchema["ui:placeholder"]}...`
     : "";
 
-  const displayPlaceholder = value?.length === 0;
+  const displayPlaceholder = !isValue;
 
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
@@ -76,9 +84,13 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       filterSelectedOptions
       autoHighlight
       options={options}
-      value={value.map((val: string | number) => {
-        return options.find((option: Option) => option.id === val);
-      })}
+      value={
+        isValue
+          ? value.map((val: string | number) => {
+              return options.find((option: Option) => option.id === val);
+            })
+          : undefined
+      }
       sx={styles}
       isOptionEqualToValue={(option: Option, val: Option) => {
         return option.id === val.id;
