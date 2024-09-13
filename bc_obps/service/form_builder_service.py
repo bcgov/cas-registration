@@ -1,8 +1,14 @@
 import json
-from reporting.models import Configuration, ConfigurationElement, ActivityJsonSchema, ActivitySourceTypeJsonSchema
+from reporting.models import (
+    Configuration,
+    ConfigurationElement,
+    ActivityJsonSchema,
+    ActivitySourceTypeJsonSchema,
+)
 from typing import Dict, List, Optional
 from django.db.models import QuerySet
 from django.db.models import Prefetch
+from service.data_access_service.fuel_service import FuelTypeDataAccessService
 
 
 # Helper function to dynamically set the RJSF property value of a field from a Title cased name
@@ -152,6 +158,11 @@ def handle_source_type_schema(
     st_schema: Dict = source_type_schema.json_schema
     # Append valid gas types to schema as an enum on the gasType property. Uses the has_unit / has_fuel booleans to determine the depth of the emissions array.
     if source_type_schema.has_unit and source_type_schema.has_fuel:
+        # Fetch the list of fuels & add them to the fuelName enum
+        fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
+        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['fuelName'][
+            'enum'
+        ] = fuel_list
         st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items'][
             'properties'
         ]['gasType']['enum'] = gas_type_enum
@@ -159,6 +170,8 @@ def handle_source_type_schema(
             'dependencies'
         ] = gas_type_one_of
     elif not source_type_schema.has_unit and source_type_schema.has_fuel:
+        fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
+        st_schema['properties']['fuels']['items']['properties']['fuelName']['enum'] = fuel_list
         st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType'][
             'enum'
         ] = gas_type_enum

@@ -8,92 +8,68 @@ class TestInitialData(TestCase):
         expected_fuel_types = sorted(
             [
                 "Acetylene",
-                "Agricultural Byproducts",
-                "ANFO",
-                "Anthracite Coal",
-                "Asphalt & Road Oil",
+                "Acid Gas",
                 "Aviation Gasoline",
-                "Aviation Turbo Fuel",
                 "Biodiesel (100%)",
-                "Biogas (captured methane)",
                 "Bituminous Coal",
-                "Bone char - organics",
                 "Butane",
-                "Butylene",
+                "C/D Waste - Plastic",
+                "C/D Waste - Wood",
                 "Carpet fibre",
                 "Coal Coke",
-                "Coke Oven Gas",
-                "Comubistlbe Tall Oil",
+                "Comubstible Tall Oil",
                 "Concentrated Non-Condensible Gases (CNCGs)",
-                "Crude Oil",
                 "Crude Sulfate Turpentine (CST)",
                 "Crude Tall Oil (CTO)",
                 "Diesel",
                 "Digester Gas",
                 "Dilute non-condensible gases (DNCGs)",
-                "Distilate Fuel Oil No.1",
                 "Distilate Fuel Oil No.2",
-                "Distilate Fuel Oil No.4",
-                "Ethane",
                 "Ethanol (100%)",
-                "Ethylene",
                 "E-waste",
                 "Explosives",
                 "Field gas",
-                "Field gas or process vent gas",
-                "Foreign Bituminous Coal",
-                "Gasoline",
-                "Isobutane",
+                "HTCR PSA Tail gas",
+                "Hydrogen",
+                "Hydrogenator Outlet Gas",
                 "Isobutylene",
                 "Kerosene",
-                "Kerosene -type Jet Fuel",
                 "Landfill Gas",
                 "Light Fuel Oil",
-                "Lignite",
                 "Liquified Petroleum Gases (LPG)",
                 "Lubricants",
-                "Motor Gasoline - Off-road",
                 "Motor Gasoline",
+                "Motor Gasoline - Off-road",
                 "Municipal Solid Waste - non-biomass component",
                 "Municipal Solide Waste - biomass component",
                 "Naphtha",
                 "Natural Gas",
-                "Natural Gasoline",
+                "Natural Gas Condensate",
                 "Nitrous Oxide",
-                "Oily Rags",
-                "Peat",
-                "Petrochemical Feedstocks",
-                "Petroleum Coke - Refinery Use",
-                "Petroleum Coke - Upgrader Use",
                 "Petroleum Coke",
-                "Plastic Recycle",
+                "Pentanes Plus",
                 "Plastics",
-                "Process vent gas",
                 "Propane",
                 "Propylene",
-                "Refinery Fuel Gas - Type 1",
-                "Refinery Fuel Gas - Type 2",
+                "PSA Offgas",
+                "PSA Process Gas",
+                "RDU Offgas",
+                "Recycle Gas",
                 "Refinery Fuel Gas",
-                "Rendered Animal Fat",
-                "Renewable diesel",
-                "Renewable natural gas",
+                "Renewable Diesel",
+                "Renewable Natural Gas",
                 "Residual Fuel Oil (#5 & 6)",
                 "SMR PSA Tail Gas",
                 "Sodium Bicarbonate",
                 "Solid Byproducts",
-                "Special substance X",
+                "Sour Gas",
                 "Spent Pulping Liquor",
-                "Still Gas - Refineries",
-                "Still Gas - Upgrader Use",
                 "Still gas",
                 "Sub-Bituminous Coal",
-                "Tail gas",
                 "Tires - biomass component",
                 "Tires - non-biomass component",
                 "Trona",
                 "Turpentine",
-                "Vegetable Oil",
-                "Waste Plastics",
                 "Wood Waste",
             ]
         )
@@ -101,15 +77,36 @@ class TestInitialData(TestCase):
 
         self.assertEqual(len(existing_fuel_types), len(expected_fuel_types))
         self.assertEqual(existing_fuel_types, expected_fuel_types)
+        woody_biomass_count = FuelType.objects.filter(classification='Woody Biomass').count()
+        exempted_biomass_count = FuelType.objects.filter(classification='Other Exempted Biomass').count()
+        exempted_non_biomass_count = FuelType.objects.filter(classification='Exempted Non-biomass').count()
+        non_biomass_count = FuelType.objects.filter(classification='Non-biomass').count()
+        non_exempted_biomass_count = FuelType.objects.filter(classification='Non-exempted Biomass').count()
+        self.assertEqual(woody_biomass_count, 9)
+        self.assertEqual(exempted_biomass_count, 8)
+        self.assertEqual(exempted_non_biomass_count, 13)
+        self.assertEqual(non_biomass_count, 33)
+        self.assertEqual(non_exempted_biomass_count, 1)
+        self.assertEqual(
+            woody_biomass_count
+            + exempted_biomass_count
+            + exempted_non_biomass_count
+            + non_biomass_count
+            + non_exempted_biomass_count,
+            len(expected_fuel_types),
+        )
 
 
 class FuelTypeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = FuelType.objects.create(name="testFuelType", unit="kilolitres")
+        cls.test_object = FuelType.objects.create(
+            name="testFuelType", classification='Woody Biomass', unit="kilolitres"
+        )
         cls.field_data = [
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("unit", "unit", 1000, None),
+            ("classification", "classification", 1000, None),
             ("reportfuel_records", "report fuel", None, 0),
         ]
