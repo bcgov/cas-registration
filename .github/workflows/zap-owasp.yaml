@@ -39,6 +39,7 @@ jobs:
           issue_title: OWASP Baseline - Backend
           fail_action: false
 
+  # Retry the workflow due to secondary rate limiting errors causing frequent failures
   retry-on-failure:
     needs: zap-scan
     if: failure() || needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled()
