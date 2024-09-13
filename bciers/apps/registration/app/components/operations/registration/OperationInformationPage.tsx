@@ -46,8 +46,14 @@ export const createOperationInformationSchema = (
       purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
       purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION;
 
+    const required = isRegulatedProducts
+      ? {
+          required: ["registration_purpose"],
+        }
+      : {};
+
     return {
-      required: [isRegulatedProducts ? "regulated_products" : ""],
+      ...required,
       properties: {
         registration_purpose: {
           type: "string",
