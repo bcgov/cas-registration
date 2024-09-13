@@ -4,27 +4,17 @@ from reporting.models import (
     ConfigurationElement,
     ActivityJsonSchema,
     ActivitySourceTypeJsonSchema,
-    FuelType,
 )
 from typing import Dict, List, Optional
 from django.db.models import QuerySet
 from django.db.models import Prefetch
+from service.data_access_service.fuel_service import FuelTypeDataAccessService
 
 
 # Helper function to dynamically set the RJSF property value of a field from a Title cased name
 def str_to_camel_case(st: str) -> str:
     output = ''.join(x for x in st.title() if x.isalnum())
     return output[0].lower() + output[1:]
-
-
-def get_fuel_list() -> List[str]:
-    """
-    Return the roles that are considered as authorized CAS users (excluding cas_pending).
-    """
-    try:
-        return list(FuelType.objects.all().values_list("name", flat=True))
-    except Exception:
-        return []
 
 
 def handle_methodologies(
@@ -169,7 +159,7 @@ def handle_source_type_schema(
     # Append valid gas types to schema as an enum on the gasType property. Uses the has_unit / has_fuel booleans to determine the depth of the emissions array.
     if source_type_schema.has_unit and source_type_schema.has_fuel:
         # Fetch the list of fuels & add them to the fuelName enum
-        fuel_list = get_fuel_list()
+        fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
         st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['fuelName'][
             'enum'
         ] = fuel_list
@@ -180,7 +170,7 @@ def handle_source_type_schema(
             'dependencies'
         ] = gas_type_one_of
     elif not source_type_schema.has_unit and source_type_schema.has_fuel:
-        fuel_list = get_fuel_list()
+        fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
         st_schema['properties']['fuels']['items']['properties']['fuelName']['enum'] = fuel_list
         st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType'][
             'enum'
