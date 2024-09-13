@@ -22,6 +22,11 @@ const customTransformErrors = (
       error.message = "Required field";
       return error;
     }
+    if (error?.name === "minItems") {
+      const limit = error.params.limit;
+      error.message = `Must not have fewer than ${limit} items`;
+      return error;
+    }
     if (
       error.name === "format" &&
       customFormatsErrorMessages[error.params.format]

@@ -42,25 +42,28 @@ export const createOperationInformationSchema = (
   );
 
   const oneOfOptions = purposes.map((purpose) => {
+    const isRegulatedProducts =
+      purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
+      purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION;
+
     return {
-      // required: ["regulated_products"],
+      required: [isRegulatedProducts && "regulated_products"],
       properties: {
         registration_purpose: {
           type: "string",
           const: purpose,
         },
-        ...(purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
-          purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION && {
-            regulated_products: {
-              title: "Regulated Product Name(s)",
-              type: "array",
-              // minItems: 1,
-              items: {
-                enum: regulatedProductsEnum,
-                enumNames: regulatedProductsEnumNames,
-              },
+        ...(isRegulatedProducts && {
+          regulated_products: {
+            title: "Regulated Product Name(s)",
+            type: "array",
+            minItems: 1,
+            items: {
+              enum: regulatedProductsEnum,
+              enumNames: regulatedProductsEnumNames,
             },
-          }),
+          },
+        }),
       },
     };
   });
