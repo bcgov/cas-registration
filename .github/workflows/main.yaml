@@ -93,7 +93,6 @@ jobs:
       image_url: "ghcr.io/bcgov/cas-rep-frontend"
     secrets: inherit
   test-registration1-e2e:
-    # if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
     needs: [build-backend, build-registration1, check-nx-affected]
     uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
@@ -121,6 +120,14 @@ jobs:
         test-registration-e2e,
         test-registration1-e2e,
       ]
+    # This wasn't wasn't being triggered if any tests were skipped
+    if: |
+      always() &&
+      (needs.test-administration-e2e.result == 'success' || needs.test-administration-e2e.result == 'skipped') &&
+      (needs.test-coam-e2e.result == 'success' || needs.test-coam-e2e.result == 'skipped') &&
+      (needs.test-reporting-e2e.result == 'success' || needs.test-reporting-e2e.result == 'skipped') &&
+      (needs.test-registration-e2e.result == 'success' || needs.test-registration-e2e.result == 'skipped') &&
+      (needs.test-registration1-e2e.result == 'success' || needs.test-registration1-e2e.result == 'skipped')
     uses: ./.github/workflows/e2e-finalize.yaml
     secrets: inherit
   zap-owasp:
