@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # - name: test failure
-      #   run: exit 1
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
@@ -21,6 +19,7 @@ jobs:
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: ZAP Frontend Scan
+        id: zap-frontend-scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -31,6 +30,7 @@ jobs:
           issue_title: OWASP Baseline - Frontend
           fail_action: false
       - name: ZAP Backend Scan
+        id: zap-backend-scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -41,14 +41,13 @@ jobs:
           issue_title: OWASP Baseline - Backend
           fail_action: false
 
-  # retry-on-failure:
-  #   needs: zap-scan
-  #   if: failure() && fromJSON(github.run_attempt) < 3
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - env:
-  #         GH_REPO: ${{ github.repository }}
-  #         GH_TOKEN: ${{ github.token }}
-  #         GH_DEBUG: api
-  #       # This will fail to fetch the workflow from gh api until merged into develop
-  #       run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}
+  retry-on-failure:
+    needs: zap-scan
+    if: failure() || needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: api
+        run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}
