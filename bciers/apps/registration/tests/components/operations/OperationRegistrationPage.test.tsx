@@ -81,7 +81,7 @@ describe("the OperationRegistrationPage component", () => {
     );
   });
 
-  it("should render the Facility Information Form", async () => {
+  it("should render the Facility Information Form with 4 steps", async () => {
     useSearchParams.mockReturnValue({
       searchParams: {
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
@@ -93,6 +93,9 @@ describe("the OperationRegistrationPage component", () => {
     actionHandler.mockReturnValue({
       items: [],
       count: 0,
+    });
+    actionHandler.mockResolvedValueOnce({
+      registration_purposes: ["OBPS Regulated Operation"],
     });
     render(
       await OperationRegistrationPage({
@@ -107,18 +110,55 @@ describe("the OperationRegistrationPage component", () => {
     );
   });
 
-  // add tests for new entrant and opt-in pages when created
+  it("should render 5 steps and the Opt-in Application Form if the registration purpose is Opt-in", async () => {
+    actionHandler.mockResolvedValueOnce({
+      registration_purposes: ["Opted-in Operation"],
+    });
+    render(
+      await OperationRegistrationPage({
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        step: 3,
+        searchParams: {},
+      }),
+    );
 
-  it("should render the Operation Representative Form", async () => {
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Opt-In Application",
+    );
+  });
+
+  it("should render 5 steps and the New Entrant Application Form if the registration purpose is New Entrant", async () => {
+    actionHandler.mockResolvedValueOnce({
+      registration_purposes: ["New Entrant Operation"],
+    });
+    render(
+      await OperationRegistrationPage({
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        step: 3,
+        searchParams: {},
+      }),
+    );
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "New Entrant Operation",
+    );
+  });
+
+  it("should render the Operation Representative Form and 4 steps", async () => {
+    // purpose
+    actionHandler.mockResolvedValueOnce({
+      registration_purposes: ["OBPS Regulated Operation"],
+    });
     // contacts
     actionHandler.mockResolvedValueOnce([]);
 
     // users
     actionHandler.mockResolvedValueOnce([]);
+
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 4,
+        step: 3,
         searchParams: {},
       }),
     );
@@ -128,7 +168,10 @@ describe("the OperationRegistrationPage component", () => {
     );
   });
 
-  it("should render the Submission Form", async () => {
+  it("should render the Submission Form and 5 steps", async () => {
+    actionHandler.mockResolvedValueOnce({
+      registration_purposes: ["New Entrant Operation"],
+    });
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
