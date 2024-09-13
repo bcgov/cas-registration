@@ -1,6 +1,7 @@
 from django.test import Client
 import json
 import pytest
+from reporting.models import FuelType
 
 pytestmark = pytest.mark.django_db
 client = Client()
@@ -72,7 +73,7 @@ class TestBuildFormSchema:
                     'units'
                 ]['items']['properties']['fuels']['items']['properties']['fuelName']['enum']
             )
-            > 0
+            == FuelType.objects.count()
         )
         # Created an array object for emissions
         assert (
