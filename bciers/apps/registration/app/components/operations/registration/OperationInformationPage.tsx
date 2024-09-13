@@ -47,7 +47,7 @@ export const createOperationInformationSchema = (
       purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION;
 
     return {
-      required: [isRegulatedProducts && "regulated_products"],
+      required: [isRegulatedProducts ? "regulated_products" : ""],
       properties: {
         registration_purpose: {
           type: "string",
