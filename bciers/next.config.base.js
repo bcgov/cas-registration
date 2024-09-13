@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const logAndReturnConfig = (config) => {
-  console.log("Next.js base config is being loaded");
   return config;
 };
 module.exports = logAndReturnConfig({
@@ -12,7 +11,6 @@ module.exports = logAndReturnConfig({
       bodySizeLimit: "25mb",
     },
   },
-
   //use modularizeImports properties to optimize the imports in the application
   modularizeImports: {
     "@mui/icons-material": {

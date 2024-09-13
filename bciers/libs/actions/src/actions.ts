@@ -18,7 +18,7 @@ import safeJsonParse from "libs/utils/safeJsonParse";
 export async function getToken() {
   try {
     const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
-      method: "GET",
+      method: "POST",
       headers: { Cookie: cookies().toString() },
     });
 

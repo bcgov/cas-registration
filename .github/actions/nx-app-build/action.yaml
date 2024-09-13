@@ -11,6 +11,18 @@ inputs:
   github_token:
     description: "GitHub token"
     required: true
+  host_administration:
+    description: "Host for administration - only used for e2e CI builds"
+    required: false
+  host_coam:
+    description: "Host for COAM - only used for e2e CI builds"
+    required: false
+  host_registration:
+    description: "Host for registration - only used for e2e CI builds"
+    required: false
+  host_reporting:
+    description: "Host for reporting - only used for e2e CI builds"
+    required: false
 
 runs:
   using: composite
@@ -59,6 +71,11 @@ runs:
         INPUT_LABELS: ${{ steps.meta.output.labels }}
         INPUT_CACHE_FROM: type=local,src=/tmp/.buildx-cache
         INPUT_CACHE_TO: type=local,dest=/tmp/.buildx-cache-new
+        HOST_ADMINISTRATION: ${{ inputs.host_administration }}
+        HOST_COAM: ${{ inputs.host_coam }}
+        HOST_REGISTRATION: ${{ inputs.host_registration }}
+        HOST_REPORTING: ${{ inputs.host_reporting }}
+
       run: |
         npx nx container ${{ inputs.project }} --skip-nx-cache
       working-directory: ./bciers
