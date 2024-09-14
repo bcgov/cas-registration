@@ -62,6 +62,8 @@ const tasklistData: TaskListElement[] = [
 ];
 
 interface Props {
+  reportVersionId: number;
+  facilityId: number;
   activityData: {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
@@ -77,6 +79,8 @@ export default function ActivityForm({
   reportDate,
   uiSchema,
   defaultEmptySourceTypeState,
+  reportVersionId,
+  facilityId,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
@@ -155,7 +159,18 @@ export default function ActivityForm({
     setErrorList([]);
     setIsLoading(true);
     setIsSuccess(false);
-    const response = { status: 200, error: false };
+
+    const response = await actionHandler(
+      `reporting/reports/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
+      "POST",
+      "",
+      {
+        body: JSON.stringify({
+          activity_data: JSON.stringify(data.formData),
+        }),
+      },
+    );
+
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
@@ -165,7 +180,8 @@ export default function ActivityForm({
     }
 
     // Apply new data to NextAuth JWT
-    console.log("SUBMITTED: ", JSON.stringify(data.formData));
+    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
+    console.log("RESPONSE: ", response);
   };
 
   if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object)
