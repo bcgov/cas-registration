@@ -8,13 +8,17 @@ const ReadOnlyMultiSelectWidget: React.FC<WidgetProps> = ({
   id,
   value,
   schema,
+  uiSchema,
 }) => {
   const fieldSchema = schema.items as FieldSchema;
   const options = mapOptions(fieldSchema);
   const selectedOptions = options.filter((option) => value.includes(option.id));
+  const displayInline = uiSchema?.["ui:inline"];
+  const separator = displayInline ? ", " : ",\n";
+
   const displayOptions = selectedOptions
     .map((option) => option.label)
-    .join(",\n");
+    .join(separator);
 
   return (
     <div
@@ -26,4 +30,5 @@ const ReadOnlyMultiSelectWidget: React.FC<WidgetProps> = ({
     </div>
   );
 };
+
 export default ReadOnlyMultiSelectWidget;

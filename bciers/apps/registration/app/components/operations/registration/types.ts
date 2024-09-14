@@ -1,6 +1,5 @@
 import { UUID } from "crypto";
 import { RJSFSchema } from "@rjsf/utils";
-import { ContactFormData } from "@/administration/app/components/contacts/types";
 
 export interface FacilityInformationFormData {}
 
@@ -20,8 +19,7 @@ export interface OptedInOperationFormData {
 export interface OperationInformationFormData {}
 
 export interface OperationRepresentativeFormData {
-  operation_representatives: UUID[];
-  new_operation_representatives: ContactFormData[];
+  operation_representatives: number[];
 }
 
 export interface RegistrationPurposeFormData {}
@@ -37,4 +35,9 @@ export interface OperationRegistrationFormProps {
   schema: RJSFSchema;
   step: number;
   steps: string[];
+}
+
+export interface OperationsContacts {
+  id: number;
+  full_name: string;
 }

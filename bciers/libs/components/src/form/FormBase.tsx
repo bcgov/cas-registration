@@ -41,7 +41,7 @@ const transformErrors = (errors: RJSFValidationError[]) => {
 
 const validator = customizeValidator({ customFormats });
 
-interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
+export interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   theme?: ThemeProps;
   validator?: any;
   formRef?: any;

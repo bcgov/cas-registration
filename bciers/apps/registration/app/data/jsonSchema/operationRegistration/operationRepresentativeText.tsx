@@ -1,9 +1,6 @@
 export const operationRepresentativePreface = (
-  <div>Please select the Operation Representative (can be multiple).</div>
-);
-
-export const operationRepresentativeAdd = (
-  <small>
-    <i>Don&apos;t see the individual? Add them below.</i>
-  </small>
+  <div>
+    Please select the Operation Representative(s) from your existing contacts,
+    or fill out the form to add a new Operation Representative
+  </div>
 );

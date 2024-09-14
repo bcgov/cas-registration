@@ -9,4 +9,6 @@ export { default as getRegulatedProducts } from "./getRegulatedProducts";
 export { default as getReportingActivities } from "./getReportingActivities";
 export { default as getRegistrationPurposes } from "./getRegistrationPurposes";
 export { default as getOptedInOperationDetail } from "./getOptedInOperationDetail";
+export { default as getContact } from "./getContact";
 export { default as getContacts } from "./getContacts";
+export { default as getOperationsContacts } from "./getOperationsContacts";

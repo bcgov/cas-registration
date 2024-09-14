@@ -4,14 +4,13 @@ import {
 } from "@bciers/components/form/fields";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import {
-  operationRepresentativeAdd,
-  operationRepresentativePreface,
-} from "./operationRepresentativeText";
-import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 import provinceOptions from "@bciers/data/provinces.json";
+import { operationRepresentativePreface } from "./operationRepresentativeText";
+import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import { ContactRow } from "@/administration/app/components/contacts/types";
+import { OperationsContacts } from "@/registration/app/components/operations/registration/types";
 
-// Temp contact schema
+// Operation Representative Schema - Very similar to Contact Schema(without the existing_bciers_user field)
 const section1: RJSFSchema = {
   type: "object",
   title: "Personal Information",
@@ -61,6 +60,7 @@ const section3: RJSFSchema = {
 const section4: RJSFSchema = {
   type: "object",
   title: "Address Information",
+  required: ["street_address", "municipality", "province", "postal_code"],
   properties: {
     street_address: {
       type: "string",
@@ -83,9 +83,9 @@ const section4: RJSFSchema = {
   },
 };
 
-export const tempContactsSchema: RJSFSchema = {
+export const newOperationRepresentativeSchema: RJSFSchema = {
+  title: "Operation Representative",
   type: "object",
-  required: ["section1", "section2", "section3", "section4"],
   properties: {
     section1,
     section2,
@@ -94,26 +94,65 @@ export const tempContactsSchema: RJSFSchema = {
   },
 };
 
-export const operationRepresentativeSchema: RJSFSchema = {
-  title: "Operation Representative",
-  type: "object",
-  properties: {
-    operation_representative_preface: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
-      type: "object",
-      readOnly: true,
+export const createOperationRepresentativeSchema = (
+  existingOperationRepresentatives: OperationsContacts[],
+  allContactOptions: ContactRow[],
+): RJSFSchema => {
+  const hasExistingOperationReps =
+    existingOperationRepresentatives &&
+    existingOperationRepresentatives.length !== 0;
+
+  const operationRepresentativeSchema: RJSFSchema = {
+    title: "Operation Representative",
+    type: "object",
+    properties: {
+      operation_representative_preface: {
+        //Not an actual field in the db - this is just to make the form look like the wireframes
+        type: "object",
+        readOnly: true,
+      },
+      new_operation_representative: {
+        type: "array",
+        maxItems: 1,
+        items: {
+          properties: {
+            existing_contact_id: {
+              type: "number",
+              title: "Select Existing Contact (Optional)",
+              anyOf: allContactOptions.map((contact) => ({
+                type: "number",
+                title: `${contact.first_name} ${contact.last_name}`,
+                const: contact.id,
+              })),
+            },
+            ...newOperationRepresentativeSchema.properties,
+          },
+        },
+      },
     },
-    operation_representatives: {
+  };
+
+  if (hasExistingOperationReps) {
+    // @ts-ignore
+    operationRepresentativeSchema.properties.operation_representatives = {
       type: "array",
-      items: {},
-      title: "Operation Representative",
-    },
-    new_operation_representatives: {
-      type: "array",
-      items: {},
-      title: "Operation Representative",
-    },
-  },
+      title: "Operation Representative(s):",
+      items: {
+        enum: existingOperationRepresentatives.map(
+          (operation_representative) => operation_representative?.id,
+        ),
+        // @ts-ignore
+        enumNames: existingOperationRepresentatives.map(
+          (operation_representative) => operation_representative?.full_name,
+        ),
+      },
+    };
+  } else {
+    // @ts-ignore
+    operationRepresentativeSchema.properties.new_operation_representative.default =
+      [{}];
+  }
+  return operationRepresentativeSchema;
 };
 
 export const operationRepresentativeUiSchema: UiSchema = {
@@ -122,26 +161,67 @@ export const operationRepresentativeUiSchema: UiSchema = {
   "ui:order": [
     "operation_representative_preface",
     "operation_representatives",
-    "new_operation_representatives",
+    "new_operation_representative",
+    "existing_contact_id",
+    "section1",
+    "section2",
+    "section3",
+    "section4",
   ],
   operation_representative_preface: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": operationRepresentativePreface,
   },
-
   operation_representatives: {
-    "ui:widget": "MultiSelectWidget",
-    "ui:help": operationRepresentativeAdd,
-    "ui:placeholder": "Select an individual",
+    "ui:widget": "ReadOnlyMultiSelectWidget",
+    "ui:inline": true,
+    "ui:classNames": "[&>div:last-child]:w-full",
   },
-  new_operation_representatives: {
-    items: contactsUiSchema,
-    "ui:FieldTemplate": FieldTemplate,
+  new_operation_representative: {
+    "ui:FieldTemplate": SectionFieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
     "ui:options": {
       label: false,
-      arrayAddLabel: "Add Another Operation Representative",
-      title: "Operation Representative",
+      arrayAddLabel: "Add New Operation Representative",
+    },
+    items: {
+      existing_contact_id: {
+        "ui:widget": "ComboBox",
+        "ui:placeholder": "Select Existing Contact",
+      },
+      section1: {
+        "ui:FieldTemplate": SectionFieldTemplate,
+        "ui:order": ["first_name", "last_name"],
+      },
+      section2: {
+        "ui:FieldTemplate": SectionFieldTemplate,
+        "ui:order": ["position_title"],
+      },
+      section3: {
+        "ui:FieldTemplate": SectionFieldTemplate,
+        "ui:order": ["email", "phone_number"],
+        email: {
+          "ui:widget": "EmailWidget",
+        },
+        phone_number: {
+          "ui:widget": "PhoneWidget",
+        },
+      },
+      section4: {
+        "ui:FieldTemplate": SectionFieldTemplate,
+        "ui:order": [
+          "street_address",
+          "municipality",
+          "province",
+          "postal_code",
+        ],
+        province: {
+          "ui:widget": "ComboBox",
+        },
+        postal_code: {
+          "ui:widget": "PostalCodeWidget",
+        },
+      },
     },
   },
 };

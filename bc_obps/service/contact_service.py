@@ -11,6 +11,7 @@ from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
+from service.operation_service import OperationService
 
 
 class ContactWithPlacesAssigned(ContactOut):
@@ -31,6 +32,15 @@ class ContactService:
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = ContactDataAccessService.get_all_contacts_for_user(user)
         return filters.filter(base_qs).order_by(sort_by)
+
+    @classmethod
+    def list_operations_contacts(
+        cls,
+        operation_id: UUID,
+        user_guid: UUID,
+    ) -> QuerySet[Contact]:
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        return operation.contacts.order_by('-created_at')
 
     @classmethod
     def get_if_authorized(cls, user_guid: UUID, contact_id: int) -> Optional[Contact]:
