@@ -155,7 +155,19 @@ export default function ActivityForm({
     setErrorList([]);
     setIsLoading(true);
     setIsSuccess(false);
-    const response = { status: 200, error: false };
+
+    const response = await actionHandler(
+      "reporting/facility-report/2/report-activity",
+      "PUT",
+      "",
+      {
+        body: JSON.stringify({
+          activity_id: activityId,
+          activity_data: JSON.stringify(data.formData),
+        }),
+      },
+    );
+
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
@@ -165,7 +177,8 @@ export default function ActivityForm({
     }
 
     // Apply new data to NextAuth JWT
-    console.log("SUBMITTED: ", JSON.stringify(data.formData));
+    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
+    console.log("RESPONSE: ", response);
   };
 
   if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object)
