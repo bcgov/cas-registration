@@ -172,7 +172,7 @@ describe("the OperationRepresentativeForm component", () => {
               "00000000-0000-0000-0000-000000000001",
               "279c80cf-5781-4c28-8727-40a133d17c0d",
             ],
-            new_operation_representatives: [],
+            new_operation_representative: [],
           }),
         },
       );
@@ -215,7 +215,7 @@ describe("the OperationRepresentativeForm component", () => {
           {
             body: JSON.stringify({
               operation_representatives: [],
-              new_operation_representatives: [
+              new_operation_representative: [
                 {
                   first_name: "John",
                   last_name: "Doe",

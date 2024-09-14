@@ -1,4 +1,4 @@
-import getContact from "./getContact";
+import { getContact } from "@bciers/actions/api";
 import ContactForm from "./ContactForm";
 import {
   contactsSchema,

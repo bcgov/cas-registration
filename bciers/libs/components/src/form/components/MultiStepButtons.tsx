@@ -34,6 +34,14 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   const { data: session } = useSession();
 
   const isIndustryUser = session?.user?.app_role?.includes("industry");
+
+  // If the submit button text is not provided, default to "Save and Continue" for all steps except the final step
+  let submitBtnText = submitButtonText
+    ? submitButtonText
+    : !isFinalStep
+    ? "Save and Continue"
+    : "Submit";
+
   return (
     <div className={`flex w-full mt-2 justify-between ${classNames}`}>
       {cancelUrl && (
@@ -66,9 +74,10 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             <Button
               variant="contained"
               type="button"
-              disabled={submitButtonDisabled ?? (isFinalStep || isSubmitting)}
+              disabled={submitButtonDisabled ?? isSubmitting}
+              aria-disabled={isDisabled}
             >
-              {isSubmitting ? "Save and Continue" : "Next"}
+              {isSubmitting ? submitBtnText : "Next"}
             </Button>
           </Link>
         ) : (
@@ -79,9 +88,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
               disabled={submitButtonDisabled ?? isDisabled}
               variant="contained"
             >
-              {!isFinalStep
-                ? "Save and Continue"
-                : submitButtonText ?? "Submit"}
+              {submitBtnText}
             </Button>
           )
         )}

@@ -1,5 +1,5 @@
 from typing import Optional
-from ninja import ModelSchema, Field, FilterSchema
+from ninja import ModelSchema, Field, FilterSchema, Schema
 from registration.models import Contact
 
 
@@ -26,6 +26,15 @@ class ContactListOut(ModelSchema):
         fields = ['id', 'first_name', 'last_name', 'email']
 
 
+class OperationsContactListOut(Schema):
+    id: int = Field(..., alias="pk")
+    full_name: str
+
+    @staticmethod
+    def resolve_full_name(obj: Contact) -> str:
+        return f"{obj.first_name} {obj.last_name}"
+
+
 class ContactFilterSchema(FilterSchema):
     # NOTE: we could simply use the `q` parameter to filter by related fields but,
     # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
@@ -44,9 +53,3 @@ class ContactIn(ModelSchema):
     class Meta:
         model = Contact
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
-
-
-class OperatorContactListOut(ModelSchema):
-    class Meta:
-        model = Contact
-        fields = ['first_name', 'last_name']
