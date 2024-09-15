@@ -1,6 +1,6 @@
 "use client";
 import ActivityForm from "./ActivityForm";
-import uiSchema from "./uiSchemas/carbonatesUseUiSchema";
+import uiSchema from "./uiSchemas/hydrogenProduction";
 
 interface Props {
   activityData: {

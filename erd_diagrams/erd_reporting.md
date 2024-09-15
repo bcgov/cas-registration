@@ -102,8 +102,11 @@ Configuration {
 }
 CustomMethodologySchema {
     BigAutoField id
-    JSONField json_schema
     ForeignKey activity
+    ForeignKey source_type
+    ForeignKey gas_type
+    ForeignKey methodology
+    JSONField json_schema
     ForeignKey valid_from
     ForeignKey valid_to
 }
@@ -239,6 +242,9 @@ FacilityReport }|--|| ReportVersion : report_version
 FacilityReport }|--|{ Activity : activities
 FacilityReport }|--|{ RegulatedProduct : products
 CustomMethodologySchema }|--|| Activity : activity
+CustomMethodologySchema }|--|| SourceType : source_type
+CustomMethodologySchema }|--|| GasType : gas_type
+CustomMethodologySchema }|--|| Methodology : methodology
 CustomMethodologySchema }|--|| Configuration : valid_from
 CustomMethodologySchema }|--|| Configuration : valid_to
 ConfigurationElement }|--|| Activity : activity

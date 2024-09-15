@@ -6,7 +6,7 @@ from reporting.models import (
     ActivitySourceTypeJsonSchema,
     CustomMethodologySchema,
 )
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, cast
 from django.db.models import QuerySet
 from django.db.models import Prefetch
 from service.data_access_service.fuel_service import FuelTypeDataAccessService
@@ -19,11 +19,9 @@ def str_to_camel_case(st: str) -> str:
 
 
 def get_custom_methodology_schema_by_id(schema_id: int) -> Dict[str, Any]:
-    try:
-        custom_schema = CustomMethodologySchema.objects.get(id=schema_id)
-        return custom_schema.json_schema
-    except CustomMethodologySchema.DoesNotExist:
-        raise ValueError(f"CustomMethodologySchema with id {schema_id} does not exist")
+    # Fetch the custom schema; assuming it always exists
+    custom_schema = CustomMethodologySchema.objects.get(id=schema_id)
+    return cast(Dict[str, Any], custom_schema.json_schema)
 
 
 def handle_methodologies(
@@ -35,12 +33,15 @@ def handle_methodologies(
     gas_type_one_of: Dict,
     index: int,
 ) -> None:
-    methodology_enum: List = []
+    methodology_enum: List[str] = []
     methodology_map: Dict[int, str] = {}
     methodology_one_of: Dict[str, Dict[str, List]] = {"methodology": {"oneOf": []}}
 
     # Create a mapping for quick lookup
-    fetched_config_map = {(elem.gas_type.id, elem.methodology_id): elem.prefetched_reporting_fields for elem in fetched_configuration_elements}  # type: ignore[attr-defined]
+    fetched_config_map = {
+        (elem.gas_type.id, elem.methodology_id): list(elem.reporting_fields.all())
+        for elem in fetched_configuration_elements
+    }
 
     # Iterate through methodologies
     for config_element_for_methodology in config_element_for_methodologies:
@@ -60,14 +61,32 @@ def handle_methodologies(
         reporting_fields = fetched_config_map[key]
 
         # Create methodology object
-        methodology_object: Dict = {"properties": {"methodology": {"enum": [methodology_name]}}}
+        methodology_object: Dict[str, Dict] = {"properties": {"methodology": {"enum": [methodology_name]}}}
 
+        # Check for custom schema
         if config_element_for_methodology.custom_methodology_schema_id:
+            # Fetch and add custom schema
             custom_schema = get_custom_methodology_schema_by_id(
                 config_element_for_methodology.custom_methodology_schema_id
             )
-            methodology_one_of['methodology']['oneOf'].append(custom_schema)
-        # Add fields to methodology object
+
+            # Find existing methodology object with matching enum
+            existing_methodology_object = next(
+                (
+                    item
+                    for item in methodology_one_of['methodology']['oneOf']
+                    if methodology_name in item['properties']['methodology']['enum']
+                ),
+                None,
+            )
+
+            if existing_methodology_object:
+                # Update the existing methodology object with the custom schema properties
+                existing_methodology_object['properties'].update(custom_schema.get('properties', {}))
+            else:
+                # If no matching object, add the custom schema properties directly
+                methodology_object['properties'].update(custom_schema.get('properties', {}))
+
         else:
             for reporting_field in reporting_fields:
                 property_field = str_to_camel_case(reporting_field.field_name)
@@ -109,9 +128,7 @@ def handle_gas_types(
 
     # Fetch all relevant configuration elements with a single query
     fetched_configuration_elements = list(
-        ConfigurationElement.objects.select_related(
-            'activity', 'source_type', 'gas_type', 'methodology', 'custom_methodology_schema'
-        )
+        ConfigurationElement.objects.select_related('activity', 'source_type', 'gas_type', 'methodology')
         .prefetch_related(Prefetch("reporting_fields", to_attr="prefetched_reporting_fields"))
         .filter(
             activity=activity_id,

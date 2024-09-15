@@ -4,13 +4,13 @@
   "properties": {
     "emissions": {
       "type": "array",
-      "title": "Emission Data",
       "items": {
         "type": "object",
         "properties": {
           "emission": {
             "title": "Emission",
-            "type": "number"
+            "maxLength": 200,
+            "type": "string"
           },
           "gasType": {
             "title": "Gas Type",
