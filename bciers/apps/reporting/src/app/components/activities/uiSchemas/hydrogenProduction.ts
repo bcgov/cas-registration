@@ -1,11 +1,19 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
+import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  otherTransformationOfHydrocarbonFeedstock: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:widget": CheckboxWidgetLeft,
+    "ui:options": {
+      label: false,
+    },
+  },
   sourceTypes: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
@@ -13,16 +21,13 @@ const uiSchema = {
     },
     otherTransformationOfHydrocarbonFeedstock: {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
-      "ui:options": {
-        label: false,
-      },
       emissions: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
         "ui:FieldTemplate": FieldTemplate,
         "ui:options": {
-          arrayAddLabel: "Add Emission Data",
-          title: "Emission Data",
+          arrayAddLabel: "Add Emission",
           padding: "p-2",
+          label: false,
         },
         items: {
           "ui:order": [
@@ -30,13 +35,15 @@ const uiSchema = {
             "emission",
             "equivalentEmissions",
             "methodology",
+            "feedStocks",
+            "description",
           ],
           gasType: {
             "ui:FieldTemplate": InlineFieldTemplate,
             "ui:widget": "select",
             "ui:options": {
-              label: "Gas Type",
               enumOptions: ["CO2"],
+              label: "Gas Type",
             },
           },
           emission: {
@@ -45,27 +52,44 @@ const uiSchema = {
           equivalentEmissions: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
-          feedstocks: {
-            "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-            "ui:FieldTemplate": FieldTemplate,
-            "ui:options": {
-              arrayAddLabel: "Add Feedstock",
-              title: "Feedstock",
-              label: false,
-              verticalBorder: true,
-            },
-          },
           methodology: {
             "ui:FieldTemplate": InlineFieldTemplate,
             "ui:widget": "select",
             "ui:options": {
-              label: "Methodology",
               enumOptions: [
+                "CEMS",
+                "Feedstock Material Balance",
                 "Alternative Parameter Measurement",
                 "Replacement Methodology",
-                "Feedstock Material Balance",
-                "CEMS",
               ],
+            },
+          },
+          feedStocks: {
+            "ui:title": "Feed Stocks",
+            "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+            "ui:FieldTemplate": FieldTemplate,
+            "ui:options": {
+              arrayAddLabel: "Add FeedStock",
+              title: "Feedstock",
+              label: false,
+              verticalBorder: true,
+            },
+            items: {
+              "ui:order": [
+                "feedStock",
+                "annualFeedStockAmount",
+                "Unit for Annual Feedstock Amount",
+              ],
+
+              feedStock: {
+                "ui:FieldTemplate": InlineFieldTemplate,
+              },
+              annualFeedStockAmount: {
+                "ui:FieldTemplate": InlineFieldTemplate,
+              },
+              "Unit for Annual Feedstock Amount": {
+                "ui:FieldTemplate": InlineFieldTemplate,
+              },
             },
           },
         },
@@ -73,5 +97,4 @@ const uiSchema = {
     },
   },
 };
-
 export default uiSchema;

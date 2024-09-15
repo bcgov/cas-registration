@@ -1,14 +1,17 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import Activity
-from reporting.models import Configuration
+from reporting.models import Configuration, SourceType, GasType, Methodology
 
 
 class CustomMethodologySchema(BaseModel):
     """Custom schema for a methodology."""
 
-    json_schema = models.JSONField()
     activity = models.ForeignKey(Activity, on_delete=models.DO_NOTHING, related_name="+")
+    source_type = models.ForeignKey(SourceType, on_delete=models.DO_NOTHING, related_name="+")
+    gas_type = models.ForeignKey(GasType, on_delete=models.DO_NOTHING, related_name="+")
+    methodology = models.ForeignKey(Methodology, on_delete=models.DO_NOTHING, related_name="+")
+    json_schema = models.JSONField()
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
 
