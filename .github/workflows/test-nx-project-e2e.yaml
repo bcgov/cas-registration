@@ -18,6 +18,10 @@ on:
         description: "Docker image URL minus the tag which will be the pull request sha"
         required: true
         type: string
+      is_nx_affected:
+        description: "Whether the project is affected by the PR"
+        required: true
+        type: boolean
 
 env:
   PGUSER: postgres
@@ -28,6 +32,7 @@ env:
 
 jobs:
   e2e-tests:
+    if: ${{ inputs.is_nx_affected }}
     name: 🧪 e2e tests ${{ matrix.project }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -127,6 +132,7 @@ jobs:
         uses: jwalton/gh-docker-logs@v2
 
   happo-finalize:
+    if: ${{ inputs.is_nx_affected }}
     runs-on: ubuntu-latest
     needs: [e2e-tests]
     steps:
@@ -142,3 +148,22 @@ jobs:
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
+
+  happo-skip-not-affected:
+    if: ${{ !inputs.is_nx_affected }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run happo skip node script
+        shell: bash
+        env:
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_PROJECT: cas-${{ inputs.nx_project }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          cd bciers
+          yarn add jsonwebtoken
+          node libs/e2e/src/utils/happo-skip.js
