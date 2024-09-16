@@ -59,7 +59,6 @@ jobs:
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
   test-administration-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
     needs:
       [
         build-backend,
@@ -75,7 +74,6 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
     secrets: inherit
   test-coam-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
     needs: [build-backend, build-dashboard-e2e, build-coam, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
@@ -85,7 +83,6 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
     secrets: inherit
   test-reporting-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
     needs:
       [build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
@@ -100,7 +97,6 @@ jobs:
     uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
   test-registration-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
     needs:
       [
         build-backend,
