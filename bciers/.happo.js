@@ -7,7 +7,7 @@ const MAXHEIGHT = 20000;
 module.exports = {
   apiKey: process.env.HAPPO_API_KEY,
   apiSecret: process.env.HAPPO_API_SECRET,
-  project: "cas-registration",
+  project: process.env.HAPPO_PROJECT || "cas-registration",
   targets: {
     chrome: new RemoteBrowserTarget("chrome", {
       viewport: VIEWPORT,
