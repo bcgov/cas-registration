@@ -1,7 +1,6 @@
 import typing
 from uuid import UUID
 from django.db import models
-from django.apps import apps
 
 from common.constants import AUDIT_FIELDS
 
