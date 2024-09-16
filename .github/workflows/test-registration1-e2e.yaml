@@ -101,3 +101,18 @@ jobs:
           name: blob-report-${{ matrix.project }}
           path: bciers/blob-report
           retention-days: 1
+
+  happo-finalize:
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: finalize happo e2e tests
+        env:
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_NONCE: ${{ github.sha }}
+        run: npx happo-e2e finalize
+        working-directory: ./bciers/apps/registration1
