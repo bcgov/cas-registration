@@ -89,7 +89,7 @@ jobs:
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.sha }}-registration1
+          HAPPO_NONCE: ${{ github.sha }}-reg1
           HAPPO_PROJECT: cas-registration1
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./bciers/apps/registration1
@@ -114,6 +114,6 @@ jobs:
         env:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.sha }}-registration1
+          HAPPO_NONCE: ${{ github.sha }}-reg1
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/registration1
