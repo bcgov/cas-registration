@@ -69,13 +69,17 @@ const uiSchema = {
               "ui:order": [
                 "fuelName",
                 "fuelUnit",
+                "fuelClassification",
                 "annualFuelAmount",
                 "emissions",
               ],
               fuelName: {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
-              fuelType: {
+              fuelUnit: {
+                "ui:FieldTemplate": InlineFieldTemplate,
+              },
+              fuelClassification: {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFuelAmount: {
