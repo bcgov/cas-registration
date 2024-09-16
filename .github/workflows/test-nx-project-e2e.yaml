@@ -149,6 +149,7 @@ jobs:
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
+  # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:
     if: ${{ !inputs.is_nx_affected }}
     runs-on: ubuntu-latest
@@ -165,5 +166,4 @@ jobs:
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           cd bciers
-          yarn add jsonwebtoken
           node libs/e2e/src/utils/happo-skip.js
