@@ -45,7 +45,8 @@ class BaseModel(models.Model):
             instance, _ = self.objects.update_or_create(pk=identifier, defaults=kwargs)
 
         # If the model has audit columns, set them
-        TimeStampedModel = apps.get('registration', 'TimeStampedModel')
+        from registration.models.time_stamped_model import TimeStampedModel
+
         if isinstance(instance, TimeStampedModel):
             instance.set_create_or_update(user_guid)
 
