@@ -108,7 +108,8 @@ jobs:
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.sha }}-${{ inputs.nx_project }}
+          # HAPPO_NONCE has 50 char limit, so using nx_project caused failures for projects with long names so using the unique nx_app_port instead
+          HAPPO_NONCE: ${{ github.sha }}-${{ inputs.nx_app_port }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./bciers
@@ -136,7 +137,8 @@ jobs:
         env:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.sha }}-${{ inputs.nx_project }}
+          # HAPPO_NONCE has 50 char limit, so using nx_project caused failures for projects with long names so using the unique nx_app_port instead
+          HAPPO_NONCE: ${{ github.sha }}-${{ inputs.nx_app_port }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
