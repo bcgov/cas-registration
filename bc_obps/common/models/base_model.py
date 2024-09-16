@@ -1,9 +1,9 @@
 import typing
 from uuid import UUID
 from django.db import models
+from django.apps import apps
 
 from common.constants import AUDIT_FIELDS
-from .utils import set_audit_fields_if_needed
 
 
 class BaseModel(models.Model):
@@ -39,13 +39,14 @@ class BaseModel(models.Model):
 
         # If no identifier is provided, create a new instance
         if identifier is None:
-
             instance, _ = self.objects.create(**kwargs), True
         else:
             # If identifier is provided, update or create the instance
             instance, _ = self.objects.update_or_create(pk=identifier, defaults=kwargs)
 
         # If the model has audit columns, set them
-        set_audit_fields_if_needed(instance, user_guid)
+        TimeStampedModel = apps.get('registration', 'TimeStampedModel')
+        if isinstance(instance, TimeStampedModel):
+            instance.set_create_or_update(user_guid)
 
         return instance
