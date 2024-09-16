@@ -6,7 +6,7 @@ from reporting.models import (
     ActivitySourceTypeJsonSchema,
     CustomMethodologySchema,
 )
-from typing import Dict, List, Optional, Any, cast
+from typing import Dict, List, Optional
 from django.db.models import QuerySet
 from django.db.models import Prefetch
 from service.data_access_service.fuel_service import FuelTypeDataAccessService
@@ -18,10 +18,9 @@ def str_to_camel_case(st: str) -> str:
     return output[0].lower() + output[1:]
 
 
-def get_custom_methodology_schema_by_id(schema_id: int) -> Dict[str, Any]:
-    # Fetch the custom schema; assuming it always exists
+def get_custom_methodology_schema_by_id(schema_id: int) -> Dict:
     custom_schema = CustomMethodologySchema.objects.get(id=schema_id)
-    return cast(Dict[str, Any], custom_schema.json_schema)
+    return custom_schema.json_schema
 
 
 def handle_methodologies(
@@ -69,23 +68,7 @@ def handle_methodologies(
             custom_schema = get_custom_methodology_schema_by_id(
                 config_element_for_methodology.custom_methodology_schema_id
             )
-
-            # Find existing methodology object with matching enum
-            existing_methodology_object = next(
-                (
-                    item
-                    for item in methodology_one_of['methodology']['oneOf']
-                    if methodology_name in item['properties']['methodology']['enum']
-                ),
-                None,
-            )
-
-            if existing_methodology_object:
-                # Update the existing methodology object with the custom schema properties
-                existing_methodology_object['properties'].update(custom_schema.get('properties', {}))
-            else:
-                # If no matching object, add the custom schema properties directly
-                methodology_object['properties'].update(custom_schema.get('properties', {}))
+            methodology_object['properties'].update(custom_schema.get('properties', {}))
 
         else:
             for reporting_field in reporting_fields:

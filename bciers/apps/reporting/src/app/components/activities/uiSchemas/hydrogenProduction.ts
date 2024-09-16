@@ -78,7 +78,7 @@ const uiSchema = {
               "ui:order": [
                 "feedStock",
                 "annualFeedStockAmount",
-                "Unit for Annual Feedstock Amount",
+                "unitForAnnualFeedstockAmount",
               ],
 
               feedStock: {

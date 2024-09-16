@@ -16,7 +16,7 @@ export default function HydrogenProduction({
   reportDate,
 }: Readonly<Props>) {
   const defaultEmptySourceTypeState = {
-    emissions: [{ gasType: "CO2" }],
+    emissions: [{}],
   };
 
   return (
