@@ -2,5 +2,5 @@ const happoConfig = require("../../.happo");
 
 module.exports = {
   ...happoConfig,
-  project: "cas-administration",
+  project: "cas-registration",
 };

@@ -72,6 +72,7 @@ jobs:
       nx_project: administration
       nx_app_port: 4001
       image_url: "ghcr.io/bcgov/cas-admin-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
     secrets: inherit
   test-coam-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
@@ -81,6 +82,7 @@ jobs:
       nx_project: coam
       nx_app_port: 7000
       image_url: "ghcr.io/bcgov/cas-coam-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
     secrets: inherit
   test-reporting-e2e:
     if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
@@ -91,6 +93,7 @@ jobs:
       nx_project: reporting
       nx_app_port: 5000
       image_url: "ghcr.io/bcgov/cas-rep-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
     secrets: inherit
   test-registration1-e2e:
     needs: [build-backend, build-registration1, check-nx-affected]
@@ -110,6 +113,7 @@ jobs:
       nx_project: registration
       nx_app_port: 4000
       image_url: "ghcr.io/bcgov/cas-reg-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
     secrets: inherit
   e2e-finalize:
     needs:
