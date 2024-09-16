@@ -1,11 +1,11 @@
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.bakers import report_version_baker
-from model_bakery import baker
+
 
 class TestReportVersionEndpoint(CommonTestSetup):
     # GET report-operation
     def test_unauthorized_users_cannot_get_report_version(self):
-        endpoint_under_test = f'/api/reporting/report-version/1/report-operation'
+        endpoint_under_test = '/api/reporting/report-version/1/report-operation'
 
         response = TestUtils.mock_get_with_auth_role(self, "cas_pending", endpoint_under_test)
         assert response.status_code == 401

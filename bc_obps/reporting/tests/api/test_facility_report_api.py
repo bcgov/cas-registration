@@ -1,5 +1,4 @@
 import pytest
-from django.test import Client
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import FacilityReport
 from model_bakery import baker

@@ -1,5 +1,4 @@
 import json
-import pytest
 from typing import Any
 from django.http import HttpResponse
 from registration.tests.utils.bakers import operation_baker, operator_baker
