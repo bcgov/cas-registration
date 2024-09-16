@@ -379,7 +379,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             equipment_list=MOCK_DATA_URL,
         )
         operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid, None, payload
+            approved_user_operator.user.user_guid,  payload
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -429,7 +429,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             ),
         ]
         operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid, None, payload
+            approved_user_operator.user.user_guid,  payload
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -483,7 +483,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             ),
         ]
         operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid, existing_operation.id, payload
+            approved_user_operator.user.user_guid,  payload, existing_operation.id,
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -518,7 +518,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         )
 
         operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid, existing_operation.id, payload
+            approved_user_operator.user.user_guid,  payload, existing_operation.id,
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1

@@ -87,22 +87,22 @@ class OperationDataAccessService:
 
         return operation
 
-    @classmethod
-    def create_or_update_operation_v2(
-        cls,
-        operation_id: int | None,
-        user_guid: UUID,
-        operation_data: DictStrAny,
-        activities: Union[QuerySet[Activity], Iterable[Activity]],
-    ) -> Operation:
-        operation_instance, _ = Operation.objects.update_or_create(
-            id=operation_id,
-            defaults={**operation_data},
-        )
+    # @classmethod
+    # def create_or_update_operation_v2(
+    #     cls,
+        
+    #     user_guid: UUID,
+    #     operation_data: DictStrAny,
+    #     activities: Union[QuerySet[Activity], Iterable[Activity]],operation_id: int = None,
+    # ) -> Operation:
+    #     operation_instance, _ = Operation.objects.update_or_create(
+    #         id=operation_id,
+    #         defaults={**operation_data},
+    #     )
 
-        operation_instance.activities.set(activities)
-        operation_instance.set_create_or_update(user_guid)
-        return operation_instance
+    #     operation_instance.activities.set(activities)
+    #     operation_instance.set_create_or_update(user_guid)
+    #     return operation_instance
 
     @classmethod
     def get_all_operations_for_user(cls, user: User) -> QuerySet[Operation]:
