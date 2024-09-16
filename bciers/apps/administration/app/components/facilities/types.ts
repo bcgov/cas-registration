@@ -3,6 +3,7 @@ export interface FacilityRow {
   bcghg_id: string;
   name: string;
   type: string;
+  status: string;
 }
 
 export interface FacilityInitialData {
@@ -15,6 +16,7 @@ export interface FacilitiesSearchParams {
   operations_title?: string;
   bcghg_id?: string;
   type?: string;
+  status?: string;
   name?: string;
   page?: number;
   sort_field?: string;

@@ -1,7 +1,7 @@
 from registration.models.operation import Operation
 from service.user_operator_service import UserOperatorService
-from registration.models import Facility, User
-from django.db.models import QuerySet
+from registration.models import Facility, User, FacilityDesignatedOperationTimeline
+from django.db.models import QuerySet, OuterRef, Subquery
 from uuid import UUID
 from ninja.types import DictStrAny
 
@@ -16,10 +16,27 @@ class FacilityDataAccessService:
         else:
             # Industry users can only see operations associated with their own operator and that are not ended
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(
-                designated_operations__operation__operator_id=user_operator.operator_id,
-                designated_operations__end_date__isnull=True,
-            ).distinct()
+
+            # query status of facility from FacilityDesignatedOperationTimeline model
+            timeline_status_query = (
+                FacilityDesignatedOperationTimeline.objects.filter(
+                    facility_designated_operation_id=OuterRef('designated_operations__id')
+                )
+                .order_by('-created_at')
+                .values('status')[:1]
+            )
+
+            facilities = (
+                queryset.filter(
+                    designated_operations__operation__operator_id=user_operator.operator_id,
+                    designated_operations__end_date__isnull=True,
+                )
+                .distinct()
+                .annotate(status=Subquery(timeline_status_query))
+            )
+            # FIXME: this is broken - getting Bad Request in server log
+            print(facilities)
+            return facilities
 
     @classmethod
     def get_current_facilities_by_operation(cls, operation: Operation) -> QuerySet[Facility]:

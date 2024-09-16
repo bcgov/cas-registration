@@ -11,6 +11,7 @@ const facilityColumns = (
       flex: 1,
     },
     { field: "type", headerName: "Facility Type", width: 200 },
+    { field: "status", headerName: "Status", width: 200 },
     { field: "bcghg_id", headerName: "BC GHG ID", width: 200 },
     {
       field: "action",
