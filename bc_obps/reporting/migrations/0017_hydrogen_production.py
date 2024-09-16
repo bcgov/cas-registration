@@ -186,18 +186,14 @@ def init_custom_schema_data(apps, schema_editor):
     valid_to = Configuration.objects.get(valid_to='2099-12-31')
 
     # Create a new record in CustomMethodologySchema
-    CustomMethodologySchema.objects.bulk_create(
-        [
-            CustomMethodologySchema(
-                activity=activity,
-                source_type=source_type,  # Ensure this field exists in the model
-                json_schema=schema,
-                methodology=methodology,  # Ensure this field exists in the model
-                gas_type=gas_type,  # Ensure this field exists in the model
-                valid_from=valid_from,
-                valid_to=valid_to,
-            )
-        ]
+    CustomMethodologySchema.objects.create(
+        activity=activity,
+        source_type=source_type,  # Ensure this field exists in the model
+        json_schema=schema,
+        methodology=methodology,  # Ensure this field exists in the model
+        gas_type=gas_type,  # Ensure this field exists in the model
+        valid_from=valid_from,
+        valid_to=valid_to,
     )
 
 

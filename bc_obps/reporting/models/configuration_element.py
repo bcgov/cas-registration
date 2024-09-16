@@ -17,11 +17,7 @@ class ConfigurationElement(BaseModel):
     gas_type = models.ForeignKey(GasType, on_delete=models.DO_NOTHING, related_name="configuration_elements")
     methodology = models.ForeignKey(Methodology, on_delete=models.DO_NOTHING, related_name="configuration_elements")
     custom_methodology_schema = models.ForeignKey(
-        CustomMethodologySchema,
-        on_delete=models.DO_NOTHING,
-        related_name="configuration_elements",
-        null=True,
-        blank=True,
+        CustomMethodologySchema, on_delete=models.DO_NOTHING, related_name="configuration_elements", null=True
     )
     reporting_fields = models.ManyToManyField(
         ReportingField,

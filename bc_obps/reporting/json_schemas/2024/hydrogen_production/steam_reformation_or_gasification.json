@@ -9,8 +9,7 @@
         "properties": {
           "emission": {
             "title": "Emission",
-            "maxLength": 200,
-            "type": "string"
+            "type": "number"
           },
           "gasType": {
             "title": "Gas Type",
