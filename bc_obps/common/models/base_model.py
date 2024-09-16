@@ -3,6 +3,7 @@ from uuid import UUID
 from django.db import models
 
 from common.constants import AUDIT_FIELDS
+from .utils import set_audit_fields_if_needed
 
 
 class BaseModel(models.Model):
@@ -43,9 +44,8 @@ class BaseModel(models.Model):
         else:
             # If identifier is provided, update or create the instance
             instance, _ = self.objects.update_or_create(pk=identifier, defaults=kwargs)
-        # If the model has audit columns, set them
-        from registration.models.time_stamped_model import TimeStampedModel
 
-        if isinstance(instance, TimeStampedModel):
-            instance.set_create_or_update(user_guid)
+        # If the model has audit columns, set them
+        set_audit_fields_if_needed(instance, user_guid)
+
         return instance
