@@ -16,7 +16,7 @@ export default function PulpAndPaperProduction({
   reportDate,
 }: Readonly<Props>) {
   const defaultEmptySourceTypeState = {
-    emissions: [],
+    emissions: [{}],
   };
 
   return (
