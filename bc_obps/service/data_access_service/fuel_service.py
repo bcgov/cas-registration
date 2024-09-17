@@ -20,10 +20,5 @@ class FuelTypeDataAccessService:
 
     @classmethod
     def get_fuel(cls, fuel_name: str) -> FuelType:
-        cached_data: Optional[FuelType] = cache.get("fuel")
-        if cached_data:
-            return cached_data
-        else:
-            fuel = FuelType.objects.get(name=fuel_name)
-            cache.set("fuel", fuel, 60 * 60 * 24 * 1)  # 1 day
-            return fuel
+        fuel = FuelType.objects.get(name=fuel_name)
+        return fuel

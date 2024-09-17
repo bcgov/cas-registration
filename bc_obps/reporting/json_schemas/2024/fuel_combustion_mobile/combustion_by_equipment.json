@@ -19,12 +19,14 @@
               "fuelClassification": {
                 "title": "Fuel Classification",
                 "maxLength": 200,
-                "type": "string"
+                "type": "string",
+                "readOnly": true
               },
               "fuelUnit": {
                 "title": "Fuel Unit",
                 "maxLength": 200,
-                "type": "string"
+                "type": "string",
+                "readOnly": true
               }
             }
           },
