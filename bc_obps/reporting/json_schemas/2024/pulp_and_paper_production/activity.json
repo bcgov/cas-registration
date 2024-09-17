@@ -1,5 +1,28 @@
 {
   "name": "Pulp and paper production",
   "type": "object",
-  "properties": {}
+  "properties": {
+    "carbonates": {
+      "type": "array",
+      "title": "Carbonates",
+      "items": {
+        "title": "Carbonates",
+        "type": "object",
+        "properties": {
+          "carbonateName": {
+            "type": "string",
+            "title": "Carbonate Name"
+          },
+          "annualAmount": {
+            "type": "number",
+            "title": "Annual Amount (t)"
+          },
+          "purityOfCarbonate": {
+            "type": "number",
+            "title": "Purity Of Carbonate (Weight Fraction)"
+          }
+        }
+      }
+    }
+  }
 }
