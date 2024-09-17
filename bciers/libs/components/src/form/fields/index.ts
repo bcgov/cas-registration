@@ -8,4 +8,3 @@ export { default as GroupedObjectFieldTemplateWrapper } from "./GroupedObjectFie
 export { default as InlineFieldTemplate } from "./InlineFieldTemplate";
 export { default as TitleFieldTemplate } from "./TitleFieldTemplate";
 export { default as TitleOnlyFieldTemplate } from "./TitleOnlyFieldTemplate";
-export { default as FuelObjectFieldTemplate } from "./FuelObjectFieldTemplate";
