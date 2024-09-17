@@ -99,7 +99,7 @@ class HydrogenProduction2024Test(TestCase):
                     "properties": {
                         "feedStock": {"type": "string", "title": "Feed Stock"},
                         "annualFeedStockAmount": {"type": "string", "title": "Annual Feed Stock Amount"},
-                        "Unit for Annual Feedstock Amount": {
+                        "unitForAnnualFeedstockAmount": {
                             "type": "string",
                             "title": "Unit for Annual Feedstock Amount",
                         },

@@ -6,7 +6,7 @@ from reporting.models import (
     ActivitySourceTypeJsonSchema,
     CustomMethodologySchema,
 )
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from django.db.models import QuerySet
 from django.db.models import Prefetch
 from service.data_access_service.fuel_service import FuelTypeDataAccessService
@@ -18,9 +18,9 @@ def str_to_camel_case(st: str) -> str:
     return output[0].lower() + output[1:]
 
 
-def get_custom_methodology_schema_by_id(schema_id: int) -> Dict:
+def get_custom_methodology_schema_by_id(schema_id: int) -> Dict[str, Any]:
     custom_schema = CustomMethodologySchema.objects.get(id=schema_id)
-    return custom_schema.json_schema
+    return custom_schema.json_schema  # type: ignore[no-any-return]
 
 
 def handle_methodologies(
