@@ -7,6 +7,11 @@ import { Alert, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import safeJsonParse from "@bciers/utils/safeJsonParse";
+import { FuelFields } from "./customFields/FuelFieldComponent";
+
+const CUSTOM_FIELDS = {
+  fuelType: (props) => <FuelFields {...props} />,
+};
 
 const tasklistData: TaskListElement[] = [
   {
@@ -171,6 +176,7 @@ export default function ActivityForm({
       <div className="w-full">
         <FormBase
           schema={jsonSchema}
+          fields={CUSTOM_FIELDS}
           formData={formState}
           uiSchema={uiSchema}
           validator={validator}

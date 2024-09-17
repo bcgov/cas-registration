@@ -177,9 +177,9 @@ def handle_source_type_schema(
     if source_type_schema.has_unit and source_type_schema.has_fuel:
         # Fetch the list of fuels & add them to the fuelName enum
         fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
-        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['fuelName'][
-            'enum'
-        ] = fuel_list
+        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['fuelType'][
+            'properties'
+        ]['fuelName']['enum'] = fuel_list
         st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items'][
             'properties'
         ]['gasType']['enum'] = gas_type_enum
@@ -188,7 +188,9 @@ def handle_source_type_schema(
         ] = gas_type_one_of
     elif not source_type_schema.has_unit and source_type_schema.has_fuel:
         fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
-        st_schema['properties']['fuels']['items']['properties']['fuelName']['enum'] = fuel_list
+        st_schema['properties']['fuels']['items']['properties']['fuelType']['properties']['fuelName'][
+            'enum'
+        ] = fuel_list
         st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType'][
             'enum'
         ] = gas_type_enum
