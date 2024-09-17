@@ -17,3 +17,13 @@ class FuelTypeDataAccessService:
             fuels = FuelType.objects.only(*FuelTypeSchema.Meta.fields).order_by('id')
             cache.set("fuels", fuels, 60 * 60 * 24 * 1)  # 1 day
             return fuels
+
+    @classmethod
+    def get_fuel(cls, fuel_name: str) -> FuelType:
+        cached_data: Optional[FuelType] = cache.get("fuel")
+        if cached_data:
+            return cached_data
+        else:
+            fuel = FuelType.objects.get(name=fuel_name)
+            cache.set("fuel", fuel, 60 * 60 * 24 * 1)  # 1 day
+            return fuel
