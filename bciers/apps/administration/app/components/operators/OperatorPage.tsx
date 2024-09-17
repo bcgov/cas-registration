@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import OperatorForm from "./OperatorForm";
 import { operatorSchema } from "../../data/jsonSchema/operator";
 import { RJSFSchema } from "@rjsf/utils";

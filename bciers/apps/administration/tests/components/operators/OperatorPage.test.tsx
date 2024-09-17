@@ -3,7 +3,6 @@ import {
   useRouter,
   useSearchParams,
   useSession,
-  notFound,
 } from "@bciers/testConfig/mocks";
 import { getBusinessStructures, getCurrentOperator } from "./mocks";
 import OperatorPage from "../../../app/components/operators/OperatorPage";
@@ -43,7 +42,7 @@ describe("Operator component", () => {
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
     });
     getBusinessStructures.mockReturnValueOnce({
-      error: "yikes",
+      error: "no business structures",
     });
     await expect(async () => {
       render(await OperatorPage());

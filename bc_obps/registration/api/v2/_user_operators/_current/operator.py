@@ -1,5 +1,5 @@
 from common.permissions import authorize
-from registration.constants import V2
+from registration.constants import USER_OPERATOR_TAGS_V2
 from registration.models.operator import Operator
 from service.operator_service_v2 import OperatorServiceV2
 from registration.schema.v2.operator import OperatorIn, OperatorOut
@@ -20,7 +20,7 @@ from registration.api.router import router
 @router.get(
     "/v2/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},
-    tags=V2,
+    tags=USER_OPERATOR_TAGS_V2,
     description="""Retrieves data about the current user-operator and their associated operator.
     Declined user-operators are excluded from the results.""",
     exclude_none=True,  # To exclude None values from the response (used for parent and partner arrays)
