@@ -100,7 +100,9 @@
     "ts-node": "^10.9.1",
     "tslib": "^2.3.0",
     "typescript": "5.4.3",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "vite": "^5.4.6",
+    "vitest": "^2.1.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.9.0",
@@ -146,9 +148,7 @@
     "nx": "19.3.0",
     "prettier": "^3.0.3",
     "ts-mockito": "^2.6.1",
-    "vite": "^5.2.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.4.0",
     "vitest-fetch-mock": "^0.2.2",
     "webkit": "^0.0.0"
   },
