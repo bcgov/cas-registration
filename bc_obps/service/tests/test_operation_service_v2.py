@@ -378,9 +378,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             boundary_map=MOCK_DATA_URL,
             equipment_list=MOCK_DATA_URL,
         )
-        operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid,  payload
-        )
+        operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
@@ -428,9 +426,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
                 mo_postal_code='H0H0H0',
             ),
         ]
-        operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid,  payload
-        )
+        operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.created_by == approved_user_operator.user
@@ -483,7 +479,9 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             ),
         ]
         operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid,  payload, existing_operation.id,
+            approved_user_operator.user.user_guid,
+            payload,
+            existing_operation.id,
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -518,7 +516,9 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         )
 
         operation = OperationServiceV2.create_or_update_operation_v2(
-            approved_user_operator.user.user_guid,  payload, existing_operation.id,
+            approved_user_operator.user.user_guid,
+            payload,
+            existing_operation.id,
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1

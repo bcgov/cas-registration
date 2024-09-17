@@ -174,7 +174,7 @@ class OperationServiceV2:
         cls,
         user_guid: UUID,
         payload: OperationInformationIn,
-        operation_id: UUID = None,
+        operation_id: UUID | None = None,
     ) -> Operation:
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
 
@@ -226,7 +226,11 @@ class OperationServiceV2:
             if not existing_operation.user_has_access(user_guid):
                 raise Exception(UNAUTHORIZED_MESSAGE)
 
-        operation: Operation = cls.create_or_update_operation_v2(user_guid,  payload,operation_id,)
+        operation: Operation = cls.create_or_update_operation_v2(
+            user_guid,
+            payload,
+            operation_id,
+        )
 
         registration_payload = RegistrationPurposeIn(
             registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products

@@ -90,7 +90,7 @@ class OperationDataAccessService:
     # @classmethod
     # def create_or_update_operation_v2(
     #     cls,
-        
+
     #     user_guid: UUID,
     #     operation_data: DictStrAny,
     #     activities: Union[QuerySet[Activity], Iterable[Activity]],operation_id: int = None,
