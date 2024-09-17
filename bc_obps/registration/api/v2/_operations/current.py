@@ -22,7 +22,7 @@ from django.db.models import QuerySet
     response={200: List[OperationCurrentOut], codes_4xx: Message},
     tags=["V2"],
     auth=authorize('approved_industry_user'),
-    description="""Gets the list of operations associated with the current user's operation that are not yet registered.
+    description="""Gets the list of operations associated with the current user's operator that are not yet registered.
     The endpoint ensures that only authorized industry users can get unregistered operations belonging to their operator. Unauthorized access attempts raise an error.""",
 )
 @handle_http_errors()
