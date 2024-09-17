@@ -10,6 +10,7 @@ import {
 } from "@/registration/app/components/operations/registration";
 import {
   OperationRegistrationSteps,
+  RegistrationPurposes,
   initialOperationRegistrationSteps,
 } from "@/registration/app/components/operations/registration/enums";
 import { getOperationV2 } from "@bciers/actions/api";
@@ -31,11 +32,11 @@ const OperationRegistrationPage = async ({
     const purposes = operationData?.registration_purposes;
     if (
       // Note: the purposes have slightly different names than the step names
-      purposes.includes("Opted-in Operation")
+      purposes.includes(RegistrationPurposes.OPTED_IN_OPERATION)
     ) {
       steps.splice(2, 0, OperationRegistrationSteps.OPT_IN_APPLICATION);
     }
-    if (purposes.includes("New Entrant Operation"))
+    if (purposes.includes(RegistrationPurposes.NEW_ENTRANT_OPERATION))
       steps.splice(2, 0, OperationRegistrationSteps.NEW_ENTRANT_APPLICATION);
   } else {
     steps = [...initialOperationRegistrationSteps];
