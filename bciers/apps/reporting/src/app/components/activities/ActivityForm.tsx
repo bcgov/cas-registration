@@ -8,9 +8,10 @@ import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/R
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { FuelFields } from "./customFields/FuelFieldComponent";
+import { FieldProps } from "@rjsf/utils";
 
 const CUSTOM_FIELDS = {
-  fuelType: (props) => <FuelFields {...props} />,
+  fuelType: (props: FieldProps) => <FuelFields {...props} />,
 };
 
 const tasklistData: TaskListElement[] = [
