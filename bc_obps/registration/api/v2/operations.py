@@ -2,6 +2,8 @@ from typing import List, Literal, Optional
 from registration.constants import V2
 from registration.models.operation import Operation
 from registration.schema.v2.operation import OperationFilterSchema, OperationListOut
+from typing import Tuple
+from registration.schema.v2.operation import OperationCreateOut, OperationInformationIn
 from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -35,3 +37,19 @@ def list_operations_v2(
 ) -> QuerySet[Operation]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
     return OperationServiceV2.list_operations(get_current_user_guid(request), sort_field, sort_order, filters)
+
+
+##### POST #####
+@router.post(
+    "/v2/operations",
+    response={200: OperationCreateOut, custom_codes_4xx: Message},
+    tags=["V2"],
+    description="""Creates a new operation for the current user and starts the registration process.
+    It associates the new operation with the current user's approved user-operator.""",
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def register_create_operation_information(
+    request: HttpRequest, payload: OperationInformationIn
+) -> Tuple[Literal[200], Operation]:
+    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload)

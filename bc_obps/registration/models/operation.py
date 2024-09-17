@@ -55,8 +55,24 @@ class Operation(TimeStampedModel):
         NaicsCode,
         on_delete=models.PROTECT,
         null=True,
-        db_comment="An operation's NAICS code",
+        db_comment="This column refers to an operation's primary NAICS code.",
         related_name='operations',
+    )
+    secondary_naics_code = models.ForeignKey(
+        NaicsCode,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        db_comment="This column refers to an operation's secondary NAICS code.",
+        related_name='operations_naics_secondary',
+    )
+    tertiary_naics_code = models.ForeignKey(
+        NaicsCode,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        db_comment="This column refers to an operation's tertiary NAICS code.",
+        related_name='operations_naics_tertiary',
     )
     swrs_facility_id = models.IntegerField(
         db_comment="An operation's SWRS facility ID. Only needed if the operation submitted a report the previous year.",
@@ -219,8 +235,8 @@ class Operation(TimeStampedModel):
         self.bc_obps_regulated_operation = new_boro_id_instance
 
     @property
-    def current_owner(self) -> Operator:
+    def current_designated_operator(self) -> Operator:
         """
-        Returns the current owner of the operation.
+        Returns the current designated operator of the operation.
         """
         return self.designated_operators.get(end_date__isnull=True).operator

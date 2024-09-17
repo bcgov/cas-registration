@@ -14,13 +14,41 @@ export const fetchFormEnums = () => {
   ]);
   // Operations
   actionHandler.mockResolvedValueOnce([
-    { id: 1, name: "Operation 1" },
-    { id: 2, name: "Operation 2" },
+    { id: "uuid1", name: "Operation 1" },
+    { id: "uuid2", name: "Operation 2" },
+    {
+      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+      name: "Existing Operation",
+    },
   ]);
   // Purposes
   actionHandler.mockResolvedValueOnce([
     "New Entrant Application",
     "Potential Reporting Operation",
+    "OBPS Regulated Operation",
+  ]);
+  // Naics codes
+  actionHandler.mockResolvedValueOnce([
+    {
+      id: 1,
+      naics_code: "211110",
+      naics_description: "Oil and gas extraction (except oil sands)",
+    },
+    {
+      id: 2,
+      naics_code: "212114",
+      naics_description: "Bituminous coal mining",
+    },
+  ]);
+  // Reporting activities
+  actionHandler.mockResolvedValueOnce([
+    { id: 1, name: "Amonia production" },
+    { id: 2, name: "Cement production" },
+  ]);
+  // Business structures
+  actionHandler.mockResolvedValueOnce([
+    { name: "General Partnership" },
+    { name: "BC Corporation" },
   ]);
 };
 

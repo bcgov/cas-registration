@@ -19,16 +19,11 @@ class MultipleOperatorModelTest(BaseTestCase):
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
-            ("operator_index", "operator index", None, None),
             ("legal_name", "legal name", 1000, None),
             ("trade_name", "trade name", 1000, None),
             ("cra_business_number", "cra business number", None, None),
             ("bc_corporate_registry_number", "bc corporate registry number", None, None),
             ("business_structure", "business structure", None, None),
-            ("website", "website", 200, None),
-            ("percentage_ownership", "percentage ownership", None, None),
-            ("physical_address", "physical address", None, None),
-            ("mailing_address_same_as_physical", "mailing address same as physical", None, None),
-            ("mailing_address", "mailing address", None, None),
+            ("attorney_address", "attorney address", None, None),
             ("operation", "operation", None, None),
         ]

@@ -35,7 +35,7 @@ export const createMultipleOperatorsInformationSchema =
                 },
                 multiple_operators_array: {
                   type: "array",
-                  default: [{}],
+                  default: [{ mo_is_extraprovincial_company: false }],
                   items: {
                     type: "object",
                     required: [
@@ -43,7 +43,6 @@ export const createMultipleOperatorsInformationSchema =
                       "mo_trade_name",
                       "mo_business_structure",
                       "mo_cra_business_number",
-                      "mo_bc_corporate_registry_number",
                       "mo_attorney_street_address",
                       "mo_municipality",
                       "mo_province",
@@ -78,11 +77,7 @@ export const createMultipleOperatorsInformationSchema =
                         type: "string",
                         title: "CRA Business Number",
                       },
-                      mo_bc_corporate_registry_number: {
-                        type: "string",
-                        title: "BC Corporate Registry Number",
-                        format: "bc_corporate_registry_number",
-                      },
+
                       mo_attorney_street_address: {
                         type: "string",
                         title: "Attorney Street Address",
@@ -99,6 +94,32 @@ export const createMultipleOperatorsInformationSchema =
                       mo_postal_code: {
                         type: "string",
                         title: "Postal Code",
+                      },
+                    },
+                    dependencies: {
+                      mo_is_extraprovincial_company: {
+                        oneOf: [
+                          {
+                            properties: {
+                              mo_is_extraprovincial_company: {
+                                enum: [false],
+                              },
+                              mo_bc_corporate_registry_number: {
+                                type: "string",
+                                title: "BC Corporate Registry Number",
+                                format: "bc_corporate_registry_number",
+                              },
+                            },
+                            required: ["mo_bc_corporate_registry_number"],
+                          },
+                          {
+                            properties: {
+                              mo_is_extraprovincial_company: {
+                                enum: [true],
+                              },
+                            },
+                          },
+                        ],
                       },
                     },
                   },
@@ -123,8 +144,21 @@ export const multipleOperatorsInformationUiSchema: UiSchema = {
       label: false,
       arrayAddLabel: "Add operator",
       title: "Operator ",
+      removable: true,
     },
     items: {
+      "ui:order": [
+        "mo_is_extraprovincial_company",
+        "mo_legal_name",
+        "mo_trade_name",
+        "mo_business_structure",
+        "mo_bc_corporate_registry_number",
+        "mo_cra_business_number",
+        "mo_attorney_street_address",
+        "mo_municipality",
+        "mo_province",
+        "mo_postal_code",
+      ],
       mo_is_extraprovincial_company: {
         "ui:widget": "ToggleWidget",
       },
