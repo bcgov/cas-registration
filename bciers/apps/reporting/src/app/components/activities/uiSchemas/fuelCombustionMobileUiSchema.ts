@@ -33,8 +33,7 @@ const uiSchema = {
         },
         items: {
           "ui:order": [
-            "fuelName",
-            "fuelClassification",
+            "fuelType",
             "fuelDescription",
             "q1FuelAmount",
             "q2FuelAmount",
@@ -43,11 +42,21 @@ const uiSchema = {
             "annualFuelAmount",
             "emissions",
           ],
-          fuelName: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          fuelClassification: {
-            "ui:FieldTemplate": InlineFieldTemplate,
+          fuelType: {
+            "ui:field": "fuelType",
+            "ui:FieldTemplate": FieldTemplate,
+            "ui:options": {
+              label: false,
+            },
+            fuelName: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            fuelUnit: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            fuelClassification: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
           },
           fuelDescription: {
             "ui:FieldTemplate": InlineFieldTemplate,
