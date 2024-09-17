@@ -38,6 +38,7 @@ HistoricalBcObpsRegulatedOperation {
     CharField id
     DateTimeField issued_at
     TextField comments
+    CharField status
     UUIDField history_user_id
     AutoField history_id
     DateTimeField history_date
@@ -48,6 +49,7 @@ BcObpsRegulatedOperation {
     CharField id
     DateTimeField issued_at
     TextField comments
+    CharField status
 }
 HistoricalBusinessRole {
     CharField role_name
@@ -485,6 +487,8 @@ HistoricalOperation {
     ForeignKey archived_by
     ForeignKey operator
     ForeignKey naics_code
+    ForeignKey secondary_naics_code
+    ForeignKey tertiary_naics_code
     ForeignKey verified_by
     ForeignKey point_of_contact
     ForeignKey bc_obps_regulated_operation
@@ -493,13 +497,6 @@ HistoricalOperation {
     DateTimeField history_date
     CharField history_change_reason
     CharField history_type
-}
-HistoricalOperation_documents {
-    BigIntegerField id
-    ForeignKey operation
-    ForeignKey document
-    ForeignKey history
-    AutoField m2m_history_id
 }
 HistoricalOperation_regulated_products {
     BigIntegerField id
@@ -512,6 +509,13 @@ HistoricalOperation_activities {
     BigIntegerField id
     ForeignKey operation
     ForeignKey activity
+    ForeignKey history
+    AutoField m2m_history_id
+}
+HistoricalOperation_documents {
+    BigIntegerField id
+    ForeignKey operation
+    ForeignKey document
     ForeignKey history
     AutoField m2m_history_id
 }
@@ -528,6 +532,8 @@ Operation {
     ForeignKey operator
     BooleanField operation_has_multiple_operators
     ForeignKey naics_code
+    ForeignKey secondary_naics_code
+    ForeignKey tertiary_naics_code
     IntegerField swrs_facility_id
     CharField bcghg_id
     BooleanField opt_in
@@ -644,22 +650,17 @@ HistoricalMultipleOperator {
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
-    IntegerField operator_index
     CharField legal_name
     CharField trade_name
     IntegerField cra_business_number
     CharField bc_corporate_registry_number
-    CharField website
-    DecimalField percentage_ownership
-    BooleanField mailing_address_same_as_physical
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
     ForeignKey archived_by
     ForeignKey operation
     ForeignKey business_structure
-    ForeignKey physical_address
-    ForeignKey mailing_address
+    ForeignKey attorney_address
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
@@ -674,17 +675,12 @@ MultipleOperator {
     ForeignKey archived_by
     DateTimeField archived_at
     ForeignKey operation
-    IntegerField operator_index
     CharField legal_name
     CharField trade_name
     IntegerField cra_business_number
     CharField bc_corporate_registry_number
     ForeignKey business_structure
-    CharField website
-    DecimalField percentage_ownership
-    ForeignKey physical_address
-    ForeignKey mailing_address
-    BooleanField mailing_address_same_as_physical
+    ForeignKey attorney_address
 }
 HistoricalOperationDesignatedOperatorTimeline {
     BigIntegerField id
@@ -973,24 +969,28 @@ HistoricalOperation }|--|| User : updated_by
 HistoricalOperation }|--|| User : archived_by
 HistoricalOperation }|--|| Operator : operator
 HistoricalOperation }|--|| NaicsCode : naics_code
+HistoricalOperation }|--|| NaicsCode : secondary_naics_code
+HistoricalOperation }|--|| NaicsCode : tertiary_naics_code
 HistoricalOperation }|--|| User : verified_by
 HistoricalOperation }|--|| Contact : point_of_contact
 HistoricalOperation }|--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
 HistoricalOperation }|--|| OptedInOperationDetail : opted_in_operation
-HistoricalOperation_documents }|--|| Operation : operation
-HistoricalOperation_documents }|--|| Document : document
-HistoricalOperation_documents }|--|| HistoricalOperation : history
 HistoricalOperation_regulated_products }|--|| Operation : operation
 HistoricalOperation_regulated_products }|--|| RegulatedProduct : regulatedproduct
 HistoricalOperation_regulated_products }|--|| HistoricalOperation : history
 HistoricalOperation_activities }|--|| Operation : operation
 HistoricalOperation_activities }|--|| Activity : activity
 HistoricalOperation_activities }|--|| HistoricalOperation : history
+HistoricalOperation_documents }|--|| Operation : operation
+HistoricalOperation_documents }|--|| Document : document
+HistoricalOperation_documents }|--|| HistoricalOperation : history
 Operation }|--|| User : created_by
 Operation }|--|| User : updated_by
 Operation }|--|| User : archived_by
 Operation }|--|| Operator : operator
 Operation }|--|| NaicsCode : naics_code
+Operation }|--|| NaicsCode : secondary_naics_code
+Operation }|--|| NaicsCode : tertiary_naics_code
 Operation }|--|| User : verified_by
 Operation }|--|| Contact : point_of_contact
 Operation ||--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
@@ -1029,15 +1029,13 @@ HistoricalMultipleOperator }|--|| User : updated_by
 HistoricalMultipleOperator }|--|| User : archived_by
 HistoricalMultipleOperator }|--|| Operation : operation
 HistoricalMultipleOperator }|--|| BusinessStructure : business_structure
-HistoricalMultipleOperator }|--|| Address : physical_address
-HistoricalMultipleOperator }|--|| Address : mailing_address
+HistoricalMultipleOperator }|--|| Address : attorney_address
 MultipleOperator }|--|| User : created_by
 MultipleOperator }|--|| User : updated_by
 MultipleOperator }|--|| User : archived_by
 MultipleOperator }|--|| Operation : operation
 MultipleOperator }|--|| BusinessStructure : business_structure
-MultipleOperator }|--|| Address : physical_address
-MultipleOperator }|--|| Address : mailing_address
+MultipleOperator }|--|| Address : attorney_address
 HistoricalOperationDesignatedOperatorTimeline }|--|| User : created_by
 HistoricalOperationDesignatedOperatorTimeline }|--|| User : updated_by
 HistoricalOperationDesignatedOperatorTimeline }|--|| User : archived_by

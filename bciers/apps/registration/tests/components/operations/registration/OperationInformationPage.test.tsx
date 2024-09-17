@@ -22,7 +22,7 @@ describe("the OperationInformationPage component", () => {
 
     render(
       await OperationInformationPage({
-        step: 2,
+        step: 1,
         steps: allOperationRegistrationSteps,
       }),
     );

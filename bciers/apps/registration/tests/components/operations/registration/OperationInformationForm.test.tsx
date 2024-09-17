@@ -1,82 +1,42 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
 import { useSession, useRouter } from "@bciers/testConfig/mocks";
-import { operationInformationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/operationInformation";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
 import { actionHandler } from "@bciers/testConfig/mocks";
+import { fetchFormEnums } from "../OperationRegistrationPage.test";
+import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
+import { mockDataUri } from "./NewEntrantOperationForm.test";
+import { fillComboboxWidgetField } from "@bciers/testConfig/helpers";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
 const mockPush = vi.fn();
-useRouter.mockReturnValue({
-  query: {},
-  push: mockPush,
-});
-
-const localSchema = operationInformationSchema;
-localSchema.properties.registration_purpose.anyOf = [
-  {
-    const: "Potential Reporting Operation",
-    title: "Potential Reporting Operation",
-  },
-  { const: "OBPS Regulated Operation", title: "OBPS Regulated Operation" },
-];
-localSchema.properties.operation.anyOf = [
-  { const: "uuid1", title: "Operation 1" },
-  { const: "uuid2", title: "Operation 2" },
-];
-localSchema.dependencies = {
-  registration_purpose: {
-    allOf: [
-      {
-        if: {
-          properties: {
-            registration_purpose: {
-              const: "OBPS Regulated Operation",
-            },
-          },
-        },
-        then: {
-          required: ["regulated_products"],
-          properties: {
-            regulated_products: {
-              type: "array",
-              items: {
-                type: "number",
-                enum: [1, 2, 3],
-                enumNames: [
-                  "BC-specific refinery complexity throughput",
-                  "Cement equivalent",
-                  "Chemicals: pure hydrogen peroxide",
-                ],
-              },
-              title: "Regulated Product Name(s):",
-            },
-          },
-        },
-      },
-    ],
-  },
-};
+const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
 describe("the OperationInformationForm component", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
+
+    useRouter.mockReturnValue({
+      query: {},
+      push: mockPush,
+    });
   });
 
-  it("should render the OperationInformationForm component", () => {
+  it("should render the OperationInformationForm component", async () => {
+    fetchFormEnums();
     render(
       <OperationInformationForm
-        formData={{}}
-        schema={operationInformationSchema}
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
@@ -86,172 +46,332 @@ describe("the OperationInformationForm component", () => {
       "Operation Information",
     );
     expect(
-      screen.getByLabelText(
-        /The purpose of this registration is to register as a/i,
-      ),
-    ).toBeVisible();
-    expect(screen.getByLabelText(/Select your operation/i)).toBeVisible();
-    expect(
       screen.getByRole("button", { name: /save and continue/i }),
     ).toBeVisible();
   });
-  it("should submit when a purpose without regulated products is selected", async () => {
-    actionHandler.mockReturnValueOnce({ id: "uuid2", name: "Operation 2" });
+
+  it("should fetch operation data when an existing operation is selected", async () => {
+    fetchFormEnums();
     render(
       <OperationInformationForm
-        formData={{}}
-        schema={localSchema}
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
     );
+    const selectOperationInput = screen.getByLabelText(
+      /select your operation+/i,
+    );
+    await fillComboboxWidgetField(selectOperationInput, /Operation 1/i);
 
-    const purposeInput = screen.getByRole("combobox", {
-      name: /The purpose of this registration+/i,
-    });
-
-    const openPurposeDropdownButton = purposeInput?.parentElement?.children[1]
-      ?.children[0] as HTMLInputElement;
-
-    await userEvent.click(openPurposeDropdownButton);
-    const purposeOption = screen.getByText("Potential Reporting Operation");
-    await userEvent.click(purposeOption);
-
-    expect(
-      screen.queryByPlaceholderText(/select regulated product/i),
-    ).not.toBeInTheDocument();
-
-    const operationInput = screen.getByRole("combobox", {
-      name: /Select your operation+/i,
-    });
-    const openOperationsDropdownButton = operationInput?.parentElement
-      ?.children[1]?.children[0] as HTMLInputElement;
-    await userEvent.click(openOperationsDropdownButton);
-    const operationOption = screen.getByText(/Operation 2/i);
-    await userEvent.click(operationOption);
-
-    userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operations/uuid2/registration/operation",
-        "PUT",
+      // LastCalledWith because fetchFormEnums calls the actionHandler multiple times to populate the dropdown options in the form schema
+      expect(actionHandler).toHaveBeenLastCalledWith(
+        "registration/v2/operations/uuid1",
+        "GET",
         "",
-        {
-          body: JSON.stringify({
-            registration_purpose: "Potential Reporting Operation",
-            operation: "uuid2",
-          }),
-        },
       );
     });
-    expect(mockPush).toHaveBeenCalledWith(
-      "/register-an-operation/uuid2/2?title=Operation 2",
-    );
   });
-  it("should submit when a purpose with regulated products is selected", async () => {
-    actionHandler.mockReturnValueOnce({ id: "uuid2", name: "Operation 2" });
-    render(
-      <OperationInformationForm
-        formData={{}}
-        schema={localSchema}
-        step={1}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
 
-    const purposeInput = screen.getByRole("combobox", {
-      name: /The purpose of this registration+/i,
-    });
+  it(
+    "should submit an edited operation without regulated products",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      fetchFormEnums(); // mock actionHandler calls to populate dropdown options
 
-    const openPurposeDropdownButton = purposeInput?.parentElement?.children[1]
-      ?.children[0] as HTMLInputElement;
+      actionHandler.mockResolvedValueOnce({
+        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        name: "Existing Operation",
+        type: "Single Facility Operation",
+        naics_code_id: 1,
+        boundary_map: mockDataUri,
+        process_flow_diagram: mockDataUri,
+        equipment_list: mockDataUri,
+        activities: [1],
+      }); // mock the GET from selecting an operation
 
-    await userEvent.click(openPurposeDropdownButton);
-    const purposeOption = screen.getByText("OBPS Regulated Operation");
-    await userEvent.click(purposeOption);
+      actionHandler.mockResolvedValueOnce({
+        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        name: "Existing Operation edited",
+      }); // mock the POST response from the submit handler
 
-    const regulatedProductsInput = screen.getByPlaceholderText(
-      /select regulated product.../i,
-    );
-
-    const openProductsDropdown = regulatedProductsInput?.parentElement
-      ?.children[1]?.children[0] as HTMLInputElement;
-    await userEvent.click(openProductsDropdown);
-    const product1 = screen.getByText(
-      "BC-specific refinery complexity throughput",
-    );
-    await userEvent.click(product1);
-    await userEvent.click(openProductsDropdown);
-    const product2 = screen.getByText("Cement equivalent");
-    await userEvent.click(product2);
-
-    const operationInput = screen.getByRole("combobox", {
-      name: /Select your operation+/i,
-    });
-    const openOperationsDropdownButton = operationInput?.parentElement
-      ?.children[1]?.children[0] as HTMLInputElement;
-    await userEvent.click(openOperationsDropdownButton);
-    const operationOption = screen.getByText(/Operation 2/i);
-    await userEvent.click(operationOption);
-
-    userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operations/uuid2/registration/operation",
-        "PUT",
-        "",
-        {
-          body: JSON.stringify({
-            registration_purpose: "OBPS Regulated Operation",
-            operation: "uuid2",
-            regulated_products: [1, 2],
-          }),
-        },
+      render(
+        <OperationInformationForm
+          rawFormData={{}}
+          schema={await createRegistrationOperationInformationSchema()}
+          step={1}
+          steps={allOperationRegistrationSteps}
+        />,
       );
-    });
-    expect(mockPush).toHaveBeenCalledWith(
-      "/register-an-operation/uuid2/2?title=Operation 2",
-    );
-  });
-  it("should trigger required field errors when a purpose without regulated products", async () => {
+
+      const purposeInput = screen.getByRole("combobox", {
+        name: /The purpose of this registration+/i,
+      });
+      await fillComboboxWidgetField(
+        purposeInput,
+        "Potential Reporting Operation",
+      );
+
+      expect(
+        screen.queryByPlaceholderText(/select regulated product/i),
+      ).not.toBeInTheDocument();
+
+      const operationInput = screen.getByLabelText(/Select your operation+/i);
+      await fillComboboxWidgetField(operationInput, "Existing Operation");
+
+      // assert the mocked GET values are in the form
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+          "Existing Operation",
+        );
+        expect(screen.getByLabelText(/Operation type+/i)).toHaveValue(
+          "Single Facility Operation",
+        );
+        expect(screen.getByLabelText(/Primary naics+/i)).toHaveValue(
+          "211110 - Oil and gas extraction (except oil sands)",
+        );
+
+        expect(screen.getByText(/Amonia production/i)).toBeVisible();
+        expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(3);
+      });
+      // edit one of the pre-filled values
+      userEvent.type(screen.getByLabelText(/Operation name+/i), " edited");
+      await waitFor(
+        () => {
+          expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+            "Existing Operation edited",
+          );
+        },
+        { timeout: 5000 },
+      );
+      // submit
+      userEvent.click(
+        screen.getByRole("button", { name: /save and continue/i }),
+      );
+
+      await waitFor(() => {
+        // LastCalledWith because we mock the actionHandler multiple times to populate the dropdown options and operation info
+        expect(actionHandler).toHaveBeenLastCalledWith(
+          "registration/v2/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
+          "PUT",
+          "",
+          {
+            body: JSON.stringify({
+              registration_purpose: "Potential Reporting Operation",
+              operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+              name: "Existing Operation edited",
+              type: "Single Facility Operation",
+              naics_code_id: 1,
+              activities: [1],
+              process_flow_diagram:
+                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+              boundary_map:
+                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+              equipment_list:
+                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+              operation_has_multiple_operators: false,
+            }),
+          },
+        );
+
+        expect(mockPush).toHaveBeenCalledWith(
+          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?title=Existing Operation edited",
+        );
+      });
+    },
+  );
+
+  it(
+    "should submit a new operation with regulated products and multiple operators",
+    {
+      timeout: 60000,
+    },
+    async () => {
+      fetchFormEnums();
+      actionHandler.mockReturnValueOnce({ id: "uuid2", name: "Operation 2" });
+      render(
+        <OperationInformationForm
+          rawFormData={{}}
+          schema={await createRegistrationOperationInformationSchema()}
+          step={1}
+          steps={allOperationRegistrationSteps}
+        />,
+      );
+
+      const purposeInput = screen.getByRole("combobox", {
+        name: /The purpose of this registration+/i,
+      });
+      await fillComboboxWidgetField(purposeInput, "OBPS Regulated Operation");
+
+      const regulatedProductsInput = screen.getByPlaceholderText(
+        /select regulated product.../i,
+      );
+      const openProductsDropdown = regulatedProductsInput?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openProductsDropdown);
+      const product1 = screen.getByText(
+        "BC-specific refinery complexity throughput",
+      );
+      await userEvent.click(product1);
+      await userEvent.click(openProductsDropdown);
+      const product2 = screen.getByText("Cement equivalent");
+      await userEvent.click(product2);
+
+      // add a new operation
+      await userEvent.type(screen.getByLabelText(/Operation Name/i), "Op Name");
+
+      // operation type
+      const operationType = screen.getByRole("combobox", {
+        name: /Operation Type+/i,
+      });
+      act(() => {
+        userEvent.click(operationType);
+      });
+
+      waitFor(() => {
+        userEvent.click(
+          screen.getByRole("option", { name: "Single Facility Operation" }),
+        );
+      });
+
+      // naics
+      const primaryNaicsInput = screen.getByPlaceholderText(/primary naics+/i);
+      await fillComboboxWidgetField(
+        primaryNaicsInput,
+        /Oil and gas extraction+/i,
+      );
+
+      // activities
+      const reportingActivitiesInput = screen.getByPlaceholderText(
+        /select reporting activity.../i,
+      );
+
+      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openActivitiesDropdown);
+      const activityOption = screen.getByText("Cement production");
+      await userEvent.click(activityOption);
+
+      // upload attachment
+      const processFlowDiagramInput = screen.getByLabelText(/process flow+/i);
+      await userEvent.upload(processFlowDiagramInput, mockFile);
+
+      const boundaryMapInput = screen.getByLabelText(/boundary map+/i);
+      await userEvent.upload(boundaryMapInput, mockFile);
+
+      const equipmentListInput = screen.getByLabelText(/equipment list+/i);
+      await userEvent.upload(equipmentListInput, mockFile);
+
+      // add multiple operator
+      await userEvent.click(
+        screen.getByLabelText(/Does the operation have multiple operators?/i),
+      );
+
+      await userEvent.type(screen.getByLabelText(/Legal Name+/i), "edit");
+      await userEvent.type(screen.getByLabelText(/Trade Name+/i), "edit");
+
+      // business structure
+      const businessStructureInput = screen.getByRole("combobox", {
+        name: /business structure+/i,
+      });
+      await fillComboboxWidgetField(businessStructureInput, /BC Corporation/i);
+
+      await userEvent.clear(screen.getByLabelText(/CRA Business Number+/i));
+      await userEvent.type(
+        screen.getByLabelText(/CRA Business Number+/i),
+        "999999999",
+      );
+      await userEvent.clear(
+        screen.getByLabelText(/BC Corporate Registry Number+/i),
+      );
+      await userEvent.type(
+        screen.getByLabelText(/BC Corporate Registry Number+/i),
+        "zzz9999999",
+      );
+
+      await userEvent.type(
+        screen.getByLabelText(/Attorney street address+/i),
+        "edit",
+      );
+      await userEvent.type(screen.getByLabelText(/Municipality+/i), "edit");
+      // province
+      const provinceComboBoxInput = screen.getByRole("combobox", {
+        name: /province/i,
+      });
+      await fillComboboxWidgetField(provinceComboBoxInput, /alberta/i);
+      await userEvent.type(screen.getByLabelText(/Postal Code+/i), "A1B 2C3");
+
+      // submit
+
+      userEvent.click(
+        screen.getByRole("button", { name: /save and continue/i }),
+      );
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenLastCalledWith(
+          "registration/v2/operations",
+          "POST",
+          "",
+          {
+            body: JSON.stringify({
+              registration_purpose: "OBPS Regulated Operation",
+              regulated_products: [1, 2],
+              name: "Op Name",
+              type: "Single Facility Operation",
+              naics_code_id: 1,
+              activities: [2],
+              process_flow_diagram:
+                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
+              boundary_map:
+                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
+              equipment_list:
+                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
+              operation_has_multiple_operators: true,
+              multiple_operators_array: [
+                {
+                  mo_is_extraprovincial_company: false,
+                  mo_legal_name: "edit",
+                  mo_trade_name: "edit",
+                  mo_business_structure: "BC Corporation",
+                  mo_cra_business_number: "999999999",
+                  mo_attorney_street_address: "edit",
+                  mo_municipality: "edit",
+                  mo_province: "AB",
+                  mo_postal_code: "A1B2C3",
+                  mo_bc_corporate_registry_number: "zzz9999999",
+                },
+              ],
+            }),
+          },
+        );
+      });
+      expect(mockPush).toHaveBeenCalledWith(
+        "/register-an-operation/uuid2/2?title=Operation 2",
+      );
+    },
+  );
+
+  it("should trigger validation errors", async () => {
+    fetchFormEnums();
     render(
       <OperationInformationForm
-        formData={{}}
-        schema={localSchema}
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
         step={1}
         steps={allOperationRegistrationSteps}
       />,
     );
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
-      expect(screen.getAllByText(/Required field/i)).toHaveLength(2);
+      expect(screen.getAllByText(/Required field/i)).toHaveLength(7);
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText(/You must select or add an operation/i),
+      ).toBeVisible();
     });
   });
-
-  // it("should trigger required field errors with regulated products", async () => {
-  //   render(
-  //     <OperationInformationForm
-  //       formData={{}}
-  //       schema={localSchema}
-  //       step={1}
-  //       steps={allOperationRegistrationSteps}
-  //     />,
-  //   );
-  //   // set purpose to make regulated products field show up
-  //   const purposeInput = screen.getByRole("combobox", {
-  //     name: /The purpose of this registration+/i,
-  //   });
-
-  //   const openPurposeDropdownButton = purposeInput?.parentElement?.children[1]
-  //     ?.children[0] as HTMLInputElement;
-
-  //   await userEvent.click(openPurposeDropdownButton);
-  //   const purposeOption = screen.getByText("OBPS Regulated Operation");
-  //   await userEvent.click(purposeOption);
-  //   // try to continue without filling anything else out
-  //   userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
-  //   await waitFor(() => {
-  //     expect(screen.getAllByText(/Required field/i)).toHaveLength(2);
-  //   });
-  // });
 });

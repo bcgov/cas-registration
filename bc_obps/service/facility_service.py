@@ -1,6 +1,9 @@
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
+from service.data_access_service.facility_designated_operation_timeline_service import (
+    FacilityDesignatedOperationTimelineDataAccessService,
+)
 from registration.schema.v1.facility import FacilityFilterSchema
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.facility_service import FacilityDataAccessService
@@ -8,9 +11,7 @@ from ninja import Query
 from registration.models import Facility
 from registration.schema.v1.facility import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
-from service.data_access_service.facility_designated_operation_timeline_service import (
-    FacilityDesignatedOperationTimelineDataAccessService,
-)
+
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.data_access_service.address_service import AddressDataAccessService
@@ -166,7 +167,7 @@ class FacilityService:
     def get_if_authorized(cls, user_guid: UUID, facility_id: UUID) -> Facility:
         """Retrieve a facility if the user is authorized to access it."""
         facility: Facility = FacilityDataAccessService.get_by_id(facility_id)
-        owner: Operation = facility.current_owner
+        owner: Operation = facility.current_designated_operation
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user() and not owner.user_has_access(user.user_guid):
             raise Exception(UNAUTHORIZED_MESSAGE)

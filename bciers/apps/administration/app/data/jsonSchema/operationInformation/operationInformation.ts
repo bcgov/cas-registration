@@ -16,6 +16,7 @@ export const createOperationInformationSchema =
         "activities",
         "boundary_map",
         "process_flow_diagram",
+        "equipment_list",
       ],
       properties: {
         name: { type: "string", title: "Operation Name" },
@@ -69,6 +70,7 @@ export const createOperationInformationSchema =
 
         activities: {
           type: "array",
+          minItems: 1,
           items: {
             type: "number",
             enum: reportingActivities.map(

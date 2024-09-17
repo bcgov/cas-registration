@@ -1,6 +1,12 @@
 from typing import List, Optional
 from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models.address import Address
+from registration.models.multiple_operator import MultipleOperator
+from registration.schema.v2.multiple_operator import MultipleOperatorIn
+from service.data_access_service.address_service import AddressDataAccessService
+from service.data_access_service.multiple_operator_service import MultipleOperatorService
+from registration.models.user_operator import UserOperator
 from registration.models import Operation
 from ninja import Query
 from django.db import transaction
@@ -17,6 +23,7 @@ from registration.models.registration_purpose import RegistrationPurpose
 from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
 from registration.schema.v2.operation import (
     OperationFilterSchema,
+    OperationInformationIn,
     OptedInOperationDetailIn,
     OperationStatutoryDeclarationIn,
     RegistrationPurposeIn,
@@ -24,6 +31,7 @@ from registration.schema.v2.operation import (
 from registration.utils import files_have_same_hash
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
+from django.db.models import Q
 
 
 class OperationServiceV2:
@@ -42,18 +50,18 @@ class OperationServiceV2:
         return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
-    def list_current_users_operations(
+    def list_current_users_unregistered_operations(
         cls,
         user_guid: UUID,
     ) -> QuerySet[Operation]:
         user = UserDataAccessService.get_by_guid(user_guid)
-        return OperationDataAccessService.get_all_operations_for_user(user)
+        return OperationDataAccessService.get_all_operations_for_user(user).filter(
+            ~Q(status=Operation.Statuses.REGISTERED)
+        )
 
     @classmethod
     @transaction.atomic()
-    def register_operation_information(
-        cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn
-    ) -> Operation:
+    def set_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Operation:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
 
         purpose_choice = next(
@@ -159,3 +167,120 @@ class OperationServiceV2:
         operation.contacts.set(contact_ids_to_add_to_operation)
         operation.set_create_or_update(user_guid)
         return operation
+
+    @classmethod
+    @transaction.atomic()
+    def create_or_update_operation_v2(
+        cls,
+        user_guid: UUID,
+        payload: OperationInformationIn,
+        operation_id: UUID | None = None,
+    ) -> Operation:
+        user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
+
+        operation_data = payload.dict(
+            include={
+                'name',
+                "type",
+                "naics_code_id",
+                'secondary_naics_code_id',
+                'tertiary_naics_code_id',
+            }
+        )
+        operation_data['operator_id'] = user_operator.operator_id
+        if operation_id:
+            operation_data['pk'] = operation_id
+
+        operation: Operation = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
+
+        # set m2m relationships
+        operation.activities.set(payload.activities)
+
+        boundary_map = DocumentService.create_or_replace_operation_document(
+            user_guid, operation.id, payload.boundary_map, 'boundary_map'  # type: ignore # mypy is not aware of the schema validator
+        )
+
+        process_flow_diagram = DocumentService.create_or_replace_operation_document(
+            user_guid, operation.id, payload.process_flow_diagram, 'process_flow_diagram'  # type: ignore # mypy is not aware of the schema validator
+        )
+        equipment_list = DocumentService.create_or_replace_operation_document(
+            user_guid, operation.id, payload.equipment_list, 'equipment_list'  # type: ignore # mypy is not aware of the schema validator
+        )
+
+        operation.documents.set([boundary_map, process_flow_diagram, equipment_list])
+
+        # handle multiple operators
+        multiple_operators_data = payload.multiple_operators_array
+        cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
+    def register_operation_information(
+        cls, user_guid: UUID, operation_id: UUID | None, payload: OperationInformationIn
+    ) -> Operation:
+        if operation_id:
+            existing_operation = OperationDataAccessService.get_by_id(operation_id)
+
+            if not existing_operation.user_has_access(user_guid):
+                raise Exception(UNAUTHORIZED_MESSAGE)
+
+        operation: Operation = cls.create_or_update_operation_v2(
+            user_guid,
+            payload,
+            operation_id,
+        )
+
+        registration_payload = RegistrationPurposeIn(
+            registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products
+        )
+        cls.set_registration_purpose(user_guid, operation.id, registration_payload)
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
+    def upsert_multiple_operators(
+        cls, operation: Operation, multiple_operators_data: list[MultipleOperatorIn] | None, user_guid: UUID
+    ) -> None:
+        old_multiple_operators: QuerySet[MultipleOperator] = operation.multiple_operators.all()
+        # if all multiple operators have been removed, archive them
+        if not multiple_operators_data:
+            for old_multiple in old_multiple_operators:
+                old_multiple.set_archive(user_guid)
+            return
+
+        new_multiple_operators = []
+        for mo_data in multiple_operators_data:
+            mo_operator_data: dict = mo_data.dict(
+                include={
+                    'legal_name',
+                    'trade_name',
+                    'business_structure',
+                    'cra_business_number',
+                    'bc_corporate_registry_number',
+                }
+            )
+            old_address_id = mo_data.attorney_address if hasattr(mo_data, 'attorney_address') else None
+            new_address = mo_data.dict(
+                include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
+            )
+            if old_address_id and not new_address:
+                old_address = Address.objects.get(id=old_address_id)
+                mo_operator_data['attorney_address'] = None
+                old_address.delete()
+
+            if new_address:
+                updated_attorney_address = AddressDataAccessService.upsert_address_from_data(
+                    new_address, old_address_id
+                )
+                mo_operator_data['attorney_address'] = updated_attorney_address
+
+            new_multiple_operators.append(
+                MultipleOperatorService.create_or_update(mo_data.id, operation, user_guid, mo_operator_data)
+            )
+
+        for old_multiple in old_multiple_operators:
+            if old_multiple not in new_multiple_operators:
+                old_multiple.set_archive(user_guid)
