@@ -1,7 +1,8 @@
+import { UUID } from "crypto";
+import { validate as isValidUUID } from "uuid";
 import OperationInformationForm from "./OperationInformationForm";
 import { getOperation } from "@bciers/actions/api";
 import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
-import { validate as isValidUUID } from "uuid";
 
 export const ExternalUserLayout = () => {
   return <h2 className="text-bc-link-blue">Add Operation</h2>;
@@ -10,7 +11,7 @@ export const ExternalUserLayout = () => {
 const OperationInformationPage = async ({
   operationId,
 }: {
-  operationId: string;
+  operationId: UUID;
 }) => {
   let operation;
 
@@ -21,6 +22,7 @@ const OperationInformationPage = async ({
   return (
     <OperationInformationForm
       formData={operation}
+      operationId={operationId}
       schema={await createAdministrationOperationInformationSchema()}
     />
   );
