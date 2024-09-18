@@ -97,7 +97,7 @@ export default function ContactForm({
         } else {
           setKey(Math.random());
         }
-        const replaceUrl = `/administration/contacts/${
+        const replaceUrl = `/contacts/${
           method === "POST" ? response.id : formState.id
         }?contacts_title=${response.first_name} ${response.last_name}`;
         router.replace(replaceUrl);
