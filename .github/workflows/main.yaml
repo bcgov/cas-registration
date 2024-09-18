@@ -59,7 +59,6 @@ jobs:
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
   test-administration-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
     needs:
       [
         build-backend,
@@ -72,18 +71,18 @@ jobs:
       nx_project: administration
       nx_app_port: 4001
       image_url: "ghcr.io/bcgov/cas-admin-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
     secrets: inherit
   test-coam-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
     needs: [build-backend, build-dashboard-e2e, build-coam, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       nx_project: coam
       nx_app_port: 7000
       image_url: "ghcr.io/bcgov/cas-coam-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
     secrets: inherit
   test-reporting-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
     needs:
       [build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
@@ -91,14 +90,13 @@ jobs:
       nx_project: reporting
       nx_app_port: 5000
       image_url: "ghcr.io/bcgov/cas-rep-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
     secrets: inherit
   test-registration1-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration1')}}
     needs: [build-backend, build-registration1, check-nx-affected]
     uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
   test-registration-e2e:
-    if: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
     needs:
       [
         build-backend,
@@ -111,6 +109,7 @@ jobs:
       nx_project: registration
       nx_app_port: 4000
       image_url: "ghcr.io/bcgov/cas-reg-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
     secrets: inherit
   e2e-finalize:
     needs:
@@ -121,6 +120,15 @@ jobs:
         test-registration-e2e,
         test-registration1-e2e,
       ]
+    # Run this job only if all the e2e tests are successful or skipped but not on failure.
+    # This was needed as just the `needs` condition was skipping the entire job if any of the e2e tests were skipped.
+    if: |
+      always() &&
+      (needs.test-administration-e2e.result == 'success' || needs.test-administration-e2e.result == 'skipped') &&
+      (needs.test-coam-e2e.result == 'success' || needs.test-coam-e2e.result == 'skipped') &&
+      (needs.test-reporting-e2e.result == 'success' || needs.test-reporting-e2e.result == 'skipped') &&
+      (needs.test-registration-e2e.result == 'success' || needs.test-registration-e2e.result == 'skipped') &&
+      (needs.test-registration1-e2e.result == 'success' || needs.test-registration1-e2e.result == 'skipped')
     uses: ./.github/workflows/e2e-finalize.yaml
     secrets: inherit
   zap-owasp:
