@@ -23,7 +23,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @handle_http_errors()
 def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Optional[Contact]]:
-    return 200, ContactService.get_if_authorized(get_current_user_guid(request), contact_id)
+    return 200, ContactService.get_with_places_assigned(get_current_user_guid(request), contact_id)
 
 
 @router.put(
