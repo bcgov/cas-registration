@@ -5,6 +5,7 @@ from registration.models.contact import Contact
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import address_baker, contact_baker, operator_baker, user_operator_baker
 from registration.utils import custom_reverse_lazy
+from model_bakery import baker
 
 
 class TestContactIdEndpoint(CommonTestSetup):
@@ -48,11 +49,10 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_industry_users_can_get_contacts_associated_with_their_operator(self):
-        contact = contact_baker()
-        operator = operator_baker()
-        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        contact = baker.make_recipe('utils.contact')
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         # add contact to operator
-        operator.contacts.add(contact)
+        approved_user_operator.operator.contacts.set([contact])
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -64,6 +64,9 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert response_json.get('first_name') == contact.first_name
         assert response_json.get('last_name') == contact.last_name
         assert response_json.get('email') == contact.email
+        assert response_json.get('places_assigned') == [
+            f"{contact.business_role.role_name} - {approved_user_operator.operator.legal_name}"
+        ]
 
     def test_industry_users_cannot_get_contacts_not_associated_with_their_operator(self):
         contact = contact_baker()

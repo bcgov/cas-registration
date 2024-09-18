@@ -254,3 +254,35 @@ class TestContactService:
         assert contact.address.municipality == contact_payload.municipality
         assert contact.address.province == contact_payload.province
         assert contact.address.postal_code == contact_payload.postal_code
+
+    @staticmethod
+    def test_get_with_an_operator_and_operation_contact():
+        contact = baker.make_recipe('utils.contact')
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        # add contact to operator
+        approved_user_operator.operator.contacts.set([contact])
+        # add contact to operation as point of contact
+        operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, point_of_contact_id=contact.id
+        )
+
+        result = ContactService.get_with_places_assigned(approved_user_operator.user.user_guid, contact.id)
+        assert result.places_assigned == [
+            f"Authorized Signing Officer - {approved_user_operator.operator.legal_name}",
+            f"Authorized Signing Officer - {operation.name}",
+        ]
+
+    @staticmethod
+    def test_get_with_operator_and_transfer_event_assigned():
+        contact = baker.make_recipe('utils.contact')
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        # add contact to operator
+        approved_user_operator.operator.contacts.set([contact])
+        # create transfer event with contact
+        baker.make_recipe('utils.transfer_event', other_operator_contact=contact)
+
+        result = ContactService.get_with_places_assigned(approved_user_operator.user.user_guid, contact.id)
+        assert result.places_assigned == [
+            f"Authorized Signing Officer - {approved_user_operator.operator.legal_name}",
+            "Authorized Signing Officer - TransferEvent",
+        ]
