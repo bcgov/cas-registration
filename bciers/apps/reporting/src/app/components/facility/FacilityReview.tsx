@@ -20,10 +20,11 @@ import {
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { IChangeEvent } from "@rjsf/core";
+import { UUID } from "crypto";
 
 interface Props {
   version_id: number;
-  facility_id: number;
+  facility_id: UUID;
 }
 
 interface Activity {
@@ -31,7 +32,7 @@ interface Activity {
   id: number;
 }
 
-const getFacilityReport = async (version_id: number, facility_id: number) => {
+const getFacilityReport = async (version_id: number, facility_id: UUID) => {
   return actionHandler(
     `reporting/report-version/${version_id}/facility-report/${facility_id}`,
     "GET",
@@ -222,6 +223,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
                 type="submit"
                 aria-disabled={isLoading}
                 disabled={isLoading}
+                onClick={handleSave}
               >
                 {buttonContent}
               </Button>
