@@ -247,7 +247,7 @@ describe("ContactForm component", () => {
           },
         );
         expect(mockReplace).toHaveBeenCalledWith(
-          "/administration/contacts/123?contacts_title=John Doe",
+          "/contacts/123?contacts_title=John Doe",
         );
       });
     },
