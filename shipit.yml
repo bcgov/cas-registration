@@ -11,5 +11,9 @@ deploy:
 
 ci:
   allow_failures:
-    - "yarn-audit"
-    - "Happo"
+    - "test-code / yarn-audit"
+    - "Happo (cas-administration)"
+    - "Happo (cas-coam)"
+    - "Happo (cas-registration)"
+    - "Happo (cas-registration1)"
+    - "Happo (cas-reporting)"
