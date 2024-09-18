@@ -7,6 +7,13 @@ export enum OperationRegistrationSteps {
   SUBMISSION = "Submission",
 }
 
+export const initialOperationRegistrationSteps: string[] = [
+  OperationRegistrationSteps.OPERATION_INFORMATION,
+  OperationRegistrationSteps.FACILITY_INFORMATION,
+  OperationRegistrationSteps.OPERATION_REPRESENTATIVE,
+  OperationRegistrationSteps.SUBMISSION,
+];
+
 export const allOperationRegistrationSteps: string[] = Object.values(
   OperationRegistrationSteps,
 );
