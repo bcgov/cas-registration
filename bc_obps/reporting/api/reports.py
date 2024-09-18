@@ -1,4 +1,5 @@
-from typing import Literal, Tuple, Dict, Union
+from typing import Literal, Tuple, Optional
+from uuid import UUID
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -10,7 +11,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
-from ..models import FacilityReport, ReportingYear
+from ..models import ReportingYear
 from ..schema.facility_report import FacilityReportOut, FacilityReportIn
 
 
@@ -76,38 +77,12 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
 )
 @handle_http_errors()
-def get_facility_report_by_version_and_id(
-    request: HttpRequest, version_id: int, facility_id: int
-) -> Union[
-    Tuple[Literal[200], FacilityReportOut],
-    Tuple[Literal[404], Dict[str, str]],
-    Tuple[Literal[400], Dict[str, str]],
-    Tuple[Literal[500], Dict[str, str]],
-]:
-    try:
-        facility_report = ReportService.get_facility_report_by_version_and_id(version_id, facility_id)
-
-        if facility_report:
-            activity_ids = ReportService.get_activity_ids_for_facility(facility_id) or []
-            response_data = FacilityReportOut(
-                id=facility_report.id,
-                report_version_id=facility_report.report_version.id,
-                facility_name=facility_report.facility_name,
-                facility_type=facility_report.facility_type,
-                facility_bcghgid=facility_report.facility_bcghgid,
-                activities=activity_ids,
-                products=[],
-            )
-            return 200, response_data
-
-        else:
-            return 404, {"message": "Facility not found"}
-
-    except ValueError as ve:
-        return 400, {"message": f"Invalid input: {str(ve)}"}
-
-    except Exception as e:
-        return 500, {"message": "An unexpected error occurred", "details": str(e)}
+def get_facility_report_form_data(
+    request: HttpRequest, version_id: int, facility_id: UUID
+) -> Tuple[Literal[200], Optional[FacilityReportOut]]:
+    facility_report = ReportService.get_facility_report_by_version_and_id(version_id, facility_id)
+    activity_ids = ReportService.get_activity_ids_for_facility(version_id, facility_id) or []
+    return 200, ReportService.get_facility_report_form_data(facility_report, activity_ids)
 
 
 @router.post(
@@ -120,13 +95,8 @@ def get_facility_report_by_version_and_id(
 )
 @handle_http_errors()
 def save_facility_report(
-    request: HttpRequest, version_id: int, facility_id: int, payload: FacilityReportIn
-) -> Union[
-    Tuple[Literal[201], FacilityReportOut],
-    Tuple[Literal[400], Dict[str, str]],
-    Tuple[Literal[404], Dict[str, str]],
-    Tuple[Literal[500], Dict[str, str]],
-]:
+    request: HttpRequest, version_id: int, facility_id: UUID, payload: FacilityReportIn
+) -> Tuple[Literal[201], FacilityReportOut]:
     """
     Save or update a report facility and its related activities.
 
@@ -139,27 +109,17 @@ def save_facility_report(
     Returns:
         Tuple: HTTP status code and the response data or an error message.
     """
-    try:
-        # Fetch the existing facility report or create a new one
-        facility_report = ReportService.save_facility_report(version_id, facility_id, payload)
+    # Fetch the existing facility report or create a new one
+    facility_report = ReportService.save_facility_report(version_id, facility_id, payload)
 
-        # Prepare the response data
-        response_data = FacilityReportOut(
-            id=facility_id,
-            report_version_id=facility_report.report_version.id,
-            facility_name=facility_report.facility_name,
-            facility_type=facility_report.facility_type,
-            facility_bcghgid=facility_report.facility_bcghgid,
-            activities=list(facility_report.activities.values_list('id', flat=True)),
-            products=list(facility_report.products.values_list('id', flat=True)) or [],
-        )
-        return 201, response_data
-
-    except ValueError as ve:
-        return 400, {"message": f"Invalid input: {str(ve)}"}
-
-    except FacilityReport.DoesNotExist:
-        return 404, {"message": "Report facility not found"}
-
-    except Exception as e:
-        return 500, {"message": "An unexpected error occurred", "details": str(e)}
+    # Prepare the response data
+    response_data = FacilityReportOut(
+        id=facility_id,
+        report_version_id=facility_report.report_version.id,
+        facility_name=facility_report.facility_name,
+        facility_type=facility_report.facility_type,
+        facility_bcghgid=facility_report.facility_bcghgid,
+        activities=list(facility_report.activities.values_list('id', flat=True)),
+        products=list(facility_report.products.values_list('id', flat=True)) or [],
+    )
+    return 201, response_data
