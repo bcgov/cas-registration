@@ -11,6 +11,9 @@ from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
+from registration.models.operation import Operation
+
+from django.db.models import ManyToManyRel, ManyToOneRel
 
 
 class ContactService:
@@ -36,6 +39,34 @@ class ContactService:
         if user.is_industry_user() and not contact:
             raise Exception(UNAUTHORIZED_MESSAGE)
         return contact
+
+    @classmethod
+    def get_with_places_assigned(cls, user_guid: UUID, contact_id: int) -> Optional[Contact]:
+        contact = cls.get_if_authorized(user_guid, contact_id)
+
+        places_assigned = []
+        if contact:
+            for contact_field in contact._meta.get_fields():
+                if isinstance(contact_field, (ManyToOneRel, ManyToManyRel)):
+                    related_objects = getattr(contact, contact_field.name).all()
+
+                    for object in related_objects:
+                        role_name = contact.business_role.role_name
+                        if isinstance(object, Operator):
+                            place = f"{role_name} - {object.legal_name}"
+                        elif isinstance(object, Operation):
+                            place = f"{role_name} - {object.name}"
+                        else:
+                            # If the relation doesn't have a custom format (e.g. for operator we want to show the legal name), then we just show the contact role and the related model name
+                            place = f"{role_name} - {related_objects.model.__name__}"
+
+                        places_assigned.append(place)
+
+            # Return the Contact plus places_assigned
+            result = contact
+            result.places_assigned = places_assigned
+            return result
+        return None
 
     @classmethod
     @transaction.atomic()
