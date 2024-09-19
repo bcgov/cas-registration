@@ -3,6 +3,8 @@ from django.db import models
 from registration.models import Activity
 from reporting.models import SourceType, GasType, Methodology, Configuration, ReportingField
 import typing
+
+from reporting.models.custom_methodology_schema import CustomMethodologySchema
 from reporting.utils import validate_overlapping_records
 
 
@@ -14,6 +16,13 @@ class ConfigurationElement(BaseModel):
     source_type = models.ForeignKey(SourceType, on_delete=models.DO_NOTHING, related_name="configuration_elements")
     gas_type = models.ForeignKey(GasType, on_delete=models.DO_NOTHING, related_name="configuration_elements")
     methodology = models.ForeignKey(Methodology, on_delete=models.DO_NOTHING, related_name="configuration_elements")
+    custom_methodology_schema = models.ForeignKey(
+        CustomMethodologySchema,
+        on_delete=models.DO_NOTHING,
+        related_name="configuration_elements",
+        null=True,
+        blank=True,
+    )
     reporting_fields = models.ManyToManyField(
         ReportingField,
         blank=True,
