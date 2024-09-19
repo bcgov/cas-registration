@@ -1,7 +1,10 @@
 from datetime import datetime
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+from registration.models.document import Document
 from registration.models.event.transfer_event import TransferEvent
 from registration.models.facility import Facility
+from registration.models.facility import Facility
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.app_role import AppRole
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
@@ -25,6 +28,8 @@ import uuid
 
 naics_code = Recipe(NaicsCode)
 address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
+document = Recipe(Document,file='test.pdf')
+
 
 operator = Recipe(
     Operator,

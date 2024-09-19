@@ -32,6 +32,8 @@ def operation_registration_submission(
         [payload.acknowledgement_of_review, payload.acknowledgement_of_information, payload.acknowledgement_of_records]
     ):
         raise Exception("All checkboxes must be checked to submit the registration.")
+    # Check that all required registration data is given
+    OperationServiceV2.raise_exception_if_operation_is_missing_registration_data(operation_id)
     return 200, OperationServiceV2.update_status(
         get_current_user_guid(request), operation_id, Operation.Statuses.REGISTERED
     )
