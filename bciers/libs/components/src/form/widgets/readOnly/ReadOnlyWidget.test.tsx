@@ -43,4 +43,34 @@ describe("RJSF ReadOnlyWidget", () => {
     const readOnlyWidget = container.querySelector("#root_stringTestField");
     expect(readOnlyWidget).toBeEmptyDOMElement();
   });
+
+  it("should render an array value", () => {
+    const { container } = render(
+      <FormBase
+        disabled
+        formData={{
+          arrayTestField: ["test1", "test2"],
+        }}
+        schema={{
+          properties: {
+            arrayTestField: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+            },
+          },
+        }}
+        uiSchema={{
+          arrayTestField: {
+            "ui:widget": "ReadOnlyWidget",
+          },
+        }}
+      />,
+    );
+
+    const readOnlyWidget = container.querySelector("#root_arrayTestField");
+    expect(readOnlyWidget).toBeVisible();
+    expect(readOnlyWidget).toHaveTextContent("test1, test2");
+  });
 });
