@@ -71,7 +71,8 @@ class TestFacilityReportService(TestCase):
 
     @staticmethod
     def test_saves_facility_report_form_data():
-        facility_report = facility_report_baker()
+        facility_report = facility_report_baker(facility_bcghgid='abc')
+        print(facility_report.facility_bcghgid)
         data = FacilityReportIn(
             facility_name="CHANGED",
             facility_type=facility_report.facility_type,
@@ -82,6 +83,6 @@ class TestFacilityReportService(TestCase):
         returned_data = FacilityReportService.save_facility_report(
             report_version_id=facility_report.report_version_id, facility_id=facility_report.facility_id, data=data
         )
-        assert facility_report.facility_name == "CHANGEDs"
-        assert facility_report.facility_type == returned_data.facility_type
-        assert facility_report.facility_bcghgid == returned_data.facility_bcghgid
+        assert returned_data.facility_name == "CHANGED"
+        assert returned_data.facility_type == facility_report.facility_type
+        assert returned_data.facility_bcghgid == facility_report.facility_bcghgid
