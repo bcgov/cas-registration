@@ -15,24 +15,27 @@ env:
 
 jobs:
   e2e-tests:
-    name: 🧪 e2e tests ${{ matrix.project }}
-    runs-on: ubuntu-latest
+    name: 🧪 e2e tests ${{ matrix.file }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - project: chromium
-            os: ubuntu-latest
-            cache_dir: ~/.cache/ms-playwright
-          # Commented out because of flakey issues with Firefox in CI
-          # - project: firefox
-          #   os: ubuntu-latest
-          #   cache_dir: ~/.cache/ms-playwright
-          # Commented out because of flakey issues with webkit in CI
-          # - project: webkit
-          #   os: macos-latest
-          #   cache_dir: ~/Library/Caches/ms-playwright
+        os: [ubuntu-latest]
+        cache_dir: [~/.cache/ms-playwright]
+        file:
+          - "bciers/apps/registration1/e2e/pages/authenticated/dashboard/profile/page.spec.ts"
+          - "bciers/apps/registration1/e2e/pages/authenticated/dashboard/page.spec.ts"
+          - "bciers/apps/registration1/e2e/pages/authenticated/routes/page.spec.ts"
+          - "bciers/apps/registration1/e2e/pages/onboarding/home/page.spec.ts"
+          - "bciers/apps/registration1/e2e/workflows/bceidbusiness/industry_user_admin.spec.ts"
+          - "bciers/apps/registration1/e2e/workflows/bceidbusiness/industry_user.spec.ts"
+          - "bciers/apps/registration1/e2e/workflows/bceidbusiness/new_user.spec.ts"
+          - "bciers/apps/registration1/e2e/workflows/idir/cas_admin.spec.ts"
+          - "bciers/apps/registration1/e2e/workflows/idir/cas_analyst.spec.ts"
+          - "bciers/apps/registration1/e2e/workflows/idir/cas_pending.spec.ts"
+          # Add more files as needed
+
     steps:
       - uses: actions/checkout@v4
 
@@ -46,21 +49,22 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+
       - name: ⚡️ cache Playwright binaries
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ${{ matrix.cache_dir }}
-          key: ${{ runner.os }}-${{ matrix.project }}-ms-playwright-registration
+          key: ${{ runner.os }}-ms-playwright-${{ matrix.file }}
 
-      - name: 📥 install Playwright ${{ matrix.project }}
+      - name: 📥 install Playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: npx playwright install --with-deps
         working-directory: ./bciers/apps/registration1
 
       - name: 🎭 Run Playwright Tests
         run: |
-          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} bciers/apps/registration1/e2e/*
+          npx happo-e2e -- npx playwright test ${{ matrix.file }}
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
@@ -71,35 +75,34 @@ jobs:
           E2E_BASEURL: http://localhost:3000/
           E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
           E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
-          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
-          E2E_CAS_ADMIN_STORAGE_STATE: ${{ secrets.E2E_CAS_ADMIN_STORAGE_STATE}}
-          E2E_CAS_ANALYST_STORAGE_STATE: ${{ secrets.E2E_CAS_ANALYST_STORAGE_STATE}}
-          E2E_CAS_PENDING_STORAGE_STATE: ${{ secrets.E2E_CAS_PENDING_STORAGE_STATE}}
+          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD }}
+          E2E_CAS_ADMIN_STORAGE_STATE: ${{ secrets.E2E_CAS_ADMIN_STORAGE_STATE }}
+          E2E_CAS_ANALYST_STORAGE_STATE: ${{ secrets.E2E_CAS_ANALYST_STORAGE_STATE }}
+          E2E_CAS_PENDING_STORAGE_STATE: ${{ secrets.E2E_CAS_PENDING_STORAGE_STATE }}
           E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
           E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}
           E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
-          E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE}}
+          E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE }}
           E2E_INDUSTRY_USER: bc-cas-dev-secondary
           E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}
           E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
-          E2E_INDUSTRY_USER_STORAGE_STATE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE_STATE}}
+          E2E_INDUSTRY_USER_STORAGE_STATE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE_STATE }}
           E2E_NEW_USER: bc-cas-dev-three
           E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
-          E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
+          E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE }}
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
           HAPPO_NONCE: ${{ github.sha }}-reg1
           HAPPO_PROJECT: cas-registration1
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./bciers/apps/registration1
-      - name: 💾 save ${{ matrix.project }} report artifact
-        # prefer to upload the report only in case of test failure
+
+      - name: 💾 save test report artifact
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          # Store all of the reports separately by reconfiguring the report name
-          name: blob-report-${{ matrix.project }}
+          name: blob-report-${{ matrix.file }}
           path: bciers/blob-report
           retention-days: 1
 
@@ -110,6 +113,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
+
       - name: finalize happo e2e tests
         env:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
