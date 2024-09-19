@@ -59,7 +59,13 @@
             "title": "Users and Access Requests",
             "icon": "Users",
             "content": "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
-            "href": "/administration/tbd"
+            "href": "/administration/tbd",
+            "condition": {
+              "api": "registration/v2/user-operators/current/operator",
+              "field": "error",
+              "operator": "notExists",
+              "value": true
+            }
           }
         ]
       }
