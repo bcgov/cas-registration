@@ -19,9 +19,11 @@ class ReportActivityProcessingService:
         existing_report_activity = ReportActivity.objects.first(
             report_version=report_version_id, facility_report__facility=facility_id, activity=activity_id
         )
-        if existing_report_activity is not None:
+        if existing_report_activity:
             existing_report_activity.json_data = activity_data
             existing_report_activity.save()
+        else:
+            existing_report_activity = ReportActivity()
 
         for source_type_key in data['source_types']:
             source_type = SourceType.objects.get(json_key=source_type_key)
