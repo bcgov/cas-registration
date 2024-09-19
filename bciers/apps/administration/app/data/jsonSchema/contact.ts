@@ -139,6 +139,9 @@ export const contactsUiSchema = {
       "ui:placeholder": "Select the user",
     },
     places_assigned: {
+      "ui:options": {
+        inline: true,
+      },
       "ui:ArrayFieldTemplate": PlacesAssignedArrayFieldTemplate,
     },
   },
