@@ -4,8 +4,8 @@ import { getOperator, getOperatorHasAdmin } from "../userOperators/mocks";
 
 import SelectOperatorReceivedPage from "../../../app/components/userOperators/SelectOperatorReceivedPage";
 
-import { expectIcon } from "../helpers/expectIcon";
-import { expectMessage } from "../helpers/expectMessage";
+import { expectIcon } from "../../helpers/expectIcon";
+import { expectMessage } from "../../helpers/expectMessage";
 import { id, operatorJSON } from "./constants";
 
 // ⛏️ Helper function to mock the state of the operator based on admin presence and access decline status

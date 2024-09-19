@@ -3,10 +3,9 @@ import {
   useRouter,
   useSearchParams,
   useSession,
-  notFound,
 } from "@bciers/testConfig/mocks";
 import { getBusinessStructures, getCurrentOperator } from "./mocks";
-import Operator from "../../../../administration/app/components/operators/Operator";
+import OperatorPage from "../../../app/components/operators/OperatorPage";
 
 useRouter.mockReturnValue({
   query: {},
@@ -30,26 +29,25 @@ describe("Operator component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
   });
-
-  it("renders the not found page when given a bad operator id", async () => {
+  it("renders the appropriate error component when getCurrentOperator fails", async () => {
     getCurrentOperator.mockReturnValueOnce({
-      error: "not real",
+      error: "no operator found",
     });
-    render(await Operator());
-    expect(notFound).toHaveBeenCalled();
+    await expect(async () => {
+      render(await OperatorPage());
+    }).rejects.toThrow("Failed to retrieve operator information");
   });
-
-  it("renders an error if there's a problem fetching business structures", async () => {
+  it("renders the appropriate error component when getBusinessStructures fails", async () => {
     getCurrentOperator.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
     });
     getBusinessStructures.mockReturnValueOnce({
-      error: "yikes",
+      error: "no business structures",
     });
-    render(await Operator());
-    expect(notFound).toHaveBeenCalled();
+    await expect(async () => {
+      render(await OperatorPage());
+    }).rejects.toThrow("Failed to retrieve business structure information");
   });
-
   it("renders the operator form with form data", async () => {
     getCurrentOperator.mockReturnValueOnce({
       street_address: "123 Main St",
@@ -103,8 +101,25 @@ describe("Operator component", () => {
       { name: "BC Incorporated Society" },
       { name: "Extraprovincial Non-Share Corporation" },
     ]);
-    render(await Operator());
+    render(await OperatorPage());
     expect(screen.getByText(/Test Operator Name/i)).toBeVisible();
     expect(screen.getByText(/BC Corporation/i)).toBeVisible();
+  });
+  it("renders the operator form for adding a new operator", async () => {
+    // Mock getBusinessStructures for create mode
+    getBusinessStructures.mockReturnValueOnce([
+      { name: "General Partnership" },
+      { name: "BC Corporation" },
+      { name: "Extra Provincially Registered Company" },
+    ]);
+
+    // Render the page with isCreating set to true
+    render(await OperatorPage({ isCreating: true }));
+
+    // Check that the form is in create mode (no operator details present)
+    expect(screen.getByText(/Legal Name/i)).toBeVisible();
+    const legalNameInput = screen.getByLabelText(/Legal Name/i);
+    expect(legalNameInput).toBeVisible();
+    expect(legalNameInput).toHaveValue("");
   });
 });
