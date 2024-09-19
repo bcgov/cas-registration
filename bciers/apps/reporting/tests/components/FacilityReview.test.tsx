@@ -10,7 +10,7 @@ vi.mock("@bciers/actions", () => ({
 }));
 
 const mockFacilityData = {
-  id: 1,
+  id: "00000000-0000-0000-0000-000000000000",
   bcghg_id: "BCGHGID12345",
   name: "Facility1",
   facility_type: "SFO",
@@ -38,7 +38,12 @@ describe("FacilityReview", () => {
       .mockResolvedValueOnce(mockFacilityData) // Mock facility data
       .mockResolvedValueOnce(mockActivitiesData); // Mock activities data
 
-    render(<FacilityReview version_id={1} facility_id={1} />);
+    render(
+      <FacilityReview
+        version_id={1}
+        facility_id={"00000000-0000-0000-0000-000000000000"}
+      />,
+    );
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
@@ -56,7 +61,12 @@ describe("FacilityReview", () => {
       () => new Promise(() => {}), // Mock loading indefinitely
     );
 
-    render(<FacilityReview version_id={1} facility_id={1} />);
+    render(
+      <FacilityReview
+        version_id={1}
+        facility_id={"00000000-0000-0000-0000-000000000000"}
+      />,
+    );
 
     fireEvent.click(screen.getByText("Save"));
     await waitFor(() => {
@@ -71,7 +81,12 @@ describe("FacilityReview", () => {
       .mockResolvedValueOnce(mockActivitiesData) // Mock activities data
       .mockResolvedValueOnce({}); // Mock successful save
 
-    render(<FacilityReview version_id={1} facility_id={1} />);
+    render(
+      <FacilityReview
+        version_id={1}
+        facility_id={"00000000-0000-0000-0000-000000000000"}
+      />,
+    );
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
@@ -104,7 +119,12 @@ describe("FacilityReview", () => {
       .mockResolvedValueOnce(mockActivitiesData) // Mock activities data
       .mockRejectedValueOnce(new Error("Failed to save")); // Mock save error
 
-    render(<FacilityReview version_id={1} facility_id={1} />);
+    render(
+      <FacilityReview
+        version_id={1}
+        facility_id={"00000000-0000-0000-0000-000000000000"}
+      />,
+    );
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
@@ -128,7 +148,12 @@ describe("FacilityReview", () => {
       .mockResolvedValueOnce(mockFacilityDataNoActivities) // Mock facility data with no activities
       .mockResolvedValueOnce([]); // Mock no activities data
 
-    render(<FacilityReview version_id={1} facility_id={1} />);
+    render(
+      <FacilityReview
+        version_id={1}
+        facility_id={"00000000-0000-0000-0000-000000000000"}
+      />,
+    );
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
@@ -144,7 +169,12 @@ describe("FacilityReview", () => {
       .mockRejectedValueOnce(new Error("Failed to fetch facility data")) // Simulate error fetching facility data
       .mockRejectedValueOnce(new Error("Failed to fetch activities data")); // Simulate error fetching activities data
 
-    render(<FacilityReview version_id={1} facility_id={1} />);
+    render(
+      <FacilityReview
+        version_id={1}
+        facility_id={"00000000-0000-0000-0000-000000000000"}
+      />,
+    );
 
     // Check if error messages are displayed
     await waitFor(() => {
