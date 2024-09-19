@@ -4,7 +4,11 @@ import { actionHandler, useSession, useRouter } from "@bciers/testConfig/mocks";
 
 import { operatorSchema } from "../../../../administration/app/data/jsonSchema/operator";
 import OperatorForm from "../../../../administration/app/components/operators/OperatorForm";
-import { createOperatorSchema } from "../../../../administration/app/components/operators/Operator";
+import { createOperatorSchema } from "../../../../administration/app/components/operators/OperatorPage";
+
+import expectButton from "../../helpers/expectButton";
+import expectField from "../../helpers/expectField";
+import expectHeader from "../../helpers/expectHeader";
 
 useSession.mockReturnValue({
   get: vi.fn(),
@@ -79,11 +83,284 @@ const testSchema = createOperatorSchema(operatorSchema, [
   { name: "Extraprovincial Non-Share Corporation" },
 ]);
 
+const formHeaders: string[] = [
+  "Operator Information",
+  "Operator Address",
+  "Parent Company Information",
+];
+
+const formFields: string[] = [
+  "Legal Name",
+  "Trade Name",
+  "Business Structure",
+  "BC Corporate Registry Number",
+  "Business Mailing Address",
+  "Municipality",
+  "Province",
+  "Postal Code",
+];
+
+const responsePostRequired = {
+  legal_name: operatorFormData.legal_name,
+  business_structure: "BC Corporation",
+  cra_business_number: operatorFormData.cra_business_number,
+  bc_corporate_registry_number: operatorFormData.bc_corporate_registry_number,
+  street_address: operatorFormData.street_address,
+  municipality: operatorFormData.municipality,
+  province: operatorFormData.province,
+  postal_code: operatorFormData.postal_code.replace(/\s+/g, ""),
+  operator_has_parent_operators: false,
+};
+const responsePostAll = {
+  legal_name: "Existing Operator 2 Legal Name",
+  trade_name: "Existing Operator 2 Trade Name",
+  business_structure: "General Partnership",
+  cra_business_number: 987654321,
+  bc_corporate_registry_number: "def1234567",
+  partner_operators_array: [
+    {
+      partner_legal_name: "Partner Operator Legal Name",
+      partner_trade_name: "Partner Operator Trade Name",
+      partner_business_structure: "General Partnership",
+      partner_cra_business_number: 123456780,
+      partner_bc_corporate_registry_number: "zzz1212121",
+    },
+  ],
+  street_address: "123 Main St",
+  municipality: "City",
+  province: "ON",
+  postal_code: "A1B2C3",
+  operator_has_parent_operators: true,
+  parent_operators_array: [
+    {
+      po_legal_name: "Parent Operator Legal Name",
+      operator_registered_in_canada: true,
+      po_cra_business_number: 123456780,
+      po_street_address: "789 Oak St",
+      po_municipality: "Village",
+      po_province: "MB",
+      po_postal_code: "M2N3P4",
+    },
+  ],
+};
+const response = { user_operator_id: 1, operator_id: 2, error: null };
+// ⛏️ Helper function to fill form required fields
+const fillRequiredFields = async () => {
+  await userEvent.type(
+    screen.getByLabelText(/Legal Name+/i),
+    responsePostRequired.legal_name,
+  );
+
+  const businessStructureDropdown =
+    screen.getByLabelText(/Business Structure+/i);
+  await userEvent.click(businessStructureDropdown);
+  await userEvent.click(
+    screen.getByText(responsePostRequired.business_structure),
+  );
+
+  await userEvent.type(
+    screen.getByLabelText(/CRA Business Number+/i),
+    responsePostRequired.cra_business_number.toString(),
+  );
+
+  await userEvent.type(
+    screen.getByLabelText(/BC Corporate Registry Number+/i),
+    responsePostRequired.bc_corporate_registry_number,
+  );
+  await userEvent.type(
+    screen.getByLabelText(/Business Mailing Address+/i),
+    responsePostRequired.street_address,
+  );
+  await userEvent.type(
+    screen.getByLabelText(/Municipality+/i),
+    responsePostRequired.municipality,
+  );
+
+  const provinceDropdown = screen.getByLabelText(/Province+/i);
+  await userEvent.click(provinceDropdown);
+  await userEvent.click(screen.getByText(/ontario/i));
+
+  await userEvent.type(
+    screen.getByLabelText(/Postal Code+/i),
+    responsePostRequired.postal_code,
+  );
+};
+
+// ⛏️ Helper function to fill form fields
+const fillOptionalFields = async () => {
+  let openDDButtons = screen.getAllByLabelText(/Open/i);
+
+  await userEvent.type(
+    screen.getByLabelText(/Trade Name+/i),
+    responsePostAll.trade_name,
+  );
+  const businessStructureDropdown = openDDButtons[0];
+  await userEvent.click(businessStructureDropdown);
+  await userEvent.click(screen.getByText(responsePostAll.business_structure));
+
+  // partner section
+  await userEvent.type(
+    screen.getAllByLabelText(/Legal Name+/i)[1],
+    responsePostAll.partner_operators_array[0].partner_legal_name,
+  );
+  await userEvent.type(
+    screen.getAllByLabelText(/Trade Name+/i)[1],
+    responsePostAll.partner_operators_array[0].partner_trade_name,
+  );
+
+  openDDButtons = screen.getAllByLabelText(/Open/i);
+
+  const openPartnerBusinessStructureButton = openDDButtons[1];
+  await userEvent.click(openPartnerBusinessStructureButton);
+  await userEvent.click(
+    screen.getByText(
+      responsePostAll.partner_operators_array[0].partner_business_structure,
+    ),
+  );
+  await userEvent.type(
+    screen.getAllByLabelText(/CRA Business Number+/i)[1],
+    responsePostAll.partner_operators_array[0].partner_cra_business_number.toString(),
+  );
+  await userEvent.type(
+    screen.getAllByLabelText(/BC Corporate Registry Number+/i)[1],
+    responsePostAll.partner_operators_array[0]
+      .partner_bc_corporate_registry_number,
+  );
+
+  // Set operator_has_parent_operators to true
+  await userEvent.click(
+    screen.getByLabelText(
+      /Does this operator have one or more parent company\?/i,
+    ),
+  );
+
+  openDDButtons = screen.getAllByLabelText(/Open/i);
+  //  Canadian parent operator
+  await userEvent.type(
+    screen.getAllByLabelText(/Legal Name+/i)[2],
+    responsePostAll.parent_operators_array?.[0]?.po_legal_name,
+  );
+  await userEvent.type(
+    screen.getAllByLabelText(/CRA Business Number+/i)[2],
+    responsePostAll.parent_operators_array?.[0]?.po_cra_business_number?.toString() ??
+      "",
+  );
+  await userEvent.type(
+    screen.getAllByLabelText(/business mailing Address+/i)[1],
+    responsePostAll.parent_operators_array?.[0]?.po_street_address ?? "",
+  );
+  await userEvent.type(
+    screen.getAllByLabelText(/Municipality+/i)[1],
+    responsePostAll.parent_operators_array?.[0]?.po_municipality ?? "",
+  );
+  const openParentOperatorProvinceDropdown = openDDButtons[3];
+  await userEvent.click(openParentOperatorProvinceDropdown);
+  await userEvent.click(screen.getByText(/manitoba/i));
+
+  await userEvent.type(
+    screen.getAllByLabelText(/Postal Code+/i)[1],
+    responsePostAll.parent_operators_array?.[0]?.po_postal_code ?? "",
+  );
+};
 describe("OperatorForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
+  it("renders the empty operator form when creating a new operator", async () => {
+    render(
+      <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+    );
+    // form fields and headings
+    expectHeader(formHeaders);
+    expectField(formFields);
+    expectField(["CRA Business Number"], null);
+    expect(
+      screen.getByLabelText(
+        /Does this operator have one or more parent company/i,
+      ),
+    ).not.toBeChecked();
+    expectButton("Submit");
+    expectButton("Cancel");
+  });
+  it("does not allow new operator form submission if there are validation errors", async () => {
+    render(
+      <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+    );
+    const submitButton = screen.getByRole("button", { name: /submit/i });
 
+    // Wrap the click event in act()
+    act(() => {
+      submitButton.click();
+    });
+
+    // Assert on the validation errors
+    expect(screen.getAllByText(/Required field/i)).toHaveLength(8);
+  });
+  it(
+    "fills the mandatory form fields, creates new operator, and redirects on success",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+      );
+
+      await fillRequiredFields();
+      // Submit
+
+      actionHandler.mockReturnValueOnce(response);
+
+      const submitButton = screen.getByRole("button", {
+        name: /submit/i,
+      });
+      act(() => {
+        submitButton.click();
+      });
+      expect(actionHandler).toHaveBeenNthCalledWith(
+        1,
+        "registration/v2/user-operators",
+        "POST",
+        "administration/operators",
+        {
+          body: JSON.stringify(responsePostRequired),
+        },
+      );
+    },
+  );
+  it(
+    "fills the partner and parent form fields, creates new operator, and redirects on success",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+      );
+
+      await fillRequiredFields();
+      await fillOptionalFields();
+
+      // Submit
+      actionHandler.mockReturnValueOnce(response);
+
+      const submitButton = screen.getByRole("button", {
+        name: /submit/i,
+      });
+      act(() => {
+        submitButton.click();
+      });
+      expect(actionHandler).toHaveBeenNthCalledWith(
+        1,
+        "registration/v2/user-operators",
+        "POST",
+        "administration/operators",
+        {
+          body: JSON.stringify(responsePostAll),
+        },
+      );
+    },
+  );
   it("loads existing readonly Operator form data", async () => {
     const { container } = render(
       <OperatorForm schema={testSchema} formData={operatorFormData} />,
@@ -203,7 +480,6 @@ describe("OperatorForm component", () => {
       ),
     ).toHaveTextContent("f id number");
   });
-
   it("edits an Operator", async () => {
     actionHandler.mockReturnValue({ error: null });
     render(<OperatorForm schema={testSchema} formData={operatorFormData} />);
