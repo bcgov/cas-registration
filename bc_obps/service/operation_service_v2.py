@@ -1,5 +1,7 @@
 from typing import List, Optional
 from django.db.models import QuerySet
+from registration.models.document_type import DocumentType
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
 from registration.models.contact import Contact
@@ -34,7 +36,7 @@ from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 
-
+    
 class OperationServiceV2:
     @classmethod
     def list_operations(
@@ -313,3 +315,72 @@ class OperationServiceV2:
             operation.regulated_products.set(payload.regulated_products)
             operation.set_create_or_update(user_guid)
         return operation
+    
+    @classmethod
+    def raise_exception_if_operation_is_missing_registration_data(cls, operation_id):
+        operation = OperationDataAccessService.get_by_id(operation_id)
+
+        # has a registration purpose
+        if not operation.registration_purposes.exists():
+            raise Exception('missing purpose')
+
+        # must have at least one operation rep with a complete address
+        if (
+            not operation.contacts.all()
+            .filter(
+                business_role__role_name='Operation Representative',
+                address__street_address__isnull=False,
+                address__municipality__isnull=False,
+                address__province__isnull=False,
+                address__postal_code__isnull=False,
+            )
+            .exists()
+        ):
+            raise Exception('missing op rep')
+
+        # operation must have at least one facility
+        if not FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists():
+            raise Exception('missing facility')
+
+        # operation must have at least one reporting activity
+        if not operation.activities.exists():
+            raise Exception('missing activities')
+
+        # operation needs attachments
+        if not operation.documents.filter(
+            type__in=[
+                DocumentType.objects.get(name='process_flow_diagram'),
+                DocumentType.objects.get(name='boundary_map'),
+            ]
+        ).exists():
+            raise Exception('missing docs')
+
+        # if operation is a new entrant, it must have statutory declaration
+        if operation.registration_purposes.filter(
+            registration_purpose=RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION
+        ).exists():
+            if not operation.documents.filter(type=DocumentType.objects.get(name='signed_statutory_declaration')).exists():
+                raise Exception('missing new entrant')
+
+        # if operation is an opt-in, it must have all questions answered
+        if operation.registration_purposes.filter(
+            registration_purpose=RegistrationPurpose.Purposes.OPTED_IN_OPERATION
+        ).exists():
+            # if the operation doesn't have a fk to an opted_in_operation record raise exception
+            if not operation.opted_in_operation:
+
+                raise Exception('missing opt in')
+            # if any of the fields in the opted_in_operation record are blank, raise exception
+            fields_to_check = [
+                'meets_section_3_emissions_requirements',
+                'meets_electricity_import_operation_criteria',
+                'meets_entire_operation_requirements',
+                'meets_section_6_emissions_requirements',
+                'meets_naics_code_11_22_562_classification_requirements',
+                'meets_producing_gger_schedule_a1_regulated_product',
+                'meets_reporting_and_regulated_obligations',
+                'meets_notification_to_director_on_criteria_change',
+            ]
+            for field in fields_to_check:
+                if getattr(operation.opted_in_operation, field) is None:
+                    raise Exception('missing opt in detail')
