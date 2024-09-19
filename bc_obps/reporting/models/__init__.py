@@ -22,6 +22,7 @@ from .report_emission import ReportEmission
 from .report_fuel import ReportFuel
 from .report_unit import ReportUnit
 from .report_methodology import ReportMethodology
+from .custom_methodology_schema import CustomMethodologySchema
 
 __all__ = [
     "ReportDataBaseModel",
@@ -45,4 +46,5 @@ __all__ = [
     "ReportMethodology",
     "ReportFuel",
     "ReportUnit",
+    "CustomMethodologySchema",
 ]

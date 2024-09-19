@@ -100,12 +100,23 @@ Configuration {
     DateField valid_from
     DateField valid_to
 }
+CustomMethodologySchema {
+    BigAutoField id
+    ForeignKey activity
+    ForeignKey source_type
+    ForeignKey gas_type
+    ForeignKey methodology
+    JSONField json_schema
+    ForeignKey valid_from
+    ForeignKey valid_to
+}
 ConfigurationElement {
     BigAutoField id
     ForeignKey activity
     ForeignKey source_type
     ForeignKey gas_type
     ForeignKey methodology
+    ForeignKey custom_methodology_schema
     ForeignKey valid_from
     ForeignKey valid_to
     ManyToManyField reporting_fields
@@ -230,10 +241,17 @@ FacilityReport }|--|| Facility : facility
 FacilityReport }|--|| ReportVersion : report_version
 FacilityReport }|--|{ Activity : activities
 FacilityReport }|--|{ RegulatedProduct : products
+CustomMethodologySchema }|--|| Activity : activity
+CustomMethodologySchema }|--|| SourceType : source_type
+CustomMethodologySchema }|--|| GasType : gas_type
+CustomMethodologySchema }|--|| Methodology : methodology
+CustomMethodologySchema }|--|| Configuration : valid_from
+CustomMethodologySchema }|--|| Configuration : valid_to
 ConfigurationElement }|--|| Activity : activity
 ConfigurationElement }|--|| SourceType : source_type
 ConfigurationElement }|--|| GasType : gas_type
 ConfigurationElement }|--|| Methodology : methodology
+ConfigurationElement }|--|| CustomMethodologySchema : custom_methodology_schema
 ConfigurationElement }|--|| Configuration : valid_from
 ConfigurationElement }|--|| Configuration : valid_to
 ConfigurationElement }|--|{ ReportingField : reporting_fields
