@@ -35,7 +35,13 @@
             "title": "Operations",
             "icon": "Layers",
             "content": "View the operations owned by your operator, or to add and register new operation to your operator here.",
-            "href": "/administration/operations"
+            "href": "/administration/operations",
+            "condition": {
+              "api": "registration/v2/user-operators/current/operator",
+              "field": "error",
+              "operator": "notExists",
+              "value": true
+            }
           },
           {
             "title": "Contacts",
@@ -53,7 +59,13 @@
             "title": "Users and Access Requests",
             "icon": "Users",
             "content": "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
-            "href": "/administration/tbd"
+            "href": "/administration/tbd",
+            "condition": {
+              "api": "registration/v2/user-operators/current/operator",
+              "field": "error",
+              "operator": "notExists",
+              "value": true
+            }
           }
         ]
       }

@@ -35,7 +35,13 @@
               },
               {
                 "title": "Operations",
-                "href": "/administration/operations"
+                "href": "/administration/operations",
+                "condition": {
+                  "api": "registration/v2/user-operators/current/operator",
+                  "field": "error",
+                  "operator": "notExists",
+                  "value": true
+                }
               },
               {
                 "title": "Contacts",
@@ -49,7 +55,13 @@
               },
               {
                 "title": "Users and Access Requests",
-                "href": "/administration/tbd"
+                "href": "/administration/tbd",
+                "condition": {
+                  "api": "registration/v2/user-operators/current/operator",
+                  "field": "error",
+                  "operator": "notExists",
+                  "value": true
+                }
               }
             ]
           },
