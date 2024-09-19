@@ -77,5 +77,5 @@ class Facility(TimeStampedModel):
         """
         return self.designated_operations.get(end_date__isnull=True).operation
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} - {self.type}, SWRS Facility ID {self.swrs_facility_id}, BCGHG ID {self.bcghg_id}"

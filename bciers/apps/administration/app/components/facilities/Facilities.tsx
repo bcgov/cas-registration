@@ -15,9 +15,6 @@ export default async function Facilities({
     row_count: number;
   } = await fetchFacilitiesPageData(operationId, searchParams);
 
-  console.log('IN components/facilities/Facilities.tsx')
-  console.log(facilities)
-
   if (!facilities) {
     return <div>No facilities data in database.</div>;
   }

@@ -43,5 +43,5 @@ class FacilityDesignatedOperationTimeline(TimeStampedModel):
             )
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.facility}, {self.operation} - start date: {self.start_date}, end date: {self.end_date} - status: {self.status}"

@@ -1,5 +1,5 @@
 from uuid import UUID
-from registration.schema.v1.facility import FacilityDesignatedOperationListOut
+from registration.schema.v1.facility_designated_operation_timeline import FacilityDesignatedOperationListOut
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from common.permissions import authorize
 from registration.api.router import router
@@ -34,11 +34,8 @@ def list_facilities(
     sort_field: Optional[str] = "created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
 ) -> QuerySet[FacilityDesignatedOperationTimeline]:
+    # TODO: reintroduce filtering
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    print("WE'RE IN THIS ONE ANDREA")
-    # return FacilityService.list_facilities(
-    #     get_current_user_guid(request), operation_id, sort_field, sort_order, filters
-    # )
     return FacilityService.list_facilities_from_operation_timeline(
         get_current_user_guid(request), operation_id, sort_field, sort_order
     )

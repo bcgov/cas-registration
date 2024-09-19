@@ -3,10 +3,15 @@ from registration.models import FacilityDesignatedOperationTimeline
 from typing import Optional
 
 
-class FacilityDesignatedOperationTimelineListOut(ModelSchema):
+class FacilityDesignatedOperationListOut(ModelSchema):
+    name: str = Field(..., alias="facility.name")
+    type: str = Field(..., alias="facility.type")
+    bcghg_id: Optional[str] = Field(None, alias="facility.bcghg_id")
+    status: str = Field(..., alias="status")
+
     class Meta:
         model = FacilityDesignatedOperationTimeline
-        fields = ['id', 'facility', 'operation', 'status']
+        fields = ['id', 'facility', 'status']
 
 
 class FacilityOperationTimelineFilterSchema(FilterSchema):
