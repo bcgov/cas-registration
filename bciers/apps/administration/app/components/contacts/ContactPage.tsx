@@ -20,7 +20,7 @@ export default async function ContactPage({
   let userOperatorUsers: UserOperatorUser[] | { error: string } = [];
 
   if (contactId) {
-    contactFormData = await getContact(contactId);
+    contactFormData = await getContact(contactId, `/contacts/${contactId}`);
     if (contactFormData && "error" in contactFormData)
       throw new Error("Failed to retrieve contact information");
   } else {
