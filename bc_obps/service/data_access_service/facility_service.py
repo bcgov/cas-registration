@@ -1,7 +1,7 @@
 from registration.models.operation import Operation
 from service.user_operator_service import UserOperatorService
-from registration.models import Facility, User, FacilityDesignatedOperationTimeline
-from django.db.models import QuerySet, OuterRef, Subquery
+from registration.models import Facility, User
+from django.db.models import QuerySet
 from uuid import UUID
 from ninja.types import DictStrAny
 

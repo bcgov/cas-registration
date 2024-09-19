@@ -2,8 +2,7 @@ from uuid import UUID
 from service.user_operator_service import UserOperatorService
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.user import User
-from registration.models.facility import Facility
-from django.db.models import QuerySet, OuterRef
+from django.db.models import QuerySet
 from ninja.types import DictStrAny
 
 
@@ -25,9 +24,7 @@ class FacilityDesignatedOperationTimelineDataAccessService:
     def get_timeline_by_operation_id_for_user(
         cls, user: User, operation_id: UUID
     ) -> QuerySet[FacilityDesignatedOperationTimeline]:
-        # return (
-        #     FacilityDesignatedOperationTimeline.objects.filter(operation=operation_id).order_by('start_date').distinct()
-        # )
+        # if IRC user, should see everything (no filter)
         queryset = FacilityDesignatedOperationTimeline.objects.all()
         user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
         return queryset.filter(

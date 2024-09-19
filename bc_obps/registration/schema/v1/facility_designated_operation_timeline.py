@@ -1,7 +1,6 @@
 from ninja import FilterSchema, ModelSchema, Field
-from registration.models import Facility, FacilityDesignatedOperationTimeline
-from uuid import UUID
-from typing import List, Optional
+from registration.models import FacilityDesignatedOperationTimeline
+from typing import Optional
 
 
 class FacilityDesignatedOperationTimelineListOut(ModelSchema):

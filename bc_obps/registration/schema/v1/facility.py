@@ -12,9 +12,14 @@ class FacilityListOut(ModelSchema):
 
 class FacilityDesignatedOperationListOut(ModelSchema):
     # andrea move this to new file
+    name: str = Field(..., alias="facility.name")
+    type: str = Field(..., alias="facility.type")
+    bcghg_id: Optional[str] = Field(None, alias="facility.bcghg_id")
+    status: str = Field(..., alias="status")
+
     class Meta:
         model = FacilityDesignatedOperationTimeline
-        fields = ['id', 'facility', 'operation', 'status', 'start_date', 'end_date']
+        fields = ['id', 'facility', 'status']
 
 
 class FacilityFilterSchema(FilterSchema):

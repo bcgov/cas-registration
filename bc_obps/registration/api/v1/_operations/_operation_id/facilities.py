@@ -8,8 +8,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import FACILITY_TAGS
-from registration.models.facility import Facility
-from registration.schema.v1.facility import FacilityFilterSchema, FacilityListOut
+from registration.schema.v1.facility import FacilityFilterSchema
 from service.facility_service import FacilityService
 from registration.decorators import handle_http_errors
 from ninja.pagination import paginate, PageNumberPagination

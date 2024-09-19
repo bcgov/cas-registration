@@ -1,5 +1,5 @@
 from typing import Optional
-from django.db.models import QuerySet, F
+from django.db.models import QuerySet
 from uuid import UUID
 from service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
