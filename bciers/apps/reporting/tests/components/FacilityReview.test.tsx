@@ -96,9 +96,9 @@ describe("FacilityReview", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        `reporting/report-version/1/facility-report/1`,
+        `reporting/report-version/1/facility-report/00000000-0000-0000-0000-000000000000`,
         "POST",
-        `reporting/report-version/1/facility-report/1`,
+        `reporting/report-version/1/facility-report/00000000-0000-0000-0000-000000000000`,
         expect.objectContaining({
           body: JSON.stringify({
             ...mockFacilityData,
