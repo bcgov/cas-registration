@@ -1,4 +1,6 @@
 from uuid import UUID
+from registration.schema.v1.facility import FacilityDesignatedOperationListOut
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from common.permissions import authorize
 from registration.api.router import router
 from typing import List, Literal, Optional
@@ -18,7 +20,7 @@ from ninja import Query
 
 @router.get(
     "/operations/{operation_id}/facilities",
-    response={200: List[FacilityListOut], custom_codes_4xx: Message},
+    response={200: List[FacilityDesignatedOperationListOut], custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Retrieves a paginated list of facilities based on the provided filters.
     The endpoint allows authorized users to view and sort facilities associated to an operation filtered by various criteria such as facility name, type, and bcghg_id.""",
@@ -32,8 +34,12 @@ def list_facilities(
     filters: FacilityFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
-) -> QuerySet[Facility]:
+) -> QuerySet[FacilityDesignatedOperationTimeline]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return FacilityService.list_facilities(
-        get_current_user_guid(request), operation_id, sort_field, sort_order, filters
+    print("WE'RE IN THIS ONE ANDREA")
+    # return FacilityService.list_facilities(
+    #     get_current_user_guid(request), operation_id, sort_field, sort_order, filters
+    # )
+    return FacilityService.list_facilities_from_operation_timeline(
+        get_current_user_guid(request), operation_id, sort_field, sort_order
     )

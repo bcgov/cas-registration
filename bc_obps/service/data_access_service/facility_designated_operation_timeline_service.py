@@ -1,5 +1,9 @@
 from uuid import UUID
+from service.user_operator_service import UserOperatorService
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+from registration.models.user import User
+from registration.models.facility import Facility
+from django.db.models import QuerySet, OuterRef
 from ninja.types import DictStrAny
 
 
@@ -16,3 +20,17 @@ class FacilityDesignatedOperationTimelineDataAccessService:
         )
         facility_designated_operation_timeline.set_create_or_update(user_guid)
         return facility_designated_operation_timeline
+
+    @classmethod
+    def get_timeline_by_operation_id_for_user(
+        cls, user: User, operation_id: UUID
+    ) -> QuerySet[FacilityDesignatedOperationTimeline]:
+        # return (
+        #     FacilityDesignatedOperationTimeline.objects.filter(operation=operation_id).order_by('start_date').distinct()
+        # )
+        queryset = FacilityDesignatedOperationTimeline.objects.all()
+        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+        return queryset.filter(
+            operation__operator_id=user_operator.operator_id,
+            operation__id=operation_id,
+        ).distinct()

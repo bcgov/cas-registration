@@ -1,5 +1,5 @@
 from ninja import FilterSchema, ModelSchema, Field
-from registration.models import Facility
+from registration.models import Facility, FacilityDesignatedOperationTimeline
 from uuid import UUID
 from typing import List, Optional
 
@@ -8,6 +8,13 @@ class FacilityListOut(ModelSchema):
     class Meta:
         model = Facility
         fields = ['id', 'name', 'is_current_year', 'starting_date', 'type', 'bcghg_id']
+
+
+class FacilityDesignatedOperationListOut(ModelSchema):
+    # andrea move this to new file
+    class Meta:
+        model = FacilityDesignatedOperationTimeline
+        fields = ['id', 'facility', 'operation', 'status', 'start_date', 'end_date']
 
 
 class FacilityFilterSchema(FilterSchema):

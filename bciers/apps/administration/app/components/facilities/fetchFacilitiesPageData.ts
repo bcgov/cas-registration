@@ -10,10 +10,11 @@ const fetchFacilitiesPageData = async (
   try {
     const queryParams = buildQueryParams(searchParams);
     const pageData = await actionHandler(
-      `registration/operations/${operationId}/facilities${queryParams}`,
+      `registration/operations/${operationId}/facilities`,
       "GET",
       "",
     );
+    console.log(pageData)
     return {
       rows: pageData.items,
       row_count: pageData.count,

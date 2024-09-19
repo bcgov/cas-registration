@@ -42,3 +42,6 @@ class FacilityDesignatedOperationTimeline(TimeStampedModel):
                 name='unique_active_designated_operation_per_facility',
             )
         ]
+
+    def __str__(self):
+        return f"{self.facility}, {self.operation} - start date: {self.start_date}, end date: {self.end_date} - status: {self.status}"

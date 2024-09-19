@@ -1,5 +1,5 @@
 from typing import Optional
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F
 from uuid import UUID
 from service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
@@ -8,7 +8,7 @@ from registration.schema.v1.facility import FacilityFilterSchema
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.facility_service import FacilityDataAccessService
 from ninja import Query
-from registration.models import Facility
+from registration.models import Facility, FacilityDesignatedOperationTimeline
 from registration.schema.v1.facility import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
 
@@ -161,7 +161,23 @@ class FacilityService:
             .filter(designated_operations__operation_id=operation_id)
             .distinct()
         )
-        return filters.filter(base_qs).order_by(sort_by)
+        results = filters.filter(base_qs).order_by(sort_by)
+        return results
+
+    @classmethod
+    def list_facilities_from_operation_timeline(
+        cls, user_guid: UUID, operation_id: UUID, sort_field: Optional[str], sort_order: Optional[str]
+    ) -> QuerySet[FacilityDesignatedOperationTimeline]:
+        """List facilities that were controlled by the specified operation at any time (current and past)."""
+        user = UserDataAccessService.get_by_guid(user_guid)
+        sort_direction = "-" if sort_order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}"
+        base_qs = FacilityDesignatedOperationTimelineDataAccessService.get_timeline_by_operation_id_for_user(
+            user, operation_id
+        )
+        print('base_qs output from list_facilities_from_operation_timeline')
+        print(base_qs)
+        return base_qs
 
     @classmethod
     def get_if_authorized(cls, user_guid: UUID, facility_id: UUID) -> Facility:
