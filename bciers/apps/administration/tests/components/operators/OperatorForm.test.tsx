@@ -100,7 +100,7 @@ const formFields: string[] = [
   "Postal Code",
 ];
 
-const responsePostRequired = {
+const postMandatory = {
   legal_name: operatorFormData.legal_name,
   business_structure: "BC Corporation",
   cra_business_number: operatorFormData.cra_business_number,
@@ -111,7 +111,7 @@ const responsePostRequired = {
   postal_code: operatorFormData.postal_code.replace(/\s+/g, ""),
   operator_has_parent_operators: false,
 };
-const responsePostAll = {
+const postPartnerParent = {
   legal_name: "Existing Operator 2 Legal Name",
   trade_name: "Existing Operator 2 Trade Name",
   business_structure: "General Partnership",
@@ -144,36 +144,35 @@ const responsePostAll = {
   ],
 };
 const response = { user_operator_id: 1, operator_id: 2, error: null };
-// ⛏️ Helper function to fill form required fields
-const fillRequiredFields = async () => {
+
+// ⛏️ Helper function to fill form mandatory required fields
+const fillMandatoryFields = async () => {
   await userEvent.type(
     screen.getByLabelText(/Legal Name+/i),
-    responsePostRequired.legal_name,
+    postMandatory.legal_name,
   );
 
   const businessStructureDropdown =
     screen.getByLabelText(/Business Structure+/i);
   await userEvent.click(businessStructureDropdown);
-  await userEvent.click(
-    screen.getByText(responsePostRequired.business_structure),
-  );
+  await userEvent.click(screen.getByText(postMandatory.business_structure));
 
   await userEvent.type(
     screen.getByLabelText(/CRA Business Number+/i),
-    responsePostRequired.cra_business_number.toString(),
+    postMandatory.cra_business_number.toString(),
   );
 
   await userEvent.type(
     screen.getByLabelText(/BC Corporate Registry Number+/i),
-    responsePostRequired.bc_corporate_registry_number,
+    postMandatory.bc_corporate_registry_number,
   );
   await userEvent.type(
     screen.getByLabelText(/Business Mailing Address+/i),
-    responsePostRequired.street_address,
+    postMandatory.street_address,
   );
   await userEvent.type(
     screen.getByLabelText(/Municipality+/i),
-    responsePostRequired.municipality,
+    postMandatory.municipality,
   );
 
   const provinceDropdown = screen.getByLabelText(/Province+/i);
@@ -182,30 +181,30 @@ const fillRequiredFields = async () => {
 
   await userEvent.type(
     screen.getByLabelText(/Postal Code+/i),
-    responsePostRequired.postal_code,
+    postMandatory.postal_code,
   );
 };
 
-// ⛏️ Helper function to fill form fields
-const fillOptionalFields = async () => {
+// ⛏️ Helper function to fill partner and parent form fields
+const fillPartnerParentFields = async () => {
   let openDDButtons = screen.getAllByLabelText(/Open/i);
 
   await userEvent.type(
     screen.getByLabelText(/Trade Name+/i),
-    responsePostAll.trade_name,
+    postPartnerParent.trade_name,
   );
   const businessStructureDropdown = openDDButtons[0];
   await userEvent.click(businessStructureDropdown);
-  await userEvent.click(screen.getByText(responsePostAll.business_structure));
+  await userEvent.click(screen.getByText(postPartnerParent.business_structure));
 
   // partner section
   await userEvent.type(
     screen.getAllByLabelText(/Legal Name+/i)[1],
-    responsePostAll.partner_operators_array[0].partner_legal_name,
+    postPartnerParent.partner_operators_array[0].partner_legal_name,
   );
   await userEvent.type(
     screen.getAllByLabelText(/Trade Name+/i)[1],
-    responsePostAll.partner_operators_array[0].partner_trade_name,
+    postPartnerParent.partner_operators_array[0].partner_trade_name,
   );
 
   openDDButtons = screen.getAllByLabelText(/Open/i);
@@ -214,16 +213,16 @@ const fillOptionalFields = async () => {
   await userEvent.click(openPartnerBusinessStructureButton);
   await userEvent.click(
     screen.getByText(
-      responsePostAll.partner_operators_array[0].partner_business_structure,
+      postPartnerParent.partner_operators_array[0].partner_business_structure,
     ),
   );
   await userEvent.type(
     screen.getAllByLabelText(/CRA Business Number+/i)[1],
-    responsePostAll.partner_operators_array[0].partner_cra_business_number.toString(),
+    postPartnerParent.partner_operators_array[0].partner_cra_business_number.toString(),
   );
   await userEvent.type(
     screen.getAllByLabelText(/BC Corporate Registry Number+/i)[1],
-    responsePostAll.partner_operators_array[0]
+    postPartnerParent.partner_operators_array[0]
       .partner_bc_corporate_registry_number,
   );
 
@@ -234,32 +233,32 @@ const fillOptionalFields = async () => {
     ),
   );
 
-  openDDButtons = screen.getAllByLabelText(/Open/i);
-  //  Canadian parent operator
+  // Set Canadian parent operator
   await userEvent.type(
     screen.getAllByLabelText(/Legal Name+/i)[2],
-    responsePostAll.parent_operators_array?.[0]?.po_legal_name,
+    postPartnerParent.parent_operators_array?.[0]?.po_legal_name,
   );
   await userEvent.type(
     screen.getAllByLabelText(/CRA Business Number+/i)[2],
-    responsePostAll.parent_operators_array?.[0]?.po_cra_business_number?.toString() ??
+    postPartnerParent.parent_operators_array?.[0]?.po_cra_business_number?.toString() ??
       "",
   );
   await userEvent.type(
     screen.getAllByLabelText(/business mailing Address+/i)[1],
-    responsePostAll.parent_operators_array?.[0]?.po_street_address ?? "",
+    postPartnerParent.parent_operators_array?.[0]?.po_street_address ?? "",
   );
   await userEvent.type(
     screen.getAllByLabelText(/Municipality+/i)[1],
-    responsePostAll.parent_operators_array?.[0]?.po_municipality ?? "",
+    postPartnerParent.parent_operators_array?.[0]?.po_municipality ?? "",
   );
+  openDDButtons = screen.getAllByLabelText(/Open/i);
   const openParentOperatorProvinceDropdown = openDDButtons[3];
   await userEvent.click(openParentOperatorProvinceDropdown);
   await userEvent.click(screen.getByText(/manitoba/i));
 
   await userEvent.type(
     screen.getAllByLabelText(/Postal Code+/i)[1],
-    responsePostAll.parent_operators_array?.[0]?.po_postal_code ?? "",
+    postPartnerParent.parent_operators_array?.[0]?.po_postal_code ?? "",
   );
 };
 describe("OperatorForm component", () => {
@@ -306,11 +305,10 @@ describe("OperatorForm component", () => {
         <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
       );
 
-      await fillRequiredFields();
+      await fillMandatoryFields();
+
       // Submit
-
       actionHandler.mockReturnValueOnce(response);
-
       const submitButton = screen.getByRole("button", {
         name: /submit/i,
       });
@@ -323,7 +321,7 @@ describe("OperatorForm component", () => {
         "POST",
         "administration/operators",
         {
-          body: JSON.stringify(responsePostRequired),
+          body: JSON.stringify(postMandatory),
         },
       );
     },
@@ -338,12 +336,11 @@ describe("OperatorForm component", () => {
         <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
       );
 
-      await fillRequiredFields();
-      await fillOptionalFields();
+      await fillMandatoryFields();
+      await fillPartnerParentFields();
 
       // Submit
       actionHandler.mockReturnValueOnce(response);
-
       const submitButton = screen.getByRole("button", {
         name: /submit/i,
       });
@@ -356,7 +353,7 @@ describe("OperatorForm component", () => {
         "POST",
         "administration/operators",
         {
-          body: JSON.stringify(responsePostAll),
+          body: JSON.stringify(postPartnerParent),
         },
       );
     },

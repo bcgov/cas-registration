@@ -27,12 +27,17 @@ class TestUserOperatorServiceV2:
          )
       
         operator_instance: Operator = Operator(
+            business_structure=payload.business_structure,
             cra_business_number=payload.cra_business_number,
             bc_corporate_registry_number=payload.bc_corporate_registry_number,
-            business_structure=payload.business_structure,
             status=Operator.Statuses.APPROVED,
         )
         UserOperatorServiceV2.save_operator(payload, operator_instance, user.user_guid)
         assert len(Operator.objects.all()) == 1
-        assert Operator.objects.first().legal_name == "Example Legal Name"
+        assert Operator.objects.first().legal_name == payload.legal_name
+        assert Operator.objects.first().trade_name == payload.trade_name
+        assert Operator.objects.first().business_structure == payload.business_structure
+        assert Operator.objects.first().cra_business_number == payload.cra_business_number
+        assert Operator.objects.first().bc_corporate_registry_number == payload.bc_corporate_registry_number
+        assert Operator.objects.first().status == Operator.Statuses.APPROVED
         

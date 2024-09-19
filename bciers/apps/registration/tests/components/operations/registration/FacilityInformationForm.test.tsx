@@ -17,7 +17,7 @@ import {
 import { UUID } from "crypto";
 import FacilityInformationForm from "apps/registration/app/components/operations/registration/FacilityInformationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
-import extractParams from "apps/administration/tests/components/helpers/extractParams";
+import extractParams from "apps/administration/tests/helpers/extractParams";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 

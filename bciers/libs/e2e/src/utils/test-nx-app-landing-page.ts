@@ -57,8 +57,7 @@ const testNxProjectLandingPage = async (zone: string) => {
 
   const url = `${process.env.E2E_BASEURL}${zone}`;
   const testRole = `E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE`;
-  // 🏷 Annotate test suite as serial
-  test.describe.configure({ mode: "serial" });
+
   test.describe(`Test ${zone} landing page`, () => {
     const storageState = JSON.parse(process.env[testRole] as string);
 

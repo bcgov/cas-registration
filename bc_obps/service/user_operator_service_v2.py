@@ -37,7 +37,7 @@ class UserOperatorServiceV2:
 
     def create_operator_and_user_operator(cls, user_guid: UUID, payload: OperatorIn)  -> Dict[str, UUID]:
         """
-        Function to create a user_operator and an operator (new operator that doesn't exist yet).
+        Function to create a user_operator and an operator
 
         Parameters:
             payload: Request payload from Operator form POST
@@ -50,17 +50,16 @@ class UserOperatorServiceV2:
 
         """
        
-       # create operator instance as approved
+       # create/save operator instance as approved
         operator_instance: Operator = Operator(
             cra_business_number=payload.cra_business_number,
             bc_corporate_registry_number=payload.bc_corporate_registry_number,
             business_structure=payload.business_structure,
             status=Operator.Statuses.APPROVED,
         )
-        # save operator
         operator: Operator = cls.save_operator(payload, operator_instance, user_guid)
 
-        # create user operator as an approved admin
+        # create/save user operator instance as an approved admin
         user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
         if created:
             user_operator.set_create_or_update(user_guid)
@@ -68,7 +67,7 @@ class UserOperatorServiceV2:
             user_operator.status= UserOperator.Statuses.APPROVED
             user_operator.save()
        
-        # update the operator with data in the request payload
+        # update the user operator operator with data in the request payload
         OperatorServiceV2.update_operator(user_guid, payload)
         
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}

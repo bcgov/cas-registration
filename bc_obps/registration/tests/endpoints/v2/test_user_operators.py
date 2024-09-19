@@ -32,7 +32,7 @@ class TestCreateUserOperator(CommonTestSetup):
     # AUTHORIZATION
     def test_unauthorized_roles_cannot_post_useroperator(self): 
         """
-        Test that certain unauthorized roles cannot post a UserOperator.
+        Test that unauthorized roles cannot post a user operator Operator.
         """
         # List of roles that should not be authorized      
         unauthorized_roles = ['cas_pending', 'cas_analyst', 'cas_admin']
@@ -292,10 +292,10 @@ class TestCreateUserOperator(CommonTestSetup):
 
         operator = Operator.objects.get(id=post_response.json().get("operator_id"))
         assert operator is not None
+        assert operator.status == Operator.Statuses.APPROVED
 
         user_operator = UserOperator.objects.get(id=post_response.json().get("user_operator_id"))
         assert user_operator is not None
-
         assert user_operator.role == UserOperator.Roles.ADMIN
         assert user_operator.status == UserOperator.Statuses.APPROVED
 
