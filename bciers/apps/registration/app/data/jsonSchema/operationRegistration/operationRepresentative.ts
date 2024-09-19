@@ -225,3 +225,34 @@ export const operationRepresentativeUiSchema: UiSchema = {
     },
   },
 };
+
+export const createOperationRepresentativeUiSchema = (
+  existingContact: boolean = false,
+) => {
+  // disable first name, last name and email for updating existing contact
+  if (existingContact)
+    return {
+      ...operationRepresentativeUiSchema,
+      new_operation_representative: {
+        ...operationRepresentativeUiSchema.new_operation_representative,
+        items: {
+          ...operationRepresentativeUiSchema.new_operation_representative.items,
+          section1: {
+            ...operationRepresentativeUiSchema.new_operation_representative
+              .items.section1,
+            "ui:disabled": true,
+          },
+          section3: {
+            ...operationRepresentativeUiSchema.new_operation_representative
+              .items.section3,
+            email: {
+              ...operationRepresentativeUiSchema.new_operation_representative
+                .items.section3.email,
+              "ui:disabled": true,
+            },
+          },
+        },
+      },
+    };
+  else return operationRepresentativeUiSchema;
+};
