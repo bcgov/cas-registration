@@ -14,6 +14,6 @@ class ActivityDataAccessService:
         if cached_data:
             return cached_data
         else:
-            activities = Activity.objects.only(*ActivitySchema.Meta.fields)
+            activities = Activity.objects.only(*ActivitySchema.Meta.fields).order_by('weight', 'name')
             cache.set("activities", activities, 60 * 60 * 24 * 1)
             return activities
