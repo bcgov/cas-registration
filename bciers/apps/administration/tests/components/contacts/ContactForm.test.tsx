@@ -25,7 +25,7 @@ const contactFormData = {
   municipality: "Cityville",
   province: "ON",
   postal_code: "A1B 2C3",
-  places_assigned: ["Operation Representative - Operator 1"],
+  places_assigned: ["Operation Representative - Operation 1"],
 };
 
 export const checkEmptyContactForm = () => {
@@ -157,7 +157,7 @@ describe("ContactForm component", () => {
 
     expect(screen.getByText(/Places Assigned/i)).toBeVisible();
     expect(
-      screen.getByText(/Operation Representative - Operator 1/i),
+      screen.getByText(/Operation Representative - Operation 1/i),
     ).toBeVisible();
 
     expect(
@@ -415,7 +415,7 @@ describe("ContactForm component", () => {
         body: JSON.stringify({
           first_name: "John updated",
           last_name: "Doe updated",
-          places_assigned: ["Operation Representative - Operator 1"],
+          places_assigned: ["Operation Representative - Operation 1"],
           position_title: "Senior Officer",
           email: "john.doe@example.com",
           phone_number: "+16044011234",

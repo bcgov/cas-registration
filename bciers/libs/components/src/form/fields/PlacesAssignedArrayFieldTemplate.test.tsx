@@ -25,7 +25,7 @@ describe("RJSF PlacesAssignedArrayFieldTemplate", () => {
         formData={{
           places_assigned: [
             "Operation Representative - Operation 1",
-            "Operation Representative - Operator 25",
+            "Operation Representative - Operation 25",
           ],
         }}
         schema={arrayFieldSchema}
@@ -40,7 +40,7 @@ describe("RJSF PlacesAssignedArrayFieldTemplate", () => {
       screen.getByText("Operation Representative - Operation 1"),
     ).toBeVisible();
     expect(
-      screen.getByText("Operation Representative - Operator 25"),
+      screen.getByText("Operation Representative - Operation 25"),
     ).toBeVisible();
     expect(screen.getByText(/You cannot delete this contact/i)).toBeVisible();
   });

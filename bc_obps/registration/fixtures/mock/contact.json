@@ -6,7 +6,7 @@
       "business_role": "Senior Officer",
       "first_name": "John",
       "last_name": "Doe",
-      "position_title": "Senior Officer",
+      "position_title": "Manager",
       "address": 1,
       "email": "john.doe@example.com",
       "phone_number": "+16044011234"
@@ -19,7 +19,7 @@
       "business_role": "Authorized Signing Officer",
       "first_name": "Jane",
       "last_name": "Smith",
-      "position_title": "Authorized Signing Officer",
+      "position_title": "Manager",
       "address": 2,
       "email": "jane.smith@example.com",
       "phone_number": "+16044011234"
@@ -32,7 +32,7 @@
       "business_role": "Senior Officer",
       "first_name": "Alice",
       "last_name": "Johnson",
-      "position_title": "Senior Officer",
+      "position_title": "Manager",
       "address": 3,
       "email": "alice.johnson@example.com",
       "phone_number": "+16044011235"
@@ -45,7 +45,7 @@
       "business_role": "Operation Representative",
       "first_name": "Bob",
       "last_name": "Brown",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 4,
       "email": "bob.brown@example.com",
       "phone_number": "+16044011236"
@@ -58,7 +58,7 @@
       "business_role": "Operation Representative",
       "first_name": "Carol",
       "last_name": "Davis",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 5,
       "email": "carol.davis@example.com",
       "phone_number": "+16044011237"
@@ -71,7 +71,7 @@
       "business_role": "Operation Representative",
       "first_name": "Dave",
       "last_name": "Evans",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 6,
       "email": "dave.evans@example.com",
       "phone_number": "+16044011238"
@@ -84,7 +84,7 @@
       "business_role": "Authorized Signing Officer",
       "first_name": "Eve",
       "last_name": "Foster",
-      "position_title": "Authorized Signing Officer",
+      "position_title": "Manager",
       "address": 7,
       "email": "eve.foster@example.com",
       "phone_number": "+16044011239"
@@ -97,7 +97,7 @@
       "business_role": "Operation Representative",
       "first_name": "Frank",
       "last_name": "Garcia",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 8,
       "email": "frank.garcia@example.com",
       "phone_number": "+16044011240"
@@ -110,7 +110,7 @@
       "business_role": "Senior Officer",
       "first_name": "Grace",
       "last_name": "Harris",
-      "position_title": "Senior Officer",
+      "position_title": "Manager",
       "address": 9,
       "email": "grace.harris@example.com",
       "phone_number": "+16044011241"
@@ -123,7 +123,7 @@
       "business_role": "Operation Representative",
       "first_name": "Henry",
       "last_name": "Ives",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 10,
       "email": "henry.ives@example.com",
       "phone_number": "+16044011242"
@@ -136,7 +136,7 @@
       "business_role": "Authorized Signing Officer",
       "first_name": "Ivy",
       "last_name": "Jones",
-      "position_title": "Authorized Signing Officer",
+      "position_title": "Manager",
       "address": 11,
       "email": "ivy.jones@example.com",
       "phone_number": "+16044011243"
@@ -149,7 +149,7 @@
       "business_role": "Operation Representative",
       "first_name": "Jack",
       "last_name": "King",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 12,
       "email": "jack.king@example.com",
       "phone_number": "+16044011244"
@@ -162,7 +162,7 @@
       "business_role": "Senior Officer",
       "first_name": "Karen",
       "last_name": "Lewis",
-      "position_title": "Senior Officer",
+      "position_title": "Manager",
       "address": 13,
       "email": "karen.lewis@example.com",
       "phone_number": "+16044011245"
@@ -175,7 +175,7 @@
       "business_role": "Operation Representative",
       "first_name": "Leo",
       "last_name": "Martinez",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 14,
       "email": "leo.martinez@example.com",
       "phone_number": "+16044011246"
@@ -188,7 +188,7 @@
       "business_role": "Authorized Signing Officer",
       "first_name": "Mia",
       "last_name": "Nelson",
-      "position_title": "Authorized Signing Officer",
+      "position_title": "Manager",
       "address": 15,
       "email": "mia.nelson@example.com",
       "phone_number": "+16044011247"
@@ -201,7 +201,7 @@
       "business_role": "Operation Representative",
       "first_name": "Nina",
       "last_name": "Owens",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 16,
       "email": "nina.owens@example.com",
       "phone_number": "+16044011248"
@@ -214,7 +214,7 @@
       "business_role": "Senior Officer",
       "first_name": "Oscar",
       "last_name": "Perez",
-      "position_title": "Senior Officer",
+      "position_title": "Manager",
       "address": 17,
       "email": "oscar.perez@example.com",
       "phone_number": "+16044011249"
@@ -227,7 +227,7 @@
       "business_role": "Operation Representative",
       "first_name": "Paula",
       "last_name": "Quinn",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 18,
       "email": "paula.quinn@example.com",
       "phone_number": "+16044011250"
@@ -240,7 +240,7 @@
       "business_role": "Authorized Signing Officer",
       "first_name": "Quincy",
       "last_name": "Roberts",
-      "position_title": "Authorized Signing Officer",
+      "position_title": "Manager",
       "address": 19,
       "email": "quincy.roberts@example.com",
       "phone_number": "+16044011251"
@@ -253,7 +253,7 @@
       "business_role": "Operation Representative",
       "first_name": "Rachel",
       "last_name": "Stewart",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "address": 20,
       "email": "rachel.stewart@example.com",
       "phone_number": "+16044011252"
@@ -266,7 +266,7 @@
       "business_role": "Senior Officer",
       "first_name": "Sam",
       "last_name": "Taylor",
-      "position_title": "Senior Officer",
+      "position_title": "Manager",
       "address": 21,
       "email": "sam.taylor@example.com",
       "phone_number": "+16044011253"
@@ -279,7 +279,7 @@
       "business_role": "Operation Representative",
       "first_name": "Tina",
       "last_name": "Upton",
-      "position_title": "Operation Representative",
+      "position_title": "Manager",
       "email": "tina.upton@example.com",
       "phone_number": "+16044011254"
     }
