@@ -28,7 +28,6 @@ const OptedInOperationForm = ({
   const [formState, setFormState] = useState(formData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-  const [error, setError] = useState("");
 
   //To run the check on initial load when the form already has data
   useEffect(() => {
@@ -55,20 +54,15 @@ const OptedInOperationForm = ({
         }),
       },
     );
-    if (response?.error) {
-      setError(response.error);
-      setIsSubmitting(false);
-      setSubmitButtonDisabled(false);
-      return { error: response.error };
-    }
+
+    // errors are handled in MultiStepBase
+    return response;
   };
   return (
     <MultiStepBase
       allowBackNavigation
       baseUrl={`/register-an-operation/${operation}`}
-      baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
-      error={error}
       formData={formState}
       onChange={handleChange}
       onSubmit={handleSubmit}

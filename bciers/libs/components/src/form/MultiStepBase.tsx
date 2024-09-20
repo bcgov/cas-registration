@@ -29,6 +29,7 @@ interface MultiStepBaseProps {
   uiSchema: UiSchema;
   submitButtonDisabled?: boolean;
   customValidate?: any;
+  successComponent?: React.ReactNode;
 }
 
 // Modified MultiStepFormBase meant to facilitate more modularized Multi-step forms
@@ -42,7 +43,7 @@ const MultiStepBase = ({
   cancelUrl,
   children,
   disabled,
-  error,
+  error: parentError,
   onChange,
   formData,
   onSubmit,
@@ -54,29 +55,54 @@ const MultiStepBase = ({
   uiSchema,
   submitButtonDisabled,
   customValidate,
+  successComponent,
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-
+  const [error, setError] = useState(parentError);
   const router = useRouter();
   const isNotFinalStep = step !== steps?.length;
 
   const stepIndex = step - 1;
 
-  // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async (data: any) => {
+    // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
     setIsSubmitting(true);
-    const response = await onSubmit(data);
-
-    // If there is an error, set isSubmitting to false to re-enable submit buttons
-    // and allow user to attempt to re-submit the form
-    if (response?.error) {
+    // Clear any old errors
+    setError(undefined);
+    try {
+      const response = await onSubmit(data);
+      if (response?.error) {
+        setError(response?.error);
+        return;
+      }
+      // First step
+      if (step === 1) {
+        // The URL below is customized for the registration workflow. It can be generalized later if needed.
+        const nextStepUrl = `/register-an-operation/${response.id}/${step + 1}${
+          baseUrlParams ? `?${baseUrlParams}` : ""
+        }`;
+        router.push(nextStepUrl);
+        return;
+      }
+      // Middle steps
+      if (isNotFinalStep && baseUrl) {
+        const nextStepUrl = `${baseUrl}/${step + 1}${
+          baseUrlParams ? `?${baseUrlParams}` : ""
+        }`;
+        router.push(nextStepUrl);
+        return;
+      }
+      // Last step
+      if (!isNotFinalStep) {
+        setIsSuccessfullySubmitted(true);
+      }
+    } catch (err) {
+      // Handle any errors beyond response.error
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
       setIsSubmitting(false);
-    } else if (isNotFinalStep && baseUrl && baseUrlParams) {
-      const nextStepUrl = `${baseUrl}/${step + 1}${
-        baseUrlParams ? `?${baseUrlParams}` : ""
-      }`;
-      router.push(nextStepUrl);
     }
   };
 
@@ -86,7 +112,9 @@ const MultiStepBase = ({
     setIsEditMode(true);
   };
 
-  return (
+  return isSuccessfullySubmitted ? (
+    successComponent
+  ) : (
     <>
       {allowEdit && (
         <div className="w-full flex justify-end mb-10">

@@ -11,7 +11,6 @@ import { IChangeEvent } from "@rjsf/core";
 import { contactsSchema } from "@/administration/app/data/jsonSchema/contact";
 import { RJSFSchema } from "@rjsf/utils";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
-import { useState } from "react";
 
 interface OperationRepresentativeFormProps
   extends OperationRegistrationFormProps {
@@ -40,7 +39,6 @@ const OperationRepresentativeForm = ({
   step,
   steps,
 }: OperationRepresentativeFormProps) => {
-  const [error, setError] = useState(undefined);
   const handleSubmit = async (e: IChangeEvent) => {
     // unnest the contact data
     const hasNewReps = e.formData?.new_operation_representatives.length > 0;
@@ -55,16 +53,14 @@ const OperationRepresentativeForm = ({
       );
     }
     const endpoint = `registration/v2/operations/${operation}/registration/operation-representative`;
+    // errors are handled in MultiStepBase
     const response = await actionHandler(endpoint, "PUT", "", {
       body: JSON.stringify({
         ...e.formData,
         ...(hasNewReps && { new_operation_representatives: unnestedNewReps }),
       }),
     });
-    if (!response || response?.error) {
-      setError(response.error);
-      return { error: response.error };
-    }
+    return response;
   };
   return (
     <MultiStepBase
@@ -76,7 +72,6 @@ const OperationRepresentativeForm = ({
       onSubmit={handleSubmit}
       schema={schema}
       step={step}
-      error={error}
       steps={steps}
       uiSchema={operationRepresentativeUiSchema}
       customValidate={customValidate}
