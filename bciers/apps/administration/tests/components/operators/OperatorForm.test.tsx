@@ -4,7 +4,7 @@ import { actionHandler, useSession, useRouter } from "@bciers/testConfig/mocks";
 
 import { operatorSchema } from "../../../../administration/app/data/jsonSchema/operator";
 import OperatorForm from "../../../../administration/app/components/operators/OperatorForm";
-import { createOperatorSchema } from "../../../../administration/app/components/operators/Operator";
+import { createOperatorSchema } from "../../../app/components/operators/OperatorPage";
 
 useSession.mockReturnValue({
   get: vi.fn(),

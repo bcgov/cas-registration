@@ -6,7 +6,7 @@ import {
   notFound,
 } from "@bciers/testConfig/mocks";
 import { getBusinessStructures, getCurrentOperator } from "./mocks";
-import Operator from "../../../../administration/app/components/operators/Operator";
+import Operator from "../../../app/components/operators/OperatorPage";
 
 useRouter.mockReturnValue({
   query: {},

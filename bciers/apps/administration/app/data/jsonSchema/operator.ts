@@ -184,6 +184,7 @@ const section3: RJSFSchema = {
 
 export const operatorSchema: RJSFSchema = {
   type: "object",
+  required: ["section1", "section2", "section3"],
   properties: {
     section1,
     section2,

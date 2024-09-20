@@ -25,19 +25,25 @@ export default function OperatorForm({
 }: Readonly<Props>) {
   // @ ts-ignore
   const [error, setError] = useState(undefined);
+
+  const [formState, setFormState] = useState(formData ?? {});
+  const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
+
   return (
     <SingleStepTaskListForm
       error={error}
       schema={schema}
       uiSchema={operatorUiSchema}
-      formData={formData}
-      mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
+      formData={formState}
+      mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
-        const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating
-          ? "tbd"
-          : `registration/v2/user-operators/current/operator`;
+        const updatedFormData = { ...formState, ...data.formData };
+        setFormState(updatedFormData);
+        const method = isCreatingState ? "POST" : "PUT";
+        const endpoint = isCreatingState
+          ? "registration/v2/user-operators"
+          : "registration/v2/user-operators/current/operator";
         const pathToRevalidate = "administration/operators";
         const response = await actionHandler(
           endpoint,
@@ -47,16 +53,18 @@ export default function OperatorForm({
             body: JSON.stringify(data.formData),
           },
         );
-        if (response.error) {
+        if (response?.error) {
           setError(response.error);
-          // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
+        } else {
+          setError(undefined);
         }
-        if (isCreating) {
-          // tbd
+
+        if (isCreatingState) {
+          setIsCreatingState(false);
         }
       }}
-      onCancel={() => router.push("/")}
+      onCancel={() => (isCreatingState ? router.back() : router.push("/"))}
     />
   );
 }
