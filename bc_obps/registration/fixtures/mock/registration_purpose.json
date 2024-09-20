@@ -1,0 +1,66 @@
+[
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 1,
+    "fields": {
+      "registration_purpose": "OBPS Regulated Operation",
+      "operation_id": "e1300fd7-2dee-47d1-b655-2ad3fd10f052"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 2,
+    "fields": {
+      "registration_purpose": "Reporting Operation",
+      "operation_id": "e1300fd7-2dee-47d1-b655-2ad3fd10f052"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 3,
+    "fields": {
+      "registration_purpose": "OBPS Regulated Operation",
+      "operation_id": "002d5a9e-32a6-4191-938c-2c02bfec592d"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 4,
+    "fields": {
+      "registration_purpose": "Reporting Operation",
+      "operation_id": "002d5a9e-32a6-4191-938c-2c02bfec592d"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 5,
+    "fields": {
+      "registration_purpose": "New Entrant Operation",
+      "operation_id": "002d5a9e-32a6-4191-938c-2c02bfec592d"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 6,
+    "fields": {
+      "registration_purpose": "OBPS Regulated Operation",
+      "operation_id": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 7,
+    "fields": {
+      "registration_purpose": "Reporting Operation",
+      "operation_id": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 8,
+    "fields": {
+      "registration_purpose": "Opted-in Operation",
+      "operation_id": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
+    }
+  }
+]
