@@ -1,5 +1,5 @@
 import OperationInformationForm from "./OperationInformationForm";
-import { getOperationV2 } from "@bciers/actions/api";
+import { getOperationWithDocuments } from "@bciers/actions/api";
 import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
@@ -16,7 +16,7 @@ const OperationInformationPage = async ({
   let operation;
 
   if (operationId && isValidUUID(operationId)) {
-    operation = await getOperationV2(operationId);
+    operation = await getOperationWithDocuments(operationId);
   }
 
   const registrationPurposes = operation?.registration_purposes;
