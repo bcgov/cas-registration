@@ -29,9 +29,5 @@ class ActivityService:
     @classmethod
     def get_all_activities(cls) -> List[Dict[str, Any]]:
         # Fetch activities and sort by weight
-        activities = (
-            Activity.objects.all()
-            .values("id", "name", "weight")  # Only fetch id, name, and weight
-            .order_by("weight")  # Sort by weight in ascending order
-        )
+        activities = Activity.objects.all().values("id", "name", "weight", "applicable_to").order_by("weight")
         return [dict(activity) for activity in activities]
