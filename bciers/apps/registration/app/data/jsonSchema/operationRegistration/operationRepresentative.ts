@@ -11,11 +11,16 @@ import { ContactRow } from "@/administration/app/components/contacts/types";
 import { OperationsContacts } from "@/registration/app/components/operations/registration/types";
 
 // Operation Representative Schema - Very similar to Contact Schema(without the existing_bciers_user field)
-const section1: RJSFSchema = {
+export const newOperationRepresentativeSchema: RJSFSchema = {
+  title: "Operation Representative",
   type: "object",
-  title: "Personal Information",
-  required: ["first_name", "last_name"],
   properties: {
+    //Not an actual field in the db - this is just to make the form look like the wireframes
+    personal_information: {
+      type: "object",
+      title: "Personal Information",
+      readOnly: true,
+    },
     first_name: {
       type: "string",
       title: "First Name",
@@ -24,26 +29,22 @@ const section1: RJSFSchema = {
       type: "string",
       title: "Last Name",
     },
-  },
-};
-
-const section2: RJSFSchema = {
-  type: "object",
-  title: "Work Information",
-  required: ["position_title"],
-  properties: {
+    //Not an actual field in the db - this is just to make the form look like the wireframes
+    work_information: {
+      type: "object",
+      title: "Work Information",
+      readOnly: true,
+    },
     position_title: {
       type: "string",
       title: "Job Title / Position",
     },
-  },
-};
-
-const section3: RJSFSchema = {
-  type: "object",
-  title: "Contact Information",
-  required: ["email", "phone_number"],
-  properties: {
+    //Not an actual field in the db - this is just to make the form look like the wireframes
+    contact_information: {
+      type: "object",
+      title: "Contact Information",
+      readOnly: true,
+    },
     email: {
       type: "string",
       title: "Business Email Address",
@@ -54,14 +55,12 @@ const section3: RJSFSchema = {
       title: "Business Telephone Number",
       format: "phone",
     },
-  },
-};
-
-const section4: RJSFSchema = {
-  type: "object",
-  title: "Address Information",
-  required: ["street_address", "municipality", "province", "postal_code"],
-  properties: {
+    //Not an actual field in the db - this is just to make the form look like the wireframes
+    address_information: {
+      type: "object",
+      title: "Address Information",
+      readOnly: true,
+    },
     street_address: {
       type: "string",
       title: "Business Mailing Address",
@@ -80,17 +79,6 @@ const section4: RJSFSchema = {
       title: "Postal Code",
       format: "postal-code",
     },
-  },
-};
-
-export const newOperationRepresentativeSchema: RJSFSchema = {
-  title: "Operation Representative",
-  type: "object",
-  properties: {
-    section1,
-    section2,
-    section3,
-    section4,
   },
 };
 
@@ -115,6 +103,16 @@ export const createOperationRepresentativeSchema = (
         type: "array",
         maxItems: 1,
         items: {
+          required: [
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "street_address",
+            "municipality",
+            "province",
+            "postal_code",
+          ],
           properties: {
             existing_contact_id: {
               type: "number",
@@ -157,16 +155,24 @@ export const createOperationRepresentativeSchema = (
 
 export const operationRepresentativeUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
-  "ui:classNames": "form-heading-label",
   "ui:order": [
     "operation_representative_preface",
     "operation_representatives",
     "new_operation_representative",
     "existing_contact_id",
-    "section1",
-    "section2",
-    "section3",
-    "section4",
+    "personal_information",
+    "first_name",
+    "last_name",
+    "work_information",
+    "position_title",
+    "contact_information",
+    "email",
+    "phone_number",
+    "address_information",
+    "street_address",
+    "municipality",
+    "province",
+    "postal_code",
   ],
   operation_representative_preface: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
@@ -189,38 +195,29 @@ export const operationRepresentativeUiSchema: UiSchema = {
         "ui:widget": "ComboBox",
         "ui:placeholder": "Select Existing Contact",
       },
-      section1: {
+      personal_information: {
         "ui:FieldTemplate": SectionFieldTemplate,
-        "ui:order": ["first_name", "last_name"],
       },
-      section2: {
+      work_information: {
         "ui:FieldTemplate": SectionFieldTemplate,
-        "ui:order": ["position_title"],
       },
-      section3: {
+      contact_information: {
         "ui:FieldTemplate": SectionFieldTemplate,
-        "ui:order": ["email", "phone_number"],
-        email: {
-          "ui:widget": "EmailWidget",
-        },
-        phone_number: {
-          "ui:widget": "PhoneWidget",
-        },
       },
-      section4: {
+      email: {
+        "ui:widget": "EmailWidget",
+      },
+      phone_number: {
+        "ui:widget": "PhoneWidget",
+      },
+      address_information: {
         "ui:FieldTemplate": SectionFieldTemplate,
-        "ui:order": [
-          "street_address",
-          "municipality",
-          "province",
-          "postal_code",
-        ],
-        province: {
-          "ui:widget": "ComboBox",
-        },
-        postal_code: {
-          "ui:widget": "PostalCodeWidget",
-        },
+      },
+      province: {
+        "ui:widget": "ComboBox",
+      },
+      postal_code: {
+        "ui:widget": "PostalCodeWidget",
       },
     },
   },
@@ -237,19 +234,20 @@ export const createOperationRepresentativeUiSchema = (
         ...operationRepresentativeUiSchema.new_operation_representative,
         items: {
           ...operationRepresentativeUiSchema.new_operation_representative.items,
-          section1: {
+          first_name: {
             ...operationRepresentativeUiSchema.new_operation_representative
-              .items.section1,
+              .items.first_name,
             "ui:disabled": true,
           },
-          section3: {
+          last_name: {
             ...operationRepresentativeUiSchema.new_operation_representative
-              .items.section3,
-            email: {
-              ...operationRepresentativeUiSchema.new_operation_representative
-                .items.section3.email,
-              "ui:disabled": true,
-            },
+              .items.last_name,
+            "ui:disabled": true,
+          },
+          email: {
+            ...operationRepresentativeUiSchema.new_operation_representative
+              .items.email,
+            "ui:disabled": true,
           },
         },
       },
