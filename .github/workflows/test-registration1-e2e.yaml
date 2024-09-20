@@ -102,7 +102,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          artifact-name: blob-report-${{ matrix.file.split('/').join('-') }}
+          artifact-name: blob-report-${{ matrix.file.replace('/', '-') }}
           path: bciers/blob-report
           retention-days: 1
   # Merge the e2e blob reports to one HTML report
