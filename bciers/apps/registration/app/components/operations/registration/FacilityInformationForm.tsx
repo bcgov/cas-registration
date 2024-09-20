@@ -65,7 +65,6 @@ const FacilityInformationForm = ({
   step,
   steps,
 }: FacilityInformationFormProps) => {
-  const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Get the list of sections in the LFO schema - used to unnest the formData
@@ -126,15 +125,11 @@ const FacilityInformationForm = ({
             formSectionListLFo,
             operation,
           );
-
+      // errors are handled in MultiStepBase
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
       });
-      if (!response || response?.error) {
-        setError(response.error);
-        setIsSubmitting(false);
-        return { error: response.error };
-      }
+      return response;
     },
     [operation, isOperationSfo, formSectionListLFo, isCreating, facilityId],
   );
@@ -143,12 +138,10 @@ const FacilityInformationForm = ({
     <MultiStepBase
       allowBackNavigation
       baseUrl={`/register-an-operation/${operation}`}
-      baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
       formData={formState}
       onChange={handleFormChange}
       onSubmit={handleSubmit}
-      error={error}
       schema={schema}
       step={step}
       steps={steps}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { actionHandler } from "@bciers/actions";
 import { IChangeEvent } from "@rjsf/core";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
@@ -22,30 +21,24 @@ const NewEntrantOperationForm = ({
   steps,
 }: NewEntrantOperationFormProps) => {
   const baseUrl = `/register-an-operation/${operation}`;
-  const [error, setError] = useState(undefined);
   const handleSubmit = async (e: IChangeEvent) => {
     const method = "PUT";
     const endpoint = `registration/v2/operations/${operation}/registration/statutory-declaration`;
     const body = {
       statutory_declaration: e.formData.statutory_declaration,
     };
+    // errors are handled in MultiStepBase
     const response = await actionHandler(endpoint, method, `${baseUrl}`, {
       body: JSON.stringify(body),
     });
-
-    if (!response || response?.error) {
-      setError(response.error);
-      return { error: response.error };
-    }
+    return response;
   };
 
   return (
     <MultiStepBase
       allowBackNavigation
       baseUrl={baseUrl}
-      baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
-      error={error}
       formData={formData}
       onSubmit={handleSubmit}
       schema={schema}
