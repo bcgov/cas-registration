@@ -1,4 +1,3 @@
-
 import pytest
 from model_bakery import baker
 from registration.models import Operator, User
@@ -19,13 +18,13 @@ class TestUserOperatorServiceV2:
             business_structure='General Partnership',
             cra_business_number=123456789,
             bc_corporate_registry_number="aaa1111111",
-            street_address= "123 Main St",
-            municipality= "City",
-            province= "ON",
-            postal_code= "A1B 2C3",
-            operator_has_parent_operators= False
-         )
-      
+            street_address="123 Main St",
+            municipality="City",
+            province="ON",
+            postal_code="A1B 2C3",
+            operator_has_parent_operators=False,
+        )
+
         operator_instance: Operator = Operator(
             business_structure=payload.business_structure,
             cra_business_number=payload.cra_business_number,
@@ -40,4 +39,3 @@ class TestUserOperatorServiceV2:
         assert Operator.objects.first().cra_business_number == payload.cra_business_number
         assert Operator.objects.first().bc_corporate_registry_number == payload.bc_corporate_registry_number
         assert Operator.objects.first().status == Operator.Statuses.APPROVED
-        

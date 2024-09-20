@@ -8,14 +8,13 @@ from service.data_access_service.user_operator_service import UserOperatorDataAc
 from registration.schema.v2.operator import OperatorIn
 from service.operator_service_v2 import OperatorServiceV2
 
+
 class UserOperatorServiceV2:
-    
+
     # Function to create operator instance
     @classmethod
     @transaction.atomic()
-    def save_operator(
-        cls, updated_data: OperatorIn, operator_instance: Operator, user_guid: UUID
-    ) -> Operator:
+    def save_operator(cls, updated_data: OperatorIn, operator_instance: Operator, user_guid: UUID) -> Operator:
         # fields to update on the Operator model
         operator_related_fields = [
             "legal_name",
@@ -34,8 +33,7 @@ class UserOperatorServiceV2:
 
     @classmethod
     @transaction.atomic()
-
-    def create_operator_and_user_operator(cls, user_guid: UUID, payload: OperatorIn)  -> Dict[str, UUID]:
+    def create_operator_and_user_operator(cls, user_guid: UUID, payload: OperatorIn) -> Dict[str, UUID]:
         """
         Function to create a user_operator and an operator
 
@@ -49,8 +47,8 @@ class UserOperatorServiceV2:
                 - 'operator_id' (UUID): ID of the operator.
 
         """
-       
-       # create/save operator instance as approved
+
+        # create/save operator instance as approved
         operator_instance: Operator = Operator(
             cra_business_number=payload.cra_business_number,
             bc_corporate_registry_number=payload.bc_corporate_registry_number,
@@ -63,13 +61,11 @@ class UserOperatorServiceV2:
         user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
         if created:
             user_operator.set_create_or_update(user_guid)
-            user_operator.role= UserOperator.Roles.ADMIN
-            user_operator.status= UserOperator.Statuses.APPROVED
+            user_operator.role = UserOperator.Roles.ADMIN
+            user_operator.status = UserOperator.Statuses.APPROVED
             user_operator.save()
-       
+
         # update the user operator operator with data in the request payload
         OperatorServiceV2.update_operator(user_guid, payload)
-        
-        return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
- 
+        return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}

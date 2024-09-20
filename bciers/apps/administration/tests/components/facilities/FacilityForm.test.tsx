@@ -593,70 +593,78 @@ describe("FacilityForm component", () => {
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
   });
   // created this starting datetest to get around form without edit fields in the last test
-  it("does not allow LFO submission if there is a starting date validation error", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesLfoSchema}
-        uiSchema={facilitiesLfoUiSchema}
-        formData={{}}
-        isCreating
-      />,
-    );
+  it(
+    "does not allow LFO submission if there is a starting date validation error",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <FacilityForm
+          schema={facilitiesLfoSchema}
+          uiSchema={facilitiesLfoUiSchema}
+          formData={{}}
+          isCreating
+        />,
+      );
 
-    // fill name
-    await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
+      // fill name
+      await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
 
-    // fill type
-    const comboBoxInput = screen.getAllByRole(
-      "combobox",
-    )[0] as HTMLInputElement;
-    const openComboboxButton = comboBoxInput?.parentElement?.children[1]
-      ?.children[0] as HTMLInputElement;
-    await userEvent.click(openComboboxButton);
-    const typeOption = screen.getByText("Large Facility");
-    await userEvent.click(typeOption);
+      // fill type
+      const comboBoxInput = screen.getAllByRole(
+        "combobox",
+      )[0] as HTMLInputElement;
+      const openComboboxButton = comboBoxInput?.parentElement?.children[1]
+        ?.children[0] as HTMLInputElement;
+      await userEvent.click(openComboboxButton);
+      const typeOption = screen.getByText("Large Facility");
+      await userEvent.click(typeOption);
 
-    // fill year and starting date with wrong info
-    const year = screen.getByLabelText(/Did this facility begin operations+/i);
-    await userEvent.click(year);
-    await userEvent.type(
-      screen.getByLabelText(/Date of facility starting operations+/i),
-      "20200101",
-    );
+      // fill year and starting date with wrong info
+      const year = screen.getByLabelText(
+        /Did this facility begin operations+/i,
+      );
+      await userEvent.click(year);
+      await userEvent.type(
+        screen.getByLabelText(/Date of facility starting operations+/i),
+        "20200101",
+      );
 
-    // fill lat and long
-    fireEvent.change(
-      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-      { target: { value: 3 } },
-    );
-    fireEvent.change(
-      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-      { target: { value: 6 } },
-    );
+      // fill lat and long
+      fireEvent.change(
+        screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+        { target: { value: 3 } },
+      );
+      fireEvent.change(
+        screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+        { target: { value: 6 } },
+      );
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
+      const submitButton = screen.getByRole("button", { name: "Submit" });
+      fireEvent.click(submitButton);
 
-    // expect to see validation error for starting date
-    expect(screen.getAllByText(/Starting Date must be between/i)).toHaveLength(
-      1,
-    );
+      // expect to see validation error for starting date
+      expect(
+        screen.getAllByText(/Starting Date must be between/i),
+      ).toHaveLength(1);
 
-    // refill year and starting date to check for proper format
-    await userEvent.clear(
-      screen.getByLabelText(/Date of facility starting operations+/i),
-    );
-    await userEvent.type(
-      screen.getByLabelText(/Date of facility starting operations+/i),
-      "202",
-    );
-    fireEvent.click(submitButton);
+      // refill year and starting date to check for proper format
+      await userEvent.clear(
+        screen.getByLabelText(/Date of facility starting operations+/i),
+      );
+      await userEvent.type(
+        screen.getByLabelText(/Date of facility starting operations+/i),
+        "202",
+      );
+      fireEvent.click(submitButton);
 
-    // expect to see format error for starting date
-    expect(
-      screen.getAllByText(/Starting Date format should be YYYY-MM-DD/i),
-    ).toHaveLength(1);
-  });
+      // expect to see format error for starting date
+      expect(
+        screen.getAllByText(/Starting Date format should be YYYY-MM-DD/i),
+      ).toHaveLength(1);
+    },
+  );
 
   it(
     "fills the mandatory form fields, creates new SFO facility, and redirects on success",

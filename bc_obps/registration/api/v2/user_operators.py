@@ -1,4 +1,3 @@
-
 from common.permissions import authorize
 from registration.api.utils.current_user_utils import get_current_user_guid
 from django.http import HttpRequest
@@ -10,10 +9,8 @@ from typing import Literal, Tuple
 
 from registration.constants import USER_OPERATOR_TAGS_V2
 from registration.schema.v2.operator import OperatorIn
-from registration.schema.v2.user_operator import  UserOperatorOperatorOut
+from registration.schema.v2.user_operator import UserOperatorOperatorOut
 from service.user_operator_service_v2 import UserOperatorServiceV2
-
-
 
 
 ## POST
@@ -28,8 +25,10 @@ from service.user_operator_service_v2 import UserOperatorServiceV2
 )
 @handle_http_errors()
 def create_operator_and_user_operator_v2(
-    request: HttpRequest, payload:  OperatorIn
+    request: HttpRequest, payload: OperatorIn
 ) -> Tuple[Literal[200], UserOperatorOperatorOut]:
-    user_operator_data = UserOperatorServiceV2.create_operator_and_user_operator(get_current_user_guid(request), payload)
-    
+    user_operator_data = UserOperatorServiceV2.create_operator_and_user_operator(
+        get_current_user_guid(request), payload
+    )
+
     return 200, UserOperatorOperatorOut(**user_operator_data)
