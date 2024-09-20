@@ -29,3 +29,9 @@ class ReportSourceType(ReportDataBaseModel):
         db_table_comment = "A table to store the reported source type-specific data, in a JSON format"
         db_table = 'erc"."report_source_type'
         app_label = 'reporting'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['report_activity', 'source_type'],
+                name="unique_source_type_report_per_activity_report_and_source_type,",
+            ),
+        ]

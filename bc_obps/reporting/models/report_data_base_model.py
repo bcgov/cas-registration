@@ -9,7 +9,10 @@ class ReportDataBaseModel(TimeStampedModel):
     Includes a json_data jsonb field and a foreign key to a report version.
     """
 
-    json_data = models.JSONField(db_comment="A flat JSON object representing the data collected for this model")
+    json_data = models.JSONField(
+        blank=True,
+        db_comment="A flat JSON object representing the data collected for this model",
+    )
     report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
