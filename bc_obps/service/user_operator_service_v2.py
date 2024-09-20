@@ -52,7 +52,7 @@ class UserOperatorServiceV2:
         operator_instance: Operator = Operator(
             cra_business_number=payload.cra_business_number,
             bc_corporate_registry_number=payload.bc_corporate_registry_number,
-            business_structure=payload.business_structure,
+            business_structure=payload.business_structure,  # type: ignore[arg-type]
             status=Operator.Statuses.APPROVED,
         )
         operator: Operator = cls.save_operator(payload, operator_instance, user_guid)
