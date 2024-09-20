@@ -4,7 +4,7 @@ name: main
 
 on:
   push:
-    branches: [develop, main, test-e2e-merge]
+    branches: [develop, main]
   pull_request:
     branches: [develop, main]
   workflow_dispatch:
@@ -15,7 +15,6 @@ concurrency:
 
 env:
   PGUSER: postgres
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   check-nx-affected:
