@@ -2,6 +2,8 @@
 
 import OperationRegistrationPage from "@/registration/app/components/operations/OperationRegistrationPage";
 import { UUID } from "crypto";
+import { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 export default async function Page({
   params,
@@ -11,12 +13,12 @@ export default async function Page({
   searchParams: any;
 }) {
   return (
-    <>
+    <Suspense fallback={<Loading />}>
       <OperationRegistrationPage
         step={1}
         operation={params?.operation}
         searchParams={searchParams}
       />
-    </>
+    </Suspense>
   );
 }
