@@ -102,7 +102,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-{{ matrix.file.split('/').pop() }}
+          artifact-name: blob-report-${{ matrix.file.split('/').join('-') }}
           path: bciers/blob-report
           retention-days: 1
 
