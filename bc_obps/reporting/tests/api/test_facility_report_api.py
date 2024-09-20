@@ -2,7 +2,8 @@ import json
 import pytest
 from django.test import Client
 from reporting.models import FacilityReport
-from reporting.tests.utils.bakers import facility_report_baker
+from registration.tests.utils.bakers import user_baker
+from model_bakery import baker
 
 client = Client()
 
@@ -21,7 +22,7 @@ class TestFacilityReportEndpoints:
         assert "Input should be a valid UUID" in response.json()["detail"][0]["msg"]
 
     def test_returns_correct_data(self):
-        facility_report = facility_report_baker()
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         response = client.get(
             f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}'
         )
@@ -30,7 +31,7 @@ class TestFacilityReportEndpoints:
 
     # POST
     def test_saves_facility_data(self):
-        facility_report = facility_report_baker()
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         request_data = {
             "facility_name": "CHANGED",
             "facility_type": "Single Facility Operation",
@@ -38,9 +39,11 @@ class TestFacilityReportEndpoints:
             "activities": ["1", "2", "3"],
             "products": [],
         }
+        user = user_baker()
         client.post(
             f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}',
             data=json.dumps(request_data),
+            HTTP_AUTHORIZATION=json.dumps({"user_guid": f'{user.user_guid}'}),
             content_type="application/json",
         )
         assert FacilityReport.objects.get(pk=facility_report.id).facility_name == "CHANGED"

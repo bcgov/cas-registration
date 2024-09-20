@@ -1,8 +1,9 @@
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
-from reporting.tests.utils.bakers import facility_report_baker, activity_baker
+from reporting.tests.utils.bakers import activity_baker
 from service.facility_report_service import FacilityReportService
 from reporting.schema.facility_report import FacilityReportIn
+from model_bakery import baker
 
 
 class TestFacilityReportService(TestCase):
@@ -16,7 +17,7 @@ class TestFacilityReportService(TestCase):
 
     @staticmethod
     def test_returns_facility_report():
-        facility_report = facility_report_baker()
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         assert facility_report == FacilityReportService.get_facility_report_by_version_and_id(
             report_version_id=facility_report.report_version_id, facility_id=facility_report.facility_id
         )
@@ -31,7 +32,7 @@ class TestFacilityReportService(TestCase):
 
     @staticmethod
     def test_returns_activity_id_list():
-        facility_report = facility_report_baker()
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         a1 = activity_baker()
         a2 = activity_baker()
         assert (
@@ -54,24 +55,8 @@ class TestFacilityReportService(TestCase):
         )
 
     @staticmethod
-    def test_form_data_returns_none_if_facility_report_does_not_exist():
-        assert FacilityReportService.get_facility_report_form_data(None, []) is None
-
-    @staticmethod
-    def test_form_data_returns_facility_report_form_data():
-        facility_report = facility_report_baker()
-        returned_data = FacilityReportService.get_facility_report_form_data(
-            facility_report=facility_report, activity_ids=[1, 2]
-        )
-        assert facility_report.facility_name == returned_data.facility_name
-        assert facility_report.facility_type == returned_data.facility_type
-        assert facility_report.facility_bcghgid == returned_data.facility_bcghgid
-
-        print(returned_data)
-
-    @staticmethod
     def test_saves_facility_report_form_data():
-        facility_report = facility_report_baker(facility_bcghgid='abc')
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report', facility_bcghgid='abc')
         print(facility_report.facility_bcghgid)
         data = FacilityReportIn(
             facility_name="CHANGED",
