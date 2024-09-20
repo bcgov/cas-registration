@@ -1,6 +1,6 @@
 from typing import Literal, Tuple
 from uuid import UUID
-from registration.schema.v2.operation import OperationOutV2, OperationInformationIn
+from registration.schema.v2.operation import OperationOutV2, OperationInformationIn, OperationOutWithDocuments
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
@@ -32,12 +32,25 @@ def get_operation_v2(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
 
+@router.get(
+    "/v2/operations/{uuid:operation_id}/with-documents",
+    response={200: OperationOutWithDocuments, codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    description="""Retrieves the details of a specific operation by its ID along with it's documents""",
+    exclude_none=True,
+    auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
+    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
+
+
 ##### PUT ######
 
 
 @router.put(
     # TODO: solve the naming conflict and remove /update/ from the path
-    "/v2/operations/update/{operation_id}",
+    "/v2/operations/{uuid:operation_id}",
     response={200: OperationOutV2, codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Updates the details of a specific operation by its ID.",
