@@ -283,4 +283,4 @@ class TestContactService:
         approved_user_operator.operator.contacts.set([contact])
 
         result = ContactService.get_with_places_assigned(approved_user_operator.user.user_guid, contact.id)
-        assert result.places_assigned == []
+        assert not hasattr(result, 'places_assigned')

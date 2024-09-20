@@ -10,8 +10,9 @@ export const createContactSchema = (
 ) => {
   const localSchema = safeJsonParse(JSON.stringify(schema)); // deep copy
 
-  // For now, we show the `existing_bciers_user` toggle and `selected_user` combobox only when creating a new contact
+  // For now, we show the `existing_bciers_user` toggle and `selected_user` combobox only when creating a new contact. We should not show `places_assigned` when creating
   if (isCreating) {
+    delete localSchema.properties.section1.properties.places_assigned;
     const userOperatorUserOptions = userOperatorUsers?.map((user) => ({
       type: "string",
       title: user.full_name,

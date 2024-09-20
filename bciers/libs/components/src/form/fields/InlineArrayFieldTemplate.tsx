@@ -34,6 +34,8 @@ const InlineArrayFieldTemplate = ({
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
 
+  const note = uiSchema?.["ui:options"]?.note as string;
+
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
@@ -86,6 +88,9 @@ const InlineArrayFieldTemplate = ({
           {arrayAddLabel}
         </Button>
       )}
+      <div className="w-full px-[14px] py-4 items-center">
+        <b>Note:</b> {note}
+      </div>
     </div>
   );
 };

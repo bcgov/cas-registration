@@ -51,7 +51,8 @@ class ContactService:
                 places_assigned.append(f"{role_name} - {operation.name}")
             # Return the Contact plus places_assigned
             result = cast(ContactWithPlacesAssigned, contact)
-            result.places_assigned = places_assigned
+            if places_assigned:
+                result.places_assigned = places_assigned
             return result
         return None
 
