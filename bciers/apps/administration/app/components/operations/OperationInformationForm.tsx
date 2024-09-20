@@ -29,15 +29,11 @@ const OperationInformationForm = ({
     formData?: OperationInformationFormData;
   }) => {
     const response = await actionHandler(
-      `registration/v2/operations/update/${operationId}`,
+      `registration/v2/operations/${operationId}`,
       "PUT",
       "",
       {
-        body: JSON.stringify({
-          ...data.formData,
-          // TODO: Remove this once the backend is updated to not require this field for updates
-          registration_purpose: formData.registration_purpose?.[0],
-        }),
+        body: JSON.stringify(data.formData),
       },
     );
 

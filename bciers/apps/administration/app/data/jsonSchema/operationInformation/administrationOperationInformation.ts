@@ -48,7 +48,8 @@ export const administrationOperationInformationUiSchema: UiSchema = {
   section2: multipleOperatorsInformationUiSchema,
   section3: {
     ...registrationInformationUiSchema,
-    registration_purpose: {
+    "ui:order": ["registration_purposes", "regulated_products"],
+    registration_purposes: {
       "ui:widget": "ReadOnlyWidget",
     },
   },

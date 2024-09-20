@@ -36,7 +36,7 @@ export const createAdministrationRegistrationInformationSchema = async (
     type: "object",
     required: ["registration_purpose"],
     properties: {
-      registration_purpose: {
+      registration_purposes: {
         type: "array",
         title: "The purpose of this registration is to register as a:",
         items: {},
