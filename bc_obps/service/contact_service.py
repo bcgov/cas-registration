@@ -1,16 +1,20 @@
 from django.db import transaction
-from typing import Optional
+from typing import Optional, cast
 from django.db.models import QuerySet
 from uuid import UUID
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
 from registration.models.operator import Operator
-from registration.schema.v1.contact import ContactFilterSchema, ContactIn
+from registration.schema.v1.contact import ContactFilterSchema, ContactIn, ContactOut
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
+
+
+class ContactWithPlacesAssigned(ContactOut):
+    places_assigned: Optional[list[str]]
 
 
 class ContactService:
@@ -36,6 +40,21 @@ class ContactService:
         if user.is_industry_user() and not contact:
             raise Exception(UNAUTHORIZED_MESSAGE)
         return contact
+
+    @classmethod
+    def get_with_places_assigned(cls, user_guid: UUID, contact_id: int) -> Optional[ContactWithPlacesAssigned]:
+        contact = cls.get_if_authorized(user_guid, contact_id)
+        places_assigned = []
+        if contact:
+            role_name = contact.business_role.role_name
+            for operation in contact.operations_contacts.all():
+                places_assigned.append(f"{role_name} - {operation.name}")
+            # Return the Contact plus places_assigned
+            result = cast(ContactWithPlacesAssigned, contact)
+            if places_assigned:
+                result.places_assigned = places_assigned
+            return result
+        return None
 
     @classmethod
     @transaction.atomic()
