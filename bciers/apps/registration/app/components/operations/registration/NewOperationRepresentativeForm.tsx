@@ -6,7 +6,7 @@ import {
   newOperationRepresentativeSchema,
 } from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
 import {
-  OperationRepresentativeFormData,
+  // OperationRepresentativeFormData,
   OperationsContacts,
 } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
@@ -48,9 +48,8 @@ const NewOperationRepresentativeForm: React.FC<
   const [formState, setFormState] = useState(formData);
   const [key, setKey] = useState(Math.random());
   const [existingContactId, setExistingContactId] = useState("");
-  const [showSubmitButton, setShowSubmitButton] = useState(
-    existingOperationRepresentatives?.length === 0,
-  );
+
+  const isSubmitButton = formState?.new_operation_representative?.length > 0;
 
   const handleSelectingContact = async (newSelectedContactId: string) => {
     setExistingContactId(newSelectedContactId);
@@ -86,8 +85,6 @@ const NewOperationRepresentativeForm: React.FC<
   };
 
   const handleChange = ({ formData: newFormData }: IChangeEvent) => {
-    // setShowSubmitButton((prev) => prev === false);
-
     const newOperationRepresentative = newFormData.new_operation_representative;
     const newSelectedContactId =
       newOperationRepresentative[0]?.existing_contact_id;
@@ -99,8 +96,12 @@ const NewOperationRepresentativeForm: React.FC<
       existingContactId &&
       newOperationRepresentative[0] &&
       Object.keys(newOperationRepresentative[0]).length > 1
-    )
+    ) {
       handleClearingExistingContact();
+    } else {
+      // This was needed to update the form data and show the submit button
+      setFormState(newFormData);
+    }
   };
 
   const submitHandler = async (data: any) => {
@@ -127,7 +128,7 @@ const NewOperationRepresentativeForm: React.FC<
         <div className="min-h-[48px] box-border">
           {error && <Alert severity="error">{error}</Alert>}
         </div>
-        {showSubmitButton && (
+        {isSubmitButton && (
           <Button className="mt-4" variant="outlined" type="submit">
             Save Operation Representative
           </Button>
