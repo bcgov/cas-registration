@@ -72,6 +72,8 @@ test.describe("Test Page - Home", () => {
   test("Test Route", async ({ page }) => {
     const homePage = new HomePOM(page);
     await homePage.route();
+    const currentUrl = await page.url();
+    await expect(currentUrl.toLocaleLowerCase()).toContain("fake-error");
     // 🔍 Assert correct url
     homePage.urlIsCorrect();
   });
