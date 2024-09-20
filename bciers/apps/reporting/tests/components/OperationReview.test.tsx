@@ -39,12 +39,9 @@ describe("OperationReview Component", () => {
         allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
       />,
     );
-
-    // Wait for form data to load and check form fields
     await waitFor(() => {
       expect(screen.getByText("Operation Information")).toBeInTheDocument();
     });
-
     expect(screen.getByText(/Cancel/i)).toBeInTheDocument();
     expect(screen.getByText(/Save And Continue/i)).toBeInTheDocument();
   });
