@@ -18,6 +18,7 @@ from service.data_access_service.address_service import AddressDataAccessService
 from registration.models.operation import Operation
 from registration.models import User
 from registration.models import WellAuthorizationNumber
+from registration.enums.enums import OperationTypes
 
 from django.db import transaction
 from django.utils import timezone
@@ -179,6 +180,11 @@ class FacilityService:
         """Create a facility with designated operation details."""
         operation = OperationDataAccessService.get_by_id(payload.operation_id)
         cls.check_user_access(user_guid, operation)
+
+        # Validate that SFO can only make one facility
+        num_facilities = FacilityDataAccessService.get_current_facilities_by_operation(payload.operation_id).count()
+        if num_facilities > 0 and operation.type == OperationTypes.SFO.value:
+            raise RuntimeError("SFO can only create one facility, this page should not be accessible")
 
         facility_data = cls.prepare_facility_data(payload)
         address_data = cls.build_address(payload)
