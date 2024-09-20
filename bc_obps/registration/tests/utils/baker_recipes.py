@@ -1,3 +1,4 @@
+from registration.models.event.transfer_event import TransferEvent
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.app_role import AppRole
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
@@ -101,3 +102,22 @@ opted_in_operation_detail = Recipe(
     meets_notification_to_director_on_criteria_change=False,
 )
 contact = Recipe(Contact, business_role=BusinessRole.objects.first())
+
+
+# transfer event bakers
+contact_for_transfer_event = Recipe(Contact, business_role=BusinessRole.objects.first())
+
+other_operator_for_transfer_event = Recipe(
+    Operator,
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    business_structure=BusinessStructure.objects.first(),
+    mailing_address=foreign_key(address),
+    cra_business_number=generate_random_cra_business_number(),
+)
+
+transfer_event = Recipe(
+    TransferEvent,
+    future_designated_operator=TransferEvent.FutureDesignatedOperatorChoices.MY_OPERATOR,
+    other_operator=foreign_key(other_operator_for_transfer_event),
+    other_operator_contact=foreign_key(contact_for_transfer_event),
+)

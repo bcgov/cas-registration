@@ -25,6 +25,7 @@ const contactFormData = {
   municipality: "Cityville",
   province: "ON",
   postal_code: "A1B 2C3",
+  places_assigned: ["Operation Representative - Operation 1"],
 };
 
 export const checkEmptyContactForm = () => {
@@ -37,6 +38,7 @@ export const checkEmptyContactForm = () => {
   expect(screen.getByLabelText(/Select the user/i)).toHaveValue("");
   expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
   expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
+  expect(screen.getByText(/Places Assigned/i)).toBeVisible();
 
   expect(
     screen.getByRole("heading", { name: /Work Information/i }),
@@ -153,6 +155,11 @@ describe("ContactForm component", () => {
       container.querySelector("#root_section1_last_name"),
     ).toHaveTextContent("Doe");
 
+    expect(screen.getByText(/Places Assigned/i)).toBeVisible();
+    expect(
+      screen.getByText(/Operation Representative - Operation 1/i),
+    ).toBeVisible();
+
     expect(
       container.querySelector("#root_section2_position_title"),
     ).toHaveTextContent("Senior Officer");
@@ -236,6 +243,7 @@ describe("ContactForm component", () => {
               existing_bciers_user: false,
               first_name: "John",
               last_name: "Doe",
+              places_assigned: ["None"],
               position_title: "Senior Officer",
               email: "john.doe@example.com",
               phone_number: "+1 1 604 401 1234",
@@ -312,6 +320,7 @@ describe("ContactForm component", () => {
             existing_bciers_user: false,
             first_name: "John",
             last_name: "Doe",
+            places_assigned: ["None"],
             position_title: "Senior Officer",
             email: "john.doe@example.com",
             phone_number: "+1 1 604 401 1234",
@@ -352,6 +361,7 @@ describe("ContactForm component", () => {
             existing_bciers_user: false,
             first_name: "John updated",
             last_name: "Doe updated",
+            places_assigned: ["None"],
             position_title: "Senior Officer",
             email: "john.doe@example.com",
             phone_number: "+1 1 604 401 1234",
@@ -405,6 +415,7 @@ describe("ContactForm component", () => {
         body: JSON.stringify({
           first_name: "John updated",
           last_name: "Doe updated",
+          places_assigned: ["Operation Representative - Operation 1"],
           position_title: "Senior Officer",
           email: "john.doe@example.com",
           phone_number: "+16044011234",

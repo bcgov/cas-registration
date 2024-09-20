@@ -1,6 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import { InlineArrayFieldTemplate } from "@bciers/components/form/fields";
 
 const section1: RJSFSchema = {
   type: "object",
@@ -19,6 +20,14 @@ const section1: RJSFSchema = {
     last_name: {
       type: "string",
       title: "Last Name",
+    },
+    places_assigned: {
+      type: "array",
+      default: ["None"],
+      title: "Places assigned",
+      items: {
+        type: "string",
+      },
     },
   },
   allOf: [
@@ -121,6 +130,7 @@ export const contactsUiSchema = {
       "selected_user",
       "first_name",
       "last_name",
+      "places_assigned",
     ],
     existing_bciers_user: {
       "ui:widget": "ToggleWidget",
@@ -128,6 +138,13 @@ export const contactsUiSchema = {
     selected_user: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select the user",
+    },
+    places_assigned: {
+      "ui:options": {
+        note: "You cannot delete this contact unless you replace them with other contact(s) in the place(s) above.",
+      },
+      "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
+      "ui:classNames": "[&>div:last-child]:w-2/3",
     },
   },
   section2: {

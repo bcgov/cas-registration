@@ -1,3 +1,4 @@
+from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
 from registration.schema.v1.contact import ContactIn
 import pytest
@@ -254,3 +255,32 @@ class TestContactService:
         assert contact.address.municipality == contact_payload.municipality
         assert contact.address.province == contact_payload.province
         assert contact.address.postal_code == contact_payload.postal_code
+
+    @staticmethod
+    def test_get_with_places_assigned_with_contacts():
+        contact = baker.make_recipe(
+            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative')
+        )
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        # add contact to operator (they have to be associated with the operator or will throw unauthorized)
+        approved_user_operator.operator.contacts.set([contact])
+        # add contact to operation
+        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        operation.contacts.set([contact])
+
+        result = ContactService.get_with_places_assigned(approved_user_operator.user.user_guid, contact.id)
+        assert result.places_assigned == [
+            f"Operation Representative - {operation.name}",
+        ]
+
+    @staticmethod
+    def test_get_with_places_assigned_with_no_contacts():
+        contact = baker.make_recipe(
+            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative')
+        )
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        # add contact to operator (they have to be associated with the operator or will throw unauthorized)
+        approved_user_operator.operator.contacts.set([contact])
+
+        result = ContactService.get_with_places_assigned(approved_user_operator.user.user_guid, contact.id)
+        assert not hasattr(result, 'places_assigned')
