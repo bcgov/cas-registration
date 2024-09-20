@@ -152,7 +152,7 @@ jobs:
   # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:
     # use github env GITHUB_REF_NAME instead of github.ref_name to avoid errors when the ref is not a branch
-    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.ref_name != 'test-e2e-merge' && github.head_ref != 'develop' && github.head_ref != 'main' && github.head_ref != 'test-e2e-merge' }}
+    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' && github.head_ref != 'test-e2e-merge' && github.ref_name != 'test-e2e-merge' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
