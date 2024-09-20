@@ -1,4 +1,4 @@
-from registration.tests.utils.bakers import operation_baker, operator_baker, facility_baker
+from registration.tests.utils.bakers import operation_baker, operator_baker
 from reporting.models import configuration_element
 from reporting.models.gas_type import GasType
 from registration.models import Activity
@@ -11,7 +11,6 @@ from reporting.models.report import Report
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.configuration import Configuration
 from reporting.models.methodology import Methodology
-from reporting.models.facility_report import FacilityReport
 
 
 def report_baker(**props) -> Report:
@@ -32,18 +31,6 @@ def report_version_baker(**props) -> ReportVersion:
         baker.make(ReportOperation, report_version=version)
 
     return version
-
-
-def facility_report_baker(**props) -> FacilityReport:
-    if "report_version" not in props and "report_version_id" not in props:
-        props["report_version"] = report_version_baker()
-
-    if "facility" not in props and "facility_id" not in props:
-        props["facility"] = facility_baker()
-
-    fr = baker.make(FacilityReport, **props)
-
-    return fr
 
 
 def activity_baker(custom_properties=None) -> Activity:
