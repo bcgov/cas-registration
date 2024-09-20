@@ -49,7 +49,6 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 
 
 @router.put(
-    # TODO: solve the naming conflict and remove /update/ from the path
     "/v2/operations/{uuid:operation_id}",
     response={200: OperationOutV2, codes_4xx: Message},
     tags=OPERATION_TAGS,
