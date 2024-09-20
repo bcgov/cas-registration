@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { UUID } from "crypto";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
 import { administrationOperationInformationUiSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
@@ -13,9 +14,11 @@ import { actionHandler } from "@bciers/actions";
 
 const OperationInformationForm = ({
   formData,
+  operationId,
   schema,
 }: {
   formData: OperationInformationPartialFormData;
+  operationId: UUID;
   schema: RJSFSchema;
 }) => {
   const [error, setError] = useState(undefined);
@@ -25,13 +28,16 @@ const OperationInformationForm = ({
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
-    // This is not currently working, just a placeholder for Edit Operation Information PR
     const response = await actionHandler(
-      "registration/v2/operations",
+      `registration/v2/operations/update/${operationId}`,
       "PUT",
       "",
       {
-        body: JSON.stringify(data.formData),
+        body: JSON.stringify({
+          ...data.formData,
+          // TODO: Remove this once the backend is updated to not require this field for updates
+          registration_purpose: formData.registration_purpose?.[0],
+        }),
       },
     );
 
@@ -43,7 +49,6 @@ const OperationInformationForm = ({
 
   return (
     <SingleStepTaskListForm
-      disabled
       error={error}
       schema={schema}
       uiSchema={administrationOperationInformationUiSchema}
