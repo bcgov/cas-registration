@@ -62,6 +62,8 @@ const tasklistData: TaskListElement[] = [
 ];
 
 interface Props {
+  reportVersionId: number;
+  facilityId: number;
   activityData: {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
@@ -77,6 +79,8 @@ export default function ActivityForm({
   reportDate,
   uiSchema,
   defaultEmptySourceTypeState,
+  reportVersionId,
+  facilityId,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
@@ -157,12 +161,11 @@ export default function ActivityForm({
     setIsSuccess(false);
 
     const response = await actionHandler(
-      "reporting/facility-report/2/report-activity",
-      "PUT",
+      `reporting/reports/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
+      "POST",
       "",
       {
         body: JSON.stringify({
-          activity_id: activityId,
           activity_data: JSON.stringify(data.formData),
         }),
       },
