@@ -3,14 +3,12 @@
 import {
   createOperationRepresentativeSchema,
   createOperationRepresentativeUiSchema,
-  newOperationRepresentativeSchema,
 } from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
 import {
   // OperationRepresentativeFormData,
   OperationsContacts,
 } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
-import { createNestedFormData } from "@bciers/components/form/formDataUtils";
 import { useState } from "react";
 import { Button, Alert } from "@mui/material";
 import { getContact } from "@bciers/actions/api";
@@ -57,16 +55,12 @@ const NewOperationRepresentativeForm: React.FC<
       const contactData: ContactFormData =
         await getContact(newSelectedContactId);
 
-      const nestedOpRepFormData = createNestedFormData(
-        contactData,
-        newOperationRepresentativeSchema,
-      );
       setFormState((prevState: FormState) => ({
         ...prevState,
         new_operation_representative: [
           {
             existing_contact_id: newSelectedContactId,
-            ...nestedOpRepFormData,
+            ...contactData,
           },
         ],
       }));
