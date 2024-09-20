@@ -8,7 +8,7 @@ class ContactOut(ModelSchema):
     municipality: Optional[str] = Field(None, alias="address.municipality")
     province: Optional[str] = Field(None, alias="address.province")
     postal_code: Optional[str] = Field(None, alias="address.postal_code")
-    places_assigned: Optional[list] = []
+    places_assigned: Optional[list] = None
 
     @staticmethod
     def resolve_phone_number(obj: Contact) -> str:

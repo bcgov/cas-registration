@@ -1,6 +1,5 @@
 export { default as ArrayFieldTemplate } from "./ArrayFieldTemplate";
 export { default as InlineArrayFieldTemplate } from "./InlineArrayFieldTemplate";
-export { default as PlacesAssignedArrayFieldTemplate } from "./PlacesAssignedArrayFieldTemplate";
 
 export { default as FieldTemplate } from "./FieldTemplate";
 export { default as FieldTemplateWithSubmitButton } from "./FieldTemplateWithSubmitButton";

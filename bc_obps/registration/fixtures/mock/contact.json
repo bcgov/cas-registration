@@ -3,7 +3,7 @@
     "model": "registration.contact",
     "pk": 1,
     "fields": {
-      "business_role": "Senior Officer",
+      "business_role": "Operation Representative",
       "first_name": "John",
       "last_name": "Doe",
       "position_title": "Manager",
@@ -16,7 +16,7 @@
     "model": "registration.contact",
     "pk": 2,
     "fields": {
-      "business_role": "Authorized Signing Officer",
+      "business_role": "Operation Representative",
       "first_name": "Jane",
       "last_name": "Smith",
       "position_title": "Manager",
@@ -29,7 +29,7 @@
     "model": "registration.contact",
     "pk": 3,
     "fields": {
-      "business_role": "Senior Officer",
+      "business_role": "Operation Representative",
       "first_name": "Alice",
       "last_name": "Johnson",
       "position_title": "Manager",
@@ -81,7 +81,7 @@
     "model": "registration.contact",
     "pk": 7,
     "fields": {
-      "business_role": "Authorized Signing Officer",
+      "business_role": "Operation Representative",
       "first_name": "Eve",
       "last_name": "Foster",
       "position_title": "Manager",
@@ -107,7 +107,7 @@
     "model": "registration.contact",
     "pk": 9,
     "fields": {
-      "business_role": "Senior Officer",
+      "business_role": "Operation Representative",
       "first_name": "Grace",
       "last_name": "Harris",
       "position_title": "Manager",
@@ -133,7 +133,7 @@
     "model": "registration.contact",
     "pk": 11,
     "fields": {
-      "business_role": "Authorized Signing Officer",
+      "business_role": "Operation Representative",
       "first_name": "Ivy",
       "last_name": "Jones",
       "position_title": "Manager",
@@ -159,7 +159,7 @@
     "model": "registration.contact",
     "pk": 13,
     "fields": {
-      "business_role": "Senior Officer",
+      "business_role": "Operation Representative",
       "first_name": "Karen",
       "last_name": "Lewis",
       "position_title": "Manager",
@@ -185,7 +185,7 @@
     "model": "registration.contact",
     "pk": 15,
     "fields": {
-      "business_role": "Authorized Signing Officer",
+      "business_role": "Operation Representative",
       "first_name": "Mia",
       "last_name": "Nelson",
       "position_title": "Manager",
@@ -211,7 +211,7 @@
     "model": "registration.contact",
     "pk": 17,
     "fields": {
-      "business_role": "Senior Officer",
+      "business_role": "Operation Representative",
       "first_name": "Oscar",
       "last_name": "Perez",
       "position_title": "Manager",
@@ -237,7 +237,7 @@
     "model": "registration.contact",
     "pk": 19,
     "fields": {
-      "business_role": "Authorized Signing Officer",
+      "business_role": "Operation Representative",
       "first_name": "Quincy",
       "last_name": "Roberts",
       "position_title": "Manager",
@@ -263,7 +263,7 @@
     "model": "registration.contact",
     "pk": 21,
     "fields": {
-      "business_role": "Senior Officer",
+      "business_role": "Operation Representative",
       "first_name": "Sam",
       "last_name": "Taylor",
       "position_title": "Manager",
