@@ -96,13 +96,18 @@ jobs:
           HAPPO_NONCE: ${{ github.sha }}-reg1
           HAPPO_PROJECT: cas-registration1
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
-        working-directory: ./bciers/apps/registration1
-
+        working-directory: ./bciers/apps/registration1      
       - name: 💾 save test report artifact
         if: failure()
+        id: save_artifact_name
+        run: |
+          ARTIFACT_NAME="blob-report-$(echo "${{ matrix.file }}" | sed 's/\//-/g')"
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_ENV
+      
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          artifact-name: blob-report-${{ matrix.file.replace('/', '-') }}
+          artifact-name: ${{ env.artifact_name }}
           path: bciers/blob-report
           retention-days: 1
   # Merge the e2e blob reports to one HTML report
