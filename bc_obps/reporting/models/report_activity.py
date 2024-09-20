@@ -31,3 +31,9 @@ class ReportActivity(ReportDataBaseModel):
         db_table_comment = "A table to store the reported activity-specific data, in a JSON format"
         db_table = 'erc"."report_activity'
         app_label = 'reporting'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['report_version', 'facility_report_id', 'activity_id'],
+                name="unique_activity_report_per_report_and_facility_and_activity,",
+            ),
+        ]
