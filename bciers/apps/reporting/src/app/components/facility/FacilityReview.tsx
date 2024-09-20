@@ -131,10 +131,6 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     try {
       await actionHandler(endpoint, method, pathToRevalidate, {
         body: JSON.stringify(formDataObject),
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
       });
 
       setIsSuccess(true);
