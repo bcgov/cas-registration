@@ -44,6 +44,8 @@ const OperationRepresentativeForm = ({
       beforeForm={
         <NewOperationRepresentativeForm
           formData={formData}
+          step={step}
+          operation={operation}
           existingOperationRepresentatives={existingOperationRepresentatives}
           contacts={contacts}
         />

@@ -73,7 +73,8 @@ class ContactService:
         # `business_role` is a mandatory field in the DB but we don't collect it from the user
         # so we set it to a default value here and we can change it later if needed
         contact_data['business_role'] = BusinessRole.objects.get(role_name="Operation Representative")
-        contact = ContactDataAccessService.update_or_create(None, contact_data, user_guid)
+        contact: Contact
+        contact, _ = ContactDataAccessService.update_or_create(None, contact_data, user_guid)
 
         # Create address
         address_data = payload.dict(
@@ -112,5 +113,4 @@ class ContactService:
                 contact.save(update_fields=['address'])
                 # contact has an address and the payload has no address data, remove the address
                 existing_contact_address.delete()
-        contact.set_create_or_update(user_guid)
         return contact

@@ -106,6 +106,7 @@ export const createOperationRepresentativeSchema = (
           required: [
             "first_name",
             "last_name",
+            "position_title",
             "email",
             "phone_number",
             "street_address",
@@ -155,6 +156,7 @@ export const createOperationRepresentativeSchema = (
 
 export const operationRepresentativeUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
   "ui:order": [
     "operation_representative_preface",
     "operation_representatives",
@@ -186,6 +188,7 @@ export const operationRepresentativeUiSchema: UiSchema = {
   new_operation_representative: {
     "ui:FieldTemplate": SectionFieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:classNames": "mt-1",
     "ui:options": {
       label: false,
       arrayAddLabel: "Add New Operation Representative",

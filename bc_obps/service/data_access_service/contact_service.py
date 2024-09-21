@@ -17,20 +17,23 @@ class ContactDataAccessService:
     def update_or_create(
         cls, existing_contact_id: Optional[int], updated_data: Dict[str, Optional[str]], user_guid: UUID
     ) -> Contact:
-        contact, _ = Contact.objects.update_or_create(
-            id=existing_contact_id,
-            defaults={
-                "first_name": updated_data["first_name"],
-                "last_name": updated_data["last_name"],
-                "position_title": updated_data["position_title"],
-                "email": updated_data["email"],
-                "phone_number": updated_data["phone_number"],
-                "business_role": updated_data.get(
-                    "business_role", BusinessRole.objects.get(role_name="Operation Representative")
-                ),
-            },
+        data: Dict[str, Optional[str]] = {
+            "pk": existing_contact_id,
+            "first_name": updated_data["first_name"],
+            "last_name": updated_data["last_name"],
+            "position_title": updated_data["position_title"],
+            "email": updated_data["email"],
+            "phone_number": updated_data["phone_number"],
+            "business_role": updated_data.get(
+                "business_role", BusinessRole.objects.get(role_name="Operation Representative")
+            ),
+        }
+        contact: Contact
+        contact, _ = Contact.custom_update_or_create(
+            self=Contact,
+            user_guid=user_guid,
+            **data,
         )
-        contact.set_create_or_update(user_guid)
         return contact
 
     @classmethod
