@@ -4,10 +4,7 @@ import {
   createOperationRepresentativeSchema,
   createOperationRepresentativeUiSchema,
 } from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
-import {
-  // OperationRepresentativeFormData,
-  OperationsContacts,
-} from "apps/registration/app/components/operations/registration/types";
+import { OperationsContacts } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
 import { useState } from "react";
 import { Button, Alert } from "@mui/material";
@@ -17,17 +14,14 @@ import {
   ContactRow,
 } from "@/administration/app/components/contacts/types";
 import FormBase, { FormPropsWithTheme } from "@bciers/components/form/FormBase";
-
-interface FormState {
-  operation_representatives?: number[];
-  new_operation_representative: {
-    existing_contact_id: string;
-    [key: string]: any;
-  }[];
-}
+import { actionHandler } from "@bciers/actions";
+import { UUID } from "crypto";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface NewOperationRepresentativeFormProps
   extends Omit<FormPropsWithTheme<any>, "schema" | "uiSchema"> {
+  step: number;
+  operation: UUID;
   existingOperationRepresentatives: OperationsContacts[];
   contacts: ContactRow[];
 }
@@ -37,16 +31,17 @@ const NewOperationRepresentativeForm: React.FC<
 > = (props) => {
   const {
     formData,
-    setErrorReset,
+    operation,
     existingOperationRepresentatives,
     contacts,
+    step,
   } = props;
 
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
   const [key, setKey] = useState(Math.random());
   const [existingContactId, setExistingContactId] = useState("");
-
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const isSubmitButton = formState?.new_operation_representative?.length > 0;
 
   const handleSelectingContact = async (newSelectedContactId: string) => {
@@ -55,15 +50,15 @@ const NewOperationRepresentativeForm: React.FC<
       const contactData: ContactFormData =
         await getContact(newSelectedContactId);
 
-      setFormState((prevState: FormState) => ({
-        ...prevState,
+      setFormState({
+        operation_representatives: formState.operation_representatives,
         new_operation_representative: [
           {
             existing_contact_id: newSelectedContactId,
             ...contactData,
           },
         ],
-      }));
+      });
     } catch (err) {
       setError("Failed to fetch contact data!" as any);
     }
@@ -71,10 +66,10 @@ const NewOperationRepresentativeForm: React.FC<
 
   const handleClearingExistingContact = () => {
     setExistingContactId("");
-    setFormState((prevState: FormState) => ({
-      ...prevState,
+    setFormState({
+      operation_representatives: formState.operation_representatives,
       new_operation_representative: [{}],
-    }));
+    });
     setKey(Math.random()); // force re-render to clear the form
   };
 
@@ -93,42 +88,69 @@ const NewOperationRepresentativeForm: React.FC<
     ) {
       handleClearingExistingContact();
     } else {
-      // This was needed to update the form data and show the submit button
-      setFormState(newFormData);
+      // This is needed to update the form data and show the submit button
+      setFormState({
+        operation_representatives: formState.operation_representatives,
+        new_operation_representative: newOperationRepresentative,
+      });
     }
   };
 
-  const submitHandler = async (data: any) => {
-    // TODO: implement this
-    console.log("submitHandler data", data);
+  const submitHandler = async ({ formData: newFormData }: IChangeEvent) => {
+    const endpoint = `registration/v2/operations/${operation}/registration/operation-representative`;
+    const response = await actionHandler(
+      endpoint,
+      "PUT",
+      `/register-an-operation/${operation}/${step}`,
+      {
+        body: JSON.stringify({
+          ...newFormData?.new_operation_representative[0],
+        }),
+      },
+    );
+
+    if (!response || response?.error) {
+      setError(response.error);
+      return { error: response.error };
+    }
+    setError(undefined);
+    handleClearingExistingContact();
+    setIsSnackbarOpen(true);
   };
 
   return (
-    <FormBase
-      key={key}
-      schema={createOperationRepresentativeSchema(
-        existingOperationRepresentatives,
-        contacts,
-      )}
-      uiSchema={createOperationRepresentativeUiSchema(
-        Boolean(existingContactId),
-      )}
-      onChange={handleChange}
-      onSubmit={submitHandler}
-      formData={formState}
-      setErrorReset={setErrorReset}
-    >
-      <div>
-        <div className="min-h-[48px] box-border">
-          {error && <Alert severity="error">{error}</Alert>}
-        </div>
-        {isSubmitButton && (
-          <Button className="mt-4" variant="outlined" type="submit">
-            Save Operation Representative
-          </Button>
+    <>
+      <FormBase
+        key={key}
+        schema={createOperationRepresentativeSchema(
+          existingOperationRepresentatives,
+          contacts,
         )}
-      </div>
-    </FormBase>
+        uiSchema={createOperationRepresentativeUiSchema(
+          Boolean(existingContactId),
+        )}
+        onChange={handleChange}
+        onSubmit={submitHandler}
+        formData={formState}
+        liveValidate={Boolean(existingContactId)}
+      >
+        <div>
+          <div className="min-h-[48px] box-border">
+            {error && <Alert severity="error">{error}</Alert>}
+          </div>
+          {isSubmitButton && (
+            <Button className="mt-4" variant="outlined" type="submit">
+              Save Operation Representative
+            </Button>
+          )}
+        </div>
+      </FormBase>
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message="Operation Representative saved successfully"
+        setIsSnackbarOpen={setIsSnackbarOpen}
+      />
+    </>
   );
 };
 

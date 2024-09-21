@@ -19,7 +19,19 @@ export interface OptedInOperationFormData {
 export interface OperationInformationFormData {}
 
 export interface OperationRepresentativeFormData {
-  operation_representatives: number[];
+  operation_representatives?: number[];
+  new_operation_representative?: {
+    existing_contact_id: string;
+    first_name: string;
+    last_name: string;
+    position_title: string;
+    email: string;
+    phone_number: string;
+    street_address: string;
+    municipality: string;
+    province: string;
+    postal_code: string;
+  }[];
 }
 
 export interface RegistrationPurposeFormData {}
