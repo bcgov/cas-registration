@@ -92,7 +92,7 @@ export default function OperationReview({
       },
     });
 
-    if (response.ok) {
+    if (response) {
       router.push(saveAndContinueUrl); // Navigate on success
     }
   };
