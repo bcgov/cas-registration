@@ -31,7 +31,7 @@ export default async function FacilitiesPage({
       </Note>
       <h2 className="text-bc-primary-blue">Facilities</h2>
       {/* Conditionally render the button based on user's role and operation type */}
-      {isExternalUser && operation.type !== OperationTypes.SFO && (
+      {isExternalUser && operation?.type !== OperationTypes.SFO && (
         <div className="text-right">
           <Link
             href={`/operations/${operationId}/facilities/add-facility?operations_title=${searchParams.operations_title}`}
