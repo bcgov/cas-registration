@@ -1,11 +1,25 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "apps/administration/app/components/operations/OperationInformationPage";
-import { getOperation } from "./mocks";
-import { actionHandler } from "@bciers/testConfig/mocks";
+import {
+  getOperationWithDocuments,
+  getNaicsCodes,
+  getReportingActivities,
+  getBusinessStructures,
+  getRegulatedProducts,
+} from "./mocks";
+import { actionHandler, useSession } from "@bciers/testConfig/mocks";
+
+useSession.mockReturnValue({
+  data: {
+    user: {
+      app_role: "industry_user_admin",
+    },
+  },
+});
 
 const fetchFormEnums = () => {
   // Naics codes
-  actionHandler.mockResolvedValueOnce([
+  getNaicsCodes.mockResolvedValue([
     {
       id: 1,
       naics_code: "211110",
@@ -18,7 +32,7 @@ const fetchFormEnums = () => {
     },
   ]);
   // Reporting activities
-  actionHandler.mockResolvedValueOnce([
+  getReportingActivities.mockResolvedValue([
     {
       name: "General stationary combustion excluding line tracing",
       applicable_to: "all",
@@ -27,19 +41,19 @@ const fetchFormEnums = () => {
   ]);
 
   // Business structures
-  actionHandler.mockResolvedValueOnce([
+  getBusinessStructures.mockResolvedValue([
     { name: "General Partnership" },
     { name: "BC Corporation" },
   ]);
 
   // Regulated products
-  actionHandler.mockResolvedValueOnce([
+  getRegulatedProducts.mockResolvedValue([
     { id: 1, name: "BC-specific refinery complexity throughput" },
     { id: 2, name: "Cement equivalent" },
   ]);
 
   // Registration purposes
-  actionHandler.mockResolvedValueOnce(["Potential Reporting Operation"]);
+  actionHandler.mockResolvedValue(["Potential Reporting Operation"]);
 };
 
 const formData = {
@@ -48,6 +62,7 @@ const formData = {
   naics_code_id: 1,
   secondary_naics_code_id: 2,
   operation_has_multiple_operators: true,
+  registration_purposes: ["Non-Regulated"],
   multiple_operators_array: [
     {
       mo_is_extraprovincial_company: false,
@@ -74,7 +89,8 @@ describe("the OperationInformationPage component", () => {
   });
   it("renders the OperationInformationPage component", async () => {
     fetchFormEnums();
-    render(await OperationInformationPage({ operationId: "1" }));
+    getOperationWithDocuments.mockResolvedValueOnce(formData);
+    render(await OperationInformationPage({ operationId }));
 
     expect(
       screen.getByRole("heading", { name: "Operation Information" }),
@@ -106,7 +122,7 @@ describe("the OperationInformationPage component", () => {
 
   it("should render the form with the correct values when formData is provided", async () => {
     fetchFormEnums();
-    getOperation.mockResolvedValueOnce(formData);
+    getOperationWithDocuments.mockResolvedValueOnce(formData);
 
     render(await OperationInformationPage({ operationId }));
 

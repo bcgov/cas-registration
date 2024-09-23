@@ -105,7 +105,7 @@ describe("The MultiStepFormBase component", () => {
     render(<MultiStepFormBase {...defaultProps} />);
     expect(screen.getByText(/test field1/i)).toHaveAttribute(
       "class",
-      "read-only-widget",
+      "read-only-widget whitespace-pre-line",
     );
     const editButton = screen.getByRole("button", { name: /Edit/i });
     fireEvent.click(editButton);
