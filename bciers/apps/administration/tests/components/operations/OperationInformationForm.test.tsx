@@ -1,6 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import OperationInformationForm from "apps/administration/app/components/operations/OperationInformationForm";
+import { useSession } from "@bciers/testConfig/mocks";
+
+useSession.mockReturnValue({
+  data: {
+    user: {
+      app_role: "industry_user_admin",
+    },
+  },
+});
 
 // Just using a simple schema for testing purposes
 // OperationInformationPage test will test the proper schema with extra enums provided by the backend
@@ -35,9 +44,17 @@ const formData = {
   type: "Single Facility Operation",
 };
 
+const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
+
 describe("the OperationInformationForm component", () => {
   it("renders the OperationInformationForm component", async () => {
-    render(<OperationInformationForm formData={{}} schema={testSchema} />);
+    render(
+      <OperationInformationForm
+        formData={{}}
+        schema={testSchema}
+        operationId={operationId}
+      />,
+    );
 
     expect(screen.getByText(/Operation Name/i)).toBeVisible();
     expect(screen.getByText(/Operation Type/i)).toBeVisible();
@@ -48,7 +65,11 @@ describe("the OperationInformationForm component", () => {
 
   it("should render the form with the correct values when formData is provided", async () => {
     render(
-      <OperationInformationForm formData={formData} schema={testSchema} />,
+      <OperationInformationForm
+        formData={formData}
+        schema={testSchema}
+        operationId={operationId}
+      />,
     );
 
     expect(screen.getByText(/Operation Name/i)).toBeVisible();
