@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, Optional
+from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
@@ -8,6 +8,7 @@ from service.facility_report_service import FacilityReportService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.schema.facility_report import FacilityReportOut, FacilityReportIn
+from registration.api.utils.current_user_utils import get_current_user_guid
 
 
 @router.get(
@@ -20,10 +21,17 @@ from reporting.schema.facility_report import FacilityReportOut, FacilityReportIn
 @handle_http_errors()
 def get_facility_report_form_data(
     request: HttpRequest, version_id: int, facility_id: UUID
-) -> Tuple[Literal[200], Optional[FacilityReportOut]]:
+) -> Tuple[Literal[200], FacilityReportOut]:
     facility_report = FacilityReportService.get_facility_report_by_version_and_id(version_id, facility_id)
-    activity_ids = FacilityReportService.get_activity_ids_for_facility(version_id, facility_id) or []
-    return 200, FacilityReportService.get_facility_report_form_data(facility_report, activity_ids)
+    return 200, FacilityReportOut(
+        id=facility_report.id,
+        report_version_id=facility_report.report_version.id,
+        facility_name=facility_report.facility_name,
+        facility_type=facility_report.facility_type,
+        facility_bcghgid=facility_report.facility_bcghgid,
+        activities=list(facility_report.activities.values_list('id', flat=True)),
+        products=list(facility_report.products.values_list('id', flat=True)),
+    )
 
 
 @router.post(
@@ -51,7 +59,8 @@ def save_facility_report(
         Tuple: HTTP status code and the response data or an error message.
     """
     # Fetch the existing facility report or create a new one
-    facility_report = FacilityReportService.save_facility_report(version_id, facility_id, payload)
+    user_guid = get_current_user_guid(request)
+    facility_report = FacilityReportService.save_facility_report(version_id, facility_id, payload, user_guid)
 
     # Prepare the response data
     response_data = FacilityReportOut(
@@ -61,6 +70,6 @@ def save_facility_report(
         facility_type=facility_report.facility_type,
         facility_bcghgid=facility_report.facility_bcghgid,
         activities=list(facility_report.activities.values_list('id', flat=True)),
-        products=list(facility_report.products.values_list('id', flat=True)) or [],
+        products=list(facility_report.products.values_list('id', flat=True)),
     )
     return 201, response_data
