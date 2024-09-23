@@ -4,7 +4,7 @@ from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.report_activity import ReportActivity
 from reporting.tests.utils.bakers import report_version_baker
 from reporting.tests.utils.constants import REPORT_DATA_MODELS_COMMON_FIELDS
-from reporting.tests.utils.report_data_bakers import facility_report_baker
+from model_bakery import baker
 
 
 class ReportActivityModelTest(BaseTestCase):
@@ -17,7 +17,7 @@ class ReportActivityModelTest(BaseTestCase):
             json_data="{'test': 1}",
             activity_base_schema=ActivityJsonSchema.objects.first(),
             activity=ActivityJsonSchema.objects.first().activity,
-            facility_report=facility_report_baker(report_version=report_version),
+            facility_report=baker.make_recipe('reporting.tests.utils.facility_report'),
         )
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
