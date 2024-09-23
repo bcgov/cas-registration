@@ -24,12 +24,14 @@ const mockResponse = {
       name: "Facility 1",
       type: "Single Facility",
       bcghg_id: "1-211113-0001",
+      status: "Active",
     },
     {
       id: 2,
       name: "Facility 2",
       type: "Large Facility",
       bcghg_id: "1-211113-0002",
+      status: "Active",
     },
   ],
   row_count: 2,
@@ -57,8 +59,9 @@ describe("OperationsDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
     ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
+    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(4);
 
     // Check data displays
     expect(screen.getByText(/Facility 1/i)).toBeVisible();
@@ -67,6 +70,8 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getByText(/Facility 2/i)).toBeVisible();
     expect(screen.getByText(/1-211113-0002/i)).toBeVisible();
     expect(screen.getAllByText(/Large Facility/i)).toHaveLength(1);
+    // Check status
+    expect(screen.getAllByText(/active/i)).toHaveLength(2);
     // Check the number of view details links
     expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
       2,
@@ -135,6 +140,7 @@ describe("OperationsDataGrid component", () => {
       extractParams(String(mockReplace.mock.calls[3][2]), "sort_order"),
     ).toBe("desc");
   });
+
   it("makes API call with correct params when filtering", async () => {
     render(
       <FacilityDataGrid
