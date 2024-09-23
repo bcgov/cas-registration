@@ -5,7 +5,7 @@ import {
   useSession,
 } from "@bciers/testConfig/mocks";
 import { getBusinessStructures, getCurrentOperator } from "./mocks";
-import OperatorPage from "../../../app/components/operators/OperatorPage";
+import OperatorPage from "apps/administration/app/components/operators/OperatorPage";
 
 useRouter.mockReturnValue({
   query: {},
