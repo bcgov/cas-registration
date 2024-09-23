@@ -113,6 +113,8 @@ const NewOperationRepresentativeForm: React.FC<
       setError(response.error);
       return { error: response.error };
     }
+    // Refresh the page and refetch the updated operation representatives
+    location.reload();
     setError(undefined);
     handleClearingExistingContact();
     setIsSnackbarOpen(true);
