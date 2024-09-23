@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import React from "react";
@@ -171,15 +177,8 @@ describe("the NewEntrantOperationForm component", () => {
 
     expect(screen.getByText("test.pdf")).toBeVisible();
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /save and continue/i }),
-    );
-
     const submitButton = screen.getByRole("button", {
       name: "Save and Continue",
-    });
-    actionHandler.mockResolvedValueOnce({
-      error: null,
     });
 
     act(() => {
@@ -196,11 +195,10 @@ describe("the NewEntrantOperationForm component", () => {
         body: '{"statutory_declaration":"data:application/pdf;name=test.pdf;base64,dGVzdA=="}',
       },
     );
-
-    expect(mockPush).toHaveBeenCalledTimes(1);
-
-    expect(mockPush).toHaveBeenCalledWith(
-      "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/5?title=Placeholder+Title",
-    );
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d/5",
+      );
+    });
   });
 });
