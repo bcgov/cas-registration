@@ -4,6 +4,7 @@ from reporting.tests.utils.bakers import activity_baker
 from service.facility_report_service import FacilityReportService
 from reporting.schema.facility_report import FacilityReportIn
 from model_bakery import baker
+from registration.tests.utils.bakers import user_baker
 
 
 class TestFacilityReportService(TestCase):
@@ -65,8 +66,12 @@ class TestFacilityReportService(TestCase):
             activities=[],
             products=[],
         )
+        user = user_baker()
         returned_data = FacilityReportService.save_facility_report(
-            report_version_id=facility_report.report_version_id, facility_id=facility_report.facility_id, data=data
+            report_version_id=facility_report.report_version_id,
+            facility_id=facility_report.facility_id,
+            data=data,
+            user_guid=user.user_guid,
         )
         assert returned_data.facility_name == "CHANGED"
         assert returned_data.facility_type == facility_report.facility_type
