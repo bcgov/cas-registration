@@ -42,7 +42,7 @@ const OperationInformationForm = ({
       },
     );
 
-    if (response.error) {
+    if (response?.error) {
       setError(response.error);
       return { error: response.error };
     }
