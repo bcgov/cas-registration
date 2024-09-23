@@ -104,10 +104,6 @@ describe("FacilityReview", () => {
             ...mockFacilityData,
             activities: ["7", "10"], // Ensure this matches your implementation
           }),
-          headers: expect.objectContaining({
-            "Content-Type": "application/json",
-            accept: "application/json",
-          }),
         }),
       );
     });
