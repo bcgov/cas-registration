@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { UUID } from "crypto";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
@@ -11,6 +12,7 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
+import { FormMode } from "@bciers/utils/enums";
 
 const OperationInformationForm = ({
   formData,
@@ -24,6 +26,9 @@ const OperationInformationForm = ({
   const [error, setError] = useState(undefined);
 
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const isIndustryUser = session?.user?.app_role?.includes("industry");
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -45,6 +50,8 @@ const OperationInformationForm = ({
 
   return (
     <SingleStepTaskListForm
+      allowEdit={isIndustryUser}
+      mode={FormMode.READ_ONLY}
       error={error}
       schema={schema}
       uiSchema={administrationOperationInformationUiSchema}
