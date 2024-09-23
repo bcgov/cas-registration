@@ -2,9 +2,9 @@ import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { actionHandler, useSession, useRouter } from "@bciers/testConfig/mocks";
 
-import { operatorSchema } from "../../../../administration/app/data/jsonSchema/operator";
-import OperatorForm from "../../../../administration/app/components/operators/OperatorForm";
-import { createOperatorSchema } from "../../../../administration/app/components/operators/OperatorPage";
+import { operatorSchema } from "apps/administration/app/data/jsonSchema/operator";
+import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
+import { createOperatorSchema } from "apps/administration/app/components/operators/OperatorPage";
 
 import expectButton from "../helpers/expectButton";
 import expectField from "../helpers/expectField";
