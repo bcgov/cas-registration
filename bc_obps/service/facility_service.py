@@ -182,7 +182,7 @@ class FacilityService:
         cls.check_user_access(user_guid, operation)
 
         # Validate that SFO can only make one facility
-        num_facilities = FacilityDataAccessService.get_current_facilities_by_operation(payload.operation_id).count()
+        num_facilities = FacilityDataAccessService.get_current_facilities_by_operation(operation).count()
         if num_facilities > 0 and operation.type == OperationTypes.SFO.value:
             raise RuntimeError("SFO can only create one facility, this page should not be accessible")
 
