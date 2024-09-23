@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import FacilitiesPage from "apps/administration/app/components/facilities/FacilitiesPage";
+import { getOperation } from "../operations/mocks";
 
 const searchParams = { operations_title: "Operation 2" };
 // mocking the child component until this issue is fixed: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
@@ -40,6 +41,22 @@ describe("Facilities page", () => {
     );
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: "Add Facility" }),
+    ).not.toBeInTheDocument();
+  });
+  it("Not displaying `Add Facility` button for external users with an SFO operation", async () => {
+    getOperation.mockReturnValueOnce({
+      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+      type: "Single Facility Operation",
+    });
+    render(
+      await FacilitiesPage({
+        operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+        searchParams: {},
+        isExternalUser: true,
+      }),
+    );
     expect(
       screen.queryByRole("button", { name: "Add Facility" }),
     ).not.toBeInTheDocument();
