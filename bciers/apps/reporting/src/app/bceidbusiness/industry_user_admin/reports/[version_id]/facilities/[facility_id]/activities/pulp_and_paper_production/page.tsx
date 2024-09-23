@@ -13,7 +13,6 @@ export default async function Page() {
 
   return (
     <>
-      <h1>Pulp and paper production</h1>
       <Suspense fallback="Loading Schema">
         <PulpAndPaperProduction
           activityData={activityDataObject}
