@@ -9,8 +9,8 @@ import {
   IconButton,
   Paper,
 } from "@mui/material";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
 
 function SourceTypeBoxTemplate({
@@ -26,7 +26,7 @@ function SourceTypeBoxTemplate({
     <>
       <Paper className={classNames} sx={{ marginBottom: "10px" }}>
         <Card style={{ textAlign: "left" }}>
-          <Grid container spacing={1}>
+          <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
             <Grid item xs={10}>
               <CardHeader
                 sx={{ color: "blue" }}
@@ -35,9 +35,11 @@ function SourceTypeBoxTemplate({
               />
             </Grid>
             <Grid item xs={1}>
-              <CardActions>
+              <CardActions
+                sx={{ justifyContent: "flex-end", marginRight: "30px" }}
+              >
                 <IconButton onClick={() => setExpand(!expand)}>
-                  {expand ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+                  {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
               </CardActions>
             </Grid>
