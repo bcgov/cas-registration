@@ -3,6 +3,12 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
+declare module "json-schema" {
+  export interface JSONSchema7 {
+    enumNames?: Array<string>;
+  }
+}
+
 export const createAdministrationRegistrationInformationSchema = async (
   registrationPurposesValue: string[],
 ): Promise<RJSFSchema> => {
@@ -18,18 +24,6 @@ export const createAdministrationRegistrationInformationSchema = async (
       RegistrationPurposes.POTENTIAL_REPORTING_OPERATION,
     );
 
-  const regulatedProductsSchema = {
-    regulated_products: {
-      title: "Regulated Product Name(s)",
-      type: "array",
-      minItems: 1,
-      items: {
-        enum: regulatedProducts.map((product) => product.id),
-        enumNames: regulatedProducts.map((product) => product.name),
-      },
-    },
-  };
-
   // create the schema with the fetched values
   const registrationInformationSchema: RJSFSchema = {
     title: "Registration Information",
@@ -41,7 +35,17 @@ export const createAdministrationRegistrationInformationSchema = async (
         title: "The purpose of this registration is to register as a:",
         items: {},
       },
-      ...(isRegulatedProducts && regulatedProductsSchema),
+      ...(isRegulatedProducts && {
+        regulated_products: {
+          title: "Regulated Product Name(s)",
+          type: "array",
+          minItems: 1,
+          items: {
+            enum: regulatedProducts.map((product) => product.id),
+            enumNames: regulatedProducts.map((product) => product.name),
+          },
+        },
+      }),
     },
   };
   return registrationInformationSchema;
