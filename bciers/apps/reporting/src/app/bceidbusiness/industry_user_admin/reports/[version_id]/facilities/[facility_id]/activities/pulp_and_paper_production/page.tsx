@@ -1,4 +1,5 @@
 import { actionHandler } from "@bciers/actions";
+import safeJsonParse from "libs/utils/safeJsonParse";
 import PulpAndPaperProduction from "@reporting/src/app/components/activities/pulpAndPaperProduction";
 import { Suspense } from "react";
 
@@ -9,7 +10,7 @@ export default async function Page() {
     "GET",
     "",
   );
-  const activityDataObject = JSON.parse(activityData);
+  const activityDataObject = safeJsonParse(activityData);
 
   return (
     <>
