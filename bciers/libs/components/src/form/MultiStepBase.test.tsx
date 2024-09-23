@@ -31,11 +31,12 @@ const testUiSchema: UiSchema = {
   },
 };
 const mockOnSubmit = vi.fn();
+const mockPush = vi.fn();
 
 useRouter.mockReturnValue({
   query: {},
   replace: vi.fn(),
-  push: vi.fn(),
+  push: mockPush,
 });
 
 const defaultProps = {
@@ -110,7 +111,8 @@ describe("The MultiStepBase component", () => {
     expect(headerSteps[2]).toHaveTextContent(/page3/i);
   });
 
-  it("navigation buttons work on first form page", () => {
+  it("navigation buttons work on first form page", async () => {
+    mockOnSubmit.mockReturnValue({ id: "uuid" });
     render(
       <MultiStepBase
         {...defaultProps}
@@ -138,9 +140,13 @@ describe("The MultiStepBase component", () => {
     expect(saveAndContinueButton).not.toBeDisabled();
     fireEvent.click(saveAndContinueButton);
     expect(mockOnSubmit).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/register-an-operation/uuid/2");
+    });
   });
 
-  it("navigation and submit buttons work on second form page", () => {
+  it("navigation and submit buttons work on second form page", async () => {
+    mockOnSubmit.mockReturnValue({ id: 1 });
     render(
       <MultiStepBase
         {...defaultProps}
@@ -172,12 +178,16 @@ describe("The MultiStepBase component", () => {
     expect(saveAndContinueButton).not.toBeDisabled();
     fireEvent.click(saveAndContinueButton);
     expect(mockOnSubmit).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("baseurl.com/3");
+    });
   });
 
-  it("navigation and submit buttons work on last form page", () => {
+  it("navigation and submit buttons work on last form page", async () => {
     render(
       <MultiStepBase
         {...defaultProps}
+        successComponent={<div>Form submissions successful</div>}
         disabled={false}
         step={3}
         schema={{
@@ -209,6 +219,9 @@ describe("The MultiStepBase component", () => {
     ).not.toBeDisabled();
     fireEvent.click(submitButton);
     expect(mockOnSubmit).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(screen.getByText(/Form submissions successful/i)).toBeVisible();
+    });
   });
 
   it("submission is disabled if form is still submitting", async () => {
@@ -251,7 +264,7 @@ describe("The MultiStepBase component", () => {
     expect(saveAndContinueButton).not.toBeDisabled();
   });
 
-  it("shows an error if there was a problem with form submission", () => {
+  it("shows an error if there was a problem with form validation", () => {
     useParams.mockReturnValue({
       formSection: "1",
       operation: "create",
@@ -264,6 +277,100 @@ describe("The MultiStepBase component", () => {
     fireEvent.click(saveAndContinueButton);
     expect(screen.getByRole("alert")).toBeVisible();
     expect(mockOnSubmit).not.toHaveBeenCalled(); // submit function is not called because we hit validation errors first
+  });
+
+  it("shows an error if passed one", () => {
+    render(
+      <MultiStepBase
+        {...defaultProps}
+        disabled={false}
+        step={2}
+        schema={{
+          ...testSchema,
+          title: "page2",
+        }}
+        error={"Test error"}
+      />,
+    );
+    expect(screen.getByRole("alert")).toBeVisible();
+    expect(screen.getByText("Test error")).toBeVisible();
+  });
+
+  it("shows an error if response returns an error", async () => {
+    mockOnSubmit.mockReturnValueOnce({ error: "whoopsie" });
+    render(
+      <MultiStepBase
+        {...defaultProps}
+        disabled={false}
+        step={2}
+        schema={{
+          ...testSchema,
+          title: "page2",
+        }}
+      />,
+    );
+
+    const saveAndContinueButton = screen.getByRole("button", {
+      name: /Save and Continue/i,
+    });
+
+    fireEvent.click(saveAndContinueButton);
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalled();
+      expect(screen.getByRole("alert")).toBeVisible();
+      expect(screen.getByText("whoopsie")).toBeVisible();
+    });
+  });
+
+  it("shows an error if there was an error with the api call", async () => {
+    mockOnSubmit.mockRejectedValueOnce("I can be anything");
+    render(
+      <MultiStepBase
+        {...defaultProps}
+        disabled={false}
+        step={2}
+        schema={{
+          ...testSchema,
+          title: "page2",
+        }}
+      />,
+    );
+    const saveAndContinueButton = screen.getByRole("button", {
+      name: /Save and Continue/i,
+    });
+
+    fireEvent.click(saveAndContinueButton);
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalled();
+      expect(screen.getByRole("alert")).toBeVisible();
+      expect(
+        screen.getByText("An unexpected error occurred. Please try again."),
+      ).toBeVisible();
+    });
+  });
+  it("clears old errors on submission", async () => {
+    render(
+      <MultiStepBase
+        {...defaultProps}
+        disabled={false}
+        step={2}
+        schema={{
+          ...testSchema,
+          title: "page2",
+        }}
+        error={"old"}
+      />,
+    );
+    const saveAndContinueButton = screen.getByRole("button", {
+      name: /Save and Continue/i,
+    });
+    act(() => {
+      fireEvent.click(saveAndContinueButton);
+    });
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalled();
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
   });
 
   it("calls the onChange prop when the form changes", () => {
