@@ -3,12 +3,6 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
-declare module "json-schema" {
-  export interface JSONSchema7 {
-    enumNames?: Array<string>;
-  }
-}
-
 export const createAdministrationRegistrationInformationSchema = async (
   registrationPurposesValue: string[],
 ): Promise<RJSFSchema> => {
@@ -42,6 +36,8 @@ export const createAdministrationRegistrationInformationSchema = async (
           minItems: 1,
           items: {
             enum: regulatedProducts.map((product) => product.id),
+            // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
+            // @ts-ignore
             enumNames: regulatedProducts.map((product) => product.name),
           },
         },
