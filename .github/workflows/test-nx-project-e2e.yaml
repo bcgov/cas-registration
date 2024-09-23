@@ -149,6 +149,41 @@ jobs:
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
+  e2e-report:
+    name: 📊 e2e report artifact
+    runs-on: ubuntu-latest
+    if: ${{ always() && contains(needs.*.result, 'failure') && inputs.is_nx_affected}}
+    steps:
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          # To minimize the report file size only download Chromium reports
+          # If you want to debug other reports, add the * pattern back in temporarily
+          pattern: blob-report-chromium #blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 14
+  # Ensure the e2e tests and e2e report completed successfully
+  e2e:
+    if: ${{ always() && inputs.is_nx_affected }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+        if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+            || contains(needs.*.result, 'skipped')
+          }}
+
   # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:
     if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' }}
