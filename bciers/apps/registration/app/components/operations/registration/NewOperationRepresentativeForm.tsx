@@ -43,6 +43,9 @@ const NewOperationRepresentativeForm: React.FC<
   const [existingContactId, setExistingContactId] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const isSubmitButton = formState?.new_operation_representative?.length > 0;
+  const isExistingContactSelected =
+    Boolean(existingContactId) &&
+    formState?.new_operation_representative?.[0]?.existing_contact_id;
 
   const handleSelectingContact = async (newSelectedContactId: string) => {
     setExistingContactId(newSelectedContactId);
@@ -134,7 +137,7 @@ const NewOperationRepresentativeForm: React.FC<
         onChange={handleChange}
         onSubmit={submitHandler}
         formData={formState}
-        liveValidate={Boolean(existingContactId)}
+        liveValidate={isExistingContactSelected}
       >
         <div>
           <div className="min-h-[48px] box-border">
