@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "title": "Emissions",
+  "properties": {
+    "emissions": {
+      "type": "array",
+      "title": "Emissions",
+      "items": {
+        "title": "Emission",
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "type": "string",
+            "title": "Gas Type",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emission",
+            "type": "number"
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "number",
+            "readOnly": true
+          }
+        }
+      }
+    }
+  }
+}
