@@ -9,6 +9,9 @@ from registration.schema.validators import validate_cra_business_number
 from ninja import ModelSchema, FilterSchema, Field, Schema
 from pydantic import field_validator
 from registration.models import BusinessStructure
+from registration.constants import (
+    BC_CORPORATE_REGISTRY_REGEX,
+)
 
 
 class OperatorFilterSchema(FilterSchema):
@@ -89,6 +92,7 @@ class OperatorIn(ModelSchema):
     trade_name: Optional[str] = ''
     business_structure: str
     cra_business_number: int
+    bc_corporate_registry_number: str = Field(pattern=BC_CORPORATE_REGISTRY_REGEX)
     parent_operators_array: Optional[List[ParentOperatorIn]] = None
     partner_operators_array: Optional[List[PartnerOperatorIn]] = None
     mailing_address: Optional[int] = None
