@@ -71,7 +71,7 @@ jobs:
       nx_project: administration
       nx_app_port: 4001
       image_url: "ghcr.io/bcgov/cas-admin-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration')}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
     secrets: inherit
   test-coam-e2e:
     needs: [build-backend, build-dashboard-e2e, build-coam, check-nx-affected]
@@ -80,7 +80,7 @@ jobs:
       nx_project: coam
       nx_app_port: 7000
       image_url: "ghcr.io/bcgov/cas-coam-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam')}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
     secrets: inherit
   test-reporting-e2e:
     needs:
@@ -90,7 +90,7 @@ jobs:
       nx_project: reporting
       nx_app_port: 5000
       image_url: "ghcr.io/bcgov/cas-rep-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting')}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
     secrets: inherit
   test-registration1-e2e:
     needs: [build-backend, build-registration1, check-nx-affected]
@@ -109,7 +109,7 @@ jobs:
       nx_project: registration
       nx_app_port: 4000
       image_url: "ghcr.io/bcgov/cas-reg-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration')}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
     secrets: inherit
   e2e-finalize:
     needs:

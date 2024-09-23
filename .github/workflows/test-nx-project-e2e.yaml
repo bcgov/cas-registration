@@ -151,7 +151,7 @@ jobs:
 
   # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:
-    if: ${{ !inputs.is_nx_affected }}
+    if: ${{ !inputs.is_nx_affected && github.ref_name != 'develop' && github.ref_name != 'main' && github.head_ref != 'develop' && github.head_ref != 'main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
