@@ -1,8 +1,9 @@
 import FacilityReview from "./FacilityReview";
+import { UUID } from "crypto";
 
 type FacilityReviewFormDataProps = Readonly<{
   version_id: number;
-  facility_id: number;
+  facility_id: UUID;
 }>;
 
 export default function FacilityReviewFormData({
