@@ -30,6 +30,7 @@ interface MultiStepBaseProps {
   submitButtonDisabled?: boolean;
   customValidate?: any;
   successComponent?: React.ReactNode;
+  firstStepExtraHandling?: (response: any) => any;
 }
 
 // Modified MultiStepFormBase meant to facilitate more modularized Multi-step forms
@@ -56,6 +57,7 @@ const MultiStepBase = ({
   submitButtonDisabled,
   customValidate,
   successComponent,
+  firstStepExtraHandling,
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState(false);
@@ -77,16 +79,11 @@ const MultiStepBase = ({
         setError(response?.error);
         return;
       }
-      // First step
-      if (step === 1) {
-        // The URL below is customized for the registration workflow. It can be generalized later if needed.
-        const nextStepUrl = `/register-an-operation/${response.id}/${step + 1}${
-          baseUrlParams ? `?${baseUrlParams}` : ""
-        }`;
-        router.push(nextStepUrl);
+      // In some cases, for the first step, we need to do something beyond simply redirecting to the baseUrl after successful onSubmit.
+      if (step === 1 && firstStepExtraHandling) {
+        firstStepExtraHandling(response);
         return;
       }
-      // Middle steps
       if (isNotFinalStep && baseUrl) {
         const nextStepUrl = `${baseUrl}/${step + 1}${
           baseUrlParams ? `?${baseUrlParams}` : ""
