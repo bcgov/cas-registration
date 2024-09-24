@@ -32,7 +32,7 @@ export const signOffSchema: RJSFSchema = {
     },
     acknowledgement_of_information2: {
       title:
-        "I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties. I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
+        "I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
       type: "boolean",
       default: false,
     },
@@ -84,13 +84,13 @@ export const signOffUiSchema = {
     "ui:options": {
       alignment: "top",
     },
-    signature: {
-      "ui:widget": "TextWidget",
-      "ui:placeholder": "Enter your full name here",
-    },
+  },
+  signature: {
+    "ui:widget": "TextWidget",
+    "ui:placeholder": "Enter your full name here",
+  },
 
-    date: {
-      "ui:widget": "ReadOnlyWidget",
-    },
+  date: {
+    "ui:widget": "ReadOnlyWidget",
   },
 };

@@ -20,5 +20,5 @@ export const getTodaysDateWithTime = (): string => {
 
 export const getTodaysDateForReportSignOff = (): string => {
   const today = new Date();
-  return formatDate(today, "MMM DD,YYYY");
+  return formatDate(today, "MMM DD, YYYY");
 };

@@ -26,6 +26,9 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
           onChange={(event: { target: { checked: any } }) =>
             onChange(event.target.checked)
           }
+          sx={{
+            ...(alignment === "top" && { paddingTop: "2px" }),
+          }}
         />
       }
       label={label}

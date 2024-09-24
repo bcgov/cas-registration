@@ -20,11 +20,11 @@ const taskListElements: TaskListElement[] = [
     title: "Sign-off & Submit",
     isExpanded: true,
     elements: [
-      { type: "Page", title: "Verification", isActive: true },
+      { type: "Page", title: "Verification" },
       { type: "Page", title: "Confidentiality request" },
       { type: "Page", title: "Attachments" },
       { type: "Page", title: "Final review" },
-      { type: "Page", title: "Sign-off" },
+      { type: "Page", title: "Sign-off", isActive: true },
     ],
   },
 ];
