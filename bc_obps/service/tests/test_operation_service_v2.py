@@ -525,3 +525,64 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         assert operation.multiple_operators.count() == 0
         assert operation.updated_by == approved_user_operator.user
         assert operation.updated_at is not None
+
+
+class TestOperationServiceV2UpdateOperation:
+    def test_update_operation(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+        )
+        payload = OperationInformationIn(
+            registration_purpose='Reporting Operation',
+            regulated_products=[1],
+            name="string",
+            type="SFO",
+            naics_code_id=1,
+            secondary_naics_code_id=2,
+            tertiary_naics_code_id=3,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            equipment_list=MOCK_DATA_URL,
+        )
+        operation = OperationServiceV2.update_operation(
+            approved_user_operator.user.user_guid, payload, existing_operation.id
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        assert operation.activities.count() == 1
+        assert operation.documents.count() == 3
+        assert operation.created_by == approved_user_operator.user
+        assert operation.created_at is not None
+        assert operation.updated_at is not None
+        assert operation.regulated_products.count() == 1
+
+    def test_update_operation_with_no_regulated_products(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+        )
+        payload = OperationInformationIn(
+            registration_purpose='Reporting Operation',
+            name="string",
+            type="SFO",
+            naics_code_id=1,
+            secondary_naics_code_id=2,
+            tertiary_naics_code_id=3,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            equipment_list=MOCK_DATA_URL,
+        )
+        operation = OperationServiceV2.update_operation(
+            approved_user_operator.user.user_guid, payload, existing_operation.id
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        assert operation.activities.count() == 1
+        assert operation.documents.count() == 3
+        assert operation.created_by == approved_user_operator.user
+        assert operation.created_at is not None
+        assert operation.updated_at is not None
+        assert operation.regulated_products.count() == 0

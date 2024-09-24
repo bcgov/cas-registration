@@ -31,8 +31,8 @@ class OperationRepresentativeIn(Schema):
     new_operation_representatives: Optional[List[ContactIn]] = []
 
 
-class OperationInformationIn(Schema):
-    registration_purpose: Optional[str] = None
+class OperationInformationIn(ModelSchema):
+    registration_purpose: Optional[RegistrationPurpose.Purposes] = None
     regulated_products: Optional[list] = None
     activities: list[int]
     boundary_map: str
@@ -221,5 +221,4 @@ class OperationStatutoryDeclarationOut(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ['id', 'name']
         fields = ['id', 'name']
