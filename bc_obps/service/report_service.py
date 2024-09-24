@@ -1,13 +1,11 @@
 from uuid import UUID
 from django.db import transaction
-from typing import List, Optional
 from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.schema.facility_report import FacilityReportIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
@@ -105,54 +103,3 @@ class ReportService:
         report_operation.save()
 
         return report_operation
-
-    @classmethod
-    def get_facility_report_by_version_and_id(
-        cls, report_version_id: int, facility_id: int
-    ) -> Optional[FacilityReport]:
-        try:
-            result = FacilityReport.objects.get(report_version__id=report_version_id, id=facility_id)
-        except FacilityReport.DoesNotExist:
-            result = None
-        return result
-
-    @classmethod
-    def get_activity_ids_for_facility(cls, facility_report_id: int) -> List[int]:
-        # Fetch the facility and return the list of activity IDs
-        facility = FacilityReport.objects.get(id=facility_report_id)
-        return list(facility.activities.values_list('id', flat=True))
-
-    @classmethod
-    def save_facility_report(
-        cls, report_version_id: int, facility_report_id: int, data: FacilityReportIn
-    ) -> FacilityReport:
-        """
-        Save or update a facility report and its related activities.
-
-        Args:
-            report_version_id (int): The ID of the report version.
-            facility_report_id (int): The ID of the facility.
-            data (FacilityReportIn): The input data for the facility report.
-
-        Returns:
-            FacilityReport: The updated or created FacilityReport instance.
-        """
-        # Fetch or create a FacilityReport instance
-        facility_report, _ = FacilityReport.objects.update_or_create(
-            id=facility_report_id,
-            report_version__id=report_version_id,
-            defaults={
-                'facility_name': data.facility_name.strip(),
-                'facility_type': data.facility_type.strip(),
-                'facility_bcghgid': data.facility_bcghgid.strip(),
-            },
-        )
-
-        # Update ManyToMany fields (activities)
-        if data.activities:
-            facility_report.activities.set(Activity.objects.filter(id__in=data.activities))
-
-        # Save the updated FacilityReport instance
-        facility_report.save()
-
-        return facility_report
