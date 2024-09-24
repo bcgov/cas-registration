@@ -9,6 +9,7 @@ import TaskList from "@bciers/components/form/components/TaskList";
 import { createNestedFormData, createUnnestedFormData } from "./formDataUtils";
 import { FormMode } from "@bciers/utils/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import { FrontendMessages } from "@bciers/utils/enums";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -69,8 +70,7 @@ const SingleStepTaskListForm = ({
       setIsDisabled(false);
     } else {
       setIsDisabled(true);
-      // we only show the snackbar confirmation when editing
-      if (hasFormData) setIsSnackbarOpen(true);
+      setIsSnackbarOpen(true);
     }
   };
 
@@ -86,7 +86,7 @@ const SingleStepTaskListForm = ({
     <div className="w-full flex flex-row mt-8">
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}
-        message="Your edits were saved successfully"
+        message={FrontendMessages.SUBMIT_CONFIRMATION}
         setIsSnackbarOpen={setIsSnackbarOpen}
       />
       <TaskList

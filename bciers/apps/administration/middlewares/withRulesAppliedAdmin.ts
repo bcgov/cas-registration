@@ -93,7 +93,6 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
         );
       }
     } catch (error) {
-      console.error("❗ Error fetching user operator data:", error);
       // Proceed to next middleware in case of error
       return null;
     }
