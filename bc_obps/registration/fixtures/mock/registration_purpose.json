@@ -11,7 +11,7 @@
     "model": "registration.registrationpurpose",
     "pk": 2,
     "fields": {
-      "registration_purpose": "Reporting Operation",
+      "registration_purpose": "Potential Reporting Operation",
       "operation_id": "c0743c09-82fa-4186-91aa-4b5412e3415c"
     }
   },
@@ -59,7 +59,7 @@
     "model": "registration.registrationpurpose",
     "pk": 8,
     "fields": {
-      "registration_purpose": "Opted-in Operation",
+      "registration_purpose": "Electricity Import Operation",
       "operation_id": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
     }
   },
@@ -149,6 +149,22 @@
     "fields": {
       "registration_purpose": "Reporting Operation",
       "operation_id": "6d07d02a-1ad2-46ed-ad56-2f84313e98bf"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 15,
+    "fields": {
+      "registration_purpose": "Potential Reporting Operation",
+      "operation_id": "df62d793-8cfe-4272-a93e-ea9c9139ff82"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 16,
+    "fields": {
+      "registration_purpose": "Electricity Import Operation",
+      "operation_id": "c5b3643b-c143-42f3-8a2b-03ccc7319cd9"
     }
   }
 ]
