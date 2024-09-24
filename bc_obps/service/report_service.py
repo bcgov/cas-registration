@@ -1,13 +1,13 @@
 from uuid import UUID
 from django.db import transaction
 from typing import List, Optional
-
 from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
+from reporting.schema.facility_report import FacilityReportIn
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
