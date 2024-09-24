@@ -174,6 +174,42 @@ class TestCreateFacilityWithDesignatedOperation:
         assert Facility.objects.get(name="zip") is not None
 
     @staticmethod
+    def test_create_second_sfo_facility_error():
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        operator = operator_baker()
+        baker.make(
+            UserOperator,
+            user_id=user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+        )
+        owning_operation: Operation = operation_baker(operator.id, type='Single Facility Operation')
+
+        payload = FacilityIn(
+            name='doraemon',
+            type='Single Facility',
+            latitude_of_largest_emissions=5,
+            longitude_of_largest_emissions=5,
+            operation_id=owning_operation.id,
+        )
+        payload2 = FacilityIn(
+            name='shinchan',
+            type='Single Facility',
+            latitude_of_largest_emissions=5,
+            longitude_of_largest_emissions=5,
+            operation_id=owning_operation.id,
+        )
+
+        FacilityService.create_facility_with_designated_operation(user.user_guid, payload)
+        assert Facility.objects.count() == 1
+        assert Facility.objects.get(name="doraemon") is not None
+
+        # test if second facility raises proper exception
+        with pytest.raises(RuntimeError, match='SFO can only create one facility, this page should not be accessible'):
+            FacilityService.create_facility_with_designated_operation(user.user_guid, payload2)
+
+    @staticmethod
     def test_create_lfo_facility_with_designated_operation_with_address():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = operator_baker()
