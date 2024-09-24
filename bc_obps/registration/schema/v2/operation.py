@@ -31,7 +31,7 @@ class OperationRepresentativeIn(Schema):
     new_operation_representatives: Optional[List[ContactIn]] = []
 
 
-class OperationInformationIn(ModelSchema):
+class OperationInformationIn(Schema):
     registration_purpose: Optional[str] = None
     regulated_products: Optional[list] = None
     activities: list[int]
@@ -70,6 +70,9 @@ class OperationOutV2(ModelSchema):
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     operator: Optional[OperatorForOperationOut] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
+    equipment_list: Optional[str] = None
     registration_purposes: Optional[list] = []
 
     @staticmethod
