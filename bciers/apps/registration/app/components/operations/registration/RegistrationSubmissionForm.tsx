@@ -23,7 +23,6 @@ const RegistrationSubmissionForm = ({
   steps,
 }: OperationRegistrationFormProps) => {
   const [formState, setFormState] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const handleChange = (e: IChangeEvent) => {
@@ -32,7 +31,6 @@ const RegistrationSubmissionForm = ({
   };
 
   const handleSubmit = async (e: IChangeEvent) => {
-    setIsSubmitting(true);
     setSubmitButtonDisabled(true);
     const response = await actionHandler(
       `registration/v2/operations/${operation}/registration/submission`,
@@ -56,14 +54,7 @@ const RegistrationSubmissionForm = ({
         cancelUrl="/"
         formData={formState}
         onSubmit={handleSubmit}
-        schema={
-          isSubmitting
-            ? {
-                title: "Submitting...",
-                type: "object",
-              }
-            : schema
-        }
+        schema={schema}
         step={step}
         steps={steps}
         uiSchema={submissionUiSchema}

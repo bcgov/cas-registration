@@ -111,6 +111,8 @@ const MultiStepBase = ({
 
   return isSuccessfullySubmitted ? (
     successComponent
+  ) : isSubmitting ? (
+    <div>Submitting...</div>
   ) : (
     <>
       {allowEdit && (

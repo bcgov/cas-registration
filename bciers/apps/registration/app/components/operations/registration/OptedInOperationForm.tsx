@@ -26,7 +26,6 @@ const OptedInOperationForm = ({
   formData,
 }: OptedInOperationFormProps) => {
   const [formState, setFormState] = useState(formData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   //To run the check on initial load when the form already has data
@@ -42,7 +41,6 @@ const OptedInOperationForm = ({
   };
 
   const handleSubmit = async (e: IChangeEvent) => {
-    setIsSubmitting(true);
     setSubmitButtonDisabled(true);
     const response = await actionHandler(
       `registration/v2/operations/${operation}/registration/opted-in-operation-detail`,
@@ -66,14 +64,7 @@ const OptedInOperationForm = ({
       formData={formState}
       onChange={handleChange}
       onSubmit={handleSubmit}
-      schema={
-        isSubmitting // A workaround to not show the read-only schema when submitting
-          ? {
-              title: "Submitting...",
-              type: "object",
-            }
-          : schema
-      }
+      schema={schema}
       step={step}
       steps={steps}
       uiSchema={optedInOperationUiSchema}
