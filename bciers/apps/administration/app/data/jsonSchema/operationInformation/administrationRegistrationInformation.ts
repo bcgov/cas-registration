@@ -22,7 +22,7 @@ export const createAdministrationRegistrationInformationSchema = async (
   const registrationInformationSchema: RJSFSchema = {
     title: "Registration Information",
     type: "object",
-    required: ["regulated_products"],
+    required: isRegulatedProducts ? ["regulated_products"] : [],
     properties: {
       registration_purposes: {
         type: "array",
