@@ -59,4 +59,4 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 def update_operation_v2(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.create_or_update_operation_v2(get_current_user_guid(request), payload, operation_id)
+    return 200, OperationServiceV2.update_operation(get_current_user_guid(request), payload, operation_id)
