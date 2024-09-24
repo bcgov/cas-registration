@@ -117,19 +117,21 @@ class ReportService:
         return result
 
     @classmethod
-    def get_activity_ids_for_facility(cls, facility_id: int) -> List[int]:
+    def get_activity_ids_for_facility(cls, facility_report_id: int) -> List[int]:
         # Fetch the facility and return the list of activity IDs
-        facility = FacilityReport.objects.get(id=facility_id)
+        facility = FacilityReport.objects.get(id=facility_report_id)
         return list(facility.activities.values_list('id', flat=True))
 
     @classmethod
-    def save_facility_report(cls, report_version_id: int, facility_id: int, data: FacilityReportIn) -> FacilityReport:
+    def save_facility_report(
+        cls, report_version_id: int, facility_report_id: int, data: FacilityReportIn
+    ) -> FacilityReport:
         """
         Save or update a facility report and its related activities.
 
         Args:
             report_version_id (int): The ID of the report version.
-            facility_id (int): The ID of the facility.
+            facility_report_id (int): The ID of the facility.
             data (FacilityReportIn): The input data for the facility report.
 
         Returns:
@@ -137,7 +139,7 @@ class ReportService:
         """
         # Fetch or create a FacilityReport instance
         facility_report, _ = FacilityReport.objects.update_or_create(
-            id=facility_id,
+            id=facility_report_id,
             report_version__id=report_version_id,
             defaults={
                 'facility_name': data.facility_name.strip(),
