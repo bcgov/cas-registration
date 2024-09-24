@@ -12,6 +12,7 @@ import {
   createUnnestedFormData,
 } from "@bciers/components/form/formDataUtils";
 import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
+import { useRouter } from "next/navigation";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -26,6 +27,7 @@ const OperationInformationForm = ({
   step,
   steps,
 }: OperationInformationFormProps) => {
+  const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState("");
   const [error, setError] = useState(undefined);
   const nestedFormData = rawFormData
@@ -95,6 +97,13 @@ const OperationInformationForm = ({
       cancelUrl="/"
       formData={formState}
       onSubmit={handleSubmit}
+      firstStepExtraHandling={(response) => {
+        // Since our form's route includes the operation's id, which doesn't exist until after the first step, we need to pass in a custom function that uses the response to generate a redirect url
+        const nextStepUrl = `/register-an-operation/${response.id}/${
+          step + 1
+        }$`;
+        router.push(nextStepUrl);
+      }}
       schema={schema}
       step={step}
       steps={steps}
