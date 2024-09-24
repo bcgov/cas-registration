@@ -17,6 +17,7 @@ const customFormats = {
   bc_corporate_registry_number: "^[A-Za-z]{1,3}\\d{7}$",
   date_format: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]).*/,
   starting_date_year: yearRegEx,
+  signature: /^[A-Za-z\s]+$/,
 };
 export const customFormatsErrorMessages = {
   bc_corporate_registry_number:
@@ -31,6 +32,7 @@ export const customFormatsErrorMessages = {
   starting_date_year: `Starting Date must be between ${
     currentYear - 1
   } and ${currentYear}`,
+  signature: "Signature should not include special characters or numbers",
 };
 
 const transformErrors = (errors: RJSFValidationError[]) => {
