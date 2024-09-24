@@ -20,7 +20,7 @@ from registration.schema.generic import Message
 
 
 @router.put(
-    "/v2/operations/{operation_id}/registration/operation",
+    "/v2/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Updates the registration purpose and regulated products (if applicable) of a specific operation by its ID.
