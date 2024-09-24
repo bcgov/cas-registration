@@ -111,7 +111,7 @@ describe("The MultiStepBase component", () => {
     expect(headerSteps[2]).toHaveTextContent(/page3/i);
   });
 
-  it("navigation buttons work on first form page", async () => {
+  it("navigation buttons work on first form page when given first page handler", async () => {
     mockOnSubmit.mockReturnValue({ id: "uuid" });
     render(
       <MultiStepBase
@@ -120,6 +120,9 @@ describe("The MultiStepBase component", () => {
         schema={{
           ...testSchema,
           title: "page1",
+        }}
+        firstStepExtraHandling={(response) => {
+          console.log(response);
         }}
       />,
     );
@@ -140,8 +143,11 @@ describe("The MultiStepBase component", () => {
     expect(saveAndContinueButton).not.toBeDisabled();
     fireEvent.click(saveAndContinueButton);
     expect(mockOnSubmit).toHaveBeenCalled();
+    vi.spyOn(console, "log");
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/register-an-operation/uuid/2");
+      expect(console.log).toHaveBeenCalledWith({
+        id: "uuid",
+      });
     });
   });
 

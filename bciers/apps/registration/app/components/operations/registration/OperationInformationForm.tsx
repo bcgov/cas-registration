@@ -99,9 +99,7 @@ const OperationInformationForm = ({
       onSubmit={handleSubmit}
       firstStepExtraHandling={(response) => {
         // Since our form's route includes the operation's id, which doesn't exist until after the first step, we need to pass in a custom function that uses the response to generate a redirect url
-        const nextStepUrl = `/register-an-operation/${response.id}/${
-          step + 1
-        }$`;
+        const nextStepUrl = `/register-an-operation/${response.id}/${step + 1}`;
         router.push(nextStepUrl);
       }}
       schema={schema}
