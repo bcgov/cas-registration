@@ -534,14 +534,14 @@ class TestOperationServiceV2UpdateOperation:
             'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
         )
         payload = OperationInformationIn(
-            registration_purpose='Reporting Operation',
+            registration_purpose='Potential Reporting Operation',
             regulated_products=[1],
-            name="string",
+            name="Test Update Operation Name",
             type="SFO",
             naics_code_id=1,
-            secondary_naics_code_id=2,
-            tertiary_naics_code_id=3,
-            activities=[1],
+            secondary_naics_code_id=1,
+            tertiary_naics_code_id=2,
+            activities=[2],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
             equipment_list=MOCK_DATA_URL,
@@ -564,13 +564,13 @@ class TestOperationServiceV2UpdateOperation:
             'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
         )
         payload = OperationInformationIn(
-            registration_purpose='Reporting Operation',
-            name="string",
+            registration_purpose='OBPS Regulated Operation',
+            name="Test Update Operation Name",
             type="SFO",
-            naics_code_id=1,
-            secondary_naics_code_id=2,
-            tertiary_naics_code_id=3,
-            activities=[1],
+            naics_code_id=2,
+            secondary_naics_code_id=3,
+            tertiary_naics_code_id=4,
+            activities=[3],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
             equipment_list=MOCK_DATA_URL,
