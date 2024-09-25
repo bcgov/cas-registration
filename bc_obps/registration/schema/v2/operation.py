@@ -2,9 +2,10 @@ from uuid import UUID
 from typing import List, Optional
 from registration.schema.v1.operator import OperatorForOperationOut
 from registration.schema.v1.contact import ContactIn
+from registration.schema.v1.multiple_operator import MultipleOperatorOut
 from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
-from registration.models import Operation
+from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.registration_purpose import RegistrationPurpose
 from pydantic import field_validator
@@ -69,15 +70,24 @@ class OperationOutV2(ModelSchema):
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     operator: Optional[OperatorForOperationOut] = None
-    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
     boundary_map: Optional[str] = None
     process_flow_diagram: Optional[str] = None
     equipment_list: Optional[str] = None
     registration_purposes: Optional[list] = []
+    multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
+    operation_has_multiple_operators: Optional[bool] = False
 
     @staticmethod
     def resolve_registration_purposes(obj: Operation) -> List[str]:
         return list(obj.registration_purposes.all().values_list('registration_purpose', flat=True))
+
+    @staticmethod
+    def resolve_multiple_operators_array(obj: Operation) -> List[MultipleOperator]:
+        return list(obj.multiple_operators.all())
+
+    @staticmethod
+    def resolve_operation_has_multiple_operators(obj: Operation) -> bool:
+        return obj.multiple_operators.exists()
 
     @staticmethod
     def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
