@@ -127,11 +127,20 @@ export const operationInformationUISchema: UiSchema = {
   },
   process_flow_diagram: {
     "ui:widget": "FileWidget",
+    "ui:options": {
+      filePreview: true,
+    },
   },
   boundary_map: {
     "ui:widget": "FileWidget",
+    "ui:options": {
+      filePreview: true,
+    },
   },
   equipment_list: {
     "ui:widget": "FileWidget",
+    "ui:options": {
+      filePreview: true,
+    },
   },
 };
