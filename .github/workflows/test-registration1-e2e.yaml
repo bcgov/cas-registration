@@ -21,10 +21,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - project: chromium
-            os: ubuntu-latest
-            cache_dir: ~/.cache/ms-playwright
+        shardIndex: [1, 2, 3, 4]
+        shardTotal:
+          [4]
           # Commented out because of flakey issues with Firefox in CI
           # - project: firefox
           #   os: ubuntu-latest
@@ -60,7 +59,7 @@ jobs:
 
       - name: 🎭 Run Playwright Tests
         run: |
-          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} bciers/apps/registration1/e2e/*
+          npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} bciers/apps/registration1/e2e/*
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
@@ -99,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Store all of the reports separately by reconfiguring the report name
-          name: blob-report-${{ matrix.project }}
+          name: blob-report-${{ matrix.shardIndex }}
           path: bciers/blob-report
           retention-days: 1
 
