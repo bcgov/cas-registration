@@ -302,6 +302,8 @@ class OperationServiceV2:
         )
 
         if payload.regulated_products:
+            # We should add a conditional to check registration_purpose type here
+            # At the time of implementation there are some changes to registration_purpose coming from the business area
             operation.regulated_products.set(payload.regulated_products)
             operation.set_create_or_update(user_guid)
         return operation
