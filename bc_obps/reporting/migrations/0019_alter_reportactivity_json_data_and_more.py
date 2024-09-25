@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0042_prod_data'),
-        ('reporting', '0017_hydrogen_production'),
+        ('reporting', '0018_pulp_and_paper_production'),
     ]
 
     operations = [

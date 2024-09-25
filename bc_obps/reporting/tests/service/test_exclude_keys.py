@@ -1,3 +1,4 @@
+import pytest
 from django.test import SimpleTestCase
 
 
