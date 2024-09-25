@@ -1,7 +1,7 @@
 # This file is used for tests that use Nx app containers.
 # For tests that don't require containers to be built first, see test-code.yaml
 
-name: Test BCIERS Nx App containers
+name: Test BCIERS Nx App container Reg 1
 
 on:
   workflow_call:
