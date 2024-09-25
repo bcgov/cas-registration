@@ -22,8 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         shardIndex: [1, 2, 3, 4]
-        shardTotal:
-          [4]
+        shardTotal: [4]
+        cache_dir: ~/.cache/ms-playwright
           # Commented out because of flakey issues with Firefox in CI
           # - project: firefox
           #   os: ubuntu-latest
