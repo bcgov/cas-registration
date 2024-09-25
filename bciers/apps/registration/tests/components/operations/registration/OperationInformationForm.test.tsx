@@ -336,7 +336,7 @@ describe("the OperationInformationForm component", () => {
                   mo_legal_name: "edit",
                   mo_trade_name: "edit",
                   mo_business_structure: "BC Corporation",
-                  mo_cra_business_number: "999999999",
+                  mo_cra_business_number: 999999999,
                   mo_attorney_street_address: "edit",
                   mo_municipality: "edit",
                   mo_province: "AB",

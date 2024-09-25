@@ -1,7 +1,5 @@
 from typing import Optional
 from ninja import Field, ModelSchema
-from common.constants import AUDIT_FIELDS
-from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models import MultipleOperator
 
 
@@ -10,41 +8,25 @@ class MultipleOperatorOut(ModelSchema):
     Schema for the MultipleOperator model
     """
 
+    mo_is_extraprovincial_company: bool
     mo_legal_name: str = Field(..., alias="legal_name")
     mo_trade_name: str = Field(..., alias="trade_name")
     mo_cra_business_number: int = Field(..., alias="cra_business_number")
-    mo_bc_corporate_registry_number: str = Field(
-        ..., alias="bc_corporate_registry_number", regex=BC_CORPORATE_REGISTRY_REGEX
-    )  # type: ignore[call-arg]
+    mo_bc_corporate_registry_number: Optional[str] = Field(None, alias="bc_corporate_registry_number")
     mo_business_structure: str = Field(..., alias="business_structure")
-    mo_website: Optional[str] = Field("", alias="website")
-    mo_percentage_ownership: Optional[float] = Field(None, alias="percentage_ownership")
-    mo_physical_street_address: str = Field(..., alias="physical_address.street_address")
-    mo_physical_municipality: str = Field(..., alias="physical_address.municipality")
-    mo_physical_province: str = Field(..., alias="physical_address.province")
-    mo_physical_postal_code: str = Field(..., alias="physical_address.postal_code")
-    mo_mailing_address_same_as_physical: Optional[bool] = Field(False, alias="mailing_address_same_as_physical")
-    mo_mailing_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
-    mo_mailing_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
-    mo_mailing_province: Optional[str] = Field(None, alias="mailing_address.province")
-    mo_mailing_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
+    mo_attorney_street_address: Optional[str] = Field(None, alias="attorney_address.street_address")
+    mo_municipality: Optional[str] = Field(None, alias="attorney_address.municipality")
+    mo_province: Optional[str] = Field(None, alias="attorney_address.province")
+    mo_postal_code: Optional[str] = Field(None, alias="attorney_address.postal_code")
 
     @staticmethod
     def resolve_business_structure(mo: MultipleOperator) -> str:
         return mo.business_structure.name  # type: ignore # we know that business_structure is not None
 
+    @staticmethod
+    def resolve_mo_is_extraprovincial_company(mo: MultipleOperator) -> bool:
+        return mo.bc_corporate_registry_number is None
+
     class Meta:
         model = MultipleOperator
-        exclude = [
-            *AUDIT_FIELDS,
-            # exclude the following fields since they are handled by the aliases above
-            "legal_name",
-            "trade_name",
-            "cra_business_number",
-            "bc_corporate_registry_number",
-            "business_structure",
-            "physical_address",
-            "mailing_address",
-            "percentage_ownership",
-            "website",
-        ]
+        fields = ["id"]

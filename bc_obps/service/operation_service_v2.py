@@ -284,3 +284,26 @@ class OperationServiceV2:
         for old_multiple in old_multiple_operators:
             if old_multiple not in new_multiple_operators:
                 old_multiple.set_archive(user_guid)
+
+    @classmethod
+    @transaction.atomic()
+    def update_operation(
+        cls,
+        user_guid: UUID,
+        payload: OperationInformationIn,
+        operation_id: UUID,
+    ) -> Operation:
+        OperationService.get_if_authorized(user_guid, operation_id)
+
+        operation: Operation = cls.create_or_update_operation_v2(
+            user_guid,
+            payload,
+            operation_id,
+        )
+
+        if payload.regulated_products:
+            # We should add a conditional to check registration_purpose type here
+            # At the time of implementation there are some changes to registration_purpose coming from the business area
+            operation.regulated_products.set(payload.regulated_products)
+            operation.set_create_or_update(user_guid)
+        return operation

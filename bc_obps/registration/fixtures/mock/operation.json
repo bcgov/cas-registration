@@ -243,6 +243,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "df62d793-8cfe-4272-a93e-ea9c9139ff82",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -260,6 +261,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "c5b3643b-c143-42f3-8a2b-03ccc7319cd9",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -278,6 +280,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "954c0382-ff61-4e87-a8a0-873586534b54",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -296,6 +299,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -314,6 +318,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "59d95661-c752-489b-9fd1-0c3fa3454dda",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -332,6 +337,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "1bd04128-d070-4d3a-940a-0874c4956181",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -350,6 +356,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "17f13f4d-29b4-45f4-b025-b21f2e126771",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -367,6 +374,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "ef9044dd-2a27-4d26-86fe-02e51e0755f7",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -383,6 +391,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -399,6 +408,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -431,6 +441,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "0ac72fa9-2636-4f54-b378-af6b1a070787",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],

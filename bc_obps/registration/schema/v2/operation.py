@@ -1,11 +1,11 @@
 from uuid import UUID
 from typing import List, Optional
-from registration.schema.validators import validate_document
 from registration.schema.v1.operator import OperatorForOperationOut
 from registration.schema.v1.contact import ContactIn
+from registration.schema.v1.multiple_operator import MultipleOperatorOut
 from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
-from registration.models import Operation
+from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.registration_purpose import RegistrationPurpose
 from pydantic import field_validator
@@ -32,7 +32,9 @@ class OperationRepresentativeIn(Schema):
     new_operation_representatives: Optional[List[ContactIn]] = []
 
 
-class OperationInformationIn(RegistrationPurposeIn, ModelSchema):
+class OperationInformationIn(ModelSchema):
+    registration_purpose: Optional[RegistrationPurpose.Purposes] = None
+    regulated_products: Optional[list] = None
     activities: list[int]
     boundary_map: str
     process_flow_diagram: str
@@ -71,12 +73,21 @@ class OperationOutV2(ModelSchema):
     boundary_map: Optional[str] = None
     process_flow_diagram: Optional[str] = None
     equipment_list: Optional[str] = None
-    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
     registration_purposes: Optional[list] = []
+    multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
+    operation_has_multiple_operators: Optional[bool] = False
 
     @staticmethod
     def resolve_registration_purposes(obj: Operation) -> List[str]:
         return list(obj.registration_purposes.all().values_list('registration_purpose', flat=True))
+
+    @staticmethod
+    def resolve_multiple_operators_array(obj: Operation) -> List[MultipleOperator]:
+        return list(obj.multiple_operators.all())
+
+    @staticmethod
+    def resolve_operation_has_multiple_operators(obj: Operation) -> bool:
+        return obj.multiple_operators.exists()
 
     @staticmethod
     def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
@@ -90,25 +101,33 @@ class OperationOutV2(ModelSchema):
                 return obj.operator
         return None
 
-    @field_validator("boundary_map")
-    @classmethod
-    def validate_boundary_map(cls, value: str) -> Optional[ContentFile]:
-        return validate_document(value)
-
-    @field_validator("process_flow_diagram")
-    @classmethod
-    def validate_process_flow_diagram(cls, value: str) -> Optional[ContentFile]:
-        return validate_document(value)
-
-    @field_validator("equipment_list")
-    @classmethod
-    def validate_equipment_list(cls, value: str) -> Optional[ContentFile]:
-        return validate_document(value)
-
     class Meta:
         model = Operation
         fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status', 'activities']
         from_attributes = True
+
+
+class OperationOutWithDocuments(OperationOutV2):
+    @staticmethod
+    def resolve_boundary_map(obj: Operation) -> Optional[str]:
+        boundary_map = obj.get_boundary_map()
+        if boundary_map:
+            return file_to_data_url(boundary_map)
+        return None
+
+    @staticmethod
+    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
+        process_flow_diagram = obj.get_process_flow_diagram()
+        if process_flow_diagram:
+            return file_to_data_url(process_flow_diagram)
+        return None
+
+    @staticmethod
+    def resolve_equipment_list(obj: Operation) -> Optional[str]:
+        equipment_list = obj.get_equipment_list()
+        if equipment_list:
+            return file_to_data_url(equipment_list)
+        return None
 
 
 class OperationCreateOut(ModelSchema):
