@@ -1,9 +1,9 @@
 from uuid import UUID
 from django.http import HttpRequest
+from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
-from reporting.models.report_activity import ReportActivity
 from reporting.schema.report_activity_data import ReportActivityDataIn
-from reporting.service.report_activity_save_service import ReportActivitySaveLoadService
+from reporting.service.report_activity_save_service import ReportActivitySaveService
 from .router import router
 
 
@@ -15,13 +15,10 @@ def save_activity_data(
     facility_id: UUID,
     activity_id: int,
     payload: ReportActivityDataIn,
-):
+) -> int:
+    user_guid = get_current_user_guid(request)
 
-    print(report_version_id, facility_id, activity_id)
-    print(payload)
-
-    service = ReportActivitySaveLoadService(report_version_id, facility_id, activity_id, request.current_user.user_guid)
-
-    r: ReportActivity = service.save(payload.activity_data)
+    service = ReportActivitySaveService(report_version_id, facility_id, activity_id, user_guid)
+    service.save(payload.activity_data)
 
     return 200
