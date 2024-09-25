@@ -100,16 +100,18 @@ export default {
 
           token.identity_provider = account.providerAccountId.split("@")[1];
         }
-        // 🚀 API call: Get user name from user table
-        const response = await actionHandler(
-          `registration/user/user-profile/${token.user_guid}`,
-          "GET",
-        );
-        const { first_name: firstName, last_name: lastName } = response || {};
-        if (firstName && lastName) {
-          token.full_name = `${firstName} ${lastName}`;
-        } else {
-          token.full_name = `${token.given_name} ${token.family_name}`;
+        if (!token.full_name) {
+          // 🚀 API call: Get user name from user table
+          const response = await actionHandler(
+            `registration/user/user-profile/${token.user_guid}`,
+            "GET",
+          );
+          const { first_name: firstName, last_name: lastName } = response || {};
+          if (firstName && lastName) {
+            token.full_name = `${firstName} ${lastName}`;
+          } else {
+            token.full_name = `${token.given_name} ${token.family_name}`;
+          }
         }
         // If no token.app_role, augment the keycloak token with cas registration user app_role
         if (!token.app_role) {
