@@ -15,6 +15,10 @@ export enum FrontEndRoles {
   INDUSTRY_USER_ADMIN = "industry_user_admin",
 }
 
+export enum FrontendMessages {
+  SUBMIT_CONFIRMATION = "All changes have been successfully saved",
+}
+
 export enum OperationStatus {
   NOT_STARTED = "Not Started",
   DRAFT = "Draft",
