@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { UUID } from "crypto";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
 import { administrationOperationInformationUiSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
@@ -10,24 +12,29 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
+import { FormMode } from "@bciers/utils/enums";
 
 const OperationInformationForm = ({
   formData,
+  operationId,
   schema,
 }: {
   formData: OperationInformationPartialFormData;
+  operationId: UUID;
   schema: RJSFSchema;
 }) => {
   const [error, setError] = useState(undefined);
 
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const isIndustryUser = session?.user?.app_role?.includes("industry");
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
-    // This is not currently working, just a placeholder for Edit Operation Information PR
     const response = await actionHandler(
-      "registration/v2/operations",
+      `registration/v2/operations/${operationId}`,
       "PUT",
       "",
       {
@@ -35,7 +42,7 @@ const OperationInformationForm = ({
       },
     );
 
-    if (response.error) {
+    if (response?.error) {
       setError(response.error);
       return { error: response.error };
     }
@@ -43,7 +50,8 @@ const OperationInformationForm = ({
 
   return (
     <SingleStepTaskListForm
-      disabled
+      allowEdit={isIndustryUser}
+      mode={FormMode.READ_ONLY}
       error={error}
       schema={schema}
       uiSchema={administrationOperationInformationUiSchema}
