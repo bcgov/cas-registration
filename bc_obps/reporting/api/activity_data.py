@@ -4,6 +4,7 @@ from .router import router
 from registration.decorators import handle_http_errors
 from django.http import HttpRequest
 from typing import Tuple
+from uuid import UUID
 
 from reporting.schema.generic import Message
 from ninja.responses import codes_4xx, codes_5xx
@@ -13,18 +14,16 @@ from ninja.responses import codes_4xx, codes_5xx
 
 
 @router.get(
-    "/initial-activity-data",
+    "/report-version/{version_id}/facility-report/{facility_id}/initial-activity-data",
     response={200: str, codes_4xx: Message, codes_5xx: Message},
     url_name="get_initial_activity_data",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_initial_activity_data(
-    request: HttpRequest,
-    activity_name: str,
-    report_date: str,
+    request: HttpRequest, version_id: int, facility_id: UUID, activity_id: int
 ) -> Tuple[int, str]:
-    return 200, ActivityService.get_initial_activity_data(activity_name, report_date)
+    return 200, ActivityService.get_initial_activity_data(version_id, facility_id, activity_id)
 
 
 @router.get(
