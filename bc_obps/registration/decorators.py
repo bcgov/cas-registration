@@ -17,7 +17,7 @@ def handle_http_errors() -> Callable[[Callable[..., Any]], Callable[..., Any]]:
             try:
                 return func(*args, **kwargs)
             except Exception as e:
-                settings.DEBUG and traceback.format_exc()
+                traceback.format_exception()
                 return handle_exception(e)
 
         return wrapper

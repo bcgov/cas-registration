@@ -1,3 +1,4 @@
+from registration.models.activity import Activity
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -18,3 +19,5 @@ report = Recipe(
 report_version = Recipe(ReportVersion, report=foreign_key(report))
 
 facility_report = Recipe(FacilityReport, report_version=foreign_key(report_version), facility=foreign_key(facility))
+
+activity = Recipe(Activity)
