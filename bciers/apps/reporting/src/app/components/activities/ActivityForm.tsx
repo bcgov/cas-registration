@@ -13,6 +13,7 @@ import { FieldProps } from "@rjsf/utils";
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
 };
+import { uiSchemaMap } from "./uiSchemas/schemaMaps";
 
 const tasklistData: TaskListElement[] = [
   {
@@ -67,7 +68,6 @@ interface Props {
     sourceTypeMap: { [key: number]: string };
   };
   reportDate: string;
-  uiSchema: any;
   defaultEmptySourceTypeState: any;
 }
 
@@ -75,7 +75,6 @@ interface Props {
 export default function ActivityForm({
   activityData,
   reportDate,
-  uiSchema,
   defaultEmptySourceTypeState,
 }: Readonly<Props>) {
   // 🐜 To display errors
@@ -88,6 +87,10 @@ export default function ActivityForm({
   const [jsonSchema, setJsonSchema] = useState({});
 
   const { activityId, sourceTypeMap } = activityData;
+
+  // Get UiSchema from map object
+  const uiSchemaName = uiSchemaMap[activityId];
+  let uiSchema = require(`./uiSchemas/${uiSchemaName}`).default;
 
   // Set useEffect dependency set from checked sourceTypes
   const dependencyArray = Object.values(sourceTypeMap).map(
