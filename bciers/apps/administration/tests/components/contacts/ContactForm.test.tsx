@@ -7,6 +7,7 @@ import {
 } from "../../../app/data/jsonSchema/contact";
 import ContactForm from "apps/administration/app/components/contacts/ContactForm";
 import { createContactSchema } from "apps/administration/app/components/contacts/createContactSchema";
+import { FrontendMessages } from "@bciers/utils/enums";
 
 const mockReplace = vi.fn();
 useRouter.mockReturnValue({
@@ -257,6 +258,12 @@ describe("ContactForm component", () => {
         expect(mockReplace).toHaveBeenCalledWith(
           "/contacts/123?contacts_title=John Doe",
         );
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
+        ).toBeVisible();
       });
     },
   );

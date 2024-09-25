@@ -9,6 +9,7 @@ import { createOperatorSchema } from "apps/administration/app/components/operato
 import expectButton from "../helpers/expectButton";
 import expectField from "../helpers/expectField";
 import expectHeader from "../helpers/expectHeader";
+import { FrontendMessages } from "@bciers/utils/enums";
 
 useSession.mockReturnValue({
   get: vi.fn(),
@@ -354,6 +355,12 @@ describe("OperatorForm component", () => {
         body: JSON.stringify(postMandatory),
       },
     );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
+      ).toBeVisible();
+    });
   }, 60000);
   it("fills the partner and parent form fields, creates new operator, and redirects on success", async () => {
     render(
@@ -654,6 +661,12 @@ describe("OperatorForm component", () => {
           }),
         },
       );
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
+      ).toBeVisible();
     });
   }, 60000);
 });

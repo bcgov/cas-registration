@@ -16,12 +16,13 @@ import FacilityForm from "apps/administration/app/components/facilities/Facility
 import {
   facilitiesSfoSchema,
   facilitiesSfoUiSchema,
-} from "../../../app/data/jsonSchema/facilitiesSfo";
+} from "apps/administration/app/data/jsonSchema/facilitiesSfo";
 import { RJSFSchema } from "@rjsf/utils";
 import {
   facilitiesLfoSchema,
   facilitiesLfoUiSchema,
-} from "../../../app/data/jsonSchema/facilitiesLfo";
+} from "apps/administration/app/data/jsonSchema/facilitiesLfo";
+import { FrontendMessages } from "@bciers/utils/enums";
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
@@ -335,6 +336,12 @@ const assertFormPost = async (
       body: JSON.stringify(responseData),
     },
   );
+
+  await waitFor(() => {
+    expect(
+      screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
+    ).toBeVisible();
+  });
 };
 
 // ⛏️ Helper function to simulate form PUT submission and assert the result
@@ -347,7 +354,7 @@ const assertFormPut = async (): Promise<void> => {
   actionHandler.mockReturnValue({ error: null });
   await waitFor(() => {
     expect(
-      screen.getByText("Your edits were saved successfully"),
+      screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
     ).toBeVisible();
   });
 };
