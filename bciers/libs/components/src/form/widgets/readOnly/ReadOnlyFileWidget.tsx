@@ -1,6 +1,7 @@
 "use client";
 
 import { WidgetProps } from "@rjsf/utils/lib/types";
+import { useEffect, useState } from "react";
 import {
   extractFileInfo,
   FilesInfo,
@@ -12,15 +13,22 @@ const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
   registry,
   value,
 }) => {
+  const [fileInfo, setFileInfo] = useState<any[]>([]);
+  const fileValue = Array.isArray(value) ? value : [value];
+
+  useEffect(() => {
+    // Fix for window not being defined on page load
+    if (fileValue.length) {
+      setFileInfo(fileValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div id={id} className="read-only-widget">
       {value ? (
         <FilesInfo
-          filesInfo={
-            Array.isArray(value)
-              ? extractFileInfo(value)
-              : extractFileInfo([value])
-          }
+          filesInfo={extractFileInfo(fileInfo)}
           preview={options.filePreview}
           registry={registry}
         />
