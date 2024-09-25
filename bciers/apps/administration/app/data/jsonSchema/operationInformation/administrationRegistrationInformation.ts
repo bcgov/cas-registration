@@ -11,10 +11,10 @@ export const createAdministrationRegistrationInformationSchema = async (
     await getRegulatedProducts();
 
   const isRegulatedProducts =
-    !registrationPurposesValue.includes(
+    !registrationPurposesValue?.includes(
       RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
     ) &&
-    !registrationPurposesValue.includes(
+    !registrationPurposesValue?.includes(
       RegistrationPurposes.POTENTIAL_REPORTING_OPERATION,
     );
 
