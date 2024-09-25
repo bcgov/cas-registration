@@ -1,6 +1,8 @@
 import { actionHandler } from "@bciers/actions";
 import { Suspense } from "react";
-// import safeJsonParse from "libs/utils/safeJsonParse";
+import safeJsonParse from "libs/utils/safeJsonParse";
+import { defaultEmtpySourceTypeMap } from "../../../../../../../components/activities/uiSchemas/schemaMaps";
+import ActivityForm from "../../../../../../../components/activities/ActivityForm";
 
 export default async function Page(router) {
   const orderedActivities = await actionHandler(
@@ -13,20 +15,24 @@ export default async function Page(router) {
     currentActivity = router.searchParams?.activity_id;
 
   // const currentIndex = orderedActivities.indexOf(currentActivity);
-  // const previousActivity = currentIndex === 0 ? null : currentIndex - 1;
-  // const nextActivity =
-  //   currentIndex === orderedActivities.length() - 1 ? null : currentIndex + 1;
-  // const activityData = await actionHandler(
-  //   `reporting/report-version/${router.params?.version_id}/facility-report/${router.params?.facility_id}/initial-activity-data?activity_id=${currentActivity}`,
-  //   "GET",
-  //   "",
-  // );
-  // const activityDataObject = safeJsonParse(activityData);
+  const activityData = await actionHandler(
+    `reporting/report-version/${router.params?.version_id}/facility-report/${router.params?.facility_id}/initial-activity-data?activity_id=${currentActivity}`,
+    "GET",
+    "",
+  );
+  const activityDataObject = safeJsonParse(activityData);
+
+  const defaultEmptySourceTypeState =
+    defaultEmtpySourceTypeMap[currentActivity];
 
   return (
     <>
       <Suspense fallback="Loading Schema">
-        Current Activity: {currentActivity}
+        <ActivityForm
+          activityData={activityDataObject}
+          reportDate="2024-04-01"
+          defaultEmptySourceTypeState={defaultEmptySourceTypeState}
+        />
       </Suspense>
     </>
   );
