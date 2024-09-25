@@ -201,7 +201,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
                       control={
                         <Checkbox
                           checked={activities[activity.id] || false}
-                          onChange={(event) =>
+                          onChange={(event: IChangeEvent) =>
                             handleCheckboxChange(event, activity.id)
                           }
                         />
