@@ -25,7 +25,7 @@ class MultipleOperatorOut(ModelSchema):
 
     @staticmethod
     def resolve_mo_is_extraprovincial_company(mo: MultipleOperator) -> bool:
-        return mo.bc_corporate_registry_number is not None
+        return mo.bc_corporate_registry_number is None
 
     class Meta:
         model = MultipleOperator
