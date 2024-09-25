@@ -5,6 +5,8 @@ from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from reporting.models.facility_report import FacilityReport
+from reporting.models.fuel_type import FuelType
+from reporting.models.gas_type import GasType
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
@@ -40,14 +42,10 @@ class ReportActivitySaveService:
 
     @transaction.atomic()
     def save(self, data: dict) -> ReportActivity:
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print(json.dumps(data, indent=4))
-        # All data except the 'source_type' key
+        # Excluding the keys that are not part of the json_data
         activity_data = exclude_keys(data, ['sourceTypes', 'id'])
-        print("activity data:", json.dumps(activity_data, indent=4))
 
         # Only one ReportActivity record per report_version/faciltiy/activity should ever exist
-
         report_activity, _ = ReportActivity.objects.update_or_create(
             report_version=self.facility_report.report_version,
             facility_report=self.facility_report,
@@ -77,8 +75,6 @@ class ReportActivitySaveService:
     ) -> ReportSourceType:
         source_type = SourceType.objects.get(json_key=source_type_slug)
         json_data = exclude_keys(source_type_data, ['units', 'id'])
-
-        print("source type data:", json.dumps(json_data, indent=4))
 
         json_base_schema = ActivitySourceTypeJsonSchema.objects.get(
             activity=report_activity.activity,
@@ -142,8 +138,10 @@ class ReportActivitySaveService:
         report_unit: ReportUnit | None,
         fuel_data: dict,
     ) -> ReportFuel:
-        json_data = exclude_keys(fuel_data, ['emissions', 'id'])
+        json_data = exclude_keys(fuel_data, ['emissions', 'fuelName', 'id'])
+
         report_fuel_id = fuel_data.get('id', None)
+        fuel_type = FuelType.objects.get(name=fuel_data["fuelName"])
 
         report_fuel, _ = ReportFuel.objects.update_or_create(
             id=report_fuel_id,
@@ -151,14 +149,15 @@ class ReportActivitySaveService:
                 "json_data": json_data,
                 "report_source_type": report_source_type,
                 "report_version": self.facility_report.report_version,
+                "fuel_type": fuel_type,
                 # Only add the report_unit key if report_unit is not None
                 **({"report_unit": report_unit} if report_unit else {}),
             },
-            defaults={"json_data": json_data},
+            defaults={"json_data": json_data, "fuel_type": fuel_type},
         )
         report_fuel.set_create_or_update(self.user_guid)
 
-        for emission_data in json_data['emissions']:
+        for emission_data in fuel_data['emissions']:
             self.save_emission(report_source_type, report_fuel, emission_data)
 
         return report_fuel
@@ -169,7 +168,9 @@ class ReportActivitySaveService:
         report_fuel: ReportFuel | None,
         emission_data: dict,
     ) -> ReportEmission:
-        json_data = exclude_keys(emission_data, ['id'])
+        json_data = exclude_keys(emission_data, ['gasType', 'id'])
+        gas_type = GasType.objects.get(chemical_formula=emission_data['gasType'])
+
         report_emission_id = emission_data.get('id')
 
         report_emission, _ = ReportEmission.objects.update_or_create(
@@ -178,9 +179,10 @@ class ReportActivitySaveService:
                 "json_data": json_data,
                 "report_source_type": report_source_type,
                 "report_version": self.facility_report.report_version,
+                "gas_type": gas_type,
                 **({"report_fuel": report_fuel} if report_fuel else {}),
             },
-            defaults={"json_data": json_data},
+            defaults={"json_data": json_data, "gas_type": gas_type},
         )
         report_emission.set_create_or_update(self.user_guid)
 
