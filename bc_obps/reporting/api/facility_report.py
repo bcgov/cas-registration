@@ -1,7 +1,8 @@
-from typing import Literal, Tuple
+from typing import Literal, Tuple, List
 from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
+from service.activity_service import ActivityService
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -34,6 +35,22 @@ def get_facility_report_form_data(
         activities=list(facility_report.activities.values_list('id', flat=True)),
         products=list(facility_report.products.values_list('id', flat=True)),
     )
+
+
+@router.get(
+    "/report-version/{version_id}/facility-report/{facility_id}/activity-list",
+    response={200: List[int], 404: Message, 400: Message, 500: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
+    Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
+)
+@handle_http_errors()
+def get_ordered_facility_report_activities(
+    request: HttpRequest, version_id: int, facility_id: UUID
+) -> Tuple[Literal[200], List[int]]:
+    facility_report_activities = set(FacilityReportService.get_activity_ids_for_facility(version_id, facility_id))
+    activities = set(ActivityService.get_all_activity_ids())
+    return 200, list(activities.intersection(facility_report_activities))
 
 
 @router.post(
