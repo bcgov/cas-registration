@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 from uuid import UUID
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
@@ -8,7 +8,7 @@ from service.data_access_service.user_operator_service import UserOperatorDataAc
 from registration.schema.v1.user_operator import (
     UserOperatorOperatorIn,
     UserOperatorPaginatedOut,
-    UserOperatorStatusUpdate,
+    UserOperatorStatusUpdate, UserOperatorListOut,
 )
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
@@ -125,7 +125,7 @@ class UserOperatorService:
         )
 
         paginator = Paginator(qs, PAGE_SIZE)
-        user_operator_list = []
+        user_operator_list: List[UserOperatorListOut] = []
 
         for user_operator in paginator.page(page).object_list:
             user_operator_related_fields_dict = model_to_dict(
@@ -154,12 +154,10 @@ class UserOperatorService:
                     **user_operator_related_fields_dict,
                     **user_related_fields_dict,
                     **operator_related_fields_dict,
-                }
+                } # type: ignore[arg-type] # we know this is a list of dictionaries with the correct keys
             )
-        # We are ignoring the unused-ignore error because this issue is inconsistent between local and CI
-        # Also ignoring the arg-type error because we know this is a list of dictionaries with the correct keys
         return UserOperatorPaginatedOut(
-            data=user_operator_list,  # type:ignore[unused-ignore] # type: ignore[arg-type]
+            data=user_operator_list,
             row_count=paginator.count,
         )
 
