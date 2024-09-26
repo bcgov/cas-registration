@@ -10,26 +10,31 @@ export default async function Page(router) {
     "GET",
     "",
   );
-  let currentActivity = orderedActivities[0];
+  let currentActivity = orderedActivities[0].id;
   if (router.searchParams?.activity_id)
-    currentActivity = router.searchParams?.activity_id;
+    currentActivity = orderedActivities.find(
+      (obj: { id: number; name: string; slug: string }) => {
+        return obj.id === parseInt(router.searchParams?.activity_id);
+      },
+    );
 
-  // const currentIndex = orderedActivities.indexOf(currentActivity);
   const activityData = await actionHandler(
-    `reporting/report-version/${router.params?.version_id}/facility-report/${router.params?.facility_id}/initial-activity-data?activity_id=${currentActivity}`,
+    `reporting/report-version/${router.params?.version_id}/facility-report/${router.params?.facility_id}/initial-activity-data?activity_id=${currentActivity.id}`,
     "GET",
     "",
   );
   const activityDataObject = safeJsonParse(activityData);
 
   const defaultEmptySourceTypeState =
-    defaultEmtpySourceTypeMap[currentActivity];
+    defaultEmtpySourceTypeMap[currentActivity.slug];
 
   return (
     <>
       <Suspense fallback="Loading Schema">
         <ActivityForm
           activityData={activityDataObject}
+          currentActivity={currentActivity}
+          orderedActivities={orderedActivities}
           reportDate="2024-04-01"
           defaultEmptySourceTypeState={defaultEmptySourceTypeState}
         />
