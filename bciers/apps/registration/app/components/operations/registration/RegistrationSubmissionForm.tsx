@@ -24,9 +24,7 @@ const RegistrationSubmissionForm = ({
 }: OperationRegistrationFormProps) => {
   const [formState, setFormState] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-  const [error, setError] = useState("");
 
   const handleChange = (e: IChangeEvent) => {
     setFormState(e.formData);
@@ -34,9 +32,8 @@ const RegistrationSubmissionForm = ({
   };
 
   const handleSubmit = async (e: IChangeEvent) => {
-    setIsSubmitting(true);
     setSubmitButtonDisabled(true);
-    await actionHandler(
+    const response = await actionHandler(
       `registration/v2/operations/${operation}/registration/submission`,
       "PATCH",
       "",
@@ -46,15 +43,20 @@ const RegistrationSubmissionForm = ({
         }),
       },
     ).then((response) => {
+      // Can handle local things here with the response if needed
+      // while retaining MultiStepBase internal error handling
       if (response?.error) {
+        console.log("submission form error repsonse", response);
         setSubmitButtonDisabled(false);
-        setIsSubmitting(false);
         return { error: response.error };
       } else {
         setIsSubmitted(true);
+        console.log("submission form success response", response);
         return response;
       }
     });
+
+    return response;
   };
 
   return (
@@ -68,16 +70,9 @@ const RegistrationSubmissionForm = ({
           baseUrlParams="title=Placeholder+Title"
           cancelUrl="/"
           formData={formState}
+          //onSubmit={handleSubmit}
           onSubmit={handleSubmit}
-          error={error}
-          schema={
-            isSubmitting
-              ? {
-                  title: "Submitting...",
-                  type: "object",
-                }
-              : schema
-          }
+          schema={schema}
           step={step}
           steps={steps}
           uiSchema={submissionUiSchema}

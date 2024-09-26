@@ -98,6 +98,7 @@ class OperationServiceV2:
     @classmethod
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
+        raise Exception("Test throwing error")
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=['status'])
