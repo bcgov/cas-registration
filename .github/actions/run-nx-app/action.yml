@@ -46,5 +46,5 @@ runs:
     - name: Start services with Docker Compose and wait for them to be ready
       working-directory: ./bciers
       run: |
-        docker compose up -d --wait
+        docker compose -f docker-compose-nx-app.yaml up -d --wait
       shell: bash
