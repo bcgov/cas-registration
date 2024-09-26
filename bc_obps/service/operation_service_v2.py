@@ -221,7 +221,6 @@ class OperationServiceV2:
     def register_operation_information(
         cls, user_guid: UUID, operation_id: UUID | None, payload: OperationInformationIn
     ) -> Operation:
-        raise Exception("Test throwing error")
         if operation_id:
             existing_operation = OperationDataAccessService.get_by_id(operation_id)
 
