@@ -176,7 +176,7 @@ describe("The MultiStepFormBase component", () => {
     } as QueryParams);
     render(<MultiStepFormBase {...defaultProps} disabled={false} />);
     const saveAndContinueButton = screen.getByRole("button", {
-      name: /Save and Continue/i,
+      name: /test submit button text/i,
     });
     expect(screen.getByLabelText(/field1*/i)).toHaveValue("test field1");
     expect(screen.getByRole("button", { name: /Back/i })).toBeDisabled();
@@ -198,7 +198,7 @@ describe("The MultiStepFormBase component", () => {
 
     render(<MultiStepFormBase {...defaultProps} disabled={false} />);
     const saveAndContinueButton = screen.getByRole("button", {
-      name: /Save and Continue/i,
+      name: /test submit button text/i,
     });
     expect(screen.getByLabelText(/field2*/i)).toHaveValue("test field2");
     expect(screen.getByRole("button", { name: /Back/i })).not.toBeDisabled();
@@ -266,7 +266,7 @@ describe("The MultiStepFormBase component", () => {
       />,
     );
     const saveAndContinueButton = screen.getByRole("button", {
-      name: /Save and Continue/i,
+      name: /test submit button text/i,
     });
 
     await act(async () => {
@@ -294,7 +294,7 @@ describe("The MultiStepFormBase component", () => {
       <MultiStepFormBase {...defaultProps} disabled={false} formData={{}} />,
     );
     const saveAndContinueButton = screen.getByRole("button", {
-      name: /Save and Continue/i,
+      name: /test submit button text/i,
     });
     fireEvent.click(saveAndContinueButton);
     expect(screen.getByRole("alert")).toBeVisible();

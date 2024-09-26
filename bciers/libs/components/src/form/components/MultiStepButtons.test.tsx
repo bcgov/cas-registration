@@ -13,7 +13,6 @@ const defaultProps = {
   isSubmitting: false,
   stepIndex: 0, // steps are 0-indexed in the props but 1-indexed in the app
   steps: ["step 1", "step 2", "step 3"],
-  submitButtonText: "Submit",
 };
 
 describe("The MultiStepButtons component", () => {
@@ -90,6 +89,21 @@ describe("The MultiStepButtons component", () => {
     );
     expect(screen.getByRole("button", { name: "Submit" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
+    expect(
+      screen.queryByRole("button", { name: "Next" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Save and Continue" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders correct buttons text when overriding submitButtonText prop", () => {
+    render(
+      <MultiStepButtons {...defaultProps} submitButtonText="I like a new name" disabled={false} />,
+    );
+    expect(screen.getByRole("button", { name: "I like a new name" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
     expect(
       screen.queryByRole("button", { name: "Next" }),
