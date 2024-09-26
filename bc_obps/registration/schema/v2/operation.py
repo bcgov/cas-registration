@@ -239,3 +239,9 @@ class OperationStatutoryDeclarationOut(ModelSchema):
     class Meta:
         model = Operation
         fields = ['id', 'name']
+
+
+class OperationRepresentativeOut(ModelSchema):
+    class Meta:
+        model = Contact
+        fields = ['id']

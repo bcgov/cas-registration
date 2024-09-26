@@ -1,12 +1,15 @@
 from django.db import transaction
-from typing import Optional, cast
+from typing import Optional, cast, Union, Dict
 from django.db.models import QuerySet
 from uuid import UUID
+
+
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
 from registration.models.operator import Operator
 from registration.schema.v1.contact import ContactFilterSchema, ContactIn, ContactOut
+from registration.schema.v2.operation import OperationRepresentativeIn
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
@@ -68,13 +71,13 @@ class ContactService:
 
     @classmethod
     @transaction.atomic()
-    def create_contact(cls, user_guid: UUID, payload: ContactIn) -> Contact:
+    def create_contact(cls, user_guid: UUID, payload: Union[ContactIn, OperationRepresentativeIn]) -> Contact:
         contact_data: dict = payload.dict(include={*ContactIn.Meta.fields})
         # `business_role` is a mandatory field in the DB but we don't collect it from the user
         # so we set it to a default value here and we can change it later if needed
         contact_data['business_role'] = BusinessRole.objects.get(role_name="Operation Representative")
         contact: Contact
-        contact, _ = ContactDataAccessService.update_or_create(None, contact_data, user_guid)
+        contact = ContactDataAccessService.update_or_create(None, contact_data, user_guid)
 
         # Create address
         address_data = payload.dict(
@@ -92,13 +95,15 @@ class ContactService:
 
     @classmethod
     @transaction.atomic()
-    def update_contact(cls, user_guid: UUID, contact_id: int, payload: ContactIn) -> Contact:
+    def update_contact(
+        cls, user_guid: UUID, contact_id: int, payload: Union[ContactIn, OperationRepresentativeIn]
+    ) -> Contact:
         # Make sure user has access to the contact
         if not ContactDataAccessService.user_has_access(user_guid, contact_id):
             raise Exception(UNAUTHORIZED_MESSAGE)
 
         # UPDATE CONTACT
-        contact_data: dict = payload.dict(include={*ContactIn.Meta.fields})
+        contact_data: Dict = payload.dict(include={*ContactIn.Meta.fields})
         contact = ContactDataAccessService.update_or_create(contact_id, contact_data, user_guid)
         # UPDATE ADDRESS
         address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})

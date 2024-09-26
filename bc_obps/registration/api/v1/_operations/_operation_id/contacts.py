@@ -14,9 +14,8 @@ from service.contact_service import ContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
-# TODO: Add tests for this endpoint
 @router.get(
-    "/operations/{operation_id}/contacts",
+    "/operations/{uuid:operation_id}/contacts",
     response={200: List[OperationsContactListOut], custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the list of contacts associated with the operation.""",
