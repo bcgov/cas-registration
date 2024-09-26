@@ -18,7 +18,7 @@ const happoPlaywright = require("happo-playwright");
 // NOTE:: This is just a quick basic test setup to ensure that the database and auth are working in CI
 // Feel free to delete this or modify it as needed
 
-const testNxProjectLandingPage = async (zone: string) => {
+const testNxProjectLandingPage = async (zone: string, userRole?: string) => {
   test.beforeAll(async () => {
     try {
       // Scenario FrontEndRoles.INDUSTRY_USER_ADMIN where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
@@ -56,7 +56,8 @@ const testNxProjectLandingPage = async (zone: string) => {
   });
 
   const url = `${process.env.E2E_BASEURL}${zone}`;
-  const testRole = `E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE`;
+  const user = userRole ?? UserRole.INDUSTRY_USER_ADMIN;
+  const testRole = `E2E_${user.toUpperCase()}_STORAGE_STATE`;
   // 🏷 Annotate test suite as serial
   test.describe.configure({ mode: "serial" });
   test.describe(`Test ${zone} landing page`, () => {
