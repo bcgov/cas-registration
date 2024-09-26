@@ -35,15 +35,14 @@ class BaseModel(models.Model):
 
         # Use pk if available, otherwise use id
         identifier = pk if pk is not None else kwargs_id
-        created: bool = False
 
         # If no identifier is provided, create a new instance
         if identifier is None:
-            instance = self.objects.create(**kwargs), True
+            instance = self.objects.create(**kwargs)
             created = True
         else:
             # If identifier is provided, update or create the instance
-            instance, _ = self.objects.update_or_create(pk=identifier, defaults=kwargs)
+            instance, created = self.objects.update_or_create(pk=identifier, defaults=kwargs)
 
         # If the model has audit columns, set them
         from registration.models.time_stamped_model import TimeStampedModel
