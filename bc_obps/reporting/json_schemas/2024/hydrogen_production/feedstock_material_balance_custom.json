@@ -9,15 +9,20 @@
         "properties": {
           "feedStock": {
             "type": "string",
-            "title": "Feed Stock"
+            "title": "Feedstock"
           },
           "annualFeedStockAmount": {
             "type": "string",
             "title": "Annual Feed Stock Amount"
           },
+          "annualHydrogenProduction": {
+            "type": "number",
+            "title": "Annual Hydrogen Production"
+          },
           "unitForAnnualFeedstockAmount": {
             "type": "string",
-            "title": "Unit for Annual Feedstock Amount"
+            "title": "Unit for Annual Feedstock Amount",
+            "enum": ["Kilolitres", "Tonnes", "Bone dry tonnes"]
           }
         }
       }
