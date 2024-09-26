@@ -2,6 +2,7 @@ import pytest
 from model_bakery import baker
 from registration.schema.v2.operation import OptedInOperationDetailIn, RegistrationPurposeIn
 from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 
 pytestmark = pytest.mark.django_db
 
@@ -31,6 +32,9 @@ class TestDataAccessOptedInOperationService:
         opted_in_operation = OperationServiceV2.update_opted_in_operation_detail(
             approved_user_operator.user.user_guid, users_operation.id, opted_in_operation_detail_payload
         )
+        updated_operation = OperationService.get_if_authorized(
+            approved_user_operator.user.user_guid, users_operation.id
+        )
         opted_in_operation.refresh_from_db()
         assert opted_in_operation is not None
         assert opted_in_operation.meets_section_3_emissions_requirements is True
@@ -43,3 +47,4 @@ class TestDataAccessOptedInOperationService:
         assert opted_in_operation.meets_notification_to_director_on_criteria_change is False
         assert opted_in_operation.updated_by == approved_user_operator.user
         assert opted_in_operation.updated_at is not None
+        assert updated_operation.opt_in is True
