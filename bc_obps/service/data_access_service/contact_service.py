@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 from uuid import UUID
 
 from registration.models import BusinessRole, Contact
@@ -17,7 +17,7 @@ class ContactDataAccessService:
     def update_or_create(
         cls, existing_contact_id: Optional[int], updated_data: Dict[str, Optional[str]], user_guid: UUID
     ) -> Contact:
-        data: Dict[str, Optional[str]] = {
+        data: Dict[str, Any] = {
             "pk": existing_contact_id,
             "first_name": updated_data["first_name"],
             "last_name": updated_data["last_name"],
