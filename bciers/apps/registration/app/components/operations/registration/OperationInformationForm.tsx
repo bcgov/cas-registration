@@ -64,7 +64,7 @@ const OperationInformationForm = ({
         "section3",
       ]),
     );
-    await actionHandler(
+    const response = await actionHandler(
       isCreating ? postEndpoint : putEndpoint,
       isCreating ? "POST" : "PUT",
       "",
@@ -72,15 +72,23 @@ const OperationInformationForm = ({
         body,
       },
     ).then((response) => {
-      // Maybe !response?.error is better? If there is an error we can return the response and let MultiStepBase handle it
-      if (response?.id) {
+      console.log("operation information initial form response", response);
+      if (response?.error) {
+        // Don't necessarily need to return it like this, but it's a good practice
+        // The final return should still return a reponse.error for MultiStepBase internal error handling
+        // This is just for local handling
+        console.log("operation information form error response", response);
+        return { error: response.error };
+      } else if (response?.id) {
+        console.log("operation information form success response", response);
         const nextStepUrl = `/register-an-operation/${response.id}/${
           step + 1
         }${`?title=${response.name}`}`;
         router.push(nextStepUrl);
+        return response;
       }
-      return response;
     });
+    return response;
   };
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
