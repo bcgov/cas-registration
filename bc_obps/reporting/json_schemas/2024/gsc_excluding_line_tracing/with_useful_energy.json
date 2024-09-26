@@ -29,20 +29,27 @@
             "items": {
               "type": "object",
               "properties": {
-                "fuelName": {
-                  "title": "Fuel Name",
-                  "type": "string",
-                  "enum": []
-                },
-                "fuelClassification": {
-                  "title": "Fuel Classification",
-                  "maxLength": 200,
-                  "type": "string"
-                },
-                "fuelUnit": {
-                  "title": "Fuel Unit",
-                  "maxLength": 200,
-                  "type": "string"
+                "fuelType": {
+                  "type": "object",
+                  "properties": {
+                    "fuelName": {
+                      "title": "Fuel Name",
+                      "type": "string",
+                      "enum": []
+                    },
+                    "fuelClassification": {
+                      "title": "Fuel Classification",
+                      "maxLength": 200,
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "fuelUnit": {
+                      "title": "Fuel Unit",
+                      "maxLength": 200,
+                      "type": "string",
+                      "readOnly": true
+                    }
+                  }
                 },
                 "annualFuelAmount": {
                   "title": "Annual Fuel Amount",

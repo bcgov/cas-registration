@@ -10,25 +10,25 @@ pytest.endpoint = "/api/reporting/build-form-schema"
 
 class TestBuildFormSchema:
     def test_invalid_without_report_date(self):
-        response = client.get(f'{pytest.endpoint}?activity=1')
+        response = client.get('/api/reporting/build-form-schema?activity=1')
         assert response.status_code == 422
 
     def test_invalid_without_activity(self):
-        response = client.get(f'{pytest.endpoint}?report_date=2024-05-01')
+        response = client.get('/api/reporting/build-form-schema?report_date=2024-05-01')
         assert response.status_code == 422
 
     def test_except_if_no_valid_configuration(self):
-        response = client.get(f'{pytest.endpoint}?activity=1&report_date=5024-05-01')
+        response = client.get('/api/reporting/build-form-schema?activity=1&report_date=5024-05-01')
         assert response.status_code == 400
         assert response.json().get('message') == "No Configuration found for report_date 5024-05-01"
 
     def test_except_if_no_valid_activity_schema(self):
-        response = client.get(f'{pytest.endpoint}?activity=0&report_date=2024-05-01')
+        response = client.get('/api/reporting/build-form-schema?activity=0&report_date=2024-05-01')
         assert response.status_code == 400
         assert response.json().get('message') == "No schema found for activity_id 0 & report_date 2024-05-01"
 
     def test_except_if_no_valid_source_type_schema(self):
-        response = client.get(f'{pytest.endpoint}?activity=1&source_types[]=0&report_date=2024-05-01')
+        response = client.get('/api/reporting/build-form-schema?activity=1&source_types[]=0&report_date=2024-05-01')
         assert response.status_code == 400
         assert (
             response.json().get('message')
@@ -36,7 +36,7 @@ class TestBuildFormSchema:
         )
 
     def test_returns_activity_schema(self):
-        response = client.get(f'{pytest.endpoint}?activity=1&report_date=2024-05-01')
+        response = client.get('/api/reporting/build-form-schema?activity=1&report_date=2024-05-01')
         assert response.status_code == 200
         response_object = json.loads(response.json())
         assert response_object['schema']['title'] == 'General stationary combustion excluding line tracing'
@@ -46,7 +46,7 @@ class TestBuildFormSchema:
         assert len(response_object['schema']['properties'].keys()) == 2
 
     def test_returns_source_type_schema(self):
-        response = client.get(f'{pytest.endpoint}?activity=1&source_types[]=1&report_date=2024-05-01')
+        response = client.get('/api/reporting/build-form-schema?activity=1&source_types[]=1&report_date=2024-05-01')
         assert response.status_code == 200
         response_object = json.loads(response.json())
         # Source Types object has been created
@@ -71,7 +71,7 @@ class TestBuildFormSchema:
             len(
                 response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
                     'units'
-                ]['items']['properties']['fuels']['items']['properties']['fuelName']['enum']
+                ]['items']['properties']['fuels']['items']['properties']['fuelType']['properties']['fuelName']['enum']
             )
             == FuelType.objects.count()
         )
@@ -94,19 +94,21 @@ class TestBuildFormSchema:
         ]
 
     def test_returns_multiple_source_type_schemas(self):
-        response = client.get(f'{pytest.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_date=2024-05-01')
+        response = client.get(
+            '/api/reporting/build-form-schema?activity=1&source_types[]=1&source_types[]=2&report_date=2024-05-01'
+        )
         assert response.status_code == 200
         # 2 schemas in the sourceTypes object
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
 
     def test_single_mandatory_source_type(self):
-        response = client.get(f'{pytest.endpoint}?activity=3&report_date=2024-05-01')
+        response = client.get('/api/reporting/build-form-schema?activity=3&report_date=2024-05-01')
         assert response.status_code == 200
         # 1 schema is automatically added to the sourceTypes object when there is only 1 valid sourceType for the activity
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 1
 
     def test_source_type_schema_no_units(self):
-        response = client.get(f'{pytest.endpoint}?activity=3&report_date=2024-05-01')
+        response = client.get('/api/reporting/build-form-schema?activity=3&report_date=2024-05-01')
         assert response.status_code == 200
         response_object = json.loads(response.json())
         source_type_key = list(response_object['schema']['properties']['sourceTypes']['properties'].keys())[0]
