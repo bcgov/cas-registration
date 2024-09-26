@@ -156,8 +156,10 @@ class UserOperatorService:
                     **operator_related_fields_dict,
                 }
             )
+        # We are ignoring the unused-ignore error because this issue is inconsistent between local and CI
+        # Also ignoring the arg-type error because we know this is a list of dictionaries with the correct keys
         return UserOperatorPaginatedOut(
-            data=user_operator_list,
+            data=user_operator_list,  # type:ignore[unused-ignore] # type: ignore[arg-type]
             row_count=paginator.count,
         )
 
