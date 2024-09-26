@@ -74,11 +74,10 @@ const OperationInformationForm = ({
     ).then((response) => {
       console.log("operation information initial form response", response);
       if (response?.error) {
-        // Don't necessarily need to return it like this, but it's a good practice
-        // The final return should still return a reponse.error for MultiStepBase internal error handling
-        // This is just for local handling
+        // Can handle local things here with the response if needed
+        // while retaining MultiStepBase internal error handling
         console.log("operation information form error response", response);
-        // Return response to MultiStepBase for error handling
+        // Return response to MultiStepBase for error handling (not sure if this is needed if no local handling is necessary)
         return { error: response.error };
       } else if (response?.id) {
         console.log("operation information form success response", response);
