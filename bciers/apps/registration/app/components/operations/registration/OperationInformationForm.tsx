@@ -61,7 +61,7 @@ const OperationInformationForm = ({
       createUnnestedFormData(data.formData, [
         "section1",
         "section2",
-        // "section3",
+        "section3",
       ]),
     );
     await actionHandler(
@@ -72,9 +72,11 @@ const OperationInformationForm = ({
         body,
       },
     ).then((response) => {
+      // Maybe !response?.error is better? If there is an error we can return the response and let MultiStepBase handle it
       if (response?.id) {
-        const nextStepUrl = `/register-an-operation/${response.id}/${step + 1
-          }${`?title=${response.name}`}`;
+        const nextStepUrl = `/register-an-operation/${response.id}/${
+          step + 1
+        }${`?title=${response.name}`}`;
         router.push(nextStepUrl);
       }
       return response;
