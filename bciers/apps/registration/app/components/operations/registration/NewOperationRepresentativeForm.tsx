@@ -47,7 +47,9 @@ const NewOperationRepresentativeForm: React.FC<
     Boolean(existingContactId) &&
     formState?.new_operation_representative?.[0]?.existing_contact_id;
 
-  const handleSelectingContact = async (newSelectedContactId: string) => {
+  const handleSelectingContact = async (
+    newSelectedContactId: string,
+  ): Promise<void> => {
     setExistingContactId(newSelectedContactId);
     try {
       const contactData: ContactFormData =
@@ -99,11 +101,26 @@ const NewOperationRepresentativeForm: React.FC<
     }
   };
 
+  const handleAfterSubmit = (response: { id: number }) => {
+    setError(undefined);
+    setExistingContactId(""); // Clear the existing contact id to enable disabled fields
+    // Add the new operation representative to the list of operation representatives and clear the form
+    setFormState({
+      operation_representatives: [
+        ...formState.operation_representatives,
+        response.id, //Contact ID
+      ],
+      new_operation_representative: [{}],
+    });
+    setKey(Math.random()); // force re-render to clear the form
+    setIsSnackbarOpen(true);
+  };
+
   const submitHandler = async ({ formData: newFormData }: IChangeEvent) => {
     const endpoint = `registration/v2/operations/${operation}/registration/operation-representative`;
     const response = await actionHandler(
       endpoint,
-      "PUT",
+      "POST",
       `/register-an-operation/${operation}/${step}`,
       {
         body: JSON.stringify({
@@ -116,11 +133,7 @@ const NewOperationRepresentativeForm: React.FC<
       setError(response.error);
       return { error: response.error };
     }
-    // Refresh the page and refetch the updated operation representatives
-    location.reload();
-    setError(undefined);
-    handleClearingExistingContact();
-    setIsSnackbarOpen(true);
+    handleAfterSubmit(response);
   };
 
   return (
