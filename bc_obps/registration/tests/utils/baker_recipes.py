@@ -107,7 +107,7 @@ opted_in_operation_detail = Recipe(
     meets_reporting_and_regulated_obligations=False,
     meets_notification_to_director_on_criteria_change=False,
 )
-contact = Recipe(Contact, business_role=BusinessRole.objects.first())
+contact = Recipe(Contact, business_role=BusinessRole.objects.first(), address=foreign_key(address))
 
 
 # transfer event bakers
