@@ -48,10 +48,12 @@ const RegistrationSubmissionForm = ({
       if (response?.error) {
         console.log("submission form error repsonse", response);
         setSubmitButtonDisabled(false);
+        // Return response to MultiStepBase for error handling
         return { error: response.error };
       } else {
         setIsSubmitted(true);
         console.log("submission form success response", response);
+        // Return response to MultiStepBase for success handling
         return response;
       }
     });
@@ -70,7 +72,6 @@ const RegistrationSubmissionForm = ({
           baseUrlParams="title=Placeholder+Title"
           cancelUrl="/"
           formData={formState}
-          //onSubmit={handleSubmit}
           onSubmit={handleSubmit}
           schema={schema}
           step={step}

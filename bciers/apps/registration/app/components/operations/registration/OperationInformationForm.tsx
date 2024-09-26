@@ -78,6 +78,7 @@ const OperationInformationForm = ({
         // The final return should still return a reponse.error for MultiStepBase internal error handling
         // This is just for local handling
         console.log("operation information form error response", response);
+        // Return response to MultiStepBase for error handling
         return { error: response.error };
       } else if (response?.id) {
         console.log("operation information form success response", response);
@@ -85,6 +86,7 @@ const OperationInformationForm = ({
           step + 1
         }${`?title=${response.name}`}`;
         router.push(nextStepUrl);
+        // Return response to MultiStepBase
         return response;
       }
     });
