@@ -180,9 +180,16 @@ cd bciers && yarn reg1:e2e:report
 
 ```
 
-[Debugging CI Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
+#### Debugging Playwright in CI
 
-**Traces**
+[Debugging CI Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report)
+
+If you are running into issues with your tests in CI, you can uncomment the Playwright html report upload steps in our GitHub Actions e2e workflow files. This will allow you to download the HTML report artifact from the CI job and view it locally if more context is needed than what is displayed in the failed job.
+
+These commented jobs are located in the `bciers/.github/workflows` directory in `test-nx-project-e2e.yaml` and `test-registration1-e2e.yaml`.
+
+#### Traces
+
 Traces are normally run in a Continuous Integration(CI) environment, because locally you can use UI Mode for developing and debugging tests. However, if you want to run traces locally without using UI Mode, you can force tracing to be on with --trace on.
 
 ```bash
