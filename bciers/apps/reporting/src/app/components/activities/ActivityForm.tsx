@@ -62,18 +62,28 @@ const tasklistData: TaskListElement[] = [
   { type: "Page", title: "Operation emission summary with a long title" },
 ];
 
+type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
+type EmptyWithFuels = { fuels: [{ emissions: [{}] }] };
+type EmptyOnlyEmissions = { emissions: [{}] };
+
 interface Props {
   activityData: {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
+  currentActivity: { id: number; name: string; slug: string };
+  orderedActivities: [{ id: number; name: string; slug: string }];
   reportDate: string;
-  defaultEmptySourceTypeState: any;
+  defaultEmptySourceTypeState:
+    | EmptyWithUnits
+    | EmptyWithFuels
+    | EmptyOnlyEmissions;
 }
 
 // 🧩 Main component
 export default function ActivityForm({
   activityData,
+  currentActivity,
   reportDate,
   defaultEmptySourceTypeState,
 }: Readonly<Props>) {
@@ -89,7 +99,7 @@ export default function ActivityForm({
   const { activityId, sourceTypeMap } = activityData;
 
   // Get UiSchema from map object
-  const uiSchemaName = uiSchemaMap[activityId];
+  const uiSchemaName = uiSchemaMap[currentActivity.slug];
   let uiSchema = require(`./uiSchemas/${uiSchemaName}`).default;
 
   // Set useEffect dependency set from checked sourceTypes
