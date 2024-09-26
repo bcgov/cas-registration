@@ -24,6 +24,8 @@ const RegistrationSubmissionForm = ({
 }: OperationRegistrationFormProps) => {
   const [formState, setFormState] = useState({});
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+  const [onSubmitSuccessfulResponse, setOnSubmitSuccessfulResponse] =
+    useState(undefined);
 
   const handleChange = (e: IChangeEvent) => {
     setFormState(e.formData);
@@ -48,20 +50,24 @@ const RegistrationSubmissionForm = ({
 
   return (
     <>
-      <MultiStepBase
-        allowBackNavigation
-        baseUrl={`/register-an-operation/${operation}`}
-        cancelUrl="/"
-        formData={formState}
-        onSubmit={handleSubmit}
-        schema={schema}
-        step={step}
-        steps={steps}
-        uiSchema={submissionUiSchema}
-        onChange={handleChange}
-        submitButtonDisabled={submitButtonDisabled}
-        successComponent=<Success step={step} steps={steps} />
-      />
+      {onSubmitSuccessfulResponse ? (
+        <Success step={step} steps={steps} />
+      ) : (
+        <MultiStepBase
+          allowBackNavigation
+          baseUrl={`/register-an-operation/${operation}`}
+          cancelUrl="/"
+          formData={formState}
+          onSubmit={handleSubmit}
+          setOnSubmitSuccessfulResponse={setOnSubmitSuccessfulResponse}
+          schema={schema}
+          step={step}
+          steps={steps}
+          uiSchema={submissionUiSchema}
+          onChange={handleChange}
+          submitButtonDisabled={submitButtonDisabled}
+        />
+      )}
     </>
   );
 };

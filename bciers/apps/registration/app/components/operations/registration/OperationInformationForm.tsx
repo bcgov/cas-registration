@@ -4,7 +4,7 @@ import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { OperationInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { getOperationV2 } from "@bciers/actions/api";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@bciers/components/form/formDataUtils";
 import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { useRouter } from "next/navigation";
+import { UUID } from "crypto";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -30,6 +31,19 @@ const OperationInformationForm = ({
   const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState("");
   const [error, setError] = useState(undefined);
+  const [onSubmitSuccessfulResponse, setOnSubmitSuccessfulResponse] = useState<
+    { id: UUID } | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (onSubmitSuccessfulResponse) {
+      const nextStepUrl = `/register-an-operation/${
+        onSubmitSuccessfulResponse.id
+      }/${step + 1}`;
+      router.push(nextStepUrl);
+    }
+  }, [onSubmitSuccessfulResponse]);
+
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
     : {};
@@ -77,31 +91,24 @@ const OperationInformationForm = ({
   };
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
-    try {
-      setSelectedOperation(operationId);
-      const operationData = await getOperationV2(operationId);
-      if (operationData?.error) {
-        setError("Failed to fetch operation data!" as any);
-      }
-      // combine the entered data with the fetched data
-      const combinedData = { ...data, section2: operationData };
-      setFormState(combinedData);
-      setKey(Math.random());
-    } catch (err) {
+    setSelectedOperation(operationId);
+    const operationData = await getOperationV2(operationId);
+    if (operationData?.error) {
       setError("Failed to fetch operation data!" as any);
     }
+    // combine the entered data with the fetched data
+    const combinedData = { ...data, section2: operationData };
+    setFormState(combinedData);
+    setKey(Math.random());
   };
+
   return (
     <MultiStepBase
       key={key}
       cancelUrl="/"
       formData={formState}
       onSubmit={handleSubmit}
-      firstStepExtraHandling={(response) => {
-        // Since our form's route includes the operation's id, which doesn't exist until after the first step, we need to pass in a custom function that uses the response to generate a redirect url
-        const nextStepUrl = `/register-an-operation/${response.id}/${step + 1}`;
-        router.push(nextStepUrl);
-      }}
+      setOnSubmitSuccessfulResponse={setOnSubmitSuccessfulResponse}
       schema={schema}
       step={step}
       steps={steps}
