@@ -6,13 +6,12 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
-  AppRoute,
   ButtonText,
   E2EValue,
   FormField,
   MessageTextOperator,
   MessageTextOperatorSelect,
-} from "@/e2e/utils/enums";
+} from "@/admin/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 import {
@@ -24,8 +23,6 @@ dotenv.config({ path: "./e2e/.env.local" });
 
 export class OperatorPOM {
   readonly page: Page;
-
-  readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATOR;
 
   readonly buttonAddParentCompany: Locator;
 
@@ -205,10 +202,6 @@ export class OperatorPOM {
     await this.linkGoBack.click();
   }
 
-  async route() {
-    await this.page.goto(this.url);
-  }
-
   async routeReturn() {
     await this.linkReturn.click();
   }
@@ -311,9 +304,8 @@ export class OperatorPOM {
     await expect(this.messageSelectOperator).toBeVisible();
   }
 
-  async urlIsCorrect() {
-    const path = this.url;
+  async urlIsCorrect(expectedPath: string) {
     const currentUrl = await this.page.url();
-    await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+    await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
   }
 }

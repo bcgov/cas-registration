@@ -20,10 +20,15 @@ const playwrightBaseConfig = {
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? "blob" : "html",
-  /* Configure projects for major browsers */
   use: {
     baseURL: baseURL,
+    trace: "on", // 'on' will capture trace for every test
+    // Other options
+    // "off"  // Default off
+    // "retain-on-failure", // Record trace only on test failure
+    // 'on-first-retry', // Record trace only on the first retry.
   },
+  /* Configure projects for major browsers */
   projects: [
     {
       name: "chromium",
@@ -31,14 +36,14 @@ const playwrightBaseConfig = {
         ...devices["Desktop Chrome"],
       },
     },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
+    // {
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
