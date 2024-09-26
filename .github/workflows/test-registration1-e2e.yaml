@@ -89,7 +89,7 @@ jobs:
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.sha }}-reg1
+          HAPPO_NONCE: ${{github.run_id}}${{ github.run_attempt}}-reg1
           HAPPO_PROJECT: cas-registration1
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./bciers/apps/registration1
@@ -105,9 +105,9 @@ jobs:
 
   e2e-report:
     name: 📊 e2e report artifact
-    needs: [e2e-tests]
     runs-on: ubuntu-latest
-    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    needs: [e2e-tests]
+    if: ${{ always() && contains(needs.*.result, 'failure') && inputs.is_nx_affected }}
     steps:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
@@ -115,7 +115,7 @@ jobs:
           path: all-blob-reports
           # To minimize the report file size only download Chromium reports
           # If you want to debug other reports, add the * pattern back in temporarily
-          pattern: blob-report-chromium #blob-report-*
+          pattern: blob-report-registration1-chromium #blob-report-*
           merge-multiple: true
 
       - name: Merge into HTML Report
@@ -123,25 +123,24 @@ jobs:
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-registration1
           path: playwright-report
           retention-days: 14
-
   # Ensure the e2e tests and e2e report completed successfully
   e2e:
-    if: ${{ always() }}
-    needs: [e2e-tests, e2e-report]
+    if: ${{ always() && inputs.is_nx_affected }}
     runs-on: ubuntu-latest
+    needs: [e2e-tests]
     steps:
       - run: exit 1
         if: >-
           ${{
                contains(needs.*.result, 'failure')
             || contains(needs.*.result, 'cancelled')
-            || contains(needs.*.result, 'skipped')
           }}
 
   happo-finalize:
+    if: ${{ inputs.is_nx_affected }}
     runs-on: ubuntu-latest
     needs: [e2e-tests]
     steps:
@@ -152,6 +151,6 @@ jobs:
         env:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.sha }}-reg1
+          HAPPO_NONCE: ${{github.run_id}}${{ github.run_attempt}}-reg1
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/registration1
