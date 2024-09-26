@@ -66,18 +66,20 @@ const MultiStepBase = ({
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async (data: any) => {
     setIsSubmitting(true);
-    const response = await onSubmit(data);
-
-    // If there is an error, set isSubmitting to false to re-enable submit buttons
-    // and allow user to attempt to re-submit the form
-    if (response?.error) {
-      setIsSubmitting(false);
-    } else if (isNotFinalStep && baseUrl && baseUrlParams) {
-      const nextStepUrl = `${baseUrl}/${step + 1}${
-        baseUrlParams ? `?${baseUrlParams}` : ""
-      }`;
-      router.push(nextStepUrl);
-    }
+    await onSubmit(data).then((response: any) => {
+      // If there is an error, set isSubmitting to false to re-enable submit buttons
+      // and allow user to attempt to re-submit the form
+      if (response?.error) {
+        setIsSubmitting(false);
+      } else if (isNotFinalStep && baseUrl && baseUrlParams) {
+        const nextStepUrl = `${baseUrl}/${step + 1}${
+          baseUrlParams ? `?${baseUrlParams}` : ""
+        }`;
+        router.push(nextStepUrl);
+      } else {
+        return response;
+      }
+    });
   };
 
   const isDisabled = (disabled && !isEditMode) || isSubmitting;

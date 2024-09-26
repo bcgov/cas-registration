@@ -61,22 +61,24 @@ const OperationInformationForm = ({
       createUnnestedFormData(data.formData, [
         "section1",
         "section2",
-        "section3",
+        // "section3",
       ]),
     );
-    const response = await actionHandler(
+    await actionHandler(
       isCreating ? postEndpoint : putEndpoint,
       isCreating ? "POST" : "PUT",
       "",
       {
         body,
       },
-    );
-    // handling the redirect here instead of in the MultiStepBase because we don't have the operation information until we receive the response
-    const nextStepUrl = `/register-an-operation/${response.id}/${
-      step + 1
-    }${`?title=${response.name}`}`;
-    router.push(nextStepUrl);
+    ).then((response) => {
+      if (response?.id) {
+        const nextStepUrl = `/register-an-operation/${response.id}/${step + 1
+          }${`?title=${response.name}`}`;
+        router.push(nextStepUrl);
+      }
+      return response;
+    });
   };
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;

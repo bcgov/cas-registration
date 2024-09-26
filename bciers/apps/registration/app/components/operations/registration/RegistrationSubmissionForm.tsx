@@ -36,7 +36,7 @@ const RegistrationSubmissionForm = ({
   const handleSubmit = async (e: IChangeEvent) => {
     setIsSubmitting(true);
     setSubmitButtonDisabled(true);
-    const response = await actionHandler(
+    await actionHandler(
       `registration/v2/operations/${operation}/registration/submission`,
       "PATCH",
       "",
@@ -45,14 +45,16 @@ const RegistrationSubmissionForm = ({
           ...e.formData,
         }),
       },
-    );
-    if (response?.error) {
-      setError(response.error);
-      setSubmitButtonDisabled(false);
-      setIsSubmitting(false);
-      return { error: response.error };
-    }
-    setIsSubmitted(true);
+    ).then((response) => {
+      if (response?.error) {
+        setSubmitButtonDisabled(false);
+        setIsSubmitting(false);
+        return { error: response.error };
+      } else {
+        setIsSubmitted(true);
+        return response;
+      }
+    });
   };
 
   return (
