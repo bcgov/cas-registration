@@ -9,7 +9,7 @@ vi.mock(
   }),
 );
 
-vi.mock("@bciers/actions", () => ({
+vi.mock("libs/actions/src/api/getContact", () => ({
   default: getContact,
 }));
 
