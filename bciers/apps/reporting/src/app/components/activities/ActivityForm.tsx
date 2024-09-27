@@ -15,53 +15,6 @@ const CUSTOM_FIELDS = {
 };
 import { uiSchemaMap } from "./uiSchemas/schemaMaps";
 
-const tasklistData: TaskListElement[] = [
-  {
-    type: "Page",
-    title: "main page element",
-  },
-  {
-    type: "Section",
-    title: "Facility 1 info",
-    elements: [
-      { type: "Page", title: "Review information", isChecked: true },
-      {
-        type: "Subsection",
-        title: "Activities information",
-        isExpanded: true,
-        elements: [
-          {
-            type: "Page",
-            title: "General stationary combustion excluding line tracing",
-          },
-          { type: "Page", title: "Mobile combustion", isActive: true },
-          { type: "Page", title: "Other 1..", isChecked: true },
-        ],
-      },
-      { type: "Page", title: "Non-attributable emissions" },
-    ],
-  },
-  {
-    type: "Section",
-    title: "Facility 2 info",
-    elements: [
-      { type: "Page", title: "Review2 ..." },
-      { type: "Page", title: "Other 2.." },
-    ],
-  },
-  {
-    type: "Section",
-    title: "Facility 3 info",
-    isChecked: true,
-    elements: [
-      { type: "Page", title: "Review3 ..." },
-      { type: "Page", title: "Other 3.." },
-    ],
-  },
-  { type: "Page", title: "New entrant information", isChecked: true },
-  { type: "Page", title: "Operation emission summary with a long title" },
-];
-
 type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
 type EmptyWithFuels = { fuels: [{ emissions: [{}] }] };
 type EmptyOnlyEmissions = { emissions: [{}] };
@@ -73,6 +26,7 @@ interface Props {
   };
   currentActivity: { id: number; name: string; slug: string };
   orderedActivities: [{ id: number; name: string; slug: string }];
+  taskListData: TaskListElement[];
   reportDate: string;
   defaultEmptySourceTypeState:
     | EmptyWithUnits
@@ -84,6 +38,7 @@ interface Props {
 export default function ActivityForm({
   activityData,
   currentActivity,
+  taskListData,
   reportDate,
   defaultEmptySourceTypeState,
 }: Readonly<Props>) {
@@ -95,17 +50,16 @@ export default function ActivityForm({
   const [isSuccess, setIsSuccess] = useState(false);
   const [formState, setFormState] = useState({} as any);
   const [jsonSchema, setJsonSchema] = useState({});
+  const [uiSchema, setUiSchema] = useState({});
 
   const { activityId, sourceTypeMap } = activityData;
-
-  // Get UiSchema from map object
-  const uiSchemaName = uiSchemaMap[currentActivity.slug];
-  let uiSchema = require(`./uiSchemas/${uiSchemaName}`).default;
 
   // Set useEffect dependency set from checked sourceTypes
   const dependencyArray = Object.values(sourceTypeMap).map(
     (v) => formState?.[`${v}`] ?? null,
   );
+
+  dependencyArray.push(currentActivity.id);
 
   useEffect(() => {
     let isFetching = true;
@@ -135,6 +89,8 @@ export default function ActivityForm({
       }
       if (isFetching)
         setFormState({ ...formState, sourceTypes: sourceTypeFormData });
+      const uiSchemaName = uiSchemaMap[currentActivity.slug];
+      setUiSchema(require(`./uiSchemas/${uiSchemaName}`).default);
     };
     let selectedSourceTypes = "";
     const selectedKeys = [];
@@ -186,7 +142,7 @@ export default function ActivityForm({
   // Render the Activity form and tasklist
   return (
     <div className="w-full flex flex-row">
-      <ReportingTaskList elements={tasklistData} />
+      <ReportingTaskList elements={taskListData} />
       <div className="w-full">
         <FormBase
           schema={jsonSchema}
