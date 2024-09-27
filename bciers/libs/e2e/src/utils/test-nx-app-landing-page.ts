@@ -18,7 +18,7 @@ const happoPlaywright = require("happo-playwright");
 // NOTE:: This is just a quick basic test setup to ensure that the database and auth are working in CI
 // Feel free to delete this or modify it as needed
 
-const testNxProjectLandingPage = async (zone: string, userRole?: string) => {
+const testNxProjectLandingPage = async (zones: string[], userRole?: string) => {
   test.beforeAll(async () => {
     try {
       // Scenario FrontEndRoles.INDUSTRY_USER_ADMIN where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
@@ -55,25 +55,28 @@ const testNxProjectLandingPage = async (zone: string, userRole?: string) => {
     await happoPlaywright.finish();
   });
 
-  const url = `${process.env.E2E_BASEURL}${zone}`;
-  const user = userRole ?? UserRole.INDUSTRY_USER_ADMIN;
-  const testRole = `E2E_${user.toUpperCase()}_STORAGE_STATE`;
   // 🏷 Annotate test suite as serial
   test.describe.configure({ mode: "serial" });
-  test.describe(`Test ${zone} landing page`, () => {
-    const storageState = JSON.parse(process.env[testRole] as string);
+  zones.forEach((zone) => {
+    test.describe(`Test ${zone} landing page`, () => {
+      const url = `${process.env.E2E_BASEURL}${zone}`;
+      const user = userRole ?? UserRole.INDUSTRY_USER_ADMIN;
+      const testRole = `E2E_${user.toUpperCase()}_STORAGE_STATE`;
 
-    test.use({ storageState: storageState });
+      const storageState = JSON.parse(process.env[testRole] as string);
 
-    test("Test Selfie", async ({ page }) => {
-      // 🛸 Navigate to landing page
-      await page.goto(url);
+      test.use({ storageState: storageState });
 
-      // 📷 Cheese!
-      const pageContent = page.locator("html");
-      await happoPlaywright.screenshot(page, pageContent, {
-        component: `Authenticated ${zone} page industry_user_admin`,
-        variant: "default",
+      test("Test Selfie", async ({ page }) => {
+        // 🛸 Navigate to landing page
+        await page.goto(url);
+
+        // 📷 Cheese!
+        const pageContent = page.locator("html");
+        await happoPlaywright.screenshot(page, pageContent, {
+          component: `Authenticated ${zone} page industry_user_admin`,
+          variant: "default",
+        });
       });
     });
   });
