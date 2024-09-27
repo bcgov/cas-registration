@@ -18,13 +18,13 @@ const OperationRepresentativePage = async ({
     | OperationsContacts[]
     | {
         error: string;
-      };
+      } = [];
 
   contacts = await getContacts();
   existingOperationRepresentatives = await getOperationsContacts(operation);
 
   if (contacts && "error" in contacts)
-    throw new Error("Failed to Retrieve Contact or User Information");
+    throw new Error("Failed to Retrieve Contact Information");
   if (
     existingOperationRepresentatives &&
     "error" in existingOperationRepresentatives
@@ -32,7 +32,7 @@ const OperationRepresentativePage = async ({
     throw new Error("Failed to Retrieve Operation Representatives");
 
   // Excluding existing operation representatives from the list of contacts
-  contacts.items = contacts.items.filter(
+  contacts.items = contacts.items?.filter(
     (contact) =>
       !existingOperationRepresentatives.some(
         (opRep) => opRep.id === contact.id,
