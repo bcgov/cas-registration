@@ -21,8 +21,8 @@ inputs:
     description: "Docker image URL minus the tag which will be the pull request sha"
     required: true
   nx_app_port:
-    description: "Port to run the Nx app on"
-    required: true
+    description: "Port to run the Nx app on if using the docker-compose-nx-app.yaml file"
+    required: false
 
 runs:
   using: composite
