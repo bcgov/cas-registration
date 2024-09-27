@@ -4,7 +4,7 @@ export enum AppRoute {
   DASHBOARD = "administration",
   OPERATIONS = "administration/operations",
   OPERATOR_SELECT = "administration/select-operator",
-  OPERATOR_MY = "administration/my-operator",
+  OPERATOR = "administration/my-operator",
   PROFILE = "administration/profile",
   USERS = "administration/users",
 }

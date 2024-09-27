@@ -198,6 +198,10 @@ export class OperatorPOM {
     await this.buttonRequestAdministratorAccess.click();
   }
 
+  async route(url: string) {
+    await this.page.goto(process.env.E2E_BASEURL + url);
+  }
+
   async routeBack() {
     await this.linkGoBack.click();
   }
