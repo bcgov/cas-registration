@@ -18,12 +18,13 @@ const happoPlaywright = require("happo-playwright");
 // NOTE:: This is just a quick basic test setup to ensure that the database and auth are working in CI
 // Feel free to delete this or modify it as needed
 
-const testNxProjectLandingPage = async (zones: string[], userRole?: string) => {
+const testNxProjectLandingPage = async (zones: string[]) => {
   test.beforeAll(async () => {
     try {
       // Scenario FrontEndRoles.INDUSTRY_USER_ADMIN where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
       // Upsert a User record: bc-cas-dev
       await upsertUserRecord(UserRole.INDUSTRY_USER_ADMIN);
+      await upsertUserRecord(UserRole.CAS_ADMIN);
       // Upsert an Operator record, using default values
       await upsertOperatorRecord();
       // Upsert an User Operator record: industry_user_admin, operator id 2
@@ -60,7 +61,11 @@ const testNxProjectLandingPage = async (zones: string[], userRole?: string) => {
   zones.forEach((zone) => {
     test.describe(`Test ${zone} landing page`, () => {
       const url = `${process.env.E2E_BASEURL}${zone}`;
-      const user = userRole ?? UserRole.INDUSTRY_USER_ADMIN;
+      // Reporting dashboard is broken at the moment
+      const user =
+        zone === "reporting"
+          ? UserRole.CAS_ADMIN
+          : UserRole.INDUSTRY_USER_ADMIN;
       const testRole = `E2E_${user.toUpperCase()}_STORAGE_STATE`;
 
       const storageState = JSON.parse(process.env[testRole] as string);
@@ -74,7 +79,7 @@ const testNxProjectLandingPage = async (zones: string[], userRole?: string) => {
         // 📷 Cheese!
         const pageContent = page.locator("html");
         await happoPlaywright.screenshot(page, pageContent, {
-          component: `Authenticated ${zone} page industry_user_admin`,
+          component: `Authenticated ${zone} page - ${user}`,
           variant: "default",
         });
       });
