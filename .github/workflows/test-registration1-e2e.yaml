@@ -154,5 +154,6 @@ jobs:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
           HAPPO_NONCE: ${{ github.run_id }}${{ github.run_attempt }}-reg1
+          HAPPO_PROJECT: cas-registration1
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/registration1
