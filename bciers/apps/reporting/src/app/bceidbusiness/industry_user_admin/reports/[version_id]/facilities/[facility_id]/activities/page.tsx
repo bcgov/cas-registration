@@ -33,7 +33,7 @@ export default async function Page(router) {
   const taskListData: TaskListElement[] = [
     {
       type: "Section",
-      title: "Activity Data",
+      title: "Activities Information",
       isExpanded: true,
       elements: [],
     },
