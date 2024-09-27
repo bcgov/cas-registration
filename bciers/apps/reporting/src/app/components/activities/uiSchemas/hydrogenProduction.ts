@@ -79,6 +79,7 @@ const uiSchema = {
                 "feedStock",
                 "annualFeedStockAmount",
                 "unitForAnnualFeedstockAmount",
+                "annualHydrogenProduction",
               ],
 
               feedStock: {
@@ -87,7 +88,10 @@ const uiSchema = {
               annualFeedStockAmount: {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
-              "Unit for Annual Feedstock Amount": {
+              unitForAnnualFeedstockAmount: {
+                "ui:FieldTemplate": InlineFieldTemplate,
+              },
+              annualHydrogenProduction: {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
             },
