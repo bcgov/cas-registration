@@ -34,6 +34,7 @@ const contactsMock = [
   },
 ];
 
+const operationId = "002d5a9e-32a6-4191-938c-2c02bfec592d";
 export const checkEmptyOperationRepresentativeForm = () => {
   expect(
     screen.getByLabelText(/select existing contact \(optional\)/i),
@@ -169,7 +170,7 @@ describe("the NewOperationRepresentativeForm component", () => {
         formData={{
           operation_representatives: [3],
         }}
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        operation={operationId}
         step={5}
         existingOperationRepresentatives={existingOperationRepresentativesMock}
         contacts={contactsMock}
@@ -200,6 +201,14 @@ describe("the NewOperationRepresentativeForm component", () => {
         name: /henry ives/i,
       }),
     );
+
+    expect(actionHandler).toHaveBeenNthCalledWith(
+      1,
+      "registration/contacts/1",
+      "GET",
+      "",
+    );
+
     // check for the form to be filled with the selected contact
     expect(screen.getByLabelText(/First Name/i)).toHaveValue("Henry");
     expect(screen.getByLabelText(/Last Name/i)).toHaveValue("Ives");
@@ -231,7 +240,7 @@ describe("the NewOperationRepresentativeForm component", () => {
         formData={{
           operation_representatives: [],
         }}
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        operation={operationId}
         step={5}
         existingOperationRepresentatives={[]}
         contacts={contactsMock}
@@ -262,6 +271,26 @@ describe("the NewOperationRepresentativeForm component", () => {
     });
     await userEvent.click(saveOperationRepresentativeButton);
 
+    expect(actionHandler).toHaveBeenNthCalledWith(
+      1,
+      `registration/v2/operations/${operationId}/registration/operation-representative`,
+      "POST",
+      `/register-an-operation/${operationId}/5`,
+      {
+        body: JSON.stringify({
+          first_name: "Isaac",
+          last_name: "Newton",
+          position_title: "Scientist",
+          email: "isaac.newton@email.com",
+          phone_number: "+1 1 604 401 4321",
+          street_address: "123 Under the Apple Tree",
+          municipality: "Gravityville",
+          province: "AB",
+          postal_code: "A1B2C3",
+        }),
+      },
+    );
+
     // Check for the success message
     expect(
       screen.getByText(/operation representative saved successfully/i),
@@ -272,7 +301,7 @@ describe("the NewOperationRepresentativeForm component", () => {
         formData={{
           operation_representatives: [4],
         }}
-        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        operation={operationId}
         step={5}
         existingOperationRepresentatives={[
           {
