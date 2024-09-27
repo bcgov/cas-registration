@@ -14,7 +14,7 @@ type DefaultEmptySourceTypeMap = {
 export const uiSchemaMap: UiSchemaMap = {
   gsc_excluding_line_tracing: "gscUiSchema",
   gsc_solely_for_line_tracing: "gscUiSchema",
-  gsc_other_than_non_compression: "gscOthenThanNonCompression",
+  gsc_other_than_non_compression: "gscOtherThanNonCompression",
   gsc_non_compression: "gscNonCompressionNonProcessingUiSchema",
   fuel_combustion_by_mobile: "fuelCombustionMobileUiSchema",
   hydrogen_production: "hydrogenProduction",
