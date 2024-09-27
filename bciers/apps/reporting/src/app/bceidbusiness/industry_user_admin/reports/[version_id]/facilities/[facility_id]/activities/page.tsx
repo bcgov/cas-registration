@@ -50,9 +50,17 @@ export default async function Page(router) {
     });
     taskListData[0].elements = sectionElements;
   };
+  const additionalPages = [
+    "Non-attributable Emissions",
+    "Emissions Summary",
+    "Production Data",
+    "Allocation of Emissions",
+  ];
+  additionalPages.forEach((taskListPage) => {
+    taskListData.push({ type: "Page", title: taskListPage });
+  });
 
   generateTasklistItems();
-
   return (
     <>
       <Suspense fallback="Loading Schema">
