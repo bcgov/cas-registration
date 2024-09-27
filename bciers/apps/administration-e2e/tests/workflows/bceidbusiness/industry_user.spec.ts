@@ -37,7 +37,7 @@ test.describe("Test Workflow industry_user", () => {
     process.env.E2E_INDUSTRY_USER_STORAGE_STATE as string,
   );
   test.use({ storageState: storageState });
-  test("Administration Dashboard - Select Operator", async ({ page }) => {
+  test("Select Operator dashboard tile", async ({ page }) => {
     let pageContent;
     // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
@@ -67,7 +67,7 @@ test.describe("Test Workflow industry_user", () => {
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
-  test("Select existing operator (via legal name) and request admin access", async ({
+  test("Select operator (via legal name) and request admin access", async ({
     page,
   }) => {
     let pageContent;
@@ -120,7 +120,7 @@ test.describe("Test Workflow industry_user", () => {
     await analyzeAccessibility(page);
   });
 
-  test("Select existing operator (via CRA business number) and request non-admin access", async ({
+  test("Select operator (via CRA business number) and request non-admin access", async ({
     page,
   }) => {
     let pageContent;
@@ -158,7 +158,7 @@ test.describe("Test Workflow industry_user", () => {
     });
   });
 
-  test("Select existing operator access request denied", async ({ page }) => {
+  test("Operator access request denied", async ({ page }) => {
     let pageContent;
 
     // 🛸 Navigates to select operator
@@ -168,12 +168,33 @@ test.describe("Test Workflow industry_user", () => {
 
     // 👉 Action select by CRA
     await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA_DENIED);
-    // 🔍 Assert operator access denied message
-    await selectOperatorPage.msgAccessDeniedIsVisible();
+    // 🔍 Assert operator access denied by admin message
+    await selectOperatorPage.msgAccessDeniedAdminIsVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
-      component: "Select operator existing admin message",
+      component: "Access request denied",
+      variant: "default",
+    });
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
+  });
+  test("Operator access request denied by admin", async ({ page }) => {
+    let pageContent;
+
+    // 🛸 Navigates to select operator
+    const selectOperatorPage = new OperatorPOM(page);
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+
+    // 👉 Action select by CRA
+    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA_DENIED);
+    // 🔍 Assert operator access denied by admin message
+    await selectOperatorPage.msgAccessDeniedAdminIsVisible();
+    // 📷 Cheese!
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Access request denied by admin",
       variant: "default",
     });
     // ♿️ Analyze accessibility

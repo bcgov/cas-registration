@@ -80,6 +80,8 @@ export class OperatorPOM {
 
   readonly messageAccessDenied: Locator;
 
+  readonly messageAccessDeniedAdmin: Locator;
+
   readonly messageNoAccess: Locator;
 
   readonly messageNoAdminSetup: Locator;
@@ -138,6 +140,9 @@ export class OperatorPOM {
 
     this.messageAccessDenied = page.getByText(
       new RegExp(MessageTextOperatorSelect.ACCESS_DENIED, "i"),
+    );
+    this.messageAccessDeniedAdmin = page.getByText(
+      new RegExp(MessageTextOperatorSelect.ACCESS_DENIED_ADMIN, "i"),
     );
     this.messageAccessRequested = page.getByText(
       new RegExp(MessageTextOperatorSelect.REQUEST_ACCESS, "i"),
@@ -282,6 +287,9 @@ export class OperatorPOM {
     await expect(this.messageAccessDenied).toBeVisible();
   }
 
+  async msgAccessDeniedAdminIsVisible() {
+    await expect(this.messageAccessDeniedAdmin).toBeVisible();
+  }
   async msgAccessRequestedIsVisible() {
     await expect(this.messageAccessRequested).toBeVisible();
   }

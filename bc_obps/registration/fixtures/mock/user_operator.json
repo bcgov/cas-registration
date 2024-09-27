@@ -52,8 +52,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
       "operator": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
-      "role": "admin",
-      "status": "Approved",
+      "role": "pending",
+      "status": "Pending",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 5
@@ -338,13 +338,25 @@
   {
     "model": "registration.useroperator",
     "fields": {
-      "user": "00000000-0000-0000-0000-000000000026",
+      "user": "ba2ba62a121842e0942aab9e92ce8822",
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 29
+    }
+  },
+  {
+    "model": "registration.useroperator",
+    "fields": {
+      "user": "279c80cf57814c28872740a133d17c0d",
+      "operator": "73e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "role": "pending",
+      "status": "Declined",
+      "verified_at": null,
+      "verified_by": null,
+      "user_friendly_id": 30
     }
   }
 ]

@@ -86,7 +86,7 @@ export enum E2EValue {
   INPUT_WEB_SITE = "https://www.website.com",
   PASSWORD = "_PASSWORD",
   PREFIX = "E2E_",
-  SEARCH_CRA = "987654324",
+  SEARCH_CRA = "987654334",
   SEARCH_CRA_DENIED = "987654321",
   SEARCH_LEGAL_NAME = "Operator",
 }
@@ -144,6 +144,7 @@ export enum MessageTextOperations {
 // 💬 Operator messages
 export enum MessageTextOperatorSelect {
   ACCESS_DENIED = "Your access request was declined by an Administrator",
+  ACCESS_DENIED_ADMIN = "Your access request was declined by an Administrator",
   INPUT_CRA = "Enter CRA Business Number",
   NO_ACCESS = "Looks like you do not have access to",
   NO_ADMIN = "does not have Administrator access set up",
