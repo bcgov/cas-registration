@@ -621,6 +621,7 @@ HistoricalFacilityDesignatedOperationTimeline {
     DateTimeField archived_at
     DateTimeField start_date
     DateTimeField end_date
+    CharField status
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
@@ -644,6 +645,7 @@ FacilityDesignatedOperationTimeline {
     ForeignKey operation
     DateTimeField start_date
     DateTimeField end_date
+    CharField status
 }
 HistoricalMultipleOperator {
     BigIntegerField id
