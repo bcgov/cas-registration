@@ -71,6 +71,7 @@ const NewOperationRepresentativeForm: React.FC<
 
   const handleClearingExistingContact = () => {
     setExistingContactId("");
+    setError(undefined);
     setFormState({
       operation_representatives: formState.operation_representatives,
       new_operation_representative: [{}],
@@ -153,14 +154,14 @@ const NewOperationRepresentativeForm: React.FC<
         liveValidate={isExistingContactSelected}
       >
         <div>
-          <div className="min-h-[48px] box-border">
-            {error && <Alert severity="error">{error}</Alert>}
-          </div>
           {isSubmitButton && (
-            <Button className="mt-4" variant="outlined" type="submit">
+            <Button className="my-4" variant="outlined" type="submit">
               Save Operation Representative
             </Button>
           )}
+          <div className="min-h-[48px] box-border">
+            {error && <Alert severity="error">{error}</Alert>}
+          </div>
         </div>
       </FormBase>
       <SnackBar
