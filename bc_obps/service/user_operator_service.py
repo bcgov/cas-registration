@@ -8,7 +8,8 @@ from service.data_access_service.user_operator_service import UserOperatorDataAc
 from registration.schema.v1.user_operator import (
     UserOperatorOperatorIn,
     UserOperatorPaginatedOut,
-    UserOperatorStatusUpdate, UserOperatorListOut,
+    UserOperatorStatusUpdate,
+    UserOperatorListOut,
 )
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
@@ -154,7 +155,7 @@ class UserOperatorService:
                     **user_operator_related_fields_dict,
                     **user_related_fields_dict,
                     **operator_related_fields_dict,
-                } # type: ignore[arg-type] # we know this is a list of dictionaries with the correct keys
+                }  # type: ignore[arg-type] # we know this is a list of dictionaries with the correct keys
             )
         return UserOperatorPaginatedOut(
             data=user_operator_list,
