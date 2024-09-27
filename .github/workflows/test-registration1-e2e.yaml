@@ -110,7 +110,8 @@ jobs:
     name: 📊 e2e report artifact
     runs-on: ubuntu-latest
     needs: [e2e-tests]
-    if: ${{ always() && contains(needs.*.result, 'failure') && inputs.is_nx_affected }}
+    if: ${{ always() }}
+    #    if: ${{ always() && contains(needs.*.result, 'failure') && inputs.is_nx_affected }}
     steps:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
