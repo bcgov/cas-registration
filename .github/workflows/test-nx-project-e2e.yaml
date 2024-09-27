@@ -59,13 +59,12 @@ jobs:
       - name: 🎁 setup local app
         uses: ./.github/actions/run-docker-compose
         with:
-          docker_compose_file_name: ${{ inputs.docker_compose_file }}
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
           docker_compose_file: ${{ inputs.docker_compose_file }}
+          image_url: ${{ inputs.image_url }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-          image_url: ${{ inputs.image_url }}
           nx_app_port: ${{ inputs.nx_app_port }}
       - name: yarn modern
         shell: bash
