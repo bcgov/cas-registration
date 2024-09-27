@@ -35,7 +35,7 @@ const uiSchema = {
             "emission",
             "equivalentEmissions",
             "methodology",
-            "feedStocks",
+            "feedstocks",
             "description",
           ],
           gasType: {
@@ -64,8 +64,8 @@ const uiSchema = {
               ],
             },
           },
-          feedStocks: {
-            "ui:title": "Feed Stocks",
+          feedstocks: {
+            "ui:title": "Feedstocks",
             "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
             "ui:FieldTemplate": FieldTemplate,
             "ui:options": {
@@ -76,13 +76,13 @@ const uiSchema = {
             },
             items: {
               "ui:order": [
-                "feedStock",
+                "feedstock",
                 "annualFeedStockAmount",
                 "unitForAnnualFeedstockAmount",
                 "annualHydrogenProduction",
               ],
 
-              feedStock: {
+              feedstock: {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFeedStockAmount: {

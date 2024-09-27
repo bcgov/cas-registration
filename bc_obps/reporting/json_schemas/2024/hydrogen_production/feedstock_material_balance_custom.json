@@ -1,19 +1,19 @@
 {
   "type": "object",
   "properties": {
-    "feedStocks": {
+    "feedstocks": {
       "type": "array",
-      "title": "Feed Stocks",
+      "title": "Feedstocks",
       "items": {
         "type": "object",
         "properties": {
-          "feedStock": {
+          "feedstock": {
             "type": "string",
             "title": "Feedstock"
           },
           "annualFeedStockAmount": {
             "type": "string",
-            "title": "Annual Feed Stock Amount"
+            "title": "Annual Feedstock Amount"
           },
           "annualHydrogenProduction": {
             "type": "number",
