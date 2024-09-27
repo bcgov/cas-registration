@@ -261,18 +261,6 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             field_name='Annual high heat value of spent liquor solids (GJ/kg)', field_units__isnull=True
         ),
     )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Pulp and paper production').id,
-        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Annual carbon content of spent liquor solids (% by weight)', field_units__isnull=True
-        ),
-    )
     # CO2 - Solids-CC
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,

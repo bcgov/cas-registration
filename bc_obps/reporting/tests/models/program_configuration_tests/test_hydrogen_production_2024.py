@@ -93,12 +93,12 @@ class HydrogenProduction2024Test(TestCase):
         expected_schema = {
             "feedstocks": {
                 "type": "array",
-                "title": "FeedStocks",
+                "title": "Feedstocks",
                 "items": {
                     "type": "object",
                     "properties": {
                         "feedstock": {"type": "string", "title": "Feedstock"},
-                        "annualFeedStockAmount": {"type": "string", "title": "Annual Feedstock Amount"},
+                        "annualFeedstockAmount": {"type": "string", "title": "Annual Feedstock Amount"},
                         "annualHydrogenProduction": {"type": "number", "title": "Annual Hydrogen Production"},
                         "unitForAnnualFeedstockAmount": {
                             "type": "string",
