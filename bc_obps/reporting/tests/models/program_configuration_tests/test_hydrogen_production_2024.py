@@ -91,14 +91,14 @@ class HydrogenProduction2024Test(TestCase):
 
         # Define the expected schema for the "Feedstock Material Balance" methodology
         expected_schema = {
-            "feedStocks": {
+            "feedstocks": {
                 "type": "array",
-                "title": "Feed Stocks",
+                "title": "FeedStocks",
                 "items": {
                     "type": "object",
                     "properties": {
-                        "feedStock": {"type": "string", "title": "Feedstock"},
-                        "annualFeedStockAmount": {"type": "string", "title": "Annual Feed Stock Amount"},
+                        "feedstock": {"type": "string", "title": "Feedstock"},
+                        "annualFeedStockAmount": {"type": "string", "title": "Annual Feedstock Amount"},
                         "annualHydrogenProduction": {"type": "number", "title": "Annual Hydrogen Production"},
                         "unitForAnnualFeedstockAmount": {
                             "type": "string",
