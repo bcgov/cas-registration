@@ -19,8 +19,8 @@ on:
         required: true
         type: boolean
       nx_app_port:
-        description: "Port to run the Nx app on"
-        required: true
+        description: "Port to run the Nx app on if using the docker-compose-nx-app.yaml file"
+        required: false
         type: number
       nx_project:
         description: "Nx project to test"
