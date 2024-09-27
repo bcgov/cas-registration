@@ -1,4 +1,5 @@
 from typing import Literal, Tuple
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -20,6 +21,7 @@ from ..models import ReportingYear
     description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
     pre-populating them with facility, operation and operator information. Returns the id of the report that was created.
     This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
@@ -32,6 +34,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     response={200: ReportOperationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 def get_report_operation_by_version_id(
@@ -47,6 +50,7 @@ def get_report_operation_by_version_id(
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def save_report(
@@ -61,6 +65,7 @@ def save_report(
     response={200: ReportingYearOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns json object with current reporting year and due date.""",
+    auth=authorize("all_roles"),
 )
 @handle_http_errors()
 def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYear]:

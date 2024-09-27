@@ -1,21 +1,32 @@
 import json
-import pytest
 from typing import Any
 from django.http import HttpResponse
-from django.test import Client
-from registration.tests.utils.bakers import operation_baker
+from registration.tests.utils.bakers import operation_baker, operator_baker
 from reporting.models import Report, ReportVersion
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
-@pytest.mark.django_db
-class TestReportsEndpoint:
+class TestReportsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/create-report"
-    client = Client()
 
-    def send_post_request(self, request_data: dict[str, Any]) -> HttpResponse:
-        return self.client.post(
-            self.endpoint_under_test, data=json.dumps(request_data), content_type="application/json"
+    def test_unauthorized_users_cannot_create_report(self):
+        data = {}
+        response = TestUtils.mock_post_with_auth_role(
+            self, "cas_pending", self.content_type, data, self.endpoint_under_test
+        )
+        assert response.status_code == 401
+
+    def send_authorized_post_request(self, request_data: dict[str, Any]) -> HttpResponse:
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        return TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            json.dumps(request_data),
+            self.endpoint_under_test,
         )
 
     def test_error_if_no_operation_exists(self):
@@ -25,7 +36,7 @@ class TestReportsEndpoint:
             "operation_id": "00000000-0000-0000-0000-000000000000",
             "reporting_year": reporting_year.reporting_year,
         }
-        response = self.send_post_request(request_data)
+        response = self.send_authorized_post_request(request_data)
 
         assert response.status_code == 404
         assert response.json()["message"] == "Not Found"
@@ -34,7 +45,7 @@ class TestReportsEndpoint:
         operation = operation_baker()
 
         request_data = {"operation_id": str(operation.id), "reporting_year": 2000}
-        response = self.send_post_request(request_data)
+        response = self.send_authorized_post_request(request_data)
 
         assert response.status_code == 404
         assert response.json()["message"] == "Not Found"
@@ -46,7 +57,7 @@ class TestReportsEndpoint:
             "operation_id": str(report.operation.id),
             "reporting_year": report.reporting_year.reporting_year,
         }
-        response = self.send_post_request(request_data)
+        response = self.send_authorized_post_request(request_data)
 
         assert response.status_code == 400
         assert (
@@ -65,7 +76,7 @@ class TestReportsEndpoint:
             "operation_id": str(operation.id),
             "reporting_year": reporting_year.reporting_year,
         }
-        response = self.send_post_request(request_data)
+        response = self.send_authorized_post_request(request_data)
 
         assert Report.objects.count() == 1
         assert ReportVersion.objects.count() == 1

@@ -1,16 +1,20 @@
 from unittest.mock import patch, MagicMock, AsyncMock
 from django.test import Client
-import pytest
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, user_baker
 from reporting.models.report import Report
 from reporting.tests.utils.bakers import reporting_year_baker
+from registration.tests.utils.bakers import operator_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
-@pytest.mark.django_db
-class TestReportingOperationsEndpoint:
+class TestReportingOperationsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/operations"
     client = Client()
+
+    def test_unauthorized_users_cannot_get_operations(self):
+        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", self.endpoint_under_test)
+        assert response.status_code == 401
 
     @patch(
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
@@ -41,7 +45,9 @@ class TestReportingOperationsEndpoint:
         mock_get_current_year.return_value = reporting_year_baker(reporting_year=1234)
         mock_get_current_user.return_value = user_baker()
 
-        response_json = self.client.get(self.endpoint_under_test).json()
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test).json()
 
         assert response_json['count'] == 5
         assert len(response_json['items']) == 5
