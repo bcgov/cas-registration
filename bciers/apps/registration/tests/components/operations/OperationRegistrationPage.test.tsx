@@ -149,10 +149,14 @@ describe("the OperationRegistrationPage component", () => {
     actionHandler.mockResolvedValueOnce({
       registration_purposes: ["OBPS Regulated Operation"],
     });
-    // contacts
-    actionHandler.mockResolvedValueOnce([]);
 
-    // users
+    // contacts
+    actionHandler.mockResolvedValueOnce({
+      items: [],
+      count: 0,
+    });
+
+    // existingOperationRepresentatives
     actionHandler.mockResolvedValueOnce([]);
 
     render(

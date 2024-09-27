@@ -100,9 +100,15 @@ describe("The MultiStepButtons component", () => {
 
   it("renders correct buttons text when overriding submitButtonText prop", () => {
     render(
-      <MultiStepButtons {...defaultProps} submitButtonText="I like a new name" disabled={false} />,
+      <MultiStepButtons
+        {...defaultProps}
+        submitButtonText="I like a new name"
+        disabled={false}
+      />,
     );
-    expect(screen.getByRole("button", { name: "I like a new name" })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "I like a new name" }),
+    ).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
     expect(
