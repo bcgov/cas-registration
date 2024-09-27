@@ -35,22 +35,22 @@ jobs:
           echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
         shell: bash
+  build-administration:
+    uses: ./.github/workflows/build-administration.yaml
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
-  build-registration:
-    uses: ./.github/workflows/build-registration.yaml
+  build-coam:
+    uses: ./.github/workflows/build-coam.yaml
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
     uses: ./.github/workflows/build-dashboard-e2e.yaml
+  build-registration:
+    uses: ./.github/workflows/build-registration.yaml
   build-registration1:
     uses: ./.github/workflows/build-registration1.yaml
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
-  build-coam:
-    uses: ./.github/workflows/build-coam.yaml
-  build-administration:
-    uses: ./.github/workflows/build-administration.yaml
   test-code:
     needs: [check-nx-affected]
     uses: ./.github/workflows/test-code.yaml
@@ -85,8 +85,8 @@ jobs:
   test-dashboard-e2e:
     needs:
       [
-        build-backend,
         build-administration,
+        build-backend,
         build-coam,
         build-dashboard-e2e,
         build-registration,
