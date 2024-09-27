@@ -52,8 +52,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
       "operator": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 5

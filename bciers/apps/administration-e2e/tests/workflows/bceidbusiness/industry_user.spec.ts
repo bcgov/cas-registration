@@ -15,6 +15,7 @@ import {
   setupTestEnvironment,
   takeStabilizedScreenshot,
 } from "@/e2e/utils/helpers";
+import { deleteUserOperatorRecord } from "@/e2e/utils/queries";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
 

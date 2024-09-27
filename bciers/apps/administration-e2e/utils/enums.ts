@@ -86,7 +86,8 @@ export enum E2EValue {
   INPUT_WEB_SITE = "https://www.website.com",
   PASSWORD = "_PASSWORD",
   PREFIX = "E2E_",
-  SEARCH_CRA = "987654321",
+  SEARCH_CRA = "987654324",
+  SEARCH_CRA_DENIED = "987654321",
   SEARCH_LEGAL_NAME = "Operator",
 }
 
