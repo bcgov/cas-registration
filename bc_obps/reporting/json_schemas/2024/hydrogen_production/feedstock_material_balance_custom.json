@@ -11,7 +11,7 @@
             "type": "string",
             "title": "Feedstock"
           },
-          "annualFeedStockAmount": {
+          "annualFeedstockAmount": {
             "type": "string",
             "title": "Annual Feedstock Amount"
           },

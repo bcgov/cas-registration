@@ -69,7 +69,7 @@ const uiSchema = {
             "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
             "ui:FieldTemplate": FieldTemplate,
             "ui:options": {
-              arrayAddLabel: "Add FeedStock",
+              arrayAddLabel: "Add Feedstock",
               title: "Feedstock",
               label: false,
               verticalBorder: true,
@@ -77,7 +77,7 @@ const uiSchema = {
             items: {
               "ui:order": [
                 "feedstock",
-                "annualFeedStockAmount",
+                "annualFeedstockAmount",
                 "unitForAnnualFeedstockAmount",
                 "annualHydrogenProduction",
               ],
@@ -85,7 +85,7 @@ const uiSchema = {
               feedstock: {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
-              annualFeedStockAmount: {
+              annualFeedstockAmount: {
                 "ui:FieldTemplate": InlineFieldTemplate,
               },
               unitForAnnualFeedstockAmount: {
