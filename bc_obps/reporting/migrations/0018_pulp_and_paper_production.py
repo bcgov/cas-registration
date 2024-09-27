@@ -237,26 +237,6 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Carbonate Name', field_units__isnull=True),
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Pulp and paper production').id,
-        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Purity Of Carbonate (Weight Fraction)', field_units__isnull=True),
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Pulp and paper production').id,
-        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
         ReportingField.objects.get(field_name='Mass of spent liquor combusted (tonnes/year)', field_units__isnull=True),
     )
     ConfigurationElement.objects.get(
@@ -313,18 +293,6 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Solids percentage by weight (%)', field_units__isnull=True),
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Pulp and paper production').id,
-        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Solids-CC').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Annual high heat value of spent liquor solids (GJ/kg)', field_units__isnull=True
-        ),
     )
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
