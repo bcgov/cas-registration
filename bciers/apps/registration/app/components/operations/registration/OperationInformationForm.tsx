@@ -4,7 +4,7 @@ import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { OperationInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { getOperationV2 } from "@bciers/actions/api";
 import {
@@ -13,7 +13,6 @@ import {
 } from "@bciers/components/form/formDataUtils";
 import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { useRouter } from "next/navigation";
-import { UUID } from "crypto";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -31,18 +30,6 @@ const OperationInformationForm = ({
   const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState("");
   const [error, setError] = useState(undefined);
-  const [onSubmitSuccessfulResponse, setOnSubmitSuccessfulResponse] = useState<
-    { id: UUID } | undefined
-  >(undefined);
-
-  useEffect(() => {
-    if (onSubmitSuccessfulResponse) {
-      const nextStepUrl = `/register-an-operation/${
-        onSubmitSuccessfulResponse.id
-      }/${step + 1}`;
-      router.push(nextStepUrl);
-    }
-  }, [onSubmitSuccessfulResponse]);
 
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
@@ -85,8 +72,16 @@ const OperationInformationForm = ({
       {
         body,
       },
-    );
-    // errors are handled in MultiStepBase
+    ).then((resolve) => {
+      if (resolve?.error) {
+        return { error: resolve.error };
+      } else if (resolve?.id) {
+        // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
+        const nextStepUrl = `/register-an-operation/${resolve.id}/${step + 1}`;
+        router.push(nextStepUrl);
+        return resolve;
+      }
+    });
     return response;
   };
   const handleSelectOperationChange = async (data: any) => {
@@ -108,7 +103,6 @@ const OperationInformationForm = ({
       cancelUrl="/"
       formData={formState}
       onSubmit={handleSubmit}
-      setOnSubmitSuccessfulResponse={setOnSubmitSuccessfulResponse}
       schema={schema}
       step={step}
       steps={steps}

@@ -31,4 +31,5 @@ from registration.schema.generic import Message
 def register_edit_operation_information(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:
+    # raise Exception('d')
     return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)

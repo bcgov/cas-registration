@@ -27,6 +27,7 @@ def operation_registration_submission(
     request: HttpRequest, operation_id: UUID, payload: OperationRegistrationSubmissionIn
 ) -> Tuple[Literal[200], Operation]:
     # Check if all checkboxes are checked
+    # raise Exception('d')
     if not all(
         [payload.acknowledgement_of_review, payload.acknowledgement_of_information, payload.acknowledgement_of_records]
     ):

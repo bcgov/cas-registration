@@ -29,7 +29,6 @@ interface MultiStepBaseProps {
   uiSchema: UiSchema;
   submitButtonDisabled?: boolean;
   customValidate?: any;
-  setOnSubmitSuccessfulResponse?: (error: undefined) => void; // Use this if the parent component needs the successful `onSubmit` response to do further actions, e.g. the RegistrationSubmissionForm shows a confirmation message after a successful submission
 }
 
 // Modified MultiStepFormBase meant to facilitate more modularized Multi-step forms
@@ -55,7 +54,6 @@ const MultiStepBase = ({
   uiSchema,
   submitButtonDisabled,
   customValidate,
-  setOnSubmitSuccessfulResponse,
 }: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -73,17 +71,17 @@ const MultiStepBase = ({
     const response = await onSubmit(data);
     if (response?.error) {
       setError(response?.error);
+      setIsSubmitting(false);
       return;
     }
 
-    if (setOnSubmitSuccessfulResponse) setOnSubmitSuccessfulResponse(response);
     if (isNotFinalStep && baseUrl) {
       const nextStepUrl = `${baseUrl}/${step + 1}${
         baseUrlParams ? `?${baseUrlParams}` : ""
       }`;
       router.push(nextStepUrl);
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const isDisabled = (disabled && !isEditMode) || isSubmitting;
