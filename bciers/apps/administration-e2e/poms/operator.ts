@@ -78,6 +78,8 @@ export class OperatorPOM {
 
   readonly messageConfirmation: Locator;
 
+  readonly messageAccessDenied: Locator;
+
   readonly messageNoAccess: Locator;
 
   readonly messageNoAdminSetup: Locator;
@@ -133,6 +135,10 @@ export class OperatorPOM {
       name: ButtonText.GO_BACK,
     });
     this.linkReturn = page.getByText(ButtonText.RETURN);
+
+    this.messageAccessDenied = page.getByText(
+      new RegExp(MessageTextOperatorSelect.ACCESS_DENIED, "i"),
+    );
     this.messageAccessRequested = page.getByText(
       new RegExp(MessageTextOperatorSelect.REQUEST_ACCESS, "i"),
     );
@@ -270,6 +276,10 @@ export class OperatorPOM {
     await this.formTitleIsVisible();
     await expect(this.buttonEdit).toBeVisible();
     await expect(this.buttonSaveAndReturn).toBeVisible();
+  }
+
+  async msgAccessDeniedIsVisible() {
+    await expect(this.messageAccessDenied).toBeVisible();
   }
 
   async msgAccessRequestedIsVisible() {

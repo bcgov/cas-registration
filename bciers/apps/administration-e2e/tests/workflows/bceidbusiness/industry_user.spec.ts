@@ -147,14 +147,36 @@ test.describe("Test Workflow industry_user", () => {
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
     // 👉 Action request access
-    // await selectOperatorPage.requestAccess();
-    // // 🔍 Assert access requested message
-    // await selectOperatorPage.msgAccessRequestedIsVisible();
-    // // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator non-admin access request confirmation",
-    //   variant: "default",
-    // });
+    await selectOperatorPage.requestAccess();
+    // 🔍 Assert access requested message
+    await selectOperatorPage.msgAccessRequestedIsVisible();
+    // 📷 Cheese!
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator non-admin access request confirmation",
+      variant: "default",
+    });
+  });
+
+  test("Select existing operator access request denied", async ({ page }) => {
+    let pageContent;
+
+    // 🛸 Navigates to select operator
+    const selectOperatorPage = new OperatorPOM(page);
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+
+    // 👉 Action select by CRA
+    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA_DENIED);
+    // 🔍 Assert operator access denied message
+    await selectOperatorPage.msgAccessDeniedIsVisible();
+    // 📷 Cheese!
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator existing admin message",
+      variant: "default",
+    });
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
   });
 });

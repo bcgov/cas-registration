@@ -143,6 +143,7 @@ export enum MessageTextOperations {
 
 // 💬 Operator messages
 export enum MessageTextOperatorSelect {
+  ACCESS_DENIED = "Your access request was declined by an Administrator",
   INPUT_CRA = "Enter CRA Business Number",
   NO_ACCESS = "Looks like you do not have access to",
   NO_ADMIN = "does not have Administrator access set up",
