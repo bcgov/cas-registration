@@ -6,13 +6,9 @@ name: Test BCIERS Nx App containers
 on:
   workflow_call:
     inputs:
-      nx_app_port:
-        description: "Port to run the Nx app on"
-        required: true
-        type: number
-      nx_project:
-        description: "Nx project to test"
-        required: true
+      docker_compose_file:
+        description: "Optional input to specify another docker-compose file. The default is docker-compose-nx-app.yaml"
+        required: false
         type: string
       image_url:
         description: "Docker image URL minus the tag which will be the pull request sha"
@@ -22,6 +18,14 @@ on:
         description: "Whether the project is affected by the PR"
         required: true
         type: boolean
+      nx_app_port:
+        description: "Port to run the Nx app on"
+        required: true
+        type: number
+      nx_project:
+        description: "Nx project to test"
+        required: true
+        type: string
 
 env:
   PGUSER: postgres
@@ -53,9 +57,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: 🎁 setup local app
-        uses: ./.github/actions/run-nx-app
+        uses: ./.github/actions/run-docker-compose
         with:
+          docker_compose_file_name: ${{ inputs.docker_compose_file }}
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          docker_compose_file: ${{ inputs.docker_compose_file }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
