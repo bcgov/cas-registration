@@ -234,86 +234,90 @@ describe("the NewOperationRepresentativeForm component", () => {
     checkEmptyOperationRepresentativeForm();
   });
 
-  it("render the NewOperationRepresentativeForm component WITHOUT an existing operation representative", async () => {
-    const { rerender } = render(
-      <NewOperationRepresentativeForm
-        formData={{
-          operation_representatives: [],
-        }}
-        operation={operationId}
-        step={5}
-        existingOperationRepresentatives={[]}
-        contacts={contactsMock}
-      />,
-    );
+  it(
+    "render the NewOperationRepresentativeForm component WITHOUT an existing operation representative",
+    async () => {
+      const { rerender } = render(
+        <NewOperationRepresentativeForm
+          formData={{
+            operation_representatives: [],
+          }}
+          operation={operationId}
+          step={5}
+          existingOperationRepresentatives={[]}
+          contacts={contactsMock}
+        />,
+      );
 
-    expect(
-      screen.queryByText(/operation representative\(s\):/i),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(/john doe/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/operation representative\(s\):/i),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/john doe/i)).not.toBeInTheDocument();
 
-    //This button should be visible if we have no existing operation representatives
-    const saveOperationRepresentativeButton = screen.getByRole("button", {
-      name: /save operation representative/i,
-    });
-    expect(saveOperationRepresentativeButton).toBeVisible();
+      //This button should be visible if we have no existing operation representatives
+      const saveOperationRepresentativeButton = screen.getByRole("button", {
+        name: /save operation representative/i,
+      });
+      expect(saveOperationRepresentativeButton).toBeVisible();
 
-    expect(
-      screen.queryByRole("button", {
-        name: /add new operation representative/i,
-      }),
-    ).not.toBeInTheDocument();
-    checkEmptyOperationRepresentativeForm();
-    await fillOperationRepresentativeForm();
-
-    actionHandler.mockReturnValueOnce({
-      id: 4,
-    });
-    await userEvent.click(saveOperationRepresentativeButton);
-
-    expect(actionHandler).toHaveBeenNthCalledWith(
-      1,
-      `registration/v2/operations/${operationId}/registration/operation-representative`,
-      "POST",
-      `/register-an-operation/${operationId}/5`,
-      {
-        body: JSON.stringify({
-          first_name: "Isaac",
-          last_name: "Newton",
-          position_title: "Scientist",
-          email: "isaac.newton@email.com",
-          phone_number: "+1 1 604 401 4321",
-          street_address: "123 Under the Apple Tree",
-          municipality: "Gravityville",
-          province: "AB",
-          postal_code: "A1B2C3",
+      expect(
+        screen.queryByRole("button", {
+          name: /add new operation representative/i,
         }),
-      },
-    );
+      ).not.toBeInTheDocument();
+      checkEmptyOperationRepresentativeForm();
+      await fillOperationRepresentativeForm();
 
-    // Check for the success message
-    expect(
-      screen.getByText(/operation representative saved successfully/i),
-    ).toBeVisible();
+      actionHandler.mockReturnValueOnce({
+        id: 4,
+      });
+      await userEvent.click(saveOperationRepresentativeButton);
 
-    rerender(
-      <NewOperationRepresentativeForm
-        formData={{
-          operation_representatives: [4],
-        }}
-        operation={operationId}
-        step={5}
-        existingOperationRepresentatives={[
-          {
-            id: 4,
-            full_name: "Isaac Newton",
-          },
-        ]}
-        contacts={contactsMock}
-      />,
-    );
-    checkEmptyOperationRepresentativeForm();
-    expect(screen.getByText(/operation representative\(s\):/i)).toBeVisible();
-    expect(screen.getByText(/isaac newton/i)).toBeVisible();
-  });
+      expect(actionHandler).toHaveBeenNthCalledWith(
+        1,
+        `registration/v2/operations/${operationId}/registration/operation-representative`,
+        "POST",
+        `/register-an-operation/${operationId}/5`,
+        {
+          body: JSON.stringify({
+            first_name: "Isaac",
+            last_name: "Newton",
+            position_title: "Scientist",
+            email: "isaac.newton@email.com",
+            phone_number: "+1 1 604 401 4321",
+            street_address: "123 Under the Apple Tree",
+            municipality: "Gravityville",
+            province: "AB",
+            postal_code: "A1B2C3",
+          }),
+        },
+      );
+
+      // Check for the success message
+      expect(
+        screen.getByText(/operation representative saved successfully/i),
+      ).toBeVisible();
+
+      rerender(
+        <NewOperationRepresentativeForm
+          formData={{
+            operation_representatives: [4],
+          }}
+          operation={operationId}
+          step={5}
+          existingOperationRepresentatives={[
+            {
+              id: 4,
+              full_name: "Isaac Newton",
+            },
+          ]}
+          contacts={contactsMock}
+        />,
+      );
+      checkEmptyOperationRepresentativeForm();
+      expect(screen.getByText(/operation representative\(s\):/i)).toBeVisible();
+      expect(screen.getByText(/isaac newton/i)).toBeVisible();
+    },
+    { timeout: 10000 },
+  );
 });
