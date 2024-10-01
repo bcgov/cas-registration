@@ -5,7 +5,7 @@ from reporting.models.configuration import Configuration
 from reporting.models.configuration_element import ConfigurationElement
 
 
-class TestGSCExcludingLineTracing2024(TestCase):
+class TestRefineryFuelGas2024(TestCase):
     def testDataExists(self):
         activity = Activity.objects.get(name='Refinery fuel gas combustion')
         config = Configuration.objects.get(slug='2024')

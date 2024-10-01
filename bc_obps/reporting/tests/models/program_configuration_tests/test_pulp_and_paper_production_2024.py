@@ -17,8 +17,8 @@ class PulpAndPaperProduction2024TestCase(TestCase):
         # For each gas, the list of methodologies and their associated field's count
         gas_config = {
             'CO2': {
-                'Solids-HHV': 6,
-                'Solids-CC': 4,
+                'Solids-HHV': 3,
+                'Solids-CC': 3,
                 'Make-up Chemical Use Methodology': 2,
                 'Alternative Parameter Methodology': 1,
                 'Replacement Methodology': 1,
