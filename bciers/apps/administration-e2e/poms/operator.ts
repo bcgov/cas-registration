@@ -9,7 +9,6 @@ import {
   ButtonText,
   E2EValue,
   OperatorFormField,
-  MessageTextOperator,
   MessageTextOperatorSelect,
   SelectOperatorFormField,
 } from "@/administration/e2e/utils/enums";
@@ -17,8 +16,6 @@ import {
 import * as dotenv from "dotenv";
 import {
   checkFormFieldsReadOnly,
-  fillAllFormFields,
-  fillRequiredFormFields,
   getAllFormInputs,
   getFieldRequired,
 } from "@/e2e/utils/helpers";
@@ -29,13 +26,9 @@ export class OperatorPOM {
 
   readonly buttonAddParentCompany: Locator;
 
-  readonly buttonEdit: Locator;
-
   readonly buttonRequestAccess: Locator;
 
   readonly buttonRequestAdministratorAccess: Locator;
-
-  readonly buttonSaveAndReturn: Locator;
 
   readonly buttonSelectOperator: Locator; // legal name search
 
@@ -61,12 +54,12 @@ export class OperatorPOM {
 
   readonly fieldSearchByCRA: Locator;
 
-  readonly fieldWebSite: Locator;
-
   readonly form: Locator;
 
   readonly headerOperator: Locator;
+
   readonly headerOperatorAddress: Locator;
+
   readonly headerOperatorParent: Locator;
 
   readonly linkAddOperator: Locator;
@@ -74,8 +67,6 @@ export class OperatorPOM {
   readonly linkGoBack: Locator;
 
   readonly linkReturn: Locator;
-
-  readonly messageEditInformation: Locator;
 
   readonly messageConfirmOperator: Locator;
 
@@ -98,18 +89,14 @@ export class OperatorPOM {
     this.buttonAddParentCompany = page.getByRole("button", {
       name: ButtonText.ADD_PARENT_COMPANY,
     });
-    this.buttonEdit = page.getByRole("button", {
-      name: ButtonText.EDIT,
-    });
+
     this.buttonRequestAccess = page.getByRole("button", {
       name: ButtonText.REQUEST_ACCESS,
     });
     this.buttonRequestAdministratorAccess = page.getByRole("button", {
       name: ButtonText.REQUEST_ADMIN_ACCESS,
     });
-    this.buttonSaveAndReturn = page.getByRole("button", {
-      name: ButtonText.SAVE_RETURN_DASHBOARD,
-    });
+
     this.buttonSelectOperator = page.getByRole("button", {
       name: ButtonText.SELECT_OPERATOR,
     });
@@ -172,9 +159,7 @@ export class OperatorPOM {
     this.messageConfirmOperator = page.getByText(
       new RegExp(MessageTextOperatorSelect.OPERATOR_CONFIRM, "i"),
     );
-    this.messageEditInformation = page.getByText(
-      new RegExp(MessageTextOperator.EDIT_INFO, "i"),
-    );
+
     this.messageNoAccess = page.getByText(
       new RegExp(MessageTextOperatorSelect.NO_ACCESS, "i"),
     );
@@ -200,17 +185,8 @@ export class OperatorPOM {
     await this.linkAddOperator.click();
   }
 
-  async clickSaveAndReturn() {
-    //If the button is clickable (i.e., enabled), then clicking it will not throw any errors. If the button is not clickable (i.e., disabled), the click action will fail with an appropriate error.
-    await this.buttonSaveAndReturn.click();
-  }
-
   async clickSubmitButton() {
     await this.buttonSubmit.click();
-  }
-
-  async editOperatorInformation() {
-    await this.fieldLegalName.fill(E2EValue.INPUT_LEGAL_NAME);
   }
 
   async fillRequiredInformation() {
@@ -260,7 +236,7 @@ export class OperatorPOM {
     await this.buttonRequestAccess.click();
   }
 
-  async requestAdmin() {
+  async requestAccessAdmin() {
     await this.buttonRequestAdministratorAccess.click();
   }
 
@@ -331,12 +307,6 @@ export class OperatorPOM {
     await expect(this.headerOperatorParent).toBeVisible();
   }
 
-  async formViewIsCorrect() {
-    await this.msgEditInformationIsVisible();
-    await expect(this.buttonEdit).toBeVisible();
-    await expect(this.buttonSaveAndReturn).toBeVisible();
-  }
-
   async msgRequestAccessConfirmedIsVisible() {
     await expect(this.messageRequestAccessConfirmed).toBeVisible();
   }
@@ -354,14 +324,6 @@ export class OperatorPOM {
   }
   async msgConfirmOperatorIsVisible() {
     await expect(this.messageConfirmOperator).toBeVisible();
-  }
-
-  async msgEditInformationIsVisible() {
-    await expect(this.messageEditInformation).toBeVisible();
-  }
-
-  async msgEditInformationIsNotVisible() {
-    await expect(this.messageEditInformation).toBeHidden();
   }
 
   async msgNoAccessIsVisible() {
