@@ -65,6 +65,32 @@ class OperationInformationIn(ModelSchema):
         fields = ["name", 'type']
 
 
+class OptedInOperationDetailOut(ModelSchema):
+    class Meta:
+        model = OptedInOperationDetail
+        fields = [
+            "meets_section_3_emissions_requirements",
+            "meets_electricity_import_operation_criteria",
+            "meets_entire_operation_requirements",
+            "meets_section_6_emissions_requirements",
+            "meets_naics_code_11_22_562_classification_requirements",
+            "meets_producing_gger_schedule_a1_regulated_product",
+            "meets_reporting_and_regulated_obligations",
+            "meets_notification_to_director_on_criteria_change",
+        ]
+
+
+class OptedInOperationDetailIn(OptedInOperationDetailOut):
+    meets_section_3_emissions_requirements: bool = Field(...)
+    meets_electricity_import_operation_criteria: bool = Field(...)
+    meets_entire_operation_requirements: bool = Field(...)
+    meets_section_6_emissions_requirements: bool = Field(...)
+    meets_naics_code_11_22_562_classification_requirements: bool = Field(...)
+    meets_producing_gger_schedule_a1_regulated_product: bool = Field(...)
+    meets_reporting_and_regulated_obligations: bool = Field(...)
+    meets_notification_to_director_on_criteria_change: bool = Field(...)
+
+
 class OperationOutV2(ModelSchema):
     naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
     secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
@@ -76,6 +102,7 @@ class OperationOutV2(ModelSchema):
     registration_purposes: Optional[list] = []
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
+    opted_in_operation: Optional[OptedInOperationDetailOut] = None
 
     @staticmethod
     def resolve_registration_purposes(obj: Operation) -> List[str]:
@@ -103,7 +130,7 @@ class OperationOutV2(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status', 'activities']
+        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status', 'activities', 'opted_in_operation']
         from_attributes = True
 
 
@@ -175,32 +202,6 @@ class OperationRegistrationSubmissionIn(Schema):
     acknowledgement_of_review: bool
     acknowledgement_of_records: bool
     acknowledgement_of_information: bool
-
-
-class OptedInOperationDetailOut(ModelSchema):
-    class Meta:
-        model = OptedInOperationDetail
-        fields = [
-            "meets_section_3_emissions_requirements",
-            "meets_electricity_import_operation_criteria",
-            "meets_entire_operation_requirements",
-            "meets_section_6_emissions_requirements",
-            "meets_naics_code_11_22_562_classification_requirements",
-            "meets_producing_gger_schedule_a1_regulated_product",
-            "meets_reporting_and_regulated_obligations",
-            "meets_notification_to_director_on_criteria_change",
-        ]
-
-
-class OptedInOperationDetailIn(OptedInOperationDetailOut):
-    meets_section_3_emissions_requirements: bool = Field(...)
-    meets_electricity_import_operation_criteria: bool = Field(...)
-    meets_entire_operation_requirements: bool = Field(...)
-    meets_section_6_emissions_requirements: bool = Field(...)
-    meets_naics_code_11_22_562_classification_requirements: bool = Field(...)
-    meets_producing_gger_schedule_a1_regulated_product: bool = Field(...)
-    meets_reporting_and_regulated_obligations: bool = Field(...)
-    meets_notification_to_director_on_criteria_change: bool = Field(...)
 
 
 class OperationStatutoryDeclarationIn(Schema):
