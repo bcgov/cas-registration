@@ -3,6 +3,7 @@ import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
 import { actionHandler } from "@bciers/testConfig/mocks";
 
+type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
 // Mock data
 const mockActivityData = {
   activityId: 1,
@@ -13,22 +14,6 @@ const mockActivityData = {
 };
 
 const mockReportDate = "2024-01-01";
-
-const mockUiSchema = {
-  "ui:classNames": "form-heading-label",
-  firstTestSourceType: {
-    "ui:widget": "CheckboxWidget",
-    "ui:options": {
-      label: false,
-    },
-  },
-  secondTestSourceType: {
-    "ui:widget": "CheckboxWidget",
-    "ui:options": {
-      label: false,
-    },
-  },
-};
 
 const mockdefaultSourceType = { units: [{ fuels: [{ emissions: [{}] }] }] };
 
@@ -61,16 +46,21 @@ describe("ActivityForm component", () => {
     render(
       <ActivityForm
         activityData={mockActivityData}
+        currentActivity={{
+          id: 1,
+          name: "General stationary combustion excluding line tracing",
+          slug: "gsc_excluding_line_tracing",
+        }}
+        taskListData={[]}
         reportDate={mockReportDate}
-        uiSchema={mockUiSchema}
-        defaultEmptySourceTypeState={mockdefaultSourceType}
+        defaultEmptySourceTypeState={mockdefaultSourceType as EmptyWithUnits}
       />,
     );
     await flushPromises();
 
     // Check if the source type booleans are rendered
-    expect(screen.getAllByText(/First Test Source Type Title/i).length).toBe(1);
-    expect(screen.getAllByText(/Second Title/i).length).toBe(1);
+    expect(screen.getAllByText(/First Test Source Type Title/i).length).toBe(2);
+    expect(screen.getAllByText(/Second Title/i).length).toBe(2);
   });
   it("renders the sourceType schema", async () => {
     const response2 = {
@@ -111,9 +101,14 @@ describe("ActivityForm component", () => {
     render(
       <ActivityForm
         activityData={mockActivityData}
+        currentActivity={{
+          id: 1,
+          name: "General stationary combustion excluding line tracing",
+          slug: "gsc_excluding_line_tracing",
+        }}
+        taskListData={[]}
         reportDate={mockReportDate}
-        uiSchema={mockUiSchema}
-        defaultEmptySourceTypeState={mockdefaultSourceType}
+        defaultEmptySourceTypeState={mockdefaultSourceType as EmptyWithUnits}
       />,
     );
     await flushPromises();
