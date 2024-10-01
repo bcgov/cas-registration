@@ -161,6 +161,7 @@ describe("the OperationRepresentativeForm component", () => {
 
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledTimes(1);
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
         "PUT",

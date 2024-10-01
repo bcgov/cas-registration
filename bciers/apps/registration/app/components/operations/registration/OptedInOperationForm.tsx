@@ -26,9 +26,7 @@ const OptedInOperationForm = ({
   formData,
 }: OptedInOperationFormProps) => {
   const [formState, setFormState] = useState(formData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-  const [error, setError] = useState("");
 
   //To run the check on initial load when the form already has data
   useEffect(() => {
@@ -43,7 +41,6 @@ const OptedInOperationForm = ({
   };
 
   const handleSubmit = async (e: IChangeEvent) => {
-    setIsSubmitting(true);
     setSubmitButtonDisabled(true);
     const response = await actionHandler(
       `registration/v2/operations/${operation}/registration/opted-in-operation-detail`,
@@ -55,31 +52,19 @@ const OptedInOperationForm = ({
         }),
       },
     );
-    if (response?.error) {
-      setError(response.error);
-      setIsSubmitting(false);
-      setSubmitButtonDisabled(false);
-      return { error: response.error };
-    }
+
+    // errors are handled in MultiStepBase
+    return response;
   };
   return (
     <MultiStepBase
       allowBackNavigation
       baseUrl={`/register-an-operation/${operation}`}
-      baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
-      error={error}
       formData={formState}
       onChange={handleChange}
       onSubmit={handleSubmit}
-      schema={
-        isSubmitting // A workaround to not show the read-only schema when submitting
-          ? {
-              title: "Submitting...",
-              type: "object",
-            }
-          : schema
-      }
+      schema={schema}
       step={step}
       steps={steps}
       uiSchema={optedInOperationUiSchema}

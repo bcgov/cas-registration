@@ -179,7 +179,7 @@ describe("the OperationInformationForm component", () => {
         );
 
         expect(mockPush).toHaveBeenCalledWith(
-          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?title=Existing Operation edited",
+          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2",
         );
       });
     },
@@ -192,7 +192,9 @@ describe("the OperationInformationForm component", () => {
     },
     async () => {
       fetchFormEnums();
-      actionHandler.mockReturnValueOnce({ id: "uuid2", name: "Operation 2" });
+      actionHandler.mockResolvedValueOnce({
+        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+      }); // mock the POST response from the submit handler
       render(
         <OperationInformationForm
           rawFormData={{}}
@@ -349,7 +351,7 @@ describe("the OperationInformationForm component", () => {
         );
       });
       expect(mockPush).toHaveBeenCalledWith(
-        "/register-an-operation/uuid2/2?title=Operation 2",
+        "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2",
       );
     },
   );

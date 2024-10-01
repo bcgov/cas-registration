@@ -3,7 +3,6 @@
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { OperationInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { actionHandler } from "@bciers/actions";
-import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
@@ -13,6 +12,7 @@ import {
   createUnnestedFormData,
 } from "@bciers/components/form/formDataUtils";
 import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
+import { useRouter } from "next/navigation";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -27,14 +27,15 @@ const OperationInformationForm = ({
   step,
   steps,
 }: OperationInformationFormProps) => {
+  const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState("");
-  const [, setError] = useState(undefined);
+  const [error, setError] = useState(undefined);
+
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
     : {};
   const [formState, setFormState] = useState(nestedFormData);
   const [key, setKey] = useState(Math.random());
-  const router = useRouter();
 
   function customValidate(
     formData: { [key: string]: any },
@@ -71,26 +72,31 @@ const OperationInformationForm = ({
       {
         body,
       },
-    );
-    // handling the redirect here instead of in the MultiStepBase because we don't have the operation information until we receive the response
-    const nextStepUrl = `/register-an-operation/${response.id}/${
-      step + 1
-    }${`?title=${response.name}`}`;
-    router.push(nextStepUrl);
+    ).then((resolve) => {
+      if (resolve?.error) {
+        return { error: resolve.error };
+      } else if (resolve?.id) {
+        // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
+        const nextStepUrl = `/register-an-operation/${resolve.id}/${step + 1}`;
+        router.push(nextStepUrl);
+        return resolve;
+      }
+    });
+    return response;
   };
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
-    try {
-      setSelectedOperation(operationId);
-      const operationData = await getOperationV2(operationId);
-      // combine the entered data with the fetched data
-      const combinedData = { ...data, section2: operationData };
-      setFormState(combinedData);
-      setKey(Math.random());
-    } catch (err) {
+    setSelectedOperation(operationId);
+    const operationData = await getOperationV2(operationId);
+    if (operationData?.error) {
       setError("Failed to fetch operation data!" as any);
     }
+    // combine the entered data with the fetched data
+    const combinedData = { ...data, section2: operationData };
+    setFormState(combinedData);
+    setKey(Math.random());
   };
+
   return (
     <MultiStepBase
       key={key}
@@ -100,6 +106,7 @@ const OperationInformationForm = ({
       schema={schema}
       step={step}
       steps={steps}
+      error={error}
       onChange={(e: IChangeEvent) => {
         let newSelectedOperation = e.formData?.section1?.operation;
         if (

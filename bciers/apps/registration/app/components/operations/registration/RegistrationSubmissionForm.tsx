@@ -23,10 +23,8 @@ const RegistrationSubmissionForm = ({
   steps,
 }: OperationRegistrationFormProps) => {
   const [formState, setFormState] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-  const [error, setError] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (e: IChangeEvent) => {
     setFormState(e.formData);
@@ -34,7 +32,6 @@ const RegistrationSubmissionForm = ({
   };
 
   const handleSubmit = async (e: IChangeEvent) => {
-    setIsSubmitting(true);
     setSubmitButtonDisabled(true);
     const response = await actionHandler(
       `registration/v2/operations/${operation}/registration/submission`,
@@ -45,14 +42,17 @@ const RegistrationSubmissionForm = ({
           ...e.formData,
         }),
       },
-    );
-    if (response?.error) {
-      setError(response.error);
-      setSubmitButtonDisabled(false);
-      setIsSubmitting(false);
-      return { error: response.error };
-    }
-    setIsSubmitted(true);
+    ).then((resolve) => {
+      if (resolve?.error) {
+        setSubmitButtonDisabled(false);
+        return { error: resolve.error };
+      } else {
+        setIsSubmitted(true);
+        return resolve;
+      }
+    });
+
+    return response;
   };
 
   return (
@@ -62,20 +62,11 @@ const RegistrationSubmissionForm = ({
       ) : (
         <MultiStepBase
           allowBackNavigation
-          baseUrl={`/register-an-operation/${operation}`}
-          baseUrlParams="title=Placeholder+Title"
+          // baseUrl={`/register-an-operation/${operation}`}
           cancelUrl="/"
           formData={formState}
           onSubmit={handleSubmit}
-          error={error}
-          schema={
-            isSubmitting
-              ? {
-                  title: "Submitting...",
-                  type: "object",
-                }
-              : schema
-          }
+          schema={schema}
           step={step}
           steps={steps}
           uiSchema={submissionUiSchema}
