@@ -30,6 +30,7 @@ const OperationInformationForm = ({
   const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState("");
   const [error, setError] = useState(undefined);
+
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
     : {};
@@ -71,37 +72,37 @@ const OperationInformationForm = ({
       {
         body,
       },
-    );
-    // errors are handled in MultiStepBase
+    ).then((resolve) => {
+      if (resolve?.error) {
+        return { error: resolve.error };
+      } else if (resolve?.id) {
+        // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
+        const nextStepUrl = `/register-an-operation/${resolve.id}/${step + 1}`;
+        router.push(nextStepUrl);
+        return resolve;
+      }
+    });
     return response;
   };
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
-    try {
-      setSelectedOperation(operationId);
-      const operationData = await getOperationV2(operationId);
-      if (operationData?.error) {
-        setError("Failed to fetch operation data!" as any);
-      }
-      // combine the entered data with the fetched data
-      const combinedData = { ...data, section2: operationData };
-      setFormState(combinedData);
-      setKey(Math.random());
-    } catch (err) {
+    setSelectedOperation(operationId);
+    const operationData = await getOperationV2(operationId);
+    if (operationData?.error) {
       setError("Failed to fetch operation data!" as any);
     }
+    // combine the entered data with the fetched data
+    const combinedData = { ...data, section2: operationData };
+    setFormState(combinedData);
+    setKey(Math.random());
   };
+
   return (
     <MultiStepBase
       key={key}
       cancelUrl="/"
       formData={formState}
       onSubmit={handleSubmit}
-      firstStepExtraHandling={(response) => {
-        // Since our form's route includes the operation's id, which doesn't exist until after the first step, we need to pass in a custom function that uses the response to generate a redirect url
-        const nextStepUrl = `/register-an-operation/${response.id}/${step + 1}`;
-        router.push(nextStepUrl);
-      }}
       schema={schema}
       step={step}
       steps={steps}
