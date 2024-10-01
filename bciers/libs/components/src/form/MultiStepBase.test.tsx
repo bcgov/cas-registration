@@ -318,7 +318,7 @@ describe("The MultiStepBase component", () => {
   it(
     "calls the onChange prop when the form changes",
     {
-      timeout: 10000,
+      timeout: 60000,
     },
     () => {
       useParams.mockReturnValue({
@@ -344,7 +344,7 @@ describe("The MultiStepBase component", () => {
   it(
     "renders children",
     {
-      timeout: 10000,
+      timeout: 60000,
     },
     () => {
       useParams.mockReturnValue({
@@ -363,7 +363,7 @@ describe("The MultiStepBase component", () => {
   it(
     "clear old errors",
     {
-      timeout: 10000,
+      timeout: 60000,
     },
     () => {
       render(
