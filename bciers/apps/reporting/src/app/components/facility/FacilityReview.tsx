@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -19,8 +19,8 @@ import {
 } from "@reporting/src/data/jsonSchema/facilities";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
-import { IChangeEvent } from "@rjsf/core";
 import { UUID } from "crypto";
+import { IChangeEvent } from "@rjsf/core";
 
 interface Props {
   version_id: number;
@@ -201,7 +201,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
                       control={
                         <Checkbox
                           checked={activities[activity.id] || false}
-                          onChange={(event: IChangeEvent) =>
+                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
                             handleCheckboxChange(event, activity.id)
                           }
                         />

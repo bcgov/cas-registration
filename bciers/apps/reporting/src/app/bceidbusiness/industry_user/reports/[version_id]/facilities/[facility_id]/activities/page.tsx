@@ -7,7 +7,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 
 type ActivityData = { id: number; name: string; slug: string };
 
-export default async function Page(router) {
+export default async function Page(router: any) {
   const orderedActivities = await actionHandler(
     `reporting/report-version/${router.params?.version_id}/facility-report/${router.params?.facility_id}/activity-list`,
     "GET",
