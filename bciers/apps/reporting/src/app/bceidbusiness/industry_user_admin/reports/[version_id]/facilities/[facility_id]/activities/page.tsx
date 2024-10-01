@@ -13,7 +13,7 @@ export default async function Page(router: any) {
     "GET",
     "",
   );
-  let currentActivity = orderedActivities[0].id;
+  let currentActivity = orderedActivities[0];
   if (router.searchParams?.activity_id)
     currentActivity = orderedActivities.find((obj: ActivityData) => {
       return obj.id === parseInt(router.searchParams?.activity_id);
