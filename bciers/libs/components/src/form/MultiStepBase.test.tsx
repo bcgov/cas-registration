@@ -314,4 +314,24 @@ describe("The MultiStepBase component", () => {
       expect(screen.getByText("whoopsie")).toBeVisible();
     });
   });
+
+  it("calls the onChange prop when the form changes", () => {
+    useParams.mockReturnValue({
+      formSection: "1",
+      operation: "create",
+    } as QueryParams);
+
+    const changeHandler = vi.fn();
+    render(
+      <MultiStepBase
+        {...defaultProps}
+        disabled={false}
+        onChange={changeHandler}
+      />,
+    );
+    const input = screen.getByLabelText(/field1*/i);
+    fireEvent.change(input, { target: { value: "new value" } });
+
+    expect(changeHandler).toHaveBeenCalled();
+  });
 });
