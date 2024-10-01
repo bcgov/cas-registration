@@ -5,8 +5,6 @@ from model_bakery import baker
 
 
 class TestActivityData(CommonTestSetup):
-    # endpoint = custom_reverse_lazy("get_initial_activity_data")
-
     # AUTHORIZATION
     def test_unauthorized_users_cannot_get_activity_data(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
