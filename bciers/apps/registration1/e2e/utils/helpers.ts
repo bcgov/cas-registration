@@ -210,85 +210,50 @@ export async function fieldsClear(page: Page, formFields: string | any[]) {
   }
 }
 
-// 🛠️ Function: fills required form fields correctly
+// 🛠️ Function: fills required form fields
 export async function fillRequiredFormFields(page: Page) {
-  // Locate all required fields within the fieldset
+  // Locate all required fields within the form
   const requiredFields = await getFieldRequired(page);
+
   if (requiredFields) {
-    // ✔️ Set required input fields
+    // Iterate over each required field
     for (const input of requiredFields) {
       const labelText = await input.textContent();
       const inputField = await page.getByLabel(labelText as string);
-      // Click the field to focus it
-      await inputField.click();
-      switch (labelText) {
-        case FormField.PHONE:
-          await inputField.fill(E2EValue.INPUT_PHONE); //Format should be ### ### ####
-          break;
-        default:
-          await inputField.fill(`${E2EValue.PREFIX} ${labelText}`);
-          break;
+
+      // Determine the field type (input, select, or radio)
+      const tagName = await inputField.evaluate((el) =>
+        el.tagName.toLowerCase(),
+      );
+      const inputType = await inputField.getAttribute("type"); // For checking radio or other types
+
+      // Perform actions based on the field type
+      if (tagName === "input") {
+        switch (inputType) {
+          case "radio": // Handle radio buttons
+            await inputField.click(); // Select the radio option
+            break;
+          case "checkbox": // Handle checkboxes if needed
+            await inputField.check();
+            break;
+          case "tel": // Phone number input
+            await inputField.fill(E2EValue.INPUT_PHONE); // Format as needed
+            break;
+          default: // Default input handling (text, email, etc.)
+            await inputField.fill(`${E2EValue.PREFIX} ${labelText}`);
+            break;
+        }
+      } else if (tagName === "select") {
+        // Handle select dropdowns
+        await inputField.selectOption({ label: "Option Label" }); // Adjust the selection logic as needed
+      } else if (tagName === "textarea") {
+        // Handle textarea fields
+        await inputField.fill(`${E2EValue.PREFIX} ${labelText}`);
       }
     }
   }
 }
 
-// 🛠️ Function: fills all form fields with correct formatting. Selector argument is used to selectively fill parts of the form. Use "fieldset#root" as the argument if filling the entire form, otherwise use the a section's fieldset.
-export async function fillAllFormFields(page: Page, selector: string) {
-  // Locate all fields within the fieldset
-  const fieldset = await page.locator(selector).first();
-  if (!fieldset) {
-    throw new Error("Fieldset not found");
-  }
-  const fields = await fieldset.locator("label").all();
-  if (fields) {
-    for (const input of fields) {
-      const labelText = await input.textContent();
-      // We use the same labels multiple times in some forms (e.g., the parent operator section in the operator form has a Legal Name field, as does the main operator form), so this ensures we only getByLabel in the desired section of the form
-      const formSection = page.locator(selector);
-      const inputField = await formSection
-        .getByLabel(labelText as string)
-        .first();
-      if (labelText === FormField.IS_BUSINESS_ADDRESS_SAME) {
-        break;
-      }
-      // Click the field to focus it
-      await inputField.click();
-      switch (labelText) {
-        case FormField.PHONE:
-          await inputField.fill(E2EValue.INPUT_PHONE);
-          break;
-        case FormField.CRA:
-          await inputField.fill(E2EValue.INPUT_CRA);
-          break;
-        case FormField.BC_CRN:
-          await inputField.fill(E2EValue.INPUT_BC_CRN);
-          break;
-        case FormField.BUSINESS_STRUCTURE:
-          await inputField.fill(E2EValue.INPUT_BUSINESS_STRUCTRE);
-          await formSection
-            .getByRole("option", { name: E2EValue.INPUT_BUSINESS_STRUCTRE })
-            .click();
-          break;
-        case FormField.PROVINCE:
-          await inputField.fill(E2EValue.INPUT_PROVINCE);
-          await formSection
-            .getByRole("option", { name: E2EValue.INPUT_PROVINCE })
-            .click();
-          break;
-        case FormField.POSTAL_CODE:
-          await inputField.fill(E2EValue.INPUT_POSTAL_CODE);
-          break;
-        case FormField.WEB_SITE:
-          await inputField.fill(E2EValue.INPUT_WEB_SITE);
-          break;
-        default:
-          await inputField.fill(`E2E ${labelText}`);
-          break;
-      }
-    }
-  }
-}
 // 🛠️ Function: verifies whether the column names displayed on the page match the expected column names provided as input
 export async function tableColumnNamesAreCorrect(
   page: Page,
@@ -346,8 +311,8 @@ export async function setupTestEnvironment(
   const url = workFlow
     ? `${baseUrlSetup}?workflow=${workFlow}`
     : truncateOnly
-    ? `${baseUrlSetup}?truncate_only=true`
-    : baseUrlSetup;
+      ? `${baseUrlSetup}?truncate_only=true`
+      : baseUrlSetup;
 
   let response: APIResponse = await context.request.get(url);
 

@@ -94,7 +94,7 @@ export enum E2EValue {
   INPUT_BAD_WEB_SITE = "bad website",
   INPUT_BC_CRN = "AAA1111111",
   INPUT_BUSINESS_STRUCTRE = "General Partnership",
-  INPUT_CRA = "123454321",
+  INPUT_CRA = 123454321,
   INPUT_EMAIL = "test@test.com",
   INPUT_FIRST_NAME = "Test First Name",
   INPUT_LAST_NAME = "Test Last Name",
@@ -110,7 +110,6 @@ export enum E2EValue {
   PREFIX = "E2E_",
   SEARCH_CRA = "987654321",
   SEARCH_LEGAL_NAME = "Operator",
-  STORAGE = "_STORAGE_STATE",
 }
 
 // 👋 Form fields selectors

@@ -36,7 +36,9 @@ test.describe("Test Workflow industry_user", () => {
     process.env.E2E_INDUSTRY_USER_STORAGE_STATE as string,
   );
   test.use({ storageState: storageState });
-  test("Select Operator dashboard tile", async ({ page }) => {
+  test("Select operator form from administration dashboard", async ({
+    page,
+  }) => {
     let pageContent;
     // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
@@ -81,7 +83,7 @@ test.describe("Test Workflow industry_user", () => {
       E2EValue.FIXTURE_LEGAL_NAME,
     );
     // 🔍 Assert operator confirmation message
-    await selectOperatorPage.msgConfirmationIsVisible();
+    await selectOperatorPage.msgConfirmOperatorIsVisible();
 
     // 📷 Cheese!
     pageContent = page.locator("html");
@@ -107,8 +109,8 @@ test.describe("Test Workflow industry_user", () => {
 
     // 👉 Action request administrator access
     await selectOperatorPage.requestAdmin();
-    // 🔍 Assert access requested message
-    await selectOperatorPage.msgAdminRequestedIsVisible();
+    // 🔍 Assert admin access requested message
+    await selectOperatorPage.msgRequestAccessAdminConfirmedIsVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -132,7 +134,7 @@ test.describe("Test Workflow industry_user", () => {
     // 👉 Action select by CRA
     await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA);
     // 🔍 Assert operator confirmation message
-    await selectOperatorPage.msgConfirmationIsVisible();
+    await selectOperatorPage.msgConfirmOperatorIsVisible();
     // 👉 Action accept operator
     await selectOperatorPage.acceptOperator();
     // 🔍 Assert no access message
@@ -147,8 +149,8 @@ test.describe("Test Workflow industry_user", () => {
     await analyzeAccessibility(page);
     // 👉 Action request access
     await selectOperatorPage.requestAccess();
-    // 🔍 Assert access requested message
-    await selectOperatorPage.msgAccessRequestedIsVisible();
+    // 🔍 Assert non-admin access requested message
+    await selectOperatorPage.msgRequestAccessConfirmedIsVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -156,8 +158,7 @@ test.describe("Test Workflow industry_user", () => {
       variant: "default",
     });
   });
-
-  test("Operator access request denied", async ({ page }) => {
+  test("Select operator request admin access denied", async ({ page }) => {
     let pageContent;
 
     // 🛸 Navigates to select operator
@@ -166,19 +167,21 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
 
     // 👉 Action select by CRA
-    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA_DENIED);
-    // 🔍 Assert operator access denied by admin message
-    await selectOperatorPage.msgAccessDeniedAdminIsVisible();
+    await selectOperatorPage.selectByCraNumber(
+      E2EValue.SEARCH_CRA_DENIED_ADMIN,
+    );
+    // 🔍 Assert operator admin access denied
+    await selectOperatorPage.msgRequestAccessAdminDeclinedIsVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
-      component: "Access request denied",
+      component: "Select operator admin access request declined",
       variant: "default",
     });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
-  test("Operator access request denied by admin", async ({ page }) => {
+  test("Select operator request non-admin access denied", async ({ page }) => {
     let pageContent;
 
     // 🛸 Navigates to select operator
@@ -189,14 +192,93 @@ test.describe("Test Workflow industry_user", () => {
     // 👉 Action select by CRA
     await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA_DENIED);
     // 🔍 Assert operator access denied by admin message
-    await selectOperatorPage.msgAccessDeniedAdminIsVisible();
+    await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
-      component: "Access request denied by admin",
+      component: "Select operator non-admin access request declined",
       variant: "default",
     });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
+  });
+  test("Add operator form submit", async ({ page }) => {
+    let pageContent;
+
+    // 🛸 Navigates to select operator
+    const selectOperatorPage = new OperatorPOM(page);
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+
+    // 👉 Action add a new operator
+    await selectOperatorPage.clickAddOperator();
+    // 🔍 Assert the form is visible
+    await selectOperatorPage.formIsVisible();
+    // 🔍 Assert the form headers
+    await selectOperatorPage.formHasHeaders();
+    // 📷 Cheese!
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Add operator form",
+      variant: "default",
+    });
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
+    // 👉 Action trigger form required fields errors
+    await selectOperatorPage.triggerErrorsFieldRequired();
+    // 📷 Cheese!
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "Add operator form",
+      variant: "required errors",
+    });
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
+
+    // 👉 Action trigger form fields format errors
+    await selectOperatorPage.triggerErrorsFieldFormat();
+    // 📷 Cheese!
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "Add operator form",
+      variant: "format errors",
+    });
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
+
+    // 👉 Action fill all operator form fields
+    await selectOperatorPage.fillRequiredInformation();
+
+    // 🔍 Assert New Operator request form is submitted
+    await selectOperatorPage.formIsSubmitted();
+    // 📷 Cheese!
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "New operator confirmation",
+      variant: "default",
+    });
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
+  });
+
+  test("Select operator Go back and Return navigations", async ({ page }) => {
+    // 🛸 Navigate to select operator page
+    const selectOperatorPage = new OperatorPOM(page);
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+    // 👉 Action select by CRA
+    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA);
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmOperatorIsVisible();
+    // 👉 Action accept operator
+    await selectOperatorPage.acceptOperator();
+    // 🔍 Assert no access message
+    await selectOperatorPage.msgNoAccessIsVisible();
+    // 👉 Action route go back
+    await selectOperatorPage.routeBack();
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmOperatorIsVisible();
+    // 👉 Action route return
+    await selectOperatorPage.routeReturn();
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgSelectOpertorIsVisible();
   });
 });
