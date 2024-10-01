@@ -15,7 +15,7 @@ export default async function OperationReviewFormData({
   const reportingYear = await getReportingYear();
   return (
     <OperationReview
-      formData={reportOperation}
+      existingFormData={reportOperation}
       version_id={version_id}
       allActivities={allActivities}
       reportingYear={reportingYear}

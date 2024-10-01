@@ -18,10 +18,11 @@ interface Props {
   formData: any;
   baseUrl?: string;
   cancelUrl?: string;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: () => void | Promise<void>;
   buttonText?: string;
   onChange?: (data: any) => void;
   submitButtonDisabled?: boolean;
+  children?: React.ReactNode;
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -36,15 +37,8 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   buttonText,
   onChange,
   submitButtonDisabled,
+  children,
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleFormSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    await onSubmit(data);
-    setIsSubmitting(false);
-  };
-
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -52,17 +46,20 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
       </div>
       <div className="w-full flex">
         {/* Make the task list hidden on small screens and visible on medium and up */}
-        <div className="hidden md:block">
-          <ReportingTaskList elements={taskListElements} />
-        </div>
+        {taskListElements.length > 0 && (
+          <div className="hidden md:block">
+            <ReportingTaskList elements={taskListElements} />
+          </div>
+        )}
         <div className="w-full">
           <FormBase
             schema={schema}
             uiSchema={uiSchema}
-            onSubmit={handleFormSubmit}
+            onSubmit={onSubmit}
             formData={formData}
             onChange={onChange}
           >
+            {children}
             <Box display="flex" justifyContent="space-between" mt={3}>
               {cancelUrl && (
                 <Link href={cancelUrl} passHref>
@@ -73,13 +70,9 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={isSubmitting || submitButtonDisabled}
+                disabled={submitButtonDisabled}
               >
-                {isSubmitting
-                  ? "Saving..."
-                  : buttonText
-                  ? buttonText
-                  : "Save and Continue"}
+                {buttonText ? buttonText : "Save and Continue"}
               </Button>
             </Box>
           </FormBase>

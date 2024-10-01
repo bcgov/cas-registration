@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
@@ -8,6 +8,8 @@ import {
   personResponsibleSchema,
   personResponsibleUiSchema,
 } from "@reporting/src/data/jsonSchema/personResponsible";
+import { useFormContext } from "@reporting/src/app/bceidbusiness/industry_user_admin/reports/[version_id]/FormContext";
+import taskList from "@bciers/components/form/components/TaskList";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
@@ -26,26 +28,20 @@ const taskListElements: TaskListElement[] = [
 ];
 
 export default function PersonResponsible() {
-  return (
-    <MultiStepFormWithTaskList
-      initialStep={0}
-      steps={[
-        "Operation Information",
-        "Facilities Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
-      taskListElements={taskListElements}
-      schema={personResponsibleSchema}
-      uiSchema={personResponsibleUiSchema}
-      formData={{}}
-      baseUrl={baseUrl}
-      cancelUrl={cancelUrl}
-      onSubmit={(data: any) => {
-        return new Promise<void>((resolve) => {
-          resolve(data);
-        });
-      }}
-    />
-  );
+  const {
+    formData,
+    setFormData,
+    setFormUiSchema,
+    setFormSchema,
+    setFormSubmitHandler,
+    setTaskList,
+  } = useFormContext();
+
+  useEffect(() => {
+    setFormSchema(personResponsibleSchema);
+    setFormUiSchema(personResponsibleUiSchema);
+    setTaskList(taskListElements);
+  }, []);
+
+  return null;
 }

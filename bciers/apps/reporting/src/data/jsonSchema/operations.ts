@@ -125,22 +125,22 @@ export const operationReviewUiSchema = {
     "ui:widget": "select",
     "ui:options": commonUiOptions,
   },
-  "ui:submitButtonOptions": {
-    props: {
-      className:
-        "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary",
-      style: {
-        backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
-        color: "white",
-        padding: "6px 16px",
-        fontSize: "0.875rem",
-        textTransform: "uppercase",
-        boxShadow:
-          "0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
-        borderRadius: "4px",
-      },
-    },
-    norender: false,
-    submitText: "Save",
-  },
+  // "ui:submitButtonOptions": {
+  //   props: {
+  //     className:
+  //       "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary",
+  //     style: {
+  //       backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
+  //       color: "white",
+  //       padding: "6px 16px",
+  //       fontSize: "0.875rem",
+  //       textTransform: "uppercase",
+  //       boxShadow:
+  //         "0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
+  //       borderRadius: "4px",
+  //     },
+  //   },
+  //   norender: false,
+  //   submitText: "Save",
+  // },
 };

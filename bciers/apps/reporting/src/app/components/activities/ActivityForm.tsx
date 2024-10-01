@@ -167,7 +167,7 @@ export default function ActivityForm({
   // Render the Activity form and tasklist
   return (
     <div className="w-full flex flex-row">
-      <ReportingTaskList elements={tasklistData} />
+      {/*<ReportingTaskList elements={tasklistData} />*/}
       <div className="w-full">
         <FormBase
           schema={jsonSchema}

@@ -23,7 +23,7 @@ describe("OperationReview Component", () => {
   it("renders the form correctly after loading", async () => {
     render(
       <OperationReview
-        formData={{
+        existingFormData={{
           activities: [1],
           regulated_products: [1],
           operation_representative_name: "John Doe",
