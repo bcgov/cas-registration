@@ -24,6 +24,7 @@ const RegistrationSubmissionForm = ({
 }: OperationRegistrationFormProps) => {
   const [formState, setFormState] = useState({});
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (e: IChangeEvent) => {
     setFormState(e.formData);
@@ -41,27 +42,38 @@ const RegistrationSubmissionForm = ({
           ...e.formData,
         }),
       },
-    );
-    // errors are handled in MultiStepBase
+    ).then((resolve) => {
+      if (resolve?.error) {
+        setSubmitButtonDisabled(false);
+        return { error: resolve.error };
+      } else {
+        setIsSubmitted(true);
+        return resolve;
+      }
+    });
+
     return response;
   };
 
   return (
     <>
-      <MultiStepBase
-        allowBackNavigation
-        baseUrl={`/register-an-operation/${operation}`}
-        cancelUrl="/"
-        formData={formState}
-        onSubmit={handleSubmit}
-        schema={schema}
-        step={step}
-        steps={steps}
-        uiSchema={submissionUiSchema}
-        onChange={handleChange}
-        submitButtonDisabled={submitButtonDisabled}
-        successComponent=<Success step={step} steps={steps} />
-      />
+      {isSubmitted ? (
+        <Success step={step} steps={steps} />
+      ) : (
+        <MultiStepBase
+          allowBackNavigation
+          // baseUrl={`/register-an-operation/${operation}`}
+          cancelUrl="/"
+          formData={formState}
+          onSubmit={handleSubmit}
+          schema={schema}
+          step={step}
+          steps={steps}
+          uiSchema={submissionUiSchema}
+          onChange={handleChange}
+          submitButtonDisabled={submitButtonDisabled}
+        />
+      )}
     </>
   );
 };

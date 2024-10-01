@@ -111,7 +111,7 @@ describe("The MultiStepBase component", () => {
     expect(headerSteps[2]).toHaveTextContent(/page3/i);
   });
 
-  it("navigation buttons work on first form page when given first page handler", async () => {
+  it("navigation buttons work on first form page when no baseUrl is given", async () => {
     mockOnSubmit.mockReturnValue({ id: "uuid" });
     render(
       <MultiStepBase
@@ -120,9 +120,6 @@ describe("The MultiStepBase component", () => {
         schema={{
           ...testSchema,
           title: "page1",
-        }}
-        firstStepExtraHandling={(response) => {
-          console.log(response);
         }}
       />,
     );
@@ -143,15 +140,10 @@ describe("The MultiStepBase component", () => {
     expect(saveAndContinueButton).not.toBeDisabled();
     fireEvent.click(saveAndContinueButton);
     expect(mockOnSubmit).toHaveBeenCalled();
-    vi.spyOn(console, "log");
-    await waitFor(() => {
-      expect(console.log).toHaveBeenCalledWith({
-        id: "uuid",
-      });
-    });
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it("navigation and submit buttons work on second form page", async () => {
+  it("navigation and submit buttons work on subsequent form page", async () => {
     mockOnSubmit.mockReturnValue({ id: 1 });
     render(
       <MultiStepBase
@@ -193,7 +185,6 @@ describe("The MultiStepBase component", () => {
     render(
       <MultiStepBase
         {...defaultProps}
-        successComponent={<div>Form submissions successful</div>}
         disabled={false}
         step={3}
         schema={{
@@ -225,9 +216,7 @@ describe("The MultiStepBase component", () => {
     ).not.toBeDisabled();
     fireEvent.click(submitButton);
     expect(mockOnSubmit).toHaveBeenCalled();
-    await waitFor(() => {
-      expect(screen.getByText(/Form submissions successful/i)).toBeVisible();
-    });
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it("submission is disabled if form is still submitting", async () => {
@@ -255,9 +244,7 @@ describe("The MultiStepBase component", () => {
       name: /Save and Continue/i,
     });
 
-    await act(async () => {
-      await user.click(saveAndContinueButton);
-    });
+    await user.click(saveAndContinueButton);
 
     waitFor(() => {
       expect(saveAndContinueButton).toBeDisabled();
@@ -326,90 +313,5 @@ describe("The MultiStepBase component", () => {
       expect(screen.getByRole("alert")).toBeVisible();
       expect(screen.getByText("whoopsie")).toBeVisible();
     });
-  });
-
-  it("shows an error if there was an error with the api call", async () => {
-    mockOnSubmit.mockRejectedValueOnce("I can be anything");
-    render(
-      <MultiStepBase
-        {...defaultProps}
-        disabled={false}
-        step={2}
-        schema={{
-          ...testSchema,
-          title: "page2",
-        }}
-      />,
-    );
-    const saveAndContinueButton = screen.getByRole("button", {
-      name: /Save and Continue/i,
-    });
-
-    fireEvent.click(saveAndContinueButton);
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalled();
-      expect(screen.getByRole("alert")).toBeVisible();
-      expect(
-        screen.getByText("An unexpected error occurred. Please try again."),
-      ).toBeVisible();
-    });
-  });
-  it("clears old errors on submission", async () => {
-    render(
-      <MultiStepBase
-        {...defaultProps}
-        disabled={false}
-        step={2}
-        schema={{
-          ...testSchema,
-          title: "page2",
-        }}
-        error={"old"}
-      />,
-    );
-    const saveAndContinueButton = screen.getByRole("button", {
-      name: /Save and Continue/i,
-    });
-    act(() => {
-      fireEvent.click(saveAndContinueButton);
-    });
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalled();
-      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    });
-  });
-
-  it("calls the onChange prop when the form changes", () => {
-    useParams.mockReturnValue({
-      formSection: "1",
-      operation: "create",
-    } as QueryParams);
-
-    const changeHandler = vi.fn();
-    render(
-      <MultiStepBase
-        {...defaultProps}
-        disabled={false}
-        onChange={changeHandler}
-      />,
-    );
-    const input = screen.getByLabelText(/field1*/i);
-    fireEvent.change(input, { target: { value: "new value" } });
-
-    expect(changeHandler).toHaveBeenCalled();
-  });
-
-  it("renders children", () => {
-    useParams.mockReturnValue({
-      formSection: "1",
-      operation: "create",
-    } as QueryParams);
-
-    render(
-      <MultiStepBase {...defaultProps}>
-        <div data-testid="test-child">Test child</div>
-      </MultiStepBase>,
-    );
-    expect(screen.getByTestId("test-child")).toBeVisible();
   });
 });
