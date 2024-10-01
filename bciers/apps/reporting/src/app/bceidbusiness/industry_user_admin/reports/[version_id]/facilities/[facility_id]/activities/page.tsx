@@ -67,7 +67,6 @@ export default async function Page(router: any) {
         <ActivityForm
           activityData={activityDataObject}
           currentActivity={currentActivity}
-          orderedActivities={orderedActivities}
           taskListData={taskListData}
           reportDate="2024-04-01"
           defaultEmptySourceTypeState={defaultEmptySourceTypeState}
