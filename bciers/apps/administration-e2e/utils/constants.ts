@@ -1,0 +1,1 @@
+export const STORAGE_STATE_SUFFIX = "_STORAGE_STATE";
