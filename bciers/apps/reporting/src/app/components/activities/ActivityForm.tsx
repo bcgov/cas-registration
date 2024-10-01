@@ -25,7 +25,6 @@ interface Props {
     sourceTypeMap: { [key: number]: string };
   };
   currentActivity: { id: number; name: string; slug: string };
-  orderedActivities: [{ id: number; name: string; slug: string }];
   taskListData: TaskListElement[];
   reportDate: string;
   defaultEmptySourceTypeState:
