@@ -1,23 +1,18 @@
 // 🧪 Suite to test the administration industry_user workflow - alternative paths
-
 import { test } from "@playwright/test";
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/administration/e2e/poms/dashboard";
 import { OperatorPOM } from "@/administration/e2e/poms/operator";
 // ☰ Enums
 import { AppRoute, E2EValue } from "@/administration/e2e/utils/enums";
-import { UserRole } from "@/e2e/utils/enums";
 import { AppName } from "@/administration/e2e/utils/constants";
-
+import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {
   analyzeAccessibility,
   setupTestEnvironment,
   takeStabilizedScreenshot,
-} from "@/e2e/utils/helpers";
-dotenv.config({ path: "./e2e/.env.local" });
+} from "@bciers/e2e/utils/helpers";
 const happoPlaywright = require("happo-playwright");
 
 test.beforeAll(async () => {
