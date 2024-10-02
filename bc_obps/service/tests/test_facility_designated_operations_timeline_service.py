@@ -29,7 +29,7 @@ class TestGetTimeline:
     def test_get_timeline_by_operation_id_for_unapproved_user_industry_user():
         industry_user = baker.make_recipe('utils.industry_operator_user')
         facility_designated_operation_timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Unauthorized."):
             FacilityDesignatedOperationTimelineService.get_timeline_by_operation_id(
                 industry_user, facility_designated_operation_timeline.operation.id
             )
@@ -66,7 +66,7 @@ class TestListTimeline:
             'facility__name',
             'asc',
             FacilityDesignatedOperationTimelineFilterSchema(
-                facility__bcghg_id=None, facility__name=None, facility__type=None, status=None
+                facility_bcghg_id=None, facility__name=None, facility__type=None, status=None
             ),
         )
         assert facilities_list.first().facility.name == 'Facility 01'
@@ -87,7 +87,7 @@ class TestListTimeline:
             "facility__created_at",  # default value
             "desc",  # default value
             FacilityDesignatedOperationTimelineFilterSchema(
-                facility__bcghg_id=None, facility__name='8', facility__type=None, status=None
+                facility_bcghg_id=None, facility__name='8', facility__type=None, status=None
             ),
         )
         assert facilities_list.count() == 1

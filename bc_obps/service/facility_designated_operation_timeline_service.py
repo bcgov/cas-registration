@@ -20,7 +20,7 @@ class FacilityDesignatedOperationTimelineService:
         if user.is_industry_user():
             UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
         return (
-            FacilityDesignatedOperationTimeline.objects.all()
+            FacilityDesignatedOperationTimeline.objects
             .filter(
                 operation__id=operation_id,
             )

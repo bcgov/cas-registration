@@ -35,7 +35,6 @@ class FacilityDesignatedOperationTimeline(TimeStampedModel):
     class Meta:
         db_table_comment = "A table to connect facilities and operations"
         db_table = 'erc"."facility_designated_operation_timeline'
-        # brianna how is status set?
         constraints = [
             models.UniqueConstraint(
                 fields=['facility'],
