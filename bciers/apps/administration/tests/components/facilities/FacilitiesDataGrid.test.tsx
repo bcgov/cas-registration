@@ -21,16 +21,16 @@ const mockResponse = {
   rows: [
     {
       id: 1,
-      facility__name: "Facility 1",
-      facility__type: "Single Facility",
-      facility__bcghg_id: "1-211113-0001",
+      facility_name: "Facility 1",
+      facility_type: "Single Facility",
+      facility_bcghg_id: "1-211113-0001",
       status: "Active",
     },
     {
       id: 2,
-      facility__name: "Facility 2",
-      facility__type: "Large Facility",
-      facility__bcghg_id: "1-211113-0002",
+      facility_name: "Facility 2",
+      facility_type: "Large Facility",
+      facility_bcghg_id: "1-211113-0002",
       status: "Active",
     },
   ],
@@ -96,7 +96,7 @@ describe("FacilitiesDataGrid component", () => {
 
     expect(
       extractParams(String(mockReplace.mock.calls[0][2]), "sort_field"),
-    ).toBe("facility__name");
+    ).toBe("facility_name");
     expect(
       extractParams(String(mockReplace.mock.calls[0][2]), "sort_order"),
     ).toBe("asc");
@@ -107,7 +107,7 @@ describe("FacilitiesDataGrid component", () => {
     });
     expect(
       extractParams(String(mockReplace.mock.calls[1][2]), "sort_field"),
-    ).toBe("facility__name");
+    ).toBe("facility_name");
     expect(
       extractParams(String(mockReplace.mock.calls[1][2]), "sort_order"),
     ).toBe("desc");
@@ -164,7 +164,7 @@ describe("FacilitiesDataGrid component", () => {
     await waitFor(() => {
       // check that the API call was made with the correct params
       expect(
-        extractParams(String(mockReplace.mock.calls), "facility__name"),
+        extractParams(String(mockReplace.mock.calls), "facility_name"),
       ).toBe("facility 1");
     });
   });
