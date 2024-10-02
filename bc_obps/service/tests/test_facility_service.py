@@ -305,7 +305,7 @@ class TestUpdateFacility:
         return user, owning_operation, facility
 
     @staticmethod
-    def _assert_updated_manditory_fields(facility, payload):
+    def _assert_updated_mandatory_fields(facility, payload):
         """
         Asserts that the fields in the response data match the expected values from the payload.
 
@@ -357,8 +357,8 @@ class TestUpdateFacility:
         FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
 
-        # Assert Updated Manditory Fields
-        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+        # Assert Updated mandatory Fields
+        TestUpdateFacility._assert_updated_mandatory_fields(facility, payload)
 
         # Assert Non-Updated Optional Fields
         assert facility.is_current_year is None
@@ -393,8 +393,8 @@ class TestUpdateFacility:
         FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
 
-        # Assert Updated Manditory Fields
-        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+        # Assert Updated mandatory Fields
+        TestUpdateFacility._assert_updated_mandatory_fields(facility, payload)
 
         # Assert Updated Optional Fields
         assert facility.is_current_year == payload.is_current_year
@@ -432,8 +432,8 @@ class TestUpdateFacility:
         FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
 
-        # Assert Updated Manditory Fields
-        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+        # Assert Updated mandatory Fields
+        TestUpdateFacility._assert_updated_mandatory_fields(facility, payload)
 
         # Assert Updated Optional Fields
         assert facility.address.street_address == payload.street_address
@@ -461,8 +461,8 @@ class TestUpdateFacility:
         FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
 
-        # Assert Updated Manditory Fields
-        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+        # Assert Updated mandatory Fields
+        TestUpdateFacility._assert_updated_mandatory_fields(facility, payload)
 
         # Assert Updated State
         TestUtils.assert_facility_db_state(facility, expect_address=None)
@@ -488,8 +488,8 @@ class TestUpdateFacility:
         FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
 
-        # Assert Updated Manditory Fields
-        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+        # Assert Updated mandatory Fields
+        TestUpdateFacility._assert_updated_mandatory_fields(facility, payload)
 
         # Assert Updated Optional Fields
         assert len(facility.well_authorization_numbers.all()) == len(payload.well_authorization_numbers)
@@ -519,8 +519,8 @@ class TestUpdateFacility:
         FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
 
-        # Assert Updated Manditory Fields
-        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+        # Assert Updated mandatory Fields
+        TestUpdateFacility._assert_updated_mandatory_fields(facility, payload)
 
         # Assert Updated Optional Fields
         assert len(facility.well_authorization_numbers.all()) == 0

@@ -9,22 +9,28 @@ const facilityGroupColumns = (
 ) => {
   const columnGroupModel: GridColumnGroupingModel = [
     {
-      groupId: "name",
+      groupId: "facility__name",
       headerName: "Facility Name",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "name" }],
+      children: [{ field: "facility__name" }],
     },
     {
-      groupId: "type",
+      groupId: "facility__type",
       headerName: "Facility Type",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "type" }],
+      children: [{ field: "facility__type" }],
     },
     {
-      groupId: "bcghg_id",
+      groupId: "status",
+      headerName: "Status",
+      renderHeaderGroup: SearchCell,
+      children: [{ field: "status" }],
+    },
+    {
+      groupId: "facility__bcghg_id",
       headerName: "BC GHG ID",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "bcghg_id" }],
+      children: [{ field: "facility__bcghg_id" }],
     },
     {
       groupId: "action",

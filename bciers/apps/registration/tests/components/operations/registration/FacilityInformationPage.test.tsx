@@ -89,13 +89,15 @@ describe("the FacilityInformationPage component", () => {
       items: [
         {
           id: "1",
-          name: "Test Facility 1",
-          type: "Test Facility Type 1",
+          facility__name: "Test Facility 1",
+          facility__type: "Test Facility Type 1",
+          status: "Active",
         },
         {
           id: "2",
-          name: "Test Facility 2",
-          type: "Test Facility Type 2",
+          facility__name: "Test Facility 2",
+          facility__type: "Test Facility Type 2",
+          status: "Active",
         },
       ],
       count: 1,

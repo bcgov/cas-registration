@@ -42,19 +42,19 @@ const facilityInitialData = {
   rows: [
     {
       id: "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
-      name: "Facility 1",
+      facility__name: "Facility 1",
       is_current_year: null,
       starting_date: null,
-      type: "Large Facility",
-      bcghg_id: null,
+      facility__type: "Large Facility",
+      facility__bcghg_id: null,
     },
     {
       id: "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
-      name: "Facility 3",
+      facility__name: "Facility 3",
       is_current_year: null,
       starting_date: null,
-      type: "Medium LFO",
-      bcghg_id: "23219990007",
+      facility__type: "Medium LFO",
+      facility__bcghg_id: "23219990007",
     },
   ],
   row_count: 20,
@@ -428,9 +428,9 @@ describe("the FacilityInformationForm component", () => {
 
     await waitFor(() => {
       // check that the API call was made with the correct params
-      expect(extractParams(String(mockReplace.mock.calls), "name")).toBe(
-        "facility 1",
-      );
+      expect(
+        extractParams(String(mockReplace.mock.calls), "facility__name"),
+      ).toBe("facility 1");
     });
 
     expect(streetAddress).toHaveValue("123 Test St");

@@ -1,3 +1,4 @@
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models import Facility
 from registration.tests.utils.bakers import (
@@ -18,7 +19,9 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'cas_pending',
-            custom_reverse_lazy("list_facilities", kwargs={'operation_id': '12345678-1234-5678-1234-567812345678'}),
+            custom_reverse_lazy(
+                "list_facilities_by_operation_id", kwargs={'operation_id': '12345678-1234-5678-1234-567812345678'}
+            ),
         )
         assert response.status_code == 401
 
@@ -26,7 +29,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
     def test_facilities_endpoint_list_facilities_paginated(self):
         operation = operation_baker()
         facility_designated_operation_timeline_baker(operation_id=operation.id, _quantity=45)
-        facilities_url = custom_reverse_lazy('list_facilities', kwargs={'operation_id': operation.id})
+        facilities_url = custom_reverse_lazy('list_facilities_by_operation_id', kwargs={'operation_id': operation.id})
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", facilities_url)
         assert response.status_code == 200
@@ -36,6 +39,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         page_1_response_id = response_items_1[0].get('id')
         assert len(response_items_1) == NINJA_PAGINATION_PER_PAGE
         assert response_count_1 == 45  # total count of facilities
+
         # Get the page 2 response
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -45,6 +49,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_items_2 = response.json().get('items')
         response_count_2 = response.json().get('count')
+
         # save the id of the first paginated response item
         page_2_response_id = response_items_2[0].get('id')
         assert len(response_items_2) == NINJA_PAGINATION_PER_PAGE
@@ -67,57 +72,61 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert page_2_response_id != page_2_response_id_reverse
 
         # make sure sorting is working
-        page_2_first_facility = Facility.objects.get(pk=page_2_response_id)
-        page_2_first_facility_reverse = Facility.objects.get(pk=page_2_response_id_reverse)
+        page_2_first_facility = FacilityDesignatedOperationTimeline.objects.get(pk=page_2_response_id)
+        page_2_first_facility_reverse = FacilityDesignatedOperationTimeline.objects.get(pk=page_2_response_id_reverse)
         assert page_2_first_facility.created_at > page_2_first_facility_reverse.created_at
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
         operation = operation_baker()
         facility_designated_operation_timeline_baker(operation_id=operation.id, _quantity=25)
-        facilities_url = custom_reverse_lazy('list_facilities', kwargs={'operation_id': operation.id})
+        facilities_url = custom_reverse_lazy('list_facilities_by_operation_id', kwargs={'operation_id': operation.id})
 
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", facilities_url + "?type=Large"
+            self, "cas_admin", facilities_url + "?facility__type=Large"
         )  # filtering Large Facility
         assert response.status_code == 200
         response_items_1 = response.json().get('items')
         for item in response_items_1:
-            assert item.get('type') == Facility.Types.LARGE_FACILITY
+            assert item.get('facility__type') == Facility.Types.LARGE_FACILITY
 
         # Test with a type filter that doesn't exist
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", facilities_url + "?type=a_type_that_does_not_exist"
+            self, "cas_admin", facilities_url + "?facility__type=a_type_that_does_not_exist"
         )
         assert response.status_code == 200
         assert response.json().get('count') == 0
 
         # Test with a name filter
-        name_to_filter = response_items_1[0].get('name')  # get the name of the first item in the response to test with
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", facilities_url + f"?name={name_to_filter}")
+        name_to_filter = response_items_1[0].get(
+            'facility__name'
+        )  # get the name of the first item in the response to test with
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", facilities_url + f"?facility__name={name_to_filter}"
+        )
         assert response.status_code == 200
         response_items_2 = response.json().get('items')
         assert len(response_items_2) == 1
         assert response.json().get('count') == 1
-        assert response_items_2[0].get('name') == name_to_filter
+        assert response_items_2[0].get('facility__name') == name_to_filter
 
         # Test with a name filter that doesn't exist
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", facilities_url + "?name=a_name_that_does_not_exist"
+            self, "cas_admin", facilities_url + "?facility__name=a_name_that_does_not_exist"
         )
         assert response.status_code == 200
         assert response.json().get('count') == 0
 
         # Test with multiple filters
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", facilities_url + f"?type=Large&name={name_to_filter}"
+            self, "cas_admin", facilities_url + f"?facility__type=Large&facility__name={name_to_filter}"
         )
         assert response.status_code == 200
         response_items_3 = response.json().get('items')
         assert len(response_items_3) == 1
         assert response.json().get('count') == 1
-        assert response_items_3[0].get('name') == name_to_filter
-        assert response_items_3[0].get('type') == Facility.Types.LARGE_FACILITY
+        assert response_items_3[0].get('facility__name') == name_to_filter
+        assert response_items_3[0].get('facility__type') == Facility.Types.LARGE_FACILITY
 
     # AUTHORIZATION
 
