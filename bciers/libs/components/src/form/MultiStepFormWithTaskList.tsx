@@ -5,7 +5,7 @@ import MultiStepHeader from "./components/MultiStepHeader";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { FormBase } from "@bciers/components/form/index";
-import { RJSFSchema, RJSFValidationError } from "@rjsf/utils";
+import { RJSFSchema } from "@rjsf/utils";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 
@@ -19,6 +19,9 @@ interface Props {
   baseUrl?: string;
   cancelUrl?: string;
   onSubmit: (data: any) => Promise<void>;
+  buttonText?: string;
+  onChange?: (data: any) => void;
+  submitButtonDisabled?: boolean;
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -30,23 +33,18 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   formData,
   cancelUrl,
   onSubmit,
+  buttonText,
+  onChange,
+  submitButtonDisabled,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormSubmit = async (data: any) => {
     setIsSubmitting(true);
-    try {
-      await onSubmit(data);
-    } catch (error) {
-      console.error("Submission failed:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await onSubmit(data);
+    setIsSubmitting(false);
   };
 
-  const handleFormError = (errors: RJSFValidationError[]) => {
-    console.error(errors);
-  };
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -62,8 +60,8 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
             schema={schema}
             uiSchema={uiSchema}
             onSubmit={handleFormSubmit}
-            onError={handleFormError}
             formData={formData}
+            onChange={onChange}
           >
             <Box display="flex" justifyContent="space-between" mt={3}>
               {cancelUrl && (
@@ -75,9 +73,13 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || submitButtonDisabled}
               >
-                {isSubmitting ? "Saving..." : "Save and Continue"}
+                {isSubmitting
+                  ? "Saving..."
+                  : buttonText
+                  ? buttonText
+                  : "Save and Continue"}
               </Button>
             </Box>
           </FormBase>
