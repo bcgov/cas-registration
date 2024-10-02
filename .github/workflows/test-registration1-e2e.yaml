@@ -15,24 +15,9 @@ env:
 
 jobs:
   e2e-tests:
-    name: 🧪 e2e tests ${{ matrix.project }}
+    name: 🧪 e2e tests Chromium
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - project: chromium
-            os: ubuntu-latest
-            cache_dir: ~/.cache/ms-playwright
-          # Commented out because of flakey issues with Firefox in CI
-          # - project: firefox
-          #   os: ubuntu-latest
-          #   cache_dir: ~/.cache/ms-playwright
-          # Commented out because of flakey issues with webkit in CI
-          # - project: webkit
-          #   os: macos-latest
-          #   cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
 
@@ -50,17 +35,17 @@ jobs:
         uses: actions/cache@v4
         id: playwright-cache
         with:
-          path: ${{ matrix.cache_dir }}
-          key: ${{ runner.os }}-${{ matrix.project }}-ms-playwright-registration
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-chromium-ms-playwright-registration
 
-      - name: 📥 install Playwright ${{ matrix.project }}
+      - name: 📥 install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: npx playwright install --with-deps chromium
         working-directory: ./bciers/apps/registration1
 
       - name: 🎭 Run Playwright Tests
         run: |
-          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} bciers/apps/registration1/e2e/*
+          npx happo-e2e -- npx playwright test --project=chromium bciers/apps/registration1/e2e/*
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
@@ -89,19 +74,18 @@ jobs:
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.run_id }}${{ github.run_attempt }}-reg1
           HAPPO_PROJECT: cas-registration1
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./bciers/apps/registration1
   #     Reports weren't being used regularly though leaving this in here for debugging purposes.
   #     Uncomment these if they are required to debug problematic e2e issues
-  #     - name: 💾 save ${{ matrix.project }} report artifact
+  #     - name: 💾 save Chromium report artifact
   #       # prefer to upload the report only in case of test failure
   #       if: failure()
   #       uses: actions/upload-artifact@v4
   #       with:
   #         # Store all of the reports separately by reconfiguring the report name
-  #         name: blob-report-registration1-${{ matrix.project }}
+  #         name: blob-report-registration1-chromium
   #         path: bciers/blob-report
   #         retention-days: 1
   #
@@ -141,18 +125,3 @@ jobs:
                contains(needs.*.result, 'failure')
             || contains(needs.*.result, 'cancelled')
           }}
-
-  happo-finalize:
-    runs-on: ubuntu-latest
-    needs: [e2e-tests]
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: finalize happo e2e tests
-        env:
-          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.run_id }}${{ github.run_attempt }}-reg1
-        run: npx happo-e2e finalize
-        working-directory: ./bciers/apps/registration1

@@ -37,23 +37,9 @@ env:
 jobs:
   e2e-tests:
     if: ${{ inputs.is_nx_affected }}
-    name: 🧪 e2e tests ${{ matrix.project }}
+    name: 🧪 e2e tests chromium
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - project: chromium
-            os: ubuntu-24.04
-            cache_dir: ~/.cache/ms-playwright
-          # Uncomment these if we want to run tests on other browsers
-          # - project: firefox
-          #   os: ubuntu-latest
-          #   cache_dir: ~/.cache/ms-playwright
-          # - project: webkit
-          #   os: macos-latest
-          #   cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
       - name: 🎁 setup local app
@@ -79,16 +65,16 @@ jobs:
         uses: actions/cache@v4
         id: playwright-cache
         with:
-          path: ${{ matrix.cache_dir }}
-          key: ${{ runner.os }}-${{ matrix.project }}-ms-playwright-bciers
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-chromium-ms-playwright-bciers
 
-      - name: 📥 install Playwright ${{ matrix.project }}
+      - name: 📥 install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: npx playwright install --with-deps chromium
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
       - name: 🎭 Run Playwright Tests
-        run: DEBUG=pw:api yarn nx run ${{ inputs.nx_project }}:e2e -- --project=${{ matrix.project }}
+        run: DEBUG=pw:api yarn nx run ${{ inputs.nx_project }}:e2e -- --project=chromium
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
@@ -118,20 +104,19 @@ jobs:
           E2E_NEW_USER_STORAGE_STATE: ${{ secrets.E2E_NEW_USER_STORAGE_STATE}}
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          # HAPPO_NONCE has 50 char limit, so using nx_project caused failures for projects with long names so using the unique nx_app_port instead
-          HAPPO_NONCE: ${{ github.run_id }}${{ github.run_attempt }}-${{ inputs.nx_app_port }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./bciers
+
   #     Reports weren't being used regularly though leaving this in here for debugging purposes.
   #     Uncomment these if they are required to debug problematic e2e issues
-  #     - name: 💾 save ${{ matrix.project }} report artifact
+  #     - name: 💾 save chromium report artifact
   #       # prefer to upload the report only in case of test failure
   #       if: failure()
   #       uses: actions/upload-artifact@v4
   #       with:
   #         # Store all of the reports separately by reconfiguring the report name
-  #         name: blob-report-${{ inputs.nx_project }}-${{ matrix.project }}
+  #         name: blob-report-${{ inputs.nx_project }}-chromium
   #         path: bciers/blob-report
   #         retention-days: 1
   #
@@ -158,37 +143,6 @@ jobs:
   #         name: playwright-report-${{ inputs.nx_project }}
   #         path: playwright-report
   #         retention-days: 14
-
-  # Ensure the e2e tests and e2e report completed successfully
-  e2e:
-    if: ${{ always() && inputs.is_nx_affected }}
-    runs-on: ubuntu-latest
-    needs: [e2e-tests]
-    steps:
-      - run: exit 1
-        if: >-
-          ${{
-               contains(needs.*.result, 'failure')
-            || contains(needs.*.result, 'cancelled')
-          }}
-
-  happo-finalize:
-    if: ${{ inputs.is_nx_affected }}
-    runs-on: ubuntu-latest
-    needs: [e2e-tests]
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: finalize happo e2e tests
-        env:
-          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          # HAPPO_NONCE has 50 char limit, so using nx_project caused failures for projects with long names so using the unique nx_app_port instead
-          HAPPO_NONCE: ${{ github.run_id }}${{ github.run_attempt }}-${{ inputs.nx_app_port }}
-          HAPPO_PROJECT: cas-${{ inputs.nx_project }}
-        run: npx happo-e2e finalize
-        working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
   # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:
