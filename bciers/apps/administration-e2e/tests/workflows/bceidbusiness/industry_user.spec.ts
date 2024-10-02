@@ -1,4 +1,4 @@
-// 🧪 Suite to test the industry_user workflows using storageState
+// 🧪 Suite to test the administration industry_user workflow
 
 import { test } from "@playwright/test";
 // ℹ️ Environment variables
@@ -18,9 +18,10 @@ import {
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
 const appName = "admin";
+
 test.beforeEach(async ({ context }) => {
   await happoPlaywright.init(context);
-
+  // Setup fixtures for admin-industry_user
   await setupTestEnvironment(appName + "-" + UserRole.INDUSTRY_USER);
 });
 
@@ -37,7 +38,6 @@ test.describe("Test Workflow industry_user", () => {
   );
   test.use({ storageState: storageState });
   test("Select operator link from dashboard", async ({ page }) => {
-    let pageContent;
     // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
     await dashboardPage.route();
@@ -53,17 +53,17 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert the form is visible - needed to prevent analyzeAccessibility from failing
     await selectOperatorPage.formIsVisible();
     // 📷 Cheese!
-    await takeStabilizedScreenshot(happoPlaywright, page, {
+    let pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator form",
       variant: "default",
     });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
-  test("Select operator (via legal name) and request admin access", async ({
+  test("Select operator request admin access (via legal name)", async ({
     page,
   }) => {
-    let pageContent;
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
@@ -78,11 +78,11 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.msgConfirmOperatorIsVisible();
 
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator confirmation message",
-    //   variant: "default",
-    // });
+    let pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator my operator confirmation message",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
 
@@ -91,11 +91,11 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert no administrator set up message
     await selectOperatorPage.msgNoAdminSetupIsVisible();
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator no administrator message",
-    //   variant: "default",
-    // });
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator no admin message",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
 
@@ -104,20 +104,18 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert admin access requested message
     await selectOperatorPage.msgRequestAccessAdminConfirmedIsVisible();
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator admin access request confirmation",
-    //   variant: "default",
-    // });
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator admin access request confirmation",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
 
-  test("Select operator (via CRA business number) and request non-admin access", async ({
+  test("Select operator request non-admin access (via CRA business number)", async ({
     page,
   }) => {
-    let pageContent;
-
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
@@ -132,11 +130,11 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert no access message
     await selectOperatorPage.msgNoAccessIsVisible();
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator existing admin message",
-    //   variant: "default",
-    // });
+    let pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator existing admin message",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
     // 👉 Action request access
@@ -144,15 +142,13 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert non-admin access requested message
     await selectOperatorPage.msgRequestAccessConfirmedIsVisible();
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator non-admin access request confirmation",
-    //   variant: "default",
-    // });
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator non-admin access request confirmation",
+      variant: "default",
+    });
   });
-  test("Select operator denied request admin access", async ({ page }) => {
-    let pageContent;
-
+  test("Select operator denied admin access request", async ({ page }) => {
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
@@ -165,17 +161,15 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert operator admin access denied
     await selectOperatorPage.msgRequestAccessAdminDeclinedIsVisible();
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator admin access request declined",
-    //   variant: "default",
-    // });
+    let pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator admin access request declined",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
-  test("Select operator denied request non-admin access", async ({ page }) => {
-    let pageContent;
-
+  test("Select operator denied non-admin access request", async ({ page }) => {
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
@@ -186,11 +180,11 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert operator access denied by admin message
     await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Select operator non-admin access request declined",
-    //   variant: "default",
-    // });
+    let pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Select operator non-admin access request declined",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
@@ -227,8 +221,6 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.hasOperatorAccess(UserRole.INDUSTRY_USER);
   });
   test("Add operator form submit", async ({ page }) => {
-    let pageContent;
-
     // 🛸 Navigates to select operator
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
@@ -241,30 +233,30 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert the form headers
     await selectOperatorPage.formHasHeaders();
     // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Add operator form",
-    //   variant: "default",
-    // });
+    let pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Add operator form",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
     // 👉 Action trigger form required fields errors
     await selectOperatorPage.triggerErrorsFieldRequired();
     // 📷 Cheese!
-    // await takeStabilizedScreenshot(happoPlaywright, page, {
-    //   component: "Add operator form",
-    //   variant: "required errors",
-    // });
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "Add operator form",
+      variant: "required errors",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
 
     // 👉 Action trigger form fields format errors
     await selectOperatorPage.triggerErrorsFieldFormat();
     // 📷 Cheese!
-    // await takeStabilizedScreenshot(happoPlaywright, page, {
-    //   component: "Add operator form",
-    //   variant: "format errors",
-    // });
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "Add operator form",
+      variant: "format errors",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
 
@@ -275,10 +267,10 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.formIsSubmitted();
     // 📷 Cheese!
     pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "New operator confirmation",
-    //   variant: "default",
-    // });
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Add operator form",
+      variant: "submission",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });

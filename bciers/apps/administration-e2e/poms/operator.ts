@@ -333,6 +333,7 @@ export class OperatorPOM {
   async msgRequestAccessAdminDeclinedIsVisible() {
     await expect(this.messageRequestAccessAdminDeclined).toBeVisible();
   }
+
   async msgConfirmOperatorIsVisible() {
     await expect(this.messageConfirmOperator).toBeVisible();
   }
