@@ -34,7 +34,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         }
 
     @staticmethod
-    def _assert_updated_manditory_fields(response_data, payload):
+    def _assert_updated_mandatory_fields(response_data, payload):
         """
         Asserts that the fields in the response data match the expected values from the payload.
 
@@ -173,7 +173,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 401
         assert response.json().get('detail') == 'Unauthorized'
 
-    def test_authorized_users_can_update_manditory_data(self):
+    def test_authorized_users_can_update_mandatory_data(self):
         # Arrange
         _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
 
@@ -199,8 +199,8 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
 
-        # Assert Updated Manditory Fields
-        self._assert_updated_manditory_fields(response_data, payload)
+        # Assert Updated mandatory Fields
+        self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Non-Updated Optional Fields
         assert response_data.get('is_current_year') is None
@@ -240,8 +240,8 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
 
-        # Assert Updated Manditory Fields
-        self._assert_updated_manditory_fields(response_data, payload)
+        # Assert Updated mandatory Fields
+        self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
         assert response_data.get('is_current_year') == payload.get('is_current_year')
@@ -296,8 +296,8 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
 
-        # Assert Updated Manditory Fields
-        self._assert_updated_manditory_fields(response_data, payload)
+        # Assert Updated mandatory Fields
+        self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
         assert response_data.get('street_address') == payload.get('street_address')
@@ -336,8 +336,8 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
 
-        # Assert Updated Manditory Fields
-        self._assert_updated_manditory_fields(response_data, payload)
+        # Assert Updated mandatory Fields
+        self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
         assert response_data.get('street_address') is None
@@ -378,8 +378,8 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
 
-        # Assert Updated Manditory Fields
-        self._assert_updated_manditory_fields(response_data, payload)
+        # Assert Updated mandatory Fields
+        self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
         assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
@@ -420,8 +420,8 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
 
-        # Assert Updated Manditory Fields
-        self._assert_updated_manditory_fields(response_data, payload)
+        # Assert Updated mandatory Fields
+        self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
         assert len(response_data.get('well_authorization_numbers')) == 0

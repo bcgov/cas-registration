@@ -1,3 +1,5 @@
+from datetime import datetime
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.event.transfer_event import TransferEvent
 from registration.models.facility import Facility
 from registration.models.multiple_operator import MultipleOperator
@@ -18,7 +20,7 @@ from registration.tests.utils.bakers import (
     generate_random_cra_business_number,
 )
 from registration.models.operator import Operator
-from model_bakery.recipe import Recipe, foreign_key
+from model_bakery.recipe import Recipe, foreign_key, seq
 import uuid
 
 naics_code = Recipe(NaicsCode)
@@ -26,10 +28,10 @@ address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland'
 
 operator = Recipe(
     Operator,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
     mailing_address=foreign_key(address),
-    cra_business_number=generate_random_cra_business_number(),
+    cra_business_number=generate_random_cra_business_number,
 )
 
 canadian_parent_operator = Recipe(
@@ -59,22 +61,25 @@ multiple_operator = Recipe(
 
 operator_for_operation = Recipe(
     Operator,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
     mailing_address=foreign_key(address),
-    cra_business_number=generate_random_cra_business_number(),
+    cra_business_number=generate_random_cra_business_number,
 )
 
 
 industry_operator_user = Recipe(User, app_role=AppRole.objects.get(role_name="industry_user"))
 
+irc_user = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
+
 operation = Recipe(
     Operation,
     naics_code=foreign_key(naics_code),
-    bcghg_id=uuid.uuid4(),
+    bcghg_id=uuid.uuid4,
     operator=foreign_key(operator_for_operation),
     created_by=foreign_key(industry_operator_user),
 )
+
 
 operator_for_approved_user_operator = Recipe(
     Operator,
@@ -122,4 +127,13 @@ transfer_event = Recipe(
     other_operator=foreign_key(other_operator_for_transfer_event),
     other_operator_contact=foreign_key(contact_for_transfer_event),
 )
-facility = Recipe(Facility, address=foreign_key(address))
+
+facility = Recipe(Facility, address=foreign_key(address), name=seq('Facility 0'))
+
+facility_designated_operation_timeline = Recipe(
+    FacilityDesignatedOperationTimeline,
+    operation=foreign_key(operation),
+    facility=foreign_key(facility),
+    status=FacilityDesignatedOperationTimeline.Statuses.TEMPORARILY_SHUTDOWN,
+    end_date=datetime.now(),
+)
