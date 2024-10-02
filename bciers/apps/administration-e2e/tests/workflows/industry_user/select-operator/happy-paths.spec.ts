@@ -47,6 +47,15 @@ test.describe("Test select operator happy paths", () => {
     });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
+
+    // 🛸 Navigates to add operator
+    await selectOperatorPage.route(AppRoute.OPERATOR_ADD);
+    // 🔍 Assert my operator re-route
+    await selectOperatorPage.route(AppRoute.OPERATOR);
+    // 🛸 Navigates to select operator
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    // 🔍 Assert my operator re-route
+    await selectOperatorPage.route(AppRoute.OPERATOR);
   });
   test("Add operator form with partner fields submit", async ({ page }) => {
     // 🛸 Navigates to add operator
