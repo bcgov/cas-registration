@@ -125,11 +125,11 @@ const FacilityInformationForm = ({
             formSectionListLFo,
             operation,
           );
-      // errors are handled in MultiStepBase
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
       }).then((resolve) => {
         if (resolve?.error) {
+          // errors are handled in MultiStepBase
           return { error: resolve.error };
         } else {
           // Using window.location.href instead of MutliStepBase router.push as there were rerender issues due to
