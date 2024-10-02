@@ -45,12 +45,6 @@ test.describe("Test Workflow industry_user", () => {
     await dashboardPage.urlIsCorrect();
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
-    // 📷 Cheese!
-    // pageContent = page.locator("html");
-    // await happoPlaywright.screenshot(page, pageContent, {
-    //   component: "Administration Dashboard",
-    //   variant: "default",
-    // });
     // 🛸 Navigates to select operator
     await dashboardPage.clickSelectOperatorTile();
     const selectOperatorPage = new OperatorPOM(page);
@@ -59,10 +53,10 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert the form is visible - needed to prevent analyzeAccessibility from failing
     await selectOperatorPage.formIsVisible();
     // 📷 Cheese!
-    // await takeStabilizedScreenshot(happoPlaywright, page, {
-    //   component: "Select operator page",
-    //   variant: "default",
-    // });
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "Select operator form",
+      variant: "default",
+    });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
@@ -156,7 +150,7 @@ test.describe("Test Workflow industry_user", () => {
     //   variant: "default",
     // });
   });
-  test("Select operator request admin access denied", async ({ page }) => {
+  test("Select operator denied request admin access", async ({ page }) => {
     let pageContent;
 
     // 🛸 Navigates to select operator
@@ -179,7 +173,7 @@ test.describe("Test Workflow industry_user", () => {
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
   });
-  test("Select operator request non-admin access denied", async ({ page }) => {
+  test("Select operator denied request non-admin access", async ({ page }) => {
     let pageContent;
 
     // 🛸 Navigates to select operator
