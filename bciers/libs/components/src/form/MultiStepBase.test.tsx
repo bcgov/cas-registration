@@ -246,7 +246,7 @@ describe("The MultiStepBase component", () => {
 
     await user.click(saveAndContinueButton);
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(saveAndContinueButton).toBeDisabled();
     });
 
