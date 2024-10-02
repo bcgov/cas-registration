@@ -4,9 +4,9 @@ from typing import Optional
 
 
 class FacilityDesignatedOperationTimelineOut(ModelSchema):
-    facility_name: str = Field(..., alias="facility.name")
-    facility_type: str = Field(..., alias="facility.type")
-    facility_bcghg_id: Optional[str] = Field(None, alias="facility.bcghg_id")
+    facility__name: str = Field(..., alias="facility.name")
+    facility__type: str = Field(..., alias="facility.type")
+    facility__bcghg_id: Optional[str] = Field(None, alias="facility.bcghg_id")
 
     class Meta:
         model = FacilityDesignatedOperationTimeline
