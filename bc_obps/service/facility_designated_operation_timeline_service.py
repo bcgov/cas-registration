@@ -19,13 +19,9 @@ class FacilityDesignatedOperationTimelineService:
     ) -> QuerySet[FacilityDesignatedOperationTimeline]:
         if user.is_industry_user():
             UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-        return (
-            FacilityDesignatedOperationTimeline.objects
-            .filter(
-                operation__id=operation_id,
-            )
-            .distinct()
-        )
+        return FacilityDesignatedOperationTimeline.objects.filter(
+            operation__id=operation_id,
+        ).distinct()
 
     @classmethod
     def list_timeline_by_operation_id(
