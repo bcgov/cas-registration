@@ -42,7 +42,10 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         assert put_response_1.status_code == 200
         put_response_1_dict = put_response_1.json()
         assert put_response_1_dict.get("id") == str(operation.id)  # string representation of UUID
-        assert put_response_1_dict.keys() == {"id"}  # Make sure the response has the expected keys based on the schema
+        assert put_response_1_dict.keys() == {
+            "id",
+            "status",
+        }  # Make sure the response has the expected keys based on the schema
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.APPROVED
         assert operation_after_put.verified_by == self.user
@@ -104,7 +107,10 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
         assert put_response_dict.get("id") == str(operation.id)  # string representation of UUID
-        assert put_response_dict.keys() == {"id"}  # Make sure the response has the expected keys based on the schema
+        assert put_response_dict.keys() == {
+            "id",
+            "status",
+        }  # Make sure the response has the expected keys based on the schema
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.DECLINED
         assert operation_after_put.verified_by == self.user
@@ -139,7 +145,10 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
         assert put_response_dict.get("id") == str(operation.id)  # string representation of UUID
-        assert put_response_dict.keys() == {"id"}  # Make sure the response has the expected keys based on the schema
+        assert put_response_dict.keys() == {
+            "id",
+            "status",
+        }  # Make sure the response has the expected keys based on the schema
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.CHANGES_REQUESTED
         assert operation_after_put.verified_by is None
