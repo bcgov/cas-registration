@@ -10,6 +10,7 @@ import {
 } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
 import Success from "apps/registration/app/components/operations/registration/Success";
+import { OperationStatus } from "@bciers/utils/enums";
 
 // Check if all checkboxes are checked
 const allChecked = (formData: RegistrationSubmissionFormData) => {
@@ -47,7 +48,9 @@ const RegistrationSubmissionForm = ({
         setSubmitButtonDisabled(false);
         return { error: resolve.error };
       } else {
-        setIsSubmitted(true);
+        if (resolve.status === OperationStatus.REGISTERED) {
+          setIsSubmitted(true);
+        }
         return resolve;
       }
     });
@@ -62,7 +65,6 @@ const RegistrationSubmissionForm = ({
       ) : (
         <MultiStepBase
           allowBackNavigation
-          // baseUrl={`/register-an-operation/${operation}`}
           cancelUrl="/"
           formData={formState}
           onSubmit={handleSubmit}
