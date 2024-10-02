@@ -23,6 +23,12 @@ const playwrightBaseConfig = {
   /* Configure projects for major browsers */
   use: {
     baseURL: baseURL,
+    trace: "retain-on-failure", // Record trace only on test failure
+    // Options:
+    // "on", // 'on' will capture trace for every test
+    // "off"  // Default off
+    // "retain-on-failure", // Record trace only on test failure
+    // 'on-first-retry', // Record trace only on the first retry.
   },
   projects: [
     {
@@ -31,14 +37,14 @@ const playwrightBaseConfig = {
         ...devices["Desktop Chrome"],
       },
     },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
+    // {
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
