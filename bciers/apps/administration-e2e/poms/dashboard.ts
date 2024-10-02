@@ -16,6 +16,7 @@ export class DashboardPOM {
   readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
 
   readonly selectOperatorTile: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.selectOperatorTile = page.getByRole("link", {

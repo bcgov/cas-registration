@@ -264,6 +264,7 @@ export class OperatorPOM {
   }
 
   async triggerErrorsFieldFormat() {
+    await this.fieldCRA.fill(E2EValue.INPUT_BAD_CRA);
     await this.fieldBCCrn.fill(E2EValue.INPUT_BAD_BC_CRN);
     await this.fieldPostal.fill(E2EValue.INPUT_BAD_POSTAL);
     await this.clickSubmitButton();
