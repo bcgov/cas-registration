@@ -2,6 +2,9 @@ name: "Local Registration app run"
 description: "Runs the Registration app locally using Docker Compose"
 
 inputs:
+  docker_compose_file:
+    description: "Optional input to specify another docker-compose file. The default is docker-compose-nx-app.yaml"
+    required: false
   django_secret_key:
     description: "Django secret key"
     required: true
@@ -18,8 +21,8 @@ inputs:
     description: "Docker image URL minus the tag which will be the pull request sha"
     required: true
   nx_app_port:
-    description: "Port to run the Nx app on"
-    required: true
+    description: "Port to run the Nx app on if using the docker-compose-nx-app.yaml file"
+    required: false
 
 runs:
   using: composite
@@ -46,5 +49,5 @@ runs:
     - name: Start services with Docker Compose and wait for them to be ready
       working-directory: ./bciers
       run: |
-        docker compose up -d --wait
+        docker compose -f ${{ inputs.docker_compose_file || 'docker-compose-nx-app.yaml' }} up -d --wait
       shell: bash
