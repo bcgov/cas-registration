@@ -25,6 +25,12 @@ services:
     depends_on:
       - db # Ensures the database is up before the backend starts
     network_mode: host
+    # Healthcheck to ensure the API is ready before reporting healthy
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8000/ || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 20 # reduce the interval/timeout and increase the retries to save time in CI
 
   dashboard:
     # Use the dashboard-e2e image which has nextjs rewrite hosts built in

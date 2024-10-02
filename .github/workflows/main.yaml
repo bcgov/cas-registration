@@ -4,9 +4,9 @@ name: main
 
 on:
   push:
-    branches: [develop, main]
-  pull_request:
-    branches: [develop, main]
+    branches: [develop, main, test-happo-diffs]
+  # pull_request:
+  #   branches: [develop, main]
   workflow_dispatch:
 
 concurrency:
@@ -97,12 +97,8 @@ jobs:
     with:
       docker_compose_file: "docker-compose-bciers-apps.yaml"
       image_url: "ghcr.io/bcgov/cas-dash-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' }}
       nx_project: dashboard
-    secrets: inherit
-  test-registration1-e2e:
-    needs: [build-backend, build-registration1, check-nx-affected]
-    uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
   test-registration-e2e:
     needs:
@@ -118,6 +114,10 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
       nx_app_port: 4000
       nx_project: registration
+    secrets: inherit
+  test-registration1-e2e:
+    needs: [build-backend, build-registration1, check-nx-affected]
+    uses: ./.github/workflows/test-registration1-e2e.yaml
     secrets: inherit
   test-reporting-e2e:
     needs:
