@@ -1,3 +1,5 @@
+from registration.models.registration_purpose import RegistrationPurpose
+from service.tests.test_operation_service_v2 import set_up_valid_mock_operation
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -23,10 +25,12 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
             assert response.json()['detail'] == "Unauthorized"
 
     def test_submission_endpoint_users_can_only_update_their_operations(self):
-        operation = baker.make_recipe(
-            'utils.operation',
-        )
-        TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
+        # user is approved to access endpoint
+        baker.make_recipe('utils.approved_user_operator', user=self.user)
+
+        # create operation that does not belong to user
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION)
+
         response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
@@ -61,7 +65,9 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
 
     def test_submission_endpoint_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION)
+        operation.operator = approved_user_operator.operator
+        operation.save()
         response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
