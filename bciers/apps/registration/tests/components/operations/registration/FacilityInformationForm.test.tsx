@@ -42,19 +42,19 @@ const facilityInitialData = {
   rows: [
     {
       id: "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
-      facility__name: "Facility 1",
+      facility_name: "Facility 1",
       is_current_year: null,
       starting_date: null,
-      facility__type: "Large Facility",
-      facility__bcghg_id: null,
+      facility_type: "Large Facility",
+      facility_bcghg_id: null,
     },
     {
       id: "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
-      facility__name: "Facility 3",
+      facility_name: "Facility 3",
       is_current_year: null,
       starting_date: null,
-      facility__type: "Medium LFO",
-      facility__bcghg_id: "23219990007",
+      facility_type: "Medium LFO",
+      facility_bcghg_id: "23219990007",
     },
   ],
   row_count: 20,
@@ -429,7 +429,7 @@ describe("the FacilityInformationForm component", () => {
     await waitFor(() => {
       // check that the API call was made with the correct params
       expect(
-        extractParams(String(mockReplace.mock.calls), "facility__name"),
+        extractParams(String(mockReplace.mock.calls), "facility_name"),
       ).toBe("facility 1");
     });
 
