@@ -33,7 +33,7 @@ useSearchParams.mockReturnValue({
   searchParams: {
     operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
     operations_title: "Test Operation",
-    step: 3,
+    step: 2,
   },
   get: vi.fn(),
 });
@@ -126,7 +126,7 @@ const fillLatitudeLongitudeFields = (index: number) => {
 const defaultProps = {
   formData: {},
   operation: "002d5a9e-32a6-4191-938c-2c02bfec592d" as UUID,
-  step: 3,
+  step: 2,
   steps: allOperationRegistrationSteps,
   initialGridData: { rows: [], row_count: 0 },
   isCreating: true,
@@ -434,5 +434,44 @@ describe("the FacilityInformationForm component", () => {
     });
 
     expect(streetAddress).toHaveValue("123 Test St");
+  });
+
+  it("should direct the user to the next page of the form on successful submit", async () => {
+    window = Object.create(window);
+    const origin = "http://localhost:3000";
+    const path = `/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d`;
+    Object.defineProperty(window, "location", {
+      value: {
+        href: `${origin}${path}/2`,
+        origin,
+      },
+      writable: true,
+    });
+    render(
+      <FacilityInformationForm
+        {...defaultProps}
+        initialGridData={facilityInitialData as any}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(window.location.href).toBe(`${origin}${path}/2`);
+    });
+
+    const submitButton = screen.getByRole("button", {
+      name: "Save and Continue",
+    });
+
+    actionHandler.mockResolvedValueOnce({
+      error: null,
+    });
+
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+
+    await waitFor(() => {
+      expect(window.location.href).toBe(`${origin}${path}/3`);
+    });
   });
 });
