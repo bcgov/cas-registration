@@ -17,7 +17,6 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   checkFormFieldsReadOnly,
   getAllFormInputs,
-  getFieldRequired,
 } from "@bciers/e2e/utils/helpers";
 /**
  * OperatorPOM provides interaction methods for Operator forms and related actions.
