@@ -125,10 +125,21 @@ const FacilityInformationForm = ({
             formSectionListLFo,
             operation,
           );
-      // errors are handled in MultiStepBase
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
+      }).then((resolve) => {
+        if (resolve?.error) {
+          // errors are handled in MultiStepBase
+          return { error: resolve.error };
+        } else {
+          // Using window.location.href instead of MutliStepBase router.push as there were rerender issues due to
+          // Facility Grid listerning to params change on this page which sometimes hijacked the route change
+          window.location.href = `${
+            window.location.origin
+          }/registration/register-an-operation/${operation}/${step + 1}`;
+        }
       });
+
       return response;
     },
     [operation, isOperationSfo, formSectionListLFo, isCreating, facilityId],
@@ -137,7 +148,6 @@ const FacilityInformationForm = ({
   return (
     <MultiStepBase
       allowBackNavigation
-      baseUrl={`/register-an-operation/${operation}`}
       cancelUrl="/"
       formData={formState}
       onChange={handleFormChange}
