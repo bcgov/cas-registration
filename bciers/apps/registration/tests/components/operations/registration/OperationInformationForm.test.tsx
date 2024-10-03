@@ -234,7 +234,7 @@ describe("the OperationInformationForm component", () => {
         userEvent.click(operationType);
       });
 
-      waitFor(() => {
+      await waitFor(() => {
         userEvent.click(
           screen.getByRole("option", { name: "Single Facility Operation" }),
         );
