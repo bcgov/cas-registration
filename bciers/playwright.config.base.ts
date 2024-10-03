@@ -16,13 +16,19 @@ const playwrightBaseConfig = {
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Opt out of parallel tests */
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? "blob" : "html",
   /* Configure projects for major browsers */
   use: {
     baseURL: baseURL,
+    trace: "retain-on-failure", // Record trace only on test failure
+    // Options:
+    // "on", // 'on' will capture trace for every test
+    // "off"  // Default off
+    // "retain-on-failure", // Record trace only on test failure
+    // 'on-first-retry', // Record trace only on the first retry.
   },
   projects: [
     {
@@ -31,14 +37,14 @@ const playwrightBaseConfig = {
         ...devices["Desktop Chrome"],
       },
     },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
+    // {
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
