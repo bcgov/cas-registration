@@ -122,7 +122,7 @@ describe("RJSF DateWidget", () => {
       />,
     );
 
-    waitFor(async () => {
+    await waitFor(async () => {
       screen.getByTestId("CalendarIcon");
     });
 
