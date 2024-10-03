@@ -5,6 +5,7 @@ import { RegistrationPurposes } from "apps/registration/app/components/operation
 
 export const createAdministrationRegistrationInformationSchema = async (
   registrationPurposesValue: string[],
+  optedIn: boolean,
 ): Promise<RJSFSchema> => {
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
@@ -39,6 +40,37 @@ export const createAdministrationRegistrationInformationSchema = async (
             // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
             // @ts-ignore
             enumNames: regulatedProducts.map((product) => product.name),
+          },
+        },
+      }),
+      ...(optedIn && {
+        opted_in_operation: {
+          type: "object",
+          properties: {
+            meets_section_3_emissions_requirements: {
+              type: "boolean",
+            },
+            meets_electricity_import_operation_criteria: {
+              type: "boolean",
+            },
+            meets_entire_operation_requirements: {
+              type: "boolean",
+            },
+            meets_section_6_emissions_requirements: {
+              type: "boolean",
+            },
+            meets_naics_code_11_22_562_classification_requirements: {
+              type: "boolean",
+            },
+            meets_producing_gger_schedule_a1_regulated_product: {
+              type: "boolean",
+            },
+            meets_reporting_and_regulated_obligations: {
+              type: "boolean",
+            },
+            meets_notification_to_director_on_criteria_change: {
+              type: "boolean",
+            },
           },
         },
       }),
