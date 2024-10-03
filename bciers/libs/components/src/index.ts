@@ -6,5 +6,3 @@ export { default as Bread } from "./navigation/Bread";
 export * from "./theme/ThemeRegistry";
 export * from "./theme/EmotionCache";
 export * from "./theme/theme";
-
-console.log("trigger nx affected for ci");
