@@ -39,7 +39,7 @@ const ActionColumnCell = (params: UserOperatorGridRenderCellParams) => {
   const userOperatorId = params.row.id;
   const userOperatorRole = params.row.userRole;
   const buttonsToShow = useCallback(
-    (status: Status): UserOperatorStatusAction[] => {
+    (status: string): UserOperatorStatusAction[] => {
       if (status === Status.MYSELF) {
         return [];
       } else if (status === Status.PENDING) {
