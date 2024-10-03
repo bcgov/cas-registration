@@ -613,7 +613,9 @@ class TestOperationServiceV2UpdateOperation:
             operation.operator = approved_user_operator.operator
             operation.save()
 
-            OperationServiceV2.set_operation_status_to_registered(approved_user_operator.user.user_guid, operation.id)
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
+                approved_user_operator.user.user_guid, operation.id
+            )
 
             operation.refresh_from_db()
             assert operation.status == Operation.Statuses.REGISTERED
@@ -625,7 +627,9 @@ class TestOperationServiceV2UpdateOperation:
             operation.operator = approved_user_operator.operator
             operation.save()
 
-            OperationServiceV2.set_operation_status_to_registered(approved_user_operator.user.user_guid, operation.id)
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
+                approved_user_operator.user.user_guid, operation.id
+            )
 
             operation.refresh_from_db()
             assert operation.status == Operation.Statuses.REGISTERED
@@ -635,7 +639,7 @@ class TestOperationServiceV2UpdateOperation:
             operation = baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT)
 
             # we check if a user is authorized to update the status only after checking that all of the info is complete, so to test incomplete operations, we can use any user
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user'), operation.id
             )
 
@@ -647,7 +651,7 @@ class TestOperationServiceV2UpdateOperation:
             operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
             operation.contacts.all().delete()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user'), operation.id
             )
 
@@ -662,7 +666,7 @@ class TestOperationServiceV2UpdateOperation:
             operation_rep.address = blank_address
             operation_rep.save()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user').user_guid, operation.id
             )
 
@@ -674,7 +678,7 @@ class TestOperationServiceV2UpdateOperation:
             operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
             FacilityDesignatedOperationTimeline.objects.filter(operation=operation).all().delete()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user'), operation.id
             )
 
@@ -686,7 +690,7 @@ class TestOperationServiceV2UpdateOperation:
             operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
             operation.activities.all().delete()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user'), operation.id
             )
 
@@ -699,7 +703,7 @@ class TestOperationServiceV2UpdateOperation:
             operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
             operation.documents.all().delete()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user'), operation.id
             )
 
@@ -714,7 +718,7 @@ class TestOperationServiceV2UpdateOperation:
                 type=DocumentType.objects.get(name='signed_statutory_declaration')
             ).all().delete()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user').user_guid, operation.id
             )
 
@@ -728,7 +732,7 @@ class TestOperationServiceV2UpdateOperation:
             operation.opted_in_operation = None
             operation.save()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user'), operation.id
             )
 
@@ -742,7 +746,7 @@ class TestOperationServiceV2UpdateOperation:
             operation.opted_in_operation = baker.make(OptedInOperationDetail)
             operation.save()
 
-            OperationServiceV2.set_operation_status_to_registered(
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
                 baker.make_recipe('utils.industry_operator_user'), operation.id
             )
 
