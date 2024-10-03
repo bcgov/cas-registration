@@ -1,8 +1,8 @@
 from uuid import UUID
 from typing import List, Optional
-from registration.schema.v1.operator import OperatorForOperationOut
-from registration.schema.v1.contact import ContactIn
 from registration.schema.v1.multiple_operator import MultipleOperatorOut
+from registration.models.contact import Contact
+from registration.schema.v1.operator import OperatorForOperationOut
 from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
@@ -27,9 +27,16 @@ class RegistrationPurposeIn(ModelSchema):
         fields = ["registration_purpose"]
 
 
-class OperationRepresentativeIn(Schema):
-    operation_representatives: Optional[List[int]] = []
-    new_operation_representatives: Optional[List[ContactIn]] = []
+class OperationRepresentativeIn(ModelSchema):
+    existing_contact_id: Optional[int] = None
+    street_address: str
+    municipality: str
+    province: str
+    postal_code: str
+
+    class Meta:
+        model = Contact
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
 
 
 class OperationInformationIn(ModelSchema):
@@ -232,3 +239,9 @@ class OperationStatutoryDeclarationOut(ModelSchema):
     class Meta:
         model = Operation
         fields = ['id', 'name']
+
+
+class OperationRepresentativeOut(ModelSchema):
+    class Meta:
+        model = Contact
+        fields = ['id']

@@ -27,7 +27,6 @@ admin.site.register(AppRole)
 admin.site.register(NaicsCode)
 admin.site.register(Document)
 admin.site.register(User)
-admin.site.register(Contact)
 admin.site.register(Operator)
 admin.site.register(UserOperator)
 admin.site.register(ParentOperator)
@@ -46,6 +45,21 @@ admin.site.register(RestartEvent)
 class OperationAdmin(admin.ModelAdmin):
     list_display = ('id', 'operator', 'name', 'type', 'status', 'created_at', 'updated_at', 'archived_at')
     search_fields = ('id', 'operator', 'name', 'operation_type', 'status', 'created_at', 'updated_at', 'archived_at')
+    ordering = ('id',)
+
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'phone_number',
+        'business_role',
+        'phone_number',
+        'position_title',
+    )
     ordering = ('id',)
 
 

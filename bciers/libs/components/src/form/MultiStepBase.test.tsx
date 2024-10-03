@@ -55,7 +55,6 @@ const defaultProps = {
   setErrorReset: vi.fn(),
   step: 1,
   steps: ["page1", "page2", "page3"],
-  submitButtonText: "test submit button text",
   uiSchema: testUiSchema,
 };
 
@@ -185,6 +184,7 @@ describe("The MultiStepBase component", () => {
     render(
       <MultiStepBase
         {...defaultProps}
+        submitButtonText={"test submit button text"}
         disabled={false}
         step={3}
         schema={{

@@ -1,43 +1,8 @@
 import { UUID } from "crypto";
 import OperationRepresentativeForm from "apps/registration/app/components/operations/registration/OperationRepresentativeForm";
-import {
-  operationRepresentativeSchema,
-  tempContactsSchema,
-} from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
-import { RJSFSchema } from "@rjsf/utils";
-import { getContacts } from "@bciers/actions/api";
-import {
-  ContactRow,
-  UserOperatorUser,
-} from "@/administration/app/components/contacts/types";
-import getUserOperatorUsers from "@/administration/app/components/contacts/getUserOperatorUsers";
-
-export const createOperationRepresentativeSchema = (
-  schema: RJSFSchema,
-  contactOptions: {
-    id: number;
-    first_name: string;
-    last_name: string;
-  }[],
-) => {
-  // set up options for contact selection dropdown
-  const localSchema = JSON.parse(JSON.stringify(schema));
-  if (Array.isArray(contactOptions)) {
-    localSchema.properties.operation_representatives.items.enum =
-      contactOptions.map((contact) => contact?.id);
-
-    localSchema.properties.operation_representatives.items.enumNames =
-      contactOptions.map(
-        (contact) => `${contact?.first_name} ${contact?.last_name}`,
-      );
-  }
-
-  // create add contact section
-  localSchema.properties.new_operation_representatives.items =
-    tempContactsSchema;
-
-  return localSchema;
-};
+import { getContacts, getOperationRepresentatives } from "@bciers/actions/api";
+import { ContactRow } from "@/administration/app/components/contacts/types";
+import { OperationRepresentative } from "./types";
 
 const OperationRepresentativePage = async ({
   operation,
@@ -49,25 +14,42 @@ const OperationRepresentativePage = async ({
   steps: string[];
 }) => {
   let contacts: { items: ContactRow[]; count: number } | { error: string };
+  let existingOperationRepresentatives:
+    | OperationRepresentative[]
+    | {
+        error: string;
+      } = [];
+
   contacts = await getContacts();
-  let userOperatorUsers: UserOperatorUser[] | { error: string };
-  userOperatorUsers = await getUserOperatorUsers(
-    `registration/register-an-operation/${operation}/4`,
-  );
+  existingOperationRepresentatives =
+    await getOperationRepresentatives(operation);
+
+  if (contacts && "error" in contacts)
+    throw new Error("Failed to Retrieve Contact Information");
   if (
-    (contacts && "error" in contacts) ||
-    (userOperatorUsers && "error" in userOperatorUsers)
+    existingOperationRepresentatives &&
+    "error" in existingOperationRepresentatives
   )
-    throw new Error("Failed to Retrieve Contact or User Information");
+    throw new Error("Failed to Retrieve Operation Representatives");
+
+  // Excluding existing operation representatives from the list of contacts
+  contacts.items = contacts.items?.filter(
+    (contact) =>
+      !existingOperationRepresentatives.some(
+        (opRep) => opRep.id === contact.id,
+      ),
+  );
 
   return (
     <OperationRepresentativeForm
-      formData={{}}
+      formData={{
+        operation_representatives: existingOperationRepresentatives.map(
+          (op) => op.id,
+        ),
+      }}
       operation={operation}
-      schema={createOperationRepresentativeSchema(
-        operationRepresentativeSchema,
-        contacts?.items,
-      )}
+      existingOperationRepresentatives={existingOperationRepresentatives}
+      contacts={contacts.items}
       step={step}
       steps={steps}
     />

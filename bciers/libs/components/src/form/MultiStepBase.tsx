@@ -15,6 +15,7 @@ interface MultiStepBaseProps {
   baseUrl?: string;
   baseUrlParams?: string;
   cancelUrl: string;
+  beforeForm?: React.ReactNode;
   children?: React.ReactNode;
   error?: any;
   disabled?: boolean;
@@ -40,6 +41,7 @@ const MultiStepBase = ({
   baseUrl,
   baseUrlParams,
   cancelUrl,
+  beforeForm,
   children,
   disabled,
   error: parentError,
@@ -105,6 +107,7 @@ const MultiStepBase = ({
         </div>
       )}
       <MultiStepHeader stepIndex={stepIndex} steps={steps} />
+      {beforeForm}
       <FormBase
         schema={schema}
         className="flex flex-col flex-grow"
@@ -118,8 +121,8 @@ const MultiStepBase = ({
         customValidate={customValidate}
         omitExtraData={true}
       >
+        {children}
         <div className="flex flex-col flex-grow justify-end">
-          {children}
           <div className="min-h-[48px] box-border">
             {error && <Alert severity="error">{error}</Alert>}
           </div>

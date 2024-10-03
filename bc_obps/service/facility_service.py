@@ -87,7 +87,7 @@ class FacilityService:
         return address_data
 
     @classmethod
-    def create_address(cls, address_data: dict, exclude_none: bool = True) -> Optional[Address]:
+    def create_address(cls, address_data: dict) -> Optional[Address]:
         """Helper function to create an address model from payload data."""
         return AddressDataAccessService.create_address(address_data)
 

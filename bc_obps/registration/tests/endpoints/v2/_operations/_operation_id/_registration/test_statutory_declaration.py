@@ -190,16 +190,6 @@ class TestGetOperationStatutoryDeclarationEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-    def test_get_register_operation_statutory_declaration_endpoint_malformed_id(self):
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_operation_statutory_declaration", kwargs={'operation_id': "bad_id"}),
-        )
-
-        # Assert
-        assert response.status_code == 401
-
     def test_get_register_operation_statutory_declaration_endpoint_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)

@@ -22,7 +22,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/v2/operations/{operation_id}/registration/statutory-declaration",
+    "/v2/operations/{uuid:operation_id}/registration/statutory-declaration",
     response={200: OperationStatutoryDeclarationOut, codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the statutory declaration document of a specific operation by its ID. The endpoint checks if the current user is authorized to access the operation.
@@ -35,7 +35,7 @@ def get_operation_statutory_declaration(request: HttpRequest, operation_id: UUID
 
 
 @router.put(
-    "/v2/operations/{operation_id}/registration/statutory-declaration",
+    "/v2/operations/{uuid:operation_id}/registration/statutory-declaration",
     response={200: OperationUpdateOut, codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Creates or replaces a statutory declaration document for an Operation",
