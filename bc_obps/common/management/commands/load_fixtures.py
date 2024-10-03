@@ -10,6 +10,26 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         fixture_base_dir = 'registration/fixtures/mock'
+        fixtures_base = [  # Order of fixtures is important
+            f'{fixture_base_dir}/address.json',
+            f'{fixture_base_dir}/user.json',
+            f'{fixture_base_dir}/contact.json',
+            f'{fixture_base_dir}/bc_obps_regulated_operation.json',
+            f'{fixture_base_dir}/operator.json',
+            f'{fixture_base_dir}/operation.json',
+            f'{fixture_base_dir}/document.json',
+            f'{fixture_base_dir}/user_operator.json',
+            f'{fixture_base_dir}/facility.json',
+            f'{fixture_base_dir}/facility_designated_operation_timeline.json',
+            f'{fixture_base_dir}/operation_designated_operator_timeline.json',
+            f'{fixture_base_dir}/restart_event.json',
+            f'{fixture_base_dir}/closure_event.json',
+            f'{fixture_base_dir}/temporary_shutdown_event.json',
+            f'{fixture_base_dir}/transfer_event.json',
+            f'{fixture_base_dir}/parent_operator.json',
+            f'{fixture_base_dir}/partner_operator.json',
+            f'{fixture_base_dir}/registration_purpose.json',
+        ]
 
         workflow_fixtures = {
             "cas_admin": [
@@ -21,6 +41,12 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/operation.json',
                 f'{fixture_base_dir}/user_operator.json',
             ],
+            "admin-industry_user": [
+                fixture.replace('user_operator.json', 'user_operator_v2.json')
+                if 'user_operator.json' in fixture
+                else fixture
+                for fixture in fixtures_base
+            ],
             # Add more workflows here
         }
 
@@ -28,27 +54,8 @@ class Command(BaseCommand):
             fixtures = workflow_fixtures[options['workflow']]
         else:
             # If no workflow specified, load all fixtures
-            # Order of fixtures is important
-            fixtures = [
-                f'{fixture_base_dir}/address.json',
-                f'{fixture_base_dir}/user.json',
-                f'{fixture_base_dir}/contact.json',
-                f'{fixture_base_dir}/bc_obps_regulated_operation.json',
-                f'{fixture_base_dir}/operator.json',
-                f'{fixture_base_dir}/operation.json',
-                f'{fixture_base_dir}/document.json',
-                f'{fixture_base_dir}/user_operator.json',
-                f'{fixture_base_dir}/facility.json',
-                f'{fixture_base_dir}/facility_designated_operation_timeline.json',
-                f'{fixture_base_dir}/operation_designated_operator_timeline.json',
-                f'{fixture_base_dir}/restart_event.json',
-                f'{fixture_base_dir}/closure_event.json',
-                f'{fixture_base_dir}/temporary_shutdown_event.json',
-                f'{fixture_base_dir}/transfer_event.json',
-                f'{fixture_base_dir}/parent_operator.json',
-                f'{fixture_base_dir}/partner_operator.json',
-                f'{fixture_base_dir}/registration_purpose.json',
-            ]
+
+            fixtures = fixtures_base
 
         for fixture in fixtures:
             self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
