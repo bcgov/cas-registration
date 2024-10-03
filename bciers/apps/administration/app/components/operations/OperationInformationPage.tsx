@@ -25,6 +25,7 @@ const OperationInformationPage = async ({
 
   const formSchema = await createAdministrationOperationInformationSchema(
     operation?.registration_purposes,
+    operation?.opt_in,
   );
 
   return (
