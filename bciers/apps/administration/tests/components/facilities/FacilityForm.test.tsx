@@ -475,7 +475,7 @@ describe("FacilityForm component", () => {
     expect(
       container.querySelector("#root_section1_is_current_year"),
     ).toHaveTextContent("Yes");
-    waitFor(() =>
+    await waitFor(() =>
       expect(
         container.querySelector("#root_section1_starting_date"),
       ).toBeInTheDocument(),
@@ -525,7 +525,7 @@ describe("FacilityForm component", () => {
     expect(
       container.querySelector("#root_section1_is_current_year"),
     ).toHaveTextContent("Yes");
-    waitFor(() =>
+    await waitFor(() =>
       expect(
         container.querySelector("#root_section1_starting_date"),
       ).toBeInTheDocument(),

@@ -1,17 +1,13 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import MultiStepBase from "./MultiStepBase";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { useParams, useRouter, useSession } from "@bciers/testConfig/mocks";
 import { QueryParams, Session } from "@bciers/testConfig/types";
-import userEvent from "@testing-library/user-event";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+
+const mockOnSubmit = vi.fn();
+const mockPush = vi.fn();
 
 const testSchema: RJSFSchema = {
   type: "object",
@@ -30,14 +26,6 @@ const testUiSchema: UiSchema = {
     "ui:widget": "TextWidget",
   },
 };
-const mockOnSubmit = vi.fn();
-const mockPush = vi.fn();
-
-useRouter.mockReturnValue({
-  query: {},
-  replace: vi.fn(),
-  push: mockPush,
-});
 
 const defaultProps = {
   allowBackNavigation: true,
@@ -60,7 +48,7 @@ const defaultProps = {
 
 describe("The MultiStepBase component", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     useSession.mockReturnValue({
       data: {
         user: {
@@ -68,6 +56,12 @@ describe("The MultiStepBase component", () => {
         },
       },
     } as Session);
+
+    useRouter.mockReturnValue({
+      query: {},
+      replace: vi.fn(),
+      push: mockPush,
+    });
   });
   it("does not show the Edit button when allowEdit is false", () => {
     useParams.mockReturnValue({
@@ -220,41 +214,28 @@ describe("The MultiStepBase component", () => {
   });
 
   it("submission is disabled if form is still submitting", async () => {
-    useParams.mockReturnValue({
-      formSection: "1",
-      operation: "create",
-    } as QueryParams);
-    const user = userEvent.setup();
-    let resolve: (v: unknown) => void;
-
-    const mockPromiseOnSubmit = vitest.fn().mockReturnValue(
-      new Promise((_resolve) => {
-        resolve = _resolve;
-      }),
-    );
-
     render(
       <MultiStepBase
         {...defaultProps}
         disabled={false}
-        onSubmit={mockPromiseOnSubmit}
+        onSubmit={mockOnSubmit}
+        baseUrl={undefined}
       />,
     );
     const saveAndContinueButton = screen.getByRole("button", {
       name: /Save and Continue/i,
     });
 
-    await user.click(saveAndContinueButton);
-
-    waitFor(() => {
-      expect(saveAndContinueButton).toBeDisabled();
-    });
-
-    await act(async () => {
-      resolve(vitest.fn);
-    });
-
     expect(saveAndContinueButton).not.toBeDisabled();
+
+    fireEvent.click(saveAndContinueButton);
+
+    // re-finding the button is necessary for the test to pass
+    expect(
+      await screen.findByRole("button", {
+        name: /Save and Continue/i,
+      }),
+    ).toBeDisabled();
   });
 
   it("calls the onChange prop when the form changes", () => {
@@ -346,6 +327,31 @@ describe("The MultiStepBase component", () => {
       expect(mockOnSubmit).toHaveBeenCalled();
       expect(screen.getByRole("alert")).toBeVisible();
       expect(screen.getByText("whoopsie")).toBeVisible();
+    });
+  });
+
+  it("clears old errors", async () => {
+    render(
+      <MultiStepBase
+        {...defaultProps}
+        disabled={false}
+        step={2}
+        schema={{
+          ...testSchema,
+          title: "page2",
+        }}
+        error="old"
+      />,
+    );
+
+    const saveAndContinueButton = screen.getByRole("button", {
+      name: /Save and Continue/i,
+    });
+
+    fireEvent.click(saveAndContinueButton);
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalled();
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
   });
 });
