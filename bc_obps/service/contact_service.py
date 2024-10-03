@@ -37,7 +37,7 @@ class ContactService:
         return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
-    def list_operations_contacts(
+    def list_operation_representatives(
         cls,
         operation_id: UUID,
         user_guid: UUID,

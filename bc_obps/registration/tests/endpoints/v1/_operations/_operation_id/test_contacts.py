@@ -12,7 +12,7 @@ class TestOperationsContactsEndpoint(CommonTestSetup):
             self,
             'cas_pending',
             custom_reverse_lazy(
-                "list_operations_contacts", kwargs={'operation_id': '12345678-1234-5678-1234-567812345678'}
+                "list_operation_representatives", kwargs={'operation_id': '12345678-1234-5678-1234-567812345678'}
             ),
         )
         assert response.status_code == 401
@@ -33,7 +33,7 @@ class TestOperationsContactsEndpoint(CommonTestSetup):
             response_1 = TestUtils.mock_get_with_auth_role(
                 self,
                 'cas_admin',
-                custom_reverse_lazy("list_operations_contacts", kwargs={'operation_id': operation.id}),
+                custom_reverse_lazy("list_operation_representatives", kwargs={'operation_id': operation.id}),
             )
             assert response_1.status_code == 200
             assert len(response_1.json()) == 3
@@ -42,7 +42,7 @@ class TestOperationsContactsEndpoint(CommonTestSetup):
         response_2 = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy("list_operations_contacts", kwargs={'operation_id': operation_1.id}),
+            custom_reverse_lazy("list_operation_representatives", kwargs={'operation_id': operation_1.id}),
         )
         assert response_2.status_code == 200
         response_json = response_2.json()
@@ -55,7 +55,7 @@ class TestOperationsContactsEndpoint(CommonTestSetup):
         response_3 = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy("list_operations_contacts", kwargs={'operation_id': operation_2.id}),
+            custom_reverse_lazy("list_operation_representatives", kwargs={'operation_id': operation_2.id}),
         )
         assert response_3.status_code == 401
         assert response_3.json().get('message') == 'Unauthorized.'

@@ -49,7 +49,7 @@ export interface OperationRegistrationFormProps {
   steps: string[];
 }
 
-export interface OperationsContacts {
+export interface OperationRepresentative {
   id: number;
   full_name: string;
 }

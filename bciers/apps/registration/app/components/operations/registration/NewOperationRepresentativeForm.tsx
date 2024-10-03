@@ -4,9 +4,9 @@ import {
   createOperationRepresentativeSchema,
   createOperationRepresentativeUiSchema,
 } from "apps/registration/app/data/jsonSchema/operationRegistration/operationRepresentative";
-import { OperationsContacts } from "apps/registration/app/components/operations/registration/types";
+import { OperationRepresentative } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
-import { useState } from "react";
+import { useState, FC } from "react";
 import { Button, Alert } from "@mui/material";
 import { getContact } from "@bciers/actions/api";
 import {
@@ -22,11 +22,11 @@ interface NewOperationRepresentativeFormProps
   extends Omit<FormPropsWithTheme<any>, "schema" | "uiSchema"> {
   step: number;
   operation: UUID;
-  existingOperationRepresentatives: OperationsContacts[];
+  existingOperationRepresentatives: OperationRepresentative[];
   contacts: ContactRow[];
 }
 
-const NewOperationRepresentativeForm: React.FC<
+const NewOperationRepresentativeForm: FC<
   NewOperationRepresentativeFormProps
 > = (props) => {
   const {

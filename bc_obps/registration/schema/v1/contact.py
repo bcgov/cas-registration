@@ -26,7 +26,7 @@ class ContactListOut(ModelSchema):
         fields = ['id', 'first_name', 'last_name', 'email']
 
 
-class OperationsContactListOut(Schema):
+class OperationRepresentativeListOut(Schema):
     id: int = Field(..., alias="pk")
     full_name: str
 
