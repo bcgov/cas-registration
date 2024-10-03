@@ -21,7 +21,7 @@ const SubmitButton = ({
   const isDisabled = disabled || isSubmitting;
 
   const spinnerContainerClass =
-    "absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full min-w-10 h-10 transition-opacity duration-500";
+    "absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full min-w-10 h-10";
 
   return (
     <Button
