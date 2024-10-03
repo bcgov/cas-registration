@@ -2,6 +2,7 @@ from typing import List, Optional
 from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
+from registration.models.contact import Contact
 from registration.models.multiple_operator import MultipleOperator
 from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from service.data_access_service.address_service import AddressDataAccessService
@@ -150,23 +151,29 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def register_operation_operation_representative(
+    def create_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeIn
-    ) -> Operation:
+    ) -> Contact:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
-
-        contact_ids_to_add_to_operation: List = []
-        if payload.operation_representatives:  # Existing contacts
-            contact_ids_to_add_to_operation.extend(payload.operation_representatives)
-        if payload.new_operation_representatives:
-            for contact in payload.new_operation_representatives:
-                new_contact = ContactService.create_contact(user_guid, contact)
-                contact_ids_to_add_to_operation.append(new_contact.id)
-
-        # add the new and existing contacts to the operaTION
-        operation.contacts.set(contact_ids_to_add_to_operation)
+        existing_contact_id = payload.existing_contact_id
+        if existing_contact_id:
+            # We need to prevent users from updating the contact's first name, last name, and email if they are using an existing contact
+            # This is already handled in the schema, but we need to make sure it's enforced here as well
+            contact: Contact = Contact.objects.get(id=existing_contact_id)
+            if any(
+                [
+                    payload.first_name != contact.first_name,  # type: ignore[attr-defined]
+                    payload.last_name != contact.last_name,  # type: ignore[attr-defined]
+                    payload.email != contact.email,  # type: ignore[attr-defined]
+                ]
+            ):
+                raise Exception("Cannot update first name, last name, or email of existing contact.")
+            contact = ContactService.update_contact(user_guid, existing_contact_id, payload)
+        else:
+            contact = ContactService.create_contact(user_guid, payload)
+        operation.contacts.add(contact)
         operation.set_create_or_update(user_guid)
-        return operation
+        return contact
 
     @classmethod
     @transaction.atomic()
@@ -191,14 +198,13 @@ class OperationServiceV2:
         if operation_id:
             operation_data['pk'] = operation_id
 
-        operation: Operation = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
+        operation: Operation
+        operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
 
         # set m2m relationships
         operation.activities.set(payload.activities)
 
-        boundary_map = DocumentService.create_or_replace_operation_document(
-            user_guid, operation.id, payload.boundary_map, 'boundary_map'  # type: ignore # mypy is not aware of the schema validator
-        )
+        boundary_map = DocumentService.create_or_replace_operation_document(user_guid, operation.id, payload.boundary_map, 'boundary_map')  # type: ignore # mypy is not aware of the schema validator
 
         process_flow_diagram = DocumentService.create_or_replace_operation_document(
             user_guid, operation.id, payload.process_flow_diagram, 'process_flow_diagram'  # type: ignore # mypy is not aware of the schema validator
