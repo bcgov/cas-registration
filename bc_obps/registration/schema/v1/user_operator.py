@@ -166,7 +166,7 @@ class ExternalDashboardUsersTileData(ModelSchema):
 
     class Meta:
         model = UserOperator
-        fields = ["role", "status", "id"]
+        fields = ["role", "status", "id", "user_friendly_id"]
 
 
 class UserOperatorListOut(Schema):
