@@ -66,7 +66,7 @@ describe("RJSF SelectWidget", () => {
       fireEvent.mouseDown(selectField);
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       userEvent.click(screen.getByRole("option", { name: "Option 2" }));
     });
 
