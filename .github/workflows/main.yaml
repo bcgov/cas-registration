@@ -4,9 +4,9 @@ name: main
 
 on:
   push:
-    branches: [develop, main]
-  pull_request:
-    branches: [develop, main]
+    branches: [develop, main, test-diffs]
+  # pull_request:
+  #   branches: [develop, main]
   workflow_dispatch:
 
 concurrency:
