@@ -55,7 +55,7 @@
               },
               {
                 "title": "Users and Access Requests",
-                "href": "/administration/tbd",
+                "href": "/administration/users",
                 "condition": {
                   "api": "registration/v2/user-operators/current/operator",
                   "field": "error",
