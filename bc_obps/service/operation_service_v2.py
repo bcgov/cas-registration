@@ -102,6 +102,8 @@ class OperationServiceV2:
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
+        if status == Operation.Statuses.REGISTERED:
+            cls.raise_exception_if_operation_missing_registration_information(operation_id)
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=['status'])
         operation.set_create_or_update(user_guid)
@@ -319,10 +321,11 @@ class OperationServiceV2:
     @classmethod
     def is_operation_opt_in_information_complete(cls, operation: Operation) -> bool:
         """This fuction checks if all opt-in information is complete. Complete means an operation has both a fk to the opt-in detail, and the details are complete."""
-        if not operation.opted_in_operation:
+        opted_in_operation = operation.opted_in_operation
+        if not opted_in_operation:
             return False
-        # if any of the fields in the opted_in_operation record are blank, info is not complete
-        fields_to_check = [
+
+        required_fields = [
             'meets_section_3_emissions_requirements',
             'meets_electricity_import_operation_criteria',
             'meets_entire_operation_requirements',
@@ -332,20 +335,17 @@ class OperationServiceV2:
             'meets_reporting_and_regulated_obligations',
             'meets_notification_to_director_on_criteria_change',
         ]
-        for field in fields_to_check:
-            if getattr(operation.opted_in_operation, field) is None:
-                return False
 
-        return True
+        return all(getattr(opted_in_operation, field) is not None for field in required_fields)
 
     @classmethod
-    def set_operation_status_to_registered(cls, user_guid: UUID, operation_id: UUID) -> Operation | None:
-        """This fuction gets an operation by id and checks if that operation has all of its registration information in order. If anything is missing, the function returns None. If all information is complete, the function updates the status and returns the operation."""
+    def raise_exception_if_operation_missing_registration_information(cls, operation_id: UUID) -> None:
+        """This fuction gets an operation by id and checks if that operation has all of its registration information in order. If anything is missing, the function raises an exception."""
         operation = OperationDataAccessService.get_by_id(operation_id)
 
         # must have a registration purpose
         if not operation.registration_purposes.exists():
-            return None
+            raise Exception("Operation must have registration purpose.")
 
         # must have at least one operation rep with a complete address
         if (
@@ -359,15 +359,15 @@ class OperationServiceV2:
             )
             .exists()
         ):
-            return None
+            raise Exception("Operation must have an operation representative with an address.")
 
         # must have at least one facility
         if not FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists():
-            return None
+            raise Exception("Operation must have at least one facility.")
 
         # must have at least one reporting activity
         if not operation.activities.exists():
-            return None
+            raise Exception("Operation must have at least one reporting activity.")
 
         # must have a boundary map and process flow diagram
         if not operation.documents.filter(
@@ -376,7 +376,7 @@ class OperationServiceV2:
                 DocumentType.objects.get(name='boundary_map'),
             ]
         ).exists():
-            return None
+            raise Exception("Operation must have a process flow diagram and boundary map.")
 
         # if operation is a new entrant, it must have statutory declaration
         if (
@@ -387,14 +387,11 @@ class OperationServiceV2:
                 type=DocumentType.objects.get(name='signed_statutory_declaration')
             ).exists()
         ):
-            return None
+            raise Exception("Operation must have a signed statutory declaration.")
 
         # if operation is an opt-in, it must have all questions answered
         if operation.registration_purposes.filter(
             registration_purpose=RegistrationPurpose.Purposes.OPTED_IN_OPERATION
         ).exists():
             if not cls.is_operation_opt_in_information_complete(operation):
-                return operation
-
-        OperationServiceV2.update_status(user_guid, operation_id, Operation.Statuses.REGISTERED)
-        return operation
+                raise Exception("Operation must have completed opt-in information.")

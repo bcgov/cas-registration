@@ -10,7 +10,6 @@ import {
 } from "apps/registration/app/components/operations/registration/types";
 import { IChangeEvent } from "@rjsf/core";
 import Success from "apps/registration/app/components/operations/registration/Success";
-import { OperationStatus } from "@bciers/utils/enums";
 
 // Check if all checkboxes are checked
 const allChecked = (formData: RegistrationSubmissionFormData) => {
@@ -48,9 +47,7 @@ const RegistrationSubmissionForm = ({
         setSubmitButtonDisabled(false);
         return { error: resolve.error };
       } else {
-        if (resolve.status === OperationStatus.REGISTERED) {
-          setIsSubmitted(true);
-        }
+        setIsSubmitted(true);
         return resolve;
       }
     });
