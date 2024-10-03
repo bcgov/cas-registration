@@ -82,7 +82,6 @@ const MultiStepBase = ({
         baseUrlParams ? `?${baseUrlParams}` : ""
       }`;
       router.push(nextStepUrl);
-      setIsSubmitting(false);
     }
   };
 

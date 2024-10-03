@@ -70,7 +70,7 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
           ))}
         {/* When the form is editable, the form should be submitted when navigating between steps */}
         {/* When the form is not editable (e.g., IRC staff is reviewing an operation), the form should not be submitted when navigating between steps */}
-        {!isFinalStep && disabled ? (
+        {!isFinalStep && disabled && !isSubmitting ? (
           <Link href={`${baseUrl}/${stepIndex + 2}`}>
             <Button
               variant="contained"
@@ -78,7 +78,7 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
               disabled={submitButtonDisabled ?? isSubmitting}
               aria-disabled={submitButtonDisabled ?? isSubmitting}
             >
-              {isSubmitting ? submitBtnText : "Next"}
+              Next
             </Button>
           </Link>
         ) : (
