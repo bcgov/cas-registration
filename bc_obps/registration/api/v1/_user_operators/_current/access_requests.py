@@ -24,7 +24,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("approved_industry_admin_user"),
 )
 @handle_http_errors()
-# Used to show industry_user admins the list of user_operators to approve/deny
 def get_current_user_operator_access_requests(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
     return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(
         get_current_user_guid(request)
