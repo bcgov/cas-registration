@@ -31,6 +31,7 @@ const SubmitButton = ({
       onClick={onClick}
     >
       <div
+        data-testid="spinner"
         className={spinnerClass}
         style={{
           visibility: isSubmitting ? "visible" : "hidden",
