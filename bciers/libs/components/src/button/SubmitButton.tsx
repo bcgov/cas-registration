@@ -2,19 +2,19 @@ import { Button } from "@mui/material";
 import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
 
 interface SubmitButtonProps {
+  children?: React.ReactNode | string;
   disabled?: boolean;
   isSubmitting: boolean;
   onClick?: () => void;
-  submitButtonText?: string;
   type?: "submit" | "button";
   variant?: "contained" | "outlined";
 }
 
 const SubmitButton = ({
+  children = "Submit",
   disabled,
   isSubmitting,
   onClick,
-  submitButtonText = "Submit",
   type = "submit",
   variant = "contained",
 }: SubmitButtonProps) => {
@@ -44,7 +44,7 @@ const SubmitButton = ({
           visibility: isSubmitting ? "hidden" : "visible",
         }}
       >
-        {submitButtonText}
+        {children}
       </div>
     </Button>
   );
