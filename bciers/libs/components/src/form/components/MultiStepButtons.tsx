@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@mui/material";
+import SubmitButton from "@bciers/components/button/SubmitButton";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -17,7 +18,7 @@ interface SubmitButtonProps {
   submitButtonDisabled?: boolean;
 }
 
-const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
+const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
   allowBackNavigation,
   baseUrl,
   cancelUrl,
@@ -82,14 +83,10 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
           </Link>
         ) : (
           isIndustryUser && (
-            <Button
-              type="submit"
-              aria-disabled={isDisabled}
+            <SubmitButton
               disabled={submitButtonDisabled ?? isDisabled}
-              variant="contained"
-            >
-              {submitBtnText}
-            </Button>
+              isSubmitting={isSubmitting}
+            >{submitBtnText}</SubmitButton>
           )
         )}
       </div>
@@ -97,4 +94,4 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   );
 };
 
-export default SubmitButton;
+export default MultiStepButtons;
