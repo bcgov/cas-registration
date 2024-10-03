@@ -78,7 +78,7 @@ describe("the OperationRepresentativePage component", () => {
     }).rejects.toThrow("Failed to Retrieve Contact");
   });
 
-  it("renders the appropriate error component when getOperationsContacts fails", async () => {
+  it("renders the appropriate error component when getOperationRepresentatives fails", async () => {
     // contacts
     actionHandler.mockResolvedValueOnce(contactsMockResponse);
 

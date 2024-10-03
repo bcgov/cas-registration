@@ -3,7 +3,7 @@
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import {
   OperationRepresentativeFormData,
-  OperationsContacts,
+  OperationRepresentative,
 } from "apps/registration/app/components/operations/registration/types";
 import { ContactRow } from "@/administration/app/components/contacts/types";
 import { UUID } from "crypto";
@@ -14,7 +14,7 @@ interface OperationRepresentativeFormProps {
   step: number;
   steps: string[];
   formData: OperationRepresentativeFormData;
-  existingOperationRepresentatives: OperationsContacts[];
+  existingOperationRepresentatives: OperationRepresentative[];
   contacts: ContactRow[];
 }
 

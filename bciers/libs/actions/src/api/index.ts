@@ -11,4 +11,4 @@ export { default as getRegistrationPurposes } from "./getRegistrationPurposes";
 export { default as getOptedInOperationDetail } from "./getOptedInOperationDetail";
 export { default as getContact } from "./getContact";
 export { default as getContacts } from "./getContacts";
-export { default as getOperationsContacts } from "./getOperationsContacts";
+export { default as getOperationRepresentatives } from "./getOperationRepresentatives";

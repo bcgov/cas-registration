@@ -8,7 +8,7 @@ import provinceOptions from "@bciers/data/provinces.json";
 import { operationRepresentativePreface } from "./operationRepresentativeText";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { ContactRow } from "@/administration/app/components/contacts/types";
-import { OperationsContacts } from "@/registration/app/components/operations/registration/types";
+import { OperationRepresentative } from "@/registration/app/components/operations/registration/types";
 
 // Operation Representative Schema - Very similar to Contact Schema(without the existing_bciers_user field)
 export const newOperationRepresentativeSchema: RJSFSchema = {
@@ -83,7 +83,7 @@ export const newOperationRepresentativeSchema: RJSFSchema = {
 };
 
 export const createOperationRepresentativeSchema = (
-  existingOperationRepresentatives: OperationsContacts[],
+  existingOperationRepresentatives: OperationRepresentative[],
   allContactOptions: ContactRow[],
 ): RJSFSchema => {
   const hasExistingOperationReps =

@@ -1,8 +1,8 @@
 import { UUID } from "crypto";
 import OperationRepresentativeForm from "apps/registration/app/components/operations/registration/OperationRepresentativeForm";
-import { getContacts, getOperationsContacts } from "@bciers/actions/api";
+import { getContacts, getOperationRepresentatives } from "@bciers/actions/api";
 import { ContactRow } from "@/administration/app/components/contacts/types";
-import { OperationsContacts } from "./types";
+import { OperationRepresentative } from "./types";
 
 const OperationRepresentativePage = async ({
   operation,
@@ -15,13 +15,14 @@ const OperationRepresentativePage = async ({
 }) => {
   let contacts: { items: ContactRow[]; count: number } | { error: string };
   let existingOperationRepresentatives:
-    | OperationsContacts[]
+    | OperationRepresentative[]
     | {
         error: string;
       } = [];
 
   contacts = await getContacts();
-  existingOperationRepresentatives = await getOperationsContacts(operation);
+  existingOperationRepresentatives =
+    await getOperationRepresentatives(operation);
 
   if (contacts && "error" in contacts)
     throw new Error("Failed to Retrieve Contact Information");

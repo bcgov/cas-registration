@@ -15,7 +15,7 @@ from . import (
     contacts,
 )
 from ._operations import operation_id
-from ._operations._operation_id import update_status, facilities, contacts
+from ._operations._operation_id import update_status, facilities, operation_representatives
 
 from ._operators._operator_id import (
     request_access,
