@@ -2,7 +2,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import SingleStepTaskListForm from "./SingleStepTaskListForm";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { FormMode } from "@bciers/utils/enums";
 import { FrontendMessages } from "@bciers/utils/enums";
 const section1: RJSFSchema = {
   type: "object",
@@ -187,7 +186,6 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={mockFormData}
-        mode={FormMode.READ_ONLY}
         onCancel={() => {
           // eslint-disable-next-line no-console
           console.log("cancel");
@@ -219,7 +217,6 @@ describe("the SingleStepTaskListForm component", () => {
         schema={schema}
         uiSchema={uiSchema}
         formData={mockFormData}
-        mode={FormMode.READ_ONLY}
         onCancel={() => {
           // eslint-disable-next-line no-console
           console.log("cancel");

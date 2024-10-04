@@ -7,42 +7,42 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TaskList from "@bciers/components/form/components/TaskList";
 import { createNestedFormData, createUnnestedFormData } from "./formDataUtils";
-import { FormMode } from "@bciers/utils/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { FrontendMessages } from "@bciers/utils/enums";
 
 interface SingleStepTaskListFormProps {
+  allowEdit?: boolean;
   disabled?: boolean;
+  error?: string;
   formData: { [key: string]: any };
+  inlineMessage?: React.ReactNode;
   onCancel: () => void;
   onChange?: (e: IChangeEvent) => void;
   onSubmit: (e: IChangeEvent) => any;
+  readOnly?: boolean;
   schema: RJSFSchema;
   uiSchema: UiSchema;
-  error?: string;
-  inlineMessage?: React.ReactNode;
-  mode?: FormMode;
-  allowEdit?: boolean;
 }
 
 const SingleStepTaskListForm = ({
-  disabled, // pass this as true only if you want the form permanently disabled, e.g., it's being viewed by an internal user
+  allowEdit = true,
+  disabled, // If allowEdit is false, disabled prop will permanently disable the form
   formData: rawFormData,
   onChange,
   onCancel,
   onSubmit,
+  readOnly,
   schema,
   uiSchema,
   error,
   inlineMessage,
-  mode = FormMode.CREATE,
-  allowEdit = true,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
   const [formState, setFormState] = useState(formData);
-  const [isDisabled, setIsDisabled] = useState(
-    disabled || mode === FormMode.READ_ONLY,
+  const [isDisabled, setIsDisabled] = useState(disabled);
+  const [isEditMode, setIsEditMode] = useState(
+    allowEdit && !readOnly && !disabled && !hasFormData,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -80,7 +80,13 @@ const SingleStepTaskListForm = ({
     if (onChange) onChange(e);
   };
 
-  const isFormDisabled = disabled || isDisabled || isSubmitting;
+  const isFormDisabled =
+    // If editing is not allowed, disabled prop permanently disables the form
+    (!allowEdit && disabled) ||
+    !isEditMode ||
+    isDisabled ||
+    isSubmitting ||
+    readOnly;
 
   return (
     <div className="w-full flex flex-row mt-8">
@@ -98,6 +104,7 @@ const SingleStepTaskListForm = ({
         <FormBase
           formRef={formRef}
           disabled={isFormDisabled}
+          readonly={readOnly}
           schema={schema}
           uiSchema={uiSchema}
           formData={formState}
@@ -113,12 +120,16 @@ const SingleStepTaskListForm = ({
           <div className="w-full flex justify-end mt-8">
             {allowEdit && (
               <div>
-                {isDisabled ? (
+                {!isEditMode && !readOnly ? (
                   <Button
                     variant="contained"
-                    onClick={() => {
+                    type="button"
+                    disabled={isEditMode}
+                    onClick={(e) => {
+                      e.preventDefault();
                       setIsDisabled(false);
                       setIsSnackbarOpen(false);
+                      setIsEditMode(true);
                     }}
                   >
                     Edit

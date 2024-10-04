@@ -32,6 +32,7 @@ export const customFormatsErrorMessages = {
   starting_date_year: `Starting Date must be between ${
     currentYear - 1
   } and ${currentYear}`,
+
   signature: "Signature should not include special characters or numbers",
 };
 
@@ -62,7 +63,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     setErrorReset,
     theme,
   } = props;
-  const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
+  const formTheme = readonly ? readOnlyTheme : defaultTheme;
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
   const [formState, setFormState] = useState(formData ?? {});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,6 +93,8 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     <Form
       {...props}
       ref={formRef}
+      disabled={disabled}
+      readonly={readonly}
       formData={isSubmitting ? formState : formData}
       onChange={handleChange}
       noHtml5Validate
