@@ -86,7 +86,9 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
             <SubmitButton
               disabled={submitButtonDisabled ?? isDisabled}
               isSubmitting={isSubmitting}
-            >{submitBtnText}</SubmitButton>
+            >
+              {submitBtnText}
+            </SubmitButton>
           )
         )}
       </div>
