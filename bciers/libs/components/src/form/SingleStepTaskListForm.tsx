@@ -10,6 +10,7 @@ import { createNestedFormData, createUnnestedFormData } from "./formDataUtils";
 import { FormMode } from "@bciers/utils/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { FrontendMessages } from "@bciers/utils/enums";
+import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -124,13 +125,12 @@ const SingleStepTaskListForm = ({
                     Edit
                   </Button>
                 ) : (
-                  <Button
-                    variant="contained"
-                    type="submit"
+                  <SubmitButton
                     disabled={isSubmitting}
+                    isSubmitting={isSubmitting}
                   >
                     Submit
-                  </Button>
+                  </SubmitButton>
                 )}
               </div>
             )}

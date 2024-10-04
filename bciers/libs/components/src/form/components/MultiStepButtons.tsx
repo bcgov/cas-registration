@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@mui/material";
+import SubmitButton from "@bciers/components/button/SubmitButton";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -17,7 +18,7 @@ interface SubmitButtonProps {
   submitButtonDisabled?: boolean;
 }
 
-const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
+const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
   allowBackNavigation,
   baseUrl,
   cancelUrl,
@@ -69,7 +70,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
           ))}
         {/* When the form is editable, the form should be submitted when navigating between steps */}
         {/* When the form is not editable (e.g., IRC staff is reviewing an operation), the form should not be submitted when navigating between steps */}
-        {!isFinalStep && disabled ? (
+        {!isFinalStep && disabled && !isSubmitting ? (
           <Link href={`${baseUrl}/${stepIndex + 2}`}>
             <Button
               variant="contained"
@@ -77,19 +78,17 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
               disabled={submitButtonDisabled ?? isSubmitting}
               aria-disabled={submitButtonDisabled ?? isSubmitting}
             >
-              {isSubmitting ? submitBtnText : "Next"}
+              Next
             </Button>
           </Link>
         ) : (
           isIndustryUser && (
-            <Button
-              type="submit"
-              aria-disabled={isDisabled}
+            <SubmitButton
               disabled={submitButtonDisabled ?? isDisabled}
-              variant="contained"
+              isSubmitting={isSubmitting}
             >
               {submitBtnText}
-            </Button>
+            </SubmitButton>
           )
         )}
       </div>
@@ -97,4 +96,4 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   );
 };
 
-export default SubmitButton;
+export default MultiStepButtons;

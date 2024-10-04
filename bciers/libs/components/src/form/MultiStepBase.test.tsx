@@ -230,12 +230,11 @@ describe("The MultiStepBase component", () => {
 
     fireEvent.click(saveAndContinueButton);
 
+    expect(await screen.findByTestId("spinner")).toBeVisible();
+
     // re-finding the button is necessary for the test to pass
-    expect(
-      await screen.findByRole("button", {
-        name: /Save and Continue/i,
-      }),
-    ).toBeDisabled();
+    // finding by test-id since the text content of the button is hidden when the spinner is visible
+    expect(await screen.findByTestId("submit-button")).toBeDisabled();
   });
 
   it("calls the onChange prop when the form changes", () => {
