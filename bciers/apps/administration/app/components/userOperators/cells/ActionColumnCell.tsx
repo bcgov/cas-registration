@@ -1,7 +1,6 @@
 "use client";
 
 import Button from "@mui/material/Button";
-import { actionHandler } from "@bciers/actions";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { Stack } from "@mui/system";
@@ -11,62 +10,46 @@ import {
   AccessRequestStatusAction,
 } from "@/administration/app/components/userOperators/types";
 import { useCallback } from "react";
-
-const handleUpdateStatus = async (
-  userOperatorId: string,
-  statusUpdate: Status,
-  roleUpdate: UserOperatorRoles,
-) => {
-  try {
-    return await actionHandler(
-      `registration/user-operators/${userOperatorId}/update-status`,
-      "PUT",
-      "",
-      {
-        body: JSON.stringify({
-          role: roleUpdate,
-          status: statusUpdate,
-        }),
-      },
-    );
-  } catch (error) {
-    throw error;
-  }
-};
+import handleAccessRequestStatus from "./handleAccessRequestStatus";
 
 const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
-  const userOperatorStatus = params.row.status;
-  const userOperatorId = params.row.id;
-  const userOperatorRole = params.row.userRole;
+  const {
+    status: userOperatorStatus,
+    id: userOperatorId,
+    userRole: userOperatorRole,
+  } = params.row;
   const buttonsToShow = useCallback(
     (status: string): AccessRequestStatusAction[] => {
-      if (status === Status.MYSELF) {
-        return [];
-      } else if (status === Status.PENDING) {
-        return [
-          {
-            statusTo: Status.APPROVED,
-            title: "Approve",
-            color: "success",
-            icon: <ThumbUpIcon />,
-          },
-          {
-            statusTo: Status.DECLINED,
-            title: "Decline",
-            color: "error",
-            icon: <DoNotDisturbIcon />,
-          },
-        ];
-      } else if (status === Status.APPROVED || status === Status.DECLINED) {
-        return [
-          {
-            statusTo: Status.PENDING,
-            title: "Undo",
-            color: "primary",
-          },
-        ];
+      switch (status) {
+        case Status.MYSELF:
+          return [];
+        case Status.PENDING:
+          return [
+            {
+              statusTo: Status.APPROVED,
+              title: "Approve",
+              color: "success",
+              icon: <ThumbUpIcon />,
+            },
+            {
+              statusTo: Status.DECLINED,
+              title: "Decline",
+              color: "error",
+              icon: <DoNotDisturbIcon />,
+            },
+          ];
+        case Status.APPROVED:
+        case Status.DECLINED:
+          return [
+            {
+              statusTo: Status.PENDING,
+              title: "Undo",
+              color: "primary",
+            },
+          ];
+        default:
+          return [];
       }
-      return [];
     },
     [],
   );
@@ -78,7 +61,7 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
           variant={item.title === "Undo" ? "text" : "outlined"}
           key={index}
           onClick={async () => {
-            const res = await handleUpdateStatus(
+            const res = await handleAccessRequestStatus(
               userOperatorId,
               item.statusTo,
               userOperatorRole as UserOperatorRoles,
@@ -86,6 +69,11 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
             params.api.updateRows([
               {
                 ...params.row,
+                // If the user is pending, we want to default the access type dropdown to Reporter
+                userRole:
+                  item.statusTo === Status.PENDING
+                    ? "reporter"
+                    : userOperatorRole,
                 status: res.status,
               },
             ]);
