@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
@@ -7,12 +6,10 @@ from registration.models import (
     BusinessStructure,
     Operator,
     ParentOperator,
-    User,
     UserOperator,
 )
 from registration.tests.utils.bakers import (
     operator_baker,
-    user_baker,
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -284,53 +281,53 @@ class TestCreateUserOperator(CommonTestSetup):
 
 
 class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
-    # /user-operators/current/access-requests ignores DECLINED records
-    def test_get_user_operator(self):
-        operator = operator_baker()
-        operator.status = "Approved"
-        operator.save(update_fields=["created_by", "status"])
-        # Approved user_operator record for the operator
-        baker.make(
-            UserOperator,
-            user=self.user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            created_by=self.user,
-            status=UserOperator.Statuses.APPROVED,
+
+    # AUTHORIZATION
+    def test_unauthorized_roles_cannot_get_current_user_operator_access_requests(self):
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            'cas_pending',
+            custom_reverse_lazy("get_operator_users"),
         )
-        # Declined user_operator record for the same operator
-        baker.make(UserOperator, operator=operator, status=UserOperator.Statuses.DECLINED)
+        assert response.status_code == 401
+
+        # unapproved industry users can't get
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+            user_id=self.user.user_guid,
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("get_current_user_operator_access_requests"),
+            custom_reverse_lazy("get_operator_users"),
         )
-        response_json = response.json()
-        assert response.status_code == 200
-        assert len(response_json) == 1
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Unauthorized"}
 
     def test_get_an_operators_user_operators_by_users_list(self):
-        operator = operator_baker()
+        operator = baker.make_recipe('utils.operator')
         # two UserOperator with the same operator
-        baker.make(
+        user_operator_1 = baker.make(
             UserOperator,
             user=self.user,
             operator=operator,
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
-        baker.make(
+        user_operator_2 = baker.make(
             UserOperator,
-            user=baker.make(User, business_guid=self.user.business_guid),
+            user=baker.make_recipe('utils.industry_operator_user', business_guid=self.user.business_guid),
             operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
+            role=UserOperator.Roles.PENDING,
+            status=UserOperator.Statuses.PENDING,
         )
-        # a UserOperator with a different operator
+        # a UserOperator with a different operator and business_guid
         baker.make(
             UserOperator,
-            user=user_baker(),
-            operator=operator_baker(),
+            user=baker.make_recipe('utils.industry_operator_user'),
+            operator=baker.make_recipe('utils.operator'),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
@@ -338,5 +335,18 @@ class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', custom_reverse_lazy('get_current_user_operator_access_requests')
         )
+        assert response.status_code == 200
+        response_json = response.json()
+        assert len(response_json) == 2
+        assert response_json[0]['id'] == str(user_operator_1.id)
+        assert response_json[1]['id'] == str(user_operator_2.id)
 
-        assert len(json.loads(response.content)) == 2
+        # check response schema
+        assert [key for key, value in response_json[0].items()] == [
+            'user',
+            'operator',
+            'role',
+            'status',
+            'id',
+            'user_friendly_id',
+        ]
