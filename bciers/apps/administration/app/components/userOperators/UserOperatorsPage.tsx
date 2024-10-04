@@ -1,6 +1,4 @@
 import Note from "@bciers/components/layout/Note";
-import Link from "next/link";
-import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import UserOperatorDataGrid from "@/administration/app/components/userOperators/UserOperatorDataGrid";
@@ -12,28 +10,19 @@ export default async function UserOperatorsPage() {
   const userOperatorData: { rows: UserOperatorDataGridRow[] } =
     await processAccessRequestData();
 
-  if (!userOperatorData) {
-    return <div>No contacts data in database.</div>;
-  }
-
-  // Render the DataGrid component
   return (
     <>
       <Note>
         <b>Note: </b>View the users or access requests to your operator here.
       </Note>
-      <h2 className="text-bc-primary-blue mb-1">Users and Access Requests</h2>
-      <p className="m-0">
-        Administrator role can: 1. View and edit all module, and 2. approve of
-        access requests
-      </p>
-      <p className="m-0">Reporter role can: 1. View and edit all modules</p>
-      <div className="text-right mb-6">
-        <Link href={"#TBD"}>
-          <Button variant="contained" sx={{ textTransform: "initial" }}>
-            Invite a new user
-          </Button>
-        </Link>
+      <h2 className="text-bc-primary-blue mb-0">Users and Access Requests</h2>
+      <div className="flex items-baseline gap-1">
+        <h4 className="mb-0 mt-1">Administrator role Access:</h4>
+        <span>View and edit all modules, approve of access requests</span>
+      </div>
+      <div className="flex items-baseline gap-1">
+        <h4 className="mb-0 mt-2">Reporter role Access:</h4>
+        <span className="mb-3">View and edit all modules</span>
       </div>
       <Suspense fallback={<Loading />}>
         <UserOperatorDataGrid initialData={userOperatorData} />
