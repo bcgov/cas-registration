@@ -27,4 +27,4 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 def get_current_user_operator_access_requests(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
     return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(
         get_current_user_guid(request)
-    )
+    ).order_by("-status", "-user_friendly_id")
