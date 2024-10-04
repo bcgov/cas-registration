@@ -7,8 +7,8 @@ import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { Stack } from "@mui/system";
 import { UserOperatorRoles, Status } from "@bciers/utils/enums";
 import {
-  UserOperatorGridRenderCellParams,
-  UserOperatorStatusAction,
+  AccessRequestGridRenderCellParams,
+  AccessRequestStatusAction,
 } from "@/administration/app/components/userOperators/types";
 import { useCallback } from "react";
 
@@ -34,12 +34,12 @@ const handleUpdateStatus = async (
   }
 };
 
-const ActionColumnCell = (params: UserOperatorGridRenderCellParams) => {
+const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.id;
   const userOperatorRole = params.row.userRole;
   const buttonsToShow = useCallback(
-    (status: string): UserOperatorStatusAction[] => {
+    (status: string): AccessRequestStatusAction[] => {
       if (status === Status.MYSELF) {
         return [];
       } else if (status === Status.PENDING) {

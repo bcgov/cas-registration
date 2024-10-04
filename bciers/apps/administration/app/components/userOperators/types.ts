@@ -28,7 +28,7 @@ export interface SelectOperatorFormData {
   cra_business_number?: number;
 }
 
-export interface UserOperatorDataGridRow {
+export interface AccessRequestDataGridRow {
   id: string;
   userFriendlyId: string;
   name: string;
@@ -38,11 +38,12 @@ export interface UserOperatorDataGridRow {
   status: string | Status;
 }
 
-export interface UserOperatorGridRenderCellParams extends GridRenderCellParams {
-  row: UserOperatorDataGridRow;
+export interface AccessRequestGridRenderCellParams
+  extends GridRenderCellParams {
+  row: AccessRequestDataGridRow;
 }
 
-export interface UserOperatorStatusAction {
+export interface AccessRequestStatusAction {
   statusTo: Status;
   title: string;
   color: ButtonOwnProps["color"];
