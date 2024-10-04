@@ -89,6 +89,12 @@ operator_for_approved_user_operator = Recipe(
     cra_business_number=generate_random_cra_business_number(),
 )
 
+user_operator = Recipe(
+    UserOperator,
+    operator=foreign_key(operator_for_approved_user_operator),
+    user=foreign_key(industry_operator_user),
+)
+
 approved_user_operator = Recipe(
     UserOperator,
     status=UserOperator.Statuses.APPROVED,
