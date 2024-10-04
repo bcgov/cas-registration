@@ -54,7 +54,7 @@ class TestReportActivitySaveService(TestCase):
     ########################
     #  Tests: create case  #
     ########################
-    @pytest.mark.skip()
+
     def test_creates_report_activity_data(self):
         """
         This test represents a real-life scenario with complex test data
@@ -226,7 +226,6 @@ class TestReportActivitySaveService(TestCase):
         assert report_emissions[8].gas_type == GasType.objects.get(chemical_formula='N2O')
         assert report_emissions[8].report_fuel == get_report_fuel_by_index(report_activity, 1, 1, 1)
 
-    @pytest.mark.skip()
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_source_type")
     def test_save(self, mock_save_source_type: MagicMock):
         test_infrastructure = TestInfrastructure.build()
@@ -283,7 +282,6 @@ class TestReportActivitySaveService(TestCase):
         assert return_value.report_version == test_infrastructure.facility_report.report_version
         mock_save_source_type.assert_called_with(report_activity, "anotherSourceType", {"more_stuff": True})
 
-    @pytest.mark.skip()
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
@@ -339,7 +337,6 @@ class TestReportActivitySaveService(TestCase):
         mock_save_fuel.assert_not_called()
         mock_save_emission.assert_not_called()
 
-    @pytest.mark.skip()
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
@@ -390,7 +387,6 @@ class TestReportActivitySaveService(TestCase):
         )
         mock_save_emission.assert_not_called()
 
-    @pytest.mark.skip()
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
@@ -439,7 +435,6 @@ class TestReportActivitySaveService(TestCase):
         mock_save_fuel.assert_not_called()
         mock_save_emission.assert_has_calls([call(return_value, None, {"a": 1}), call(return_value, None, {"b": 2})])
 
-    @pytest.mark.skip()
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     def test_save_unit_with_fuel(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
@@ -450,7 +445,7 @@ class TestReportActivitySaveService(TestCase):
             valid_from=test_infrastructure.configuration,
             valid_to=test_infrastructure.configuration,
             source_type__json_key="sourceTypeWithUnitAndFuel",
-            has_unit=True,
+            has_unit=False,
             has_fuel=True,
         )
         report_activity = make(
@@ -506,7 +501,7 @@ class TestReportActivitySaveService(TestCase):
             valid_from=test_infrastructure.configuration,
             valid_to=test_infrastructure.configuration,
             source_type__json_key="sourceTypeWithUnitAndFuel",
-            has_unit=True,
+            has_unit=False,
             has_fuel=False,
         )
         report_activity = make(
@@ -553,13 +548,147 @@ class TestReportActivitySaveService(TestCase):
             ]
         )
 
-    @pytest.mark.skip()
-    def test_save_fuel(self):
-        raise
+    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
+    def test_save_fuel(self, mock_save_emission: MagicMock):
+        test_infrastructure = TestInfrastructure.build()
+        act_st = make_recipe(
+            "reporting.tests.utils.activity_source_type_json_schema",
+            activity=test_infrastructure.activity,
+            valid_from=test_infrastructure.configuration,
+            valid_to=test_infrastructure.configuration,
+            source_type__json_key="sourceTypeWithUnitAndFuel",
+            has_unit=True,
+            has_fuel=True,
+        )
+        report_activity = make(
+            ReportActivity,
+            activity=test_infrastructure.activity,
+            activity_base_schema=test_infrastructure.activity_json_schema,
+            facility_report=test_infrastructure.facility_report,
+            report_version=test_infrastructure.report_version,
+            json_data={"test": "test"},
+        )
+        report_source_type = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st,
+            source_type=act_st.source_type,
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+        report_unit = make(
+            ReportUnit,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_unit": True},
+        )
+        fuel_type = make_recipe("reporting.tests.utils.fuel_type", name="Test Fuel Type")
 
-    @pytest.mark.skip()
+        service_under_test = ReportActivitySaveService(
+            report_activity.report_version.id,
+            report_activity.facility_report.facility.id,
+            report_activity.activity.id,
+            make_recipe('registration.tests.utils.industry_operator_user'),
+        )
+
+        with pytest.raises(KeyError, match="fuelName"):
+            service_under_test.save_fuel(report_source_type, report_unit, {"no_fuel_name": True})
+        with pytest.raises(FuelType.DoesNotExist):
+            service_under_test.save_fuel(report_source_type, report_unit, {"fuelName": "fuelThatDoesntExist"})
+        with pytest.raises(ValueError, match="Fuel is expecting emission data"):
+            service_under_test.save_fuel(
+                report_source_type, report_unit, {"fuelName": "Test Fuel Type", "no_emission_data": True}
+            )
+
+        with_none_report_unit = service_under_test.save_fuel(
+            report_source_type, None, {"fuelName": fuel_type.name, "emissions": []}
+        )
+
+        assert with_none_report_unit.report_unit is None
+
+        return_value = service_under_test.save_fuel(
+            report_source_type,
+            report_unit,
+            {
+                "test_fuel_prop": "fuel_value",
+                "fuelName": fuel_type.name,
+                "emissions": [{"small_emission": 1}, {"large_emission": 2}],
+            },
+        )
+
+        assert return_value.json_data == {"test_fuel_prop": "fuel_value"}
+        assert return_value.report_source_type == report_source_type
+        assert return_value.report_unit == report_unit
+        assert return_value.report_version == test_infrastructure.report_version
+
+        mock_save_emission.assert_has_calls(
+            [
+                call(report_source_type, return_value, {"small_emission": 1}),
+                call(report_source_type, return_value, {"large_emission": 2}),
+            ]
+        )
+
     def test_save_emission(self):
-        raise
+        test_infrastructure = TestInfrastructure.build()
+        act_st = make_recipe(
+            "reporting.tests.utils.activity_source_type_json_schema",
+            activity=test_infrastructure.activity,
+            valid_from=test_infrastructure.configuration,
+            valid_to=test_infrastructure.configuration,
+            source_type__json_key="sourceTypeWithUnitAndFuel",
+            has_unit=True,
+            has_fuel=True,
+        )
+        report_activity = make(
+            ReportActivity,
+            activity=test_infrastructure.activity,
+            activity_base_schema=test_infrastructure.activity_json_schema,
+            facility_report=test_infrastructure.facility_report,
+            report_version=test_infrastructure.report_version,
+            json_data={"test": "test"},
+        )
+        report_source_type = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st,
+            source_type=act_st.source_type,
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+        report_fuel = make(
+            ReportFuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_unit": True},
+            report_unit=None,
+        )
+        make_recipe("reporting.tests.utils.gas_type", chemical_formula="GGIRCA")
+
+        service_under_test = ReportActivitySaveService(
+            report_activity.report_version.id,
+            report_activity.facility_report.facility.id,
+            report_activity.activity.id,
+            make_recipe('registration.tests.utils.industry_operator_user'),
+        )
+
+        with pytest.raises(KeyError, match="gasType"):
+            service_under_test.save_emission(report_source_type, report_fuel, {"no_gas_type": True})
+        with pytest.raises(GasType.DoesNotExist):
+            service_under_test.save_emission(report_source_type, report_fuel, {"gasType": "gasTypeThatDoesntExist"})
+
+        with_none_report_fuel = service_under_test.save_emission(report_source_type, None, {"gasType": "GGIRCA"})
+        assert with_none_report_fuel.report_fuel is None
+
+        return_value = service_under_test.save_emission(
+            report_source_type,
+            report_fuel,
+            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+        )
+
+        assert return_value.json_data == {"test_emission_prop": "something"}
+        assert return_value.report_source_type == report_source_type
+        assert return_value.report_fuel == report_fuel
+        assert return_value.report_version == test_infrastructure.report_version
 
     ########################
     #  Tests: update case  #

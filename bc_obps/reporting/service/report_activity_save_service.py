@@ -86,7 +86,7 @@ class ReportActivitySaveService:
 
         if json_base_schema.has_unit and 'units' not in source_type_data:
             raise ValueError(f"Source type {source_type_slug} is expecting unit data")
-        elif json_base_schema.has_fuel and 'fuels' not in source_type_data:
+        elif not json_base_schema.has_unit and json_base_schema.has_fuel and 'fuels' not in source_type_data:
             raise ValueError(f"Source type {source_type_slug} is expecting fuel data")
         elif not json_base_schema.has_unit and not json_base_schema.has_fuel and 'emissions' not in source_type_data:
             raise ValueError(f"Source type {source_type_slug} is expecting emission data")
@@ -117,7 +117,7 @@ class ReportActivitySaveService:
         """
         ReportUnit records are not keyed, we rely on the 'id' presence to know if we update a record or create a new one
         """
-        json_data = exclude_keys(unit_data, ['fuels', 'id'])
+        json_data = exclude_keys(unit_data, ['fuels', 'emissions', 'id'])
         report_unit_id = unit_data.get('id', None)
 
         if report_source_type.activity_source_type_base_schema.has_fuel and 'fuels' not in unit_data:
@@ -141,7 +141,7 @@ class ReportActivitySaveService:
             for fuel_data in unit_data['fuels']:
                 self.save_fuel(report_source_type, report_unit, fuel_data)
         else:
-            for emission_data in json_data['emissions']:
+            for emission_data in unit_data['emissions']:
                 self.save_emission(report_source_type, None, emission_data)
 
         return report_unit
@@ -156,6 +156,9 @@ class ReportActivitySaveService:
 
         report_fuel_id = fuel_data.get('id', None)
         fuel_type = FuelType.objects.get(name=fuel_data["fuelName"])
+
+        if 'emissions' not in fuel_data:
+            raise ValueError("Fuel is expecting emission data")
 
         report_fuel, _ = ReportFuel.objects.update_or_create(
             id=report_fuel_id,

@@ -2,6 +2,8 @@ from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from reporting.models.configuration import Configuration
+from reporting.models.fuel_type import FuelType
+from reporting.models.gas_type import GasType
 from reporting.models.report_activity import ReportActivity
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
@@ -29,6 +31,9 @@ configuration = Recipe(Configuration)
 
 activity = Recipe(Activity)
 source_type = Recipe(SourceType)
+fuel_type = Recipe(FuelType)
+gas_type = Recipe(GasType)
+
 activity_json_schema = Recipe(
     ActivityJsonSchema,
     activity=foreign_key(activity),
