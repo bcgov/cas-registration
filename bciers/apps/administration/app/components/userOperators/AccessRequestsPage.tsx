@@ -1,15 +1,9 @@
 import Note from "@bciers/components/layout/Note";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import AccessRequestDataGrid from "@/administration/app/components/userOperators/AccessRequestDataGrid";
-import { AccessRequestDataGridRow } from "@/administration/app/components/userOperators/types";
-import { processAccessRequestData } from "@/administration/app/components/userOperators/getAccessRequests";
+import AccessRequests from "./AccessRequests";
 
-// 🧩 Main component
-export default async function AccessRequestsPage() {
-  const accessRequestData: { rows: AccessRequestDataGridRow[] } =
-    await processAccessRequestData();
-
+export default function AccessRequestsPage() {
   return (
     <>
       <Note>
@@ -25,7 +19,7 @@ export default async function AccessRequestsPage() {
         <span className="mb-3">View and edit all modules</span>
       </div>
       <Suspense fallback={<Loading />}>
-        <AccessRequestDataGrid initialData={accessRequestData} />
+        <AccessRequests />
       </Suspense>
     </>
   );
