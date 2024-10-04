@@ -1,7 +1,6 @@
 import {
   Status,
   UserOperatorStatus,
-  OperatorStatus,
   UserOperatorRoles,
 } from "@bciers/utils/enums";
 import { actionHandler, getToken } from "@bciers/actions";
@@ -22,34 +21,39 @@ export async function getAccessRequests(): Promise<AccessRequest[]> {
   }
 }
 export async function processAccessRequestData() {
-  const tileData = await getAccessRequests();
+  const accessRequests = await getAccessRequests();
 
-  // Ensure tileData is an array before using map
-  const transformedTileData = Array.isArray(tileData)
-    ? tileData.map((userOperator) => {
-        userOperator.status = userOperator.status
-          ? UserOperatorStatus[
-              userOperator.status.toUpperCase() as keyof typeof UserOperatorStatus
-            ]
-          : UserOperatorStatus.PENDING;
+  // Ensure accessRequests is an array before using map
+  if (!Array.isArray(accessRequests)) {
+    return { rows: [] };
+  }
 
-        return userOperator;
-      })
-    : [];
+  const transformedAccessRequests = accessRequests.map((accessRequest) => {
+    accessRequest.status = accessRequest.status
+      ? UserOperatorStatus[
+          accessRequest.status.toUpperCase() as keyof typeof UserOperatorStatus
+        ]
+      : UserOperatorStatus.PENDING;
+
+    return accessRequest;
+  });
 
   // 🤳Identify current admin user in the list
   const token = await getToken();
   const uid = token?.user_guid ?? "";
-  const selfIndex = transformedTileData.findIndex((userOperator) => {
-    return userOperator.user.user_guid.replace(/-/g, "") === uid;
-  });
+  const selfIndex = transformedAccessRequests.findIndex(
+    (transformedAccessRequest) => {
+      return transformedAccessRequest.user.user_guid.replace(/-/g, "") === uid;
+    },
+  );
 
   // Ensure selfIndex is within the valid range before modifying the array
-  if (selfIndex !== -1 && selfIndex < transformedTileData.length) {
-    transformedTileData[selfIndex].status = Status.MYSELF;
+  if (selfIndex !== -1 && selfIndex < transformedAccessRequests.length) {
+    transformedAccessRequests[selfIndex].status = Status.MYSELF;
   }
-  const rowData = transformedTileData.map((uOS) => {
-    const { id, user_friendly_id, role, status, user, operator } = uOS;
+  const rowData = transformedAccessRequests.map((accessRequest) => {
+    const { id, user_friendly_id, role, status, user, operator } =
+      accessRequest;
 
     // If the user is pending, we want to default the access type dropdown to Reporter
     const userRole =
@@ -61,7 +65,7 @@ export async function processAccessRequestData() {
       name: `${user.first_name} ${user.last_name}`,
       email: user.email,
       business: operator.legal_name,
-      userRole: status === OperatorStatus.DECLINED ? "N/A" : userRole,
+      userRole: status === UserOperatorStatus.DECLINED ? "N/A" : userRole,
       status: status,
     };
   });
