@@ -1,4 +1,4 @@
-import json
+from multiprocessing import Value
 import uuid
 from django.db import transaction
 from registration.models.activity import Activity
@@ -47,6 +47,7 @@ class ReportActivitySaveService:
 
         # Only one ReportActivity record per report_version/faciltiy/activity should ever exist
         report_activity, _ = ReportActivity.objects.update_or_create(
+            id=data.get('id'),
             report_version=self.facility_report.report_version,
             facility_report=self.facility_report,
             activity=self.activity,
@@ -74,7 +75,7 @@ class ReportActivitySaveService:
         source_type_data: dict,
     ) -> ReportSourceType:
         source_type = SourceType.objects.get(json_key=source_type_slug)
-        json_data = exclude_keys(source_type_data, ['units', 'id'])
+        json_data = exclude_keys(source_type_data, ['units', 'fuels', 'emissions', 'id'])
 
         json_base_schema = ActivitySourceTypeJsonSchema.objects.get(
             activity=report_activity.activity,
@@ -83,7 +84,15 @@ class ReportActivitySaveService:
             valid_to__valid_to__gte=self.facility_report.report_version.report.created_at,
         )
 
+        if json_base_schema.has_unit and 'units' not in source_type_data:
+            raise ValueError(f"Source type {source_type_slug} is expecting unit data")
+        elif json_base_schema.has_fuel and 'fuels' not in source_type_data:
+            raise ValueError(f"Source type {source_type_slug} is expecting fuel data")
+        elif not json_base_schema.has_unit and not json_base_schema.has_fuel and 'emissions' not in source_type_data:
+            raise ValueError(f"Source type {source_type_slug} is expecting emission data")
+
         report_source_type, _ = ReportSourceType.objects.update_or_create(
+            id=source_type_data.get("id"),
             report_version=self.facility_report.report_version,
             report_activity=report_activity,
             source_type=source_type,
@@ -110,6 +119,11 @@ class ReportActivitySaveService:
         """
         json_data = exclude_keys(unit_data, ['fuels', 'id'])
         report_unit_id = unit_data.get('id', None)
+
+        if report_source_type.activity_source_type_base_schema.has_fuel and 'fuels' not in unit_data:
+            raise ValueError("Unit is expecting fuel data")
+        elif not report_source_type.activity_source_type_base_schema.has_fuel and 'emissions' not in unit_data:
+            raise ValueError("Unit is expecting emission data")
 
         # Update record if id was provided, create otherwise
         report_unit, _ = ReportUnit.objects.update_or_create(

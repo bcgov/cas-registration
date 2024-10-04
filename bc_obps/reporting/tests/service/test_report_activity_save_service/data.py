@@ -65,7 +65,7 @@ test_data = {
                 {
                     "fuels": [
                         {
-                            "fuelName": "Diesel",
+                            "fuelName": "Kerosene",
                             "emissions": [
                                 {
                                     "gasType": "CO2",
@@ -76,7 +76,7 @@ test_data = {
                             ],
                         },
                         {
-                            "fuelName": "Plastics",
+                            "fuelName": "Wood Waste",
                             "emissions": [
                                 {
                                     "gasType": "CO2",
