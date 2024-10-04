@@ -4,7 +4,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from registration.models.user_operator import UserOperator
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from registration.decorators import handle_http_errors
 from registration.schema.v1 import UserOperatorUsersOut
 from registration.schema.generic import Message
@@ -26,6 +26,9 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @handle_http_errors()
 def get_operator_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
     current_user_guid = get_current_user_guid(request)
-    return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(current_user_guid).exclude(
-        user_id=current_user_guid
-    )  # Exclude the current user from the list of users
+    return (
+        200,
+        UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(current_user_guid)
+        .exclude(Q(user_id=current_user_guid) | Q(status=UserOperator.Statuses.DECLINED))
+        .distinct(),
+    )  # Exclude the current user and declined users from the list
