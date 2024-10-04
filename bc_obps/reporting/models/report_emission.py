@@ -22,6 +22,7 @@ class ReportEmission(ReportDataBaseModel):
     report_fuel = models.ForeignKey(
         ReportFuel,
         null=True,
+        blank=True,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
         db_comment="The fuel data this emission data belongs to, if applicable",

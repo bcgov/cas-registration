@@ -16,6 +16,7 @@ class ReportFuel(ReportDataBaseModel):
     report_unit = models.ForeignKey(
         ReportUnit,
         null=True,
+        blank=True,
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
         db_comment="The unit form data this fuel data belongs to, if applicable",
