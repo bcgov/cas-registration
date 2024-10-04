@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
 import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "@bciers/styles/colors";
 interface SubmitButtonProps {
-  children?: React.ReactNode | string;
+  children?: string;
   disabled?: boolean;
   isSubmitting: boolean;
   onClick?: () => void;
@@ -25,6 +25,7 @@ const SubmitButton = ({
 
   return (
     <Button
+      data-testid="submit-button"
       type={type}
       variant={variant}
       disabled={isDisabled}
