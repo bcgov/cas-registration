@@ -1,13 +1,13 @@
 import Note from "@bciers/components/layout/Note";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import UserOperatorDataGrid from "@/administration/app/components/userOperators/UserOperatorDataGrid";
-import { UserOperatorDataGridRow } from "@/administration/app/components/userOperators/types";
+import AccessRequestDataGrid from "@/administration/app/components/userOperators/AccessRequestDataGrid";
+import { AccessRequestDataGridRow } from "@/administration/app/components/userOperators/types";
 import { processAccessRequestData } from "@/administration/app/components/userOperators/getAccessRequests";
 
 // 🧩 Main component
-export default async function UserOperatorsPage() {
-  const userOperatorData: { rows: UserOperatorDataGridRow[] } =
+export default async function AccessRequestsPage() {
+  const accessRequestData: { rows: AccessRequestDataGridRow[] } =
     await processAccessRequestData();
 
   return (
@@ -25,7 +25,7 @@ export default async function UserOperatorsPage() {
         <span className="mb-3">View and edit all modules</span>
       </div>
       <Suspense fallback={<Loading />}>
-        <UserOperatorDataGrid initialData={userOperatorData} />
+        <AccessRequestDataGrid initialData={accessRequestData} />
       </Suspense>
     </>
   );

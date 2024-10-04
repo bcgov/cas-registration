@@ -3,7 +3,7 @@ import StatusStyleColumnCell from "@bciers/components/datagrid/cells/StatusStyle
 import UserRoleColumnCell from "@/administration/app/components/userOperators/cells/UserRoleColumnCell";
 import ActionColumnCell from "@/administration/app/components/userOperators/cells/ActionColumnCell";
 
-const userOperatorColumns = () => {
+const accessRequestColumns = () => {
   const columns: GridColDef[] = [
     {
       field: "userFriendlyId",
@@ -64,4 +64,4 @@ const userOperatorColumns = () => {
   return columns;
 };
 
-export default userOperatorColumns;
+export default accessRequestColumns;
