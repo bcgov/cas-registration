@@ -1,7 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
 import StatusStyleColumnCell from "@bciers/components/datagrid/cells/StatusStyleColumnCell";
-import UserRoleColumnCell from "@/administration/app/components/userOperators/cells/UserRoleColumnCell";
-import ActionColumnCell from "@/administration/app/components/userOperators/cells/ActionColumnCell";
+import UserRoleColumnCell from "apps/administration/app/components/userOperators/cells/UserRoleColumnCell";
+import ActionColumnCell from "apps/administration/app/components/userOperators/cells/ActionColumnCell";
 
 const accessRequestColumns = () => {
   const columns: GridColDef[] = [

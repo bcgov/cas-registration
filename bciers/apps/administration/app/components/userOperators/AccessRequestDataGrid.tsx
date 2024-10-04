@@ -1,9 +1,9 @@
 "use client";
 
-import { AccessRequestDataGridRow } from "@/administration/app/components/userOperators/types";
+import { AccessRequestDataGridRow } from "apps/administration/app/components/userOperators/types";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { useMemo } from "react";
-import accessRequestColumns from "@/administration/app/components/datagrid/models/userOperators/accessRequestColumns";
+import accessRequestColumns from "apps/administration/app/components/datagrid/models/userOperators/accessRequestColumns";
 
 const AccessRequestDataGrid = ({
   initialData,
