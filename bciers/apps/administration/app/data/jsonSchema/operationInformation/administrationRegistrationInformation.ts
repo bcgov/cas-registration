@@ -19,6 +19,29 @@ export const createAdministrationRegistrationInformationSchema = async (
       RegistrationPurposes.POTENTIAL_REPORTING_OPERATION,
     );
 
+  const isNewEntrant = registrationPurposesValue?.includes(
+    RegistrationPurposes.NEW_ENTRANT_OPERATION,
+  );
+
+  const newEntrantInformationSchema: RJSFSchema = {
+    title: "New Entrant Operation",
+    type: "object",
+    required: ["operation_date_of_first_shipment", "statutory_declaration"],
+    properties: {
+      operation_date_of_first_shipment: {
+        title: "When is this operation’s date of First Shipment?",
+        type: "string",
+        enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
+        default: "On or after April 1, 2024",
+      },
+      statutory_declaration: {
+        type: "string",
+        title: "Application and Statutory Declaration",
+        format: "data-url",
+      },
+    },
+  };
+
   // create the schema with the fetched values
   const registrationInformationSchema: RJSFSchema = {
     title: "Registration Information",
@@ -73,6 +96,8 @@ export const createAdministrationRegistrationInformationSchema = async (
             },
           },
         },
+      ...(isNewEntrant && {
+        newEntrantInformationSchema,
       }),
     },
   };
