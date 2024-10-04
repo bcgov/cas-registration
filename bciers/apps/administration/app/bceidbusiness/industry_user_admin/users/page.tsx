@@ -2,12 +2,12 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { ContactsSearchParams } from "@/administration/app/components/contacts/types";
-import UserOperatorsPage from "@/administration/app/components/userOperators/UserOperatorsPage";
+import AccessRequestsPage from "@/administration/app/components/userOperators/AccessRequestsPage";
 
 export default async function Page() {
   return (
     <Suspense fallback={<Loading />}>
-      <UserOperatorsPage />
+      <AccessRequestsPage />
     </Suspense>
   );
 }

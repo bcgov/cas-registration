@@ -6,7 +6,7 @@ import {
 import { actionHandler, getToken } from "@bciers/actions";
 import {
   AccessRequest,
-  UserOperatorDataGridRow,
+  AccessRequestDataGridRow,
 } from "@/administration/app/components/userOperators/types";
 
 export async function getAccessRequests(): Promise<AccessRequest[]> {
@@ -71,6 +71,6 @@ export async function processAccessRequestData() {
   });
 
   return {
-    rows: rowData as UserOperatorDataGridRow[],
+    rows: rowData as AccessRequestDataGridRow[],
   };
 }
