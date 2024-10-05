@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock, call, patch
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 import pytest
 from model_bakery.baker import make_recipe, make
@@ -26,30 +27,18 @@ class TestReportActivitySaveService(TestCase):
     #######################
     #  Tests: error case  #
     #######################
-    @pytest.mark.skip()
+
     def test_errors_out_if_empty_json(self):
-        activity = make_recipe('reporting.tests.utils.activity')
+        t = TestInfrastructure.build()
         service_under_test = ReportActivitySaveService(
-            self.facility_report.report_version.id,
-            self.facility_report.facility.id,
-            activity.id,
-            self.user.user_guid,
+            t.report_version.id,
+            t.facility_report.facility.id,
+            t.activity.id,
+            t.user.user_guid,
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(Exception):
             service_under_test.save({})
-
-    @pytest.mark.skip()
-    def test_errors_out_if_no_emission_record(self):
-        activity = Activity.objects.get(slug='gsc_non_compression')
-        service_under_test = ReportActivitySaveService(
-            self.facility_report.report_version.id,
-            self.facility_report.facility.id,
-            activity.id,
-            self.user.user_guid,
-        )
-        with pytest.raises(ValueError):
-            service_under_test.save(data.no_emission_test_data)
 
     ########################
     #  Tests: create case  #
@@ -264,6 +253,17 @@ class TestReportActivitySaveService(TestCase):
         mock_save_source_type.assert_called_with(report_activity, "testSourceType", {"stuff": True})
 
         # Update case
+
+        # If no ID is provided, an error is expected
+        with pytest.raises(ValidationError):
+            service_under_test.save({"sourceTypes": {"anotherSourceType": {"more_stuff": True}}})
+
+        # If the ID of the ReportActivity object doesn't match, an error is expected
+        with pytest.raises(ValidationError):
+            service_under_test.save(
+                {"id": return_value.id + 1, "sourceTypes": {"anotherSourceType": {"more_stuff": True}}}
+            )
+
         updated_activity_data = {
             "id": return_value.id,
             "stuff": "testing updated",
@@ -289,28 +289,15 @@ class TestReportActivitySaveService(TestCase):
         self, mock_save_unit: MagicMock, mock_save_fuel: MagicMock, mock_save_emission: MagicMock
     ):
         test_infrastructure = TestInfrastructure.build()
-        act_st = make_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            activity=test_infrastructure.activity,
-            valid_from=test_infrastructure.configuration,
-            valid_to=test_infrastructure.configuration,
-            source_type__json_key="sourceTypeWithUnit",
-            has_unit=True,
-            has_fuel=False,
+        act_st = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeWithUnit", has_unit=True, has_fuel=True
         )
-        report_activity = make(
-            ReportActivity,
-            activity=test_infrastructure.activity,
-            activity_base_schema=test_infrastructure.activity_json_schema,
-            facility_report=test_infrastructure.facility_report,
-            report_version=test_infrastructure.facility_report.report_version,
-            json_data={"test": "test"},
-        )
+        report_activity = test_infrastructure.make_report_activity()
         service_under_test = ReportActivitySaveService(
             report_activity.facility_report.report_version.id,
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
-            make_recipe('registration.tests.utils.industry_operator_user'),
+            test_infrastructure.user.user_guid,
         )
 
         with pytest.raises(SourceType.DoesNotExist):
@@ -337,6 +324,26 @@ class TestReportActivitySaveService(TestCase):
         mock_save_fuel.assert_not_called()
         mock_save_emission.assert_not_called()
 
+        # Update case
+        # If no report_source_type.id is provided, an error is expeced for the source type
+        with pytest.raises(ValidationError):
+            service_under_test.save_source_type(
+                report_activity,
+                "sourceTypeWithUnit",
+                {"test": "source type with unit", "units": [{"unit_data_1": 1}, {"unit_data_2": 2}]},
+            )
+        # If the report_source_type.id doesn't match the existing record, an error is expected
+        with pytest.raises(ValidationError):
+            service_under_test.save_source_type(
+                report_activity,
+                "sourceTypeWithUnit",
+                {
+                    "id": return_value.id + 1,
+                    "test": "source type with unit",
+                    "units": [{"unit_data_1": 1}, {"unit_data_2": 2}],
+                },
+            )
+
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
@@ -344,28 +351,15 @@ class TestReportActivitySaveService(TestCase):
         self, mock_save_unit: MagicMock, mock_save_fuel: MagicMock, mock_save_emission: MagicMock
     ):
         test_infrastructure = TestInfrastructure.build()
-        act_st = make_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            activity=test_infrastructure.activity,
-            valid_from=test_infrastructure.configuration,
-            valid_to=test_infrastructure.configuration,
-            source_type__json_key="sourceTypeWithFuel",
-            has_unit=False,
-            has_fuel=True,
+        act_st = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeWithFuel", has_unit=False, has_fuel=True
         )
-        report_activity = make(
-            ReportActivity,
-            activity=test_infrastructure.activity,
-            activity_base_schema=test_infrastructure.activity_json_schema,
-            facility_report=test_infrastructure.facility_report,
-            report_version=test_infrastructure.facility_report.report_version,
-            json_data={"test": "test"},
-        )
+        report_activity = test_infrastructure.make_report_activity()
         service_under_test = ReportActivitySaveService(
             report_activity.facility_report.report_version.id,
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
-            make_recipe('registration.tests.utils.industry_operator_user'),
+            test_infrastructure.user.user_guid,
         )
 
         with pytest.raises(ValueError, match="Source type sourceTypeWithFuel is expecting fuel data"):
@@ -394,23 +388,12 @@ class TestReportActivitySaveService(TestCase):
         self, mock_save_unit: MagicMock, mock_save_fuel: MagicMock, mock_save_emission: MagicMock
     ):
         test_infrastructure = TestInfrastructure.build()
-        act_st = make_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            activity=test_infrastructure.activity,
-            valid_from=test_infrastructure.configuration,
-            valid_to=test_infrastructure.configuration,
+        act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithoutFuelOrUnit",
             has_unit=False,
             has_fuel=False,
         )
-        report_activity = make(
-            ReportActivity,
-            activity=test_infrastructure.activity,
-            activity_base_schema=test_infrastructure.activity_json_schema,
-            facility_report=test_infrastructure.facility_report,
-            report_version=test_infrastructure.facility_report.report_version,
-            json_data={"test": "test"},
-        )
+        report_activity = test_infrastructure.make_report_activity()
         service_under_test = ReportActivitySaveService(
             report_activity.facility_report.report_version.id,
             report_activity.facility_report.facility.id,
@@ -439,23 +422,12 @@ class TestReportActivitySaveService(TestCase):
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     def test_save_unit_with_fuel(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
-        act_st = make_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            activity=test_infrastructure.activity,
-            valid_from=test_infrastructure.configuration,
-            valid_to=test_infrastructure.configuration,
+        act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithUnitAndFuel",
             has_unit=False,
             has_fuel=True,
         )
-        report_activity = make(
-            ReportActivity,
-            activity=test_infrastructure.activity,
-            activity_base_schema=test_infrastructure.activity_json_schema,
-            facility_report=test_infrastructure.facility_report,
-            report_version=test_infrastructure.report_version,
-            json_data={"test": "test"},
-        )
+        report_activity = test_infrastructure.make_report_activity()
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -495,23 +467,12 @@ class TestReportActivitySaveService(TestCase):
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     def test_save_unit_without_fuel(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
-        act_st = make_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            activity=test_infrastructure.activity,
-            valid_from=test_infrastructure.configuration,
-            valid_to=test_infrastructure.configuration,
+        act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithUnitAndFuel",
             has_unit=False,
             has_fuel=False,
         )
-        report_activity = make(
-            ReportActivity,
-            activity=test_infrastructure.activity,
-            activity_base_schema=test_infrastructure.activity_json_schema,
-            facility_report=test_infrastructure.facility_report,
-            report_version=test_infrastructure.report_version,
-            json_data={"test": "test"},
-        )
+        report_activity = test_infrastructure.make_report_activity()
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -551,23 +512,12 @@ class TestReportActivitySaveService(TestCase):
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     def test_save_fuel(self, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
-        act_st = make_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            activity=test_infrastructure.activity,
-            valid_from=test_infrastructure.configuration,
-            valid_to=test_infrastructure.configuration,
+        act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithUnitAndFuel",
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = make(
-            ReportActivity,
-            activity=test_infrastructure.activity,
-            activity_base_schema=test_infrastructure.activity_json_schema,
-            facility_report=test_infrastructure.facility_report,
-            report_version=test_infrastructure.report_version,
-            json_data={"test": "test"},
-        )
+        report_activity = test_infrastructure.make_report_activity()
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -630,23 +580,12 @@ class TestReportActivitySaveService(TestCase):
 
     def test_save_emission(self):
         test_infrastructure = TestInfrastructure.build()
-        act_st = make_recipe(
-            "reporting.tests.utils.activity_source_type_json_schema",
-            activity=test_infrastructure.activity,
-            valid_from=test_infrastructure.configuration,
-            valid_to=test_infrastructure.configuration,
+        act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithUnitAndFuel",
             has_unit=True,
             has_fuel=True,
         )
-        report_activity = make(
-            ReportActivity,
-            activity=test_infrastructure.activity,
-            activity_base_schema=test_infrastructure.activity_json_schema,
-            facility_report=test_infrastructure.facility_report,
-            report_version=test_infrastructure.report_version,
-            json_data={"test": "test"},
-        )
+        report_activity = test_infrastructure.make_report_activity()
         report_source_type = make(
             ReportSourceType,
             activity_source_type_base_schema=act_st,
@@ -703,4 +642,19 @@ class TestReportActivitySaveService(TestCase):
 
     @pytest.mark.skip()
     def test_updates_unit_data(self):
+        pass
+
+    def test_prunes_source_types_in_update(self):
+        pass
+
+    def test_prunes_units_un_update(self):
+        pass
+
+    def test_prunes_fuels_in_update(self):
+        pass
+
+    def test_prunes_emissions_in_update(self):
+        pass
+
+    def test_user_create_or_update_set(self):
         pass

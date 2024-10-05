@@ -7,8 +7,9 @@ from reporting.models.configuration import Configuration
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_fuel import ReportFuel
+from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
-from model_bakery.baker import make_recipe
+from model_bakery.baker import make_recipe, make
 from reporting.models.report_version import ReportVersion
 
 
@@ -86,3 +87,23 @@ class TestInfrastructure:
             valid_to=t.configuration,
         )
         return t
+
+    def make_activity_source_type(self, **kwargs):
+        return make_recipe(
+            "reporting.tests.utils.activity_source_type_json_schema",
+            activity=self.activity,
+            valid_from=self.configuration,
+            valid_to=self.configuration,
+            **kwargs
+        )
+
+    def make_report_activity(self, **kwargs):
+        return make(
+            ReportActivity,
+            activity=self.activity,
+            activity_base_schema=self.activity_json_schema,
+            facility_report=self.facility_report,
+            report_version=self.facility_report.report_version,
+            json_data={"test": "test"},
+            **kwargs
+        )
