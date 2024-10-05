@@ -338,8 +338,8 @@ class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_json = response.json()
         assert len(response_json) == 2
-        assert response_json[0]['id'] == str(user_operator_1.id)
-        assert response_json[1]['id'] == str(user_operator_2.id)
+        assert response_json[1]['id'] == str(user_operator_1.id)
+        assert response_json[0]['id'] == str(user_operator_2.id)
 
         # check response schema
         assert [key for key, value in response_json[0].items()] == [
