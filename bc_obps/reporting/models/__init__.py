@@ -1,3 +1,4 @@
+from .report_person_responsible import ReportPersonResponsible
 from .report_data_base_model import ReportDataBaseModel
 
 from .report import Report
@@ -47,4 +48,5 @@ __all__ = [
     "ReportFuel",
     "ReportUnit",
     "CustomMethodologySchema",
+    "ReportPersonResponsible",
 ]
