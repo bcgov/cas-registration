@@ -51,7 +51,7 @@ export default function OperationReview({
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const saveAndContinueUrl = `/reporting/reports/${version_id}/person-responsible`;
+  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
     "MMM DD YYYY",

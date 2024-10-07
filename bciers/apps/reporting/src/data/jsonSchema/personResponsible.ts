@@ -4,7 +4,6 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { infoNote } from "@reporting/src/data/jsonSchema/personResponsibleInfoText";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 
-// Person Responsible Schema
 export const personResponsibleSchema: RJSFSchema = {
   title: "Person Responsible",
   type: "object",
@@ -62,60 +61,49 @@ export const personResponsibleUiSchema: UiSchema = {
         "last_name",
         "places_assigned",
       ],
-      // first_name: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
-      // last_name: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
+      first_name: {
+        "ui:disabled": true,
+      },
+      last_name: {
+        "ui:disabled": true,
+      },
     },
     section2: {
       "ui:FieldTemplate": SectionFieldTemplate,
-      // position_title: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
+      position_title: {
+        "ui:disabled": true,
+      },
     },
     section3: {
       "ui:FieldTemplate": SectionFieldTemplate,
-      // email: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
-      // phone_number: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
+      email: {
+        "ui:disabled": true,
+      },
+      phone_number: {
+        "ui:disabled": true,
+      },
     },
     section4: {
       "ui:FieldTemplate": SectionFieldTemplate,
-      // street_address: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
-      // municipality: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
-      // province: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
-      // postal_code: {
-      //   "ui:widget": "ReadOnlyWidget",
-      // },
+      street_address: {
+        "ui:disabled": true,
+      },
+      municipality: {
+        "ui:disabled": true,
+      },
+      province: {
+        "ui:disabled": true,
+      },
+      postal_code: {
+        "ui:disabled": true,
+      },
     },
   },
 };
 
-export const createContactDetailsProperties = (contactFormData: {
-  first_name: any;
-  last_name: any;
-  position_title: any;
-  email: any;
-  phone_number: any;
-  street_address: any;
-  municipality: any;
-  province: any;
-  postal_code: any;
-}) => {
+export const createContactDetailsProperties = (userContact: Contact) => {
   return {
     type: "object", // Define the type of contact_details
-
     properties: {
       section1: {
         type: "object",
@@ -124,12 +112,12 @@ export const createContactDetailsProperties = (contactFormData: {
           first_name: {
             type: "string",
             title: "First Name",
-            default: contactFormData.first_name,
+            default: userContact.first_name,
           },
           last_name: {
             type: "string",
             title: "Last Name",
-            default: contactFormData.last_name,
+            default: userContact.last_name,
           },
         },
       },
@@ -140,7 +128,7 @@ export const createContactDetailsProperties = (contactFormData: {
           position_title: {
             type: "string",
             title: "Job Title / Position",
-            default: contactFormData.position_title,
+            default: userContact.position_title,
           },
         },
       },
@@ -151,12 +139,12 @@ export const createContactDetailsProperties = (contactFormData: {
           email: {
             type: "string",
             title: "Business Email Address",
-            default: contactFormData.email,
+            default: userContact.email,
           },
           phone_number: {
             type: "string",
             title: "Business Telephone Number",
-            default: contactFormData.phone_number,
+            default: userContact.phone_number,
           },
         },
       },
@@ -167,22 +155,22 @@ export const createContactDetailsProperties = (contactFormData: {
           street_address: {
             type: "string",
             title: "Business Mailing Address",
-            default: contactFormData.street_address || "",
+            default: userContact.street_address || "",
           },
           municipality: {
             type: "string",
             title: "Municipality",
-            default: contactFormData.municipality || "",
+            default: userContact.municipality || "",
           },
           province: {
             type: "string",
             title: "Province",
-            default: contactFormData.province || "",
+            default: userContact.province || "",
           },
           postal_code: {
             type: "string",
             title: "Postal Code",
-            default: contactFormData.postal_code || "",
+            default: userContact.postal_code || "",
           },
         },
       },
