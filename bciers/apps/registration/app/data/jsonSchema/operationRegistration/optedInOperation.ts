@@ -1,9 +1,6 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import {
-  TitleOnlyFieldTemplate,
-  SectionFieldTemplate,
-} from "@bciers/components/form/fields";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import {
   optedInOperationPreface,
   meetsSection3EmissionsRequirementsText,
@@ -70,9 +67,6 @@ export const optedInOperationSchema: RJSFSchema = {
 const customClassNamesForRadioWidget =
   "[&>div:first-child]:w-[600px] md:[&>div:first-child]:mr-10 md:my-6 [&>div:nth-child(2)]:w-[200px]";
 
-// A little bit of extra margin so the detail page is slightly easier to read
-const customClassNamesForDetailsPage = "mb-2";
-
 export const optedInOperationUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
@@ -124,54 +118,5 @@ export const optedInOperationUiSchema: UiSchema = {
     "ui:title": meetsNotificationToDirectorOnCriteriaChangeText,
     "ui:widget": "RadioWidget",
     "ui:classNames": customClassNamesForRadioWidget,
-  },
-};
-
-export const optedInOperationDetailsUiSchema: UiSchema = {
-  opted_in_operation: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-    "ui:options": {
-      label: false,
-    },
-    meets_section_3_emissions_requirements: {
-      "ui:title": meetsSection3EmissionsRequirementsText,
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
-    meets_electricity_import_operation_criteria: {
-      "ui:title": "Is this operation an electricity import operation?",
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
-    meets_entire_operation_requirements: {
-      "ui:title": meetsEntireOperationRequirementsText,
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
-    meets_section_6_emissions_requirements: {
-      "ui:title": meetsSection6EmissionsRequirementsText,
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
-    meets_naics_code_11_22_562_classification_requirements: {
-      "ui:title": meetsNaicsCode1122562ClassificationRequirementsText,
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
-    meets_producing_gger_schedule_a1_regulated_product: {
-      "ui:title": meetsProducingGgerScheduleA1RegulatedProductText,
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
-    meets_reporting_and_regulated_obligations: {
-      "ui:title": meetsReportingAndRegulatedObligationsText,
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
-    meets_notification_to_director_on_criteria_change: {
-      "ui:title": meetsNotificationToDirectorOnCriteriaChangeText,
-      "ui:widget": "RadioWidget",
-      "ui:classNames": customClassNamesForDetailsPage,
-    },
   },
 };
