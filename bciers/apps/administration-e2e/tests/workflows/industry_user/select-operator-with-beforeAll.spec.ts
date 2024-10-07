@@ -2,11 +2,12 @@
 // tests that need fixture setup only once
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
-import { DashboardPOM } from "@/administration/e2e/poms/dashboard";
-import { OperatorPOM } from "@/administration/e2e/poms/operator";
+import { DashboardPOM } from "@/administration-e2e/poms/dashboard";
+import { OperatorPOM } from "@/administration-e2e/poms/operator";
 // ☰ Enums
-import { AppRoute, E2EValue } from "@/administration/e2e/utils/enums";
-import { AppName } from "@/administration/e2e/utils/constants";
+import { OperatorE2EValue } from "@/administration-e2e/utils/enums";
+import { AppRoute } from "@/administration-e2e/utils/enums";
+import { AppName } from "@/administration-e2e/utils/constants";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {
@@ -77,7 +78,7 @@ test.describe("Test select operator paths with beforeAll", () => {
 
     // 👉 Action select by CRA
     await selectOperatorPage.selectByCraNumber(
-      E2EValue.SEARCH_CRA_DENIED_ADMIN,
+      OperatorE2EValue.SEARCH_CRA_DENIED_ADMIN,
     );
     // 🔍 Assert operator admin access denied
     await selectOperatorPage.msgRequestAccessAdminDeclinedIsVisible();
@@ -97,7 +98,9 @@ test.describe("Test select operator paths with beforeAll", () => {
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
 
     // 👉 Action select by CRA
-    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA_DENIED);
+    await selectOperatorPage.selectByCraNumber(
+      OperatorE2EValue.SEARCH_CRA_DENIED,
+    );
     // 🔍 Assert operator access denied by admin message
     await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
     // 📷 Cheese!
@@ -115,7 +118,7 @@ test.describe("Test select operator paths with beforeAll", () => {
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
     // 👉 Action select by CRA
-    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA);
+    await selectOperatorPage.selectByCraNumber(OperatorE2EValue.SEARCH_CRA);
     // 🔍 Assert operator confirmation message
     await selectOperatorPage.msgConfirmOperatorIsVisible();
     // 👉 Action accept operator

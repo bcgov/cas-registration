@@ -2,10 +2,10 @@
 // tests that need fixture setup every tests
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
-import { OperatorPOM } from "@/administration/e2e/poms/operator";
+import { OperatorPOM } from "@/administration-e2e/poms/operator";
 // ☰ Enums
-import { AppRoute, E2EValue } from "@/administration/e2e/utils/enums";
-import { AppName } from "@/administration/e2e/utils/constants";
+import { AppRoute, E2EValue } from "@/administration-e2e/utils/enums";
+import { AppName } from "@/administration-e2e/utils/constants";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {

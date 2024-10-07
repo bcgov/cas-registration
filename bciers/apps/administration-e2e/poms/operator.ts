@@ -11,12 +11,8 @@ import {
   OperatorFormField,
   MessageTextOperatorSelect,
   SelectOperatorFormField,
-} from "@/administration/e2e/utils/enums";
-import {
-  ButtonText,
-  MessageTextResponse,
-  UserRole,
-} from "@bciers/e2e/utils/enums";
+} from "@/administration-e2e/utils/enums";
+import { ButtonText, UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {
   checkFormFieldsReadOnly,
