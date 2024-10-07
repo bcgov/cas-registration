@@ -11,43 +11,21 @@ export enum AppRole {
 
 // 🔘 button text
 export enum ButtonText {
-  ADD_OPERATION = "Add Operation",
-  ADD_OPERATOR = "Add Operator",
-  ADD_PARENT_COMPANY = "Add another parent company",
-  APPLICATION_APPROVE = "Approve application",
-  APPLICATION_REJECT = "Reject application",
-  APPLICATION_REQUEST_CHANGE = "Request Changes",
-  APPLICATION_REQUEST_CHANGE_CANCEL = "Cancel Change Request",
-  APPLICATION_REQUEST_CHANGE_CONFIRM = "Confirm Change Request",
-  APPLICATION_REQUEST_CHANGE_UNDO = "Undo Request Changes",
   APPROVE = "Approve",
   CANCEL = "Cancel",
   CONFIRM = "Confirm",
   CONTINUE = "Continue",
   DECLINE = "Decline",
-  EDIT = "Edit Information",
+  EDIT = "Edit",
+  EDIT_INFO = "Edit Information",
   EXPAND_ALL = "Expand All",
   GO_BACK = "Go Back",
-  LOGIN_CAS = "Log in with IDIR",
-  LOGIN_INDUSTRY_USER = "Log in with Business BCeID",
-  LOGOUT = "Log out",
-  LOGOUT_SSO = "You are logged out",
-  NEXT = "Next",
-  OPERATORS = "Operators",
-  OPERATIONS = "Operations",
-  PDF_PREVIEW = "Preview",
   RETURN = "Return",
-  RETURN_OPERATIONS = "Return to Operations List",
-  REQUEST_ACCESS = "Request Access",
-  REQUEST_ADMIN_ACCESS = "Request Administrator Access",
   SAVE_CONTINUE = "Save and Continue",
   SAVE_RETURN_DASHBOARD = "Save and Return to Dashboard",
-  SEARCH_OPERATOR = "Search Operator",
-  SELECT_OPERATOR = "Select Operator",
   SUBMIT = "Submit",
   UNDO = "Undo",
   VIEW_DETAILS = "View Details",
-  YES_OPERATOR = "Yes this is my operator",
 }
 
 // 🚀  App routes
@@ -81,11 +59,7 @@ export enum DataTestID {
 
 // E2E values
 export enum E2EValue {
-  FIXTURE_EXISTING = "Existing",
-  FIXTURE_LEGAL_NAME = "Operator 1 Legal Name",
   FIXTURE_NAICS = "211110 - Oil and gas extraction (except oil sands)",
-  FIXTURE_OPERATOR_NEW = "New Operator",
-  FIXTURE_OPERATOR_EXISTING = "Existing Operator",
   FIXTURE_SFO = "Single Facility Operation",
   INPUT_BAD_BC_CRN = "234rtf",
   INPUT_BAD_CRA = "123",
@@ -108,8 +82,6 @@ export enum E2EValue {
   INPUT_WEB_SITE = "https://www.website.com",
   PASSWORD = "_PASSWORD",
   PREFIX = "E2E_",
-  SEARCH_CRA = "987654321",
-  SEARCH_LEGAL_NAME = "Operator",
   STORAGE = "_STORAGE_STATE",
 }
 
@@ -179,40 +151,10 @@ export enum MessageTextOperations {
   NOTE_INTERNAL = "Once “Approved,” a B.C. OBPS Regulated Operation ID will be issued for the operation",
 }
 
-// 💬 Operator messages
-export enum MessageTextOperatorSelect {
-  INPUT_CRA = "Enter CRA Business Number",
-  NO_ACCESS = "Looks like you do not have access to",
-  NO_ADMIN = "does not have Administrator access set up",
-  OPERATOR_CONFIRM = "Kindly confirm if this is the operator that you represent.",
-  REQUEST_ACCESS = "Your access request has been sent",
-  REQUEST_ADD = "Your request to add",
-  REQUEST_ADMIN = "has been received and will be reviewed",
-  SELECT_OPERATOR = "Which operator would you like to log in to?",
-  SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
-  SEARCH_BY_LEGAL_NAME = "Search by Canada Revenue Agency (CRA) Business Number",
-  SEARCH_BY_CRA_NUMBER = "Enter CRA Business Number",
-}
-
-// 💬 Operator messages
-export enum MessageTextOperator {
-  EDIT_INFO = 'Please click on the "Edit Information" button',
-}
-
-// 💬 Operators messages
-export enum MessageTextOperators {
-  ALERT_NEW_OPERATOR_NEEDS_APPROVE = "Operator must be approved before approving or declining users.",
-  ALERT_ADMIN_APPROVED = "You have approved the prime admin request.",
-  ALERT_ADMIN_DECLINED = "You have declined the prime admin request.",
-  ALERT_OPERATOR_APPROVED = "You have approved the creation of the new operator.",
-  ALERT_OPERATOR_DECLINED = "You have declined the creation of the new operator.",
-  NOTE_INTERNAL = "Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there.",
-  NOTE_NEW = "Note: This is a new operator. You must approve this operator before approving its admin.",
-}
-
 // 💬 Response messages
 export enum MessageTextResponse {
   SETUP_SUCCESS = "Test setup complete.",
+  SUBMIT_CONFIRMATION = "All changes have been successfully saved",
 }
 
 // 📝 Status LOV Operator

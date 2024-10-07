@@ -6,13 +6,17 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
-  ButtonText,
-  E2EValue,
+  OperatorButtonText,
+  OperatorE2EValue,
   OperatorFormField,
   MessageTextOperatorSelect,
   SelectOperatorFormField,
 } from "@/administration/e2e/utils/enums";
-import { UserRole } from "@bciers/e2e/utils/enums";
+import {
+  ButtonText,
+  MessageTextResponse,
+  UserRole,
+} from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {
   checkFormFieldsReadOnly,
@@ -28,9 +32,13 @@ export class OperatorPOM {
 
   readonly buttonAddParentCompany: Locator;
 
+  readonly buttonEdit: Locator;
+
   readonly buttonRequestAccess: Locator;
 
   readonly buttonRequestAdministratorAccess: Locator;
+
+  readonly buttonSaveAndReturn: Locator;
 
   readonly buttonSelectOperator: Locator; // legal name search
 
@@ -100,25 +108,31 @@ export class OperatorPOM {
     this.page = page;
     // Initialize Button Locators
     this.buttonAddParentCompany = page.getByRole("button", {
-      name: ButtonText.ADD_PARENT_COMPANY,
+      name: OperatorButtonText.ADD_PARENT_COMPANY,
+    });
+    this.buttonEdit = page.getByRole("button", {
+      name: ButtonText.EDIT,
+    });
+    this.buttonSaveAndReturn = page.getByRole("button", {
+      name: ButtonText.SAVE_RETURN_DASHBOARD,
     });
     this.buttonRequestAccess = page.getByRole("button", {
-      name: ButtonText.REQUEST_ACCESS,
+      name: OperatorButtonText.REQUEST_ACCESS,
     });
     this.buttonRequestAdministratorAccess = page.getByRole("button", {
-      name: ButtonText.REQUEST_ADMIN_ACCESS,
+      name: OperatorButtonText.REQUEST_ADMIN_ACCESS,
     });
     this.buttonSelectOperator = page.getByRole("button", {
-      name: ButtonText.SELECT_OPERATOR,
+      name: OperatorButtonText.SELECT_OPERATOR,
     });
     this.buttonSearchOperator = page.getByRole("button", {
-      name: ButtonText.SEARCH_OPERATOR,
+      name: OperatorButtonText.SEARCH_OPERATOR,
     });
     this.buttonSubmit = page.getByRole("button", {
       name: ButtonText.SUBMIT,
     });
     this.buttonYesThisIsMyOperator = page.getByRole("button", {
-      name: ButtonText.YES_OPERATOR,
+      name: OperatorButtonText.YES_OPERATOR,
     });
     // Initialize Field Locators
     this.fieldBCCrn = page.getByLabel(OperatorFormField.BC_CRN);
@@ -126,7 +140,7 @@ export class OperatorPOM {
       OperatorFormField.BUSINESS_STRUCTURE,
     );
     this.fieldCRA = page.getByLabel(OperatorFormField.CRA);
-    this.fieldLegalName = page.getByLabel(OperatorFormField.LEGAL_NAME);
+    this.fieldLegalName = page.getByLabel(OperatorFormField.LEGAL_NAME).first();
     this.fieldHasParentCompany = page.getByLabel(
       OperatorFormField.HAS_PARENT_COMPANY,
     );
@@ -153,7 +167,7 @@ export class OperatorPOM {
     );
     // Initialize Link Locators
     this.linkAddOperator = page.getByRole("link", {
-      name: ButtonText.ADD_OPERATOR,
+      name: OperatorButtonText.ADD_OPERATOR,
     });
     this.linkGoBack = page.getByRole("link", {
       name: ButtonText.GO_BACK,
@@ -196,8 +210,21 @@ export class OperatorPOM {
     await this.linkAddOperator.click();
   }
 
+  async clickEditInformation() {
+    await this.buttonEdit.click();
+  }
+
+  async clickSaveAndReturn() {
+    //If the button is clickable (i.e., enabled), then clicking it will not throw any errors. If the button is not clickable (i.e., disabled), the click action will fail with an appropriate error.
+    await this.buttonSaveAndReturn.click();
+  }
+
   async clickSubmitButton() {
     await this.buttonSubmit.click();
+  }
+
+  async editOperatorInformation() {
+    await this.fieldLegalName.fill(OperatorE2EValue.INPUT_LEGAL_NAME);
   }
 
   async fillFields(fieldLabels: string[], values: { [key: string]: string }) {
@@ -236,12 +263,14 @@ export class OperatorPOM {
     ];
     const parentValues = {
       [OperatorFormField.BUSINESS_ADDRESS]:
-        E2EValue.INPUT_BUSINESS_ADDRESS_PARENT,
-      [OperatorFormField.CRA]: E2EValue.INPUT_CRA_PARENT,
-      [OperatorFormField.LEGAL_NAME]: E2EValue.INPUT_LEGAL_NAME_PARENT,
-      [OperatorFormField.MUNICIPALITY]: E2EValue.INPUT_MUNICIPALITY_PARENT,
-      [OperatorFormField.POSTAL_CODE]: E2EValue.INPUT_POSTAL_CODE_PARENT,
-      [OperatorFormField.PROVINCE]: E2EValue.INPUT_PROVINCE_PARENT,
+        OperatorE2EValue.INPUT_BUSINESS_ADDRESS_PARENT,
+      [OperatorFormField.CRA]: OperatorE2EValue.INPUT_CRA_PARENT,
+      [OperatorFormField.LEGAL_NAME]: OperatorE2EValue.INPUT_LEGAL_NAME_PARENT,
+      [OperatorFormField.MUNICIPALITY]:
+        OperatorE2EValue.INPUT_MUNICIPALITY_PARENT,
+      [OperatorFormField.POSTAL_CODE]:
+        OperatorE2EValue.INPUT_POSTAL_CODE_PARENT,
+      [OperatorFormField.PROVINCE]: OperatorE2EValue.INPUT_PROVINCE_PARENT,
     };
 
     // Use the helper function to fill parent fields
@@ -251,9 +280,11 @@ export class OperatorPOM {
   async fillPartnerInformation() {
     // Trigger partner field display based on business structure value == general partnership
     await this.fieldBusinessStructure.clear();
-    await this.fieldBusinessStructure.fill(E2EValue.INPUT_BUSINESS_STRUCTRE_0);
+    await this.fieldBusinessStructure.fill(
+      OperatorE2EValue.INPUT_BUSINESS_STRUCTRE_0,
+    );
     await this.page
-      .getByRole("option", { name: E2EValue.INPUT_BUSINESS_STRUCTRE_0 })
+      .getByRole("option", { name: OperatorE2EValue.INPUT_BUSINESS_STRUCTRE_0 })
       .click();
 
     // Define fields and values for partner information
@@ -264,11 +295,11 @@ export class OperatorPOM {
       OperatorFormField.LEGAL_NAME,
     ];
     const partnerValues = {
-      [OperatorFormField.BC_CRN]: E2EValue.INPUT_BC_CRN_PARTNER,
+      [OperatorFormField.BC_CRN]: OperatorE2EValue.INPUT_BC_CRN_PARTNER,
       [OperatorFormField.BUSINESS_STRUCTURE]:
-        E2EValue.INPUT_BUSINESS_STRUCTRE_1,
-      [OperatorFormField.CRA]: E2EValue.INPUT_CRA_PARTNER,
-      [OperatorFormField.LEGAL_NAME]: E2EValue.INPUT_LEGAL_NAME_PARTNER,
+        OperatorE2EValue.INPUT_BUSINESS_STRUCTRE_1,
+      [OperatorFormField.CRA]: OperatorE2EValue.INPUT_CRA_PARTNER,
+      [OperatorFormField.LEGAL_NAME]: OperatorE2EValue.INPUT_LEGAL_NAME_PARTNER,
     };
 
     // Use the helper function to fill partner fields
@@ -288,15 +319,16 @@ export class OperatorPOM {
       OperatorFormField.PROVINCE,
     ];
     const requiredValues = {
-      [OperatorFormField.BC_CRN]: E2EValue.INPUT_BC_CRN,
-      [OperatorFormField.BUSINESS_ADDRESS]: E2EValue.INPUT_BUSINESS_ADDRESS,
+      [OperatorFormField.BC_CRN]: OperatorE2EValue.INPUT_BC_CRN,
+      [OperatorFormField.BUSINESS_ADDRESS]:
+        OperatorE2EValue.INPUT_BUSINESS_ADDRESS,
       [OperatorFormField.BUSINESS_STRUCTURE]:
-        E2EValue.INPUT_BUSINESS_STRUCTRE_1,
-      [OperatorFormField.CRA]: E2EValue.INPUT_CRA,
-      [OperatorFormField.LEGAL_NAME]: E2EValue.INPUT_LEGAL_NAME,
-      [OperatorFormField.MUNICIPALITY]: E2EValue.INPUT_MUNICIPALITY,
-      [OperatorFormField.POSTAL_CODE]: E2EValue.INPUT_POSTAL_CODE,
-      [OperatorFormField.PROVINCE]: E2EValue.INPUT_PROVINCE,
+        OperatorE2EValue.INPUT_BUSINESS_STRUCTRE_1,
+      [OperatorFormField.CRA]: OperatorE2EValue.INPUT_CRA,
+      [OperatorFormField.LEGAL_NAME]: OperatorE2EValue.INPUT_LEGAL_NAME,
+      [OperatorFormField.MUNICIPALITY]: OperatorE2EValue.INPUT_MUNICIPALITY,
+      [OperatorFormField.POSTAL_CODE]: OperatorE2EValue.INPUT_POSTAL_CODE,
+      [OperatorFormField.PROVINCE]: OperatorE2EValue.INPUT_PROVINCE,
     };
 
     // Use the helper function to fill required fields
@@ -338,9 +370,9 @@ export class OperatorPOM {
   }
 
   async triggerErrorsFieldFormat() {
-    await this.fieldCRA.fill(E2EValue.INPUT_BAD_CRA);
-    await this.fieldBCCrn.fill(E2EValue.INPUT_BAD_BC_CRN);
-    await this.fieldPostal.fill(E2EValue.INPUT_BAD_POSTAL);
+    await this.fieldCRA.fill(OperatorE2EValue.INPUT_BAD_CRA);
+    await this.fieldBCCrn.fill(OperatorE2EValue.INPUT_BAD_BC_CRN);
+    await this.fieldPostal.fill(OperatorE2EValue.INPUT_BAD_POSTAL);
     await this.clickSubmitButton();
   }
 
