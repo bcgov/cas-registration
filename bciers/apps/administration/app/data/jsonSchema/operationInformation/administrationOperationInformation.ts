@@ -13,7 +13,7 @@ import {
   registrationInformationUiSchema,
 } from "./administrationRegistrationInformation";
 
-import { optedInOperationDetailsUiSchema } from "@/registration/app/data/jsonSchema/operationRegistration/optedInOperation";
+import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 export const createAdministrationOperationInformationSchema = async (
   registrationPurposesValue: string[],
   optedIn: boolean,
