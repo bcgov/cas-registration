@@ -7,7 +7,6 @@ from reporting.models.configuration import Configuration
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_fuel import ReportFuel
-from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from model_bakery.baker import make_recipe, make
 from reporting.models.report_version import ReportVersion
