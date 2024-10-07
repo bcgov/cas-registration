@@ -62,7 +62,7 @@ class ReportActivitySaveService:
         )
         report_activity.set_create_or_update(self.user_guid)
 
-        # Delete the existing report_source_types with an id not in the form_data (they've been deleted on the form)
+        # Delete the existing report_source_types with an id not in the form_data (this means they've been deleted on the form)
         ReportSourceType.objects.filter(report_activity=report_activity).exclude(
             id__in=retrieve_ids(data["sourceTypes"])
         ).delete()

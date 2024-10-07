@@ -12,6 +12,9 @@ def find_configuration(date: datetime) -> Configuration:
 
 
 def retrieve_ids(data: dict | list[dict]):
+    """
+    Utility function to retrieve the id field of each element of a list or dict
+    """
     # Assumes a dict of dicts containing the ID
     if isinstance(data, dict):
         return [data[key].get("id") for key in data if data[key].get("id") is not None]
