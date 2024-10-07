@@ -55,10 +55,9 @@ Once the schemas are created, they need to be added to the database in the migra
 
 On the frontend:
 
-- Create a directory for the activity under `bceidbusiness/industry_user_admin/reports/[version_id]/facilities/[facility_idid]/activities`
-- Add a page.tsx route file - see the gsc_excluding_line_tracing directory for an example
-- Add a component for the activity under `components/activities` - see the generalStationaryCombustion.tsx file for an example
-- Create a uiSchema in the activity component. These will eventually live in the database, but for ease of development they can live here for now.
+- Create a uiSchema for the activity `components/activities/uiSchemas`
+- The name of the uiSchema file should be the same as the slug for that activity in the erc.activity table record
+- Update `components/activities/uiSchemas/schemaMaps.tsx`
+  - The uiSchema map should have the slug as the key and the uiSchema filename as the value
+  - The defaultEmptySourceTypeMap should have the slug as the key and the shape of an empty form as the value (ie: if the activity has units then use `withUnits`)
 - The ActivityForm.tsx file is a generic component to render the form it _shouldn't_ need any changes
-
-Once the activity form page is working properly. Copy the new activity directory from under the `industry_user_admin` role to the `industry_user` role directory in the same place. Both user types should be able to access these pages.
