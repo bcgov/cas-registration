@@ -1,4 +1,5 @@
-// 🧪 Suite to test the administration industry_user workflow - alternative paths
+// 🧪 Suite to test the administration industry_user workflow
+// tests that need fixture setup only once
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/administration/e2e/poms/dashboard";
@@ -32,7 +33,7 @@ test.afterEach(async () => {
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
-test.describe("Test select operator alternative paths", () => {
+test.describe("Test select operator paths with beforeAll", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
     process.env.E2E_INDUSTRY_USER_STORAGE_STATE as string,

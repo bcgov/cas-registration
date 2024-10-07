@@ -15,10 +15,15 @@ export class DashboardPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
 
+  readonly operatorTile: Locator;
+
   readonly selectOperatorTile: Locator;
 
   constructor(page: Page) {
     this.page = page;
+    this.operatorTile = page.getByRole("link", {
+      name: DashboardTileText.TILE_OPERATOR,
+    });
     this.selectOperatorTile = page.getByRole("link", {
       name: DashboardTileText.TILE_OPERATOR_SELECT,
     });
@@ -28,6 +33,10 @@ export class DashboardPOM {
 
   async route() {
     await this.page.goto(this.url);
+  }
+
+  async clickOperatorTile() {
+    await this.operatorTile.click();
   }
 
   async clickSelectOperatorTile() {
