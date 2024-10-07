@@ -80,5 +80,8 @@ class TestSaveReportFuel(TestCase):
             ]
         )
 
+    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
+    def test_save_fuel_update(self, mock_save_emission: MagicMock):
+
     def test_removes_deleted_emissions(self):
         raise
