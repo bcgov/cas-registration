@@ -10,7 +10,7 @@ from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from reporting.models.facility_report import FacilityReport
 from registration.tests.utils.baker_recipes import operation, operator, facility
-from model_bakery.recipe import Recipe, foreign_key, related
+from model_bakery.recipe import Recipe, foreign_key
 from reporting.models.source_type import SourceType
 
 
