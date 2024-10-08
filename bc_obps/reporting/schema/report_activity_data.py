@@ -1,7 +1,6 @@
-from typing import Any
+from typing import Dict
 from ninja import Schema
-from pydantic import Json
 
 
 class ReportActivityDataIn(Schema):
-    activity_data: Json[Any]
+    activity_data: Dict

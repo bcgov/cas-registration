@@ -59,6 +59,8 @@ class TestSaveReportEmission(TestCase):
         assert return_value.report_source_type == report_source_type
         assert return_value.report_fuel == report_fuel
         assert return_value.report_version == test_infrastructure.report_version
+
+        return_value.refresh_from_db()
         assert return_value.created_by == test_infrastructure.user
         assert return_value.updated_by is None
 
@@ -110,5 +112,7 @@ class TestSaveReportEmission(TestCase):
         assert report_emission.id == updated_return_value.id
         assert updated_return_value.json_data == {"test_emission_prop": "new something"}
         assert updated_return_value.gas_type == GasType.objects.get(chemical_formula="BCOBPS")
+
+        updated_return_value.refresh_from_db()
         assert updated_return_value.created_by == test_infrastructure.user
         assert updated_return_value.updated_by == test_infrastructure.user
