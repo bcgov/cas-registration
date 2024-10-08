@@ -61,6 +61,7 @@ class ReportActivitySaveService:
             defaults={"json_data": activity_data},
         )
         report_activity.set_create_or_update(self.user_guid)
+        report_activity.refresh_from_db()
 
         # Delete the existing report_source_types with an id not in the form_data (this means they've been deleted on the form)
         ReportSourceType.objects.filter(report_activity=report_activity).exclude(
@@ -104,6 +105,7 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data},
         )
         report_source_type.set_create_or_update(self.user_guid)
+        report_source_type.refresh_from_db()
 
         if json_base_schema.has_unit:
             ReportUnit.objects.filter(report_source_type=report_source_type).exclude(
@@ -136,10 +138,8 @@ class ReportActivitySaveService:
         json_data = exclude_keys(unit_data, ['fuels', 'emissions', 'id'])
         report_unit_id = unit_data.get('id', None)
 
-        if report_source_type.activity_source_type_base_schema.has_fuel and 'fuels' not in unit_data:
+        if 'fuels' not in unit_data:
             raise ValueError("Unit is expecting fuel data")
-        elif not report_source_type.activity_source_type_base_schema.has_fuel and 'emissions' not in unit_data:
-            raise ValueError("Unit is expecting emission data")
 
         # Update record if id was provided, create otherwise
         report_unit, _ = ReportUnit.objects.update_or_create(
@@ -152,21 +152,14 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data},
         )
         report_unit.set_create_or_update(self.user_guid)
+        report_unit.refresh_from_db()
 
-        if report_source_type.activity_source_type_base_schema.has_fuel:
-            ReportFuel.objects.filter(report_source_type=report_source_type).exclude(
-                id__in=retrieve_ids(unit_data['fuels'])
-            ).delete()
+        ReportFuel.objects.filter(report_source_type=report_source_type, report_unit=report_unit).exclude(
+            id__in=retrieve_ids(unit_data['fuels'])
+        ).delete()
 
-            for fuel_data in unit_data['fuels']:
-                self.save_fuel(report_source_type, report_unit, fuel_data)
-        else:
-            ReportEmission.objects.filter(report_source_type=report_source_type).exclude(
-                id__in=retrieve_ids(unit_data['emissions'])
-            ).delete()
-
-            for emission_data in unit_data['emissions']:
-                self.save_emission(report_source_type, None, emission_data)
+        for fuel_data in unit_data['fuels']:
+            self.save_fuel(report_source_type, report_unit, fuel_data)
 
         return report_unit
 
@@ -197,8 +190,9 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "fuel_type": fuel_type},
         )
         report_fuel.set_create_or_update(self.user_guid)
+        report_fuel.refresh_from_db()
 
-        ReportEmission.objects.filter(report_source_type=report_source_type).exclude(
+        ReportEmission.objects.filter(report_source_type=report_source_type, report_fuel=report_fuel).exclude(
             id__in=retrieve_ids(fuel_data['emissions'])
         ).delete()
 
@@ -230,5 +224,6 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
         report_emission.set_create_or_update(self.user_guid)
+        report_emission.refresh_from_db()
 
         return report_emission
