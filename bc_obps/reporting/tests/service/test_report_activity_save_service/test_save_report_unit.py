@@ -46,6 +46,8 @@ class TestSaveReportUnit(TestCase):
         assert return_value.json_data == {"test_unit_prop": "unit_value"}
         assert return_value.report_source_type == report_source_type
         assert return_value.report_version == test_infrastructure.report_version
+
+        return_value.refresh_from_db()
         assert return_value.created_by == test_infrastructure.user
         assert return_value.updated_by is None
 
@@ -95,6 +97,8 @@ class TestSaveReportUnit(TestCase):
 
         assert update_return_value.json_data == {"new_prop": "new_val"}
         assert update_return_value.id == report_unit.id
+
+        update_return_value.refresh_from_db()
         assert update_return_value.created_by == test_infrastructure.user
         assert update_return_value.updated_by == test_infrastructure.user
 
