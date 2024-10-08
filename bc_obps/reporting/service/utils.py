@@ -11,7 +11,7 @@ def find_configuration(date: datetime) -> Configuration:
     return Configuration.objects.get(valid_from__lte=date, valid_to__gte=date)
 
 
-def retrieve_ids(data: dict | list[dict]):
+def retrieve_ids(data: dict | list[dict]) -> list:
     """
     Utility function to retrieve the id field of each element of a list or dict
     """
