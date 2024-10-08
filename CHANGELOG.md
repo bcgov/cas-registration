@@ -1,3 +1,32 @@
+# [1.11.0](https://github.com/bcgov/cas-registration/compare/v1.10.0...v1.11.0) (2024-10-08)
+
+### Bug Fixes
+
+- add build images to dashboard-e2e workflow needs ([b710e43](https://github.com/bcgov/cas-registration/commit/b710e43d5f1b87adb29d90217ef8c44c0789c155))
+- facility information lfo form route change error ([bf3e440](https://github.com/bcgov/cas-registration/commit/bf3e440c7ef7c90cc8296f601abb80c49cf38133))
+- multiselect minitems error ([e988c4c](https://github.com/bcgov/cas-registration/commit/e988c4cb5e3976478680f61ded721e4dfb681a6a))
+- page is stuck on add mode after creating a contact ([0a2e828](https://github.com/bcgov/cas-registration/commit/0a2e82808aadddc23d2da89d7b0b160705e31546))
+- playwright e2e html report uploads in ci ([10a58e7](https://github.com/bcgov/cas-registration/commit/10a58e73c0d9dd0d0019b68529ced9d358f69cec))
+- Remove add facility button for SFO and include check on backed POST to ensure SFO has 1 facility ([c55fbbf](https://github.com/bcgov/cas-registration/commit/c55fbbfd12ba68cf8d12931678d113c076d1e4ef))
+
+### Features
+
+- add an operator ([d92c54b](https://github.com/bcgov/cas-registration/commit/d92c54b7279dfab17d927a3fe9888f9f6fa1d857))
+- add frontend for pulp and paper activity ([1bde5d4](https://github.com/bcgov/cas-registration/commit/1bde5d4442e2c6334fe252404a3674b5083d9932))
+- add places assigned to contact form ([ab12ccd](https://github.com/bcgov/cas-registration/commit/ab12ccd233fbd6b62f029879b69e9a01718082ca))
+- Create inline array field template for well auth numbers ([3b62806](https://github.com/bcgov/cas-registration/commit/3b62806fd269906fe9a168163686c5fa135a0c1d))
+- facility timeline shows in app grids ([1af7ab0](https://github.com/bcgov/cas-registration/commit/1af7ab046feb60af37bae5c90c934124cb29b6f1))
+- GSC Non Compression Non Processing activity ([becd45e](https://github.com/bcgov/cas-registration/commit/becd45e4fc0fc2e3ae024fc42adfbc4884f54be6))
+- reg workflow steps are conditional based on purpose ([d59514a](https://github.com/bcgov/cas-registration/commit/d59514ab7bdf0a12a967c4a855de8e2fbaa32277))
+- retry owasp-zap on failure ([d21755b](https://github.com/bcgov/cas-registration/commit/d21755bb7821a2a9ea48ddaed5b918ccbb6c86e9))
+- run all e2e tests on merge to develop/main ([d3daa6d](https://github.com/bcgov/cas-registration/commit/d3daa6d28c1f620230430bd48f9b85d90909efe1))
+- Set up and display operators page, grid and data with routing for internal users ([12ff4c2](https://github.com/bcgov/cas-registration/commit/12ff4c23b2b859a312629585c1dd7a0012c2473a))
+- step 1 of reg workflow ([3065d1a](https://github.com/bcgov/cas-registration/commit/3065d1ad9b9a931c03ae4091bbf1b27930d6959c))
+
+### Reverts
+
+- Revert "chore: attempt to remove dunders" ([8a09d6f](https://github.com/bcgov/cas-registration/commit/8a09d6fe9bd3cd02a3bd3acb55686ef8a73085a3))
+
 # [1.10.0](https://github.com/bcgov/cas-registration/compare/v1.9.0...v1.10.0) (2024-09-04)
 
 ### Bug Fixes
