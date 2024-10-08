@@ -179,7 +179,8 @@ class TestSaveReportUnit(TestCase):
             json_data={"aaaa": "bbbb"},
             _quantity=2,
         )
-        report_emissions_to_be_deleted = make(
+        # ReportEmission records that will be deleted
+        make(
             ReportEmission,
             gas_type=make_recipe("reporting.tests.utils.gas_type"),
             report_source_type=report_source_type,
