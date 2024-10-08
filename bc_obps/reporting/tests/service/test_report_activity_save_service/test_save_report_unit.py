@@ -143,7 +143,7 @@ class TestSaveReportUnit(TestCase):
 
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    def test_removes_deleted_fuels(self):
+    def test_removes_deleted_fuels(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithFuel",
@@ -203,7 +203,8 @@ class TestSaveReportUnit(TestCase):
         assert ReportEmission.objects.filter(report_fuel__report_unit=report_unit).count() == 6
 
         service_under_test.save_unit(
-            report_source_type, {"new_prop": "new", "fuels": [{"id": report_fuels[1], "fuel1": 1}, {"more_fuels": 2}]}
+            report_source_type,
+            {"new_prop": "new", "fuels": [{"id": report_fuels[1].id, "fuel1": 1}, {"more_fuels": 2}]},
         )
 
         self.assertQuerySetEqual(ReportFuel.objects.filter(report_unit=report_unit), [report_fuels[1]], ordered=False)
@@ -215,5 +216,67 @@ class TestSaveReportUnit(TestCase):
 
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    def test_removes_deleted_emissions(self):
-        raise
+    def test_removes_deleted_emissions(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
+        test_infrastructure = TestInfrastructure.build()
+        act_st = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeWithoutFuel",
+            has_unit=False,
+            has_fuel=False,
+        )
+        report_activity = test_infrastructure.make_report_activity()
+        report_source_type = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st,
+            source_type=act_st.source_type,
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+
+        service_under_test = ReportActivitySaveService(
+            report_activity.report_version.id,
+            report_activity.facility_report.facility.id,
+            report_activity.activity.id,
+            make_recipe('registration.tests.utils.industry_operator_user'),
+        )
+
+        report_unit = service_under_test.save_unit(
+            report_source_type, {"test_unit_prop": "unit_value", "emissions": [{"e": 1}, {"e": 2}]}
+        )
+
+        report_fuels = make(
+            ReportFuel,
+            report_source_type=report_source_type,
+            report_unit=report_unit,
+            fuel_type=make_recipe("reporting.tests.utils.fuel_type"),
+            report_version=test_infrastructure.report_version,
+            json_data={"aaaa": "bbbb"},
+            _quantity=4,
+        )
+        report_emissions = make(
+            ReportEmission,
+            gas_type=make_recipe("reporting.tests.utils.gas_type"),
+            report_source_type=report_source_type,
+            report_fuel=report_fuels[2],
+            report_version=test_infrastructure.report_version,
+            json_data={"cccc": "dddd"},
+            _quantity=3,
+        )
+
+        assert ReportFuel.objects.filter(report_unit=report_unit).count() == 4
+        assert ReportEmission.objects.filter(report_fuel__report_unit=report_unit).count() == 3
+
+        service_under_test.save_unit(
+            report_source_type,
+            {
+                "new_prop": "new",
+                "emissions": [{"id": report_emissions[1].id, "a": 1}, {"id": report_emissions[0].id, "b": 2}],
+            },
+        )
+
+        assert ReportFuel.objects.filter(report_unit=report_unit).count() == 4
+        self.assertQuerySetEqual(
+            ReportEmission.objects.filter(report_fuel__report_unit=report_unit),
+            [report_emissions[1], report_emissions[0]],
+            ordered=False,
+        )
