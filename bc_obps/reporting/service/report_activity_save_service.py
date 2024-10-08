@@ -18,14 +18,13 @@ from reporting.service.utils import exclude_keys, retrieve_ids
 class ReportActivitySaveService:
     """
     Service that handles a json objects coming from an activity form:
-    - Splits out json data in, and saves individual parts into a ReportActivity object
-    - With a report_version, a facility and an activity, fetches the report_activity and all its dependent data and returns json data for the form
+    - Splits out json data in, and saves individual parts into a ReportActivity object and its ReportSourceType, ReportUnit, ReportFuel and ReportEmission dependencies.
+    - Removes existing data in the report if not part of the newly saved data
 
     usage:
     service = ReportActivitySaveLoadService(report_version_id, facility_id, activity_id)
     service.save(json_data)
 
-    service.load()
     """
 
     facility_report: FacilityReport

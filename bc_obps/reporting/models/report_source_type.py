@@ -32,6 +32,6 @@ class ReportSourceType(ReportDataBaseModel):
         constraints = [
             models.UniqueConstraint(
                 fields=['report_activity', 'source_type'],
-                name="unique_source_type_report_per_activity_report_and_source_type,",
+                name="unique_source_type_report_per_activity_report_and_source_type",
             ),
         ]
