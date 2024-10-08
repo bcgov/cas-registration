@@ -11,7 +11,6 @@ from model_bakery.baker import make_recipe, make
 
 
 class TestSaveReportFuel(TestCase):
-
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     def test_save_fuel(self, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()

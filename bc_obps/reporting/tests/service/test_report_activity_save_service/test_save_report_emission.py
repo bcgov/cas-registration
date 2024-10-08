@@ -9,7 +9,6 @@ from model_bakery.baker import make_recipe, make
 
 
 class TestSaveReportEmission(TestCase):
-
     def test_save_emission(self):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(

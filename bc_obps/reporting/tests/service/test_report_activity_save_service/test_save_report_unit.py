@@ -10,7 +10,6 @@ from model_bakery.baker import make_recipe, make
 
 
 class TestSaveReportUnit(TestCase):
-
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
     def test_save_unit_with_fuel(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
