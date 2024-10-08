@@ -2,13 +2,11 @@ from unittest.mock import MagicMock, patch
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 import pytest
-from reporting.models import activity_source_type_json_schema, source_type
-from reporting.models import report_source_type
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_source_type import ReportSourceType
 from reporting.service.report_activity_save_service import ReportActivitySaveService
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
-from model_bakery.baker import make_recipe, make
+from model_bakery.baker import make
 
 
 class TestSaveReportActivity(TestCase):
