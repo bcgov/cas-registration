@@ -41,8 +41,14 @@ export default async function processAccessRequestData(
     transformedAccessRequests[selfIndex].status = Status.MYSELF;
   }
   const rowData = transformedAccessRequests.map((accessRequest) => {
-    const { id, user_friendly_id, role, status, user, operator } =
-      accessRequest;
+    const {
+      id,
+      user_friendly_id: userFriendlyId,
+      role,
+      status,
+      user,
+      operator,
+    } = accessRequest;
 
     // If the user is pending, we want to default the access type dropdown to Reporter
     const userRole =
@@ -52,7 +58,7 @@ export default async function processAccessRequestData(
 
     return {
       id: id, // This unique ID is needed for DataGrid to work properly
-      userFriendlyId: user_friendly_id,
+      userFriendlyId: userFriendlyId,
       name: `${user.first_name} ${user.last_name}`,
       email: user.email,
       business: operator.legal_name,
