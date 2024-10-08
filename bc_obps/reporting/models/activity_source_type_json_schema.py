@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from django.db.models import Q
 from registration.models import Activity
 from reporting.models import SourceType, Configuration
 import typing
@@ -29,6 +30,13 @@ class ActivitySourceTypeJsonSchema(BaseModel):
     class Meta:
         db_table_comment = "Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair"
         db_table = 'erc"."activity_source_type_json_schema'
+        constraints = [
+            models.CheckConstraint(
+                check=~(Q(has_unit=True) & Q(has_fuel=False)),
+                violation_error_message="A Source Type configuration cannot specify a unit without a fuel",
+                name="invalid_if_has_unit_and_no_fuel",
+            )
+        ]
 
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:

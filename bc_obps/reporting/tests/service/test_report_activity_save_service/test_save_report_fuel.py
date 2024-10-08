@@ -40,7 +40,7 @@ class TestSaveReportFuel(TestCase):
             report_activity.report_version.id,
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
-            make_recipe('registration.tests.utils.industry_operator_user'),
+            test_infrastructure.user.user_guid,
         )
 
         with pytest.raises(KeyError, match="fuelName"):
@@ -72,6 +72,8 @@ class TestSaveReportFuel(TestCase):
         assert return_value.report_source_type == report_source_type
         assert return_value.report_unit == report_unit
         assert return_value.report_version == test_infrastructure.report_version
+        assert return_value.created_by == test_infrastructure.user
+        assert return_value.updated_by is None
 
         mock_save_emission.assert_has_calls(
             [
@@ -109,7 +111,7 @@ class TestSaveReportFuel(TestCase):
             report_activity.report_version.id,
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
-            make_recipe('registration.tests.utils.industry_operator_user'),
+            test_infrastructure.user.user_guid,
         )
 
         report_fuel = service_under_test.save_fuel(
@@ -138,6 +140,8 @@ class TestSaveReportFuel(TestCase):
         assert update_return_value.id == report_fuel.id
         assert update_return_value.json_data == {"test_fuel_prop": "updated!"}
         assert update_return_value.fuel_type == new_fuel_type
+        assert update_return_value.created_by == test_infrastructure.user
+        assert update_return_value.updated_by == test_infrastructure.user
 
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
     def test_removes_deleted_emissions(self, mock_save_emission: MagicMock):

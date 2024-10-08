@@ -47,6 +47,8 @@ class TestSaveReportSourceType(TestCase):
         assert return_value.source_type == act_st.source_type
         assert return_value.report_activity == report_activity
         assert return_value.report_version == test_infrastructure.facility_report.report_version
+        assert return_value.created_by == test_infrastructure.user
+        assert return_value.updated_by is None
 
         mock_save_unit.assert_has_calls(
             [call(return_value, {"unit_data_1": 1}), call(return_value, {"unit_data_2": 2})]
@@ -134,6 +136,8 @@ class TestSaveReportSourceType(TestCase):
         assert update_return_value.source_type == act_st.source_type
         assert update_return_value.report_activity == report_activity
         assert update_return_value.report_version == test_infrastructure.facility_report.report_version
+        assert update_return_value.created_by == test_infrastructure.user
+        assert update_return_value.updated_by == test_infrastructure.user
 
         mock_save_unit.assert_called_once_with(update_return_value, {"another_unit": "test"})
         mock_save_fuel.assert_not_called()

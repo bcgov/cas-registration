@@ -38,7 +38,7 @@ class TestSaveReportEmission(TestCase):
             report_activity.report_version.id,
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
-            make_recipe('registration.tests.utils.industry_operator_user'),
+            test_infrastructure.user.user_guid,
         )
 
         with pytest.raises(KeyError, match="gasType"):
@@ -59,6 +59,8 @@ class TestSaveReportEmission(TestCase):
         assert return_value.report_source_type == report_source_type
         assert return_value.report_fuel == report_fuel
         assert return_value.report_version == test_infrastructure.report_version
+        assert return_value.created_by == test_infrastructure.user
+        assert return_value.updated_by is None
 
     def test_update_emission(self):
         test_infrastructure = TestInfrastructure.build()
@@ -89,7 +91,7 @@ class TestSaveReportEmission(TestCase):
             report_activity.report_version.id,
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
-            make_recipe('registration.tests.utils.industry_operator_user'),
+            test_infrastructure.user.user_guid,
         )
 
         report_emission = service_under_test.save_emission(
@@ -108,3 +110,5 @@ class TestSaveReportEmission(TestCase):
         assert report_emission.id == updated_return_value.id
         assert updated_return_value.json_data == {"test_emission_prop": "new something"}
         assert updated_return_value.gas_type == GasType.objects.get(chemical_formula="BCOBPS")
+        assert updated_return_value.created_by == test_infrastructure.user
+        assert updated_return_value.updated_by == test_infrastructure.user
