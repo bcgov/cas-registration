@@ -72,5 +72,5 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             valid_from=config,
             valid_to=config,
         )
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError, match='A Source Type configuration cannot specify a unit without a fuel'):
             invalid_record.save()
