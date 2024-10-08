@@ -2,7 +2,9 @@ from common.tests.utils.helpers import BaseTestCase
 from registration.models import Activity
 from reporting.models import ActivitySourceTypeJsonSchema, SourceType
 from reporting.tests.utils.bakers import configuration_baker
+from model_bakery.baker import make_recipe
 import pytest
+from django.core.exceptions import ValidationError
 
 
 class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
@@ -31,7 +33,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
         ]
 
     # Throws when a matching activity, source_type, json_schema has an overlapping date range
-    def testDuplicateJsonSchemaForDateRange(self):
+    def test_duplicate_json_schema_for_date_range(self):
         invalid_record = ActivitySourceTypeJsonSchema(
             activity=self.test_object.activity,
             source_type=self.test_object.source_type,
@@ -46,7 +48,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             invalid_record.save()
         assert exc.match(r"^This record will result in duplicate json schemas")
 
-    def testValidInsert(self):
+    def test_valid_insert(self):
         config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})
         valid_record = ActivitySourceTypeJsonSchema(
             activity=self.test_object.activity,
@@ -58,3 +60,17 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             valid_to=config,
         )
         valid_record.save()
+
+    def test_condition_on_fuel_unit_configuration(self):
+        config = make_recipe('reporting.tests.utils.configuration', valid_from='5026-01-01', valid_to='5026-12-31')
+        invalid_record = ActivitySourceTypeJsonSchema(
+            activity=self.test_object.activity,
+            source_type=self.test_object.source_type,
+            json_schema='{}',
+            has_unit=True,
+            has_fuel=False,
+            valid_from=config,
+            valid_to=config,
+        )
+        with pytest.raises(ValidationError):
+            invalid_record.save()

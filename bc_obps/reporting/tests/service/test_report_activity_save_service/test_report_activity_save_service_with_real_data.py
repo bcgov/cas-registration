@@ -165,6 +165,9 @@ class TestReportActivitySaveService(TestCase):
             "test_emission_number": 12345,
             "test_emission_bool": True,
             "test_emission_str": "test",
+            "methodology": "Default EV",
+            "methodology_field_1": 123,
+            "method_field_2": "Some description",
         }
         assert report_emissions[0].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[0].gas_type == GasType.objects.get(chemical_formula='CH4')
