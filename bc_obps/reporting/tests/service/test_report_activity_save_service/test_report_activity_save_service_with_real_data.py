@@ -19,10 +19,6 @@ from reporting.tests.service.test_report_activity_save_service.infrastructure im
 
 
 class TestReportActivitySaveService(TestCase):
-
-    #######################
-    #  Tests: error case  #
-    #######################
     def test_errors_out_if_empty_json(self):
         t = TestInfrastructure.build()
         service_under_test = ReportActivitySaveService(
@@ -32,12 +28,8 @@ class TestReportActivitySaveService(TestCase):
             t.user.user_guid,
         )
 
-        with pytest.raises(Exception):
+        with pytest.raises(KeyError, match="sourceTypes"):
             service_under_test.save({})
-
-    ########################
-    #  Tests: create case  #
-    ########################
 
     def test_creates_report_activity_data(self):
         """
