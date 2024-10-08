@@ -1,15 +1,20 @@
 "use client";
 import ActivityForm from "./ActivityForm";
-import { ActivityFormProps } from "./types";
 import uiSchema from "./uiSchemas/gscNonCompressionNonProcessingUiSchema";
+
+interface Props {
+  activityData: {
+    activityId: number;
+    sourceTypeMap: { [key: number]: string };
+  };
+  reportDate: string;
+}
 
 // 🧩 Main component
 export default function GSCNonCompressionNonProcessing({
-  reportVersionId,
-  facilityId,
   activityData,
   reportDate,
-}: Readonly<ActivityFormProps>) {
+}: Readonly<Props>) {
   // Shape of an empty sourceType to create a set of fields on select
   const defaultEmptySourceTypeState = {
     units: [{ fuels: [{ emissions: [{}] }] }],
@@ -17,8 +22,6 @@ export default function GSCNonCompressionNonProcessing({
 
   return (
     <ActivityForm
-      facilityId={facilityId}
-      reportVersionId={reportVersionId}
       activityData={activityData}
       reportDate={reportDate}
       uiSchema={uiSchema}
