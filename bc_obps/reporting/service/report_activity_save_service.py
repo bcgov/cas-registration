@@ -61,7 +61,6 @@ class ReportActivitySaveService:
             defaults={"json_data": activity_data},
         )
         report_activity.set_create_or_update(self.user_guid)
-        report_activity.refresh_from_db()
 
         # Delete the existing report_source_types with an id not in the form_data (this means they've been deleted on the form)
         ReportSourceType.objects.filter(report_activity=report_activity).exclude(
@@ -105,7 +104,6 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data},
         )
         report_source_type.set_create_or_update(self.user_guid)
-        report_source_type.refresh_from_db()
 
         if json_base_schema.has_unit:
             ReportUnit.objects.filter(report_source_type=report_source_type).exclude(
@@ -152,7 +150,6 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data},
         )
         report_unit.set_create_or_update(self.user_guid)
-        report_unit.refresh_from_db()
 
         ReportFuel.objects.filter(report_source_type=report_source_type, report_unit=report_unit).exclude(
             id__in=retrieve_ids(unit_data['fuels'])
@@ -190,7 +187,6 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "fuel_type": fuel_type},
         )
         report_fuel.set_create_or_update(self.user_guid)
-        report_fuel.refresh_from_db()
 
         ReportEmission.objects.filter(report_source_type=report_source_type, report_fuel=report_fuel).exclude(
             id__in=retrieve_ids(fuel_data['emissions'])
@@ -224,6 +220,5 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
         report_emission.set_create_or_update(self.user_guid)
-        report_emission.refresh_from_db()
 
         return report_emission
