@@ -338,7 +338,7 @@
   {
     "model": "registration.useroperator",
     "fields": {
-      "user": "ba2ba62a121842e0942aab9e92ce8822",
+      "user": "00000000-0000-0000-0000-000000000001",
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
       "role": "admin",
       "status": "Approved",
