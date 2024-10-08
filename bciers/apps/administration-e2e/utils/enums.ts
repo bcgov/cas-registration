@@ -11,27 +11,23 @@ export enum AppRoute {
 }
 
 // 🔘 button text
-export enum ButtonText {
+export enum OperatorButtonText {
   ADD_OPERATOR = "Add Operator",
   ADD_PARENT_COMPANY = "Add another parent company",
-  CONFIRM = "Confirm",
-  CONTINUE = "Continue",
-  GO_BACK = "Go Back",
-  RETURN = "Return",
   REQUEST_ACCESS = "Request Access",
   REQUEST_ADMIN_ACCESS = "Request Administrator Access",
   SEARCH_OPERATOR = "Search Operator",
   SELECT_OPERATOR = "Select Operator",
-  SUBMIT = "Submit",
   YES_OPERATOR = "Yes this is my operator",
 }
 // 💬 Dashboard tiles
 export enum DashboardTileText {
+  TILE_OPERATOR = "My Operator",
   TILE_OPERATOR_SELECT = "Select an Operator",
 }
 
 // E2E values
-export enum E2EValue {
+export enum OperatorE2EValue {
   FIXTURE_LEGAL_NAME = "Operator 1 Legal Name",
   INPUT_BAD_BC_CRN = "234rtf",
   INPUT_BAD_CRA = "123",
