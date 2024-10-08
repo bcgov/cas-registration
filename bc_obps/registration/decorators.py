@@ -1,6 +1,5 @@
 import traceback
 from typing import Any, Callable
-from bc_obps import settings
 from service.error_service.handle_exception import handle_exception
 from functools import wraps
 
