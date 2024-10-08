@@ -23,7 +23,7 @@
       }
     },
     "hooks": {
-      "before:bump": "RELEASE_VERSION=$(echo ${version} | tr '.' '_'); cd bc_obps && poetry run python manage.py create_empty_migrations $RELEASE_VERSION",
+      "before:bump": "RELEASE_VERSION=$(echo ${version} | tr '.' '_'); cd bc_obps && poetry run python manage.py create_empty_migrations $RELEASE_VERSION && git add **/migrations/*.py",
       "before:git:beforeRelease": "./.bin/pre-commit-format.sh CHANGELOG.md"
     }
   },
