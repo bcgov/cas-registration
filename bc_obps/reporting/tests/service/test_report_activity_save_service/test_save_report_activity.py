@@ -118,7 +118,7 @@ class TestSaveReportActivity(TestCase):
             source_type__json_key="existingSourceType3", has_unit=True, has_fuel=True
         )
 
-        report_source_type_1 = make(
+        make(
             ReportSourceType,
             activity_source_type_base_schema=act_st_1,
             source_type=act_st_1.source_type,
@@ -134,7 +134,7 @@ class TestSaveReportActivity(TestCase):
             report_version=test_infrastructure.report_version,
             json_data={"test2": 2},
         )
-        report_source_type_3 = make(
+        make(
             ReportSourceType,
             activity_source_type_base_schema=act_st_3,
             source_type=act_st_3.source_type,
