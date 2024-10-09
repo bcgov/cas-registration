@@ -9,11 +9,11 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps } from "@rjsf/utils";
+import { getUiSchema } from "./uiSchemas/schemaMaps";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
 };
-import { uiSchemaMap } from "./uiSchemas/schemaMaps";
 
 type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
 type EmptyWithFuels = { fuels: [{ emissions: [{}] }] };
@@ -58,8 +58,6 @@ export default function ActivityForm({
     (v) => formState?.[`${v}`] ?? null,
   );
 
-  dependencyArray.push(currentActivity.id);
-
   useEffect(() => {
     let isFetching = true;
     const fetchSchemaData = async (
@@ -88,8 +86,7 @@ export default function ActivityForm({
       }
       if (isFetching)
         setFormState({ ...formState, sourceTypes: sourceTypeFormData });
-      const uiSchemaName = uiSchemaMap[currentActivity.slug];
-      setUiSchema(require(`./uiSchemas/${uiSchemaName}`).default);
+      setUiSchema(getUiSchema(currentActivity.slug));
     };
     let selectedSourceTypes = "";
     const selectedKeys = [];
