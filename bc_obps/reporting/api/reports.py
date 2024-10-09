@@ -97,6 +97,7 @@ def get_report_person_responsible_by_version_id(
         """Creates or updates a contact associated with a report version.
                 Includes fields like legal name, trade name, operation details, and contact information."""
     ),
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 def save_report_contact(

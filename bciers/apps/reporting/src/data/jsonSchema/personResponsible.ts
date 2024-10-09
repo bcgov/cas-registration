@@ -3,6 +3,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { infoNote } from "@reporting/src/data/jsonSchema/personResponsibleInfoText";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import { Contact } from "@reporting/src/app/components/operations/types";
 
 export const personResponsibleSchema: RJSFSchema = {
   title: "Person Responsible",
@@ -103,7 +104,7 @@ export const personResponsibleUiSchema: UiSchema = {
 
 export const createContactDetailsProperties = (userContact: Contact) => {
   return {
-    type: "object", // Define the type of contact_details
+    type: "object",
     properties: {
       section1: {
         type: "object",
