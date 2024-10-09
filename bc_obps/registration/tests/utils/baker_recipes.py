@@ -1,4 +1,6 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document import Document
 from registration.models.event.transfer_event import TransferEvent
@@ -144,5 +146,5 @@ facility_designated_operation_timeline = Recipe(
     operation=foreign_key(operation),
     facility=foreign_key(facility),
     status=FacilityDesignatedOperationTimeline.Statuses.TEMPORARILY_SHUTDOWN,
-    end_date=datetime.now(),
+    end_date=datetime.now(ZoneInfo("UTC")),
 )
