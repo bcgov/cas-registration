@@ -21,15 +21,13 @@ export const createPersonResponsibleSchema = (
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(schema));
 
-  // Set up enum values (display names)
-  localSchema.properties.person_responsible.enum = contactOptions.map(
-    (c) => `${c.first_name} ${c.last_name}`, // Use 'c' instead of 'contact'
+  localSchema.properties.person_responsible.enum = contactOptions?.map(
+    (c) => `${c.first_name} ${c.last_name}`,
   );
 
-  // Conditionally add contact schema if contactId exists
   if (contactId && contactData) {
     localSchema.properties.contact_details =
-      createContactDetailsProperties(contactData); // Updated to use contactData
+      createContactDetailsProperties(contactData);
   }
 
   return localSchema;
