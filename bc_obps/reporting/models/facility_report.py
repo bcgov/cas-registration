@@ -50,3 +50,9 @@ class FacilityReport(TimeStampedModel):
         db_table_comment = "A table to store individual facility information as part of a report"
         db_table = 'erc"."facility_report'
         app_label = 'reporting'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['report_version', 'facility_id'],
+                name="unique_facility_report_per_facility_and_report_version",
+            )
+        ]

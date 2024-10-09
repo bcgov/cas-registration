@@ -121,9 +121,11 @@ class TestReportService(TestCase):
             )
 
             # Testing the facilityreport data
-            facility_reports = report_version.facility_reports
-
+            facility_reports = report_version.facility_reports.order_by("facility__id")
             self.assertEqual(facility_reports.count(), 3)
+
+            mock_facilities.sort(key=lambda f: f.id)
+
             for index, facility in enumerate(mock_facilities):
                 facility_report = facility_reports.all()[index]
                 self.assertSequenceEqual(

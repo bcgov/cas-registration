@@ -36,7 +36,7 @@ operator = Recipe(
 
 canadian_parent_operator = Recipe(
     ParentOperator,
-    cra_business_number=generate_random_cra_business_number(),
+    cra_business_number=generate_random_cra_business_number,
     mailing_address=foreign_key(address),
 )
 
@@ -46,15 +46,15 @@ foreign_parent_operator = Recipe(
 
 partner_operator = Recipe(
     PartnerOperator,
-    cra_business_number=generate_random_cra_business_number(),
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    cra_business_number=generate_random_cra_business_number,
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
 )
 
 multiple_operator = Recipe(
     MultipleOperator,
-    cra_business_number=generate_random_cra_business_number(),
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    cra_business_number=generate_random_cra_business_number,
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
 )
 
@@ -83,10 +83,10 @@ operation = Recipe(
 
 operator_for_approved_user_operator = Recipe(
     Operator,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
     mailing_address=foreign_key(address),
-    cra_business_number=generate_random_cra_business_number(),
+    cra_business_number=generate_random_cra_business_number,
 )
 
 user_operator = Recipe(
@@ -121,10 +121,10 @@ contact_for_transfer_event = Recipe(Contact, business_role=BusinessRole.objects.
 
 other_operator_for_transfer_event = Recipe(
     Operator,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
     mailing_address=foreign_key(address),
-    cra_business_number=generate_random_cra_business_number(),
+    cra_business_number=generate_random_cra_business_number,
 )
 
 transfer_event = Recipe(
