@@ -58,7 +58,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         facility_report.activities.add(a1, a2, a3)
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/activity-list'
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', endpoint_under_test)
-        ordered_activities = Activity.objects.filter(pk__in=[1, 28, 14]).order_by('weight', 'name')
+        ordered_activities = ordered_activities = [a3, a2, a1]
         assert response.status_code == 200
         assert len(response.json()) == 3
         assert response.json()[0]['id'] == ordered_activities[0].id
