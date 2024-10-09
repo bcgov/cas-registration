@@ -8,7 +8,7 @@ from service.facility_report_service import FacilityReportService
 
 class ActivityService:
     @classmethod
-    def get_initial_activity_data(request, version_id: int, facility_id: UUID, activity_id: int) -> str:
+    def get_initial_activity_data(cls, version_id: int, facility_id: UUID, activity_id: int) -> str:
         source_type_map: dict[int, str] = {}
         report_date = FacilityReportService.get_facility_report_by_version_and_id(version_id, facility_id).created_at
         config = Configuration.objects.get(valid_from__lte=report_date, valid_to__gte=report_date)
