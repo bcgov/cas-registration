@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
 from registration.models.document_type import DocumentType
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -103,7 +103,7 @@ class OperationServiceV2:
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         if status == Operation.Statuses.REGISTERED:
-            cls.raise_exception_if_operation_missing_registration_information(operation_id)
+            cls.raise_exception_if_operation_missing_registration_information(operation)
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=['status'])
         operation.set_create_or_update(user_guid)
@@ -320,7 +320,10 @@ class OperationServiceV2:
 
     @classmethod
     def is_operation_opt_in_information_complete(cls, operation: Operation) -> bool:
-        """This fuction checks if all opt-in information is complete. Complete means an operation has both a fk to the opt-in detail, and the details are complete."""
+        """
+        This function checks if all opt-in information is complete.
+        Complete means an operation has both a FK to the opt-in detail, and the details are complete.
+        """
         opted_in_operation = operation.opted_in_operation
         if not opted_in_operation:
             return False
@@ -339,59 +342,59 @@ class OperationServiceV2:
         return all(getattr(opted_in_operation, field) is not None for field in required_fields)
 
     @classmethod
-    def raise_exception_if_operation_missing_registration_information(cls, operation_id: UUID) -> None:
-        """This fuction gets an operation by id and checks if that operation has all of its registration information in order. If anything is missing, the function raises an exception."""
-        operation = OperationDataAccessService.get_by_id(operation_id)
+    def raise_exception_if_operation_missing_registration_information(cls, operation: Operation) -> None:
+        """
+        This function checks if the given operation instance has all necessary registration information.
+        If any required information is missing, it raises an appropriate exception.
+        """
 
-        # must have a registration purpose
-        if not operation.registration_purposes.exists():
-            raise Exception("Operation must have registration purpose.")
-
-        # must have at least one operation rep with a complete address
-        if (
-            not operation.contacts.all()
-            .filter(
-                business_role__role_name='Operation Representative',
-                address__street_address__isnull=False,
-                address__municipality__isnull=False,
-                address__province__isnull=False,
-                address__postal_code__isnull=False,
+        def check_conditions() -> Generator[Tuple[Callable[[], bool], str], None, None]:
+            yield lambda: operation.registration_purposes.exists(), "Operation must have a registration purpose."
+            yield (
+                lambda: operation.contacts.filter(
+                    business_role__role_name='Operation Representative',
+                    address__street_address__isnull=False,
+                    address__municipality__isnull=False,
+                    address__province__isnull=False,
+                    address__postal_code__isnull=False,
+                ).exists(),
+                "Operation must have an operation representative with an address.",
             )
-            .exists()
-        ):
-            raise Exception("Operation must have an operation representative with an address.")
+            yield (
+                lambda: FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists(),
+                "Operation must have at least one facility.",
+            )
+            yield lambda: operation.activities.exists(), "Operation must have at least one reporting activity."
 
-        # must have at least one facility
-        if not FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists():
-            raise Exception("Operation must have at least one facility.")
+            # Check if the operation has both a process flow diagram and a boundary map
+            yield (
+                lambda: operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
+                .distinct()
+                .count()
+                == 2,
+                "Operation must have a process flow diagram and a boundary map.",
+            )
+            yield (
+                lambda: not (
+                    operation.registration_purposes.filter(
+                        registration_purpose=RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION
+                    ).exists()
+                    and not operation.documents.filter(
+                        type=DocumentType.objects.get(name='signed_statutory_declaration')
+                    ).exists()
+                ),
+                "Operation must have a signed statutory declaration if it is a new entrant.",
+            )
+            yield (
+                lambda: not (
+                    operation.registration_purposes.filter(
+                        registration_purpose=RegistrationPurpose.Purposes.OPTED_IN_OPERATION
+                    ).exists()
+                    and not cls.is_operation_opt_in_information_complete(operation)
+                ),
+                "Operation must have completed opt-in information if it is opted in.",
+            )
 
-        # must have at least one reporting activity
-        if not operation.activities.exists():
-            raise Exception("Operation must have at least one reporting activity.")
-
-        # must have a boundary map and process flow diagram
-        if not operation.documents.filter(
-            type__in=[
-                DocumentType.objects.get(name='process_flow_diagram'),
-                DocumentType.objects.get(name='boundary_map'),
-            ]
-        ).exists():
-            raise Exception("Operation must have a process flow diagram and boundary map.")
-
-        # if operation is a new entrant, it must have statutory declaration
-        if (
-            operation.registration_purposes.filter(
-                registration_purpose=RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION
-            ).exists()
-            and not operation.documents.filter(
-                type=DocumentType.objects.get(name='signed_statutory_declaration')
-            ).exists()
-        ):
-            raise Exception("Operation must have a signed statutory declaration.")
-
-        # if operation is an opt-in, it must have all questions answered
-        if operation.registration_purposes.filter(
-            registration_purpose=RegistrationPurpose.Purposes.OPTED_IN_OPERATION
-        ).exists():
-            if not cls.is_operation_opt_in_information_complete(operation):
-                raise Exception("Operation must have completed opt-in information.")
+        for condition, error_message in check_conditions():
+            if not condition():
+                raise Exception(error_message)
