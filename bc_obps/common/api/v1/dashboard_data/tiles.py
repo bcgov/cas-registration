@@ -33,10 +33,10 @@ def list_dashboard_data(
     ],
 ) -> Tuple[Literal[200], QuerySet[DashboardData]]:
     role = ""
+    user_guid: UUID = get_current_user_guid(request)
     if dashboard != "all":  # if dashboard is not equal to "all" then get role from AppRole
-        user_guid: UUID = get_current_user_guid(request)
         app_role: AppRole = UserDataAccessService.get_app_role(user_guid)
         role = app_role.role_name
-    data = DashboardDataService.get_dashboard_data_by_name_for_role(dashboard, role)
+    data = DashboardDataService.get_dashboard_data_by_name_for_role(dashboard, user_guid, role)
 
     return 200, data
