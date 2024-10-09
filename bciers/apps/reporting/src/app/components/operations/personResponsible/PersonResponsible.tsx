@@ -7,7 +7,7 @@ import {
   personResponsibleSchema,
   personResponsibleUiSchema,
 } from "@reporting/src/data/jsonSchema/personResponsible";
-import getContact from "@/administration/app/components/contacts/getContact";
+import getContact from "@reporting/src/app/utils/getContact";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import {
   Contact,
@@ -66,7 +66,7 @@ const PersonResponsible = ({ version_id }: Props) => {
       if (personResponsibleData && contactData?.items) {
         // Match the fetched "person responsible" data with the contacts list
         const matchingContact = contactData.items.find(
-          (contact) =>
+          (contact: { first_name: string; last_name: string }) =>
             contact.first_name === personResponsibleData.first_name &&
             contact.last_name === personResponsibleData.last_name,
         );
@@ -82,7 +82,7 @@ const PersonResponsible = ({ version_id }: Props) => {
           setContactFormData(newContactFormData);
           setFormData((prevFormData: any) => ({
             ...prevFormData,
-            person_responsible: `${newContactFormData.first_name} ${newContactFormData.last_name}`,
+            person_responsible: `${newContactFormData?.first_name} ${newContactFormData?.last_name}`,
           }));
         }
       }
@@ -90,7 +90,7 @@ const PersonResponsible = ({ version_id }: Props) => {
       // Initialize schema based on the fetched contacts
       const initialSchema = createPersonResponsibleSchema(
         personResponsibleSchema,
-        contactData.items,
+        contactData?.items,
         selectedContactId,
       );
       setSchema(initialSchema);
@@ -129,12 +129,10 @@ const PersonResponsible = ({ version_id }: Props) => {
     if (selectedContact) {
       const newSelectedContactId = selectedContact.id;
 
-      // Assume getContact always resolves or has built-in error handling
       const newContactFormData: Contact = await getContact(
         `${selectedContact.id}`,
       );
 
-      // Only update state if the selected contact information changes
       if (
         newSelectedContactId !== selectedContactId ||
         newContactFormData !== contactFormData
@@ -147,7 +145,6 @@ const PersonResponsible = ({ version_id }: Props) => {
         }));
       }
     } else {
-      // Handle case where no contact matches the selected full name
       setSelectedContactId(null);
       setContactFormData(null);
       setFormData((prevFormData: any) => ({
@@ -163,14 +160,13 @@ const PersonResponsible = ({ version_id }: Props) => {
 
     const payload = {
       report_version: version_id,
-      ...contactFormData, // Spread contactFormData to include all fields
+      ...contactFormData,
     };
 
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
 
-    // Handle response
     if (response) {
       router.push(`${saveAndContinueUrl}`);
     }
@@ -181,9 +177,11 @@ const PersonResponsible = ({ version_id }: Props) => {
       <MultiStepFormWithTaskList
         initialStep={0}
         steps={[
-          "Review Operation information",
-          "Person responsible",
-          "Review facilities",
+          "Operation Information",
+          "Report Information",
+          "Additional Information",
+          "Compliance Summary",
+          "Sign-off & Submit",
         ]}
         cancelUrl={"/reports"}
         taskListElements={taskListElements}

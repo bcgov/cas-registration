@@ -86,10 +86,6 @@ export default function OperationReview({
 
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(preparedData),
-      headers: {
-        "Content-Type": "application/json",
-        accept: "application/json",
-      },
     });
 
     if (response) {
