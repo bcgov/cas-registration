@@ -57,9 +57,9 @@
                 "title": "Users and Access Requests",
                 "href": "/administration/users",
                 "condition": {
-                  "api": "registration/v2/user-operators/current/operator",
-                  "field": "error",
-                  "operator": "notExists",
+                  "api": "registration/user-operators/current/is-current-user-approved-admin",
+                  "field": "approved",
+                  "operator": "equals",
                   "value": true
                 }
               }

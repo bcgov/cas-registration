@@ -61,9 +61,9 @@
             "content": "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
             "href": "/administration/users",
             "condition": {
-              "api": "registration/v2/user-operators/current/operator",
-              "field": "error",
-              "operator": "notExists",
+              "api": "registration/user-operators/current/is-current-user-approved-admin",
+              "field": "approved",
+              "operator": "equals",
               "value": true
             }
           }
