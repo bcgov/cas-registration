@@ -185,12 +185,12 @@ class TestOperationServiceV2:
         assert result[0] == users_unregistered_operation
 
     @staticmethod
-    def test_update_status_success():
+    def test_update_operation_status_success():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-        users_operation.operator=approved_user_operator.operator
+        users_operation.operator = approved_user_operator.operator
         users_operation.save()
-        
+
         updated_operation = OperationServiceV2.update_status(
             approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
         )
@@ -200,18 +200,15 @@ class TestOperationServiceV2:
         assert updated_operation.updated_at is not None
 
     @staticmethod
-    def test_update_status_fail():
+    def test_update_operation_status_fail():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_operation = baker.make_recipe(
             'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
         )
-        updated_operation = OperationServiceV2.update_status(
-            approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
-        )
-        updated_operation.refresh_from_db()
-        assert updated_operation.status == Operation.Statuses.REGISTERED
-        assert updated_operation.updated_by == approved_user_operator.user
-        assert updated_operation.updated_at is not None
+        with pytest.raises(Exception, match="Operation must have a registration purpose."):
+            OperationServiceV2.update_status(
+                approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
+            )
 
     @staticmethod
     def test_raises_error_if_operation_does_not_belong_to_user_when_updating_status():
@@ -620,138 +617,113 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.updated_at is not None
         assert operation.regulated_products.count() == 0
 
-    class TestRaiseExceptionIfOperationDataIncomplete:
-        @staticmethod
-        def test_do_not_raise_exception_if_data_complete_opt_in():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
 
-            # test will pass if no exception raised
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                operation.id
-            )
+class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
+    @staticmethod
+    def test_raises_exception_if_no_purpose():
+        operation = baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT)
 
+        with pytest.raises(Exception, match="Operation must have a registration purpose."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-        @staticmethod
-        def test_do_not_raise_exception_if_data_complete_new_entrant():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION)
+    @staticmethod
+    def test_raises_exception_if_no_operation_rep():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        operation.contacts.all().delete()
 
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                 operation.id
-            )
+        with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
+    @staticmethod
+    def test_raises_exception_if_operation_rep_missing_address():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        op_rep = operation.contacts.first()
+        op_rep.address = None
+        op_rep.save()
 
-        @staticmethod
-        def test_raises_exception_if_no_purpose():
-            operation = baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT)
+        with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
+    @staticmethod
+    def test_raises_exception_if_operation_rep_missing_required_fields():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        op_rep_address = operation.contacts.first().address
+        op_rep_address.street_address = None
+        op_rep_address.save()
 
-            
+        with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-        @staticmethod
-        def test_raises_exception_if_no_operation_rep():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-            operation.contacts.all().delete()
+    @staticmethod
+    def test_raises_exception_if_no_facilities():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        FacilityDesignatedOperationTimeline.objects.filter(operation=operation).delete()
 
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
+        with pytest.raises(Exception, match="Operation must have at least one facility."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-            
+    @staticmethod
+    def test_raises_exception_if_no_activities():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        operation.activities.all().delete()
 
-        @staticmethod
-        def test_raises_exception_if_incomplete_operation_rep():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-            blank_address = baker.make(Address)
-            operation_rep = operation.contacts.all().filter(business_role__role_name='Operation Representative')[0]
-            operation_rep.address = blank_address
-            operation_rep.save()
+        with pytest.raises(Exception, match="Operation must have at least one reporting activity."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
+    @staticmethod
+    def test_raises_exception_if_no_documents():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        operation.documents.all().delete()
 
-            
+        with pytest.raises(Exception, match="Operation must have a process flow diagram and a boundary map."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-        @staticmethod
-        def test_raises_exception_if_no_facilities():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-            FacilityDesignatedOperationTimeline.objects.filter(operation=operation).all().delete()
+    @staticmethod
+    def test_raises_exception_if_one_of_the_documents_is_missing():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')).delete()
 
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
+        with pytest.raises(Exception, match="Operation must have a process flow diagram and a boundary map."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-            
+    @staticmethod
+    def test_do_not_raise_exception_if_data_complete_new_entrant():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION)
+        OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-        @staticmethod
-        def test_raises_exception_if_no_activities():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-            operation.activities.all().delete()
+    @staticmethod
+    def test_raises_exception_if_no_new_entrant_info():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION)
+        # remove statutory declaration
+        operation.documents.filter(type=DocumentType.objects.get(name='signed_statutory_declaration')).delete()
 
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
+        with pytest.raises(
+            Exception, match="Operation must have a signed statutory declaration if it is a new entrant."
+        ):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-            
+    @staticmethod
+    def test_raises_exception_if_no_opt_in_info():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        # remove opted in information
+        operation.opted_in_operation = None
+        operation.save()
 
-        @staticmethod
-        def test_raises_exception_if_no_attachments():
+        with pytest.raises(Exception, match="Operation must have completed opt-in information if it is opted in."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-            operation.documents.all().delete()
+    @staticmethod
+    def test_raises_exception_if_incomplete_opt_in_info():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        # make the opt-in record blank
+        operation.opted_in_operation = baker.make(OptedInOperationDetail)
+        operation.save()
 
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
+        with pytest.raises(Exception, match="Operation must have completed opt-in information if it is opted in."):
+            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 
-            
-
-        @staticmethod
-        def test_raises_exception_if_no_new_entrant_info():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION)
-            # remove statutory declaration
-            operation.documents.filter(
-                type=DocumentType.objects.get(name='signed_statutory_declaration')
-            ).all().delete()
-
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
-            
-
-        @staticmethod
-        def test_raises_exception_if_no_opt_in_info():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-            # remove opted in information
-            operation.opted_in_operation = None
-            operation.save()
-
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
-
-            
-
-        @staticmethod
-        def test_raises_exception_if_incomplete_opt_in_info():
-            operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
-            # make the opt-in record blank
-            operation.opted_in_operation = baker.make(OptedInOperationDetail)
-            operation.save()
-
-            with pytest.raises(Exception):
-                OperationServiceV2.raise_exception_if_operation_missing_registration_information(
-                    operation.id
-                )
-            
+    @staticmethod
+    def test_do_not_raise_exception_if_data_complete_opt_in():
+        operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        # test will pass if no exception raised
+        OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
