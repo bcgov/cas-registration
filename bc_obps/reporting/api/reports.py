@@ -74,6 +74,21 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     return 200, ReportingYearService.get_current_reporting_year()
 
 
+@router.get(
+    "/report-version/{version_id}/person-responsible",
+    response={200: ReportPersonResponsibleOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
+    auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_report_person_responsible_by_version_id(
+    request: HttpRequest, version_id: int
+) -> Tuple[Literal[200], ReportPersonResponsibleOut]:
+    report_person_responsible = ReportService.get_report_person_responsible_by_version_id(version_id)
+    return 200, report_person_responsible  # type: ignore
+
+
 @router.post(
     "/report-version/{version_id}/report-contact",
     response={201: ReportPersonResponsibleOut, custom_codes_4xx: Message},

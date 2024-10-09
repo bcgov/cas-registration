@@ -108,6 +108,10 @@ class ReportService:
         return report_operation
 
     @classmethod
+    def get_report_person_responsible_by_version_id(cls, report_version_id: int) -> ReportPersonResponsible:
+        return ReportPersonResponsible.objects.get(report_version__id=report_version_id)
+
+    @classmethod
     def save_report_contact(cls, version_id: int, data: ReportPersonResponsibleIn) -> ReportPersonResponsibleOut:
         print(f"Version ID: {version_id}")
         report_version = ReportVersion.objects.filter(id=version_id).first()
@@ -117,19 +121,18 @@ class ReportService:
 
         report_person_responsible, created = ReportPersonResponsible.objects.update_or_create(
             report_version=report_version,
-            first_name=data.first_name,
-            last_name=data.last_name,
-            email=data.email,
-            phone_number=data.phone_number,
-            position_title=data.position_title,
-            business_role=data.business_role,
-            street_address=data.street_address,
-            municipality=data.municipality,
-            province=data.province,
-            postal_code=data.postal_code,
+            defaults={
+                'first_name': data.first_name,
+                'last_name': data.last_name,
+                'email': data.email,
+                'phone_number': data.phone_number,
+                'position_title': data.position_title,
+                'business_role': data.business_role,
+                'street_address': data.street_address,
+                'municipality': data.municipality,
+                'province': data.province,
+                'postal_code': data.postal_code,
+            },
         )
 
-        print(report_person_responsible.phone_number)
-
-        result = cast(ReportPersonResponsibleOut, report_person_responsible)
-        return result
+        return cast(ReportPersonResponsibleOut, report_person_responsible)
