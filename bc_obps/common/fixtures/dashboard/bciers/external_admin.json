@@ -2,10 +2,10 @@
   {
     "model": "common.dashboarddata",
     "fields": {
-      "name": "External BCiers Dashboard",
+      "name": "External BCiers Dashboard - Admin",
       "data": {
         "dashboard": "bciers",
-        "access_roles": ["industry_user"],
+        "access_roles": ["industry_user_admin"],
         "tiles": [
           {
             "title": "Administration",
@@ -13,16 +13,6 @@
             "icon": "Layers",
             "content": "View or update information of your operator, operations, facilities.",
             "links": [
-              {
-                "title": "Select an Operator",
-                "href": "/administration/select-operator",
-                "condition": {
-                  "api": "registration/v2/user-operators/current/operator",
-                  "field": "error",
-                  "operator": "exists",
-                  "value": true
-                }
-              },
               {
                 "title": "My Operator",
                 "href": "/administration/my-operator",
@@ -52,6 +42,10 @@
                   "operator": "notExists",
                   "value": true
                 }
+              },
+              {
+                "title": "Users and Access Requests",
+                "href": "/administration/users-and-access-requests"
               }
             ]
           },
