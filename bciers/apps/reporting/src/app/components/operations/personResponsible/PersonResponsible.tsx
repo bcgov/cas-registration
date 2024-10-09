@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
+import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 
 interface Props {
   version_id: number;
@@ -53,19 +54,50 @@ const PersonResponsible = ({ version_id }: Props) => {
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/review-facilities`;
   useEffect(() => {
-    const fetchContacts = async () => {
+    const fetchData = async () => {
+      // Fetch contacts first
       const contactData = await getContacts();
       setContacts(contactData);
+
+      // Then fetch the person responsible for the report version
+      const personResponsibleData =
+        await getReportingPersonResponsible(version_id);
+
+      if (personResponsibleData && contactData?.items) {
+        // Match the fetched "person responsible" data with the contacts list
+        const matchingContact = contactData.items.find(
+          (contact) =>
+            contact.first_name === personResponsibleData.first_name &&
+            contact.last_name === personResponsibleData.last_name,
+        );
+
+        // If a matching contact is found, set selectedContactId and contactFormData
+        if (matchingContact) {
+          setSelectedContactId(matchingContact.id);
+
+          const newContactFormData: Contact = await getContact(
+            `${matchingContact.id}`,
+          );
+
+          setContactFormData(newContactFormData);
+          setFormData((prevFormData: any) => ({
+            ...prevFormData,
+            person_responsible: `${newContactFormData.first_name} ${newContactFormData.last_name}`,
+          }));
+        }
+      }
+
+      // Initialize schema based on the fetched contacts
       const initialSchema = createPersonResponsibleSchema(
         personResponsibleSchema,
         contactData.items,
-        null,
+        selectedContactId,
       );
       setSchema(initialSchema);
     };
 
-    fetchContacts();
-  }, []);
+    fetchData();
+  }, [version_id]);
 
   // Update schema whenever selectedContactId or contactFormData changes
   useEffect(() => {

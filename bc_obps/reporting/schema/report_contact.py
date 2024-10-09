@@ -27,9 +27,9 @@ class ReportPersonResponsibleOut(ModelSchema):
             'province',
             'postal_code',
             'first_name',
+            'phone_number',
             'last_name',
             'email',
-            'phone_number',
             'position_title',
             'business_role',
             'report_version',
@@ -47,6 +47,7 @@ class ReportPersonResponsibleIn(ModelSchema):
     province: str
     postal_code: str
     first_name: str
+    phone_number: str
     last_name: str
     email: str
     position_title: str
@@ -65,7 +66,6 @@ class ReportPersonResponsibleIn(ModelSchema):
             'phone_number',
             'last_name',
             'email',
-            'phone_number',
             'position_title',
             'business_role',
         ]
