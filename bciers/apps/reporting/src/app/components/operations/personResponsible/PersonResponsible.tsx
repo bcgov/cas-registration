@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import debounce from "lodash.debounce";
 import {
   personResponsibleSchema,
   personResponsibleUiSchema,
@@ -49,45 +50,40 @@ const PersonResponsible = ({ version_id }: Props) => {
     null,
   );
   const [contactFormData, setContactFormData] = useState<any>(null);
-  const [formData, setFormData] = useState<any>({}); // Track overall form data
+  const [formData, setFormData] = useState({
+    person_responsible: "", // Default to empty string
+  });
+
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/review-facilities`;
+
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch contacts first
       const contactData = await getContacts();
       setContacts(contactData);
 
-      // Then fetch the person responsible for the report version
       const personResponsibleData =
         await getReportingPersonResponsible(version_id);
-
-      if (personResponsibleData && contactData?.items) {
-        // Match the fetched "person responsible" data with the contacts list
+      if (contactData) {
         const matchingContact = contactData.items.find(
           (contact: { first_name: string; last_name: string }) =>
             contact.first_name === personResponsibleData.first_name &&
             contact.last_name === personResponsibleData.last_name,
         );
 
-        // If a matching contact is found, set selectedContactId and contactFormData
         if (matchingContact) {
           setSelectedContactId(matchingContact.id);
-
           const newContactFormData: Contact = await getContact(
             `${matchingContact.id}`,
           );
-
           setContactFormData(newContactFormData);
-          setFormData((prevFormData: any) => ({
-            ...prevFormData,
+          setFormData({
             person_responsible: `${newContactFormData?.first_name} ${newContactFormData?.last_name}`,
-          }));
+          });
         }
       }
 
-      // Initialize schema based on the fetched contacts
       const initialSchema = createPersonResponsibleSchema(
         personResponsibleSchema,
         contactData?.items,
@@ -112,47 +108,36 @@ const PersonResponsible = ({ version_id }: Props) => {
     }
   }, [selectedContactId, contactFormData]);
 
-  const handleContactSelect = async (e: any) => {
+  const handleContactSelect = debounce(async (e: any) => {
     const selectedFullName = e.formData?.person_responsible;
 
-    // Safeguard against undefined or empty contacts
-    if (!contacts || !contacts.items) {
-      console.error("Contacts data is not available or empty");
-      return;
-    }
-
-    const selectedContact = contacts.items.find(
+    const selectedContact = contacts?.items.find(
       (contact) =>
         `${contact.first_name} ${contact.last_name}` === selectedFullName,
     );
 
     if (selectedContact) {
       const newSelectedContactId = selectedContact.id;
-
       const newContactFormData: Contact = await getContact(
         `${selectedContact.id}`,
       );
 
-      if (
-        newSelectedContactId !== selectedContactId ||
-        newContactFormData !== contactFormData
-      ) {
-        setSelectedContactId(newSelectedContactId);
-        setContactFormData(newContactFormData);
-        setFormData((prevFormData: any) => ({
-          ...prevFormData,
-          person_responsible: `${newContactFormData.first_name} ${newContactFormData.last_name}`,
-        }));
-      }
+      setSelectedContactId(newSelectedContactId);
+      setContactFormData(newContactFormData);
+      setFormData({
+        person_responsible: `${newContactFormData?.first_name || ""} ${
+          newContactFormData?.last_name || ""
+        }`.trim(),
+      });
     } else {
       setSelectedContactId(null);
       setContactFormData(null);
       setFormData((prevFormData: any) => ({
         ...prevFormData,
-        person_responsible: null,
+        person_responsible: "", // Reset to empty string if no contact is selected
       }));
     }
-  };
+  }, 300);
 
   const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${version_id}/report-contact`;
