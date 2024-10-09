@@ -58,6 +58,8 @@ export default function ActivityForm({
     (v) => formState?.[`${v}`] ?? null,
   );
 
+  dependencyArray.push(activityId);
+
   useEffect(() => {
     let isFetching = true;
     const fetchSchemaData = async (
@@ -114,7 +116,7 @@ export default function ActivityForm({
     setFormState(c.formData);
   };
 
-  // 🛠️ Function to submit user form data to API
+  // 🛠️ Function to submit form data to API
   const submitHandler = async (data: { formData?: any }) => {
     //Set states
     setErrorList([]);
@@ -129,7 +131,6 @@ export default function ActivityForm({
       return;
     }
 
-    // Apply new data to NextAuth JWT
     console.log("SUBMITTED: ", JSON.stringify(data.formData));
   };
 
