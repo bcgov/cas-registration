@@ -36,8 +36,7 @@ def get_facility_report_form_data(
     "/report-version/{version_id}/facility-report/{facility_id}/activity-list",
     response={200: List[FacilityReportActivityDataOut], 404: Message, 400: Message, 500: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
-    Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
+    description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a list of activities that apply to that facility, ordered by weight""",
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()

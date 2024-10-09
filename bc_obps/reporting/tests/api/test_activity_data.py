@@ -16,7 +16,7 @@ class TestActivityData(CommonTestSetup):
         assert response.status_code == 401
 
     def test_authorized_users_can_get_activity_data(self):
-        operator = operator_baker()
+        operator = baker.make_recipe("registration.tests.utils.operator")
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
