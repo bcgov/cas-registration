@@ -1,6 +1,7 @@
 import pytest
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import FacilityReport
+from registration.models import Activity
 from model_bakery import baker
 
 
@@ -40,6 +41,29 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
         assert response.status_code == 200
         assert response.json()['facility_name'] == facility_report.facility_name
+
+    ## Facility Report Activity List
+    def test_unauthorized_users_cannot_get_facility_report_activities(self):
+        endpoint_under_test = '/api/reporting/report-version/1/facility-report/101/activity-list'
+
+        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", endpoint_under_test)
+        assert response.status_code == 401
+
+    def test_returns_ordered_activity_list_for_facility_report(self):
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        a1 = Activity.objects.get(pk=1)
+        a2 = Activity.objects.get(pk=14)
+        a3 = Activity.objects.get(pk=28)
+        facility_report.activities.add(a1, a2, a3)
+        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/activity-list'
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', endpoint_under_test)
+        ordered_activities = [a1, a3, a2]
+        assert response.status_code == 200
+        assert len(response.json()) == 3
+        assert response.json()[0]['id'] == ordered_activities[0].id
+        assert response.json()[1]['id'] == ordered_activities[1].id
+        assert response.json()[2]['id'] == ordered_activities[2].id
 
     # POST
     def test_saves_facility_data(self):
