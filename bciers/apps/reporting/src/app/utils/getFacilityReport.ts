@@ -5,7 +5,7 @@ export async function getFacilityReport(version_id: number) {
     "GET",
     `reporting/report-version/${version_id}/facility-report`,
   );
-  if (!response.error) {
+  if (response && !response.error) {
     return response;
   }
 }
