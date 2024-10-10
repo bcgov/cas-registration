@@ -53,7 +53,7 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getByRole("columnheader", { name: "Name" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Email" })).toBeVisible();
     expect(
-      screen.getByRole("columnheader", { name: "BCeID Business" }),
+      screen.getByRole("columnheader", { name: "Business BCeID" }),
     ).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "User Role" }),
