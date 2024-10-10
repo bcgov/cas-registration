@@ -5,7 +5,6 @@ import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListFo
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
-import { FormMode } from "@bciers/utils/enums";
 import { useRouter } from "next/navigation";
 
 export interface OperatorFormData {
@@ -36,7 +35,7 @@ export default function OperatorForm({
       schema={schema}
       uiSchema={operatorUiSchema}
       formData={formState}
-      mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
+      disabled={isCreatingState}
       onSubmit={async (data: { formData?: any }) => {
         const updatedFormData = { ...formState, ...data.formData };
         setFormState(updatedFormData);

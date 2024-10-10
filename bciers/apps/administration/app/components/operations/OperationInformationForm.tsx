@@ -12,7 +12,6 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
-import { FormMode } from "@bciers/utils/enums";
 
 const OperationInformationForm = ({
   formData,
@@ -51,7 +50,8 @@ const OperationInformationForm = ({
   return (
     <SingleStepTaskListForm
       allowEdit={isIndustryUser}
-      mode={FormMode.READ_ONLY}
+      disabled
+      readOnly={!isIndustryUser}
       error={error}
       schema={schema}
       uiSchema={administrationOperationInformationUiSchema}

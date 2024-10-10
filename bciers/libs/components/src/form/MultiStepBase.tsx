@@ -22,6 +22,7 @@ interface MultiStepBaseProps {
   formData?: any;
   onChange?: (e: IChangeEvent) => void;
   onSubmit: (e: IChangeEvent) => any;
+  readOnly?: boolean;
   schema: RJSFSchema;
   step: number;
   steps: string[];
@@ -48,6 +49,7 @@ const MultiStepBase = ({
   onChange,
   formData,
   onSubmit,
+  readOnly,
   schema,
   setErrorReset,
   step,
@@ -85,7 +87,7 @@ const MultiStepBase = ({
     }
   };
 
-  const isDisabled = (disabled && !isEditMode) || isSubmitting;
+  const isDisabled = (disabled && !isEditMode) || isSubmitting || readOnly;
 
   const handleEditClick = () => {
     setIsEditMode(true);
@@ -93,7 +95,7 @@ const MultiStepBase = ({
 
   return (
     <>
-      {allowEdit && (
+      {allowEdit && !readOnly && (
         <div className="w-full flex justify-end mb-10">
           <Button
             variant="contained"
@@ -112,7 +114,7 @@ const MultiStepBase = ({
         className="flex flex-col flex-grow"
         uiSchema={uiSchema}
         disabled={isDisabled}
-        readonly={isDisabled}
+        readonly={readOnly}
         onChange={onChange}
         onSubmit={submitHandler}
         formData={formData}

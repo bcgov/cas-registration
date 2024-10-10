@@ -4,6 +4,7 @@ import { createTheme } from "@mui/material/styles";
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_BACKGROUND_COLOR_BLUE,
+  BC_GOV_BACKGROUND_COLOR_GREY,
   BC_GOV_COMPONENTS_GREY,
   BC_GOV_LINKS_COLOR,
   BC_GOV_YELLOW,
@@ -87,6 +88,9 @@ export const theme = createTheme({
               borderColor: BC_GOV_LINKS_COLOR,
             },
           },
+          "& .Mui-disabled": {
+            backgroundColor: BC_GOV_BACKGROUND_COLOR_GREY,
+          },
         },
       },
     },
@@ -100,6 +104,9 @@ export const theme = createTheme({
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: BC_GOV_LINKS_COLOR,
+          },
+          "& .Mui-disabled": {
+            backgroundColor: BC_GOV_BACKGROUND_COLOR_GREY,
           },
         },
       },
@@ -130,6 +137,15 @@ export const theme = createTheme({
         colorInfo: {
           color: BC_GOV_LINKS_COLOR,
           borderColor: BC_GOV_LINKS_COLOR,
+        },
+        root: {
+          // disabled styles
+          "&.Mui-disabled": {
+            border: `1px solid ${BC_GOV_COMPONENTS_GREY}`,
+          },
+          ".MuiChip-deleteIcon": {
+            display: "none",
+          },
         },
       },
     },
