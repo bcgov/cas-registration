@@ -8,6 +8,7 @@ from registration.models.facility import Facility
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.app_role import AppRole
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.models.regulated_product import RegulatedProduct
 from registration.models.user import User
 from registration.models.user_operator import UserOperator
 from registration.models.naics_code import NaicsCode
@@ -148,3 +149,6 @@ facility_designated_operation_timeline = Recipe(
     status=FacilityDesignatedOperationTimeline.Statuses.TEMPORARILY_SHUTDOWN,
     end_date=datetime.now(ZoneInfo("UTC")),
 )
+
+
+regulated_product = Recipe(RegulatedProduct)
