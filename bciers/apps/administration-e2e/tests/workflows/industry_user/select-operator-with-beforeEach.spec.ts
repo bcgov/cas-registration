@@ -1,10 +1,11 @@
-// 🧪 Suite to test the administration industry_user workflow - happy paths
+// 🧪 Suite to test the administration industry_user workflow
+// tests that need fixture setup every tests
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
-import { OperatorPOM } from "@/administration/e2e/poms/operator";
+import { OperatorPOM } from "@/administration-e2e/poms/operator";
 // ☰ Enums
-import { AppRoute, E2EValue } from "@/administration/e2e/utils/enums";
-import { AppName } from "@/administration/e2e/utils/constants";
+import { AppRoute, OperatorE2EValue } from "@/administration-e2e/utils/enums";
+import { AppName } from "@/administration-e2e/utils/constants";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {
@@ -25,7 +26,7 @@ test.afterEach(async () => {
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
-test.describe("Test select operator happy paths", () => {
+test.describe("Test select operator paths with beforeEach", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
     process.env.E2E_INDUSTRY_USER_STORAGE_STATE as string,
@@ -122,8 +123,8 @@ test.describe("Test select operator happy paths", () => {
 
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
-      E2EValue.SEARCH_LEGAL_NAME,
-      E2EValue.FIXTURE_LEGAL_NAME,
+      OperatorE2EValue.SEARCH_LEGAL_NAME,
+      OperatorE2EValue.FIXTURE_LEGAL_NAME,
     );
     // 👉 Action accept operator
     await selectOperatorPage.acceptOperator();
@@ -153,7 +154,7 @@ test.describe("Test select operator happy paths", () => {
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
 
     // 👉 Action select by CRA
-    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA);
+    await selectOperatorPage.selectByCraNumber(OperatorE2EValue.SEARCH_CRA);
     // 🔍 Assert operator confirmation message
     await selectOperatorPage.msgConfirmOperatorIsVisible();
     // 👉 Action accept operator

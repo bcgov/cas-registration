@@ -18,7 +18,7 @@
     "paths": {
       "@/*": ["apps/registration1/*"],
       "@/administration/*": ["apps/administration/*"],
-      "@/administration/e2e/*": ["apps/administration-e2e/*"],
+      "@/administration-e2e/*": ["apps/administration-e2e/*"],
       "@/coam/*": ["apps/coam/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/registration/*": ["apps/registration/*"],
