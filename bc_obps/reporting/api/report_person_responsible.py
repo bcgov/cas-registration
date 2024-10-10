@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, Optional
+from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
@@ -7,6 +7,7 @@ from reporting.schema.generic import Message
 from service.report_person_responsible import ReportContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
+from ..models import ReportPersonResponsible
 from ..schema.report_person_responsible import ReportPersonResponsibleIn, ReportPersonResponsibleOut
 
 
@@ -38,6 +39,6 @@ def get_report_person_responsible_by_version_id(
 @handle_http_errors()
 def save_report_contact(
     request: HttpRequest, version_id: int, payload: ReportPersonResponsibleIn
-) -> Tuple[Literal[201], Optional[ReportPersonResponsibleOut]]:
+) -> tuple[Literal[201], ReportPersonResponsible]:
     report_contact = ReportContactService.save_report_contact(version_id, payload)
     return 201, report_contact

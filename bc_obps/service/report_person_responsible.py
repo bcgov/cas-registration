@@ -1,7 +1,8 @@
-from typing import cast
+from typing import Optional
+
 from reporting.models import ReportPersonResponsible
 from reporting.models.report_version import ReportVersion
-from reporting.schema.report_person_responsible import ReportPersonResponsibleIn, ReportPersonResponsibleOut
+from reporting.schema.report_person_responsible import ReportPersonResponsibleIn
 
 
 class ReportContactService:
@@ -10,8 +11,8 @@ class ReportContactService:
         return ReportPersonResponsible.objects.get(report_version__id=report_version_id)
 
     @classmethod
-    def save_report_contact(cls, version_id: int, data: ReportPersonResponsibleIn) -> ReportPersonResponsibleOut:
-        report_version = ReportVersion.objects.filter(id=version_id).first()
+    def save_report_contact(cls, version_id: int, data: ReportPersonResponsibleIn) -> ReportPersonResponsible:
+        report_version: Optional[ReportVersion] = ReportVersion.objects.filter(id=version_id).first()
 
         if report_version is None:
             raise ValueError("ReportVersion with this ID does not exist.")
@@ -32,4 +33,4 @@ class ReportContactService:
             },
         )
 
-        return cast(ReportPersonResponsibleOut, report_person_responsible)
+        return report_person_responsible
