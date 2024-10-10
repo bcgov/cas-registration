@@ -53,12 +53,12 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
         a1 = Activity.objects.get(pk=1)
-        a2 = Activity.objects.get(pk=28)
-        a3 = Activity.objects.get(pk=14)
+        a2 = Activity.objects.get(pk=14)
+        a3 = Activity.objects.get(pk=28)
         facility_report.activities.add(a1, a2, a3)
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/activity-list'
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', endpoint_under_test)
-        ordered_activities = ordered_activities = [a3, a2, a1]
+        ordered_activities = [a1, a3, a2]
         assert response.status_code == 200
         assert len(response.json()) == 3
         assert response.json()[0]['id'] == ordered_activities[0].id
