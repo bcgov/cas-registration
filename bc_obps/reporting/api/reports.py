@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, Optional
+from typing import Literal, Tuple
 
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -13,7 +13,6 @@ from reporting.schema.report_operation import ReportOperationOut, ReportOperatio
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..models import ReportingYear
-from ..schema.report_contact import ReportPersonResponsibleIn, ReportPersonResponsibleOut
 
 
 @router.post(
@@ -72,37 +71,3 @@ def save_report(
 @handle_http_errors()
 def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYear]:
     return 200, ReportingYearService.get_current_reporting_year()
-
-
-@router.get(
-    "/report-version/{version_id}/person-responsible",
-    response={200: ReportPersonResponsibleOut, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    auth=authorize("approved_authorized_roles"),
-)
-@handle_http_errors()
-def get_report_person_responsible_by_version_id(
-    request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], ReportPersonResponsibleOut]:
-    report_person_responsible = ReportService.get_report_person_responsible_by_version_id(version_id)
-    return 200, report_person_responsible  # type: ignore
-
-
-@router.post(
-    "/report-version/{version_id}/report-contact",
-    response={201: ReportPersonResponsibleOut, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description=(
-        """Creates or updates a contact associated with a report version.
-                Includes fields like legal name, trade name, operation details, and contact information."""
-    ),
-    auth=authorize("approved_authorized_roles"),
-)
-@handle_http_errors()
-def save_report_contact(
-    request: HttpRequest, version_id: int, payload: ReportPersonResponsibleIn
-) -> Tuple[Literal[201], Optional[ReportPersonResponsibleOut]]:
-    print(f"Incoming payload: {payload.dict()}")
-    report_contact = ReportService.save_report_contact(version_id, payload)
-    return 201, report_contact

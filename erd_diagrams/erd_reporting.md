@@ -34,7 +34,6 @@ ReportVersion {
     CharField status
 }
 ReportPersonResponsible {
-    BigAutoField id
     ForeignKey created_by
     DateTimeField created_at
     ForeignKey updated_by
@@ -46,7 +45,7 @@ ReportPersonResponsible {
     CharField position_title
     CharField email
     CharField phone_number
-    ForeignKey report_version
+    OneToOneField report_version
     CharField street_address
     CharField municipality
     CharField province
@@ -251,7 +250,7 @@ ReportVersion }|--|| Report : report
 ReportPersonResponsible }|--|| User : created_by
 ReportPersonResponsible }|--|| User : updated_by
 ReportPersonResponsible }|--|| User : archived_by
-ReportPersonResponsible }|--|| ReportVersion : report_version
+ReportPersonResponsible ||--|| ReportVersion : report_version
 ReportOperation }|--|| User : created_by
 ReportOperation }|--|| User : updated_by
 ReportOperation }|--|| User : archived_by
