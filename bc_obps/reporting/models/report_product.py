@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q, F
 from registration.models.regulated_product import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
@@ -6,6 +7,11 @@ from reporting.models.report_version import ReportVersion
 
 
 class ReportProduct(TimeStampedModel):
+    """
+    A model storing production information for a single product.
+    It belongs to a facility report.
+    """
+
     report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
@@ -55,3 +61,17 @@ class ReportProduct(TimeStampedModel):
         null=True,
         blank=True,
     )
+
+    class Meta:
+        db_table_comment = (
+            "A table storing the production information for a single product, as part of a facility report"
+        )
+        db_table = 'erc"."report_product'
+        app_label = 'reporting'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['facility_report', 'product'],
+                name="unique_report_product_per_product_and_facility_report",
+                violation_error_message="A FacilityReport can only have one ReportProduct per product",
+            ),
+        ]

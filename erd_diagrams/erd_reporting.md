@@ -237,6 +237,26 @@ ReportMethodology {
     ForeignKey report_version
     OneToOneField report_emission
 }
+ReportProduct {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey report_version
+    ForeignKey facility_report
+    ForeignKey product
+    CharField unit
+    FloatField annual_production
+    FloatField production_data_apr_dec
+    CharField production_methodology
+    FloatField storage_quantity_start_of_period
+    FloatField storage_quantity_end_of_period
+    FloatField quantity_sold_during_period
+    FloatField quantity_throughput_during_period
+}
 Report }|--|| User : created_by
 Report }|--|| User : updated_by
 Report }|--|| User : archived_by
@@ -323,3 +343,9 @@ ReportMethodology }|--|| User : updated_by
 ReportMethodology }|--|| User : archived_by
 ReportMethodology }|--|| ReportVersion : report_version
 ReportMethodology ||--|| ReportEmission : report_emission
+ReportProduct }|--|| User : created_by
+ReportProduct }|--|| User : updated_by
+ReportProduct }|--|| User : archived_by
+ReportProduct }|--|| ReportVersion : report_version
+ReportProduct }|--|| FacilityReport : facility_report
+ReportProduct }|--|| RegulatedProduct : product

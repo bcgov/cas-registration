@@ -1,15 +1,18 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
-import { UUID } from "crypto";
+import ProductionData from "@reporting/src/app/components/products/ProductionData";
 
 export default async function Page({
   params,
 }: {
-  params: { version_id: number; facility_id: UUID };
+  params: { version_id: number; facility_id: string };
 }) {
   return (
     <Suspense fallback={<Loading />}>
-      Test Page!! <>{params}</>
+      <ProductionData
+        report_version_id={params.version_id}
+        facility_id={params.facility_id}
+      />
     </Suspense>
   );
 }
