@@ -38,6 +38,16 @@ export interface OperationInformationFormData {
   new_entrant_operation?: string;
   regulated_products?: number[];
   forcasted_emmisions?: string;
+  opted_in_operation?: {
+    meets_electricity_import_operation_criteria?: boolean;
+    meets_entire_operation_requirements?: boolean;
+    meets_naics_code_11_22_562_classification_requirements?: boolean;
+    meets_notification_to_director_on_criteria_change?: boolean;
+    meets_producing_gger_schedule_a1_regulated_product?: boolean;
+    meets_reporting_and_regulated_obligations?: boolean;
+    meets_section_3_emissions_requirements?: boolean;
+    meets_section_6_emissions_requirements?: boolean;
+  };
 }
 
 export interface OperationInformationPartialFormData {
