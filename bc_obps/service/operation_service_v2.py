@@ -1,5 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
+from registration.models.document_type import DocumentType
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
 from registration.models.contact import Contact
@@ -100,6 +102,8 @@ class OperationServiceV2:
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
+        if status == Operation.Statuses.REGISTERED:
+            cls.raise_exception_if_operation_missing_registration_information(operation)
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=['status'])
         operation.set_create_or_update(user_guid)
@@ -242,6 +246,7 @@ class OperationServiceV2:
             registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products
         )
         cls.set_registration_purpose(user_guid, operation.id, registration_payload)
+        cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
 
         return operation
 
@@ -313,3 +318,84 @@ class OperationServiceV2:
             operation.regulated_products.set(payload.regulated_products)
             operation.set_create_or_update(user_guid)
         return operation
+
+    @classmethod
+    def is_operation_opt_in_information_complete(cls, operation: Operation) -> bool:
+        """
+        This function checks if all opt-in information is complete.
+        Complete means an operation has both a FK to the opt-in detail, and the details are complete.
+        """
+        opted_in_operation = operation.opted_in_operation
+        if not opted_in_operation:
+            return False
+
+        required_fields = [
+            'meets_section_3_emissions_requirements',
+            'meets_electricity_import_operation_criteria',
+            'meets_entire_operation_requirements',
+            'meets_section_6_emissions_requirements',
+            'meets_naics_code_11_22_562_classification_requirements',
+            'meets_producing_gger_schedule_a1_regulated_product',
+            'meets_reporting_and_regulated_obligations',
+            'meets_notification_to_director_on_criteria_change',
+        ]
+
+        return all(getattr(opted_in_operation, field) is not None for field in required_fields)
+
+    @classmethod
+    def raise_exception_if_operation_missing_registration_information(cls, operation: Operation) -> None:
+        """
+        This function checks if the given operation instance has all necessary registration information.
+        If any required information is missing, it raises an appropriate exception.
+        """
+
+        def check_conditions() -> Generator[Tuple[Callable[[], bool], str], None, None]:
+            yield lambda: operation.registration_purposes.exists(), "Operation must have a registration purpose."
+            yield (
+                lambda: operation.contacts.filter(
+                    business_role__role_name='Operation Representative',
+                    address__street_address__isnull=False,
+                    address__municipality__isnull=False,
+                    address__province__isnull=False,
+                    address__postal_code__isnull=False,
+                ).exists(),
+                "Operation must have an operation representative with an address.",
+            )
+            yield (
+                lambda: FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists(),
+                "Operation must have at least one facility.",
+            )
+            yield lambda: operation.activities.exists(), "Operation must have at least one reporting activity."
+
+            # Check if the operation has both a process flow diagram and a boundary map
+            yield (
+                lambda: operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
+                .distinct()
+                .count()
+                == 2,
+                "Operation must have a process flow diagram and a boundary map.",
+            )
+            yield (
+                lambda: not (
+                    operation.registration_purposes.filter(
+                        registration_purpose=RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION
+                    ).exists()
+                    and not operation.documents.filter(
+                        type=DocumentType.objects.get(name='signed_statutory_declaration')
+                    ).exists()
+                ),
+                "Operation must have a signed statutory declaration if it is a new entrant.",
+            )
+            yield (
+                lambda: not (
+                    operation.registration_purposes.filter(
+                        registration_purpose=RegistrationPurpose.Purposes.OPTED_IN_OPERATION
+                    ).exists()
+                    and not cls.is_operation_opt_in_information_complete(operation)
+                ),
+                "Operation must have completed opt-in information if it is opted in.",
+            )
+
+        for condition, error_message in check_conditions():
+            if not condition():
+                raise Exception(error_message)

@@ -6,6 +6,7 @@ import { submissionSchema } from "@/registration/app/data/jsonSchema/operationRe
 import RegistrationSubmissionForm from "apps/registration/app/components/operations/registration/RegistrationSubmissionForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { UUID } from "crypto";
+import { OperationStatus } from "@bciers/utils/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -32,7 +33,12 @@ const defaultProps = {
   schema: submissionSchema,
 };
 
-const checkAllCheckboxesAndSubmit = async () => {
+const checkAllCheckboxesAndSubmit = async (
+  mockResponse = {
+    id: "81f62498-3b9d-49b7-961f-739c51b961a9",
+    status: OperationStatus.REGISTERED,
+  },
+) => {
   expect(
     screen.getByRole("button", {
       name: /submit/i,
@@ -50,7 +56,7 @@ const checkAllCheckboxesAndSubmit = async () => {
     name: /submit/i,
   });
   expect(submitButton).not.toBeDisabled();
-  actionHandler.mockResolvedValueOnce({});
+  actionHandler.mockResolvedValueOnce(mockResponse);
   act(() => {
     submitButton.click();
   });
@@ -121,6 +127,22 @@ describe("the RegistrationSubmissionForm component", () => {
     await checkAllCheckboxesAndSubmit();
 
     await verifySuccessPage();
+  });
+
+  it("should not render the success page if the operation data is incomplete", async () => {
+    render(<RegistrationSubmissionForm {...defaultProps} />);
+
+    await checkAllCheckboxesAndSubmit({
+      id: "81f62498-3b9d-49b7-961f-739c51b961a9",
+      status: OperationStatus.DRAFT,
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Registration complete"),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(/Before clicking 'Submit'/i)).toBeVisible();
+    });
   });
 
   it("should render the Submission message with the correct years (older date)", async () => {
