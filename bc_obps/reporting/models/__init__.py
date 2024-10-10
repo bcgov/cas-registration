@@ -28,6 +28,7 @@ from .custom_methodology_schema import CustomMethodologySchema
 from .report_additional_data import ReportAdditionalData
 from .emission_category import EmissionCategory
 from .emission_category_mapping import EmissionCategoryMapping
+from .report_product import ReportProduct
 
 __all__ = [
     "ReportDataBaseModel",
@@ -51,6 +52,7 @@ __all__ = [
     "ReportMethodology",
     "ReportFuel",
     "ReportUnit",
+    "ReportProduct",
     "CustomMethodologySchema",
     "ReportPersonResponsible",
     "ReportAdditionalData",

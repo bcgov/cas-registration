@@ -6,6 +6,7 @@ from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
 from reporting.models.methodology import Methodology
 from reporting.models.report_activity import ReportActivity
+from reporting.models.report_product import ReportProduct
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
