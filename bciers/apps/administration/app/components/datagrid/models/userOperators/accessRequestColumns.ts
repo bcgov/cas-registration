@@ -28,7 +28,7 @@ const accessRequestColumns = () => {
     },
     {
       field: "business",
-      headerName: "BCeID Business",
+      headerName: "Business BCeID",
       align: "center",
       headerAlign: "center",
       minWidth: 220,
