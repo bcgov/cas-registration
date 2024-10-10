@@ -18,28 +18,11 @@ import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
+import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 interface Props {
   version_id: number;
 }
-
-const taskListElements: TaskListElement[] = [
-  {
-    type: "Section",
-    title: "Operation information",
-    isExpanded: true,
-    elements: [
-      { type: "Page", title: "Review Operation information", isChecked: true },
-      {
-        type: "Page",
-        title: "Person responsible",
-        isActive: true,
-        link: "/reports",
-      },
-      { type: "Page", title: "Review facilities" },
-    ],
-  },
-];
 
 const PersonResponsible = ({ version_id }: Props) => {
   const [contacts, setContacts] = useState<{
@@ -53,10 +36,37 @@ const PersonResponsible = ({ version_id }: Props) => {
   const [formData, setFormData] = useState({
     person_responsible: "", // Default to empty string
   });
+  const [facilityId, setFacilityId] = useState<number | null>();
 
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${version_id}/review-facilities`;
+  const saveAndContinueUrl = `/reports/${version_id}/facilities/${facilityId}/review`;
+  const taskListElements: TaskListElement[] = [
+    {
+      type: "Section",
+      title: "Operation information",
+      isExpanded: true,
+      elements: [
+        {
+          type: "Page",
+          title: "Review Operation information",
+          isChecked: true,
+          link: `/reports/${version_id}/review-operator-data`,
+        },
+        {
+          type: "Page",
+          title: "Person responsible",
+          isActive: true,
+          link: `/reports/${version_id}/person-responsible`,
+        },
+        {
+          type: "Page",
+          title: "Review facilities",
+          link: `/reports/${version_id}/facilities/${facilityId}/review`,
+        },
+      ],
+    },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,6 +118,18 @@ const PersonResponsible = ({ version_id }: Props) => {
     }
   }, [selectedContactId, contactFormData]);
 
+  useEffect(() => {
+    const getFacilityId = async () => {
+      const facilityReport = await getFacilityReport(version_id);
+      if (facilityReport?.facility) {
+        setFacilityId(facilityReport.facility);
+      } else {
+        setFacilityId(null);
+      }
+    };
+    getFacilityId();
+  }, []);
+
   const handleContactSelect = debounce(async (e: any) => {
     const selectedFullName = e.formData?.person_responsible;
 
@@ -142,7 +164,6 @@ const PersonResponsible = ({ version_id }: Props) => {
   const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${version_id}/report-contact`;
     const method = "POST";
-
     const payload = {
       report_version: version_id,
       ...contactFormData,

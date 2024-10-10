@@ -7,12 +7,12 @@ from reporting.models.report_version import ReportVersion
 
 class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
     # A report version can have multiple persons responsible
-    report_version = models.ForeignKey(
-        ReportVersion,  # Use a string reference instead
+    report_version = models.OneToOneField(
+        ReportVersion,
         on_delete=models.PROTECT,
         related_name="report_persons_responsible",
         db_comment="The report version this person responsible applies to",
-        unique=True,
+        primary_key=True,
     )
     street_address = models.CharField(
         max_length=255,

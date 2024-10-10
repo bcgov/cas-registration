@@ -13,6 +13,10 @@ class FacilityReportService:
         return FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
 
     @classmethod
+    def get_facility_report_by_version_id(cls, report_version_id: int) -> FacilityReport:
+        return FacilityReport.objects.get(report_version__id=report_version_id)
+
+    @classmethod
     def get_activity_ids_for_facility(cls, version_id: int, facility_id: UUID) -> List[int]:
         facility_report = FacilityReport.objects.get(report_version_id=version_id, facility_id=facility_id)
         return list(facility_report.activities.values_list('id', flat=True))
