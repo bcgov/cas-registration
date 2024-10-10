@@ -76,3 +76,16 @@ def save_facility_report(
         products=list(facility_report.products.values_list('id', flat=True)),
     )
     return 201, response_data
+
+
+@router.get(
+    "/report-version/{version_id}/facility-report",
+    response={200: FacilityReportOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
+    auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], FacilityReportOut]:
+    report_operation = FacilityReportService.get_facility_report_by_version_id(version_id)
+    return 200, report_operation  # type: ignore
