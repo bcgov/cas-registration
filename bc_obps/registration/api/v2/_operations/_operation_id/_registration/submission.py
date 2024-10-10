@@ -25,13 +25,13 @@ from registration.schema.generic import Message
 @handle_http_errors()
 def operation_registration_submission(
     request: HttpRequest, operation_id: UUID, payload: OperationRegistrationSubmissionIn
-) -> Tuple[Literal[200], Operation]:
+) -> Tuple[Literal[200], Operation | None]:
     # Check if all checkboxes are checked
-    # raise Exception('d')
     if not all(
         [payload.acknowledgement_of_review, payload.acknowledgement_of_information, payload.acknowledgement_of_records]
     ):
         raise Exception("All checkboxes must be checked to submit the registration.")
+
     return 200, OperationServiceV2.update_status(
         get_current_user_guid(request), operation_id, Operation.Statuses.REGISTERED
     )

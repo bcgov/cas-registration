@@ -138,7 +138,7 @@ class OperationUpdateStatusIn(ModelSchema):
 class OperationUpdateStatusOut(ModelSchema):
     class Meta:
         model = Operation
-        fields = ["id"]
+        fields = ["id", "status"]
 
 
 class OperationPaginatedOut(Schema):
