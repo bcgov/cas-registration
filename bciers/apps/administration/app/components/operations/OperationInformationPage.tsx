@@ -24,6 +24,8 @@ const OperationInformationPage = async ({
     operation?.opt_in,
   );
 
+  console.log({ operation });
+
   return (
     <OperationInformationForm
       formData={{
