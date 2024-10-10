@@ -3,7 +3,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000001",
-      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
       "role": "admin",
       "status": "Approved",
       "verified_at": "2024-02-26 06:24:57.293242-08",
@@ -340,7 +340,7 @@
     "fields": {
       "user": "279c80cf57814c28872740a133d17c0d",
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "role": "admin",
+      "role": "",
       "status": "Approved",
       "verified_at": "2024-02-27 06:24:57.293242-08",
       "verified_by": "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
