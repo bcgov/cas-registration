@@ -9,73 +9,36 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps } from "@rjsf/utils";
+import { getUiSchema } from "./uiSchemas/schemaMaps";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
 };
 
-const tasklistData: TaskListElement[] = [
-  {
-    type: "Page",
-    title: "main page element",
-  },
-  {
-    type: "Section",
-    title: "Facility 1 info",
-    elements: [
-      { type: "Page", title: "Review information", isChecked: true },
-      {
-        type: "Subsection",
-        title: "Activities information",
-        isExpanded: true,
-        elements: [
-          {
-            type: "Page",
-            title: "General stationary combustion excluding line tracing",
-          },
-          { type: "Page", title: "Mobile combustion", isActive: true },
-          { type: "Page", title: "Other 1..", isChecked: true },
-        ],
-      },
-      { type: "Page", title: "Non-attributable emissions" },
-    ],
-  },
-  {
-    type: "Section",
-    title: "Facility 2 info",
-    elements: [
-      { type: "Page", title: "Review2 ..." },
-      { type: "Page", title: "Other 2.." },
-    ],
-  },
-  {
-    type: "Section",
-    title: "Facility 3 info",
-    isChecked: true,
-    elements: [
-      { type: "Page", title: "Review3 ..." },
-      { type: "Page", title: "Other 3.." },
-    ],
-  },
-  { type: "Page", title: "New entrant information", isChecked: true },
-  { type: "Page", title: "Operation emission summary with a long title" },
-];
+type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
+type EmptyWithFuels = { fuels: [{ emissions: [{}] }] };
+type EmptyOnlyEmissions = { emissions: [{}] };
 
 interface Props {
   activityData: {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
+  currentActivity: { id: number; name: string; slug: string };
+  taskListData: TaskListElement[];
   reportDate: string;
-  uiSchema: any;
-  defaultEmptySourceTypeState: any;
+  defaultEmptySourceTypeState:
+    | EmptyWithUnits
+    | EmptyWithFuels
+    | EmptyOnlyEmissions;
 }
 
 // 🧩 Main component
 export default function ActivityForm({
   activityData,
+  currentActivity,
+  taskListData,
   reportDate,
-  uiSchema,
   defaultEmptySourceTypeState,
 }: Readonly<Props>) {
   // 🐜 To display errors
@@ -86,6 +49,7 @@ export default function ActivityForm({
   const [isSuccess, setIsSuccess] = useState(false);
   const [formState, setFormState] = useState({} as any);
   const [jsonSchema, setJsonSchema] = useState({});
+  const [uiSchema, setUiSchema] = useState({});
 
   const { activityId, sourceTypeMap } = activityData;
 
@@ -93,6 +57,8 @@ export default function ActivityForm({
   const dependencyArray = Object.values(sourceTypeMap).map(
     (v) => formState?.[`${v}`] ?? null,
   );
+
+  dependencyArray.push(activityId);
 
   useEffect(() => {
     let isFetching = true;
@@ -122,6 +88,7 @@ export default function ActivityForm({
       }
       if (isFetching)
         setFormState({ ...formState, sourceTypes: sourceTypeFormData });
+      setUiSchema(getUiSchema(currentActivity.slug));
     };
     let selectedSourceTypes = "";
     const selectedKeys = [];
@@ -149,7 +116,7 @@ export default function ActivityForm({
     setFormState(c.formData);
   };
 
-  // 🛠️ Function to submit user form data to API
+  // 🛠️ Function to submit form data to API
   const submitHandler = async (data: { formData?: any }) => {
     //Set states
     setErrorList([]);
@@ -164,7 +131,6 @@ export default function ActivityForm({
       return;
     }
 
-    // Apply new data to NextAuth JWT
     console.log("SUBMITTED: ", JSON.stringify(data.formData));
   };
 
@@ -173,7 +139,7 @@ export default function ActivityForm({
   // Render the Activity form and tasklist
   return (
     <div className="w-full flex flex-row">
-      <ReportingTaskList elements={tasklistData} />
+      <ReportingTaskList elements={taskListData} />
       <div className="w-full">
         <FormBase
           schema={jsonSchema}

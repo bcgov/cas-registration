@@ -2,18 +2,15 @@ import json
 from reporting.models import Configuration, ConfigurationElement
 from typing import List, Dict, Any
 from registration.models import Activity
+from uuid import UUID
+from service.facility_report_service import FacilityReportService
 
 
 class ActivityService:
     @classmethod
-    def get_initial_activity_data(request, activity_name: str, report_date: str) -> str:
-        if report_date is None:
-            raise Exception('Cannot fetch activity data without a valid report date')
-        if activity_name is None:
-            raise Exception('Cannot fetch activity data without activity name')
-        # Get
+    def get_initial_activity_data(cls, version_id: int, facility_id: UUID, activity_id: int) -> str:
         source_type_map: dict[int, str] = {}
-        activity_id = Activity.objects.get(name=activity_name).id
+        report_date = FacilityReportService.get_facility_report_by_version_and_id(version_id, facility_id).created_at
         config = Configuration.objects.get(valid_from__lte=report_date, valid_to__gte=report_date)
         source_type_data = (
             ConfigurationElement.objects.select_related('source_type')
@@ -31,3 +28,8 @@ class ActivityService:
         # Fetch activities and sort by weight
         activities = Activity.objects.all().order_by('weight', 'name').values("id", "name", "applicable_to")
         return [dict(activity) for activity in activities]
+
+    @classmethod
+    def get_all_activity_ids(cls) -> List[int]:
+        # Fetch activities and sort by weight
+        return list(Activity.objects.all().values_list("id", flat=True).order_by("weight", "name"))
