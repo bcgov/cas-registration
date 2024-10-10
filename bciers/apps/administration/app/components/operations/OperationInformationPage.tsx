@@ -27,6 +27,8 @@ const OperationInformationPage = async ({
     operation?.registration_purposes,
   );
 
+  console.log({ operation });
+
   return (
     <OperationInformationForm
       formData={{
