@@ -75,7 +75,7 @@ const PersonResponsible = ({ version_id }: Props) => {
 
       const personResponsibleData =
         await getReportingPersonResponsible(version_id);
-      if (contactData) {
+      if (personResponsibleData && contactData) {
         const matchingContact = contactData.items.find(
           (contact: { first_name: string; last_name: string }) =>
             contact.first_name === personResponsibleData.first_name &&
