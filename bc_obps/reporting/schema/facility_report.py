@@ -18,10 +18,15 @@ class FacilityReportOut(ModelSchema):
     Schema for the get report facility endpoint request output
     """
 
+    @staticmethod
+    def resolve_facility(obj: FacilityReport) -> str:
+        print(obj.facility)
+        return str(obj.facility)
+
     class Meta:
         alias_generator = to_snake
         model = FacilityReport
-        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products']
+        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products', 'facility']
 
 
 class FacilityReportIn(ModelSchema):
