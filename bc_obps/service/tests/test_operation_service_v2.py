@@ -361,6 +361,7 @@ class TestOperationServiceV2:
         assert operation.updated_by is not None  # the operation is created first, and then we add the purpose
         # check purpose
         assert operation.registration_purposes.count() == 1
+        assert operation.status == Operation.Statuses.DRAFT
 
     @staticmethod
     def test_register_operation_information_existing_operation():
@@ -390,6 +391,7 @@ class TestOperationServiceV2:
         assert operation.updated_at is not None
         # check purpose
         assert operation.registration_purposes.count() == 1
+        assert operation.status == Operation.Statuses.DRAFT
 
 
 class TestOperationServiceV2CreateOrUpdateOperation:

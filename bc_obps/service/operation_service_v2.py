@@ -246,6 +246,7 @@ class OperationServiceV2:
             registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products
         )
         cls.set_registration_purpose(user_guid, operation.id, registration_payload)
+        cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
 
         return operation
 
