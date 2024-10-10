@@ -138,26 +138,18 @@ class OperationServiceV2:
     def create_or_replace_statutory_declaration(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationStatutoryDeclarationIn
     ) -> Operation:
-        existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(operation_id)
         operation = OperationDataAccessService.get_by_id(operation_id)
 
         # industry users can only edit operations that belong to their operator
         if not operation.user_has_access(user_guid):
             raise Exception(UNAUTHORIZED_MESSAGE)
 
-        # if there is an existing statutory declaration document, check if the new one is different
-        if existing_statutory_document:
-            # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
-            if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
-                existing_statutory_document.delete()
-            else:
-                return operation
-        # if there is no existing statutory declaration document, create a new one
-        document = DocumentDataAccessService.create_document(
-            user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
+        statutory_document, statutory_document_created = DocumentService.create_or_replace_operation_document(
+            user_guid, operation_id, payload.statutory_declaration, "signed_statutory_declaration" # type: ignore # mypy is not aware of the schema validator
         )
-        if document:
-            operation.documents.set([document])
+        if statutory_document_created:
+            operation.documents.add(statutory_document)
+
         operation.set_create_or_update(user_guid)
         return operation
 
@@ -216,13 +208,16 @@ class OperationServiceV2:
         # set m2m relationships
         operation.activities.set(payload.activities)
 
-        boundary_map = DocumentService.create_or_replace_operation_document(user_guid, operation.id, payload.boundary_map, 'boundary_map')  # type: ignore # mypy is not aware of the schema validator
 
-        process_flow_diagram = DocumentService.create_or_replace_operation_document(
-            user_guid, operation.id, payload.process_flow_diagram, 'process_flow_diagram'  # type: ignore # mypy is not aware of the schema validator
-        )
 
-        operation.documents.set([boundary_map, process_flow_diagram])
+        # create or replace documents
+        operation_documents = [
+            doc for doc, created in [
+                DocumentService.create_or_replace_operation_document(user_guid, operation.id, payload.boundary_map, 'boundary_map'),  # type: ignore # mypy is not aware of the schema validator
+                DocumentService.create_or_replace_operation_document(user_guid, operation.id, payload.process_flow_diagram, 'process_flow_diagram'),  # type: ignore # mypy is not aware of the schema validator
+            ] if created
+        ]
+        operation.documents.add(*operation_documents)
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
