@@ -19,7 +19,9 @@ test.beforeAll(async () => {
   // Note: can run multiple times if using multiple workers (or, if a test fails you'll get a new worker- can't be helped)
   // So, ensure this runs only once by using only 1 worker
   // Setup fixtures for admin-industry_user
-  await setupTestEnvironment(AppName + UserRole.INDUSTRY_USER + "_operator");
+  await setupTestEnvironment(
+    AppName + "-" + UserRole.INDUSTRY_USER + "_operator",
+  );
 });
 
 test.beforeEach(async ({ context }) => {
