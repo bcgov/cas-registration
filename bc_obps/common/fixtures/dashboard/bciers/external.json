@@ -5,7 +5,7 @@
       "name": "External BCiers Dashboard",
       "data": {
         "dashboard": "bciers",
-        "access_roles": ["industry_user"],
+        "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
             "title": "Administration",
@@ -50,6 +50,18 @@
                   "api": "registration/v2/user-operators/current/operator",
                   "field": "error",
                   "operator": "notExists",
+                  "value": true
+                }
+              },
+              {
+                "title": "Users and Access Requests",
+                "icon": "Users",
+                "content": "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
+                "href": "/administration/users-and-access-requests",
+                "condition": {
+                  "api": "registration/user-operators/current/is-current-user-approved-admin",
+                  "field": "approved",
+                  "operator": "equals",
                   "value": true
                 }
               }
