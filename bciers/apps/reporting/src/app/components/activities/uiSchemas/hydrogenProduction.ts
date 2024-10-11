@@ -53,15 +53,20 @@ const uiSchema = {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
           methodology: {
-            "ui:FieldTemplate": InlineFieldTemplate,
+            "ui:FieldTemplate": FieldTemplate,
             "ui:widget": "select",
             "ui:options": {
+              label: false,
               enumOptions: [
                 "CEMS",
                 "Feedstock Material Balance",
                 "Alternative Parameter Measurement",
                 "Replacement Methodology",
               ],
+            },
+            methodology: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:label": false,
             },
           },
           feedstocks: {

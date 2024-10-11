@@ -60,7 +60,7 @@ def handle_methodologies(
         reporting_fields = fetched_config_map[key]
 
         # Create methodology object
-        methodology_object: Dict[str, Dict] = {"properties": {"methodology": {"enum": [methodology_name]}}}
+        methodology_object: Dict[str, Dict] = {"properties": {"methodology":{"enum": [methodology_name]}}}
 
         # Check for custom schema
         if config_element_for_methodology.custom_methodology_schema_id:
@@ -73,12 +73,12 @@ def handle_methodologies(
         else:
             for reporting_field in reporting_fields:
                 property_field = str_to_camel_case(reporting_field.field_name)
-                methodology_object['properties'][property_field] = {
+                methodology_object['properties']['methodology']['properties'][property_field] = {
                     "type": reporting_field.field_type,
                     "title": reporting_field.field_name,
                 }
                 if reporting_field.field_units:
-                    methodology_object['properties'][f"{property_field}FieldUnits"] = {
+                    methodology_object['properties']['methodology']['properties'][f"{property_field}FieldUnits"] = {
                         "type": "string",
                         "default": reporting_field.field_units,
                         "title": f"{reporting_field.field_name} Units",
@@ -87,8 +87,8 @@ def handle_methodologies(
         methodology_one_of['methodology']['oneOf'].append(methodology_object)
 
     # Update gas_type_one_of with computed values
-    gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['enum'] = methodology_enum
-    gas_type_one_of['gasType']['oneOf'][index]['dependencies'] = methodology_one_of
+    gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['properties']['methodology']['enum'] = methodology_enum
+    gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['dependencies'] = methodology_one_of
 
 
 def handle_gas_types(
@@ -152,7 +152,11 @@ def handle_gas_types(
             {
                 "properties": {
                     "gasType": {"enum": [gas_type_chemical_formula]},
-                    "methodology": {"title": "Methodology", "type": "string", "enum": []},
+                    # "methodology": {"title": "Methodology", "type": "string", "enum": []},
+                    "methodology": { "type": "object", "properties": { 
+                        "methodology": {"title": "Methodology", "type": "string", "enum": [] }
+                        }
+                    },
                 }
             }
         )
