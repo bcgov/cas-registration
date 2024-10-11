@@ -3,6 +3,7 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
+import { InlineArrayFieldTemplate } from "@bciers/components/form/fields";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -66,16 +67,14 @@ const uiSchema = {
             },
             methodology: {
               "ui:FieldTemplate": InlineFieldTemplate,
-              "ui:label": false,
             },
           },
           feedstocks: {
-            "ui:title": "Feedstocks",
-            "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-            "ui:FieldTemplate": FieldTemplate,
+            "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
+            //"ui:FieldTemplate": FieldTemplate,
             "ui:options": {
               arrayAddLabel: "Add Feedstock",
-              title: "Feedstock",
+              title: "Feedstocks",
               label: false,
               verticalBorder: true,
             },

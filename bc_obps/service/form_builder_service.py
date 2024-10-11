@@ -60,7 +60,7 @@ def handle_methodologies(
         reporting_fields = fetched_config_map[key]
 
         # Create methodology object
-        methodology_object: Dict[str, Dict] = {"properties": {"methodology":{"enum": [methodology_name]}}}
+        methodology_object: Dict[str, Dict] =  {"properties": {"methodology": {"enum": [methodology_name]}}}
 
         # Check for custom schema
         if config_element_for_methodology.custom_methodology_schema_id:
@@ -73,12 +73,12 @@ def handle_methodologies(
         else:
             for reporting_field in reporting_fields:
                 property_field = str_to_camel_case(reporting_field.field_name)
-                methodology_object['properties']['methodology']['properties'][property_field] = {
+                methodology_object['properties'][property_field] = {
                     "type": reporting_field.field_type,
                     "title": reporting_field.field_name,
                 }
                 if reporting_field.field_units:
-                    methodology_object['properties']['methodology']['properties'][f"{property_field}FieldUnits"] = {
+                    methodology_object['properties'][f"{property_field}FieldUnits"] = {
                         "type": "string",
                         "default": reporting_field.field_units,
                         "title": f"{reporting_field.field_name} Units",
