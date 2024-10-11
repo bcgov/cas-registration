@@ -26,6 +26,19 @@ const mockActivitiesData = [
 
 beforeEach(() => {
   window.alert = vi.fn(); // or vi.fn() if using Vitest
+  vi.mock("next/navigation", () => {
+    const actual = vi.importActual("next/navigation");
+    return {
+      ...actual,
+      useRouter: vi.fn(() => ({
+        push: vi.fn(),
+      })),
+      useSearchParams: vi.fn(() => ({
+        get: vi.fn(),
+      })),
+      usePathname: vi.fn(),
+    };
+  });
 });
 
 describe("FacilityReview", () => {
@@ -68,7 +81,7 @@ describe("FacilityReview", () => {
       />,
     );
 
-    fireEvent.click(screen.getByText("Save"));
+    fireEvent.click(screen.getByText("Save & Continue"));
     await waitFor(() => {
       expect(screen.getByTestId("progressbar")).toBeInTheDocument();
     });
@@ -92,7 +105,7 @@ describe("FacilityReview", () => {
       expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
     });
 
-    fireEvent.click(screen.getByText("Save"));
+    fireEvent.click(screen.getByText("Save & Continue"));
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
@@ -127,7 +140,7 @@ describe("FacilityReview", () => {
     });
 
     fireEvent.click(screen.getByLabelText("Activity7"));
-    fireEvent.click(screen.getByText("Save"));
+    fireEvent.click(screen.getByText("Save & Continue"));
 
     await waitFor(() => {
       expect(screen.getByText("Failed to save")).toBeInTheDocument();
