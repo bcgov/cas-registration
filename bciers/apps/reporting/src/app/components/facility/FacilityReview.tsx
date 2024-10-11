@@ -21,6 +21,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import { IChangeEvent } from "@rjsf/core";
+import { useRouter } from "next/navigation";
 
 interface Props {
   version_id: number;
@@ -55,6 +56,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     properties: {},
   });
   const [activityList, setActivityList] = useState<Activity[]>([]);
+  const router = useRouter();
 
   const customStepNames = [
     "Operation Information",
@@ -142,6 +144,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
       setTimeout(() => {
         setIsSuccess(false);
       }, 3000);
+      router.push(`activities`);
     }
   };
 
@@ -150,7 +153,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   ) : isSuccess ? (
     "✅ Success"
   ) : (
-    "Save"
+    "Save & Continue"
   );
 
   return (
