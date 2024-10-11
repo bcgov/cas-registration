@@ -95,6 +95,17 @@ const uiSchema = {
                   label: false,
                   verticalBorder: true,
                 },
+                items: {
+                  methodology: {
+                    "ui:FieldTemplate": FieldTemplate,
+                    "ui:options": {
+                      label: false,
+                    },
+                    methodology: {
+                      "ui:FieldTemplate": InlineFieldTemplate,
+                    },
+                  },
+                },
               },
             },
           },
@@ -162,6 +173,17 @@ const uiSchema = {
                   title: "Emission",
                   label: false,
                   verticalBorder: true,
+                },
+                items: {
+                  methodology: {
+                    "ui:FieldTemplate": FieldTemplate,
+                    "ui:options": {
+                      label: false,
+                    },
+                    methodology: {
+                      "ui:FieldTemplate": InlineFieldTemplate,
+                    },
+                  },
                 },
               },
             },

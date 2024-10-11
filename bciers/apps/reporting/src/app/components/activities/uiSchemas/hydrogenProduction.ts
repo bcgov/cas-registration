@@ -3,7 +3,6 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
-import { InlineArrayFieldTemplate } from "@bciers/components/form/fields";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -68,35 +67,36 @@ const uiSchema = {
             methodology: {
               "ui:FieldTemplate": InlineFieldTemplate,
             },
-          },
-          feedstocks: {
-            "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-            "ui:FieldTemplate": FieldTemplate,
-            "ui:options": {
-              arrayAddLabel: "Add Feedstock",
-              title: "Feedstocks",
-              label: false,
-              verticalBorder: true,
-            },
-            items: {
-              "ui:order": [
-                "feedstock",
-                "annualFeedstockAmount",
-                "unitForAnnualFeedstockAmount",
-                "annualHydrogenProduction",
-              ],
 
-              feedstock: {
-                "ui:FieldTemplate": InlineFieldTemplate,
+            feedstocks: {
+              "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+              "ui:FieldTemplate": FieldTemplate,
+              "ui:options": {
+                arrayAddLabel: "Add Feedstock",
+                title: "Feedstocks",
+                label: false,
+                verticalBorder: true,
               },
-              annualFeedstockAmount: {
-                "ui:FieldTemplate": InlineFieldTemplate,
-              },
-              unitForAnnualFeedstockAmount: {
-                "ui:FieldTemplate": InlineFieldTemplate,
-              },
-              annualHydrogenProduction: {
-                "ui:FieldTemplate": InlineFieldTemplate,
+              items: {
+                "ui:order": [
+                  "feedstock",
+                  "annualFeedstockAmount",
+                  "unitForAnnualFeedstockAmount",
+                  "annualHydrogenProduction",
+                ],
+
+                feedstock: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                annualFeedstockAmount: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                unitForAnnualFeedstockAmount: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                annualHydrogenProduction: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
               },
             },
           },
