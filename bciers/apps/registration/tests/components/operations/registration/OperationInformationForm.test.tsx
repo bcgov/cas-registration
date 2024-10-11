@@ -3,7 +3,10 @@ import { describe, expect, vi } from "vitest";
 import React from "react";
 import { useSession, useRouter } from "@bciers/testConfig/mocks";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
-import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
+import {
+  allOperationRegistrationSteps,
+  RegistrationPurposeHelpText,
+} from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
 import { actionHandler } from "@bciers/testConfig/mocks";
 import { fetchFormEnums } from "../OperationRegistrationPage.test";
@@ -355,6 +358,43 @@ describe("the OperationInformationForm component", () => {
       );
     },
   );
+
+  it("should show the correct help text when selecting a purpose", async () => {
+    fetchFormEnums();
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    const purposeInput = screen.getByRole("combobox", {
+      name: /The purpose of this registration+/i,
+    });
+    await fillComboboxWidgetField(
+      purposeInput,
+      "Potential Reporting Operation",
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          RegistrationPurposeHelpText["Potential Reporting Operation"],
+        ),
+      ).toBeVisible();
+    });
+    await userEvent.clear(purposeInput);
+    await fillComboboxWidgetField(purposeInput, "OBPS Regulated Operation");
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          RegistrationPurposeHelpText["OBPS Regulated Operation"],
+        ),
+      ).toBeVisible();
+    });
+  });
 
   it("should trigger validation errors", async () => {
     fetchFormEnums();
