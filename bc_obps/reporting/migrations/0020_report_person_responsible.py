@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0045_V1_11_0'),
-        ('reporting', '0018_pulp_and_paper_production'),
+        ('reporting', '0019_alter_reportactivity_json_data_and_more'),
     ]
 
     operations = [

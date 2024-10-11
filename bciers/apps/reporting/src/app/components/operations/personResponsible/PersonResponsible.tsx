@@ -37,10 +37,16 @@ const PersonResponsible = ({ version_id }: Props) => {
     person_responsible: "", // Default to empty string
   });
   const [facilityId, setFacilityId] = useState<number | null>();
+  const [operationType, setOperationType] = useState(null);
 
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${version_id}/facilities/${facilityId}/review`;
+
+  const saveAndContinueUrl =
+    operationType === "Linear Facility Operation"
+      ? `/reports/${version_id}/facilities/lfo-facilities`
+      : `/reports/${version_id}/facilities/${facilityId}/review`;
+
   const taskListElements: TaskListElement[] = [
     {
       type: "Section",
@@ -62,7 +68,7 @@ const PersonResponsible = ({ version_id }: Props) => {
         {
           type: "Page",
           title: "Review facilities",
-          link: `/reports/${version_id}/facilities/${facilityId}/review`,
+          link: saveAndContinueUrl,
         },
       ],
     },
@@ -121,10 +127,13 @@ const PersonResponsible = ({ version_id }: Props) => {
   useEffect(() => {
     const getFacilityId = async () => {
       const facilityReport = await getFacilityReport(version_id);
-      if (facilityReport?.facility) {
-        setFacilityId(facilityReport.facility);
+      console.log("facilityReport", facilityReport);
+      if (facilityReport?.facility_id) {
+        setFacilityId(facilityReport.facility_id);
+        setOperationType(facilityReport.operation_type);
       } else {
         setFacilityId(null);
+        setOperationType(null);
       }
     };
     getFacilityId();
