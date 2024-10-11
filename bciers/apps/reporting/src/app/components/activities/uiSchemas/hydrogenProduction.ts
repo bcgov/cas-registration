@@ -70,8 +70,8 @@ const uiSchema = {
             },
           },
           feedstocks: {
-            "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
-            //"ui:FieldTemplate": FieldTemplate,
+            "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+            "ui:FieldTemplate": FieldTemplate,
             "ui:options": {
               arrayAddLabel: "Add Feedstock",
               title: "Feedstocks",
