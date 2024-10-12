@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Q, F
 from registration.models.regulated_product import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
