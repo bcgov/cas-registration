@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import MultiStepFormBase from "./MultiStepFormBase";
 import { useSession, useParams } from "@bciers/testConfig/mocks";
@@ -273,9 +267,9 @@ describe("The MultiStepFormBase component", () => {
       await user.click(saveAndContinueButton);
     });
 
-    waitFor(() => {
-      expect(saveAndContinueButton).toBeDisabled();
-    });
+    expect(await screen.findByTestId("spinner")).toBeVisible();
+    // finding by test-id since the text content of the button is hidden when the spinner is visible
+    expect(await screen.findByTestId("submit-button")).toBeDisabled();
 
     await act(async () => {
       resolve(vitest.fn);

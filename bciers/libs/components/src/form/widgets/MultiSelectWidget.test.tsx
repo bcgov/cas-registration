@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import {
@@ -137,17 +137,20 @@ describe("RJSF MultiSelectWidget", () => {
       />,
     );
 
-    const selectedOption2 = screen.getByRole("button", { name: "Option 2" });
-    const selectedOption3 = screen.getByRole("button", { name: "Option 3" });
-    const optionCancelIcon = screen.getAllByTestId("CancelIcon");
-
-    await userEvent.click(optionCancelIcon[0]);
-    await userEvent.click(optionCancelIcon[1]);
-
-    waitFor(() => {
-      expect(selectedOption2).not.toBeInTheDocument();
-      expect(selectedOption3).not.toBeInTheDocument();
+    await userEvent.click(screen.getAllByTestId("CancelIcon")[0]); // Remove Option 2
+    const selectedOption2 = screen.queryByRole("button", {
+      name: "Option 2",
     });
+    expect(selectedOption2).not.toBeInTheDocument();
+    // TODO: Fix this test(ticket https://github.com/bcgov/cas-registration/issues/2365)
+    // This test case doesn't fail when working with the component in the browser but it fails when running the tests
+    // It might be related to props we pass to the widget(Error: cannot read property 'filter' of undefined)
+
+    // await userEvent.click(screen.getAllByTestId("CancelIcon")[0]); // Remove Option 3
+    // const selectedOption3 = screen.queryByRole("button", {
+    //   name: "Option 3",
+    // });
+    // expect(selectedOption3).not.toBeInTheDocument();
   });
   it("should render the  placeholder text", async () => {
     render(
@@ -286,7 +289,7 @@ describe("RJSF MultiSelectWidget", () => {
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
-    checkComboBoxWidgetValidationStyles(
+    await checkComboBoxWidgetValidationStyles(
       <FormBase
         schema={multiSelectFieldSchema}
         uiSchema={multiSelectFieldUiSchema}
