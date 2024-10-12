@@ -1,4 +1,6 @@
 import { actionHandler } from "@bciers/actions";
+import ProductionDataForm from "./ProductionDataForm";
+import { Product } from "./types";
 
 interface Props {
   report_version_id: number;
@@ -19,8 +21,17 @@ const ProductionData: React.FC<Props> = async ({
       accept: "application/json",
     },
   });
+  console.log(response);
 
-  return <>response: {response}</>;
+  const allowedProducts: Product[] = [
+    { id: 1, name: "BC-specific refinery complexity throughput" },
+    { id: 2, name: "Cement equivalent" },
+    { id: 3, name: "Chemicals: pure hydrogen peroxide" },
+  ];
+
+  return (
+    <ProductionDataForm allowedProducts={allowedProducts} initialData={[]} />
+  );
 };
 
 export default ProductionData;
