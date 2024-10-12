@@ -1,6 +1,5 @@
 from typing import List, Literal
 from uuid import UUID
-from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -15,7 +14,7 @@ from .router import router
     response={200: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Saves the data for the production data page into multiple ReportProduct rows""",
-    auth=authorize("approved_industry_user"),
+    # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def save_production_data(
