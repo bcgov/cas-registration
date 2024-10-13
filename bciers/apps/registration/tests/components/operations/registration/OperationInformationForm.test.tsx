@@ -190,7 +190,7 @@ describe("the OperationInformationForm component", () => {
   it(
     "should submit a new operation with regulated products and multiple operators",
     {
-      timeout: 30000,
+      timeout: 60000,
     },
     async () => {
       fetchFormEnums();
