@@ -90,7 +90,7 @@ class TestSaveReportActivity(TestCase):
         service_under_test.save(updated_activity_data)
         report_activity.refresh_from_db()
 
-        assert report_activity == report_activity
+        assert report_activity.id == updated_activity_data["id"]
         assert report_activity.activity_base_schema == test_infrastructure.activity_json_schema
         assert report_activity.facility_report == test_infrastructure.facility_report
         assert report_activity.json_data == {"stuff": "testing updated", "number": 123456, "extra_boolean": True}
