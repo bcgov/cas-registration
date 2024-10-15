@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { useSession } from "@bciers/testConfig/mocks";
@@ -39,7 +39,7 @@ export const fileFieldSchema = {
 export const fileFieldUiSchema = {
   fileTestField: {
     "ui:widget": "FileWidget",
-    "ui:options": { accept: ".pdf" },
+    "ui:options": { accept: ".pdf", filePreview: true },
   },
 };
 
@@ -195,23 +195,26 @@ describe("RJSF FileWidget", () => {
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
     const input = screen.getByLabelText(fileLabelRequired);
 
-    const previewLink = screen.queryByRole("link", { name: "Preview" });
-    expect(previewLink).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Preview" }),
+    ).not.toBeInTheDocument();
 
     await userEvent.upload(input, mockFile);
-
-    waitFor(() => {
-      expect(previewLink).toBeVisible();
-    });
+    expect(screen.getByRole("link", { name: "Preview" })).toBeVisible();
   });
 
   it("should have the correct href for the preview link", async () => {
-    render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
-
-    waitFor(() => {
-      const previewLink = screen.getByRole("link", { name: "Preview" });
-      expect(previewLink).toHaveAttribute("href", testDataUri);
-    });
+    render(
+      <FormBase
+        schema={fileFieldSchema}
+        uiSchema={fileFieldUiSchema}
+        formData={{
+          fileTestField: [testDataUri],
+        }}
+      />,
+    );
+    const previewLink = screen.getByRole("link", { name: "Preview" });
+    expect(previewLink).toHaveAttribute("href", testDataUri);
   });
 
   it("should not render the upload button for internal users", () => {
