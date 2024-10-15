@@ -41,6 +41,15 @@ const uiSchema = {
           equivalentEmission: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
+          methodology: {
+            "ui:FieldTemplate": FieldTemplate,
+            "ui:options": {
+              label: false,
+            },
+            methodology: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+          },
         },
       },
     },
