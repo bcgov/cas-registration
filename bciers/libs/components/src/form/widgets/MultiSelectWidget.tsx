@@ -99,7 +99,6 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       getOptionLabel={(option: Option) => String(option.label)}
       renderInput={(params) => (
         <TextField
-          helperText={uiSchema?.["ui:helperText"]}
           {...params}
           placeholder={displayPlaceholder ? placeholder : ""}
         />

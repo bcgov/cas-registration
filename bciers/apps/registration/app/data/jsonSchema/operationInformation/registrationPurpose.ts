@@ -101,7 +101,9 @@ export const createRegistrationPurposeSchema = async () => {
 
 export const registrationPurposeUISchema: UiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,
-
+  "ui:options": {
+    label: false,
+  },
   "ui:order": [
     "purpose_preface",
     "registration_purpose",
