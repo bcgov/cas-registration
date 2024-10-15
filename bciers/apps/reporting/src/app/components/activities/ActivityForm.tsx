@@ -50,15 +50,18 @@ export default function ActivityForm({
   const [formState, setFormState] = useState({} as any);
   const [jsonSchema, setJsonSchema] = useState({});
   const [uiSchema, setUiSchema] = useState({});
+  const [previousActivityId, setPreviousActivityId] = useState<number>();
 
   const { activityId, sourceTypeMap } = activityData;
 
   // Set useEffect dependency set from checked sourceTypes
-  const dependencyArray = Object.values(sourceTypeMap).map(
-    (v) => formState?.[`${v}`] ?? null,
+  const selectedSourceTypesArray = Object.values(sourceTypeMap).map(
+    (v) => formState?.[`${v}`] ?? false,
   );
-
-  dependencyArray.push(activityId);
+  const numberOfSelectedSourceTypes = selectedSourceTypesArray.filter(
+    (x) => x === true,
+  ).length;
+  const dependencyArray = [numberOfSelectedSourceTypes, activityId];
 
   useEffect(() => {
     let isFetching = true;
@@ -81,13 +84,14 @@ export default function ActivityForm({
       } else {
         // Add an empty sourceType for each selected Source Type (show first item by default)
         selectedKeys.forEach((k: number) => {
-          if (!formState?.sourceTypes[`${sourceTypeMap[k]}`])
+          if (!formState?.sourceTypes?.[`${sourceTypeMap[k]}`])
             sourceTypeFormData[`${sourceTypeMap[k]}`] =
               defaultEmptySourceTypeState;
         });
       }
       if (isFetching)
         setFormState({ ...formState, sourceTypes: sourceTypeFormData });
+      setPreviousActivityId(activityId);
       setUiSchema(getUiSchema(currentActivity.slug));
     };
     let selectedSourceTypes = "";
@@ -98,7 +102,7 @@ export default function ActivityForm({
         selectedKeys.push(Number(key));
       }
     }
-
+    if (previousActivityId !== activityId) setFormState({});
     fetchSchemaData(selectedSourceTypes, selectedKeys);
     return () => {
       isFetching = false;
@@ -134,7 +138,11 @@ export default function ActivityForm({
     console.log("SUBMITTED: ", JSON.stringify(data.formData));
   };
 
-  if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object)
+  if (
+    (Object.keys(jsonSchema).length === 0 &&
+      jsonSchema.constructor === Object) ||
+    previousActivityId !== activityId
+  )
     return <>Loading...</>;
   // Render the Activity form and tasklist
   return (
