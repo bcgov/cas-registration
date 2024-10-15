@@ -1706,7 +1706,6 @@ __metadata:
     happo-e2e: "npm:^2.4.1"
     happo-playwright: "npm:^2.1.0"
     happo.io: "npm:^9.1.2"
-    improved-yarn-audit: "npm:^3.0.0"
     jsdom: "npm:~22.1.0"
     lodash.debounce: "npm:^4.0.8"
     mui-tel-input: "npm:^4.0.1"
@@ -10673,15 +10672,6 @@ __metadata:
     parent-module: "npm:^1.0.0"
     resolve-from: "npm:^4.0.0"
   checksum: 10c0/7f882953aa6b740d1f0e384d0547158bc86efbf2eea0f1483b8900a6f65c5a5123c2cf09b0d542cc419d0b98a759ecaeb394237e97ea427f2da221dc3cd80cc3
-  languageName: node
-  linkType: hard
-
-"improved-yarn-audit@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "improved-yarn-audit@npm:3.0.0"
-  bin:
-    improved-yarn-audit: bin/improved-yarn-audit
-  checksum: 10c0/59f4a5d3f31c3bbd671206103769bd18b4d130ee567d74e78789180cfd66a0e48bc75f7bc64936f5021f678ac04c5102f5702b02ab5b5a02a1cbead7c41b412f
   languageName: node
   linkType: hard
 
