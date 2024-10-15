@@ -20,7 +20,7 @@ from django.db.models import QuerySet
 from django.core.exceptions import ObjectDoesNotExist
 
 
-class OperatorServiceV2:    
+class OperatorServiceV2:
     @classmethod
     def has_required_fields(cls, operator_id: UUID) -> bool:
         try:
@@ -29,8 +29,11 @@ class OperatorServiceV2:
 
             # Get the fields that are required based on the model's meta info (non-nullable fields without a default value)
             required_fields = [
-                field.name for field in Operator._meta.fields
-                if not field.null and field.default is None and not field.blank
+                "legal_name",
+                "cra_business_number",
+                "bc_corporate_registry_number",
+                "business_structure",
+                "mailing_address",
             ]
 
             # Check if all required fields are completed
