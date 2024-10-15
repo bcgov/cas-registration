@@ -34,10 +34,10 @@ const uiSchema = {
         items: {
           "ui:order": [
             "gasType",
-            "methodology",
             "emissions",
             "equivalentEmissions",
             "carbonateType",
+            "methodology",
             "annualMassOfCarbonateTypeConsumedTonnes",
             "fractionCalcinationAchievedForEachParticularCarbonateTypeWeightFactor",
             "numberOfCarbonateTypes",
@@ -48,7 +48,38 @@ const uiSchema = {
             "description",
           ],
           methodology: {
-            "ui:FieldTemplate": InlineFieldTemplate,
+            "ui:FieldTemplate": FieldTemplate,
+            "ui:options": {
+              label: false,
+            },
+            methodology: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            annualMassOfCarbonateTypeConsumedTonnes: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            fractionCalcinationAchievedForEachParticularCarbonateTypeWeightFactor:
+              {
+                "ui:FieldTemplate": InlineFieldTemplate,
+              },
+            numberOfCarbonateTypes: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            annualMassOfInputCarbonateTypeTonnes: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            annualMassOfOutputCarbonateTypeTonnes: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            numberOfInputCarbonateTypes: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            numberOfOutputCarbonateTypes: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            description: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
           },
           emissions: {
             "ui:FieldTemplate": InlineFieldTemplate,
@@ -60,31 +91,6 @@ const uiSchema = {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
           equivalentEmissions: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          annualMassOfCarbonateTypeConsumedTonnes: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          fractionCalcinationAchievedForEachParticularCarbonateTypeWeightFactor:
-            {
-              "ui:FieldTemplate": InlineFieldTemplate,
-            },
-          numberOfCarbonateTypes: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          annualMassOfInputCarbonateTypeTonnes: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          annualMassOfOutputCarbonateTypeTonnes: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          numberOfInputCarbonateTypes: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          numberOfOutputCarbonateTypes: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          description: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
         },
