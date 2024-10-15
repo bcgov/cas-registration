@@ -145,17 +145,22 @@ const uiSchema = {
               title: "Fuel",
             },
             items: {
-              "ui:order": [
-                "fuelName",
-                "fuelUnit",
-                "annualFuelAmount",
-                "emissions",
-              ],
-              fuelName: {
-                "ui:FieldTemplate": InlineFieldTemplate,
-              },
+              "ui:order": ["fuelType", "annualFuelAmount", "emissions"],
               fuelType: {
-                "ui:FieldTemplate": InlineFieldTemplate,
+                "ui:field": "fuelType",
+                "ui:FieldTemplate": FieldTemplate,
+                "ui:options": {
+                  label: false,
+                },
+                fuelName: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                fuelUnit: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                fuelClassification: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
               },
               annualFuelAmount: {
                 "ui:FieldTemplate": InlineFieldTemplate,
@@ -219,17 +224,22 @@ const uiSchema = {
               title: "Fuel",
             },
             items: {
-              "ui:order": [
-                "fuelName",
-                "fuelUnit",
-                "annualFuelAmount",
-                "emissions",
-              ],
-              fuelName: {
-                "ui:FieldTemplate": InlineFieldTemplate,
-              },
+              "ui:order": ["fuelType", "annualFuelAmount", "emissions"],
               fuelType: {
-                "ui:FieldTemplate": InlineFieldTemplate,
+                "ui:field": "fuelType",
+                "ui:FieldTemplate": FieldTemplate,
+                "ui:options": {
+                  label: false,
+                },
+                fuelName: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                fuelUnit: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                fuelClassification: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
               },
               annualFuelAmount: {
                 "ui:FieldTemplate": InlineFieldTemplate,
