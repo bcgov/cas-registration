@@ -13,6 +13,10 @@ import {
 } from "@bciers/components/form/formDataUtils";
 import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { useRouter } from "next/navigation";
+import {
+  RegistrationPurposeHelpText,
+  RegistrationPurposes,
+} from "@/registration/app/components/operations/registration/enums";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -36,6 +40,10 @@ const OperationInformationForm = ({
     : {};
   const [formState, setFormState] = useState(nestedFormData);
   const [key, setKey] = useState(Math.random());
+  const [selectedPurpose, setSelectedPurpose] = useState("");
+  const [currentUiSchema, setCurrentUiSchema] = useState(
+    registrationOperationInformationUiSchema,
+  );
 
   function customValidate(
     formData: { [key: string]: any },
@@ -97,6 +105,29 @@ const OperationInformationForm = ({
     setKey(Math.random());
   };
 
+  const handleSelectedPurposeChange = (data: any) => {
+    const newSelectedPurpose: RegistrationPurposes =
+      data.section1.registration_purpose;
+    setSelectedPurpose(newSelectedPurpose);
+    setCurrentUiSchema({
+      ...registrationOperationInformationUiSchema,
+      section1: {
+        ...registrationOperationInformationUiSchema.section1,
+        registration_purpose: {
+          ...registrationOperationInformationUiSchema.section1
+            .registration_purpose,
+          "ui:help": newSelectedPurpose ? (
+            <small>
+              <b>Note: </b>
+              {RegistrationPurposeHelpText[newSelectedPurpose]}
+            </small>
+          ) : null,
+        },
+      },
+    });
+    setFormState(data);
+  };
+
   return (
     <MultiStepBase
       key={key}
@@ -109,14 +140,13 @@ const OperationInformationForm = ({
       error={error}
       onChange={(e: IChangeEvent) => {
         let newSelectedOperation = e.formData?.section1?.operation;
-        if (
-          newSelectedOperation &&
-          newSelectedOperation !== selectedOperation
-        ) {
+        let newSelectedPurpose = e.formData?.section1?.registration_purpose;
+        if (newSelectedOperation && newSelectedOperation !== selectedOperation)
           handleSelectOperationChange(e.formData);
-        }
+        if (newSelectedPurpose !== selectedPurpose)
+          handleSelectedPurposeChange(e.formData);
       }}
-      uiSchema={registrationOperationInformationUiSchema}
+      uiSchema={currentUiSchema}
       customValidate={customValidate}
     />
   );
