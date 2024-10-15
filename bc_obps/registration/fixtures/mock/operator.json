@@ -25,8 +25,6 @@
     "fields": {
       "legal_name": "Existing Operator 2 Legal Name",
       "trade_name": "Existing Operator 2 Trade Name",
-      "cra_business_number": 987654321,
-      "bc_corporate_registry_number": "def1234567",
       "business_structure": "General Partnership",
       "physical_address": 4,
       "mailing_address": 3,
