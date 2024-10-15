@@ -29,6 +29,8 @@ const ArrayFieldTemplate = ({
 }: ArrayFieldTemplateProps) => {
   const arrayAddLabel =
     (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
+  const canDeleteFirst =
+    (uiSchema?.["ui:options"]?.canDeleteFirst as boolean) || false;
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
 
@@ -43,7 +45,7 @@ const ArrayFieldTemplate = ({
                   {customTitleName} {i + 1}
                 </span>
               )}
-              {i !== 0 && (
+              {(i !== 0 || canDeleteFirst) && (
                 <button
                   onClick={item.onDropIndexClick(item.index)}
                   className="border-none bg-transparent p-0 ml-6"

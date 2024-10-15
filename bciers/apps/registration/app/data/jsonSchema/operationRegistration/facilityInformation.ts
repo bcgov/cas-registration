@@ -38,6 +38,7 @@ export const facilityInformationLfoUiSchema: UiSchema = {
       label: false,
       arrayAddLabel: "Add facility",
       title: "Facility",
+      canDeleteFirst: true,
     },
     items: {
       ...facilitiesLfoUiSchema,
