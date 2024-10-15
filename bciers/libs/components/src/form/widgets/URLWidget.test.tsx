@@ -98,7 +98,7 @@ describe("RJSF URLWidget", () => {
     );
     const input = screen.getByLabelText(urlFieldLabel);
     expect(input).toHaveValue(url);
-    userEvent.clear(input);
+    await userEvent.clear(input);
     await checkNoValidationErrorIsTriggered();
     expect(screen.queryByText(urlErrorMessage)).toBeNull();
   });

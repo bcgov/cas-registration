@@ -142,17 +142,16 @@ describe("the OperationInformationForm component", () => {
         expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(3);
       });
       // edit one of the pre-filled values
-      userEvent.type(screen.getByLabelText(/Operation name+/i), " edited");
-      await waitFor(
-        () => {
-          expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
-            "Existing Operation edited",
-          );
-        },
-        { timeout: 5000 },
+      await userEvent.type(
+        screen.getByLabelText(/Operation name+/i),
+        " edited",
       );
+      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+        "Existing Operation edited",
+      );
+
       // submit
-      userEvent.click(
+      await userEvent.click(
         screen.getByRole("button", { name: /save and continue/i }),
       );
 
@@ -312,7 +311,7 @@ describe("the OperationInformationForm component", () => {
 
       // submit
 
-      userEvent.click(
+      await userEvent.click(
         screen.getByRole("button", { name: /save and continue/i }),
       );
       await waitFor(() => {
