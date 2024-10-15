@@ -41,5 +41,5 @@ export const RegistrationPurposeHelpText: {
   [RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION]:
     "An Electricity Import Operation is an industrial operation that imports electricity from an electricity generating facility located outside British Columbia and is the first point of delivery in British Columbia.",
   [RegistrationPurposes.POTENTIAL_REPORTING_OPERATION]:
-    "A Potential Reporting Operation is an industrial operation that did not submit an emission report for the previous year, but has forecast it's emissions to be greater than or equal to 10 000 tCO2e for the current reporting period. Potential Reporting Operations must register, but do not need to submit an emission report unless they actually emit greater than or equal to 10 000 tCO2e in the current reporting period.",
+    "A Potential Reporting Operation is an industrial operation that did not submit an emission report for the previous year, but has forecast its emissions to be greater than or equal to 10 000 tCO2e for the current reporting period. Potential Reporting Operations must register, but do not need to submit an emission report unless they actually emit greater than or equal to 10 000 tCO2e in the current reporting period.",
 };
