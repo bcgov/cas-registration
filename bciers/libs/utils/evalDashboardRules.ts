@@ -59,19 +59,8 @@ const evaluateAllConditions = async (conditions: any[]): Promise<boolean> => {
 
 const evaluateCondition = async (condition: any): Promise<boolean> => {
   try {
-    if (
-      condition.api == "registration/user-operators/current/has-required-fields"
-    ) {
-      console.log("Evaluating condition:", condition); // Log condition details
-    }
     const apiEndpoint = condition.api;
     const data = await actionHandler(apiEndpoint, "GET");
-    if (
-      condition.api == "registration/user-operators/current/has-required-fields"
-    ) {
-      console.log("API response:", data); // Log API response
-    }
-
     const fieldValue = data[condition.field];
 
     switch (condition.operator) {
