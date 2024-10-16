@@ -1,4 +1,5 @@
 from typing import Literal, Tuple
+
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors

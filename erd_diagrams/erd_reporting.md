@@ -33,6 +33,25 @@ ReportVersion {
     BooleanField is_latest_submitted
     CharField status
 }
+ReportPersonResponsible {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    CharField first_name
+    CharField last_name
+    CharField position_title
+    CharField email
+    CharField phone_number
+    OneToOneField report_version
+    CharField street_address
+    CharField municipality
+    CharField province
+    CharField postal_code
+    CharField business_role
+}
 SourceType {
     BigAutoField id
     CharField name
@@ -228,6 +247,10 @@ ReportVersion }|--|| User : created_by
 ReportVersion }|--|| User : updated_by
 ReportVersion }|--|| User : archived_by
 ReportVersion }|--|| Report : report
+ReportPersonResponsible }|--|| User : created_by
+ReportPersonResponsible }|--|| User : updated_by
+ReportPersonResponsible }|--|| User : archived_by
+ReportPersonResponsible ||--|| ReportVersion : report_version
 ReportOperation }|--|| User : created_by
 ReportOperation }|--|| User : updated_by
 ReportOperation }|--|| User : archived_by

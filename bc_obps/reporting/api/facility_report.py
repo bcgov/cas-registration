@@ -11,8 +11,8 @@ from .router import router
 from reporting.schema.facility_report import FacilityReportOut, FacilityReportIn
 from reporting.schema.activity import FacilityReportActivityDataOut
 from registration.api.utils.current_user_utils import get_current_user_guid
-from registration.models import Activity
-from reporting.models import FacilityReport
+from registration.models import Activity, Operation
+from reporting.models import FacilityReport, ReportVersion, Report
 from django.db.models import QuerySet
 
 
@@ -80,3 +80,27 @@ def save_facility_report(
 
     # Prepare the response data
     return 201, facility_report
+
+
+@router.get(
+    "/report-version/{version_id}/facility-report",
+    response={200: dict, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
+    auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
+    facility_report = FacilityReportService.get_facility_report_by_version_id(version_id)
+    facility_id = facility_report[0] if isinstance(facility_report, tuple) else facility_report
+
+    operation_type = Operation.objects.get(
+        id=Report.objects.get(id=ReportVersion.objects.get(id=version_id).report_id).operation_id
+    ).type
+
+    response_data = {
+        "facility_id": facility_id,
+        "operation_type": operation_type,
+    }
+
+    return 200, response_data
