@@ -1,3 +1,4 @@
+from uuid import UUID
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from ninja import FilterSchema, ModelSchema, Field
 from typing import Optional
@@ -7,6 +8,7 @@ class FacilityDesignatedOperationTimelineOut(ModelSchema):
     facility__name: str = Field(..., alias="facility.name")
     facility__type: str = Field(..., alias="facility.type")
     facility__bcghg_id: Optional[str] = Field(None, alias="facility.bcghg_id")
+    facility__id: UUID = Field(..., alias="facility.id")
 
     class Meta:
         model = FacilityDesignatedOperationTimeline

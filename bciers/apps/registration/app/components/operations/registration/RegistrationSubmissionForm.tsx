@@ -62,6 +62,7 @@ const RegistrationSubmissionForm = ({
       ) : (
         <MultiStepBase
           allowBackNavigation
+          baseUrl={`/register-an-operation/${operation}`}
           cancelUrl="/"
           formData={formState}
           onSubmit={handleSubmit}
