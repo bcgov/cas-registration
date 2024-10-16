@@ -127,7 +127,6 @@ const PersonResponsible = ({ version_id }: Props) => {
   useEffect(() => {
     const getFacilityId = async () => {
       const facilityReport = await getFacilityReport(version_id);
-      console.log("facilityReport", facilityReport);
       if (facilityReport?.facility_id) {
         setFacilityId(facilityReport.facility_id);
         setOperationType(facilityReport.operation_type);
