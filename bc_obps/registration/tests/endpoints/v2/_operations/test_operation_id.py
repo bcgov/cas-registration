@@ -30,7 +30,6 @@ class TestOperationIdEndpoint(CommonTestSetup):
         "activities": [1],
         "boundary_map": MOCK_DATA_URL,
         "process_flow_diagram": MOCK_DATA_URL,
-        "equipment_list": MOCK_DATA_URL,
     }
 
     def test_operations_endpoint_unauthorized_users_cannot_get(self):

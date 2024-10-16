@@ -213,11 +213,8 @@ class OperationServiceV2:
         process_flow_diagram = DocumentService.create_or_replace_operation_document(
             user_guid, operation.id, payload.process_flow_diagram, 'process_flow_diagram'  # type: ignore # mypy is not aware of the schema validator
         )
-        equipment_list = DocumentService.create_or_replace_operation_document(
-            user_guid, operation.id, payload.equipment_list, 'equipment_list'  # type: ignore # mypy is not aware of the schema validator
-        )
 
-        operation.documents.set([boundary_map, process_flow_diagram, equipment_list])
+        operation.documents.set([boundary_map, process_flow_diagram])
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array

@@ -45,7 +45,6 @@ class OperationInformationIn(ModelSchema):
     activities: list[int]
     boundary_map: str
     process_flow_diagram: str
-    equipment_list: str
     naics_code_id: int
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
@@ -61,11 +60,6 @@ class OperationInformationIn(ModelSchema):
     def validate_process_flow_diagram(cls, value: str) -> ContentFile:
         return data_url_to_file(value)
 
-    @field_validator("equipment_list")
-    @classmethod
-    def validate_equipment_list(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
     class Meta:
         model = Operation
         fields = ["name", 'type']
@@ -79,7 +73,6 @@ class OperationOutV2(ModelSchema):
     operator: Optional[OperatorForOperationOut] = None
     boundary_map: Optional[str] = None
     process_flow_diagram: Optional[str] = None
-    equipment_list: Optional[str] = None
     registration_purposes: Optional[list] = []
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
@@ -127,13 +120,6 @@ class OperationOutWithDocuments(OperationOutV2):
         process_flow_diagram = obj.get_process_flow_diagram()
         if process_flow_diagram:
             return file_to_data_url(process_flow_diagram)
-        return None
-
-    @staticmethod
-    def resolve_equipment_list(obj: Operation) -> Optional[str]:
-        equipment_list = obj.get_equipment_list()
-        if equipment_list:
-            return file_to_data_url(equipment_list)
         return None
 
 
