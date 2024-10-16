@@ -1,9 +1,4 @@
-import {
-  NextFetchEvent,
-  NextMiddleware,
-  NextRequest,
-  NextResponse,
-} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 
@@ -16,8 +11,8 @@ to the appropriate folder structure.
 const appName = "registration";
 
 // Middleware for admin rules
-export const withResponseReg: MiddlewareFactory = (next: NextMiddleware) => {
-  return async (request: NextRequest, _next: NextFetchEvent) => {
+export const withResponseReg: MiddlewareFactory = () => {
+  return async (request: NextRequest) => {
     const { pathname } = request.nextUrl;
     if (pathname.endsWith(`/`)) {
       // 🛸 Proceed to dashboard
