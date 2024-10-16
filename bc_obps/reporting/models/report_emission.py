@@ -3,6 +3,7 @@ from reporting.models.gas_type import GasType
 from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
+from reporting.models.emission_category import EmissionCategory
 
 
 class ReportEmission(ReportDataBaseModel):
@@ -26,6 +27,10 @@ class ReportEmission(ReportDataBaseModel):
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
         db_comment="The fuel data this emission data belongs to, if applicable",
+    )
+    emission_categories = models.ManyToManyField(
+        EmissionCategory,
+        related_name="+",
     )
 
     class Meta:
