@@ -5,13 +5,11 @@ import middleware from "../middleware";
 
 const domain = "https://localhost:3000";
 const mockedRequest: NextRequest = mock(NextRequest);
-
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
-
 const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
-describe("withAuthorizationAdministration middleware", () => {
+describe("withAuthorizationReg middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -20,7 +18,8 @@ describe("withAuthorizationAdministration middleware", () => {
   });
 
   it("redirects to the onboarding page if the user is not authenticated", async () => {
-    const nextUrl = new NextURL(`${domain}/administration`);
+    // The user tries to access the register an register an operation page
+    const nextUrl = new NextURL(`${domain}/registration/register-an-operation`);
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);

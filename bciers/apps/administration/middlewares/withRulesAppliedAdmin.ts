@@ -7,32 +7,9 @@ import {
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 import { IDP, OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
-
+import { fetchApi } from "@bciers/actions/api/fetchApi";
 // Constants
 const appName = "administration";
-const baseApiUrl = `${process.env.API_URL}registration/`;
-
-/**
- * 🛠 Helper to fetch user operator data from the API.
- *
- * @param endpoint - The API endpoint to fetch from.
- * @param token - The user token for authorization.
- * @returns The parsed JSON data from the response.
- */
-const fetchUserOperatorData = async (endpoint: string, token: any) => {
-  const options: RequestInit = {
-    cache: "no-store", // ⚙ No caching for API requests
-    method: "GET",
-    headers: new Headers({
-      Authorization: JSON.stringify({ user_guid: token.user_guid }),
-    }),
-  };
-  const response = await fetch(`${baseApiUrl}${endpoint}`, options);
-  if (!response.ok) {
-    throw new Error(`❗ Failed to fetch ${endpoint}: ${response.statusText}`);
-  }
-  return response.json();
-};
 
 /**
  * 📏 Handles routing for industry users based on the status of their operator.
@@ -46,10 +23,10 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
 
   // 📏 Rule: Industry users can only see operations if their operator is pending/approved
   if (pathname.includes("operations")) {
-    const operator = await fetchUserOperatorData(
-      "user-operators/current",
-      token,
-    );
+    const operator = await fetchApi("registration/user-operators/current", {
+      user_guid: token.user_guid,
+    });
+
     if (
       operator.status !== OperatorStatus.PENDING &&
       operator.status !== OperatorStatus.APPROVED
@@ -62,9 +39,11 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
   // 📏 Rule: Manage the select-operator flow for industry users
   if (pathname.endsWith("select-operator")) {
     try {
-      const userOperator = await fetchUserOperatorData(
-        "user-operators/pending",
-        token,
+      const userOperator = await fetchApi(
+        "registration/user-operators/pending",
+        {
+          user_guid: token.user_guid,
+        },
       );
 
       // 🧩 If there is no userOperator, proceed to the next middleware
@@ -100,10 +79,10 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
 
   // 📏 Rule: Industry users can only see contacts if they have operator access
   if (pathname.includes("contacts")) {
-    const userOperator = await fetchUserOperatorData(
-      "user-operators/pending",
-      token,
-    );
+    const userOperator = await fetchApi("registration/user-operators/pending", {
+      user_guid: token.user_guid,
+    });
+
     if (userOperator.status !== UserOperatorStatus.APPROVED) {
       // 🛸 Redirect to the root app router page - dashboard
       return NextResponse.redirect(new URL(`/${appName}`, request.url));
