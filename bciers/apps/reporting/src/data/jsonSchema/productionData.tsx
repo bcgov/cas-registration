@@ -9,7 +9,7 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 export const buildProductionDataSchema: (
   compliance_period_start: string,
   compliance_period_end: string,
-) => RJSFSchema = (products, compliance_period_start) => ({
+) => RJSFSchema = (compliance_period_start, compliance_period_end) => ({
   type: "object",
   title: "Production Data",
   properties: {
@@ -37,6 +37,7 @@ export const buildProductionDataSchema: (
   definitions: {
     productionDataItem: {
       type: "object",
+      required: ["annualProduction", "productionMethodology"],
       properties: {
         name: {
           title: "Name",
@@ -56,7 +57,19 @@ export const buildProductionDataSchema: (
           type: "string",
         },
         qtyStorageBeginningOfComplPeriod: {
-          title: `Quantity in storage at the beginning of the compliance period (${compliance_period_start}) if applicable`,
+          title: `Quantity in storage at the beginning of the compliance period [${compliance_period_start}], if applicable`,
+          type: "string",
+        },
+        qtyStorageEndOfComplPeriod: {
+          title: `Quantity in storage at the beginning of the compliance period [${compliance_period_end}], if applicable`,
+          type: "string",
+        },
+        qtySoldDuringComplPeriod: {
+          title: `Quantity sold during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
+          type: "string",
+        },
+        qtyThroughputAtPosDuringComplPeriod: {
+          title: `Quantity of throughput at point of sale during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
           type: "string",
         },
       },
@@ -82,6 +95,8 @@ export const productionDataUiSchema: UiSchema = {
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
     "ui:options": {
       label: false,
+      addable: false,
+      removable: false,
     },
     items: {
       name: {
