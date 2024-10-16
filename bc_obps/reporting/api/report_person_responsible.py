@@ -16,7 +16,7 @@ from ..schema.report_person_responsible import ReportPersonResponsibleIn, Report
     response={200: ReportPersonResponsibleOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_report_person_responsible_by_version_id(
@@ -34,7 +34,7 @@ def get_report_person_responsible_by_version_id(
         """Creates or updates a contact associated with a report version.
                     Includes fields like legal name, trade name, operation details, and contact information."""
     ),
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def save_report_contact(

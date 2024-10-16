@@ -6,7 +6,6 @@ from reporting.models.report_version import ReportVersion
 
 
 class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
-    # A report version can have multiple persons responsible
     report_version = models.OneToOneField(
         ReportVersion,
         on_delete=models.PROTECT,
