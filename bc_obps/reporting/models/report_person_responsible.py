@@ -9,7 +9,7 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
     report_version = models.OneToOneField(
         ReportVersion,
         on_delete=models.PROTECT,
-        related_name="report_persons_responsible",
+        related_name="report_person_responsible",
         db_comment="The report version this person responsible applies to",
         primary_key=True,
     )

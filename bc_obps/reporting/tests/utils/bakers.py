@@ -1,5 +1,5 @@
 from registration.tests.utils.bakers import operation_baker, operator_baker
-from reporting.models import configuration_element
+from reporting.models import configuration_element, ReportPersonResponsible
 from reporting.models.gas_type import GasType
 from registration.models import Activity
 from reporting.models.report_operation import ReportOperation
@@ -31,6 +31,26 @@ def report_version_baker(**props) -> ReportVersion:
         baker.make(ReportOperation, report_version=version)
 
     return version
+
+
+def report_person_responsible_baker(report_version=None) -> ReportPersonResponsible:
+    if report_version is None:
+        report_version = report_version_baker()
+
+    return baker.make(
+        ReportPersonResponsible,
+        report_version=report_version,
+        first_name="John",
+        last_name="Doe",
+        position_title="Manager",
+        email="john.doe@example.com",
+        phone_number="+16044011234",
+        street_address="123 Elm St",
+        municipality="Springfield",
+        province="IL",
+        postal_code="62701",
+        business_role="Operation Representative",
+    )
 
 
 def activity_baker(custom_properties=None) -> Activity:
