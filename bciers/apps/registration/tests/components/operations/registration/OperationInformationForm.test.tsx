@@ -93,7 +93,6 @@ describe("the OperationInformationForm component", () => {
         naics_code_id: 1,
         boundary_map: mockDataUri,
         process_flow_diagram: mockDataUri,
-        equipment_list: mockDataUri,
         activities: [1],
       }); // mock the GET from selecting an operation
 
@@ -139,7 +138,7 @@ describe("the OperationInformationForm component", () => {
         );
 
         expect(screen.getByText(/Amonia production/i)).toBeVisible();
-        expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(3);
+        expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(2);
       });
       // edit one of the pre-filled values
       await userEvent.type(
@@ -172,8 +171,6 @@ describe("the OperationInformationForm component", () => {
               process_flow_diagram:
                 "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
               boundary_map:
-                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
-              equipment_list:
                 "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
               operation_has_multiple_operators: false,
             }),
@@ -267,9 +264,6 @@ describe("the OperationInformationForm component", () => {
       const boundaryMapInput = screen.getByLabelText(/boundary map+/i);
       await userEvent.upload(boundaryMapInput, mockFile);
 
-      const equipmentListInput = screen.getByLabelText(/equipment list+/i);
-      await userEvent.upload(equipmentListInput, mockFile);
-
       // add multiple operator
       await userEvent.click(
         screen.getByLabelText(/Does the operation have multiple operators?/i),
@@ -330,8 +324,6 @@ describe("the OperationInformationForm component", () => {
               process_flow_diagram:
                 "data:application/pdf;name=test.pdf;base64,dGVzdA==",
               boundary_map:
-                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
-              equipment_list:
                 "data:application/pdf;name=test.pdf;base64,dGVzdA==",
               operation_has_multiple_operators: true,
               multiple_operators_array: [
@@ -407,7 +399,7 @@ describe("the OperationInformationForm component", () => {
     );
     userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
     await waitFor(() => {
-      expect(screen.getAllByText(/Required field/i)).toHaveLength(7);
+      expect(screen.getAllByText(/Required field/i)).toHaveLength(6);
     });
     await waitFor(() => {
       expect(

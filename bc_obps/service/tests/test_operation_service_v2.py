@@ -348,7 +348,6 @@ class TestOperationServiceV2:
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
         operation = OperationServiceV2.register_operation_information(
             approved_user_operator.user.user_guid, None, payload
@@ -379,7 +378,6 @@ class TestOperationServiceV2:
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
         # check operation updates
         operation = OperationServiceV2.register_operation_information(
@@ -408,13 +406,12 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
         operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
-        assert operation.documents.count() == 3
+        assert operation.documents.count() == 2
         assert operation.created_by == approved_user_operator.user
         assert operation.created_at is not None
         assert operation.updated_at is None
@@ -433,7 +430,6 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
         payload.multiple_operators_array = [
             MultipleOperatorIn(
@@ -485,7 +481,6 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
         payload.multiple_operators_array = [
             MultipleOperatorIn(
@@ -518,7 +513,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
-        assert operation.documents.count() == 3
+        assert operation.documents.count() == 2
         assert operation.multiple_operators.count() == 2
         assert operation.multiple_operators.first().legal_name == 'i am new'
         assert operation.multiple_operators.last().legal_name == 'i am new 2'
@@ -544,7 +539,6 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
 
         operation = OperationServiceV2.create_or_update_operation_v2(
@@ -576,7 +570,6 @@ class TestOperationServiceV2UpdateOperation:
             activities=[2],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
         operation = OperationServiceV2.update_operation(
             approved_user_operator.user.user_guid, payload, existing_operation.id
@@ -584,7 +577,7 @@ class TestOperationServiceV2UpdateOperation:
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
-        assert operation.documents.count() == 3
+        assert operation.documents.count() == 2
         assert operation.created_by == approved_user_operator.user
         assert operation.created_at is not None
         assert operation.updated_at is not None
@@ -605,7 +598,6 @@ class TestOperationServiceV2UpdateOperation:
             activities=[3],
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
-            equipment_list=MOCK_DATA_URL,
         )
         operation = OperationServiceV2.update_operation(
             approved_user_operator.user.user_guid, payload, existing_operation.id
@@ -613,7 +605,7 @@ class TestOperationServiceV2UpdateOperation:
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
-        assert operation.documents.count() == 3
+        assert operation.documents.count() == 2
         assert operation.created_by == approved_user_operator.user
         assert operation.created_at is not None
         assert operation.updated_at is not None

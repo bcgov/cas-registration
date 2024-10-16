@@ -103,7 +103,6 @@ describe("the OperationInformationPage component", () => {
     expect(screen.getByText(/Reporting Activities/i)).toBeVisible();
     expect(screen.getByText(/Process Flow Diagram/i)).toBeVisible();
     expect(screen.getByText(/Boundary Map/i)).toBeVisible();
-    expect(screen.getByText(/Equipment List/i)).toBeVisible();
 
     expect(
       screen.getByRole("heading", { name: "Multiple Operators Information" }),

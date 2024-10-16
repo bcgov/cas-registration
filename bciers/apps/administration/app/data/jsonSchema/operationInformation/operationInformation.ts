@@ -16,7 +16,6 @@ export const createOperationInformationSchema =
         "activities",
         "boundary_map",
         "process_flow_diagram",
-        "equipment_list",
       ],
       properties: {
         name: { type: "string", title: "Operation Name" },
@@ -94,10 +93,6 @@ export const createOperationInformationSchema =
           type: "string",
           title: "Boundary Map",
         },
-        equipment_list: {
-          type: "string",
-          title: "Equipment List",
-        },
       },
     };
     return operationInformationSchema;
@@ -132,12 +127,6 @@ export const operationInformationUISchema: UiSchema = {
     },
   },
   boundary_map: {
-    "ui:widget": "FileWidget",
-    "ui:options": {
-      filePreview: true,
-    },
-  },
-  equipment_list: {
     "ui:widget": "FileWidget",
     "ui:options": {
       filePreview: true,
