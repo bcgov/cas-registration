@@ -17,7 +17,6 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
         "activities": [1],
         "boundary_map": MOCK_DATA_URL,
         "process_flow_diagram": MOCK_DATA_URL,
-        "equipment_list": MOCK_DATA_URL,
     }
 
     def test_register_edit_operation_information_endpoint_unauthorized_roles_cannot_put(self):

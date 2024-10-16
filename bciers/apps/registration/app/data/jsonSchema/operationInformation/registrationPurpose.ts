@@ -11,7 +11,6 @@ import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTem
 import {
   operationAdd,
   operationPreface,
-  purposeNote,
   purposePreface,
 } from "../operationRegistration/operationInformationText";
 
@@ -40,11 +39,6 @@ export const createRegistrationPurposeSchema = async () => {
           const: purpose,
           title: purpose,
         })),
-      },
-      purpose_note: {
-        //Not an actual field in the db - this is just to make the form look like the wireframes
-        type: "object",
-        readOnly: true,
       },
       operation_preface: {
         //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -107,7 +101,6 @@ export const registrationPurposeUISchema: UiSchema = {
   "ui:order": [
     "purpose_preface",
     "registration_purpose",
-    "purpose_note",
     "regulated_products",
     "operation_preface",
     "operation",
@@ -120,10 +113,6 @@ export const registrationPurposeUISchema: UiSchema = {
   registration_purpose: {
     "ui:placeholder": "Select Registration Purpose",
     "ui:widget": "ComboBox",
-  },
-  purpose_note: {
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": purposeNote,
   },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",

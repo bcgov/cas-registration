@@ -205,13 +205,6 @@ class Operation(TimeStampedModel):
 
         return self.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).only('file').first()
 
-    def get_equipment_list(self) -> Optional[Document]:
-        """
-        Returns the equipment list document associated with the operation.
-        """
-
-        return self.documents.filter(type=DocumentType.objects.get(name="equipment_list")).only('file').first()
-
     def user_has_access(self, user_guid: UUID) -> bool:
         """
         Returns whether a user has access to the operation.
