@@ -1,0 +1,36 @@
+[
+  {
+    "model": "reporting.reportpersonresponsible",
+    "pk": 1,
+    "fields": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "position_title": "Manager",
+      "email": "john.doe@example.com",
+      "phone_number": "+16044011234",
+      "street_address": "123 Elm St",
+      "municipality": "Springfield",
+      "province": "IL",
+      "postal_code": "62701",
+      "business_role": "Operation Representative",
+      "report_version": 1
+    }
+  },
+  {
+    "model": "reporting.reportpersonresponsible",
+    "pk": 2,
+    "fields": {
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "position_title": "Manager",
+      "email": "jane.smith@example.com",
+      "phone_number": "+16044011234",
+      "street_address": "456 Oak St",
+      "municipality": "Springfield",
+      "province": "IL",
+      "postal_code": "62702",
+      "business_role": "Operation Representative",
+      "report_version": 2
+    }
+  }
+]
