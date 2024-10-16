@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { actionHandler } from "@bciers/actions";
-import { FormMode } from "@bciers/utils/enums";
 import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 import { FacilityTypes } from "@bciers/utils/enums";
 
@@ -40,7 +39,7 @@ export default function FacilityForm({
       schema={schema}
       uiSchema={uiSchema}
       formData={formState}
-      mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
+      disabled={isCreatingState}
       onSubmit={async (data: { formData?: any }) => {
         const updatedFormData = { ...formState, ...data.formData };
         setFormState(updatedFormData);

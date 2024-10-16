@@ -108,6 +108,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
           return (
             <Chip
               {...getTagProps}
+              disabled={disabled}
               key={option.id}
               label={option.label}
               {...getTagProps({

@@ -208,7 +208,9 @@ const FileWidget = ({
   );
 
   const disabledColour =
-    disabled || readonly ? "text-bc-bg-dark-grey" : "text-bc-link-blue";
+    disabled || readonly
+      ? "text-bc-component-grey opacity-60 cursor-default"
+      : "text-bc-link-blue";
 
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
@@ -217,7 +219,7 @@ const FileWidget = ({
         <button
           type="button"
           onClick={handleClick}
-          className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
+          className={`p-0 decoration-solid border-0 text-lg bg-transparent  underline ${disabledColour}`}
         >
           {localValue ? "Reupload attachment" : "Upload attachment"}
         </button>
