@@ -53,9 +53,10 @@ const uiSchema = {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
           methodology: {
-            "ui:FieldTemplate": InlineFieldTemplate,
+            "ui:FieldTemplate": FieldTemplate,
             "ui:widget": "select",
             "ui:options": {
+              label: false,
               enumOptions: [
                 "CEMS",
                 "Feedstock Material Balance",
@@ -63,36 +64,39 @@ const uiSchema = {
                 "Replacement Methodology",
               ],
             },
-          },
-          feedstocks: {
-            "ui:title": "Feedstocks",
-            "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-            "ui:FieldTemplate": FieldTemplate,
-            "ui:options": {
-              arrayAddLabel: "Add Feedstock",
-              title: "Feedstock",
-              label: false,
-              verticalBorder: true,
+            methodology: {
+              "ui:FieldTemplate": InlineFieldTemplate,
             },
-            items: {
-              "ui:order": [
-                "feedstock",
-                "annualFeedstockAmount",
-                "unitForAnnualFeedstockAmount",
-                "annualHydrogenProduction",
-              ],
 
-              feedstock: {
-                "ui:FieldTemplate": InlineFieldTemplate,
+            feedstocks: {
+              "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+              "ui:FieldTemplate": FieldTemplate,
+              "ui:options": {
+                arrayAddLabel: "Add Feedstock",
+                title: "Feedstocks",
+                label: false,
+                verticalBorder: true,
               },
-              annualFeedstockAmount: {
-                "ui:FieldTemplate": InlineFieldTemplate,
-              },
-              unitForAnnualFeedstockAmount: {
-                "ui:FieldTemplate": InlineFieldTemplate,
-              },
-              annualHydrogenProduction: {
-                "ui:FieldTemplate": InlineFieldTemplate,
+              items: {
+                "ui:order": [
+                  "feedstock",
+                  "annualFeedstockAmount",
+                  "unitForAnnualFeedstockAmount",
+                  "annualHydrogenProduction",
+                ],
+
+                feedstock: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                annualFeedstockAmount: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                unitForAnnualFeedstockAmount: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
+                annualHydrogenProduction: {
+                  "ui:FieldTemplate": InlineFieldTemplate,
+                },
               },
             },
           },

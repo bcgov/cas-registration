@@ -87,8 +87,10 @@ def handle_methodologies(
         methodology_one_of['methodology']['oneOf'].append(methodology_object)
 
     # Update gas_type_one_of with computed values
-    gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['enum'] = methodology_enum
-    gas_type_one_of['gasType']['oneOf'][index]['dependencies'] = methodology_one_of
+    gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['properties']['methodology'][
+        'enum'
+    ] = methodology_enum
+    gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['dependencies'] = methodology_one_of
 
 
 def handle_gas_types(
@@ -152,7 +154,10 @@ def handle_gas_types(
             {
                 "properties": {
                     "gasType": {"enum": [gas_type_chemical_formula]},
-                    "methodology": {"title": "Methodology", "type": "string", "enum": []},
+                    "methodology": {
+                        "type": "object",
+                        "properties": {"methodology": {"title": "Methodology", "type": "string", "enum": []}},
+                    },
                 }
             }
         )
