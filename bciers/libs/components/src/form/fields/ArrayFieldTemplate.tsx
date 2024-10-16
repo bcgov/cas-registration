@@ -1,5 +1,9 @@
 import Button from "@mui/material/Button";
-import { ArrayFieldTemplateProps, FieldTemplateProps } from "@rjsf/utils";
+import {
+  ArrayFieldTemplateProps,
+  FieldTemplateProps,
+  getUiOptions,
+} from "@rjsf/utils";
 
 function BasicFieldTemplate({ children }: FieldTemplateProps) {
   return <>{children}</>;
@@ -26,9 +30,12 @@ const ArrayFieldTemplate = ({
   items,
   onAddClick,
   uiSchema,
+  registry,
 }: ArrayFieldTemplateProps) => {
-  const arrayAddLabel =
-    (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
+  const { removable = true, arrayAddLabel = "Add" } = getUiOptions(
+    uiSchema,
+    registry.globalUiOptions,
+  );
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
 
@@ -43,7 +50,7 @@ const ArrayFieldTemplate = ({
                   {customTitleName} {i + 1}
                 </span>
               )}
-              {i !== 0 && (
+              {removable && i !== 0 && (
                 <button
                   onClick={item.onDropIndexClick(item.index)}
                   className="border-none bg-transparent p-0 ml-6"
@@ -77,7 +84,7 @@ const ArrayFieldTemplate = ({
           className="w-fit my-8 normal-case"
           onClick={onAddClick}
         >
-          {arrayAddLabel}
+          {arrayAddLabel as any}
         </Button>
       )}
     </div>

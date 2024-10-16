@@ -43,25 +43,22 @@ const ProductionDataForm: React.FC<Props> = ({ allowedProducts }) => {
     productSelection: string[];
     productionData: ProductData[];
   }) => {
-    // Remove the products not checked
-    newFormData.productionData = newFormData.productionData.filter((pd) =>
-      newFormData.productSelection.includes(pd.name),
+    const updatedSelection = newFormData.productSelection.map(
+      (product_name) =>
+        newFormData.productionData.find(
+          (item) => item.name === product_name,
+        ) ?? { name: product_name },
     );
 
-    // Add the checked products
-    newFormData.productionData = [
-      ...newFormData.productionData,
-      ...newFormData.productSelection
-        .filter(
-          (product_name) =>
-            !newFormData.productionData.some((pd) => pd.name === product_name),
-        )
-        .map((product_name) => ({ name: product_name }) as ProductData),
-    ];
+    setFormData({
+      productSelection: newFormData.productSelection,
+      productionData: updatedSelection,
+    });
+  };
 
-    console.log(newFormData);
-
-    setFormData(newFormData);
+  const onSubmit = async (data) => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log(data);
   };
 
   return (
@@ -79,7 +76,7 @@ const ProductionDataForm: React.FC<Props> = ({ allowedProducts }) => {
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}
-      onSubmit={() => new Promise<void>({} as any)}
+      onSubmit={(data) => onSubmit(data.formData)}
       onChange={(data) => onChange(data.formData)}
     />
   );
