@@ -10,6 +10,7 @@ import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
+import { UUID } from "crypto";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -31,6 +32,8 @@ interface Props {
     | EmptyWithUnits
     | EmptyWithFuels
     | EmptyOnlyEmissions;
+  reportVersionId: number;
+  facilityId: UUID;
 }
 
 // 🧩 Main component
@@ -40,6 +43,8 @@ export default function ActivityForm({
   taskListData,
   reportDate,
   defaultEmptySourceTypeState,
+  reportVersionId,
+  facilityId,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
