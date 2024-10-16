@@ -25,6 +25,7 @@ from .report_unit import ReportUnit
 from .report_methodology import ReportMethodology
 from .custom_methodology_schema import CustomMethodologySchema
 from .report_additional_data import ReportAdditionalData
+from .emission_category import EmissionCategory
 
 __all__ = [
     "ReportDataBaseModel",
@@ -51,4 +52,5 @@ __all__ = [
     "CustomMethodologySchema",
     "ReportPersonResponsible",
     "ReportAdditionalData",
+    "EmissionCategory",
 ]
