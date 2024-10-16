@@ -2,16 +2,19 @@
 
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import {
-  buildProductionDataSchema,
-  productionDataUiSchema,
-} from "@reporting/src/data/jsonSchema/productionData";
-import { Product, ProductData } from "./types";
+
 import { useState } from "react";
+import { RJSFSchema } from "@rjsf/utils";
+import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
+import { Product, ProductData } from "@bciers/types/form/productionData";
+import { postProductionData } from "@bciers/actions/api";
 
 interface Props {
+  report_version_id: number;
+  facility_id: string;
   allowedProducts: Product[];
   initialData: ProductData[];
+  schema: RJSFSchema;
 }
 
 const taskListElements: TaskListElement[] = [
@@ -31,37 +34,38 @@ const taskListElements: TaskListElement[] = [
   },
 ];
 
-const ProductionDataForm: React.FC<Props> = ({ allowedProducts }) => {
+const ProductionDataForm: React.FC<Props> = ({
+  report_version_id,
+  facility_id,
+  schema,
+  allowedProducts,
+}) => {
   const [formData, setFormData] = useState<any>({});
 
-  const schema: any = buildProductionDataSchema("Jan 1", "Dec 31");
-  schema.properties.productSelection.items.enum = allowedProducts.map(
-    (p) => p.name,
-  );
-
   const onChange = (newFormData: {
-    productSelection: string[];
-    productionData: ProductData[];
+    product_selection: string[];
+    production_data: ProductData[];
   }) => {
-    // Remove the products not checked
-    newFormData.productionData = newFormData.productionData.filter((pd) =>
-      newFormData.productSelection.includes(pd.name),
+    const updatedSelection = newFormData.product_selection.map(
+      (product_name) =>
+        newFormData.production_data.find(
+          (item) => item.name === product_name,
+        ) ?? allowedProducts.find((p) => p.name === product_name),
     );
 
-    // Add the checked products
-    newFormData.productionData = [
-      ...newFormData.productionData,
-      ...newFormData.productSelection
-        .filter(
-          (product_name) =>
-            !newFormData.productionData.some((pd) => pd.name === product_name),
-        )
-        .map((product_name) => ({ name: product_name }) as ProductData),
-    ];
+    setFormData({
+      product_selection: newFormData.product_selection,
+      production_data: updatedSelection,
+    });
+  };
 
-    console.log(newFormData);
-
-    setFormData(newFormData);
+  const onSubmit = async (data: any) => {
+    console.log(data);
+    await postProductionData(
+      report_version_id,
+      facility_id,
+      data.production_data,
+    );
   };
 
   return (
@@ -79,7 +83,7 @@ const ProductionDataForm: React.FC<Props> = ({ allowedProducts }) => {
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}
-      onSubmit={() => new Promise<void>({} as any)}
+      onSubmit={(data) => onSubmit(data.formData)}
       onChange={(data) => onChange(data.formData)}
     />
   );
