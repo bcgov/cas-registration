@@ -27,7 +27,7 @@ class OperatorServiceV2:
             # Get the operator by ID
             operator = Operator.objects.get(id=operator_id)
 
-            # Get the fields that are required based on the model's meta info (non-nullable fields without a default value)
+            # Get the fields that are required
             required_fields = [
                 "legal_name",
                 "cra_business_number",
@@ -36,8 +36,13 @@ class OperatorServiceV2:
                 "mailing_address",
             ]
 
-            # Check if all required fields are completed
-            missing_fields = [field for field in required_fields if not getattr(operator, field)]
+            # Check if all required fields are completed (None, empty, or whitespace for strings)
+            missing_fields = [
+                field
+                for field in required_fields
+                if getattr(operator, field) is None
+                or (isinstance(getattr(operator, field), str) and getattr(operator, field).strip() == '')
+            ]
 
             # If no missing fields, return True (all fields are filled), otherwise False
             return len(missing_fields) == 0
