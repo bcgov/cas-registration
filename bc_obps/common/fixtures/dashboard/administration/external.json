@@ -32,6 +32,32 @@
                 "field": "error",
                 "operator": "notExists",
                 "value": true
+              },
+              {
+                "api": "registration/user-operators/current/has-required-fields",
+                "field": "has_required_fields",
+                "operator": "equals",
+                "value": true
+              }
+            ]
+          },
+          {
+            "title": "My Operator * action required",
+            "icon": "Inbox",
+            "content": "View or update information of your operator here.",
+            "href": "/administration/my-operator",
+            "conditions": [
+              {
+                "api": "registration/v2/user-operators/current/operator",
+                "field": "error",
+                "operator": "notExists",
+                "value": true
+              },
+              {
+                "api": "registration/user-operators/current/has-required-fields",
+                "field": "has_required_fields",
+                "operator": "equals",
+                "value": false
               }
             ]
           },
