@@ -1,6 +1,6 @@
-import { actionHandler } from "@bciers/actions";
 import ProductionDataForm from "./ProductionDataForm";
-import { Product } from "./types";
+import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
+import getProductionData from "@bciers/actions/api/getProductionData";
 
 interface Props {
   report_version_id: number;
@@ -11,26 +11,23 @@ const ProductionData: React.FC<Props> = async ({
   report_version_id,
   facility_id,
 }) => {
-  const endpoint = `reporting/report-version/${report_version_id}/facilities/${facility_id}/production-data`;
-  const data = [{ somedata: "test" }, {}, {}];
+  const response = await getProductionData(report_version_id, facility_id);
 
-  const response = await actionHandler(endpoint, "POST", endpoint, {
-    body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json",
-      accept: "application/json",
-    },
-  });
-  console.log(response);
-
-  const allowedProducts: Product[] = [
-    { id: 1, name: "BC-specific refinery complexity throughput" },
-    { id: 2, name: "Cement equivalent" },
-    { id: 3, name: "Chemicals: pure hydrogen peroxide" },
-  ];
+  const allowedProductNames = response.allowed_products.map((p) => p.name);
+  const schema: any = buildProductionDataSchema(
+    "Jan 1",
+    "Dec 31",
+    allowedProductNames,
+  );
 
   return (
-    <ProductionDataForm allowedProducts={allowedProducts} initialData={[]} />
+    <ProductionDataForm
+      report_version_id={report_version_id}
+      facility_id={facility_id}
+      allowedProducts={response.allowed_products}
+      initialData={response.report_products}
+      schema={schema}
+    />
   );
 };
 

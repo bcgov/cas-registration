@@ -12,3 +12,6 @@ export { default as getOptedInOperationDetail } from "./getOptedInOperationDetai
 export { default as getContact } from "./getContact";
 export { default as getContacts } from "./getContacts";
 export { default as getOperationRepresentatives } from "./getOperationRepresentatives";
+export { default as getProductionData } from "./getProductionData";
+
+export { default as postProductionData } from "./postProductionData";
