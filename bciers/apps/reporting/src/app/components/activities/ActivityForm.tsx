@@ -138,46 +138,48 @@ export default function ActivityForm({
     console.log("SUBMITTED: ", JSON.stringify(data.formData));
   };
 
-  if (
+  const formIsLoading =
     (Object.keys(jsonSchema).length === 0 &&
       jsonSchema.constructor === Object) ||
-    previousActivityId !== activityId
-  )
-    return <>Loading...</>;
-  // Render the Activity form and tasklist
+    previousActivityId !== activityId;
+
   return (
     <div className="w-full flex flex-row">
       <ReportingTaskList elements={taskListData} />
-      <div className="w-full">
-        <FormBase
-          schema={jsonSchema}
-          fields={CUSTOM_FIELDS}
-          formData={formState}
-          uiSchema={uiSchema}
-          validator={validator}
-          onChange={handleFormChange}
-          onError={(e: any) => console.log("ERROR: ", e)}
-          onSubmit={submitHandler}
-        >
-          {errorList.length > 0 &&
-            errorList.map((e: any) => (
-              <Alert key={e.message} severity="error">
-                {e?.stack ?? e.message}
-              </Alert>
-            ))}
-          <div className="flex justify-end gap-3">
-            {/* Disable the button when loading or when success state is true */}
-            <Button
-              variant="contained"
-              type="submit"
-              aria-disabled={isLoading}
-              disabled={isLoading}
-            >
-              {isSuccess ? "✅ Success" : "Submit"}
-            </Button>
-          </div>
-        </FormBase>
-      </div>
+      {formIsLoading ? (
+        "Loading Form..."
+      ) : (
+        <div className="w-full">
+          <FormBase
+            schema={jsonSchema}
+            fields={CUSTOM_FIELDS}
+            formData={formState}
+            uiSchema={uiSchema}
+            validator={validator}
+            onChange={handleFormChange}
+            onError={(e: any) => console.log("ERROR: ", e)}
+            onSubmit={submitHandler}
+          >
+            {errorList.length > 0 &&
+              errorList.map((e: any) => (
+                <Alert key={e.message} severity="error">
+                  {e?.stack ?? e.message}
+                </Alert>
+              ))}
+            <div className="flex justify-end gap-3">
+              {/* Disable the button when loading or when success state is true */}
+              <Button
+                variant="contained"
+                type="submit"
+                aria-disabled={isLoading}
+                disabled={isLoading}
+              >
+                {isSuccess ? "✅ Success" : "Submit"}
+              </Button>
+            </div>
+          </FormBase>
+        </div>
+      )}
     </div>
   );
 }
