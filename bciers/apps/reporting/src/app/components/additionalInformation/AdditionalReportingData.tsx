@@ -15,17 +15,12 @@ import { actionHandler } from "@bciers/actions";
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
-const taskListElements: TaskListElement[] = [
-  { type: "Page", title: "Additional reporting data", isActive: true },
-  { type: "Page", title: "New entrant information" },
-];
-
 interface AdditionalReportingDataProps {
-  version_id: number;
+  versionId: number;
 }
 
 export default function AdditionalReportingData({
-  version_id,
+  versionId,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<any>({});
   const [schema, setSchema] = useState<RJSFSchema>(
@@ -33,14 +28,26 @@ export default function AdditionalReportingData({
   ); // Initialize with base schema
   const router = useRouter();
 
-  const saveAndContinueUrl = `/reports/${version_id}/new-entrant-information`;
+  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+
+  const taskListElements: TaskListElement[] = [
+    {
+      type: "Page",
+      title: "Additional reporting data",
+      isActive: true,
+      link: `/reports/${versionId}/additional-reporting-data`,
+    },
+    {
+      type: "Page",
+      title: "New entrant information",
+      link: `/reports/${versionId}/new-entrant-information`,
+    },
+  ];
 
   useEffect(() => {
     const getRegistrationPurposes = async () => {
-      const result = await getRegistrationPurpose(version_id);
+      const result = await getRegistrationPurpose(versionId);
       const registrationPurpose = result?.registration_purposes;
-      console.log("reg", result);
-      console.log("registration_purpose", registrationPurpose);
 
       if (
         registrationPurpose?.length === 1 &&
@@ -75,8 +82,7 @@ export default function AdditionalReportingData({
                             ...item.properties,
                             electricity_generated: {
                               type: "string",
-                              title:
-                                "Electricity generated (Optional for reporting only operations)",
+                              title: "Electricity generated",
                             },
                           },
                         };
@@ -92,24 +98,20 @@ export default function AdditionalReportingData({
     };
 
     getRegistrationPurposes();
-  }, [version_id]);
+  }, [versionId]);
 
   const handleSubmit = async (data: any) => {
-    const endpoint = `reporting/report-version/${version_id}/additional-data`;
+    const endpoint = `reporting/report-version/${versionId}/additional-data`;
     const method = "POST";
 
     const payload = {
-      report_version: version_id,
-      ...data, // Use the form data passed to this function
+      report_version: versionId,
+      ...data,
     };
 
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
-
-    console.log("Response:", response);
-
-    // Handle response
     if (response) {
       router.push(`${saveAndContinueUrl}`); // Redirect on success
     }
@@ -117,24 +119,25 @@ export default function AdditionalReportingData({
 
   return (
     <MultiStepFormWithTaskList
-      initialStep={0}
+      initialStep={2}
       steps={[
         "Operation Information",
-        "Facilities Information",
+        "Report Information",
+        "Additional Information",
         "Compliance Summary",
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
       schema={schema} // Use the modified schema
       uiSchema={additionalReportingDataUiSchema}
-      formData={formData} // Pass the updated formData to the component
+      formData={formData}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
       onChange={(data: any) => {
-        setFormData(data.formData); // Sync formData on every change
+        setFormData(data.formData);
       }}
       onSubmit={(data: any) => {
-        handleSubmit(data.formData); // Call the submit handler directly
+        handleSubmit(data.formData);
       }}
     />
   );
