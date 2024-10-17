@@ -78,7 +78,7 @@ export default {
     error: "/auth/error", // Error code passed in query string as ?error=
   },
   callbacks: {
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, trigger }) {
       try {
         // 🧩 custom properties are configured through module augmentation
         if (profile) {
@@ -113,8 +113,9 @@ export default {
             token.full_name = `${token.given_name} ${token.family_name}`;
           }
         }
-        // If no token.app_role, augment the keycloak token with cas registration user app_role
-        if (!token.app_role) {
+        // Check if app_role is missing or if the update trigger was called
+        if (!token.app_role || trigger === "update") {
+          // Augment the keycloak token with the user app_role
           // 🚀 API call: Get user app_role by user_guid from user table
           const responseRole = await actionHandler(
             `registration/user/user-app-role/${token.user_guid}`,
