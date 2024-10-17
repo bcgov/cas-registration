@@ -26,7 +26,7 @@ interface Props {
   };
   currentActivity: { id: number; name: string; slug: string };
   taskListData: TaskListElement[];
-  reportDate: string;
+  reportVersionId: number;
   defaultEmptySourceTypeState:
     | EmptyWithUnits
     | EmptyWithFuels
@@ -38,7 +38,7 @@ export default function ActivityForm({
   activityData,
   currentActivity,
   taskListData,
-  reportDate,
+  reportVersionId,
   defaultEmptySourceTypeState,
 }: Readonly<Props>) {
   // 🐜 To display errors
@@ -68,7 +68,7 @@ export default function ActivityForm({
     ) => {
       // fetch data from server
       const schemaData = await actionHandler(
-        `reporting/build-form-schema?activity=${activityId}&report_date=${reportDate}${selectedSourceTypes}`,
+        `reporting/build-form-schema?activity=${activityId}&report_version_id=${reportVersionId}${selectedSourceTypes}`,
         "GET",
         "",
       );
