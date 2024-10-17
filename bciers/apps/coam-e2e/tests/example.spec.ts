@@ -1,3 +1,3 @@
-import testNxProjectLandingPage from "@bciers/e2e/utils/test-nx-app-landing-page";
+import testNxProjectUrl from "@bciers/e2e/utils/test-nx-app-url";
 
-testNxProjectLandingPage(["coam"]);
+testNxProjectUrl(["coam"]);
