@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0045_V1_11_0'),
-        ('reporting', '0019_alter_reportactivity_json_data_and_more'),
+        ('reporting', '0020_report_person_responsible'),
     ]
 
     operations = [
