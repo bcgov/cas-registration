@@ -21,6 +21,6 @@ from ninja.responses import codes_4xx, codes_5xx
 def build_form_schema(
     request: HttpRequest,
     activity: int,
-    report_date: str,
+    report_version_id: int,
 ) -> Tuple[int, str]:
-    return 200, FormBuilderService.build_form_schema(activity, report_date, request.GET.getlist('source_types[]'))
+    return 200, FormBuilderService.build_form_schema(activity, report_version_id, request.GET.getlist('source_types[]'))
