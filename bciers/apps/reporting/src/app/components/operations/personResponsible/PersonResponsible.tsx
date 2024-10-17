@@ -186,6 +186,21 @@ const PersonResponsible = ({ version_id }: Props) => {
     }
   };
 
+  const handleSync = async () => {
+    const updatedContacts = await getContacts();
+    setContacts(updatedContacts);
+    setSelectedContactId(null);
+    setContactFormData(null);
+    setFormData({ person_responsible: "" });
+
+    const updatedSchema = createPersonResponsibleSchema(
+      personResponsibleSchema,
+      updatedContacts.items,
+      null,
+    );
+    setSchema(updatedSchema);
+  };
+
   return (
     <>
       <MultiStepFormWithTaskList
@@ -200,7 +215,15 @@ const PersonResponsible = ({ version_id }: Props) => {
         cancelUrl={"/reports"}
         taskListElements={taskListElements}
         schema={schema}
-        uiSchema={personResponsibleUiSchema}
+        uiSchema={{
+          ...personResponsibleUiSchema,
+          sync_button: {
+            ...personResponsibleUiSchema.sync_button,
+            "ui:options": {
+              onSync: handleSync,
+            },
+          },
+        }}
         formData={formData}
         onChange={handleContactSelect}
         onSubmit={handleSubmit}
