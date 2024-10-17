@@ -1,0 +1,47 @@
+from registration.models import Operation, RegistrationPurpose
+from reporting.models import ReportVersion, Report, ReportAdditionalData
+from reporting.schema.report_additional_data import ReportAdditionalDataIn
+
+
+class ReportAdditionalDataService:
+    @staticmethod
+    def get_report_person_responsible_by_version_id(
+        report_version_id: int,
+    ) -> ReportAdditionalData:
+        return ReportAdditionalData.objects.get(report_version__id=report_version_id)
+
+    @staticmethod
+    def get_registration_purpose_by_version_id(version_id: int) -> dict:
+        # Fetch the operation associated with the report version
+        operation = Operation.objects.get(
+            id=Report.objects.get(id=ReportVersion.objects.get(id=version_id).report_id).operation_id
+        )
+
+        # Use list comprehension to collect registration purposes directly
+        purposes_list = list(
+            RegistrationPurpose.objects.filter(operation=operation).values_list('registration_purpose', flat=True)
+        )
+
+        # Always return the result as a dictionary with an array (empty or populated)
+        return {"registration_purposes": purposes_list}
+
+    @staticmethod
+    def save_report_additional_data(version_id: int, data: ReportAdditionalDataIn) -> ReportAdditionalData:
+        # Fetch the report version
+        report_version = ReportVersion.objects.filter(id=version_id).first()
+        if report_version is None:
+            raise ValueError("ReportVersion with this ID does not exist.")
+
+        # Create or update the ReportAdditionalData instance
+        report_additional_data, created = ReportAdditionalData.objects.update_or_create(
+            report_version=report_version,
+            defaults={
+                "capture_emissions": data.capture_emissions,
+                "emissions_on_site_use": data.emissions_on_site_use,
+                "emissions_on_site_sequestration": data.emissions_on_site_sequestration,
+                "emissions_off_site_transfer": data.emissions_off_site_transfer,
+                "electricity_generated": data.electricity_generated,
+            },
+        )
+
+        return report_additional_data
