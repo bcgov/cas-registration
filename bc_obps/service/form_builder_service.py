@@ -5,6 +5,7 @@ from reporting.models import (
     ActivityJsonSchema,
     ActivitySourceTypeJsonSchema,
     CustomMethodologySchema,
+    ReportVersion,
 )
 from typing import Dict, List, Optional, Any
 from django.db.models import QuerySet
@@ -322,15 +323,22 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
 
 class FormBuilderService:
     @classmethod
-    def build_form_schema(cls, activity: int, report_date: str, source_types: List[str] | List[int]) -> str:
-        if report_date is None:
-            raise Exception('Cannot build a schema without a valid report date')
+    def build_form_schema(cls, activity: int, report_version_id: int, source_types: List[str] | List[int]) -> str:
         if activity is None:
             raise Exception('Cannot build a schema without Activity data')
+
+        report_date = cls.get_report_date_from_version_id(report_version_id)
+
         # Get config objects
-        try:
-            config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
-        except Exception:
-            raise Exception(f'No Configuration found for report_date {report_date}')
+        config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
         schema = build_schema(config.id, activity, source_types, report_date)
         return schema
+
+    @classmethod
+    def get_report_date_from_version_id(cls, report_version_id: int) -> str:
+
+        report_version = ReportVersion.objects.only('report_id').get(id=report_version_id)
+        if report_version and report_version.report and report_version.report.created_at:
+            return report_version.report.created_at.strftime('%Y-%m-%d')
+
+        return ""
