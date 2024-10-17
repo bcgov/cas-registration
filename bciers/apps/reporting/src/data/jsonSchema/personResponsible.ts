@@ -1,7 +1,10 @@
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { infoNote } from "@reporting/src/data/jsonSchema/personResponsibleInfoText";
+import {
+  infoNote,
+  SyncContactsButton,
+} from "@reporting/src/data/jsonSchema/personResponsibleInfoText";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { Contact } from "@reporting/src/app/components/operations/types";
 
@@ -23,6 +26,9 @@ export const personResponsibleSchema: RJSFSchema = {
       type: "string",
       title: "Select contact if they are already a BCIERS user ",
     },
+    sync_button: {
+      type: "object",
+    },
   },
 };
 
@@ -36,6 +42,7 @@ export const personResponsibleUiSchema: UiSchema = {
     "person_responsible",
     "new_person_responsible",
     "contact_details",
+    "sync_button",
   ],
   purpose_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
@@ -43,6 +50,9 @@ export const personResponsibleUiSchema: UiSchema = {
   },
   assign_info: {
     "ui:FieldTemplate": SectionFieldTemplate,
+  },
+  sync_button: {
+    "ui:FieldTemplate": SyncContactsButton,
   },
   person_responsible: {
     "ui:widget": "SelectWidget",
