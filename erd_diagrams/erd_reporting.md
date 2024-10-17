@@ -256,6 +256,11 @@ ReportAdditionalData {
     IntegerField emissions_on_site_sequestration
     IntegerField emissions_off_site_transfer
     IntegerField electricity_generated
+EmissionCategoryMapping {
+    BigAutoField id
+    ForeignKey emission_category
+    ForeignKey activity
+    ForeignKey source_type
 }
 Report }|--|| User : created_by
 Report }|--|| User : updated_by
@@ -348,3 +353,6 @@ ReportAdditionalData }|--|| User : created_by
 ReportAdditionalData }|--|| User : updated_by
 ReportAdditionalData }|--|| User : archived_by
 ReportAdditionalData ||--|| ReportVersion : report_version
+EmissionCategoryMapping }|--|| EmissionCategory : emission_category
+EmissionCategoryMapping }|--|| Activity : activity
+EmissionCategoryMapping }|--|| SourceType : source_type
