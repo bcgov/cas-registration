@@ -10,3 +10,4 @@ from .fuel import get_fuel_data
 from .report_person_responsible import get_report_person_responsible_by_version_id
 from .report_person_responsible import save_report_contact
 from .report_activity import save_report_activity_data
+from .report_additional_data import get_registration_purpose_by_version_id
