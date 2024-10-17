@@ -4,6 +4,7 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
+import { mockUseSession } from "../helpers/mockUseSession";
 import { getBusinessStructures, getCurrentOperator } from "./mocks";
 import OperatorPage from "apps/administration/app/components/operators/OperatorPage";
 
@@ -49,6 +50,8 @@ describe("Operator component", () => {
     }).rejects.toThrow("Failed to retrieve business structure information");
   });
   it("renders the operator form with form data", async () => {
+    // Mock the session data
+    mockUseSession();
     getCurrentOperator.mockReturnValueOnce({
       street_address: "123 Main St",
       municipality: "City",
@@ -106,6 +109,8 @@ describe("Operator component", () => {
     expect(screen.getByText(/BC Corporation/i)).toBeVisible();
   });
   it("renders the operator form for adding a new operator", async () => {
+    // Mock the session data
+    mockUseSession();
     // Mock getBusinessStructures for create mode
     getBusinessStructures.mockReturnValueOnce([
       { name: "General Partnership" },
