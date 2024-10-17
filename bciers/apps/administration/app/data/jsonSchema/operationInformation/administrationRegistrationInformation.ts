@@ -1,11 +1,7 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-// import { getRegulatedProducts } from "@bciers/actions/api";
-import {
-  getRegulatedProducts,
-  getOperationStatutoryDeclaration,
-} from "libs/actions/src/api";
+import { getRegulatedProducts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
 export const createAdministrationRegistrationInformationSchema = async (
@@ -23,7 +19,6 @@ export const createAdministrationRegistrationInformationSchema = async (
   const isNewEntrant = registrationPurposesValue?.includes(
     RegistrationPurposes.NEW_ENTRANT_OPERATION,
   );
-  const statutoryDeclaration = await getOperationStatutoryDeclaration();
 
   // create the schema with the fetched values
   const registrationInformationSchema: RJSFSchema = {
@@ -90,22 +85,17 @@ export const createAdministrationRegistrationInformationSchema = async (
           type: "object",
           readOnly: true,
         },
-        new_entrant: {
-          type: "object",
-          properties: {
-            operation_date_of_first_shipment: {
-              type: "string",
-              title: "When is this operation's date of First Shipment?",
-              enum: [
-                "On or before March 31, 2024",
-                "On or after April 1, 2024",
-              ],
-            },
-            statutory_declaration: {
-              type: "string",
-              title: "Application and Statutory Declaration",
-            },
-          },
+        operation_date_of_first_shipment: {
+          type: "string",
+          title: "When is this operation's date of First Shipment?",
+          enum: [
+            "On or before March 31, 2024",
+            "On or after April 1, 2024",
+          ],
+        },
+        statutory_declaration: {
+          type: "string",
+          title: "Application and Statutory Declaration",
         },
       }),
     },
@@ -119,7 +109,8 @@ export const registrationInformationUiSchema: UiSchema = {
     "regulated_operation_preface",
     "regulated_products",
     "new_entrant_preface",
-    "new_entrant",
+    "operation_date_of_first_shipment",
+    "statutory_declaration",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
   regulated_operation_preface: {
@@ -136,22 +127,17 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "New Entrant Operation",
   },
-  new_entrant: {
+  operation_date_of_first_shipment: {
+    "ui:widget": "SelectWidget",
     "ui:options": {
-      label: false,
+      inline: true,
     },
-    operation_date_of_first_shipment: {
-      "ui:widget": "SelectWidget",
-      "ui:options": {
-        inline: true,
-      },
-    },
-    statutory_declaration: {
-      "ui:widget": "FileWidget",
-      "ui:options": {
-        filePreview: true,
-        accept: ".pdf",
-      },
+  },
+  statutory_declaration: {
+    "ui:widget": "FileWidget",
+    "ui:options": {
+      filePreview: true,
+      accept: ".pdf",
     },
   },
 };
