@@ -344,8 +344,8 @@ describe("OperatorForm component", () => {
     await fillMandatoryFields(); // Mock function to fill the form
 
     // Mock the actionHandler response
-    const response = { success: true }; // Example response
-    actionHandler.mockReturnValueOnce(response);
+    const res = { success: true }; // Example response
+    actionHandler.mockReturnValueOnce(res);
 
     // Submit the form
     const submitButton = screen.getByRole("button", { name: /submit/i });
