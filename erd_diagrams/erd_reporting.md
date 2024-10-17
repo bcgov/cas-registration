@@ -243,6 +243,12 @@ ReportMethodology {
     ForeignKey report_version
     OneToOneField report_emission
 }
+EmissionCategoryMapping {
+    BigAutoField id
+    ForeignKey emission_category
+    ForeignKey activity
+    ForeignKey source_type
+}
 Report }|--|| User : created_by
 Report }|--|| User : updated_by
 Report }|--|| User : archived_by
@@ -330,3 +336,6 @@ ReportMethodology }|--|| User : updated_by
 ReportMethodology }|--|| User : archived_by
 ReportMethodology }|--|| ReportVersion : report_version
 ReportMethodology ||--|| ReportEmission : report_emission
+EmissionCategoryMapping }|--|| EmissionCategory : emission_category
+EmissionCategoryMapping }|--|| Activity : activity
+EmissionCategoryMapping }|--|| SourceType : source_type
