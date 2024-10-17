@@ -62,7 +62,7 @@ export default function ProfileForm({ formData, isCreate }: Props) {
   // 🛠️ Function to update the session, without reloading the page
   const handleUpdate = async () => {
     // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
-    await update();
+    await update({ trigger: "update" });
     // ✅ Set success state to true
     setIsSuccess(true);
     // 🕐 Wait for 3 second and then reset success state
