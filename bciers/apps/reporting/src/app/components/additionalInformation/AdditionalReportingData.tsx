@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-
+import { useRouter } from "next/navigation";
 import {
+  additionalReportingDataSchema,
   additionalReportingDataUiSchema,
-  baseSchema,
-  conditionalFields,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
+import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
+import { actionHandler } from "@bciers/actions";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
@@ -19,36 +20,99 @@ const taskListElements: TaskListElement[] = [
   { type: "Page", title: "New entrant information" },
 ];
 
-export default function AdditionalReportingData() {
-  const [formSchema, setFormSchema] = useState<RJSFSchema>(baseSchema);
+interface AdditionalReportingDataProps {
+  version_id: number;
+}
+
+export default function AdditionalReportingData({
+  version_id,
+}: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<any>({});
+  const [schema, setSchema] = useState<RJSFSchema>(
+    additionalReportingDataSchema,
+  ); // Initialize with base schema
+  const router = useRouter();
 
-  const handleRadioChange = (data: any) => {
-    const isCaptureEmissions = data.capture_emissions === true;
+  const saveAndContinueUrl = `/reports/${version_id}/new-entrant-information`;
 
-    // Update schema based on radio button value
-    const updatedSchema: RJSFSchema = {
-      ...baseSchema,
-      properties: {
-        ...baseSchema.properties,
-        ...(isCaptureEmissions ? conditionalFields : {}),
-      },
+  useEffect(() => {
+    const getRegistrationPurposes = async () => {
+      const result = await getRegistrationPurpose(version_id);
+      const registrationPurpose = result?.registration_purposes;
+      console.log("reg", result);
+      console.log("registration_purpose", registrationPurpose);
+
+      if (
+        registrationPurpose?.length === 1 &&
+        registrationPurpose[0] === "Reporting Operation"
+      ) {
+        setSchema((prevSchema) => {
+          const dependencies = prevSchema.dependencies || {};
+          const captureEmissions =
+            typeof dependencies.capture_emissions === "object" &&
+            dependencies.capture_emissions !== null
+              ? dependencies.capture_emissions
+              : {};
+
+          return {
+            ...prevSchema,
+            dependencies: {
+              ...dependencies,
+              capture_emissions: {
+                ...captureEmissions,
+                oneOf:
+                  captureEmissions.oneOf?.map(
+                    (item: {
+                      properties: { capture_emissions: { enum: boolean[] } };
+                    }) => {
+                      if (
+                        item.properties &&
+                        item.properties.capture_emissions?.enum[0] === true
+                      ) {
+                        return {
+                          ...item,
+                          properties: {
+                            ...item.properties,
+                            electricity_generated: {
+                              type: "string",
+                              title:
+                                "Electricity generated (Optional for reporting only operations)",
+                            },
+                          },
+                        };
+                      }
+                      return item;
+                    },
+                  ) || [],
+              },
+            },
+          };
+        });
+      }
     };
 
-    // Ensure formData reflects the current selection
-    const updatedFormData = {
-      ...data,
-      ...(!isCaptureEmissions && {
-        capture_type: undefined,
-        emissions_on_site_use: undefined,
-        emissions_on_site_sequestration: undefined,
-        emissions_off_site_transfer: undefined,
-        electricity_generated: undefined,
-      }),
+    getRegistrationPurposes();
+  }, [version_id]);
+
+  const handleSubmit = async (data: any) => {
+    const endpoint = `reporting/report-version/${version_id}/additional-data`;
+    const method = "POST";
+
+    const payload = {
+      report_version: version_id,
+      ...data, // Use the form data passed to this function
     };
 
-    setFormSchema(updatedSchema);
-    setFormData(updatedFormData);
+    const response = await actionHandler(endpoint, method, endpoint, {
+      body: JSON.stringify(payload),
+    });
+
+    console.log("Response:", response);
+
+    // Handle response
+    if (response) {
+      router.push(`${saveAndContinueUrl}`); // Redirect on success
+    }
   };
 
   return (
@@ -61,20 +125,17 @@ export default function AdditionalReportingData() {
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
-      schema={formSchema}
+      schema={schema} // Use the modified schema
       uiSchema={additionalReportingDataUiSchema}
       formData={formData} // Pass the updated formData to the component
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
       onChange={(data: any) => {
         setFormData(data.formData); // Sync formData on every change
-        handleRadioChange(data.formData);
       }}
-      onSubmit={(data: any) =>
-        new Promise<void>((resolve) => {
-          resolve(data);
-        })
-      }
+      onSubmit={(data: any) => {
+        handleSubmit(data.formData); // Call the submit handler directly
+      }}
     />
   );
 }
