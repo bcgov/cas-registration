@@ -28,12 +28,9 @@ const FacilityInformationPage = async ({
     searchParams,
   );
 
-  // Is there a cleaner way to get the facilityId for a single facility operation?
-  // May be worth creating an API endpoint to get the facilityId for a single facility operation
-  // in https://github.com/bcgov/cas-registration/issues/2065
   const facilityId =
     isOperationSfo && initialGridData.rows.length === 1
-      ? initialGridData.rows[0].id
+      ? initialGridData.rows[0].facility__id
       : null;
 
   // Get facility form data for SFO operations if facilityId is available
