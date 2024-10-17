@@ -57,9 +57,9 @@ export default function AdditionalReportingData({
           const dependencies = prevSchema.dependencies || {};
           const captureEmissions =
             typeof dependencies.capture_emissions === "object" &&
-            dependencies.capture_emissions !== null
+            !Array.isArray(dependencies.capture_emissions)
               ? dependencies.capture_emissions
-              : {};
+              : {}; // Ensure captureEmissions is an object
 
           return {
             ...prevSchema,
@@ -68,28 +68,37 @@ export default function AdditionalReportingData({
               capture_emissions: {
                 ...captureEmissions,
                 oneOf:
-                  captureEmissions.oneOf?.map(
-                    (item: {
-                      properties: { capture_emissions: { enum: boolean[] } };
-                    }) => {
+                  captureEmissions.oneOf?.map((item) => {
+                    // Ensure item is an object and has properties
+                    if (
+                      typeof item === "object" &&
+                      item !== null &&
+                      "properties" in item
+                    ) {
+                      const { properties } = item as any; // Cast item to have properties
+
                       if (
-                        item.properties &&
-                        item.properties.capture_emissions?.enum[0] === true
+                        properties &&
+                        properties.capture_emissions &&
+                        Array.isArray(properties.capture_emissions.enum)
                       ) {
-                        return {
-                          ...item,
-                          properties: {
-                            ...item.properties,
-                            electricity_generated: {
-                              type: "string",
-                              title: "Electricity generated",
+                        // Only modify if the first enum value is true
+                        if (properties.capture_emissions.enum[0] === true) {
+                          return {
+                            ...item,
+                            properties: {
+                              ...properties,
+                              electricity_generated: {
+                                type: "string",
+                                title: "Electricity generated",
+                              },
                             },
-                          },
-                        };
+                          };
+                        }
                       }
-                      return item;
-                    },
-                  ) || [],
+                    }
+                    return item; // Return the original item if conditions aren't met
+                  }) || [],
               },
             },
           };
@@ -137,7 +146,7 @@ export default function AdditionalReportingData({
         setFormData(data.formData);
       }}
       onSubmit={(data: any) => {
-        handleSubmit(data.formData);
+        return handleSubmit(data.formData);
       }}
     />
   );
