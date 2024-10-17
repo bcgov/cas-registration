@@ -85,7 +85,6 @@ const evaluateCondition = async (condition: any): Promise<boolean> => {
         return false;
     }
   } catch (error) {
-    console.error("Error evaluating condition:", error);
     return false;
   }
 };

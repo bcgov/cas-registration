@@ -126,7 +126,7 @@ For our multi-zone apps, the dashboard app manages the main domain and rewites r
 
 The base directory where all the dashboard-related JSON files are stored is `bc_obps/common/fixtures/dashboard/`. The folder structure for the .json files in the project follows a specific pattern, which includes an optional part. Here's the complete structure:
 
-`bc_obps/common/fixtures/dashboard/{project}/{identity-provider-type}{optional_userole}.json`
+`bc_obps/common/fixtures/dashboard/{project}/{identity-provider-type}_{optional_userole}.json`
 
 `{project}/`: This represents the specific project folder. Replace {project} with the name of the project.
 
@@ -136,13 +136,61 @@ The base directory where all the dashboard-related JSON files are stored is `bc_
 
 The .json file then sets the dashboard tile links' href property as per the project's folder structure.
 
+#### Key Fields in JSON:
+
+- **`dashboard`**: Specifies the type of dashboard, in this case, `"administration"`.
+- **`access_roles`**: An array of roles that can access this dashboard. Here, it includes `"industry_user"` and `"industry_user_admin"`.
+- **`tiles`**: An array of tiles (menu items), where each tile includes:
+  - **`title`**: The title of the tile, which appears on the dashboard.
+  - **`icon`**: The icon name representing the tile visually.
+  - **`content`**: A short description of what the tile is for.
+  - **`href`**: The link or path to navigate to when the tile is clicked.
+  - **`conditions`**: An array of condition objects. These determine whether the tile should be displayed or not, based on certain API responses and field values.
+
+#### Tile Example:
+
+```json
+{
+  "title": "Select an Operator",
+  "icon": "Layers",
+  "content": "Select your operator here.",
+  "href": "/administration/select-operator",
+  "conditions": [
+    {
+      "api": "registration/v2/user-operators/current/operator",
+      "field": "error",
+      "operator": "exists",
+      "value": true
+    }
+  ]
+}
+```
+
+### Condition Structure
+
+Each tile's visibility can be controlled by one or more conditions. A condition consists of:
+
+- **`api`**: The API endpoint that will return the data to evaluate.
+- **`field`**: The specific field in the API response to check.
+- **`operator`**: The comparison operator, such as:
+  - `"equals"`: Checks if the field value equals the specified `value`.
+  - `"notEquals"`: Checks if the field value does not equal the specified `value`.
+  - `"exists"`: Checks if the field exists.
+  - `"notExists"`: Checks if the field does not exist.
+- **`value`**: The value to compare against the field, based on the operator.
+
+### `evalDashboardRules` Function
+
+This function processes the dashboard items (tiles) and evaluates their conditions using API requests. It filters out any tiles or links whose conditions are not met, returning only the valid ones.
+This mechanism allows the dashboard to dynamically display or hide certain tiles based on API responses, providing a personalized experience for users based on their specific data and status.
+
 ### Folder Structure & Dynamic Breadcrumbs
 
 The Bread.tsx component in the `bciers/libs/components/src/navigation` directory dynamically builds breadcrumbs based on the folder structure. To exclude certain folders from appearing in the breadcrumbs, you can use Route groups (i.e., a folder named in parenthesis, such as (authentication)), which are not included in the route's URL path, or you can apply conditional logic within the component.
 
 For instance, when dealing with UUID breadcrumbs from dynamic folders, the component passes the name associated with the UUID record via the query string. The Bread component utilizes the translateNumericPart function to handle UUID segments, identifying the correct query string parameter and rendering the name instead of the UUID number.
 
-The pattern for the query string parameter should follow the format `{name-of-preceding-folder}Title`. For example, the OperationDataGridPage is displayed from the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations`, and the View Details link includes the parameter `?operations_title` for the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations/[operatorId]`.
+The pattern for the query string parameter should follow the format `{name-of-preceding-folder}_title`. For example, the OperationDataGridPage is displayed from the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations`, and the View Details link includes the parameter `?operations_title` for the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations/[operatorId]`.
 
 ## Styling
 
