@@ -17,9 +17,39 @@ from registration.models import (
 from registration.schema.v2.operator import OperatorIn, OperatorFilterSchema
 from registration.schema.v2.parent_operator import ParentOperatorIn
 from django.db.models import QuerySet
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class OperatorServiceV2:
+    @classmethod
+    def has_required_fields(cls, operator_id: UUID) -> bool:
+        try:
+            # Get the operator by ID
+            operator = Operator.objects.get(id=operator_id)
+
+            # Get the fields that are required
+            required_fields = [
+                "legal_name",
+                "cra_business_number",
+                "bc_corporate_registry_number",
+                "business_structure",
+                "mailing_address",
+            ]
+
+            # Check if all required fields are completed (None, empty, or whitespace for strings)
+            missing_fields = [
+                field
+                for field in required_fields
+                if getattr(operator, field) is None
+                or (isinstance(getattr(operator, field), str) and getattr(operator, field).strip() == '')
+            ]
+
+            # If no missing fields, return True (all fields are filled), otherwise False
+            return len(missing_fields) == 0
+
+        except ObjectDoesNotExist:
+            return False  # If the operator does not exist, return False (or handle it in another way if needed)
+
     @classmethod
     @transaction.atomic()
     def upsert_partner_operators(

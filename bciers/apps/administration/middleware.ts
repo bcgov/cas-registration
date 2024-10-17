@@ -1,5 +1,4 @@
-import { stackMiddlewares } from "@bciers/middlewares";
-import { withAuthorizationAdministration } from "./middlewares/withAuthorizationAdministration";
+import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
 import { withRulesAppliedAdmin } from "./middlewares/withRulesAppliedAdmin";
 import { withResponseAdmin } from "./middlewares/withResponseAdmin";
 /* 📌
@@ -27,7 +26,7 @@ export const config = { matcher: ["/((?!api|_next|sw.js|favicon.ico).*)"] };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([
-  withAuthorizationAdministration,
+  withAuthorization,
   withRulesAppliedAdmin,
   withResponseAdmin,
 ]);

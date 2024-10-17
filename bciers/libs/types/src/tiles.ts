@@ -1,25 +1,26 @@
+// Type representing a condition that must be evaluated to show/hide a ContentItem or LinkItem
 export type Condition = {
-  api: string;
-  field: string;
-  operator: "equals" | "in" | "notIn"; // You can add more operators if needed
-  value: string | string[] | null; // The type of value can vary depending on the condition
+  api: string; // The API endpoint to call
+  field: string; // The field in the API response to evaluate
+  operator: "equals" | "notEquals" | "in" | "notIn" | "exists" | "notExists"; // Comparison operator
+  value: any; // The value to compare against
 };
 
-// Define a type for individual LinkItems
+// Type representing a link within a ContentItem that can also have its own conditions
 export type LinkItem = {
-  title: string;
-  href: string;
-  condition?: Condition; // Optional condition for each link
+  href: string; // URL the link points to
+  title: string; // The title of the link
+  conditions?: Condition[]; // Optional array of conditions to display the link
 };
 
-// Define the ContentItem type, which may include an array of LinkItems
+// Main ContentItem type, including optional conditions and links
 export type ContentItem = {
-  icon: string;
-  href: string;
-  title: string;
-  content: string;
-  links?: LinkItem[]; // Array of LinkItems, each with a condition
-  condition?: Condition; // Optional condition for the ContentItem itself
+  icon: string; // Icon to display on the dashboard tile
+  href: string; // URL the tile points to
+  title: string; // Title of the dashboard tile
+  content: string; // Description or content of the dashboard tile
+  links?: LinkItem[]; // Optional array of links, each can have a condition
+  conditions?: Condition[]; // Optional array of conditions to display the tile
 };
 
 export type IconMap = {
