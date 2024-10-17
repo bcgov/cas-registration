@@ -88,10 +88,7 @@ export const createAdministrationRegistrationInformationSchema = async (
         operation_date_of_first_shipment: {
           type: "string",
           title: "When is this operation's date of First Shipment?",
-          enum: [
-            "On or before March 31, 2024",
-            "On or after April 1, 2024",
-          ],
+          enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
         },
         statutory_declaration: {
           type: "string",
