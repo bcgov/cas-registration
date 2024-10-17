@@ -24,7 +24,7 @@ from .report_fuel import ReportFuel
 from .report_unit import ReportUnit
 from .report_methodology import ReportMethodology
 from .custom_methodology_schema import CustomMethodologySchema
-from .reporting_additional_data import ReportAdditionalData
+from .report_additional_data import ReportAdditionalData
 
 __all__ = [
     "ReportDataBaseModel",

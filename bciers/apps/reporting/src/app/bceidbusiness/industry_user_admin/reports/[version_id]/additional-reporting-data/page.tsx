@@ -9,7 +9,7 @@ export default async function Page({
 }) {
   return (
     <Suspense fallback={<Loading />}>
-      <AdditionalReportingData version_id={params.version_id} />
+      <AdditionalReportingData versionId={params.version_id} />
     </Suspense>
   );
 }
