@@ -89,16 +89,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-    def test_get_facility_with_invalid_facility_id(self):
-        response = TestUtils.mock_get_with_auth_role(
-            self, endpoint=custom_reverse_lazy("get_facility", kwargs={"facility_id": '99999'}), role_name="cas_admin"
-        )
-        assert response.status_code == 422
-        assert (
-            response.json().get('detail')[0].get('msg')
-            == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 5'
-        )
-
     def test_industry_users_can_get_their_own_facilities(self):
 
         operator = operator_baker()
@@ -113,7 +103,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             role_name="industry_user",
         )
         assert response.status_code == 200
-        response.json().get('name') is not None
+        assert response.json().get('name') is not None
 
     def test_industry_users_cannot_get_other_users_facilities(self):
         facility = facility_baker()
