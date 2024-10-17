@@ -2,16 +2,19 @@
 
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import {
-  buildProductionDataSchema,
-  productionDataUiSchema,
-} from "@reporting/src/data/jsonSchema/productionData";
-import { Product, ProductData } from "./types";
+
 import { useState } from "react";
+import { RJSFSchema } from "@rjsf/utils";
+import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
+import { Product, ProductData } from "@bciers/types/form/productionData";
+import { postProductionData } from "@bciers/actions/api";
 
 interface Props {
+  report_version_id: number;
+  facility_id: string;
   allowedProducts: Product[];
   initialData: ProductData[];
+  schema: RJSFSchema;
 }
 
 const taskListElements: TaskListElement[] = [
@@ -31,34 +34,38 @@ const taskListElements: TaskListElement[] = [
   },
 ];
 
-const ProductionDataForm: React.FC<Props> = ({ allowedProducts }) => {
+const ProductionDataForm: React.FC<Props> = ({
+  report_version_id,
+  facility_id,
+  schema,
+  allowedProducts,
+}) => {
   const [formData, setFormData] = useState<any>({});
 
-  const schema: any = buildProductionDataSchema("Jan 1", "Dec 31");
-  schema.properties.productSelection.items.enum = allowedProducts.map(
-    (p) => p.name,
-  );
-
   const onChange = (newFormData: {
-    productSelection: string[];
-    productionData: ProductData[];
+    product_selection: string[];
+    production_data: ProductData[];
   }) => {
-    const updatedSelection = newFormData.productSelection.map(
+    const updatedSelection = newFormData.product_selection.map(
       (product_name) =>
-        newFormData.productionData.find(
+        newFormData.production_data.find(
           (item) => item.name === product_name,
-        ) ?? { name: product_name },
+        ) ?? allowedProducts.find((p) => p.name === product_name),
     );
 
     setFormData({
-      productSelection: newFormData.productSelection,
-      productionData: updatedSelection,
+      product_selection: newFormData.product_selection,
+      production_data: updatedSelection,
     });
   };
 
-  const onSubmit = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+  const onSubmit = async (data: any) => {
     console.log(data);
+    await postProductionData(
+      report_version_id,
+      facility_id,
+      data.production_data,
+    );
   };
 
   return (
