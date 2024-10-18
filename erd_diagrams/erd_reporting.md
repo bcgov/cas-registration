@@ -259,6 +259,12 @@ ReportRawActivityData {
     JSONField json_data
 }
 ReportAdditionalData {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
     OneToOneField report_version
     BooleanField capture_emissions
     IntegerField emissions_on_site_use

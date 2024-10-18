@@ -14,6 +14,11 @@ const ProductionData: React.FC<Props> = async ({
   const response = await getProductionData(report_version_id, facility_id);
 
   const allowedProductNames = response.allowed_products.map((p) => p.name);
+  const allowedProducts = response.allowed_products.map((p) => ({
+    product_id: p.id,
+    product_name: p.name,
+  }));
+
   const schema: any = buildProductionDataSchema(
     "Jan 1",
     "Dec 31",
@@ -24,7 +29,7 @@ const ProductionData: React.FC<Props> = async ({
     <ProductionDataForm
       report_version_id={report_version_id}
       facility_id={facility_id}
-      allowedProducts={response.allowed_products}
+      allowedProducts={allowedProducts}
       initialData={response.report_products}
       schema={schema}
     />
