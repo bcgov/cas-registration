@@ -1,9 +1,11 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 // ☰ Enums
 import { UserRole } from "@/e2e/utils/enums";
-
+// 🛠️ Helpers
+import { setupTestEnvironment } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+
 dotenv.config({ path: "./e2e/.env.local" });
 
 const happoPlaywright = require("happo-playwright");
@@ -12,6 +14,13 @@ const happoPlaywright = require("happo-playwright");
 // Feel free to delete this or modify it as needed
 
 const testNxProjectLandingPage = async (zones: string[]) => {
+  test.beforeAll(async () => {
+    // Note: can run multiple times if using multiple workers (or, if a test fails you'll get a new worker- can't be helped)
+    // So, ensure this runs only once by using only 1 worker
+    // Setup fixtures for admin-industry_user
+    await setupTestEnvironment();
+  });
+
   test.beforeEach(async ({ context }) => {
     await happoPlaywright.init(context);
   });
