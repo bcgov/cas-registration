@@ -22,11 +22,8 @@ export const operationReviewSchema: RJSFSchema = {
     operation_report_type: {
       type: "string",
       title: "Please select what type of report are you filling",
-      enum: [
-        "Annual emissions report",
-        "Regulated partial year operation",
-        "Simple Report",
-      ],
+      enum: ["Annual report", "Simple Report"],
+      default: "Annual report",
     },
     operation_representative_name: {
       type: "string",
@@ -47,6 +44,10 @@ export const operationReviewSchema: RJSFSchema = {
     },
     operation_bcghgid: { type: "string", title: "BCGHG ID" },
     bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
+    registration_pupose: {
+      type: "string",
+      title: "Registration Purpose",
+    },
     activities: {
       type: "array",
       title: "Reporting activities",
@@ -94,14 +95,21 @@ export const operationReviewUiSchema = {
     "ui:widget": "select",
     "ui:options": { style: { width: "100%", textAlign: "justify" } },
     "ui:placeholder": "Report type",
+    "ui:disabled": true,
   },
   operation_bcghgid: {
     "ui:options": commonUiOptions,
     "ui:placeholder": "BCGHG ID",
+    "ui:disabled": true,
   },
   bc_obps_regulated_operation_id: {
     "ui:options": commonUiOptions,
     "ui:placeholder": "BORO ID",
+    "ui:disabled": true,
+  },
+
+  registration_pupose: {
+    "ui:placeholder": "Registration Purpose",
   },
   activities: {
     "ui:widget": "MultiSelectWidget",
@@ -121,6 +129,7 @@ export const operationReviewUiSchema = {
     "ui:placeholder": "Regulated products",
     uniqueItems: true,
   },
+
   operation_representative_name: {
     "ui:widget": "select",
     "ui:options": commonUiOptions,

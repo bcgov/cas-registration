@@ -17,6 +17,9 @@ import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 interface Props {
   formData: any;
   version_id: number;
+  reportType: {
+    report_type: string;
+  };
   reportingYear: {
     reporting_year: number;
     report_due_date: string;
@@ -45,12 +48,14 @@ const taskListElements: TaskListElement[] = [
 export default function OperationReview({
   formData,
   version_id,
+  reportType,
   reportingYear,
   allActivities,
   allRegulatedProducts,
 }: Props) {
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
+  const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
   const queryString = serializeSearchParams(useSearchParams());
   const saveAndContinueUrl = `/reports/${version_id}/person-responsible${queryString}`;
@@ -60,6 +65,7 @@ export default function OperationReview({
     "MMM DD YYYY",
   );
 
+  // Function to handle form data submission
   const submitHandler = async (
     data: { formData?: any },
     reportVersionId: number,
@@ -69,22 +75,30 @@ export default function OperationReview({
 
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
 
+    // Prepare the data based on the operation report type
     const preparedData = {
       ...formDataObject,
-      activities: formDataObject.activities?.map((activityId: any) => {
-        const activity = allActivities.find((a) => a.id === activityId);
-        if (!activity)
-          throw new Error(`Activity with ID ${activityId} not found`);
-        return activity.name;
-      }),
-      regulated_products: formDataObject.regulated_products?.map(
-        (productId: any) => {
-          const product = allRegulatedProducts.find((p) => p.id === productId);
-          if (!product)
-            throw new Error(`Product with ID ${productId} not found`);
-          return product.name;
-        },
-      ),
+      // Check the report type and set activities and regulated_products to empty arrays if it's a simple report
+      activities:
+        formDataState.operation_report_type === "Simple Report"
+          ? []
+          : formDataObject.activities?.map((activityId: any) => {
+              const activity = allActivities.find((a) => a.id === activityId);
+              if (!activity)
+                throw new Error(`Activity with ID ${activityId} not found`);
+              return activity.name;
+            }),
+      regulated_products:
+        formDataState.operation_report_type === "Simple Report"
+          ? []
+          : formDataObject.regulated_products?.map((productId: any) => {
+              const product = allRegulatedProducts.find(
+                (p) => p.id === productId,
+              );
+              if (!product)
+                throw new Error(`Product with ID ${productId} not found`);
+              return product.name;
+            }),
     };
 
     const response = await actionHandler(endpoint, method, endpoint, {
@@ -96,18 +110,43 @@ export default function OperationReview({
     }
   };
 
+  // Function to handle changes in the form data
+  const onChangeHandler = (data: { formData: any }) => {
+    const updatedData = {
+      ...data.formData,
+      // Modify the structure of form data here as needed
+    };
+
+    setFormDataState(updatedData); // Update the state with modified data
+  };
+
   useEffect(() => {
     if (!formData || !allActivities || !allRegulatedProducts) {
       return;
     }
 
-    const activities = formData.activities || [];
-    const products = formData.regulated_products || [];
+    const updatedFormData = {
+      ...formData,
+      operation_report_type: reportType?.report_type || "Annual Report",
+      activities: formData.activities || [],
+      regulated_products: formData.regulated_products || [],
+    };
 
+    setFormDataState(updatedFormData);
+  }, [formData, reportType, allActivities, allRegulatedProducts]);
+
+  useEffect(() => {
     setSchema((prevSchema) => ({
       ...prevSchema,
       properties: {
         ...prevSchema.properties,
+        operation_report_type: {
+          type: "string",
+          title: "Please select what type of report you are filling",
+          enum: ["Annual Report", "Simple Report"],
+          default: formDataState?.operation_report_type || "Annual Report",
+        },
+        // Conditionally render fields based on report type
         activities: {
           type: "array",
           title: "Reporting activities",
@@ -117,6 +156,10 @@ export default function OperationReview({
             enumNames: allActivities.map((activity) => activity.name),
           },
           uniqueItems: true,
+          // Only show this field if report type is not simple
+          "ui:options": {
+            hidden: formDataState.operation_report_type === "Simple Report",
+          },
         },
         regulated_products: {
           type: "array",
@@ -127,16 +170,20 @@ export default function OperationReview({
             enumNames: allRegulatedProducts.map((product) => product.name),
           },
           uniqueItems: true,
+          // Only show this field if report type is not simple
+          "ui:options": {
+            hidden: formDataState.operation_report_type === "Simple Report",
+          },
         },
         operation_representative_name: {
           type: "string",
           title: "Operation representative",
-          enum: [formData.operation_representative_name || ""],
+          enum: [formDataState.operation_representative_name || ""],
         },
         operation_type: {
           type: "string",
           title: "Operation type",
-          enum: [formData.operation_type || ""],
+          enum: [formDataState.operation_type || ""],
         },
         date_info: {
           type: "object",
@@ -145,18 +192,35 @@ export default function OperationReview({
         },
       },
     }));
+  }, [allActivities, allRegulatedProducts, formDataState, reportingWindowEnd]);
 
-    const updatedFormData = {
-      ...formData,
-      activities,
-      regulated_products: products,
+  useEffect(() => {
+    const updateUiSchema = () => {
+      const helperText =
+        formDataState?.operation_report_type === "Simple Report" ? (
+          <small>
+            Regulated or Reporting Operations should file a Simple Report if
+            their emissions have dropped below 10,000 tCO2e. They will continue
+            to report using the Simple Report form until they stop Schedule A
+            activities or stay under 10ktCO2e for three years. This does not
+            apply to Opt-ins.
+          </small>
+        ) : null;
+
+      setUiSchema({
+        ...operationReviewUiSchema,
+        operation_report_type: {
+          "ui:widget": "select", // Set the widget type
+          "ui:help": helperText,
+        },
+      });
     };
 
-    setFormDataState(updatedFormData);
-  }, [allActivities, allRegulatedProducts, formData, reportingWindowEnd]);
+    // Call the function to update the UI schema
+    updateUiSchema();
+  }, [formDataState]); // Ensure the effect runs when formDataState changes
 
   if (!formData) {
-    //we need to render another component which we would display if no version Id exist or we want to show an error
     return <div>No version ID found(TBD)</div>;
   }
 
@@ -171,11 +235,12 @@ export default function OperationReview({
       ]}
       taskListElements={taskListElements}
       schema={schema}
-      uiSchema={operationReviewUiSchema}
+      uiSchema={uiSchema}
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
       onSubmit={(data) => submitHandler(data, version_id)}
+      onChange={onChangeHandler} // Pass the onChange handler here
     />
   );
 }
