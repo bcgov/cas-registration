@@ -28,7 +28,10 @@ const Tile = ({ content, href, icon, links, title }: ContentItem) => {
       <a href={href} className="px-6 no-underline text-bc-text">
         <h2 className="flex items-center m-0 [&>svg]:min-w-6">
           {iconMap[icon as keyof IconMap]}
-          <div className="ml-3">{title}</div>
+          <div
+            className="ml-3"
+            dangerouslySetInnerHTML={{ __html: title }}
+          ></div>
         </h2>
         <div className=" mt-4">{content}</div>
       </a>
@@ -44,7 +47,7 @@ const Tile = ({ content, href, icon, links, title }: ContentItem) => {
                     href={linkHref}
                     className="dashboard-tile-link no-underline"
                   >
-                    {linkTitle}
+                    <span dangerouslySetInnerHTML={{ __html: linkTitle }} />
                   </a>
                 </div>
               );

@@ -311,3 +311,16 @@ class TestUpdateOperatorV2:
         assert Operator.objects.count() == 1
         updated_operator = Operator.objects.get(legal_name='Legal Name Example')
         assert updated_operator.parent_operators.count() == 0
+
+
+class TestOperatorHasRequiredFields:
+    @staticmethod
+    def test_operator_has_all_required_fields():
+        operator = baker.make_recipe('utils.operator')
+        assert OperatorServiceV2.has_required_fields(operator) is True
+
+    @staticmethod
+    def test_operator_does_not_have_all_required_fields():
+        # Create an operator with the required fields, but set legal_name to an empty string
+        operator = baker.make_recipe('utils.operator', legal_name=' ')  # Set legal_name to an empty string
+        assert OperatorServiceV2.has_required_fields(operator) is False
