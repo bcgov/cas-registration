@@ -31,6 +31,7 @@ ReportVersion {
     DateTimeField archived_at
     ForeignKey report
     BooleanField is_latest_submitted
+    CharField report_type
     CharField status
 }
 ReportPersonResponsible {
