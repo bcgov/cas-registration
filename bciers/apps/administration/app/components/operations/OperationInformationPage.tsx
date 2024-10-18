@@ -4,10 +4,6 @@ import { createAdministrationOperationInformationSchema } from "../../data/jsonS
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 
-export const ExternalUserLayout = () => {
-  return <h2 className="text-bc-link-blue">Add Operation</h2>;
-};
-
 const OperationInformationPage = async ({
   operationId,
 }: {
