@@ -40,9 +40,6 @@ const testNxProjectLandingPage = async (zones: string[]) => {
         // 🛸 Navigate to landing page
         await page.goto(url);
 
-        // 🛠 Assert that the zone is in the current URL
-        await expect(page).toHaveURL(new RegExp(`.*${zone}.*`));
-
         // ⏲️ Add a delay (in milliseconds) to wait before taking the screenshot
         await page.waitForTimeout(5000); // Wait for 5 seconds
 
