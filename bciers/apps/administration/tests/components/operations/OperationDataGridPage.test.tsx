@@ -4,7 +4,7 @@ import {
   useRouter,
   useSearchParams,
 } from "@bciers/testConfig/mocks";
-import Operations from "apps/administration/app/components/operations/OperationDataGridPage";
+import Operations from "@/administration/app/components/operations/Operations";
 
 useRouter.mockReturnValue({
   query: {},

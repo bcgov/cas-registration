@@ -140,4 +140,34 @@ describe("the OperationInformationForm component", () => {
     // Expect the form to be submitted
     expect(screen.getByText(/Operation 4/i)).toBeVisible();
   });
+
+  it("should render the form in read-only mode and not show Edit/Submit button if the user is not an industry_user_admin", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_admin",
+        },
+      },
+    });
+
+    render(
+      <OperationInformationForm
+        formData={formData}
+        schema={testSchema}
+        operationId={operationId}
+      />,
+    );
+
+    // There is no textbox element in the form
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Edit" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Submit" }),
+    ).not.toBeInTheDocument();
+    // still show the cancel button
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
+  });
 });
