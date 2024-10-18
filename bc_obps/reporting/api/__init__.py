@@ -10,6 +10,7 @@ from .fuel import get_fuel_data
 from .report_person_responsible import get_report_person_responsible_by_version_id
 from .report_person_responsible import save_report_contact
 from .report_additional_data import get_registration_purpose_by_version_id
+from .reports import get_report_type_by_version
 from .gas_type import get_gas_type
 from .emission_category import get_emission_category
 from .production_data import save_production_data

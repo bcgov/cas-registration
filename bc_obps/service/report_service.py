@@ -102,3 +102,7 @@ class ReportService:
         report_operation.save()
 
         return report_operation
+
+    @staticmethod
+    def get_report_type_by_version_id(version_id: int) -> ReportVersion:
+        return ReportVersion.objects.get(id=version_id)
