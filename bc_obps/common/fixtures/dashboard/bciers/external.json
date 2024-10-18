@@ -44,7 +44,7 @@
                 ]
               },
               {
-                "title": "My Operator * action required",
+                "title": "My Operator<sup style='color: red;'>*</sup><small> (action required)</small>",
                 "href": "/administration/my-operator",
                 "conditions": [
                   {

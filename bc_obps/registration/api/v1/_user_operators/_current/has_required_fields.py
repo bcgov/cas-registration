@@ -6,6 +6,7 @@ from service.operator_service_v2 import OperatorServiceV2
 from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 from common.permissions import authorize
+from django.core.exceptions import ObjectDoesNotExist
 
 
 @router.get(
@@ -24,15 +25,9 @@ def get_current_user_operator_has_required_fields(request: HttpRequest) -> Tuple
     try:
         # Retrieve the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(user_guid)
-
         # Use the service to check if the operator has all required fields filled
-        has_required_fields = OperatorServiceV2.has_required_fields(operator.id)
-
-        if has_required_fields:
-            return 200, {"has_required_fields": True}
-        else:
-            return 200, {"has_required_fields": False}
-
-    except Exception:
-        # Handle the case where no operator is found for the user
+        has_required_fields = OperatorServiceV2.has_required_fields(operator)
+        return 200, {"has_required_fields": has_required_fields}
+    except ObjectDoesNotExist:
+        # Handle the case where no user_operator is found for the user
         return 200, {"has_required_fields": False}

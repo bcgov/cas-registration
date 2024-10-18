@@ -1,3 +1,9 @@
-import testNxProjectUrl from "@bciers/e2e/utils/test-nx-app-url";
+import testNxProjectLandingPage from "@bciers/e2e/utils/test-nx-app-landing-page";
 
-testNxProjectUrl(["dashboard"]);
+testNxProjectLandingPage([
+  "administration",
+  "coam",
+  "dashboard",
+  "registration",
+  "reporting",
+]);
