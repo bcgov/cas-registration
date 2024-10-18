@@ -6,13 +6,13 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
-import { Product, ProductData } from "@bciers/types/form/productionData";
+import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 
 interface Props {
   report_version_id: number;
   facility_id: string;
-  allowedProducts: Product[];
+  allowedProducts: { product_id: number; product_name: string }[];
   initialData: ProductData[];
   schema: RJSFSchema;
 }
@@ -39,8 +39,14 @@ const ProductionDataForm: React.FC<Props> = ({
   facility_id,
   schema,
   allowedProducts,
+  initialData,
 }) => {
-  const [formData, setFormData] = useState<any>({});
+  const initialFormData = {
+    product_selection: initialData.map((i) => i.product_name),
+    production_data: initialData,
+  };
+
+  const [formData, setFormData] = useState<any>(initialFormData);
 
   const onChange = (newFormData: {
     product_selection: string[];
@@ -49,8 +55,8 @@ const ProductionDataForm: React.FC<Props> = ({
     const updatedSelection = newFormData.product_selection.map(
       (product_name) =>
         newFormData.production_data.find(
-          (item) => item.name === product_name,
-        ) ?? allowedProducts.find((p) => p.name === product_name),
+          (item) => item.product_name === product_name,
+        ) ?? allowedProducts.find((p) => p.product_name === product_name),
     );
 
     setFormData({
@@ -60,7 +66,6 @@ const ProductionDataForm: React.FC<Props> = ({
   };
 
   const onSubmit = async (data: any) => {
-    console.log(data);
     await postProductionData(
       report_version_id,
       facility_id,
