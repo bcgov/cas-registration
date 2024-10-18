@@ -5,6 +5,7 @@ from reporting.models import (
     ActivityJsonSchema,
     ActivitySourceTypeJsonSchema,
     CustomMethodologySchema,
+    ReportVersion,
 )
 from typing import Dict, List, Optional, Any
 from django.db.models import QuerySet
@@ -262,12 +263,10 @@ def build_source_type_schema(
 def build_schema(config_id: int, activity: int, source_types: List[str] | List[int], report_date: str) -> str:
 
     # Get activity schema
-    try:
-        activity_schema = ActivityJsonSchema.objects.only('json_schema').get(
-            activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
-        )
-    except Exception:
-        raise Exception(f'No schema found for activity_id {activity} & report_date {report_date}')
+    activity_schema = ActivityJsonSchema.objects.only('json_schema').get(
+        activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
+    )
+
     rjsf_schema: Dict = activity_schema.json_schema
 
     # Fetch valid config elements for the activity
@@ -307,30 +306,30 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
         # For each selected source_type, add the related schema
         for source_type in source_types:
-            try:
-                valid_config_element = valid_config_elements.get(source_type__id=source_type)
-                rjsf_schema['properties']['sourceTypes']['properties'][
-                    valid_config_element.source_type.json_key
-                ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id, report_date)
-            except Exception:
-                raise Exception(
-                    f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}'
-                )
+            valid_config_element = valid_config_elements.get(source_type__id=source_type)
+            rjsf_schema['properties']['sourceTypes']['properties'][
+                valid_config_element.source_type.json_key
+            ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id, report_date)
 
     return json.dumps({"schema": rjsf_schema})
 
 
 class FormBuilderService:
     @classmethod
-    def build_form_schema(cls, activity: int, report_date: str, source_types: List[str] | List[int]) -> str:
-        if report_date is None:
-            raise Exception('Cannot build a schema without a valid report date')
+    def build_form_schema(cls, activity: int, report_version_id: int, source_types: List[str] | List[int]) -> str:
         if activity is None:
             raise Exception('Cannot build a schema without Activity data')
+
+        report_date = cls.get_report_date_from_version_id(report_version_id)
+
         # Get config objects
-        try:
-            config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
-        except Exception:
-            raise Exception(f'No Configuration found for report_date {report_date}')
+        config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
         schema = build_schema(config.id, activity, source_types, report_date)
         return schema
+
+    @classmethod
+    def get_report_date_from_version_id(cls, report_version_id: int) -> str:
+        report_version = ReportVersion.objects.get(id=report_version_id)
+        if report_version and report_version.report and report_version.report.created_at:
+            return report_version.report.created_at.strftime('%Y-%m-%d')
+        return ''
