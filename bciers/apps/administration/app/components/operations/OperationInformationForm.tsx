@@ -12,7 +12,7 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
-import { FormMode } from "@bciers/utils/enums";
+import { FormMode, FrontEndRoles } from "@bciers/utils/enums";
 
 const OperationInformationForm = ({
   formData,
@@ -26,9 +26,10 @@ const OperationInformationForm = ({
   const [error, setError] = useState(undefined);
 
   const router = useRouter();
-  const { data: session } = useSession();
 
-  const isIndustryUser = session?.user?.app_role?.includes("industry");
+  // To get the user's role from the session
+  const { data: session } = useSession();
+  const role = session?.user?.app_role ?? "";
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -50,7 +51,7 @@ const OperationInformationForm = ({
 
   return (
     <SingleStepTaskListForm
-      allowEdit={isIndustryUser}
+      allowEdit={role === FrontEndRoles.INDUSTRY_USER_ADMIN}
       mode={FormMode.READ_ONLY}
       error={error}
       schema={schema}
