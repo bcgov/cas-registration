@@ -9,6 +9,8 @@ import { createOperatorSchema } from "apps/administration/app/components/operato
 import expectButton from "../helpers/expectButton";
 import expectField from "../helpers/expectField";
 import expectHeader from "../helpers/expectHeader";
+import { mockUseSession } from "../helpers/mockUseSession";
+
 import { FrontendMessages } from "@bciers/utils/enums";
 
 useSession.mockReturnValue({
@@ -331,31 +333,43 @@ describe("OperatorForm component", () => {
     // Assert on the validation errors
     expect(screen.getAllByText(/Required field/i)).toHaveLength(8);
   });
-  it("fills the mandatory form fields, creates new operator, and redirects on success", async () => {
+  it("fills the mandatory form fields, creates a new operator, updates the session, and shows a success message", async () => {
+    // Mock the session and get access to the update function
+    const { update } = mockUseSession();
+
     render(
       <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
     );
 
-    await fillMandatoryFields();
+    await fillMandatoryFields(); // Mock function to fill the form
 
-    // Submit
-    actionHandler.mockReturnValueOnce(response);
-    const submitButton = screen.getByRole("button", {
-      name: /submit/i,
-    });
+    // Mock the actionHandler response
+    const res = { success: true }; // Example response
+    actionHandler.mockReturnValueOnce(res);
+
+    // Submit the form
+    const submitButton = screen.getByRole("button", { name: /submit/i });
     act(() => {
       submitButton.click();
     });
+
+    // Ensure actionHandler is called with the correct arguments
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
       "registration/v2/user-operators",
       "POST",
       "administration/operators",
       {
-        body: JSON.stringify(postMandatory),
+        body: JSON.stringify(postMandatory), // Ensure postMandatory is defined
       },
     );
 
+    // Ensure the session is updated by calling the update function
+    await waitFor(() => {
+      expect(update).toHaveBeenCalledWith({ trigger: "update" });
+    });
+
+    // Check for the success message after submission
     await waitFor(() => {
       expect(
         screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
