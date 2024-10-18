@@ -5,7 +5,8 @@ from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_product import ReportProduct
-from reporting.schema.report_product import ProductionDataOut, ReportProductSchema
+from reporting.schema.report_product import ProductionDataOut, ReportProductSchemaIn
+from reporting.service.report_product_service import ReportProductService
 from service.error_service import custom_codes_4xx
 from reporting.schema.generic import Message
 from .router import router
@@ -23,11 +24,14 @@ def save_production_data(
     request: HttpRequest,
     report_version_id: int,
     facility_id: UUID,
-    payload: List[ReportProductSchema],
+    payload: List[ReportProductSchemaIn],
 ) -> Literal[200]:
 
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print(payload)
+
+    # dicts = map(lambda rps: rps.dict(), payload)
+
+    ReportProductService.save_production_data(report_version_id, facility_id, payload)
 
     return 200
 
