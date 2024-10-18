@@ -4,9 +4,10 @@ import fetchOperationsPageData from "./fetchOperationsPageData";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { auth } from "@/dashboard/auth";
+import { FrontEndRoles } from "@bciers/utils/enums";
 
 // 🧩 Main component
-export default async function Operations({
+export default async function OperationDataGridPage({
   searchParams,
 }: {
   searchParams: OperationsSearchParams;
@@ -23,8 +24,10 @@ export default async function Operations({
     return <div>No operations data in database.</div>;
   }
 
-  const isAuthorizedAdminUser =
-    role?.includes("cas") && !role?.includes("pending");
+  const isAuthorizedAdminUser = [
+    FrontEndRoles.CAS_ADMIN,
+    FrontEndRoles.CAS_ANALYST,
+  ].includes(role as FrontEndRoles);
 
   // Render the DataGrid component
   return (
