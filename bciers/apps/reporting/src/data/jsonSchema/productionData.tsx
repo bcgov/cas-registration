@@ -39,13 +39,16 @@ export const buildProductionDataSchema = (
     definitions: {
       productionDataItem: {
         type: "object",
-        required: ["annual_production", "production_methodology"],
+        required: [
+          "annual_production",
+          "production_data_apr_dec",
+          "production_methodology",
+        ],
         properties: {
-          id: {
-            title: "id",
+          product_id: {
             type: "number",
           },
-          name: {
+          product_name: {
             title: "Name",
             type: "string",
           },
@@ -67,19 +70,19 @@ export const buildProductionDataSchema = (
           },
           storage_quantity_start_of_period: {
             title: `Quantity in storage at the beginning of the compliance period [${compliance_period_start}], if applicable`,
-            type: "string",
+            type: "number",
           },
           storage_quantity_end_of_period: {
             title: `Quantity in storage at the beginning of the compliance period [${compliance_period_end}], if applicable`,
-            type: "string",
+            type: "number",
           },
           quantity_sold_during_period: {
             title: `Quantity sold during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
-            type: "string",
+            type: "number",
           },
           quantity_throughput_during_period: {
             title: `Quantity of throughput at point of sale during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
-            type: "string",
+            type: "number",
           },
         },
       },
@@ -108,10 +111,10 @@ export const productionDataUiSchema: UiSchema = {
       removable: false,
     },
     items: {
-      id: {
+      product_id: {
         "ui:widget": "hidden",
       },
-      name: {
+      product_name: {
         "ui:widget": ReadOnlyWidget,
         "ui:options": {
           label: false,
