@@ -48,7 +48,7 @@ def reverse_init_emission_category_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0019_alter_reportactivity_json_data_and_more'),
+        ('reporting', '0020_report_person_responsible'),
     ]
 
     operations = [

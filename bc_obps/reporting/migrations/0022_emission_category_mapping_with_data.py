@@ -1033,8 +1033,15 @@ def init_emission_category_mapping_data(apps, schema_monitor):
                 emission_category=EmissionCategory.objects.get(category_name='Emissions from wastewater'),
             ),
             EmissionCategoryMapping(
-                activity=Activity.objects.get(name='Industrial wastewater processing'),
+                activity=Activity.objects.get(name='Petroleum refining'),
                 source_type=SourceType.objects.get(name='Oil-water separators at refineries'),
+                emission_category=EmissionCategory.objects.get(category_name='Emissions from wastewater'),
+            ),
+            EmissionCategoryMapping(
+                activity=Activity.objects.get(name='Petroleum refining'),
+                source_type=SourceType.objects.get(
+                    name='Wastewater processing using anaerobic digestion at refineries'
+                ),
                 emission_category=EmissionCategory.objects.get(category_name='Emissions from wastewater'),
             ),
             # FUEL EXCLUDED CATEGORIES
@@ -1667,8 +1674,7 @@ def reverse_init_emission_category_mapping_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0045_V1_11_0'),
-        ('reporting', '0020_emission_category_plus_data'),
+        ('reporting', '0021_emission_category_plus_data'),
     ]
 
     operations = [
