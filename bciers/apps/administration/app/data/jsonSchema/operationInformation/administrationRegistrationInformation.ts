@@ -1,4 +1,5 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
@@ -10,13 +11,13 @@ export const createAdministrationRegistrationInformationSchema = async (
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
 
-  const isRegulatedProducts =
-    !registrationPurposesValue?.includes(
-      RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
-    ) &&
-    !registrationPurposesValue?.includes(
-      RegistrationPurposes.POTENTIAL_REPORTING_OPERATION,
-    );
+  const isRegulatedProducts = registrationPurposesValue?.includes(
+    RegistrationPurposes.OBPS_REGULATED_OPERATION,
+  );
+
+  const isNewEntrant = registrationPurposesValue?.includes(
+    RegistrationPurposes.NEW_ENTRANT_OPERATION,
+  );
 
   // create the schema with the fetched values
   const registrationInformationSchema: RJSFSchema = {
@@ -30,6 +31,11 @@ export const createAdministrationRegistrationInformationSchema = async (
         items: {},
       },
       ...(isRegulatedProducts && {
+        regulated_operation_preface: {
+          // Not an actual field, just used to display a message
+          type: "object",
+          readOnly: true,
+        },
         regulated_products: {
           title: "Regulated Product Name(s)",
           type: "array",
@@ -42,16 +48,62 @@ export const createAdministrationRegistrationInformationSchema = async (
           },
         },
       }),
+      ...(isNewEntrant && {
+        new_entrant_preface: {
+          // Not an actual field, just used to display a message
+          type: "object",
+          readOnly: true,
+        },
+        operation_date_of_first_shipment: {
+          type: "string",
+          title: "When is this operation's date of First Shipment?",
+          enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
+        },
+        statutory_declaration: {
+          type: "string",
+          title: "Application and Statutory Declaration",
+        },
+      }),
     },
   };
   return registrationInformationSchema;
 };
 
 export const registrationInformationUiSchema: UiSchema = {
-  "ui:order": ["registration_purpose", "regulated_products"],
+  "ui:order": [
+    "registration_purposes",
+    "regulated_operation_preface",
+    "regulated_products",
+    "new_entrant_preface",
+    "operation_date_of_first_shipment",
+    "statutory_declaration",
+  ],
   "ui:FieldTemplate": SectionFieldTemplate,
+  regulated_operation_preface: {
+    "ui:classNames": "text-bc-bg-blue text-lg",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": "Regulated Operation",
+  },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",
+  },
+  new_entrant_preface: {
+    "ui:classNames": "text-bc-bg-blue text-lg",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": "New Entrant Operation",
+  },
+  operation_date_of_first_shipment: {
+    "ui:widget": "SelectWidget",
+    "ui:options": {
+      inline: true,
+    },
+  },
+  statutory_declaration: {
+    "ui:widget": "FileWidget",
+    "ui:options": {
+      filePreview: true,
+      accept: ".pdf",
+    },
   },
 };
