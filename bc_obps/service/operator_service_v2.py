@@ -21,6 +21,24 @@ from django.db.models import QuerySet
 
 class OperatorServiceV2:
     @classmethod
+    def has_required_fields(cls, operator: Operator) -> bool:
+        # Get the fields that are required
+        required_fields = [
+            "legal_name",
+            "cra_business_number",
+            "bc_corporate_registry_number",
+            "business_structure",
+            "mailing_address",
+        ]
+
+        # Check if all required fields are not None and not empty/whitespace
+        return all(
+            getattr(operator, field) is not None
+            and (not isinstance(getattr(operator, field), str) or getattr(operator, field).strip() != '')
+            for field in required_fields
+        )
+
+    @classmethod
     @transaction.atomic()
     def upsert_partner_operators(
         cls, operator: Operator, partner_operator_data: list[PartnerOperatorIn] | None, user_guid: UUID

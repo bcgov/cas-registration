@@ -14,9 +14,7 @@ Checks for a valid user token to continue to next middleware else redirects to o
  */
 
 // Middleware for authorization
-export const withAuthorizationAdministration: MiddlewareFactory = (
-  next: NextMiddleware,
-) => {
+export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();

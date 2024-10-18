@@ -7,63 +7,62 @@ import { actionHandler } from "../actions/src/actions";
  *
  * @param items - Array of ContentItem objects to evaluate.
  * @returns Filtered array of ContentItem objects.
- */
-const evalDashboardRules = async (
-  items: ContentItem[] | null | undefined, // Allow null or undefined
+ */ const evalDashboardRules = async (
+  items: ContentItem[] | null | undefined,
 ): Promise<ContentItem[]> => {
-  // Ensure items is an array, if not default to an empty array
   if (!Array.isArray(items)) {
     items = [];
   }
+
   const result = await Promise.all(
     items.map(async (item) => {
-      // 🧩 Check if the tile (item) has a condition
-      if (item.condition) {
-        // 🔍 Evaluate condition for the tile
-        const conditionMet = await evaluateCondition(item.condition);
-        if (!conditionMet) return null; // Filter out the tile if condition is not met
+      if (item.conditions && Array.isArray(item.conditions)) {
+        const allConditionsMet = await evaluateAllConditions(item.conditions);
+        if (!allConditionsMet) return null;
       }
 
-      // 🔗 Evaluate conditions for links inside the tile
       if (item.links && item.links.length > 0) {
         const filteredLinks = await Promise.all(
           item.links.map(async (link) => {
-            if (link.condition) {
-              const linkConditionMet = await evaluateCondition(link.condition);
-              return linkConditionMet ? link : null; // Return link if condition is met, otherwise null
+            if (link.conditions && Array.isArray(link.conditions)) {
+              const allLinkConditionsMet = await evaluateAllConditions(
+                link.conditions,
+              );
+              return allLinkConditionsMet ? link : null;
             }
-            return link; // Return link if no condition is present
+            return link;
           }),
         );
-        // Filter out null links
         item.links = filteredLinks.filter(
           (link): link is LinkItem => link !== null,
         );
       }
 
-      return item; // Return the tile with filtered links if conditions are met
+      return item;
     }),
   );
 
-  // 🧹 Filter out null tiles and return only valid ContentItem objects
   return result.filter((item): item is ContentItem => item !== null);
 };
 
-/**
- * Evaluates if a given condition is met by making an API request.
- *
- * @param condition - Condition object to evaluate.
- * @returns Boolean indicating if the condition is met.
- */
+const evaluateAllConditions = async (conditions: any[]): Promise<boolean> => {
+  try {
+    const conditionResults = await Promise.all(
+      conditions.map((condition) => evaluateCondition(condition)),
+    );
+    return conditionResults.every((result) => result === true);
+  } catch (error) {
+    console.error("Error evaluating conditions:", error);
+    return false;
+  }
+};
+
 const evaluateCondition = async (condition: any): Promise<boolean> => {
   try {
-    // 📍 Extract API endpoint from condition
     const apiEndpoint = condition.api;
-    // 🚀 Fetch data using actionHandler
     const data = await actionHandler(apiEndpoint, "GET");
-    // 📊 Extract the field value from the data
     const fieldValue = data[condition.field];
-    // Check condition based on operator
+
     switch (condition.operator) {
       case "equals":
         return fieldValue === condition.value;
@@ -86,7 +85,6 @@ const evaluateCondition = async (condition: any): Promise<boolean> => {
         return false;
     }
   } catch (error) {
-    console.error("Error evaluating condition:", error);
     return false;
   }
 };
