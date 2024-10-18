@@ -1,5 +1,5 @@
 from registration.tests.utils.bakers import operation_baker, operator_baker
-from reporting.models import configuration_element, ReportPersonResponsible
+from reporting.models import configuration_element, ReportPersonResponsible, ReportAdditionalData
 from reporting.models.gas_type import GasType
 from registration.models import Activity
 from reporting.models.report_operation import ReportOperation
@@ -50,6 +50,20 @@ def report_person_responsible_baker(report_version=None) -> ReportPersonResponsi
         province="IL",
         postal_code="62701",
         business_role="Operation Representative",
+    )
+
+
+def report_additional_data_baker(report_version=None) -> ReportAdditionalData:
+    if report_version is None:
+        report_version = report_version_baker()
+    return baker.make(
+        ReportAdditionalData,
+        report_version=report_version,
+        capture_emissions=True,
+        emissions_on_site_use=200,
+        emissions_on_site_sequestration=200,
+        emissions_off_site_transfer=200,
+        electricity_generated=300,
     )
 
 
