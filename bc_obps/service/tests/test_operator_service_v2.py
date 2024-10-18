@@ -317,10 +317,10 @@ class TestOperatorHasRequiredFields:
     @staticmethod
     def test_operator_has_all_required_fields():
         operator = baker.make_recipe('utils.operator')
-        assert OperatorServiceV2.has_required_fields(operator.id) is True
+        assert OperatorServiceV2.has_required_fields(operator) is True
 
     @staticmethod
     def test_operator_does_not_have_all_required_fields():
         # Create an operator with the required fields, but set legal_name to an empty string
         operator = baker.make_recipe('utils.operator', legal_name=' ')  # Set legal_name to an empty string
-        assert OperatorServiceV2.has_required_fields(operator.id) is False
+        assert OperatorServiceV2.has_required_fields(operator) is False
