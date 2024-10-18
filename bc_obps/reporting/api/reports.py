@@ -12,7 +12,8 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
-from ..models import ReportingYear
+from ..models import ReportingYear, ReportVersion
+from ..schema.report_version import ReportingVersionOut
 
 
 @router.post(
@@ -71,3 +72,16 @@ def save_report(
 @handle_http_errors()
 def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYear]:
     return 200, ReportingYearService.get_current_reporting_year()
+
+
+@router.get(
+    "/report-version/{version_id}/report-type",
+    response={200: ReportingVersionOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="Retrieve the report type for a specific reporting version, including the reporting year and due date.",
+    # auth=authorize("all_roles"),
+)
+@handle_http_errors()
+def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
+    report_type = ReportService.get_report_type_by_version_id(version_id)
+    return 200, report_type
