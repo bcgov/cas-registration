@@ -27,12 +27,7 @@ class ReportAdditionalDataService:
 
     @staticmethod
     def save_report_additional_data(version_id: int, data: ReportAdditionalDataIn) -> ReportAdditionalData:
-        # Fetch the report version
-        report_version = ReportVersion.objects.filter(id=version_id).first()
-        if report_version is None:
-            raise ValueError("ReportVersion with this ID does not exist.")
-
-        # Create or update the ReportAdditionalData instance
+        report_version = ReportVersion.objects.get(pk=version_id)
         report_additional_data, created = ReportAdditionalData.objects.update_or_create(
             report_version=report_version,
             defaults={
