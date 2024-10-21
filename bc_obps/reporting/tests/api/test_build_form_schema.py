@@ -15,7 +15,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.status_code == 401
 
     def test_authorized_users_can_get_activity_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -39,7 +39,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.status_code == 422
 
     def test_invalid_without_activity(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -51,7 +51,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.status_code == 422
 
     def test_error_if_no_valid_activity_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -64,7 +64,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.json().get('message') == "Not Found"
 
     def test_error_if_no_valid_source_type_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -77,7 +77,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.json().get('message') == "Not Found"
 
     def test_returns_activity_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -95,7 +95,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert len(response_object['schema']['properties'].keys()) == 2
 
     def test_returns_source_type_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -151,7 +151,7 @@ class TestBuildFormSchema(CommonTestSetup):
         ]
 
     def test_returns_multiple_source_type_schemas(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -165,7 +165,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
 
     def test_single_mandatory_source_type(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -179,7 +179,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 1
 
     def test_source_type_schema_no_units(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
