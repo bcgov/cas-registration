@@ -45,24 +45,25 @@ const ArrayFieldTemplate = ({
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            <div className="text-bc-bg-blue text-lg flex align-center my-10">
-              {customTitleName && (
-                <span>
-                  {customTitleName} {i + 1}
-                </span>
-              )}
-
-              {((removable && i !== 0) || canDeleteFirst) && (
-                <button
-                  onClick={item.onDropIndexClick(item.index)}
-                  className="border-none bg-transparent p-0 ml-6"
-                  title="Remove item"
-                  aria-label="Remove item"
-                >
-                  <MinusSVG />
-                </button>
-              )}
-            </div>
+            {(customTitleName || (removable && i !== 0)) && (
+              <div className="text-bc-bg-blue text-lg flex align-center my-10">
+                {customTitleName && (
+                  <span>
+                    {customTitleName} {i + 1}
+                  </span>
+                )}
+                {((removable && i !== 0) || canDeleteFirst) && (
+                  <button
+                    onClick={item.onDropIndexClick(item.index)}
+                    className="border-none bg-transparent p-0 ml-6"
+                    title="Remove item"
+                    aria-label="Remove item"
+                  >
+                    <MinusSVG />
+                  </button>
+                )}
+              </div>
+            )}
             {{
               ...item.children,
               props: {
