@@ -72,6 +72,7 @@ const section2: RJSFSchema = {
     street_address: {
       type: "string",
       title: "Street Address",
+      default: "",
     },
     municipality: {
       type: "string",
