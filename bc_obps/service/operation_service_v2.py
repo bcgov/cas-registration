@@ -67,11 +67,8 @@ class OperationServiceV2:
         """
         Returns True if the userOperator's operator has at least one operation with status 'Registered', False otherwise.
         """
-        return Operation.objects.filter(
-            operator_id=operator_id, 
-            status="Registered" 
-        ).exists()
-    
+        return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()
+
     @classmethod
     @transaction.atomic()
     def set_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Operation:

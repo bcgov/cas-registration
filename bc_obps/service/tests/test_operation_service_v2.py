@@ -616,27 +616,27 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
     def test_check_current_users_registered_operation_returns_true(self):
         # Create a user operator and a registered operation
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        
+
         # Create an operation with status 'Registered'
         baker.make_recipe(
-            'utils.operation', 
-            operator=approved_user_operator.operator, 
+            'utils.operation',
+            operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            status="Registered"
+            status="Registered",
         )
-        
+
         # Check that the method returns True when there is a registered operation
         assert Operation.objects.count() == 1
         assert OperationServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id) is True
 
         # Create an operation with a different status
         baker.make_recipe(
-            'utils.operation', 
-            operator=approved_user_operator.operator, 
+            'utils.operation',
+            operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            status="Draft"
+            status="Draft",
         )
-        
+
         # Ensure the method still returns True with mixed statuses
         assert Operation.objects.count() == 2
         assert OperationServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id) is True
@@ -644,18 +644,19 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
     def test_check_current_users_registered_operation_returns_false(self):
         # Create a user operator and an operation with a non-registered status
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        
+
         # Create an operation with a non-registered status
         baker.make_recipe(
-            'utils.operation', 
-            operator=approved_user_operator.operator, 
+            'utils.operation',
+            operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            status="Draft"
+            status="Draft",
         )
-        
+
         # Check that the method returns False when there is no registered operation
         assert Operation.objects.count() == 1
         assert OperationServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id) is False
+
 
 class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
     @staticmethod

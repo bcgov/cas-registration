@@ -1,7 +1,7 @@
 from django.http import HttpRequest
 from typing import Dict, Literal, Tuple
 from registration.api.router import router
-from registration.constants import OPERATOR_TAGS
+from registration.constants import USER_OPERATOR_TAGS
 from service.operator_service_v2 import OperatorServiceV2
 from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 @router.get(
     "/user-operators/current/has-required-fields",
     response={200: Dict[str, bool]},
-    tags=OPERATOR_TAGS,
+    tags=USER_OPERATOR_TAGS,
     description="""
         Checks if a current user's operator has all required fields completed.
         If all required fields (as defined by the hard-coded array) are completed, it returns 'True'; otherwise, it returns 'False'.
