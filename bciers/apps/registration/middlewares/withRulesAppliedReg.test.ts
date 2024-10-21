@@ -54,6 +54,7 @@ describe("withRulesAppliedReg middleware", () => {
         status: "Approved",
       }),
     );
+    // Mock the fetch response for operator has required fields, false
     fetch.mockResponseOnce(
       JSON.stringify({
         has_required_fields: false,
@@ -70,7 +71,7 @@ describe("withRulesAppliedReg middleware", () => {
     );
     expect(result?.status).toBe(307);
   });
-  it("proceeds industry users if their operator is found", async () => {
+  it("proceeds industry users if their operator is found and has required fields", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
     const nextUrl = new NextURL(`${domain}/registration/register-an-operation`);
 
@@ -85,7 +86,7 @@ describe("withRulesAppliedReg middleware", () => {
       }),
     );
 
-    // Mock the fetch response for operator has required fields
+    // Mock the fetch response for operator has required fields, true
     fetch.mockResponseOnce(
       JSON.stringify({
         has_required_fields: true,

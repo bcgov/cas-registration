@@ -1,7 +1,6 @@
 [
   {
     "model": "common.dashboarddata",
-    "pk": 8,
     "fields": {
       "name": "Internal Reporting Dashboard",
       "data": {
@@ -12,13 +11,13 @@
             "title": "Annual Reports",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/reporting/tbd"
+            "href": "/reporting/reports"
           },
           {
             "title": "Previous Years Reports",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/reporting/tbd"
+            "href": "/reporting/reports/previous-years"
           }
         ]
       }
