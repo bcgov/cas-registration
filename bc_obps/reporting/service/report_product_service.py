@@ -24,8 +24,6 @@ class ReportProductService:
         # Update or create the report products from the data
         for report_product in report_products:
 
-            print(report_product.dict())
-
             ReportProduct.objects.update_or_create(
                 report_version_id=report_version_id,
                 facility_report=facility_report,
