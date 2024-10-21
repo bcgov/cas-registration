@@ -21,7 +21,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     description="""Retrieves the list of users associated with the operator of the current user. The current user is an industry user admin.
     The endpoint returns the users that have Pending or Approved status.
     The list is filtered based on the business GUID of the current user and the associated operator.""",
-    auth=authorize("approved_industry_admin_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_operator_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:

@@ -43,7 +43,7 @@ def list_contacts(
     response={201: ContactOut, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Creates a new contact for the current user and associate it to the operator the user is associated with.""",
-    auth=authorize("approved_industry_admin_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:

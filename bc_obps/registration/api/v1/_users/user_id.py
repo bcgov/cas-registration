@@ -19,7 +19,7 @@ from service.user_service import UserService
     tags=USER_TAGS,
     description="""Retrieves the details of a specific user by its ID.
     We check if the user is authorized to access the user's details by comparing the business_guid of the user with the business_guid of the current user.""",
-    auth=authorize("approved_industry_admin_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_user(request: HttpRequest, user_id: UUID) -> Tuple[Literal[200], User]:

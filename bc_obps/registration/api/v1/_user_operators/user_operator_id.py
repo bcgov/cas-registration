@@ -17,6 +17,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.schema.v1 import UserOperatorOut
 
+
 # GET
 @router.get(
     "/user-operators/{uuid:user_operator_id}",
@@ -45,7 +46,7 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
     It checks for the uniqueness of the CRA Business Number.
     If all permissions and checks are in order, it updates the operator's status to 'Pending' if it is currently 'Draft'.
     The updated data is saved, and a new user-operator instance is created if one does not already exist.""",
-    auth=authorize("approved_industry_admin_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def update_operator_and_user_operator(

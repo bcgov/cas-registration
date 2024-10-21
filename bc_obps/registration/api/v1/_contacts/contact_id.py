@@ -31,7 +31,7 @@ def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Op
     response={200: ContactOut, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Updates the details of a specific contact by its ID. The endpoint checks if the current user is authorized to access the contact.""",
-    auth=authorize("approved_industry_admin_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def update_contact(request: HttpRequest, contact_id: int, payload: ContactIn) -> Tuple[Literal[200], Contact]:
