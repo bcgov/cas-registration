@@ -1,5 +1,5 @@
 import json
-from service.utils import get_report_date_from_version_id
+from service.utils import get_report_valid_year_from_version_id
 from reporting.models import (
     Configuration,
     ConfigurationElement,
@@ -320,7 +320,7 @@ class FormBuilderService:
         if activity is None:
             raise Exception('Cannot build a schema without Activity data')
 
-        report_date = get_report_date_from_version_id(report_version_id)
+        report_date = get_report_valid_year_from_version_id(report_version_id)
 
         # Get config objects
         config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
