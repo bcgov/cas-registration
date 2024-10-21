@@ -13,7 +13,6 @@ from registration.models.user_operator import UserOperator
 from registration.models import Operation
 from ninja import Query
 from django.db import transaction
-from service.data_access_service.document_service import DocumentDataAccessService
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.document_service import DocumentService
 from service.data_access_service.operation_service import OperationDataAccessService
@@ -31,7 +30,6 @@ from registration.schema.v2.operation import (
     OperationStatutoryDeclarationIn,
     RegistrationPurposeIn,
 )
-from registration.utils import files_have_same_hash
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
