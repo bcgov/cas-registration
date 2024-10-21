@@ -199,11 +199,15 @@ export default function OperationReview({
       const helperText =
         formDataState?.operation_report_type === "Simple Report" ? (
           <small>
-            Regulated or Reporting Operations should file a Simple Report if
-            their emissions have dropped below 10,000 tCO2e. They will continue
-            to report using the Simple Report form until they stop Schedule A
-            activities or stay under 10ktCO2e for three years. This does not
-            apply to Opt-ins.
+            Simple reports are submitted by operations that previously emitted
+            greater than or equal to 10 000 tCO2e of attributable emissions in a
+            reporting period, but now emit under 10 000 tCO2e of attributable
+            emissions in a reporting period and have an obligation to continue
+            reporting emissions for three consecutive reporting periods. This
+            report type is not applicable for opted-in operations.
+            <br /> <br />
+            If you are uncertain about which report type your operation should
+            complete, please contact GHGRegulator@gov.bc.ca.
           </small>
         ) : null;
 
