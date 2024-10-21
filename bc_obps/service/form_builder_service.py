@@ -1,11 +1,11 @@
 import json
+from service.utils import get_report_date_from_version_id
 from reporting.models import (
     Configuration,
     ConfigurationElement,
     ActivityJsonSchema,
     ActivitySourceTypeJsonSchema,
     CustomMethodologySchema,
-    ReportVersion,
 )
 from typing import Dict, List, Optional, Any
 from django.db.models import QuerySet
@@ -320,16 +320,9 @@ class FormBuilderService:
         if activity is None:
             raise Exception('Cannot build a schema without Activity data')
 
-        report_date = cls.get_report_date_from_version_id(report_version_id)
+        report_date = get_report_date_from_version_id(report_version_id)
 
         # Get config objects
         config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
         schema = build_schema(config.id, activity, source_types, report_date)
         return schema
-
-    @classmethod
-    def get_report_date_from_version_id(cls, report_version_id: int) -> str:
-        report_version = ReportVersion.objects.get(id=report_version_id)
-        if report_version and report_version.report and report_version.report.created_at:
-            return report_version.report.created_at.strftime('%Y-%m-%d')
-        return ''
