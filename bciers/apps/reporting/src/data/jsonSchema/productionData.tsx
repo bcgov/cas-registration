@@ -4,7 +4,15 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema, WidgetProps } from "@rjsf/utils";
+
+const ProductionDataTitleWidget: React.FC<WidgetProps> = ({ id, value }) => {
+  return (
+    <div id={id} className="w-full mt-8">
+      <u>Product:</u> {value}
+    </div>
+  );
+};
 
 export const buildProductionDataSchema = (
   compliance_period_start: string,
@@ -29,7 +37,6 @@ export const buildProductionDataSchema = (
       },
       production_data: {
         type: "array",
-        title: "Things!",
         items: {
           $ref: "#/definitions/productionDataItem",
         },
@@ -94,7 +101,7 @@ export const productionDataUiSchema: UiSchema = {
   "ui:classNames": "form-heading-label",
   product_selection_title: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:classNames": "mt-2 mb-5",
+    "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
   product_selection: {
     "ui:widget": "checkboxes",
@@ -106,16 +113,18 @@ export const productionDataUiSchema: UiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
     "ui:options": {
-      label: false,
       addable: false,
       removable: false,
+      label: false,
     },
     items: {
       product_id: {
         "ui:widget": "hidden",
       },
       product_name: {
-        "ui:widget": ReadOnlyWidget,
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:widget": ProductionDataTitleWidget,
+        "ui:classNames": "emission-array-header",
         "ui:options": {
           label: false,
         },
