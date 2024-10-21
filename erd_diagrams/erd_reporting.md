@@ -237,6 +237,20 @@ ReportMethodology {
     ForeignKey report_version
     OneToOneField report_emission
 }
+ReportAdditionalData {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    OneToOneField report_version
+    BooleanField capture_emissions
+    IntegerField emissions_on_site_use
+    IntegerField emissions_on_site_sequestration
+    IntegerField emissions_off_site_transfer
+    IntegerField electricity_generated
+}
 Report }|--|| User : created_by
 Report }|--|| User : updated_by
 Report }|--|| User : archived_by
@@ -323,3 +337,7 @@ ReportMethodology }|--|| User : updated_by
 ReportMethodology }|--|| User : archived_by
 ReportMethodology }|--|| ReportVersion : report_version
 ReportMethodology ||--|| ReportEmission : report_emission
+ReportAdditionalData }|--|| User : created_by
+ReportAdditionalData }|--|| User : updated_by
+ReportAdditionalData }|--|| User : archived_by
+ReportAdditionalData ||--|| ReportVersion : report_version
