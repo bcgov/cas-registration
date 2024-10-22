@@ -186,8 +186,6 @@ class TestInitialData(TestCase):
                 ('Open pit coal mining', 'sfo'),
                 ('Storage of petroleum products', 'sfo'),
                 ('Carbonate use', 'sfo'),
-                ('Oil and gas extraction and gas processing activities', 'lfo'),
-                ('Carbon dioxide transportation and oil transmission', 'lfo'),
                 ('General stationary combustion, other than non-compression and non-processing combustion', 'lfo'),
                 ('General stationary non-compression and non-processing combustion', 'lfo'),
                 ('Electricity transmission', 'lfo'),
