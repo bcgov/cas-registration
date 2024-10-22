@@ -133,12 +133,12 @@ export default function ActivityForm({
     setIsSuccess(false);
 
     const response = await actionHandler(
-      `reporting/reports/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
+      `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
       "POST",
       "",
       {
         body: JSON.stringify({
-          activity_data: JSON.stringify(data.formData),
+          activity_data: data.formData,
         }),
       },
     );
