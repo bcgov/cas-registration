@@ -585,7 +585,6 @@ class TestInitialData(TestCase):
                     'Combustion of refinery fuel gas, still gas, flexigas or associated gas',
                     'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
                     'Field gas or process vent gas combustion at a linear facilities operation',
-                    'Field gas or process vent gas combustion at a linear facilities operation',
                 ]
             ),
         )

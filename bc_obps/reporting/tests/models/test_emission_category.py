@@ -22,4 +22,5 @@ class EmissionCategoryModelTest(BaseTestCase):
             ("id", "ID", None, None),
             ("category_name", "category name", 1000, None),
             ("category_type", "category type", 1000, None),
+            ("emission_category_mappings", "emission category mapping", None, 0),
         ]
