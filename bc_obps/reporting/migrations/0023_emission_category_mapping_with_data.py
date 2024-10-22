@@ -164,9 +164,7 @@ def init_emission_category_mapping_data(apps, schema_monitor):
             ),
             EmissionCategoryMapping(
                 activity=Activity.objects.get(name='Petroleum refining'),
-                source_type=SourceType.objects.get(
-                    name='Wastewater processing using anaerobic digestion at refineries'
-                ),
+                source_type=SourceType.objects.get(name='Uncontrolled blowdown systems used at refineries'),
                 emission_category=EmissionCategory.objects.get(category_name='Fugitive emissions'),
             ),
             EmissionCategoryMapping(
@@ -471,9 +469,7 @@ def init_emission_category_mapping_data(apps, schema_monitor):
             ),
             EmissionCategoryMapping(
                 activity=Activity.objects.get(name='Petrochemical production'),
-                source_type=SourceType.objects.get(
-                    name='Flares, the flare pilot, the combustion of purge gas and the destruction of low Btu gases'
-                ),
+                source_type=SourceType.objects.get(name='Process units'),
                 emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
             ),
             EmissionCategoryMapping(
