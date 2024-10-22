@@ -169,7 +169,7 @@ class ReportActivitySaveService:
         json_data = exclude_keys(fuel_data, ['emissions', 'fuelName', 'id'])
 
         report_fuel_id = fuel_data.get('id', None)
-        fuel_type = FuelType.objects.get(name=fuel_data["fuelName"])
+        fuel_type = FuelType.objects.get(name=fuel_data["fuelType"]["fuelName"])
 
         if 'emissions' not in fuel_data:
             raise ValueError("Fuel is expecting emission data")
