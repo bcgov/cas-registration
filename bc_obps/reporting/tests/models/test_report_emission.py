@@ -15,4 +15,5 @@ class ReportEmissionModelTest(BaseTestCase):
             ("report_source_type", "report source type", None, None),
             ("report_fuel", "report fuel", None, None),
             ("report_methodology", "report methodology", None, None),
+            ("emission_categories", "emission categories", None, 0),
         ]
