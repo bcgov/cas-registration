@@ -4,6 +4,7 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
 import { getAllRegulatedProducts } from "@reporting/src/app/utils/getAllRegulatedProducts";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
+import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 
 export default async function OperationReviewFormData({
   version_id,
@@ -15,6 +16,14 @@ export default async function OperationReviewFormData({
   const allRegulatedProducts = await getAllRegulatedProducts();
   const reportingYear = await getReportingYear();
   const reportType = await getReportType(version_id);
+  const registrationPurpose = await getRegistrationPurpose(version_id);
+
+  const registrationPurposeString = Array.isArray(
+    registrationPurpose.registration_purposes,
+  )
+    ? registrationPurpose.registration_purposes.join(", ")
+    : registrationPurpose.registration_purposes || "";
+
   return (
     <OperationReview
       formData={reportOperation}
@@ -23,6 +32,7 @@ export default async function OperationReviewFormData({
       allActivities={allActivities}
       reportingYear={reportingYear}
       allRegulatedProducts={allRegulatedProducts}
+      registrationPurpose={registrationPurposeString}
     />
   );
 }

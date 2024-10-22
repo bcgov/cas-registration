@@ -1,4 +1,4 @@
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from reporting.models.report_operation import ReportOperation
 from pydantic import alias_generators
 from typing import List
@@ -33,7 +33,7 @@ class ReportOperationOut(ModelSchema):
         ]
 
 
-class ReportOperationIn(ModelSchema):
+class ReportOperationIn(Schema):
     """
     Schema for the save report operation endpoint request input
     """
@@ -47,10 +47,10 @@ class ReportOperationIn(ModelSchema):
     activities: List[str]
     regulated_products: List[str]
     operation_representative_name: str
+    operation_report_type: str
 
     class Meta:
         alias_generator = to_snake
-        model = ReportOperation
         fields = [
             'operator_legal_name',
             'operator_trade_name',
@@ -61,4 +61,5 @@ class ReportOperationIn(ModelSchema):
             'activities',
             'regulated_products',
             'operation_representative_name',
+            'operation_report_type',
         ]
