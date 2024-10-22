@@ -1674,7 +1674,7 @@ def reverse_init_emission_category_mapping_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0021_emission_category_plus_data'),
+        ('reporting', '0022_emission_category_with_data'),
     ]
 
     operations = [
