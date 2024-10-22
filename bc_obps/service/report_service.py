@@ -79,6 +79,7 @@ class ReportService:
         return ReportOperation.objects.get(report_version__id=report_version_id)
 
     @classmethod
+    @transaction.atomic
     def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperation:
         # Fetch the existing report operation
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)

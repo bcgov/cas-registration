@@ -3,6 +3,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { purposeNote } from "./reviewOperationInformationText";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
+import selectWidget from "@bciers/components/form/widgets/SelectWidget";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const operationReviewSchema: RJSFSchema = {
@@ -21,7 +22,8 @@ export const operationReviewSchema: RJSFSchema = {
     },
     operation_report_type: {
       type: "string",
-      title: "Please select what type of report are you filling",
+      title:
+        "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
       enum: ["Annual report", "Simple Report"],
       default: "Annual report",
     },
@@ -104,8 +106,7 @@ export const operationReviewUiSchema = {
     "ui:disabled": true,
   },
   operation_report_type: {
-    "ui:widget": "select",
-    "ui:options": { style: { width: "100%", textAlign: "justify" } },
+    "ui:widget": selectWidget,
     "ui:placeholder": "Report type",
     "ui:disabled": true,
   },
@@ -181,7 +182,8 @@ export const updateSchema = (
       ...prevSchema.properties,
       operation_report_type: {
         type: "string",
-        title: "Please select what type of report you are filling",
+        title:
+          "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
         enum: ["Annual Report", "Simple Report"],
         default: formDataState?.operation_report_type || "Annual Report",
       },
