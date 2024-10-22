@@ -126,9 +126,6 @@ export default function OperationReview({
             emissions in a reporting period and have an obligation to continue
             reporting emissions for three consecutive reporting periods. This
             report type is not applicable for opted-in operations.
-            <br /> <br />
-            If you are uncertain about which report type your operation should
-            complete, please contact GHGRegulator@gov.bc.ca.
           </small>
         ) : null;
 
