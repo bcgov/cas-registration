@@ -256,6 +256,7 @@ ReportAdditionalData {
     IntegerField emissions_on_site_sequestration
     IntegerField emissions_off_site_transfer
     IntegerField electricity_generated
+}
 EmissionCategoryMapping {
     BigAutoField id
     ForeignKey emission_category
