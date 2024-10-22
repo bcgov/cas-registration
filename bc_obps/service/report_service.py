@@ -98,8 +98,11 @@ class ReportService:
 
         report_operation.activities.set(activities)
         report_operation.regulated_products.set(regulated_products)
-        # Save the updated report operation
         report_operation.save()
+
+        report_version = ReportVersion.objects.get(id=report_version_id)
+        report_version.report_type = data.operation_report_type
+        report_version.save()
 
         return report_operation
 
