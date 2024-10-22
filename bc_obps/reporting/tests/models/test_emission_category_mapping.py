@@ -1,6 +1,8 @@
 from common.tests.utils.helpers import BaseTestCase
-from reporting.models import EmissionCategoryMapping
+from reporting.models import EmissionCategoryMapping, SourceType
+from registration.models import Activity
 from django.test import TestCase
+from django.db.models import Q
 from model_bakery import baker
 
 
@@ -43,6 +45,20 @@ class TestInitialData(TestCase):
         self.assertEqual(venting_non_useful_count, 41)
         self.assertEqual(waste_count, 3)
         self.assertEqual(wastewater_count, 4)
+
+    def test_all_activities_have_basic_category_mapping(self):
+        mapped_activity_ids = list(
+            EmissionCategoryMapping.objects.filter(emission_category_id__lt=10).values_list('activity_id', flat=True)
+        )
+        activities_with_no_mapping = list(Activity.objects.filter(~Q(id__in=mapped_activity_ids)))
+        assert len(activities_with_no_mapping) == 0
+
+    def test_all_source_types_have_basic_category_mapping(self):
+        mapped_source_type_ids = list(
+            EmissionCategoryMapping.objects.filter(emission_category_id__lt=10).values_list('source_type_id', flat=True)
+        )
+        source_types_with_no_mapping = list(SourceType.objects.filter(~Q(id__in=mapped_source_type_ids)))
+        assert len(source_types_with_no_mapping) == 0
 
     def test_emission_category_mapping_correct_activities(self):
         flaring_activities = sorted(
