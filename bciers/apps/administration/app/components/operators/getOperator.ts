@@ -1,7 +1,8 @@
 import { actionHandler } from "@bciers/actions";
+import { UUID } from "crypto";
 
 // 🛠️ Function to get an operator by operator id
-export default async function getOperator(id: string) {
+export default async function getOperator(id: UUID) {
   try {
     return await actionHandler(
       `registration/operators/${id}`,
