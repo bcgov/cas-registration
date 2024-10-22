@@ -220,11 +220,11 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
         report_emission.set_create_or_update(self.user_guid)
-        self.applyEmissionCategories(report_source_type, report_fuel, report_emission)
+        self.apply_emission_categories(report_source_type, report_fuel, report_emission)
 
         return report_emission
 
-    def applyEmissionCategories(
+    def apply_emission_categories(
         self,
         report_source_type: ReportSourceType,
         report_fuel: ReportFuel | None,
