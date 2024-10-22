@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
+  updateSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
@@ -27,6 +28,7 @@ interface Props {
   };
   allActivities: { id: number; name: string }[];
   allRegulatedProducts: { id: number; name: string }[];
+  registrationPurpose: string;
 }
 
 const baseUrl = "/reports";
@@ -52,6 +54,7 @@ export default function OperationReview({
   reportingYear,
   allActivities,
   allRegulatedProducts,
+  registrationPurpose,
 }: Props) {
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
@@ -65,20 +68,10 @@ export default function OperationReview({
     "MMM DD YYYY",
   );
 
-  // Function to handle form data submission
-  const submitHandler = async (
-    data: { formData?: any },
-    reportVersionId: number,
-  ) => {
-    const method = "POST";
-    const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
-
-    const formDataObject = safeJsonParse(JSON.stringify(data.formData));
-
-    // Prepare the data based on the operation report type
-    const preparedData = {
+  // Function to prepare the form data for submission
+  const prepareFormData = (formDataObject: any) => {
+    return {
       ...formDataObject,
-      // Check the report type and set activities and regulated_products to empty arrays if it's a simple report
       activities:
         formDataState.operation_report_type === "Simple Report"
           ? []
@@ -100,108 +93,36 @@ export default function OperationReview({
               return product.name;
             }),
     };
-
-    const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(preparedData),
-    });
-
-    if (response) {
-      router.push(saveAndContinueUrl); // Navigate on success
-    }
   };
 
-  // Function to handle changes in the form data
-  const onChangeHandler = (data: { formData: any }) => {
-    const updatedData = {
-      ...data.formData,
-      // Modify the structure of form data here as needed
-    };
-
-    setFormDataState(updatedData); // Update the state with modified data
-  };
-
+  // Combined useEffect for initialization and schema updates
   useEffect(() => {
-    if (!formData || !allActivities || !allRegulatedProducts) {
-      return;
-    }
+    if (formData && allActivities && allRegulatedProducts) {
+      const updatedFormData = {
+        ...formData,
+        operation_report_type: reportType?.report_type || "Annual Report",
+        activities: formData.activities || [],
+        regulated_products: formData.regulated_products || [],
+      };
+      setFormDataState(updatedFormData);
 
-    const updatedFormData = {
-      ...formData,
-      operation_report_type: reportType?.report_type || "Annual Report",
-      activities: formData.activities || [],
-      regulated_products: formData.regulated_products || [],
-    };
+      setSchema((prevSchema) =>
+        updateSchema(
+          prevSchema,
+          updatedFormData,
+          registrationPurpose,
+          reportingWindowEnd,
+          allActivities,
+          allRegulatedProducts,
+        ),
+      );
 
-    setFormDataState(updatedFormData);
-  }, [formData, reportType, allActivities, allRegulatedProducts]);
-
-  useEffect(() => {
-    setSchema((prevSchema) => ({
-      ...prevSchema,
-      properties: {
-        ...prevSchema.properties,
-        operation_report_type: {
-          type: "string",
-          title: "Please select what type of report you are filling",
-          enum: ["Annual Report", "Simple Report"],
-          default: formDataState?.operation_report_type || "Annual Report",
-        },
-        // Conditionally render fields based on report type
-        activities: {
-          type: "array",
-          title: "Reporting activities",
-          items: {
-            type: "number",
-            enum: allActivities.map((activity) => activity.id),
-            enumNames: allActivities.map((activity) => activity.name),
-          },
-          uniqueItems: true,
-          // Only show this field if report type is not simple
-          "ui:options": {
-            hidden: formDataState.operation_report_type === "Simple Report",
-          },
-        },
-        regulated_products: {
-          type: "array",
-          title: "Regulated products",
-          items: {
-            type: "number",
-            enum: allRegulatedProducts.map((product) => product.id),
-            enumNames: allRegulatedProducts.map((product) => product.name),
-          },
-          uniqueItems: true,
-          // Only show this field if report type is not simple
-          "ui:options": {
-            hidden: formDataState.operation_report_type === "Simple Report",
-          },
-        },
-        operation_representative_name: {
-          type: "string",
-          title: "Operation representative",
-          enum: [formDataState.operation_representative_name || ""],
-        },
-        operation_type: {
-          type: "string",
-          title: "Operation type",
-          enum: [formDataState.operation_type || ""],
-        },
-        date_info: {
-          type: "object",
-          readOnly: true,
-          title: `Please ensure this information was accurate for ${reportingWindowEnd}`,
-        },
-      },
-    }));
-  }, [allActivities, allRegulatedProducts, formDataState, reportingWindowEnd]);
-
-  useEffect(() => {
-    const updateUiSchema = () => {
       const helperText =
-        formDataState?.operation_report_type === "Simple Report" ? (
+        updatedFormData.operation_report_type === "Simple Report" ? (
           <small>
             Simple reports are submitted by operations that previously emitted
-            greater than or equal to 10 000 tCO2e of attributable emissions in a
-            reporting period, but now emit under 10 000 tCO2e of attributable
+            greater than or equal to 10,000 tCO2e of attributable emissions in a
+            reporting period, but now emit under 10,000 tCO2e of attributable
             emissions in a reporting period and have an obligation to continue
             reporting emissions for three consecutive reporting periods. This
             report type is not applicable for opted-in operations.
@@ -214,18 +135,47 @@ export default function OperationReview({
       setUiSchema({
         ...operationReviewUiSchema,
         operation_report_type: {
-          "ui:widget": "select", // Set the widget type
+          "ui:widget": "select",
           "ui:help": helperText,
         },
       });
-    };
+    }
+  }, [
+    formData,
+    reportType,
+    allActivities,
+    allRegulatedProducts,
+    registrationPurpose,
+    reportingWindowEnd,
+  ]);
 
-    // Call the function to update the UI schema
-    updateUiSchema();
-  }, [formDataState]); // Ensure the effect runs when formDataState changes
+  // Handle form submission
+  const submitHandler = async (
+    data: { formData?: any },
+    reportVersionId: number,
+  ) => {
+    const method = "POST";
+    const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
+
+    const formDataObject = safeJsonParse(JSON.stringify(data.formData));
+    const preparedData = prepareFormData(formDataObject);
+
+    const response = await actionHandler(endpoint, method, endpoint, {
+      body: JSON.stringify(preparedData),
+    });
+
+    if (response) {
+      router.push(saveAndContinueUrl); // Navigate on success
+    }
+  };
+
+  // Handle form data changes
+  const onChangeHandler = (data: { formData: any }) => {
+    setFormDataState(data.formData);
+  };
 
   if (!formData) {
-    return <div>No version ID found(TBD)</div>;
+    return <div>No version ID found (TBD)</div>;
   }
 
   return (
@@ -244,7 +194,7 @@ export default function OperationReview({
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
       onSubmit={(data) => submitHandler(data, version_id)}
-      onChange={onChangeHandler} // Pass the onChange handler here
+      onChange={onChangeHandler}
     />
   );
 }

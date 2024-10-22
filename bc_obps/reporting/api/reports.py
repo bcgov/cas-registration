@@ -51,7 +51,7 @@ def get_report_operation_by_version_id(
     response={201: ReportOperationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
-    Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
+    Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, aznd Activities.""",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
