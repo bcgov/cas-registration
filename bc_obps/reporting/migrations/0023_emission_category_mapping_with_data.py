@@ -1293,9 +1293,7 @@ def init_emission_category_mapping_data(apps, schema_monitor):
                 ),
             ),
             EmissionCategoryMapping(
-                activity=Activity.objects.get(
-                    name='General stationary combustion, other than non-compression and non-processing combustion'
-                ),
+                activity=Activity.objects.get(name='General stationary non-compression and non-processing combustion'),
                 source_type=SourceType.objects.get(
                     name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
                 ),
