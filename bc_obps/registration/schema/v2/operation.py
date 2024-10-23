@@ -1,5 +1,6 @@
 from uuid import UUID
 from typing import List, Optional
+from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.schema.v1.multiple_operator import MultipleOperatorOut
 from registration.models.contact import Contact
 from registration.schema.v1.operator import OperatorForOperationOut
@@ -231,4 +232,10 @@ class OperationStatutoryDeclarationOut(ModelSchema):
 class OperationRepresentativeOut(ModelSchema):
     class Meta:
         model = Contact
+        fields = ['id']
+
+
+class OperationBoroIdOut(ModelSchema):
+    class Meta:
+        model = BcObpsRegulatedOperation
         fields = ['id']
