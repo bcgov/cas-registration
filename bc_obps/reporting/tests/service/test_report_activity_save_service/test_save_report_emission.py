@@ -2,6 +2,8 @@ from django.test import TestCase
 import pytest
 from reporting.models.gas_type import GasType
 from reporting.models.report_fuel import ReportFuel
+from reporting.models.emission_category_mapping import EmissionCategoryMapping
+from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_source_type import ReportSourceType
 from reporting.service.report_activity_save_service import ReportActivitySaveService
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
@@ -39,6 +41,14 @@ class TestSaveReportEmission(TestCase):
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
             test_infrastructure.user.user_guid,
+        )
+
+        # Ensure there is a mapped emission category for the activity/source type pair created above
+        make(
+            EmissionCategoryMapping,
+            activity=report_activity.activity,
+            source_type=report_source_type.source_type,
+            emission_category=EmissionCategory.objects.get(pk=1),
         )
 
         with pytest.raises(KeyError, match="gasType"):
@@ -94,6 +104,14 @@ class TestSaveReportEmission(TestCase):
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
             test_infrastructure.user.user_guid,
+        )
+
+        # Ensure there is a mapped emission category for the activity/source type pair created above
+        make(
+            EmissionCategoryMapping,
+            activity=report_activity.activity,
+            source_type=report_source_type.source_type,
+            emission_category=EmissionCategory.objects.get(pk=1),
         )
 
         report_emission = service_under_test.save_emission(
