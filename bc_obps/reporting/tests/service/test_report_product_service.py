@@ -9,12 +9,14 @@ pytestmark = pytest.mark.django_db
 
 class TestReportProductService:
     def setup_method(self):
+        self.test_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
         self.facility_report = make_recipe(
             "reporting.tests.utils.facility_report",
             products=RegulatedProduct.objects.filter(id__in=[29, 1]),
         )
         self.report_version_id = self.facility_report.report_version.id
         self.facility_id = self.facility_report.facility.id
+
         self.test_data = [
             {
                 "product_id": 29,  # Sugar
@@ -38,7 +40,12 @@ class TestReportProductService:
 
         assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 0
 
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
+        ReportProductService.save_production_data(
+            self.report_version_id,
+            self.facility_id,
+            self.test_data,
+            self.test_user_guid,
+        )
 
         assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 2
 
@@ -61,16 +68,22 @@ class TestReportProductService:
         assert rp2.quantity_throughput_during_period == 0
 
     def test_deletes_report_product_records_when_not_in_submitted_data(self):
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
         assert ReportProduct.objects.count() == 2
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data[:1])
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data[:1], self.test_user_guid
+        )
         assert ReportProduct.objects.count() == 1
         assert ReportProduct.objects.get(product_id=29) is not None
 
     def test_saves_additional_data(self):
         self.facility_report.products.add(RegulatedProduct.objects.get(id=10))
 
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
         assert ReportProduct.objects.all().count() == 2
 
         new_item = {
@@ -84,12 +97,16 @@ class TestReportProductService:
             "quantity_throughput_during_period": 0,
         }
 
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, [*self.test_data, new_item])
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, [*self.test_data, new_item], self.test_user_guid
+        )
         assert ReportProduct.objects.count() == 3
         assert list(ReportProduct.objects.order_by("product__id").values_list("product_id", flat=True)) == [1, 10, 29]
 
     def test_updates_existing_report_products(self):
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
         updated_item = {
             "product_id": 1,
             "annual_production": 0,
@@ -101,7 +118,7 @@ class TestReportProductService:
             "quantity_throughput_during_period": 0,
         }
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, [self.test_data[0], updated_item]
+            self.report_version_id, self.facility_id, [self.test_data[0], updated_item], self.test_user_guid
         )
         assert ReportProduct.objects.count() == 2
         rp1 = ReportProduct.objects.get(facility_report=self.facility_report, product_id=1)
@@ -121,7 +138,9 @@ class TestReportProductService:
             ValueError,
             match="Data was submitted for a product that is not in the products allowed for this facility*",
         ):
-            ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
+            ReportProductService.save_production_data(
+                self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+            )
 
     # Test saving errors out if no product_id
     def test_errors_out_if_no_product_id(self):
@@ -135,15 +154,43 @@ class TestReportProductService:
 
         with pytest.raises(KeyError, match="product_id"):
             ReportProductService.save_production_data(
-                self.facility_report.report_version.id, self.facility_report.facility.id, test_data
+                self.facility_report.report_version.id, self.facility_report.facility.id, test_data, self.test_user_guid
             )
 
     # Test the created_at and created_by
-    def test_sets_created_at_created_by(self):
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
-        assert ReportProduct.objects.count() == 2
+    def test_sets_created_updated_fields(self):
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
 
-        raise
+        report_products = ReportProduct.objects.all()
+        assert report_products.count() == 2
+        assert all(rp.created_by.user_guid == self.test_user_guid for rp in report_products)
+        assert all(rp.created_at is not None for rp in report_products)
+        assert all(rp.updated_by is None for rp in report_products)
+        assert all(rp.updated_at is None for rp in report_products)
+
+        another_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
+        ReportProductService.save_production_data(
+            self.report_version_id,
+            self.facility_id,
+            [
+                {
+                    "product_id": 1,
+                    "annual_production": 4,
+                    "production_data_apr_dec": 4,
+                    "production_methodology": "test updated!",
+                }
+            ],
+            another_user_guid,
+        )
+
+        report_products = ReportProduct.objects.all()
+        assert report_products.count() == 1
+        assert report_products[0].created_by.user_guid == self.test_user_guid
+        assert report_products[0].created_at is not None
+        assert report_products[0].updated_by.user_guid == another_user_guid
+        assert report_products[0].updated_at is not None
 
     def test_retrieves_the_data_sorted_by_product_id(self):
         products = make_recipe("registration.tests.utils.regulated_product", _quantity=3)
@@ -169,7 +216,7 @@ class TestReportProductService:
         ]
         self.facility_report.products.set(products)
 
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, data)
+        ReportProductService.save_production_data(self.report_version_id, self.facility_id, data, self.test_user_guid)
 
         return_value = list(ReportProductService.get_production_data(self.report_version_id, self.facility_id))
 
