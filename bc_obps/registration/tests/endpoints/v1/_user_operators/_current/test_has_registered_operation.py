@@ -1,9 +1,8 @@
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.utils import custom_reverse_lazy
-
 
 class TestGetCurrentUserOperatorHasRegisteredOperation(CommonTestSetup):
-    endpoint = custom_reverse_lazy("has_registered_operation")
+    endpoint = CommonTestSetup.base_endpoint + "user-operators/current/has_registered_operation"
+
     # AUTHORIZATION
     def test_unauthorized_users_cannot_get_endpoint(self):
         roles = ["cas_analyst", "cas_admin", "cas_pending"]

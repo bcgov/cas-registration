@@ -1,9 +1,8 @@
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.utils import custom_reverse_lazy
-
 
 class TestGetCurrentUserOperatorHasRequiredFields(CommonTestSetup):
-    endpoint = custom_reverse_lazy("has-required-fields")
+    endpoint = CommonTestSetup.base_endpoint + "user-operators/current/has-required-fields"
+
     # AUTHORIZATION
     def test_unauthorized_users_cannot_get_endpoint(self):
         roles = ["cas_analyst", "cas_admin", "cas_pending"]
