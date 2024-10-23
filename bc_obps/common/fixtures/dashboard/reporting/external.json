@@ -1,11 +1,10 @@
 [
   {
     "model": "common.dashboarddata",
-    "pk": 7,
     "fields": {
       "name": "External Reporting Dashboard",
       "data": {
-        "dashboard": "reporting/reports",
+        "dashboard": "reporting",
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {

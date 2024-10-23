@@ -11,7 +11,29 @@
             "title": "Register an Operation",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/registration/register-an-operation"
+            "href": "/registration/register-an-operation",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/has_registered_operation",
+                "field": "has_registered_operation",
+                "operator": "equals",
+                "value": true
+              }
+            ]
+          },
+          {
+            "title": "Register an Operation<sup style='color: red;'>*</sup><small> (action required)</small>",
+            "icon": "File",
+            "content": "TBD here.",
+            "href": "/registration/register-an-operation",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/has_registered_operation",
+                "field": "has_registered_operation",
+                "operator": "equals",
+                "value": false
+              }
+            ]
           },
           {
             "title": "Report an Event",

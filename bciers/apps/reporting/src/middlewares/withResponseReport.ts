@@ -9,7 +9,7 @@ otherwise,builds app router path based on JWT properties of identity_provider an
 to the appropriate folder structure.
  */
 
-export const withResponseReg: MiddlewareFactory = () => {
+export const withResponseReport: MiddlewareFactory = () => {
   return async (request: NextRequest) => {
     const { pathname } = request.nextUrl;
     if (pathname.endsWith(`/`)) {
