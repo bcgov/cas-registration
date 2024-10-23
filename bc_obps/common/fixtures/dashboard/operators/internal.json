@@ -1,0 +1,34 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "Internal Operator Dashboard",
+      "data": {
+        "dashboard": "operators",
+        "access_roles": ["cas_admin", "cas_analyst"],
+        "tiles": [
+          {
+            "title": "Information",
+            "content": "View information of this operator.",
+            "href": "/administration/operators/operator-id"
+          },
+          {
+            "title": "Operations",
+            "content": "View the operations owned by this operator.",
+            "href": "/administration/operators/operator-id/operations"
+          },
+          {
+            "title": "Contacts",
+            "content": "View the contacts of this operator.",
+            "href": "/administration/operators/operator-id/contacts"
+          },
+          {
+            "title": "Users",
+            "content": "View users and their access types of this operator.",
+            "href": "/administration/operators/operator-id/users"
+          }
+        ]
+      }
+    }
+  }
+]
