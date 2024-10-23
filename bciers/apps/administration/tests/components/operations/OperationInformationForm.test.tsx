@@ -243,11 +243,10 @@ describe("the OperationInformationForm component", () => {
     // reporting activities
     expect(screen.getByText(/Reporting Activities/i)).toBeVisible();
     expect(screen.getByText(/General stationary combustion/i)).toBeVisible();
-    // 3 file inputs
+    // 2 file inputs
     expect(screen.getByText(/Process Flow Diagram/i)).toBeVisible();
     expect(screen.getByText(/Boundary Map/i)).toBeVisible();
-    expect(screen.getByText(/Equipment List/i)).toBeVisible();
-    expect(screen.getAllByText(/No attachment was uploaded/i)).toHaveLength(3);
+    expect(screen.getAllByText(/No attachment was uploaded/i)).toHaveLength(2);
     // multiple operators
     expect(
       screen.getByText(/Does the operation have multiple operators/i),
@@ -337,36 +336,6 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Operation 4/i)).toBeVisible();
   });
 
-  it("should render the form in read-only mode and not show Edit/Submit button if the user is not an industry_user_admin", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    });
-
-    render(
-      <OperationInformationForm
-        formData={formData}
-        schema={testSchema}
-        operationId={operationId}
-      />,
-    );
-
-    // There is no textbox element in the form
-    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
-
-    expect(
-      screen.queryByRole("button", { name: "Edit" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Submit" }),
-    ).not.toBeInTheDocument();
-    // still show the cancel button
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
-  });
-
   it("should edit and submit opt-in operation details in the form", async () => {
     render(
       <OperationInformationForm
@@ -428,6 +397,36 @@ describe("the OperationInformationForm component", () => {
         expect(radioValue).toHaveTextContent(/no/i);
       });
     });
+  });
+
+  it("should render the form in read-only mode and not show Edit/Submit button if the user is not an industry_user_admin", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_admin",
+        },
+      },
+    });
+
+    render(
+      <OperationInformationForm
+        formData={formData}
+        schema={testSchema}
+        operationId={operationId}
+      />,
+    );
+
+    // There is no textbox element in the form
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Edit" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Submit" }),
+    ).not.toBeInTheDocument();
+    // still show the cancel button
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
 
   it("should render the opt-in information if purpose is opt-in", async () => {
