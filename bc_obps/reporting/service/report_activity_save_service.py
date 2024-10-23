@@ -12,8 +12,8 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.source_type import SourceType
-from reporting.models.emission_category_mapping import EmissionCategoryMapping
 from reporting.service.utils import exclude_keys, retrieve_ids
+from reporting.service.emission_category_mapping_service import EmissionCategoryMappingService
 
 
 class ReportActivitySaveService:
@@ -220,52 +220,6 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
         report_emission.set_create_or_update(self.user_guid)
-        self.apply_emission_categories(report_source_type, report_fuel, report_emission)
+        EmissionCategoryMappingService.apply_emission_categories(report_source_type, report_fuel, report_emission)
 
         return report_emission
-
-    def apply_emission_categories(
-        self,
-        report_source_type: ReportSourceType,
-        report_fuel: ReportFuel | None,
-        report_emission: ReportEmission,
-    ) -> None:
-        categories_set = []
-        activity_id = report_source_type.report_activity.activity.id
-        source_type_id = report_source_type.source_type.id
-        basic = EmissionCategoryMapping.objects.get(
-            activity_id=activity_id, source_type_id=source_type_id, emission_category__category_type='basic'
-        ).emission_category.id
-        categories_set.append(basic)
-
-        if report_fuel:
-            fuel_classification = report_fuel.fuel_type.classification
-            fuel_excluded = EmissionCategoryMapping.objects.filter(
-                activity_id=activity_id, source_type_id=source_type_id, emission_category__category_type='fuel_excluded'
-            )
-            if fuel_excluded:
-                if fuel_classification == 'Woody Biomass':
-                    categories_set.append(
-                        fuel_excluded.get(
-                            emission_category__category_name='CO2 emissions from excluded woody biomass'
-                        ).emission_category.id
-                    )
-                if fuel_classification == 'Other Exempted Biomass':
-                    categories_set.append(
-                        fuel_excluded.get(
-                            emission_category__category_name='Other emissions from excluded biomass'
-                        ).emission_category.id
-                    )
-                if fuel_classification == 'Exempted Non-biomass':
-                    categories_set.append(
-                        fuel_excluded.get(
-                            emission_category__category_name='Emissions from excluded non-biomass'
-                        ).emission_category.id
-                    )
-        other = EmissionCategoryMapping.objects.filter(
-            activity_id=activity_id, source_type_id=source_type_id, emission_category__category_type='other_excluded'
-        ).first()
-
-        if other:
-            categories_set.append(other.emission_category.id)
-        report_emission.emission_categories.set(categories_set)
