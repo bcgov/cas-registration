@@ -6,6 +6,7 @@ from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
 from reporting.models.methodology import Methodology
 from reporting.models.report_activity import ReportActivity
+from reporting.models.report_product import ReportProduct
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -15,6 +16,9 @@ from model_bakery.recipe import Recipe, foreign_key
 from reporting.models.source_type import SourceType
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.emission_category_mapping import EmissionCategoryMapping
+
+from registration.tests.utils.baker_recipes import regulated_product
+
 
 reporting_year = Recipe(ReportingYear)
 
@@ -61,6 +65,7 @@ report_activity = Recipe(
     report_version=foreign_key(report_version),
 )
 
+
 emission_category = Recipe(EmissionCategory)
 
 emission_category_mapping = Recipe(
@@ -68,4 +73,10 @@ emission_category_mapping = Recipe(
     activity=foreign_key(activity),
     source_type=foreign_key(source_type),
     emission_category=foreign_key(emission_category),
+)
+report_product = Recipe(
+    ReportProduct,
+    facility_report=foreign_key(facility_report),
+    report_version=foreign_key(report_version),
+    product=foreign_key(regulated_product),
 )
