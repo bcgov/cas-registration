@@ -62,18 +62,16 @@ describe("AdditionalReportingData Component", () => {
 
   it("updates schema dynamically based on registration purpose", async () => {
     (getRegistrationPurpose as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      registration_purposes: ["Reporting Operation"],
+      registration_purposes: ["OBPS Regulated Operation"],
     });
-
     render(<AdditionalReportingData versionId={versionId} />);
+
     await waitFor(() =>
       expect(getRegistrationPurpose).toHaveBeenCalledWith(versionId),
     );
 
-    const yesRadioButton = screen.getByLabelText("Yes");
-    fireEvent.click(yesRadioButton);
-
-    expect(screen.queryByText("Electricity generated")).not.toBeInTheDocument();
+    const element = await screen.findByText("Electricity Generated");
+    expect(element).toBeInTheDocument();
   });
 
   it("submits form data and redirects on success", async () => {

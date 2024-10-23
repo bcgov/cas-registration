@@ -55,13 +55,8 @@ export default function AdditionalReportingData({
     const getRegistrationPurposes = async () => {
       const result = await getRegistrationPurpose(versionId);
       const registrationPurpose = result?.registration_purposes;
-      console.log("reg ", registrationPurpose);
 
-      if (
-        registrationPurpose?.length > 1 ||
-        (registrationPurpose?.length === 1 &&
-          registrationPurpose[0] !== "Reporting Operation")
-      ) {
+      if (registrationPurpose?.includes("OBPS Regulated Operation")) {
         setSchema((prevSchema) => {
           // Clone the schema and add the additional data section
           return {
