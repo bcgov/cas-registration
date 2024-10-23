@@ -1,3 +1,19 @@
+# [1.12.0](https://github.com/bcgov/cas-registration/compare/v1.11.0...v1.12.0) (2024-10-23)
+
+### Bug Fixes
+
+- activity form state should not persist when switching activities ([dfe9d21](https://github.com/bcgov/cas-registration/commit/dfe9d21038127c9c53210f6b5e52c56e84767585))
+- fix operation registration back navigation ([711619e](https://github.com/bcgov/cas-registration/commit/711619ec5896e0ec07dc6ec5a3efcd24d5325f90))
+
+### Features
+
+- a service to save the activity report data ([853fc78](https://github.com/bcgov/cas-registration/commit/853fc788906ae5f2036b7bf740217a49c1d2c812))
+- create internal operator detail page ([200073c](https://github.com/bcgov/cas-registration/commit/200073c4d062ed892da6a1d4a7ee96b67f600da6))
+- external user can see operator's user access grid ([0f94f58](https://github.com/bcgov/cas-registration/commit/0f94f58ccfcb12c797fb49c7e9fb198e25ff0a42))
+- generate acitivity task list ([5f5dad9](https://github.com/bcgov/cas-registration/commit/5f5dad9cee887079e94ac1a18cc74929114d3125))
+- internal user can view an operation ([ef84308](https://github.com/bcgov/cas-registration/commit/ef84308b01a797adb0d5cb5716fcc0f6ca6c2761))
+- registration info must be complete to change operation status ([1142789](https://github.com/bcgov/cas-registration/commit/1142789c0ce75b3eeacf864c074105468a64aac5))
+
 # [1.11.0](https://github.com/bcgov/cas-registration/compare/v1.10.0...v1.11.0) (2024-10-08)
 
 ### Bug Fixes
