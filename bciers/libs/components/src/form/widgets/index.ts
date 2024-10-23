@@ -14,3 +14,4 @@ export { default as SelectWidget } from "./SelectWidget";
 export { default as TextWidget } from "./TextWidget";
 export { default as ToggleWidget } from "./ToggleWidget";
 export { default as URLWidget } from "./URLWidget";
+export { default as BoroIdWidget } from "./BoroIdWidget";

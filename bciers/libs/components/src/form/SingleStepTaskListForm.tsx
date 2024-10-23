@@ -24,6 +24,7 @@ interface SingleStepTaskListFormProps {
   inlineMessage?: React.ReactNode;
   mode?: FormMode;
   allowEdit?: boolean;
+  formContext?: { [key: string]: any };
 }
 
 const SingleStepTaskListForm = ({
@@ -38,6 +39,7 @@ const SingleStepTaskListForm = ({
   inlineMessage,
   mode = FormMode.CREATE,
   allowEdit = true,
+  formContext,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -97,6 +99,7 @@ const SingleStepTaskListForm = ({
       />
       <div className="w-full">
         <FormBase
+          formContext={formContext}
           formRef={formRef}
           disabled={isFormDisabled}
           schema={schema}

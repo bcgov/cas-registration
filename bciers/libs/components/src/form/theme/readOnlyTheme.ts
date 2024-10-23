@@ -10,6 +10,7 @@ import { getDefaultRegistry } from "@rjsf/core";
 import { InlineFieldTemplate } from "../fields";
 import TitleFieldTemplate from "@bciers/components/form/fields/TitleFieldTemplate";
 import ReadOnlyArrayFieldTemplate from "../fields/readonly/ReadOnlyArrayFieldTemplate";
+import { BoroIdWidget } from "../widgets";
 
 const { templates: defaultTemplates } = getDefaultRegistry();
 
@@ -30,6 +31,7 @@ const readOnlyTheme = {
     TextWidget: ReadOnlyWidget,
     ToggleWidget: ReadOnlyBooleanWidget,
     URLWidget: ReadOnlyWidget,
+    BoroIdWidget: BoroIdWidget,
   },
   templates: {
     ...defaultTemplates,
