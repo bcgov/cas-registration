@@ -1089,9 +1089,7 @@ def init_emission_category_mapping_data(apps, schema_monitor):
             ),
             EmissionCategoryMapping(
                 activity=Activity.objects.get(name='Pulp and paper production'),
-                source_type=SourceType.objects.get(
-                    name='Fuel combustion by mobile equipment that is part of the facility'
-                ),
+                source_type=SourceType.objects.get(name='Pulping and chemical recovery'),
                 emission_category=EmissionCategory.objects.get(
                     category_name='CO2 emissions from excluded woody biomass'
                 ),
@@ -1174,9 +1172,7 @@ def init_emission_category_mapping_data(apps, schema_monitor):
             ),
             EmissionCategoryMapping(
                 activity=Activity.objects.get(name='Pulp and paper production'),
-                source_type=SourceType.objects.get(
-                    name='Fuel combustion by mobile equipment that is part of the facility'
-                ),
+                source_type=SourceType.objects.get(name='Pulping and chemical recovery'),
                 emission_category=EmissionCategory.objects.get(category_name='Other emissions from excluded biomass'),
             ),
             EmissionCategoryMapping(
