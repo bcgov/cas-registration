@@ -43,7 +43,7 @@ describe("AdditionalReportingData Component", () => {
   it("renders form with correct initial fields", async () => {
     render(<AdditionalReportingData versionId={versionId} />);
     const capturedEmissionsText = await screen.findByText(
-      "Captured emissions (Optional)",
+      "Captured emissions (If applicable)",
     );
     expect(capturedEmissionsText).toBeInTheDocument();
   });
@@ -73,7 +73,7 @@ describe("AdditionalReportingData Component", () => {
     const yesRadioButton = screen.getByLabelText("Yes");
     fireEvent.click(yesRadioButton);
 
-    expect(screen.getByText("Electricity generated")).toBeInTheDocument();
+    expect(screen.queryByText("Electricity generated")).not.toBeInTheDocument();
   });
 
   it("submits form data and redirects on success", async () => {
