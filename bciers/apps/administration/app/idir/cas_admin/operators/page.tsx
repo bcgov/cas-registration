@@ -2,6 +2,8 @@
 import { OperatorsSearchParams } from "@/administration/app/components/operators/types";
 import OperatorDataGridPage from "@/administration/app/components/operators/OperatorDataGridPage";
 import { InternalOperatorDataGridLayout } from "@/administration/app/components/operators/OperatorLayouts";
+import Loading from "@bciers/components/loading/SkeletonGrid";
+import { Suspense } from "react";
 
 export default async function Page({
   searchParams,
@@ -10,7 +12,9 @@ export default async function Page({
 }) {
   return (
     <InternalOperatorDataGridLayout>
-      <OperatorDataGridPage searchParams={searchParams} />
+      <Suspense fallback={<Loading />}>
+        <OperatorDataGridPage searchParams={searchParams} />
+      </Suspense>
     </InternalOperatorDataGridLayout>
   );
 }
