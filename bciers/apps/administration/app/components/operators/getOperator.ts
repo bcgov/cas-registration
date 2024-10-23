@@ -2,12 +2,15 @@ import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 
 // 🛠️ Function to get an operator by operator id
-export default async function getOperator(id: UUID) {
+export default async function getOperator(
+  id: UUID,
+  pathToRevalidate: string = "",
+) {
   try {
     return await actionHandler(
       `registration/operators/${id}`,
       "GET",
-      `/select-operator/confirm/${id}`,
+      pathToRevalidate,
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level

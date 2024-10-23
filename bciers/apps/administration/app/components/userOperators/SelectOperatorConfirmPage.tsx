@@ -13,7 +13,10 @@ export default async function SelectOperatorConfirmPage({
   id,
 }: Readonly<{ id?: UUID }>) {
   if (id) {
-    const operator: Operator | { error: string } = await getOperator(id);
+    const operator: Operator | { error: string } = await getOperator(
+      id,
+      `/select-operator/confirm/${id}`,
+    );
     const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(id);
     const accessDeclined: boolean | { error: string } =
       await getOperatorAccessDeclined(id);
