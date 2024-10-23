@@ -191,7 +191,6 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.status_code == 200
         response_object = json.loads(response.json())
         source_type_key = list(response_object['schema']['properties']['sourceTypes']['properties'].keys())[0]
-        print(source_type_key)
         # No units in schema
         assert (
             'units'

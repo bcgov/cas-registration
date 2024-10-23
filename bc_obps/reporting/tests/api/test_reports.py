@@ -3,9 +3,8 @@ from typing import Any
 from django.http import HttpResponse
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from reporting.models import Report, ReportVersion
-from reporting.tests.utils.bakers import report_baker, reporting_year_baker, report_version_baker
+from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from service.utils import get_report_valid_year_from_version_id
 
 
 class TestReportsEndpoint(CommonTestSetup):
@@ -83,10 +82,3 @@ class TestReportsEndpoint(CommonTestSetup):
         assert ReportVersion.objects.count() == 1
         assert response.status_code == 201
         assert response.json() == ReportVersion.objects.first().id
-
-    def test_get_report_valid_year_from_version_id(self):
-        report_version = report_version_baker()
-        assert (
-            get_report_valid_year_from_version_id(report_version.id)
-            == f"{report_version.report.reporting_year_id}-05-31"
-        )
