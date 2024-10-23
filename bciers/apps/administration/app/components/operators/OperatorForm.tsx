@@ -17,11 +17,13 @@ interface Props {
   schema: RJSFSchema;
   formData: OperatorFormData;
   isCreating?: boolean;
+  isInternalUser: boolean;
 }
 export default function OperatorForm({
   formData,
   schema,
   isCreating,
+  isInternalUser,
 }: Readonly<Props>) {
   // @ ts-ignore
   const [error, setError] = useState(undefined);
@@ -37,6 +39,7 @@ export default function OperatorForm({
       uiSchema={operatorUiSchema}
       formData={formState}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
+      allowEdit={!isInternalUser}
       onSubmit={async (data: { formData?: any }) => {
         const updatedFormData = { ...formState, ...data.formData };
         setFormState(updatedFormData);

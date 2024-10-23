@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { Operator } from "../userOperators/types";
 import getOperator from "../operators/getOperator";
 import getOperatorHasAdmin from "../operators/getOperatorHasAdmin";
+import { UUID } from "crypto";
 // 🧩 Main component
 export default async function SelectOperatorReceivedPage({
   step,
   id,
-}: Readonly<{ step: string; id?: string }>) {
+}: Readonly<{ step: string; id?: UUID }>) {
   if (id) {
     const operator: Operator | { error: string } = await getOperator(id);
     const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(id);
