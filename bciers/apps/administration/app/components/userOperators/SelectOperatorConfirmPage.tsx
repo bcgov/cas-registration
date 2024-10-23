@@ -7,10 +7,11 @@ import SelectOperatorConfirmForm from "./SelectOperatorConfirmForm";
 import getOperator from "../operators/getOperator";
 import getOperatorHasAdmin from "../operators/getOperatorHasAdmin";
 import getOperatorAccessDeclined from "../operators/getOperatorAccessDeclined";
+import { UUID } from "crypto";
 // 🧩 Main component
 export default async function SelectOperatorConfirmPage({
   id,
-}: Readonly<{ id?: string }>) {
+}: Readonly<{ id?: UUID }>) {
   if (id) {
     const operator: Operator | { error: string } = await getOperator(id);
     const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(id);
