@@ -422,76 +422,76 @@ class TestInitialData(TestCase):
                 .distinct()
             )
         )
-        # venting_useful_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(emission_category__category_name='Venting emissions — useful')
-        #         .values_list('source_type__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
-        # venting_non_useful_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(emission_category__category_name='Venting emissions — non-useful')
-        #         .values_list('source_type__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
-        # waste_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(emission_category__category_name='Emissions from waste')
-        #         .values_list('source_type__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
-        # wastewater_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(emission_category__category_name='Emissions from wastewater')
-        #         .values_list('source_type__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
+        venting_useful_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(emission_category__category_name='Venting emissions — useful')
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
+        venting_non_useful_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(emission_category__category_name='Venting emissions — non-useful')
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
+        waste_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(emission_category__category_name='Emissions from waste')
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
+        wastewater_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(emission_category__category_name='Emissions from wastewater')
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
 
-        # # FUEL EXCLUDED
-        # woody_biomass_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(emission_category__category_name='CO2 emissions from excluded woody biomass')
-        #         .values_list('source_type__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
-        # excluded_biomass_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(emission_category__category_name='Other emissions from excluded biomass')
-        #         .values_list('source_type__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
-        # excluded_nonbiomass_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(emission_category__category_name='Emissions from excluded non-biomass')
-        #         .values_list('source_type__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
+        # FUEL EXCLUDED
+        woody_biomass_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(emission_category__category_name='CO2 emissions from excluded woody biomass')
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
+        excluded_biomass_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(emission_category__category_name='Other emissions from excluded biomass')
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
+        excluded_nonbiomass_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(emission_category__category_name='Emissions from excluded non-biomass')
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
 
-        # # OTHER
-        # lfo_line_tracing_sources = sorted(
-        #     list(
-        #         EmissionCategoryMapping.objects.select_related('source_type')
-        #         .filter(
-        #             emission_category__category_name='Emissions from line tracing and non-processing and non-compression activities'
-        #         )
-        #         .values_list('activity__name', flat=True)
-        #         .distinct()
-        #     )
-        # )
+        # OTHER
+        lfo_line_tracing_sources = sorted(
+            list(
+                EmissionCategoryMapping.objects.select_related('source_type')
+                .filter(
+                    emission_category__category_name='Emissions from line tracing and non-processing and non-compression activities'
+                )
+                .values_list('source_type__name', flat=True)
+                .distinct()
+            )
+        )
 
         self.assertEqual(
             flaring_sources,
@@ -585,6 +585,160 @@ class TestInitialData(TestCase):
                     'Combustion of refinery fuel gas, still gas, flexigas or associated gas',
                     'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
                     'Field gas or process vent gas combustion at a linear facilities operation',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            venting_useful_sources,
+            sorted(
+                [
+                    'Natural gas pneumatic high bleed device venting',
+                    'Natural gas pneumatic pump venting',
+                    'Natural gas pneumatic low bleed device venting',
+                    'Natural gas pneumatic intermittent bleed device venting',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            venting_non_useful_sources,
+            sorted(
+                [
+                    'Process vents',
+                    'Loading operations at refineries and terminals',
+                    'Acid gas removal venting or incineration',
+                    'Dehydrator venting',
+                    'Blowdown venting',
+                    'Releases from tanks used for storage, production or processing',
+                    'Associated gas venting',
+                    'Centrifugal compressor venting',
+                    'Reciprocating compressor venting',
+                    'Transmission storage tanks',
+                    'Enhanced oil recovery injection pump blowdowns',
+                    'Other venting sources',
+                    'Well venting for liquids unloading',
+                    'Gas well venting during well completions and workovers with or without hydraulic fracturing',
+                    'Drilling venting',
+                    'Well testing venting',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            waste_sources,
+            sorted(
+                [
+                    'General stationary combustion of waste without production of useful energy',
+                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            wastewater_sources,
+            sorted(
+                [
+                    'Industrial wastewater process using anaerobic digestion',
+                    'Oil-water separators',
+                    'Oil-water separators at refineries',
+                    'Wastewater processing using anaerobic digestion at refineries',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            woody_biomass_sources,
+            sorted(
+                [
+                    'General stationary combustion of fuel or waste with production of useful energy',
+                    'General stationary combustion of waste without production of useful energy',
+                    'Fuel combustion by mobile equipment that is part of the facility',
+                    'Fuel combustion for electricity generation',
+                    'Pulping and chemical recovery',
+                    'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
+                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            excluded_biomass_sources,
+            sorted(
+                [
+                    'General stationary combustion of fuel or waste with production of useful energy',
+                    'General stationary combustion of waste without production of useful energy',
+                    'Fuel combustion by mobile equipment that is part of the facility',
+                    'Fuel combustion for electricity generation',
+                    'Pulping and chemical recovery',
+                    'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
+                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            excluded_biomass_sources,
+            sorted(
+                [
+                    'General stationary combustion of fuel or waste with production of useful energy',
+                    'General stationary combustion of waste without production of useful energy',
+                    'Fuel combustion by mobile equipment that is part of the facility',
+                    'Fuel combustion for electricity generation',
+                    'Pulping and chemical recovery',
+                    'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
+                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            excluded_nonbiomass_sources,
+            sorted(
+                [
+                    'General stationary combustion of fuel or waste with production of useful energy',
+                    'General stationary combustion of waste without production of useful energy',
+                    'Fuel combustion by mobile equipment that is part of the facility',
+                    'Fuel combustion for electricity generation',
+                    'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
+                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            lfo_line_tracing_sources,
+            sorted(
+                [
+                    'General stationary combustion of fuel or waste with production of useful energy',
+                    'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
+                    'Natural gas pneumatic high bleed device venting',
+                    'Natural gas pneumatic pump venting',
+                    'Natural gas pneumatic low bleed device venting',
+                    'Natural gas pneumatic intermittent bleed device venting',
+                    'Dehydrator venting',
+                    'Well venting for liquids unloading',
+                    'Gas well venting during well completions and workovers with or without hydraulic fracturing',
+                    'Drilling flaring',
+                    'Drilling venting',
+                    'Hydraulic fracturing flaring',
+                    'Blowdown venting',
+                    'Releases from tanks used for storage, production or processing',
+                    'Well testing venting',
+                    'Well testing flaring',
+                    'Associated gas venting',
+                    'Associated gas flaring',
+                    'Flaring stacks',
+                    'Equipment leaks detected using leak detection and leaker emission factor methods',
+                    'Population count sources',
+                    'Transmission storage tanks',
+                    'Enhanced oil recovery injection pump blowdowns',
+                    'Produced water dissolved carbon dioxide and methane',
+                    'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide',
+                    'Other venting sources',
+                    'Other fugitive sources',
+                    'Third party line hits with release of gas',
+                    'Flare stacks',
                 ]
             ),
         )
