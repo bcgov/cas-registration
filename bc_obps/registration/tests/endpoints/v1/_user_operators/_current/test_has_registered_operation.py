@@ -1,5 +1,6 @@
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
+
 class TestGetCurrentUserOperatorHasRegisteredOperation(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "user-operators/current/has_registered_operation"
 
