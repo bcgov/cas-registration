@@ -20,7 +20,9 @@ test_data = {
                             "test_fuel_number": 12345,
                             "test_fuel_bool": True,
                             "test_fuel_str": "test",
-                            "fuelName": "C/D Waste - Plastic",
+                            "fuelType": {
+                                "fuelName": "C/D Waste - Plastic",
+                            },
                             "emissions": [
                                 {
                                     "gasType": "CH4",
@@ -42,7 +44,9 @@ test_data = {
                 {
                     "fuels": [
                         {
-                            "fuelName": "Diesel",
+                            "fuelType": {
+                                "fuelName": "Diesel",
+                            },
                             "emissions": [
                                 {
                                     "gasType": "CO2",
@@ -53,7 +57,9 @@ test_data = {
                             ],
                         },
                         {
-                            "fuelName": "Plastics",
+                            "fuelType": {
+                                "fuelName": "Plastics",
+                            },
                             "emissions": [
                                 {
                                     "gasType": "CO2",
@@ -68,7 +74,9 @@ test_data = {
                 {
                     "fuels": [
                         {
-                            "fuelName": "Kerosene",
+                            "fuelType": {
+                                "fuelName": "Kerosene",
+                            },
                             "emissions": [
                                 {
                                     "gasType": "CO2",
@@ -79,7 +87,9 @@ test_data = {
                             ],
                         },
                         {
-                            "fuelName": "Wood Waste",
+                            "fuelType": {
+                                "fuelName": "Wood Waste",
+                            },
                             "emissions": [
                                 {
                                     "gasType": "CO2",
