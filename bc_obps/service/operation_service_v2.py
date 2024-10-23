@@ -101,7 +101,8 @@ class OperationServiceV2:
             )
             if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
                 operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
-                operation.save(update_fields=['opted_in_operation'])
+                operation.opt_in = True
+                operation.save(update_fields=['opted_in_operation', 'opt_in'])
         operation.set_create_or_update(user_guid)
         return operation
 
