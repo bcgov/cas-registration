@@ -1,4 +1,5 @@
 import pytest
+from registration.models.regulated_product import RegulatedProduct
 from reporting.models.report_product import ReportProduct
 from reporting.service.report_product_service import ReportProductService
 from model_bakery.baker import make_recipe
@@ -8,7 +9,10 @@ pytestmark = pytest.mark.django_db
 
 class TestReportProductService:
     def setup_method(self):
-        self.facility_report = make_recipe("reporting.tests.utils.facility_report")
+        self.facility_report = make_recipe(
+            "reporting.tests.utils.facility_report",
+            products=RegulatedProduct.objects.filter(id__in=[29, 1]),
+        )
         self.report_version_id = self.facility_report.report_version.id
         self.facility_id = self.facility_report.facility.id
         self.test_data = [
@@ -64,6 +68,8 @@ class TestReportProductService:
         assert ReportProduct.objects.get(product_id=29) is not None
 
     def test_saves_additional_data(self):
+        self.facility_report.products.add(RegulatedProduct.objects.get(id=10))
+
         ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
         assert ReportProduct.objects.all().count() == 2
 
@@ -111,7 +117,10 @@ class TestReportProductService:
         products = make_recipe("registration.tests.utils.regulated_product", _quantity=3)
         self.facility_report.products.set(products)
 
-        with pytest.raises(ValueError, match="smork"):
+        with pytest.raises(
+            ValueError,
+            match="Data was submitted for a product that is not in the products allowed for this facility*",
+        ):
             ReportProductService.save_production_data(self.report_version_id, self.facility_id, self.test_data)
 
     # Test saving errors out if no product_id
@@ -158,6 +167,8 @@ class TestReportProductService:
                 "production_methodology": "test prod method",
             },
         ]
+        self.facility_report.products.set(products)
+
         ReportProductService.save_production_data(self.report_version_id, self.facility_id, data)
 
         return_value = list(ReportProductService.get_production_data(self.report_version_id, self.facility_id))

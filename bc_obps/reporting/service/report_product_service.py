@@ -23,7 +23,7 @@ class ReportProductService:
         if RegulatedProduct.objects.filter(id__in=product_ids).exclude(id__in=allowed_product_ids).exists():
             raise ValueError(
                 "Data was submitted for a product that is not in the products allowed for this facility. "
-                + f"Allowed products ids: {allowed_product_ids}, Submitted product ids: {product_ids}"
+                + f"Allowed products ids: {list(allowed_product_ids)}, Submitted product ids: {product_ids}"
             )
 
         ReportProduct.objects.filter(
