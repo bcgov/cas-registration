@@ -22,7 +22,7 @@ const OperationsActionCell = (isInternalUser: boolean) => {
         <Link
           className="action-cell-text"
           href={{
-            pathname: `operations/${params.row.id}`,
+            pathname: `/operations/${params.row.id}`,
             query: {
               operations_title: `${params.row.name}`,
             },
