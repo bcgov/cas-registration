@@ -10,88 +10,98 @@ export const additionalReportingDataSchema: RJSFSchema = {
   type: "object",
   title: "Additional Reporting Data",
   properties: {
-    purpose_note: { type: "object", readOnly: true },
-    capture_emissions: { type: "boolean", title: "Did you capture emissions?" },
-  },
-  dependencies: {
-    capture_emissions: {
-      oneOf: [
-        {
-          properties: {
-            capture_emissions: { enum: [false] },
-          },
+    captured_emissions_section: {
+      type: "object",
+      title: "Captured Emissions (If applicable)",
+      properties: {
+        purpose_note: { type: "object", readOnly: true },
+        capture_emissions: {
+          type: "boolean",
+          title: "Did you capture emissions?",
         },
-        {
-          properties: {
-            capture_emissions: { enum: [true] },
-            capture_type: {
-              type: "array",
-              title: "Capture type",
-              items: {
-                type: "string",
-                enum: [
-                  "On-site use",
-                  "On-site sequestration",
-                  "Off-site transfer",
-                ],
-              },
-            },
-          },
-          allOf: [
+      },
+      dependencies: {
+        capture_emissions: {
+          oneOf: [
             {
-              if: {
-                properties: {
-                  capture_type: {
-                    contains: { enum: ["On-site use"] },
-                  },
-                },
-              },
-              then: {
-                properties: {
-                  emissions_on_site_use: {
-                    type: "number",
-                    title: "Emissions (t) captured for on-site use",
-                  },
-                },
+              properties: {
+                capture_emissions: { enum: [false] },
               },
             },
             {
-              if: {
-                properties: {
-                  capture_type: {
-                    contains: { enum: ["On-site sequestration"] },
+              properties: {
+                capture_emissions: { enum: [true] },
+                capture_type: {
+                  type: "array",
+                  title: "Capture type",
+                  items: {
+                    type: "string",
+                    enum: [
+                      "On-site use",
+                      "On-site sequestration",
+                      "Off-site transfer",
+                    ],
                   },
                 },
               },
-              then: {
-                properties: {
-                  emissions_on_site_sequestration: {
-                    type: "number",
-                    title: "Emissions (t) captured for on-site sequestration",
+              allOf: [
+                {
+                  if: {
+                    properties: {
+                      capture_type: {
+                        contains: { enum: ["On-site use"] },
+                      },
+                    },
+                  },
+                  then: {
+                    properties: {
+                      emissions_on_site_use: {
+                        type: "number",
+                        title: "Emissions (t) captured for on-site use",
+                      },
+                    },
                   },
                 },
-              },
-            },
-            {
-              if: {
-                properties: {
-                  capture_type: {
-                    contains: { enum: ["Off-site transfer"] },
+                {
+                  if: {
+                    properties: {
+                      capture_type: {
+                        contains: { enum: ["On-site sequestration"] },
+                      },
+                    },
+                  },
+                  then: {
+                    properties: {
+                      emissions_on_site_sequestration: {
+                        type: "number",
+                        title:
+                          "Emissions (t) captured for on-site sequestration",
+                      },
+                    },
                   },
                 },
-              },
-              then: {
-                properties: {
-                  emissions_off_site_transfer: {
-                    type: "number",
-                    title: "Emissions (t) captured for off-site transfer",
+                {
+                  if: {
+                    properties: {
+                      capture_type: {
+                        contains: { enum: ["Off-site transfer"] },
+                      },
+                    },
+                  },
+                  then: {
+                    properties: {
+                      emissions_off_site_transfer: {
+                        type: "number",
+                        title: "Emissions (t) captured for off-site transfer",
+                      },
+                    },
                   },
                 },
-              },
+              ],
             },
           ],
         },
-      ],
+      },
     },
   },
 };
@@ -99,18 +109,37 @@ export const additionalReportingDataSchema: RJSFSchema = {
 export const additionalReportingDataUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  additional_data: { "ui:FieldTemplate": SectionFieldTemplate },
-  purpose_note: {
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": CapturedEmmissionsInfo,
+
+  captured_emissions_section: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:options": { label: false },
+    "ui:order": [
+      "purpose_note",
+      "capture_emissions",
+      "capture_type",
+      "emissions_on_site_use",
+      "emissions_on_site_sequestration",
+      "emissions_off_site_transfer",
+    ],
+    purpose_note: {
+      "ui:FieldTemplate": TitleOnlyFieldTemplate,
+      "ui:title": CapturedEmmissionsInfo,
+    },
+    capture_emissions: {
+      "ui:widget": RadioWidget,
+    },
+    capture_type: {
+      "ui:widget": multiSelectWidget,
+      "ui:options": { style: { width: "100%", textAlign: "justify" } },
+      "ui:placeholder": "Capture type",
+    },
   },
-  capture_emissions: {
-    "ui:title": "Did you capture emissions?",
-    "ui:widget": RadioWidget,
-  },
-  capture_type: {
-    "ui:widget": multiSelectWidget,
-    "ui:options": { style: { width: "100%", textAlign: "justify" } },
-    "ui:placeholder": "Capture type",
+
+  additional_data_section: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:order": ["electricity_generated"],
+    electricity_generated: {
+      "ui:placeholder": "Enter amount of electricity generated",
+    },
   },
 };
