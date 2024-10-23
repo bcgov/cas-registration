@@ -59,9 +59,10 @@ export const buildProductionDataSchema = (
             title: "Name",
             type: "string",
           },
-          units: {
-            title: "Units",
+          unit: {
+            title: "Unit",
             type: "string",
+            readOnly: true,
           },
           annual_production: {
             title: "Annual Production",
@@ -129,7 +130,7 @@ export const productionDataUiSchema: UiSchema = {
           label: false,
         },
       },
-      units: {
+      unit: {
         "ui:widget": ReadOnlyWidget,
       },
     },
