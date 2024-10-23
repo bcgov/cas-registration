@@ -274,7 +274,6 @@ ReportProduct {
     ForeignKey report_version
     ForeignKey facility_report
     ForeignKey product
-    CharField unit
     FloatField annual_production
     FloatField production_data_apr_dec
     CharField production_methodology

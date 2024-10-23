@@ -31,8 +31,6 @@ class ReportProduct(TimeStampedModel):
         related_name='report_products',
         db_comment="The product this production information is about",
     )
-
-    unit = models.CharField(max_length=1000, db_comment="The unit the production is reported in, e.g. kg, tonnes, etc.")
     annual_production = models.FloatField(
         db_comment="The total annual production for the product, expressed in the unit of this same model."
     )
