@@ -76,6 +76,19 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.status_code == 404
         assert response.json().get('message') == "Not Found"
 
+    def test_error_if_no_valid_configuration_schema(self):
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        operator = report_version.report.operator
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            f'{self.endpoint}?activity=1&report_version_id=0',
+        )
+        assert response.status_code == 404
+        assert response.json().get('message') == "Not Found"
+
     def test_returns_activity_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
