@@ -42,6 +42,10 @@ describe("OperationReview Component", () => {
         allActivities={[{ id: 1, name: "Activity 1" }]}
         allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
         registrationPurpose="Test Purpose"
+        facilityReport={{
+          facility_id: 2344,
+          operation_type: "Single Facility Operation",
+        }}
       />,
     );
 
@@ -78,6 +82,10 @@ describe("OperationReview Component", () => {
         allActivities={[{ id: 1, name: "Activity 1" }]}
         allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
         registrationPurpose="Test Purpose"
+        facilityReport={{
+          facility_id: 2344,
+          operation_type: "Single Facility Operation",
+        }}
       />,
     );
 
@@ -115,6 +123,10 @@ describe("OperationReview Component", () => {
         allActivities={[{ id: 1, name: "Activity 1" }]}
         allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
         registrationPurpose="Test Purpose"
+        facilityReport={{
+          facility_id: 2344,
+          operation_type: "Single Facility Operation",
+        }}
       />,
     );
 

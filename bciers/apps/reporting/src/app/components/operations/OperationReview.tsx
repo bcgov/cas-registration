@@ -3,17 +3,16 @@
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
   updateSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
-import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 interface Props {
   formData: any;
@@ -29,23 +28,14 @@ interface Props {
   allActivities: { id: number; name: string }[];
   allRegulatedProducts: { id: number; name: string }[];
   registrationPurpose: string;
+  facilityReport: {
+    facility_id: number;
+    operation_type: string;
+  };
 }
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
-
-const taskListElements: TaskListElement[] = [
-  {
-    type: "Section",
-    title: "Operation information",
-    isExpanded: true,
-    elements: [
-      { type: "Page", title: "Review Operation information", isActive: true },
-      { type: "Page", title: "Person responsible" },
-      { type: "Page", title: "Review facilities" },
-    ],
-  },
-];
 
 export default function OperationReview({
   formData,
@@ -55,20 +45,52 @@ export default function OperationReview({
   allActivities,
   allRegulatedProducts,
   registrationPurpose,
+  facilityReport,
 }: Props) {
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const queryString = serializeSearchParams(useSearchParams());
-  const saveAndContinueUrl = `/reports/${version_id}/person-responsible${queryString}`;
+  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
+  const [facilityId, setFacilityId] = useState<number | null>(null);
+  const [operationType, setOperationType] = useState("");
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
     "MMM DD YYYY",
   );
 
-  // Function to prepare the form data for submission
+  const facilityPageUrl =
+    operationType === "Linear Facility Operation"
+      ? `/reports/${version_id}/facilities/lfo-facilities`
+      : `/reports/${version_id}/facilities/${facilityId}/review`;
+
+  const taskListElements: TaskListElement[] = [
+    {
+      type: "Section",
+      title: "Operation information",
+      isExpanded: true,
+      elements: [
+        {
+          type: "Page",
+          title: "Review Operation information",
+          isActive: true,
+          link: `/reports/${version_id}/review-operator-data`,
+        },
+        {
+          type: "Page",
+          title: "Person responsible",
+          link: `/reports/${version_id}/person-responsible`,
+        },
+        {
+          type: "Page",
+          title: "Review facilities",
+          link: `${facilityPageUrl}`,
+        },
+      ],
+    },
+  ];
+
   const prepareFormData = (formDataObject: any) => {
     return {
       ...formDataObject,
@@ -95,7 +117,6 @@ export default function OperationReview({
     };
   };
 
-  // Combined useEffect for initialization and schema updates
   useEffect(() => {
     if (formData && allActivities && allRegulatedProducts) {
       const updatedFormData = {
@@ -137,16 +158,20 @@ export default function OperationReview({
         },
       });
     }
+    if (facilityReport?.facility_id) {
+      setFacilityId(facilityReport.facility_id);
+      setOperationType(facilityReport.operation_type);
+    }
   }, [
     formData,
     reportType,
+    facilityReport,
     allActivities,
     allRegulatedProducts,
     registrationPurpose,
     reportingWindowEnd,
   ]);
 
-  // Handle form submission
   const submitHandler = async (
     data: { formData?: any },
     reportVersionId: number,
@@ -162,11 +187,10 @@ export default function OperationReview({
     });
 
     if (response) {
-      router.push(saveAndContinueUrl); // Navigate on success
+      router.push(saveAndContinueUrl);
     }
   };
 
-  // Handle form data changes
   const onChangeHandler = (data: { formData: any }) => {
     setFormDataState(data.formData);
   };
