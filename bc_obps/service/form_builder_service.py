@@ -317,6 +317,27 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
 class FormBuilderService:
     @classmethod
     def build_form_schema(cls, activity: int, report_version_id: int, source_types: List[str] | List[int]) -> str:
+        """
+        Generates a form schema based on the provided activity, report version, and source types.
+
+        Args:
+            activity (int): The ID of the activity for which the form schema is being generated.
+            report_version_id (int): The ID of the report version to determine the valid reporting period.
+            source_types (List[str] | List[int]): A list of source types, which can be either strings or integers,
+                                                  that are used to customize the form schema.
+
+        Returns:
+            str: A string representation of the generated form schema.
+
+        Description:
+            - First, it verifies that the `activity` parameter is valid. If `activity` is None, it raises an exception.
+            - Then, it determines the report date by using `get_report_valid_year_from_version_id()`,
+              which extracts the valid reporting year based on the report version.
+            - It retrieves a `Configuration` object that matches the report date by checking if the date
+              falls between the `valid_from` and `valid_to` fields.
+            - Finally, the schema is built by calling `build_schema()`, passing the configuration ID,
+              activity, source types, and the report date.
+        """
         if activity is None:
             raise Exception('Cannot build a schema without Activity data')
 
