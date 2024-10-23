@@ -1,13 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "apps/administration/app/components/operations/OperationInformationPage";
-import {
-  getOperationWithDocuments,
-  getNaicsCodes,
-  getReportingActivities,
-  getBusinessStructures,
-  getRegulatedProducts,
-} from "./mocks";
-import { actionHandler, useSession } from "@bciers/testConfig/mocks";
+import { getOperationWithDocuments } from "./mocks";
+import { useSession } from "@bciers/testConfig/mocks";
+import { fetchFormEnums } from "./OperationInformationForm.test";
 
 useSession.mockReturnValue({
   data: {
@@ -16,45 +11,6 @@ useSession.mockReturnValue({
     },
   },
 });
-
-const fetchFormEnums = () => {
-  // Naics codes
-  getNaicsCodes.mockResolvedValue([
-    {
-      id: 1,
-      naics_code: "211110",
-      naics_description: "Oil and gas extraction (except oil sands)",
-    },
-    {
-      id: 2,
-      naics_code: "212114",
-      naics_description: "Bituminous coal mining",
-    },
-  ]);
-  // Reporting activities
-  getReportingActivities.mockResolvedValue([
-    {
-      name: "General stationary combustion excluding line tracing",
-      applicable_to: "all",
-    },
-    { name: "Fuel combustion by mobile equipment", applicable_to: "sfo" },
-  ]);
-
-  // Business structures
-  getBusinessStructures.mockResolvedValue([
-    { name: "General Partnership" },
-    { name: "BC Corporation" },
-  ]);
-
-  // Regulated products
-  getRegulatedProducts.mockResolvedValue([
-    { id: 1, name: "BC-specific refinery complexity throughput" },
-    { id: 2, name: "Cement equivalent" },
-  ]);
-
-  // Registration purposes
-  actionHandler.mockResolvedValue(["Potential Reporting Operation"]);
-};
 
 const formData = {
   name: "Operation 3",
@@ -79,6 +35,7 @@ const formData = {
   ],
   registration_purpose: "Non-Regulated",
   regulated_products: [6],
+  opt_in: false,
 };
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
@@ -119,7 +76,7 @@ describe("the OperationInformationPage component", () => {
     ).toBeVisible();
   });
 
-  it("should render the form with the correct values when formData is provided", async () => {
+  it("should render the form", async () => {
     fetchFormEnums();
     getOperationWithDocuments.mockResolvedValueOnce(formData);
 

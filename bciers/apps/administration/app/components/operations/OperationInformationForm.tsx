@@ -47,6 +47,21 @@ const OperationInformationForm = ({
       setError(response.error);
       return { error: response.error };
     }
+
+    if (!data.formData?.opted_in_operation) return;
+    const response2 = await actionHandler(
+      `registration/v2/operations/${operationId}/registration/opted-in-operation-detail`,
+      "PUT",
+      "",
+      {
+        body: JSON.stringify(data.formData?.opted_in_operation),
+      },
+    );
+
+    if (response2?.error) {
+      setError(response2.error);
+      return { error: response2.error };
+    }
   };
 
   return (

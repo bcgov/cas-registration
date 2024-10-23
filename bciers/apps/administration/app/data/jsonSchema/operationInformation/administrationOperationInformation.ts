@@ -13,8 +13,10 @@ import {
   registrationInformationUiSchema,
 } from "./administrationRegistrationInformation";
 
+import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 export const createAdministrationOperationInformationSchema = async (
   registrationPurposesValue: string[],
+  optedIn: boolean,
 ): Promise<RJSFSchema> => {
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
@@ -23,6 +25,7 @@ export const createAdministrationOperationInformationSchema = async (
       section2: await createMultipleOperatorsInformationSchema(),
       section3: await createAdministrationRegistrationInformationSchema(
         registrationPurposesValue,
+        optedIn,
       ),
     },
   };
@@ -48,9 +51,14 @@ export const administrationOperationInformationUiSchema: UiSchema = {
   section2: multipleOperatorsInformationUiSchema,
   section3: {
     ...registrationInformationUiSchema,
-    "ui:order": ["registration_purposes", "regulated_products"],
+    "ui:order": [
+      "registration_purposes",
+      "regulated_products",
+      "opted_in_operation",
+    ],
     registration_purposes: {
       "ui:widget": "ReadOnlyWidget",
     },
+    ...optedInOperationDetailsUiSchema,
   },
 };
