@@ -48,7 +48,7 @@ def reverse_init_emission_category_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0045_V1_11_0'),
+        ('registration', '0046_V1_12_0'),
         ('reporting', '0021_report_additional_data'),
     ]
 

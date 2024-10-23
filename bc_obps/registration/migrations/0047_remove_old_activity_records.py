@@ -33,7 +33,7 @@ def reverse_remove_old_activity_records(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0045_V1_11_0'),
+        ('registration', '0046_V1_12_0'),
     ]
 
     operations = [
