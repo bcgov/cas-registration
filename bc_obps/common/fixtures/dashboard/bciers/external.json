@@ -123,11 +123,55 @@
             "links": [
               {
                 "title": "Register an Operation",
-                "href": "/registration/register-an-operation"
+                "href": "/registration/register-an-operation",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/has_registered_operation",
+                    "field": "has_registered_operation",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "title": "Register an Operation<sup style='color: red;'>*</sup><small> (action required)</small>",
+                "href": "/registration/register-an-operation",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/has_registered_operation",
+                    "field": "has_registered_operation",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
               },
               {
                 "title": "Report an Event",
                 "href": "/registration/event"
+              }
+            ]
+          },
+          {
+            "title": "Reporting",
+            "href": "/reporting",
+            "icon": "File",
+            "content": "Submit, view and edit your annual reports or previous years’ reports.",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/has_registered_operation",
+                "field": "has_registered_operation",
+                "operator": "equals",
+                "value": true
+              }
+            ],
+            "links": [
+              {
+                "title": "Submit Annual Report(s)",
+                "href": "/reporting/reports"
+              },
+              {
+                "title": "View Past Submissions",
+                "href": "/reporting/reports/previous-years"
               }
             ]
           },

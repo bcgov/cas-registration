@@ -27,6 +27,7 @@ from .user import user_profile, user_app_role
 from ._user_operators import user_operator_id, current, pending
 from ._user_operators._current import (
     access_requests,
+    has_registered_operation,
     has_required_fields,
     is_current_user_approved_admin,
     operator_users,

@@ -8,11 +8,13 @@ import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 import { IDP, OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
 import { fetchApi } from "@bciers/actions/api/fetchApi";
-// Constants
-const appName = "administration";
+import { appName } from "../middleware";
 
 /**
- * 📏 Handles routing for industry users based on the status of their operator.
+ * 📏 Handles routing for industry users based on:
+ * Industry users can only see operations if their operator is pending/approved
+ * Industry users can only see contacts if they have operator access
+ * Manages the select-operator flow
  *
  * @param request - The incoming request object.
  * @param token - The user's authentication token.
@@ -111,9 +113,8 @@ export const withRulesAppliedAdmin: MiddlewareFactory = (
           return response;
         }
       } catch (error) {
-        // ❗ Log error and redirect to the app's root page
-        console.error("Error in withRulesAppliedAdmin middleware:", error);
-        return NextResponse.redirect(new URL(`/${appName}`, request.url));
+        // 🛸 Redirect to BCIERS dashboard
+        return NextResponse.redirect(new URL(`/onboarding`, request.url));
       }
     }
 

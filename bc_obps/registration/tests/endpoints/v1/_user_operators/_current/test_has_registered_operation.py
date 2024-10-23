@@ -1,8 +1,8 @@
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
-class TestGetCurrentUserOperatorHasRequiredFields(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "user-operators/current/has-required-fields"
+class TestGetCurrentUserOperatorHasRegisteredOperation(CommonTestSetup):
+    endpoint = CommonTestSetup.base_endpoint + "user-operators/current/has_registered_operation"
 
     # AUTHORIZATION
     def test_unauthorized_users_cannot_get_endpoint(self):

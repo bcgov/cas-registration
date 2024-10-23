@@ -1,6 +1,7 @@
 import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
 import { withRulesAppliedAdmin } from "./middlewares/withRulesAppliedAdmin";
 import { withResponseAdmin } from "./middlewares/withResponseAdmin";
+export const appName = "administration";
 /* 📌
 Middleware allows you to run code before a request is completed so you can modify the response by
 rewriting, redirecting, modifying the request or response headers, or responding directly.

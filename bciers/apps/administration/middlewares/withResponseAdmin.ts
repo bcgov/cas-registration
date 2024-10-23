@@ -6,14 +6,13 @@ import {
 } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-
+import { appName } from "../middleware";
 /*
 Middleware to route to request app router path if pathname is in the allowed list;
 otherwise,builds app router path based on JWT properties of identity_provider and role, the middleware dynamically rewrites the request URL
 to the appropriate folder structure.
  */
 
-const appName = "administration";
 // Function to check if the path is in the authenticated allow list- does not build authorization folders
 const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
   const allowList = ["profile"];
