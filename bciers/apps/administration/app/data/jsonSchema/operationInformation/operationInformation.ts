@@ -142,4 +142,7 @@ export const operationInformationUISchema: UiSchema = {
       filePreview: true,
     },
   },
+  bc_obps_regulated_operation: {
+    "ui:widget": "BoroIdWidget",
+  },
 };
