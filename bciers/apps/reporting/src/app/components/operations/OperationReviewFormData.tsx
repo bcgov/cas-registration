@@ -5,6 +5,7 @@ import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivi
 import { getAllRegulatedProducts } from "@reporting/src/app/utils/getAllRegulatedProducts";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
+import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 export default async function OperationReviewFormData({
   version_id,
@@ -17,12 +18,10 @@ export default async function OperationReviewFormData({
   const reportingYear = await getReportingYear();
   const reportType = await getReportType(version_id);
   const registrationPurpose = await getRegistrationPurpose(version_id);
+  const facilityReport = await getFacilityReport(version_id);
 
-  const registrationPurposeString = Array.isArray(
-    registrationPurpose.registration_purposes,
-  )
-    ? registrationPurpose.registration_purposes.join(", ")
-    : registrationPurpose.registration_purposes || "";
+  const registrationPurposeString =
+    registrationPurpose?.registration_purposes?.join(", ") || "";
 
   return (
     <OperationReview
@@ -33,6 +32,7 @@ export default async function OperationReviewFormData({
       reportingYear={reportingYear}
       allRegulatedProducts={allRegulatedProducts}
       registrationPurpose={registrationPurposeString}
+      facilityReport={facilityReport}
     />
   );
 }
