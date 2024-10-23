@@ -166,7 +166,7 @@ class ReportActivitySaveService:
         report_unit: ReportUnit | None,
         fuel_data: dict,
     ) -> ReportFuel:
-        json_data = exclude_keys(fuel_data, ['emissions', 'fuelName', 'id'])
+        json_data = exclude_keys(fuel_data, ['emissions', 'fuelType', 'id'])
 
         report_fuel_id = fuel_data.get('id', None)
         fuel_type = FuelType.objects.get(name=fuel_data["fuelType"]["fuelName"])
