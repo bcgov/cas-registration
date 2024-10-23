@@ -11,7 +11,9 @@ from reporting.models.report_product import ReportProduct
 class ReportProductService:
     @classmethod
     @transaction.atomic()
-    def save_production_data(cls, report_version_id: int, facility_id: UUID, report_products: List[dict]) -> None:
+    def save_production_data(
+        cls, report_version_id: int, facility_id: UUID, report_products: List[dict], user_guid: UUID
+    ) -> None:
 
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
 
@@ -35,7 +37,7 @@ class ReportProductService:
 
             product_id = report_product["product_id"]
 
-            ReportProduct.objects.update_or_create(
+            report_product_record, _ = ReportProduct.objects.update_or_create(
                 report_version_id=report_version_id,
                 facility_report=facility_report,
                 product_id=product_id,
@@ -46,6 +48,7 @@ class ReportProductService:
                     "product_id": product_id,
                 },
             )
+            report_product_record.set_create_or_update(user_guid)
 
     @classmethod
     def get_production_data(cls, report_version_id: int, facility_id: UUID) -> QuerySet[ReportProduct]:

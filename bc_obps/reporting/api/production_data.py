@@ -1,6 +1,7 @@
 from typing import List, Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.facility_report import FacilityReport
@@ -27,11 +28,11 @@ def save_production_data(
     payload: List[ReportProductSchemaIn],
 ) -> Literal[200]:
 
-    print(payload)
-
     product_data_dicts = [item.dict() for item in payload]
 
-    ReportProductService.save_production_data(report_version_id, facility_id, product_data_dicts)
+    ReportProductService.save_production_data(
+        report_version_id, facility_id, product_data_dicts, get_current_user_guid(request)
+    )
 
     return 200
 
@@ -46,9 +47,13 @@ def save_production_data(
 )
 def load_production_data(request: HttpRequest, report_version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
 
-    report_products = ReportProduct.objects.filter(facility_report__facility_id=facility_id).all()
-    allowed_products = FacilityReport.objects.get(
-        report_version_id=report_version_id, facility_id=facility_id
-    ).products.all()
+    report_products = (
+        ReportProduct.objects.filter(facility_report__facility_id=facility_id).order_by("product_id").all()
+    )
+    allowed_products = (
+        FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
+        .products.order_by("id")
+        .all()
+    )
 
     return 200, {"report_products": report_products, "allowed_products": allowed_products}
