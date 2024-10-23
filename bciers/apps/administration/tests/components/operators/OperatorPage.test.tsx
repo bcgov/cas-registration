@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import {
+  auth,
   useRouter,
   useSearchParams,
   useSession,
@@ -31,6 +32,9 @@ describe("Operator component", () => {
     vi.resetAllMocks();
   });
   it("renders the appropriate error component when getCurrentOperator fails", async () => {
+    auth.mockReturnValueOnce({
+      user: { app_role: "industry_user_admin" },
+    });
     getCurrentOperator.mockReturnValueOnce({
       error: "no operator found",
     });

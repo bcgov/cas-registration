@@ -305,7 +305,12 @@ describe("OperatorForm component", () => {
   });
   it("renders the empty operator form when creating a new operator", async () => {
     render(
-      <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+      <OperatorForm
+        schema={testSchema}
+        formData={{}}
+        isCreating={true}
+        isInternalUser={false}
+      />,
     );
     // form fields and headings
     expectHeader(formHeaders);
@@ -321,7 +326,12 @@ describe("OperatorForm component", () => {
   });
   it("does not allow new operator form submission if there are validation errors", async () => {
     render(
-      <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+      <OperatorForm
+        schema={testSchema}
+        formData={{}}
+        isCreating={true}
+        isInternalUser={false}
+      />,
     );
     const submitButton = screen.getByRole("button", { name: /submit/i });
 
@@ -338,7 +348,12 @@ describe("OperatorForm component", () => {
     const { update } = mockUseSession();
 
     render(
-      <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+      <OperatorForm
+        schema={testSchema}
+        formData={{}}
+        isCreating={true}
+        isInternalUser={false}
+      />,
     );
 
     await fillMandatoryFields(); // Mock function to fill the form
@@ -403,129 +418,15 @@ describe("OperatorForm component", () => {
       },
     );
   }, 60000);
-  it("loads existing readonly Operator form data", async () => {
-    const { container } = render(
-      <OperatorForm schema={testSchema} formData={operatorFormData} />,
-    );
-    // section 1
-    expect(
-      container.querySelector("#root_section1_legal_name"),
-    ).toHaveTextContent("Existing Operator 2 Legal Name");
-
-    expect(
-      container.querySelector("#root_section1_trade_name"),
-    ).toHaveTextContent("Existing Operator 2 Trade Name");
-
-    expect(
-      container.querySelector("#root_section1_business_structure"),
-    ).toHaveTextContent("General Partnership");
-
-    expect(
-      container.querySelector("#root_section1_cra_business_number"),
-    ).toHaveTextContent("987654321");
-
-    expect(
-      container.querySelector("#root_section1_bc_corporate_registry_number"),
-    ).toHaveTextContent("def1234567");
-
-    expect(
-      container.querySelector(
-        "#root_section1_partner_operators_array_0_partner_legal_name",
-      ),
-    ).toHaveTextContent("Partner Operator Legal Name");
-
-    // section 2
-    expect(
-      container.querySelector("#root_section2_street_address"),
-    ).toHaveTextContent("123 Main St");
-
-    expect(
-      container.querySelector("#root_section2_municipality"),
-    ).toHaveTextContent("City");
-
-    expect(
-      container.querySelector("#root_section2_province"),
-    ).toHaveTextContent("Ontario");
-
-    expect(
-      container.querySelector("#root_section2_postal_code"),
-    ).toHaveTextContent("A1B 2C3");
-
-    // section 3
-    expect(
-      container.querySelector("#root_section3_operator_has_parent_operators"),
-    ).toHaveTextContent("Yes");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_0_po_legal_name",
-      ),
-    ).toHaveTextContent("Parent Operator Legal Name");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_0_po_cra_business_number",
-      ),
-    ).toHaveTextContent("123456780");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_0_po_street_address",
-      ),
-    ).toHaveTextContent("789 Oak St");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_0_po_municipality",
-      ),
-    ).toHaveTextContent("Village");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_0_po_province",
-      ),
-    ).toHaveTextContent("British Columbia");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_0_po_postal_code",
-      ),
-    ).toHaveTextContent("M2N 3P4");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_0_operator_registered_in_canada",
-      ),
-    ).toHaveTextContent("Yes");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_1_po_legal_name",
-      ),
-    ).toHaveTextContent("Foreign company");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_1_operator_registered_in_canada",
-      ),
-    ).toHaveTextContent("No");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_1_foreign_address",
-      ),
-    ).toHaveTextContent("f address");
-
-    expect(
-      container.querySelector(
-        "#root_section3_parent_operators_array_1_foreign_tax_id_number",
-      ),
-    ).toHaveTextContent("f id number");
-  });
-
   it("edits an Operator", async () => {
     actionHandler.mockReturnValue({ error: null });
-    render(<OperatorForm schema={testSchema} formData={operatorFormData} />);
+    render(
+      <OperatorForm
+        schema={testSchema}
+        formData={operatorFormData}
+        isInternalUser={false}
+      />,
+    );
     const editButton = screen.getByRole("button", { name: /edit/i });
     act(() => {
       editButton.click();
@@ -683,4 +584,130 @@ describe("OperatorForm component", () => {
       ).toBeVisible();
     });
   }, 60000);
+  it("loads existing readonly Operator form data for an internal user", async () => {
+    const { container } = render(
+      <OperatorForm
+        schema={testSchema}
+        formData={operatorFormData}
+        isInternalUser={true}
+      />,
+    );
+    // section 1
+    expect(
+      container.querySelector("#root_section1_legal_name"),
+    ).toHaveTextContent("Existing Operator 2 Legal Name");
+
+    expect(
+      container.querySelector("#root_section1_trade_name"),
+    ).toHaveTextContent("Existing Operator 2 Trade Name");
+
+    expect(
+      container.querySelector("#root_section1_business_structure"),
+    ).toHaveTextContent("General Partnership");
+
+    expect(
+      container.querySelector("#root_section1_cra_business_number"),
+    ).toHaveTextContent("987654321");
+
+    expect(
+      container.querySelector("#root_section1_bc_corporate_registry_number"),
+    ).toHaveTextContent("def1234567");
+
+    expect(
+      container.querySelector(
+        "#root_section1_partner_operators_array_0_partner_legal_name",
+      ),
+    ).toHaveTextContent("Partner Operator Legal Name");
+
+    // section 2
+    expect(
+      container.querySelector("#root_section2_street_address"),
+    ).toHaveTextContent("123 Main St");
+
+    expect(
+      container.querySelector("#root_section2_municipality"),
+    ).toHaveTextContent("City");
+
+    expect(
+      container.querySelector("#root_section2_province"),
+    ).toHaveTextContent("Ontario");
+
+    expect(
+      container.querySelector("#root_section2_postal_code"),
+    ).toHaveTextContent("A1B 2C3");
+
+    // section 3
+    expect(
+      container.querySelector("#root_section3_operator_has_parent_operators"),
+    ).toHaveTextContent("Yes");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_0_po_legal_name",
+      ),
+    ).toHaveTextContent("Parent Operator Legal Name");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_0_po_cra_business_number",
+      ),
+    ).toHaveTextContent("123456780");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_0_po_street_address",
+      ),
+    ).toHaveTextContent("789 Oak St");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_0_po_municipality",
+      ),
+    ).toHaveTextContent("Village");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_0_po_province",
+      ),
+    ).toHaveTextContent("British Columbia");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_0_po_postal_code",
+      ),
+    ).toHaveTextContent("M2N 3P4");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_0_operator_registered_in_canada",
+      ),
+    ).toHaveTextContent("Yes");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_1_po_legal_name",
+      ),
+    ).toHaveTextContent("Foreign company");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_1_operator_registered_in_canada",
+      ),
+    ).toHaveTextContent("No");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_1_foreign_address",
+      ),
+    ).toHaveTextContent("f address");
+
+    expect(
+      container.querySelector(
+        "#root_section3_parent_operators_array_1_foreign_tax_id_number",
+      ),
+    ).toHaveTextContent("f id number");
+    expect(
+      screen.queryByRole("button", { name: "Edit" }),
+    ).not.toBeInTheDocument();
+  });
 });
