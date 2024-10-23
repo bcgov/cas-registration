@@ -8,7 +8,6 @@ class ReportProductSchema(ModelSchema):
     class Meta:
         model = ReportProduct
         fields = [
-            "unit",
             "annual_production",
             "production_data_apr_dec",
             "production_methodology",
@@ -17,7 +16,6 @@ class ReportProductSchema(ModelSchema):
             "quantity_sold_during_period",
             "quantity_throughput_during_period",
         ]
-        fields_optional = ['unit']
 
 
 class ReportProductSchemaIn(ReportProductSchema):
@@ -27,6 +25,7 @@ class ReportProductSchemaIn(ReportProductSchema):
 class ReportProductSchemaOut(ReportProductSchema):
     product_id: int = Field(..., alias="product.id")
     product_name: str = Field(..., alias="product.name")
+    unit: str = "tonnes"
 
 
 class ProductionDataOut(Schema):

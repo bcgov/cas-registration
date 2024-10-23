@@ -29,9 +29,9 @@ def save_production_data(
 
     print(payload)
 
-    # dicts = map(lambda rps: rps.dict(), payload)
+    product_data_dicts = [item.dict() for item in payload]
 
-    ReportProductService.save_production_data(report_version_id, facility_id, payload)
+    ReportProductService.save_production_data(report_version_id, facility_id, product_data_dicts)
 
     return 200
 
@@ -41,6 +41,7 @@ def save_production_data(
     response={200: ProductionDataOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the production data page from the multiple ReportProduct rows""",
+    exclude_none=True,
     # auth=authorize("approved_industry_user"),
 )
 def load_production_data(request: HttpRequest, report_version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
