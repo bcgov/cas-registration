@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 from ninja import ModelSchema, Field, FilterSchema, Schema
 from registration.models import Contact
 
@@ -42,6 +43,7 @@ class ContactFilterSchema(FilterSchema):
     first_name: Optional[str] = Field(None, json_schema_extra={'q': 'first_name__icontains'})
     last_name: Optional[str] = Field(None, json_schema_extra={'q': 'last_name__icontains'})
     email: Optional[str] = Field(None, json_schema_extra={'q': 'email__icontains'})
+    operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operators__id'})
 
 
 class ContactIn(ModelSchema):
