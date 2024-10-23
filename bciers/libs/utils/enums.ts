@@ -1,3 +1,7 @@
+export enum Apps {
+  ADMINISTRATION = "administration",
+  REGISTRATION = "registration",
+}
 export enum Errors {
   ACCESS_TOKEN = "ErrorAccessToken",
 }

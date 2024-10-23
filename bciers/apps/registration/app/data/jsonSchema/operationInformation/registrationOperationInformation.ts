@@ -12,6 +12,7 @@ import {
   createRegistrationPurposeSchema,
   registrationPurposeUISchema,
 } from "./registrationPurpose";
+import { Apps } from "@bciers/utils/enums";
 
 export const createRegistrationOperationInformationSchema =
   async (): Promise<RJSFSchema> => {
@@ -20,7 +21,7 @@ export const createRegistrationOperationInformationSchema =
       type: "object",
       properties: {
         section1: await createRegistrationPurposeSchema(),
-        section2: await createOperationInformationSchema(),
+        section2: await createOperationInformationSchema(Apps.REGISTRATION),
         section3: await createMultipleOperatorsInformationSchema(),
       },
     };
