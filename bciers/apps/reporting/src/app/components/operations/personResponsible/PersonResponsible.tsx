@@ -14,7 +14,7 @@ import {
   Contact,
   ContactRow,
 } from "@reporting/src/app/components/operations/types";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
@@ -42,10 +42,11 @@ const PersonResponsible = ({ version_id }: Props) => {
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
   const router = useRouter();
 
+  const queryString = useSearchParams();
   const saveAndContinueUrl =
     operationType === "Linear Facility Operation"
-      ? `/reports/${version_id}/facilities/lfo-facilities`
-      : `/reports/${version_id}/facilities/${facilityId}/review`;
+      ? `/reports/${version_id}/facilities/lfo-facilities?${queryString}`
+      : `/reports/${version_id}/facilities/${facilityId}/review?${queryString}`;
 
   const taskListElements: TaskListElement[] = [
     {
