@@ -85,12 +85,12 @@ export const createAdministrationRegistrationInformationSchema = async (
           type: "object",
           readOnly: true,
         },
-        operation_date_of_first_shipment: {
+        date_of_first_shipment: {
           type: "string",
           title: "When is this operation's date of First Shipment?",
           enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
         },
-        statutory_declaration: {
+        new_entrant_application: {
           type: "string",
           title: "Application and Statutory Declaration",
         },
@@ -106,8 +106,8 @@ export const registrationInformationUiSchema: UiSchema = {
     "regulated_operation_preface",
     "regulated_products",
     "new_entrant_preface",
-    "operation_date_of_first_shipment",
-    "statutory_declaration",
+    "date_of_first_shipment",
+    "new_entrant_application",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
   regulated_operation_preface: {
@@ -124,13 +124,13 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "New Entrant Operation",
   },
-  operation_date_of_first_shipment: {
+  date_of_first_shipment: {
     "ui:widget": "SelectWidget",
     "ui:options": {
       inline: true,
     },
   },
-  statutory_declaration: {
+  new_entrant_application: {
     "ui:widget": "FileWidget",
     "ui:options": {
       filePreview: true,

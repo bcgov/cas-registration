@@ -31,18 +31,11 @@ const OperationInformationForm = ({
   const { data: session } = useSession();
   const role = session?.user?.app_role ?? "";
 
-  console.log("\n SCHEMA SECTION 1", schema.properties.section1);
-
-  console.log("\nSCHEMA SECTION 3", schema.properties.section3);
-  console.log(
-    "\nNEW ENTRANT",
-    schema.properties.section3.properties.new_entrant,
-  );
-  console.log("\n\nUI SCHEMA", administrationOperationInformationUiSchema);
-
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
+    console.log('\n\nFORM DATA\N')
+    console.log(data.formData)
     const response = await actionHandler(
       `registration/v2/operations/${operationId}`,
       "PUT",

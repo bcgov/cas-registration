@@ -19,7 +19,9 @@ from service.data_access_service.operation_service import OperationDataAccessSer
 from service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.models.new_entrant_operation_detail import NewEntrantOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
+from service.data_access_service.new_entrant_operation_detail_service import NewEntrantOperationDataAccessService
 from service.operation_service import OperationService
 from registration.models.registration_purpose import RegistrationPurpose
 from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
@@ -27,11 +29,12 @@ from registration.schema.v2.operation import (
     OperationFilterSchema,
     OperationInformationIn,
     OptedInOperationDetailIn,
+    NewEntrantOperationDetailIn,
     OperationStatutoryDeclarationIn,
     RegistrationPurposeIn,
+    OperationRepresentativeIn,
 )
 from service.contact_service import ContactService
-from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 
 
@@ -133,6 +136,25 @@ class OperationServiceV2:
         return operation.opted_in_operation
 
     @classmethod
+    @transaction.atomic()
+    def update_new_entrant_operation_detail(
+        cls, user_guid: UUID, operation_id: UUID, payload: NewEntrantOperationDetailIn
+    ) -> NewEntrantOperationDetail:
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        if not operation.new_entrant_operation:
+            raise Exception("Operation does not have new entrant details.")
+        return NewEntrantOperationDataAccessService.update_new_entrant_operation_detail(
+            user_guid, operation.new_entrant_operation.id, payload.dict()
+        )
+
+    @classmethod
+    def get_new_entrant_operation_detail(
+        cls, user_guid: UUID, operation_id: UUID
+    ) -> Optional[NewEntrantOperationDetail]:
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        return operation.new_entrant_operation
+
+    @classmethod
     def create_or_replace_statutory_declaration(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationStatutoryDeclarationIn
     ) -> Operation:
@@ -143,7 +165,7 @@ class OperationServiceV2:
             raise Exception(UNAUTHORIZED_MESSAGE)
 
         statutory_document, statutory_document_created = DocumentService.create_or_replace_operation_document(
-            user_guid, operation_id, payload.statutory_declaration, "signed_statutory_declaration" # type: ignore # mypy is not aware of the schema validator
+            user_guid, operation_id, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore # mypy is not aware of the schema validator
         )
         if statutory_document_created:
             operation.documents.add(statutory_document)
@@ -206,14 +228,14 @@ class OperationServiceV2:
         # set m2m relationships
         operation.activities.set(payload.activities)
 
-
-
         # create or replace documents
         operation_documents = [
-            doc for doc, created in [
+            doc
+            for doc, created in [
                 DocumentService.create_or_replace_operation_document(user_guid, operation.id, payload.boundary_map, 'boundary_map'),  # type: ignore # mypy is not aware of the schema validator
                 DocumentService.create_or_replace_operation_document(user_guid, operation.id, payload.process_flow_diagram, 'process_flow_diagram'),  # type: ignore # mypy is not aware of the schema validator
-            ] if created
+            ]
+            if created
         ]
         operation.documents.add(*operation_documents)
 

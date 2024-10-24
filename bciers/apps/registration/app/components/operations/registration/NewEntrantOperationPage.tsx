@@ -2,7 +2,7 @@ import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import NewEntrantOperationForm from "apps/registration/app/components/operations/registration/NewEntrantOperationForm";
 import { newEntrantOperationSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/newEntrantOperation";
-import { getOperationStatutoryDeclaration } from "@bciers/actions/api";
+import { getNewEntrantOperationDetail } from "@bciers/actions/api";
 
 const NewEntrantOperationPage = async ({
   operation,
@@ -15,7 +15,9 @@ const NewEntrantOperationPage = async ({
 }) => {
   let formData;
   if (operation && isValidUUID(operation)) {
-    formData = await getOperationStatutoryDeclaration(operation);
+    formData = await getNewEntrantOperationDetail(operation);
+    console.log("NewEntrantOperationPage")
+    console.log(formData)
   }
 
   return (

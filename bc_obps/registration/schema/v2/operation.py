@@ -7,6 +7,7 @@ from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.models.new_entrant_operation_detail import NewEntrantOperationDetail
 from registration.models.registration_purpose import RegistrationPurpose
 from pydantic import field_validator
 from django.core.files.base import ContentFile
@@ -39,6 +40,22 @@ class OperationRepresentativeIn(ModelSchema):
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
 
 
+class NewEntrantOperationDetailOut(ModelSchema):
+    class Meta:
+        model = NewEntrantOperationDetail
+        fields = ["date_of_first_shipment"]
+
+
+class NewEntrantOperationDetailIn(NewEntrantOperationDetailOut):
+    date_of_first_shipment: str = Field(...)
+    new_entrant_application: str
+
+    @field_validator("new_entrant_application")
+    @classmethod
+    def validate_new_entrant_application(cls, value: str) -> ContentFile:
+        return data_url_to_file(value)
+
+
 class OperationInformationIn(ModelSchema):
     registration_purpose: Optional[RegistrationPurpose.Purposes] = None
     regulated_products: Optional[list] = None
@@ -49,6 +66,9 @@ class OperationInformationIn(ModelSchema):
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+    date_of_first_shipment: Optional[str] = None
+    new_entrant_application: Optional[str] = None
+    new_entrant_operation_detail: Optional[NewEntrantOperationDetailIn] = None
 
     @field_validator("boundary_map")
     @classmethod
@@ -58,6 +78,11 @@ class OperationInformationIn(ModelSchema):
     @field_validator("process_flow_diagram")
     @classmethod
     def validate_process_flow_diagram(cls, value: str) -> ContentFile:
+        return data_url_to_file(value)
+
+    @field_validator("new_entrant_application")
+    @classmethod
+    def validate_new_entrant_application(cls, value: str) -> ContentFile:
         return data_url_to_file(value)
 
     class Meta:
@@ -103,6 +128,9 @@ class OperationOutV2(ModelSchema):
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
+    new_entrant_operation_detail: Optional[NewEntrantOperationDetailOut] = None
+    date_of_first_shipment: Optional[str] = None
+    new_entrant_application: Optional[str] = None
 
     @staticmethod
     def resolve_registration_purposes(obj: Operation) -> List[str]:
@@ -147,6 +175,13 @@ class OperationOutWithDocuments(OperationOutV2):
         process_flow_diagram = obj.get_process_flow_diagram()
         if process_flow_diagram:
             return file_to_data_url(process_flow_diagram)
+        return None
+
+    @staticmethod
+    def resole_new_entrant_application(obj: Operation) -> Optional[str]:
+        new_entrant_application = obj.get_new_entrant_application()
+        if new_entrant_application:
+            return file_to_data_url(new_entrant_application)
         return None
 
 

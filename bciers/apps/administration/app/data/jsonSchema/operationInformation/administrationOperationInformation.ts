@@ -62,8 +62,8 @@ export const administrationOperationInformationUiSchema: UiSchema = {
       "regulated_products",
       "opted_in_operation",
       "new_entrant_preface",
-      "operation_date_of_first_shipment",
-      "statutory_declaration",
+      "date_of_first_shipment",
+      "new_entrant_application",
     ],
     registration_purposes: {
       "ui:widget": "ReadOnlyWidget",

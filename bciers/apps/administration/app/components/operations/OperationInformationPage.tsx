@@ -22,12 +22,12 @@ const OperationInformationPage = async ({
 
   const registrationPurposes = operation?.registration_purposes;
 
-  if (registrationPurposes.includes("New Entrant Operation")) {
-    const statutory_declaration_response =
-      await getOperationStatutoryDeclaration(operationId);
-    operation.statutory_declaration =
-      statutory_declaration_response.statutory_declaration;
-  }
+  // if (registrationPurposes.includes("New Entrant Operation")) {
+  //   const statutory_declaration_response =
+  //     await getOperationStatutoryDeclaration(operationId);
+  //   operation.statutory_declaration =
+  //     statutory_declaration_response.statutory_declaration;
+  // }
 
   const formSchema = await createAdministrationOperationInformationSchema(
     operation?.registration_purposes,

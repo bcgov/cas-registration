@@ -8,10 +8,16 @@ import {
   NewEntrantOperationFormData,
   OperationRegistrationFormProps,
 } from "apps/registration/app/components/operations/registration/types";
+import { useState, useEffect } from "react";
+
 
 interface NewEntrantOperationFormProps extends OperationRegistrationFormProps {
   formData: NewEntrantOperationFormData;
 }
+// Check if all questions are answered
+const allQuestionsAnswered = (formData: NewEntrantOperationFormData) => {
+  return Object.values(formData).every((value) => value !== null);
+};
 
 const NewEntrantOperationForm = ({
   formData,
@@ -20,17 +26,39 @@ const NewEntrantOperationForm = ({
   step,
   steps,
 }: NewEntrantOperationFormProps) => {
+  const [formState, setFormState] = useState(formData);
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+
+  //To run the check on initial load when the form already has data
+  useEffect(() => {
+    if (formData) {
+      setSubmitButtonDisabled(!allQuestionsAnswered(formData));
+    }
+  }, []);
+
+  const handleChange = (e: IChangeEvent) => {
+    setFormState(e.formData);
+    setSubmitButtonDisabled(!allQuestionsAnswered(e.formData));
+  };
+
   const baseUrl = `/register-an-operation/${operation}`;
   const handleSubmit = async (e: IChangeEvent) => {
-    const method = "PUT";
-    const endpoint = `registration/v2/operations/${operation}/registration/statutory-declaration`;
+    setSubmitButtonDisabled(true);
     const body = {
-      statutory_declaration: e.formData.statutory_declaration,
+      operation_id: operation,
+      date_of_first_shipment: e.formData.date_of_first_shipment,
+      new_entrant_application: e.formData.new_entrant_application,
     };
-    // errors are handled in MultiStepBase
-    const response = await actionHandler(endpoint, method, `${baseUrl}`, {
-      body: JSON.stringify(body),
-    });
+    const response = await actionHandler(
+      `registration/v2/operations/${operation}/registration/new-entrant-operation-detail`,
+      "POST",
+      baseUrl, // Removing this line will cause the form to show the existing data(not consistent)
+      {body: body}
+    );
+    console.log('HEEEEEERRRRRRRREEEEEEEEE')
+    console.log('BODY')
+    console.log(JSON.stringify({...e.formData}))
+
     return response;
   };
 
@@ -39,12 +67,14 @@ const NewEntrantOperationForm = ({
       allowBackNavigation
       baseUrl={baseUrl}
       cancelUrl="/"
-      formData={formData}
+      formData={formState}
       onSubmit={handleSubmit}
+      onChange={handleChange}
       schema={schema}
       step={step}
       steps={steps}
       uiSchema={newEntrantOperationUiSchema}
+      submitButtonDisabled={submitButtonDisabled}
     />
   );
 };

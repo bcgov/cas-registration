@@ -18,6 +18,7 @@ from .regulated_product import RegulatedProduct
 from .naics_code import NaicsCode
 from .activity import Activity
 from .opted_in_operation_detail import OptedInOperationDetail
+from .new_entrant_operation_detail import NewEntrantOperationDetail
 from .operation import Operation
 from .facility import Facility
 from .facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -58,4 +59,5 @@ __all__ = [
     "WellAuthorizationNumber",
     "RegistrationPurpose",
     "OptedInOperationDetail",
+    "NewEntrantOperationDetail",
 ]

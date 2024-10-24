@@ -90,6 +90,8 @@ const OperationInformationForm = ({
         return resolve;
       }
     });
+    console.log("OperationInformationForm - handleSubmit")
+    console.log(response)
     return response;
   };
   const handleSelectOperationChange = async (data: any) => {
