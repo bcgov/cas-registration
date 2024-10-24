@@ -251,7 +251,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [('reporting', '0021_report_additional_data')]
+    dependencies = [('reporting', '0023_emission_category_mapping_with_data')]
 
     operations = [
         migrations.RunPython(init_custom_schema_data, reverse_init_custom_schema_data),
