@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import ActivityInit from "apps/reporting/src/app/components/activities/ActivityInit";
-
+import Loading from "@bciers/components/loading/SkeletonForm";
 export default async function Page(router: any) {
   return (
     <>
-      <Suspense fallback="Loading Schema">
+      <Suspense fallback={<Loading />}>
         <ActivityInit
           versionId={parseInt(router.params?.version_id)}
           facilityId={router.params?.facility_id}
