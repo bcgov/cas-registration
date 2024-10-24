@@ -14,7 +14,7 @@ const updateDashboardDataHref = (
   items: ContentItem[],
   replaceValue: string,
   getNewValue: (item: ContentItem) => string,
-  getTitle: (item: ContentItem) => string,
+  getTitle: (item: ContentItem) => string = () => "",
 ): ContentItem[] => {
   return items.map((item) => {
     const newValue = getNewValue(item); // Determine the new value based on the item's properties
