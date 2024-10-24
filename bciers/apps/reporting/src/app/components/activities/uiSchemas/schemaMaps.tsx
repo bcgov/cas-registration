@@ -6,6 +6,7 @@ import gscUiSchema from "./gscUiSchema";
 import hydrogenProduction from "./hydrogenProduction";
 import pulpAndPaperUiSchema from "./pulpAndPaperUiSchema";
 import refineryFuelGasUiSchema from "./refineryFuelGasUiSchema";
+import openPitCoalMining from "@reporting/src/app/components/activities/uiSchemas/openPitCoalMining";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -30,6 +31,7 @@ export const uiSchemaMap: UiSchemaMap = {
   pulp_and_paper: pulpAndPaperUiSchema,
   refinery_fuel_gas: refineryFuelGasUiSchema,
   carbonate_use: carbonatesUseUiSchema,
+  open_pit_coal_mining: openPitCoalMining,
 };
 
 export const getUiSchema = (slug: string) => {

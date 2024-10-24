@@ -571,6 +571,7 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='CEMS'),
             Methodology(name='Measured CC and MW'),
             Methodology(name='Feedstock Material Balance'),
+            Methodology(name='Emissions Factor Methodology'),
         ]
     )
 
@@ -602,6 +603,7 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'CEMS',
             'Measured CC and MW',
             'Feedstock Material Balance',
+            'Emissions Factor Methodology',
         ]
     ).delete()
 
@@ -716,7 +718,6 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('reporting', '0007_reinit'),
     ]
