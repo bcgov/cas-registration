@@ -1,7 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getOptedInOperationDetail(id: string) {
-  return await actionHandler(
+  return actionHandler(
     `registration/v2/operations/${id}/registration/opted-in-operation-detail`,
     "GET",
     "",

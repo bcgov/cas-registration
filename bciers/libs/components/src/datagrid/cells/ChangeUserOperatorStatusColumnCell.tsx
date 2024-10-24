@@ -21,21 +21,18 @@ const handleUpdateStatus = async (
   statusUpdate: Status,
   roleUpdate: UserOperatorRoles,
 ) => {
-  try {
-    return await actionHandler(
-      `registration/user-operators/${userOperatorId}/update-status`,
-      "PUT",
-      "",
-      {
-        body: JSON.stringify({
-          role: roleUpdate,
-          status: statusUpdate,
-        }),
-      },
-    );
-  } catch (error) {
-    throw error;
-  }
+  const response = await actionHandler(
+    `registration/user-operators/${userOperatorId}/update-status`,
+    "PUT",
+    "",
+    {
+      body: JSON.stringify({
+        role: roleUpdate,
+        status: statusUpdate,
+      }),
+    },
+  );
+  return response;
 };
 
 const ChangeUserOperatorStatusColumnCell = (

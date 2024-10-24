@@ -1,7 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getContacts() {
-  return await actionHandler(
+  return actionHandler(
     `registration/contacts?paginate_result=false`,
     "GET",
     "",

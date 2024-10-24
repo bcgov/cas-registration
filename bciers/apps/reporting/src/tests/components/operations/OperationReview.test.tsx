@@ -8,9 +8,15 @@ vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-}));
+vi.mock("next/navigation", async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
+  return {
+    ...actual,
+    useRouter: vi.fn(),
+    useSearchParams: vi.fn(() => new URLSearchParams()),
+  };
+});
+
 const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
 const mockActionHandler = vi.fn();
 

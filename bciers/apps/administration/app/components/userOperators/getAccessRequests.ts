@@ -4,13 +4,10 @@ import { AccessRequest } from "@/administration/app/components/userOperators/typ
 export default async function getAccessRequests(): Promise<
   AccessRequest[] | { error: string }
 > {
-  try {
-    return await actionHandler(
-      `registration/user-operators/current/access-requests`,
-      "GET",
-      "/dashboard/users",
-    );
-  } catch (error) {
-    throw error;
-  }
+  const response = await actionHandler(
+    `registration/user-operators/current/access-requests`,
+    "GET",
+    "/dashboard/users",
+  );
+  return response;
 }
