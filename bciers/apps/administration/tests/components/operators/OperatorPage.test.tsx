@@ -22,11 +22,6 @@ useSession.mockReturnValue({
   get: vi.fn(),
 });
 
-useRouter.mockReturnValue({
-  query: {},
-  replace: vi.fn(),
-});
-
 describe("Operator component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();

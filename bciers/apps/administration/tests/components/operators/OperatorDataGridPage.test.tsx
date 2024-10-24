@@ -49,7 +49,7 @@ vi.mock(
   }),
 );
 
-describe("Operators component", () => {
+describe("OperatorDataGridPage component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
