@@ -1,11 +1,12 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getRegulatedProducts() {
-  try {
-    return await actionHandler("registration/regulated_products", "GET", "");
-  } catch (error) {
-    throw error;
-  }
+  const response = await actionHandler(
+    "registration/regulated_products",
+    "GET",
+    "",
+  );
+  return response;
 }
 
 export default getRegulatedProducts;

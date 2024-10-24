@@ -3,13 +3,13 @@ import {
   GridColumnGroupingModel,
 } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
-import { OPERATOR_COLUMN_INDEX } from "apps/administration/app/components/datagrid/models/operationColumns";
+import { OPERATOR_COLUMN_INDEX } from "./operationColumns";
 
 const operationGroupColumns = (
-  isInternalUser: boolean,
+  isOperatorColumn: boolean,
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
-  const columnGroupModel: GridColumnGroupingModel = [
+  const columnGroupModel = [
     {
       groupId: "bcghg_id",
       headerName: "BC GHG ID",
@@ -18,15 +18,15 @@ const operationGroupColumns = (
     },
     {
       groupId: "name",
-      headerName: "Operation Name",
+      headerName: "Operation",
       renderHeaderGroup: SearchCell,
       children: [{ field: "name" }],
     },
     {
-      groupId: "type",
-      headerName: "Operation Type",
-      renderHeaderGroup: SearchCell,
-      children: [{ field: "type" }],
+      groupId: "submission_date",
+      headerName: "Submission Date",
+      renderHeaderGroup: EmptyGroupCell,
+      children: [{ field: "submission_date" }],
     },
     {
       groupId: "bc_obps_regulated_operation",
@@ -36,7 +36,7 @@ const operationGroupColumns = (
     },
     {
       groupId: "status",
-      headerName: "Status",
+      headerName: "Application Status",
       renderHeaderGroup: SearchCell,
       children: [{ field: "status" }],
     },
@@ -46,12 +46,12 @@ const operationGroupColumns = (
       renderHeaderGroup: EmptyGroupCell,
       children: [{ field: "action" }],
     },
-  ];
+  ] as GridColumnGroupingModel;
 
-  if (isInternalUser) {
+  if (isOperatorColumn) {
     columnGroupModel.splice(OPERATOR_COLUMN_INDEX, 0, {
       groupId: "operator",
-      headerName: "Operator Legal Name",
+      headerName: "Operator",
       renderHeaderGroup: SearchCell,
       children: [{ field: "operator" }],
     });

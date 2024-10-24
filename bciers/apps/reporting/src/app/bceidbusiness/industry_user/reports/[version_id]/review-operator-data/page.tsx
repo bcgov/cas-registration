@@ -1,4 +1,4 @@
-import OperationReviewFormData from "../../../../../components/operations/OperationReviewFormData";
+import OperationReviewFormData from "apps/reporting/src/app/components/operations/OperationReviewFormData";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
 

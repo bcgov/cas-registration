@@ -6,7 +6,7 @@ import {
   getOperatorHasAdmin,
 } from "../userOperators/mocks";
 
-import SelectOperatorConfirmPage from "../../../app/components/userOperators/SelectOperatorConfirmPage";
+import SelectOperatorConfirmPage from "apps/administration/app/components/userOperators/SelectOperatorConfirmPage";
 
 import { expectIcon } from "../helpers/expectIcon";
 import { expectLink } from "../helpers/expectLink";

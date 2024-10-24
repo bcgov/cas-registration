@@ -22,6 +22,11 @@ export default async function FacilitiesPage({
 
   if (operationId && isValidUUID(operationId)) {
     operation = await getOperation(operationId);
+    if (operation.error) {
+      throw new Error(
+        "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
+      );
+    }
   }
 
   return (

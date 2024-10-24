@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
+import OperationsActionCell from "@bciers/components/datagrid/cells/operations/OperationsActionCell";
 import OperationFacilitiesActionCell from "apps/administration/app/components/operations/cells/OperationFacilitiesActionCell";
-import operationColumns from "../datagrid/models/operationColumns";
-import operationGroupColumns from "../datagrid/models/operationGroupColumns";
+import operationColumns from "../datagrid/models/operations/operationColumns";
+import operationGroupColumns from "../datagrid/models/operations/operationGroupColumns";
 import { OperationRow } from "./types";
 import fetchOperationsPageData from "./fetchOperationsPageData";
 

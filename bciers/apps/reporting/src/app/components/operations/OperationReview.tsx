@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
@@ -51,7 +51,9 @@ export default function OperationReview({
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
+  const queryString = useSearchParams();
+  const saveAndContinueUrl = `/reports/${version_id}/person-responsible?${queryString}`;
+
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
     "MMM DD YYYY",

@@ -14,7 +14,20 @@ describe("Facilities page", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
-
+  it("renders the appropriate error component when getOperation fails", async () => {
+    getOperation.mockReturnValueOnce({
+      error: "We couldn't find your operation information.",
+    });
+    await expect(async () => {
+      render(
+        await FacilitiesPage({
+          operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+          searchParams: searchParams,
+          isExternalUser: true,
+        }),
+      );
+    }).rejects.toThrow("We couldn't find your operation information.");
+  });
   it("displays `Add Facility` button for external users", async () => {
     render(
       await FacilitiesPage({

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import SelectOperatorPage from "../../../app/bceidbusiness/industry_user/select-operator/(request-access)/page";
+import SelectOperatorPage from "apps/administration/app/bceidbusiness/industry_user/select-operator/(request-access)/page";
 
 import { mockUseSession } from "../helpers/mockUseSession";
 
