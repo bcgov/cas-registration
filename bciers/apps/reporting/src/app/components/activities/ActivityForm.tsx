@@ -27,7 +27,6 @@ interface Props {
   };
   currentActivity: { id: number; name: string; slug: string };
   taskListData: TaskListElement[];
-  reportVersionId: number;
   defaultEmptySourceTypeState:
     | EmptyWithUnits
     | EmptyWithFuels
@@ -41,7 +40,6 @@ export default function ActivityForm({
   activityData,
   currentActivity,
   taskListData,
-  reportVersionId,
   defaultEmptySourceTypeState,
   reportVersionId,
   facilityId,
