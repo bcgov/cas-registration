@@ -30,8 +30,8 @@ const OperatorDetailsPage = async ({ operatorId }: { operatorId: UUID }) => {
   const newOperatorDashboardData = updateDashboardDataHref(
     operatorDashboardData,
     "operator-id",
-    operatorId,
-    `?operators_title=Operator Details&operator_id=${operatorId}`,
+    () => `${operatorId}/operator-details`,
+    () => `?operator_id=${operatorId}`,
   );
 
   return (
