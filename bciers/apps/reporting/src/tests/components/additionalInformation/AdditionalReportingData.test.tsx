@@ -7,6 +7,7 @@ import { vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
 vi.mock("@bciers/actions", () => ({
