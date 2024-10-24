@@ -91,12 +91,9 @@ export default function AdditionalReportingData({
       ...data.captured_emissions_section,
       ...data.additional_data_section,
     };
-    console.log("payload", payload);
-
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
-    console.log("response", response);
     if (response) {
       router.push(`${saveAndContinueUrl}`); // Redirect on success
     }
