@@ -263,6 +263,25 @@ EmissionCategoryMapping {
     ForeignKey activity
     ForeignKey source_type
 }
+ReportProduct {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey report_version
+    ForeignKey facility_report
+    ForeignKey product
+    FloatField annual_production
+    FloatField production_data_apr_dec
+    CharField production_methodology
+    FloatField storage_quantity_start_of_period
+    FloatField storage_quantity_end_of_period
+    FloatField quantity_sold_during_period
+    FloatField quantity_throughput_during_period
+}
 Report }|--|| User : created_by
 Report }|--|| User : updated_by
 Report }|--|| User : archived_by
@@ -357,3 +376,9 @@ ReportAdditionalData ||--|| ReportVersion : report_version
 EmissionCategoryMapping }|--|| EmissionCategory : emission_category
 EmissionCategoryMapping }|--|| Activity : activity
 EmissionCategoryMapping }|--|| SourceType : source_type
+ReportProduct }|--|| User : created_by
+ReportProduct }|--|| User : updated_by
+ReportProduct }|--|| User : archived_by
+ReportProduct }|--|| ReportVersion : report_version
+ReportProduct }|--|| FacilityReport : facility_report
+ReportProduct }|--|| RegulatedProduct : product
