@@ -1,6 +1,6 @@
 import ReportingOperationDataGrid from "./ReportingOperationDataGrid";
 import { OperationRow, OperationsSearchParams } from "./types";
-import fetchOperationsPageData from "./fetchOperationsPageData";
+import { fetchOperationsPageData } from "./fetchOperationsPageData";
 
 // 🧩 Main component
 export default async function Operations({

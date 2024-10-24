@@ -5,6 +5,7 @@ import { defaultEmtpySourceTypeMap } from "./uiSchemas/schemaMaps";
 import ActivityForm from "./ActivityForm";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { UUID } from "crypto";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 type ActivityData = { id: number; name: string; slug: string };
 interface Props {
@@ -78,7 +79,7 @@ export default async function ActivityInit({
 
   generateTasklistItems();
   return (
-    <Suspense fallback="Loading Schema">
+    <Suspense fallback={<Loading />}>
       <ActivityForm
         activityData={activityDataObject}
         currentActivity={currentActivity}

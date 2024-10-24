@@ -1,10 +1,11 @@
+import { actionHandler } from "@bciers/actions";
 import buildQueryParams from "@bciers/utils/buildQueryParams";
 import { OperationsSearchParams } from "./types";
-import { actionHandler } from "@bciers/actions";
 
-export default async function fetchOperationsPageData(
+// 🛠️ Function to fetch operations
+export const fetchOperationsPageData = async (
   searchParams: OperationsSearchParams,
-) {
+) => {
   const queryParams = buildQueryParams(searchParams);
   // fetch data from server
   const pageData = await actionHandler(
@@ -16,4 +17,4 @@ export default async function fetchOperationsPageData(
     rows: pageData.items,
     row_count: pageData.count,
   };
-}
+};
