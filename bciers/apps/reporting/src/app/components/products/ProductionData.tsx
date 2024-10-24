@@ -1,6 +1,6 @@
 import ProductionDataForm from "./ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
-import getProductionData from "@bciers/actions/api/getProductionData";
+import { getProductionData } from "@bciers/actions/api";
 
 interface Props {
   report_version_id: number;
