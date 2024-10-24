@@ -12,7 +12,7 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const OperatorsActionCell = ActionCellFactory({
   generateHref: (params: GridRenderCellParams) => {
-    return `operators/${params.row.id}/operator-details`;
+    return `/operators/${params.row.id}/operator-details`;
   },
   cellText: "View Details",
 });
