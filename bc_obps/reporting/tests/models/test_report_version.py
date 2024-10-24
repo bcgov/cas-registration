@@ -11,6 +11,7 @@ class ReportVersionTest(BaseTestCase):
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
             ("report", "report", None, None),
+            ("report_type", "report type", None, None),
             ("is_latest_submitted", "is latest submitted", None, None),
             ("status", "status", 1000, None),
             ("facility_reports", "facility report", None, 0),

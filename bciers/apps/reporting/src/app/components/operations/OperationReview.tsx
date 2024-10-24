@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
+  updateSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import safeJsonParse from "@bciers/utils/safeJsonParse";
@@ -16,6 +17,9 @@ import { formatDate } from "@reporting/src/app/utils/formatDate";
 interface Props {
   formData: any;
   version_id: number;
+  reportType: {
+    report_type: string;
+  };
   reportingYear: {
     reporting_year: number;
     report_due_date: string;
@@ -23,39 +27,150 @@ interface Props {
   };
   allActivities: { id: number; name: string }[];
   allRegulatedProducts: { id: number; name: string }[];
+  registrationPurpose: string;
+  facilityReport: {
+    facility_id: number;
+    operation_type: string;
+  };
 }
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
-const taskListElements: TaskListElement[] = [
-  {
-    type: "Section",
-    title: "Operation information",
-    isExpanded: true,
-    elements: [
-      { type: "Page", title: "Review Operation information", isActive: true },
-      { type: "Page", title: "Person responsible" },
-      { type: "Page", title: "Review facilities" },
-    ],
-  },
-];
-
 export default function OperationReview({
   formData,
   version_id,
+  reportType,
   reportingYear,
   allActivities,
   allRegulatedProducts,
+  registrationPurpose,
+  facilityReport,
 }: Props) {
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
+  const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
   const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
+  const [facilityId, setFacilityId] = useState<number | null>(null);
+  const [operationType, setOperationType] = useState("");
+
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
     "MMM DD YYYY",
   );
+
+  const facilityPageUrl =
+    operationType === "Linear Facility Operation"
+      ? `/reports/${version_id}/facilities/lfo-facilities`
+      : `/reports/${version_id}/facilities/${facilityId}/review`;
+
+  const taskListElements: TaskListElement[] = [
+    {
+      type: "Section",
+      title: "Operation information",
+      isExpanded: true,
+      elements: [
+        {
+          type: "Page",
+          title: "Review Operation information",
+          isActive: true,
+          link: `/reports/${version_id}/review-operator-data`,
+        },
+        {
+          type: "Page",
+          title: "Person responsible",
+          link: `/reports/${version_id}/person-responsible`,
+        },
+        {
+          type: "Page",
+          title: "Review facilities",
+          link: `${facilityPageUrl}`,
+        },
+      ],
+    },
+  ];
+
+  const prepareFormData = (formDataObject: any) => {
+    return {
+      ...formDataObject,
+      activities:
+        formDataState.operation_report_type === "Simple Report"
+          ? []
+          : formDataObject.activities?.map((activityId: any) => {
+              const activity = allActivities.find((a) => a.id === activityId);
+              if (!activity)
+                throw new Error(`Activity with ID ${activityId} not found`);
+              return activity.name;
+            }),
+      regulated_products:
+        formDataState.operation_report_type === "Simple Report"
+          ? []
+          : formDataObject.regulated_products?.map((productId: any) => {
+              const product = allRegulatedProducts.find(
+                (p) => p.id === productId,
+              );
+              if (!product)
+                throw new Error(`Product with ID ${productId} not found`);
+              return product.name;
+            }),
+    };
+  };
+
+  useEffect(() => {
+    if (formData && allActivities && allRegulatedProducts) {
+      const updatedFormData = {
+        ...formData,
+        operation_report_type: reportType?.report_type || "Annual Report",
+        activities: formData.activities || [],
+        regulated_products: formData.regulated_products || [],
+      };
+      setFormDataState(updatedFormData);
+
+      setSchema((prevSchema) =>
+        updateSchema(
+          prevSchema,
+          updatedFormData,
+          registrationPurpose,
+          reportingWindowEnd,
+          allActivities,
+          allRegulatedProducts,
+        ),
+      );
+
+      const helperText =
+        updatedFormData.operation_report_type === "Simple Report" ? (
+          <small>
+            Simple reports are submitted by operations that previously emitted
+            greater than or equal to 10,000 tCO2e of attributable emissions in a
+            reporting period, but now emit under 10,000 tCO2e of attributable
+            emissions in a reporting period and have an obligation to continue
+            reporting emissions for three consecutive reporting periods. This
+            report type is not applicable for opted-in operations.
+          </small>
+        ) : null;
+
+      setUiSchema({
+        ...operationReviewUiSchema,
+        operation_report_type: {
+          "ui:widget": "select",
+          "ui:help": helperText,
+        },
+      });
+    }
+    if (facilityReport?.facility_id) {
+      setFacilityId(facilityReport.facility_id);
+      setOperationType(facilityReport.operation_type);
+    }
+  }, [
+    formData,
+    reportType,
+    facilityReport,
+    allActivities,
+    allRegulatedProducts,
+    registrationPurpose,
+    reportingWindowEnd,
+  ]);
 
   const submitHandler = async (
     data: { formData?: any },
@@ -65,96 +180,23 @@ export default function OperationReview({
     const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
 
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
-
-    const preparedData = {
-      ...formDataObject,
-      activities: formDataObject.activities?.map((activityId: any) => {
-        const activity = allActivities.find((a) => a.id === activityId);
-        if (!activity)
-          throw new Error(`Activity with ID ${activityId} not found`);
-        return activity.name;
-      }),
-      regulated_products: formDataObject.regulated_products?.map(
-        (productId: any) => {
-          const product = allRegulatedProducts.find((p) => p.id === productId);
-          if (!product)
-            throw new Error(`Product with ID ${productId} not found`);
-          return product.name;
-        },
-      ),
-    };
+    const preparedData = prepareFormData(formDataObject);
 
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(preparedData),
     });
 
     if (response) {
-      router.push(saveAndContinueUrl); // Navigate on success
+      router.push(saveAndContinueUrl);
     }
   };
 
-  useEffect(() => {
-    if (!formData || !allActivities || !allRegulatedProducts) {
-      return;
-    }
-
-    const activities = formData.activities || [];
-    const products = formData.regulated_products || [];
-
-    setSchema((prevSchema) => ({
-      ...prevSchema,
-      properties: {
-        ...prevSchema.properties,
-        activities: {
-          type: "array",
-          title: "Reporting activities",
-          items: {
-            type: "number",
-            enum: allActivities.map((activity) => activity.id),
-            enumNames: allActivities.map((activity) => activity.name),
-          },
-          uniqueItems: true,
-        },
-        regulated_products: {
-          type: "array",
-          title: "Regulated products",
-          items: {
-            type: "number",
-            enum: allRegulatedProducts.map((product) => product.id),
-            enumNames: allRegulatedProducts.map((product) => product.name),
-          },
-          uniqueItems: true,
-        },
-        operation_representative_name: {
-          type: "string",
-          title: "Operation representative",
-          enum: [formData.operation_representative_name || ""],
-        },
-        operation_type: {
-          type: "string",
-          title: "Operation type",
-          enum: [formData.operation_type || ""],
-        },
-        date_info: {
-          type: "object",
-          readOnly: true,
-          title: `Please ensure this information was accurate for ${reportingWindowEnd}`,
-        },
-      },
-    }));
-
-    const updatedFormData = {
-      ...formData,
-      activities,
-      regulated_products: products,
-    };
-
-    setFormDataState(updatedFormData);
-  }, [allActivities, allRegulatedProducts, formData, reportingWindowEnd]);
+  const onChangeHandler = (data: { formData: any }) => {
+    setFormDataState(data.formData);
+  };
 
   if (!formData) {
-    //we need to render another component which we would display if no version Id exist or we want to show an error
-    return <div>No version ID found(TBD)</div>;
+    return <div>No version ID found (TBD)</div>;
   }
 
   return (
@@ -168,11 +210,12 @@ export default function OperationReview({
       ]}
       taskListElements={taskListElements}
       schema={schema}
-      uiSchema={operationReviewUiSchema}
+      uiSchema={uiSchema}
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
       onSubmit={(data) => submitHandler(data, version_id)}
+      onChange={onChangeHandler}
     />
   );
 }
