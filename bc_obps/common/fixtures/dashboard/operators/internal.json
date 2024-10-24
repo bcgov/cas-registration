@@ -10,7 +10,7 @@
           {
             "title": "Information",
             "content": "View information of this operator.",
-            "href": "/administration/operators/operator-id"
+            "href": "/administration/operators/operator-id/information"
           },
           {
             "title": "Operations",
