@@ -3,11 +3,11 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import OperatorsActionCell from "@bciers/components/datagrid/cells/OperatorsActionCell";
+import OperatorsActionCell from "@bciers/components/datagrid/cells/operators/OperatorsActionCell";
 import fetchOperatorsPageData from "./fetchOperatorsPageData";
 import { OperatorRow } from "./types";
-import operatorColumns from "../datagrid/models/operatorColumns";
-import operatorGroupColumns from "../datagrid/models/operatorGroupColumns";
+import operatorColumns from "../datagrid/models/operators/operatorColumns";
+import operatorGroupColumns from "../datagrid/models/operators/operatorGroupColumns";
 
 const OperatorDataGrid = ({
   initialData,

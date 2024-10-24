@@ -1,15 +1,11 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getContacts() {
-  try {
-    return await actionHandler(
-      `registration/contacts?paginate_result=false`,
-      "GET",
-      "",
-    );
-  } catch (error) {
-    throw error;
-  }
+  return await actionHandler(
+    `registration/contacts?paginate_result=false`,
+    "GET",
+    "",
+  );
 }
 
 export default getContacts;
