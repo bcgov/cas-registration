@@ -1,5 +1,5 @@
 import { describe } from "vitest";
-import operationColumns from "@reporting/src/app/components/datagrid/models/operationColumns";
+import operationColumns from "@reporting/src/app/components/datagrid/models/operations/operationColumns";
 import { GridColDef } from "@mui/x-data-grid";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

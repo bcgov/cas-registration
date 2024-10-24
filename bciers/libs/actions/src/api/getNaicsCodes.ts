@@ -1,11 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getNaicsCodes() {
-  try {
-    return await actionHandler("registration/naics_codes", "GET", "");
-  } catch (error) {
-    throw error;
-  }
+  return await actionHandler("registration/naics_codes", "GET", "");
 }
 
 export default getNaicsCodes;
