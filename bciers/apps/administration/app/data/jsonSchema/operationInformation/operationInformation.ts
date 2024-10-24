@@ -103,6 +103,14 @@ export const createOperationInformationSchema = async (
             },
           }
         : {}),
+      ...(app === Apps.ADMINISTRATION
+        ? {
+            bcghg_id: {
+              type: "string",
+              title: "BCGHGID",
+            },
+          }
+        : {}),
     },
   };
   return operationInformationSchema;

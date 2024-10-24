@@ -3,7 +3,7 @@ import re
 from uuid import UUID
 import uuid
 from django.db import models
-from registration.constants import BORO_ID_REGEX
+from registration.constants import BCGHG_ID_REGEX, BORO_ID_REGEX
 from registration.models import (
     TimeStampedModel,
     Operator,
@@ -79,9 +79,9 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
     )
-    bcghg_id = models.CharField(
+    bcghg_id = models.OneToOneField(
         max_length=1000,
-        db_comment="An operation's BCGHG identifier. Only needed if the operation submitted a report the previous year.",
+        db_comment="An operation's BCGHG identifier.",
         blank=True,
         null=True,
     )
@@ -248,6 +248,41 @@ class Operation(TimeStampedModel):
         new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id)
         self.bc_obps_regulated_operation = new_boro_id_instance
 
+    def generate_unique_bcghg_id(self) -> None:
+        """
+        Generate a unique BCGHG ID based on the current year and the latest BORO ID.
+        """
+
+        # if the operation already has a BCGHG ID, do nothing
+        if self.bcghg_id:
+            return None
+        
+        first_digit = 1 if self.type == 'SFO' else 2
+
+
+        latest_bcghg_id = BcObpsRegulatedOperation.objects.order_by('-id').values_list('id', flat=True).first()
+
+        latest_number = 1
+        if latest_bcghg_id:
+            # brianna don't have to split?
+            latest_latest_bcghg_id_year, latest_bcghg_id_number = map(int, latest_bcghg_id.split('-'))
+            # Check if the latest BORO ID is from the current year
+            if latest_latest_bcghg_id_year == current_year_last_digits:
+                latest_number = latest_bcghg_id_number + 1
+
+        new_bcghg_id = (
+            f"{first_digit}{self.naics_code.naics_code}{latest_number:04d}"  # Pad the number with zeros to make it 4 digits long
+        )
+
+        if not re.match(BCGHG_ID_REGEX, new_bcghg_id):
+            raise ValidationError("Generated BCGHG ID is not in the correct format.")
+        if Operation.objects.filter(bcghg_id__pk=new_bcghg_id).exists():
+            raise ValidationError("Generated BCGHG ID is not unique.")
+
+        new_bcghg_id_instance = BcObpsRegulatedOperation.objects.create(id=new_bcghg_id)
+        self.bcghg_id = new_bcghg_id_instance
+
+   
     @property
     def current_designated_operator(self) -> Operator:
         """
