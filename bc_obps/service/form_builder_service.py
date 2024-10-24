@@ -342,8 +342,8 @@ class FormBuilderService:
             raise Exception('Cannot build a schema without Activity data')
 
         report_date = get_report_valid_year_from_version_id(report_version_id)
-
+        report_date_string = report_date.strftime('%Y-%m-%d')
         # Get config objects
         config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
-        schema = build_schema(config.id, activity, source_types, report_date)
+        schema = build_schema(config.id, activity, source_types, report_date_string)
         return schema
