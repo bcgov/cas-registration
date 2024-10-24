@@ -51,11 +51,11 @@
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990003",
-      "regulated_products": [],
+      "regulated_products": [2, 6, 7, 8],
       "status": "Approved",
       "bc_obps_regulated_operation": "21-0001",
       "created_at": "2024-1-31T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5, 17]
     }
   },
   {

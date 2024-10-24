@@ -15,24 +15,8 @@ interface Props {
   allowedProducts: { product_id: number; product_name: string }[];
   initialData: ProductData[];
   schema: RJSFSchema;
+  taskListElements: TaskListElement[];
 }
-
-const taskListElements: TaskListElement[] = [
-  {
-    type: "Section",
-    title: "Schmorg",
-    isExpanded: true,
-    elements: [
-      {
-        type: "Page",
-        title: "Sborg",
-        isChecked: true,
-      },
-      { type: "Page", title: "Sbarg", isActive: true },
-      { type: "Page", title: "Shimilimili" },
-    ],
-  },
-];
 
 const ProductionDataForm: React.FC<Props> = ({
   report_version_id,
@@ -40,6 +24,7 @@ const ProductionDataForm: React.FC<Props> = ({
   schema,
   allowedProducts,
   initialData,
+  taskListElements,
 }) => {
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
