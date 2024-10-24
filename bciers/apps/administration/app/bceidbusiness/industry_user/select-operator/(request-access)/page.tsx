@@ -1,5 +1,5 @@
 "use client";
-import SelectOperatorForm from "../../../../components/userOperators/SelectOperatorForm";
+import SelectOperatorForm from "apps/administration/app/components/userOperators/SelectOperatorForm";
 import { useSession } from "next-auth/react";
 import getUserFullName from "@bciers/utils/getUserFullName";
 export default function Page() {

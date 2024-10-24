@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import ActivityInit from "../../../../../../../components/activities/ActivityInit";
+import ActivityInit from "apps/reporting/src/app/components/activities/ActivityInit";
 
 export default async function Page(router: any) {
   return (

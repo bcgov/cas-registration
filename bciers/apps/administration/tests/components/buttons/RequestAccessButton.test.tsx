@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import RequestAccessButton from "../../../app/components/buttons/RequestAccessButton";
+import RequestAccessButton from "apps/administration/app/components/buttons/RequestAccessButton";
 
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 
