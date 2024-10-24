@@ -33,7 +33,7 @@ const uiSchema = {
           "ui:order": [
             "gasType",
             "emission",
-            "equivalentEmissions",
+            "equivalentEmission",
             "methodology",
             "feedstocks",
             "description",
