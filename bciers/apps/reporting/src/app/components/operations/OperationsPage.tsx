@@ -1,6 +1,6 @@
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
-import Operations from "../../operations/Operations";
-import { OperationsSearchParams } from "../../operations/types";
+import Operations from "apps/reporting/src/app/components/operations/Operations";
+import { OperationsSearchParams } from "apps/reporting/src/app/components/operations/types";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 
 export default async function OperationsPage({
