@@ -12,7 +12,8 @@ from reporting.models.facility_report import FacilityReport
 from registration.tests.utils.baker_recipes import operation, operator, facility
 from model_bakery.recipe import Recipe, foreign_key
 from reporting.models.source_type import SourceType
-
+from reporting.models.emission_category import EmissionCategory
+from reporting.models.emission_category_mapping import EmissionCategoryMapping
 
 reporting_year = Recipe(ReportingYear)
 
@@ -56,4 +57,13 @@ report_activity = Recipe(
     activity_base_schema=foreign_key(activity_json_schema),
     activity=foreign_key(activity),
     report_version=foreign_key(report_version),
+)
+
+emission_category = Recipe(EmissionCategory)
+
+emission_category_mapping = Recipe(
+    EmissionCategoryMapping,
+    activity=foreign_key(activity),
+    source_type=foreign_key(source_type),
+    emission_category=foreign_key(emission_category),
 )

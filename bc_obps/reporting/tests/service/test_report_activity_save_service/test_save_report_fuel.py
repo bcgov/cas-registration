@@ -43,17 +43,19 @@ class TestSaveReportFuel(TestCase):
             test_infrastructure.user.user_guid,
         )
 
-        with pytest.raises(KeyError, match="fuelName"):
-            service_under_test.save_fuel(report_source_type, report_unit, {"no_fuel_name": True})
+        with pytest.raises(KeyError, match="fuelType"):
+            service_under_test.save_fuel(report_source_type, report_unit, {"no_fuel_type": True})
         with pytest.raises(FuelType.DoesNotExist):
-            service_under_test.save_fuel(report_source_type, report_unit, {"fuelName": "fuelThatDoesntExist"})
+            service_under_test.save_fuel(
+                report_source_type, report_unit, {"fuelType": {"fuelName": "fuelThatDoesntExist"}}
+            )
         with pytest.raises(ValueError, match="Fuel is expecting emission data"):
             service_under_test.save_fuel(
-                report_source_type, report_unit, {"fuelName": "Test Fuel Type", "no_emission_data": True}
+                report_source_type, report_unit, {"fuelType": {"fuelName": "Test Fuel Type"}, "no_emission_data": True}
             )
 
         with_none_report_unit = service_under_test.save_fuel(
-            report_source_type, None, {"fuelName": fuel_type.name, "emissions": []}
+            report_source_type, None, {"fuelType": {"fuelName": fuel_type.name}, "emissions": []}
         )
 
         assert with_none_report_unit.report_unit is None
@@ -63,7 +65,7 @@ class TestSaveReportFuel(TestCase):
             report_unit,
             {
                 "test_fuel_prop": "fuel_value",
-                "fuelName": fuel_type.name,
+                "fuelType": {"fuelName": fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
             },
         )
@@ -121,7 +123,7 @@ class TestSaveReportFuel(TestCase):
             report_unit,
             {
                 "test_fuel_prop": "fuel_value",
-                "fuelName": fuel_type.name,
+                "fuelType": {"fuelName": fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
             },
         )
@@ -134,7 +136,7 @@ class TestSaveReportFuel(TestCase):
             {
                 "id": report_fuel.id,
                 "test_fuel_prop": "updated!",
-                "fuelName": new_fuel_type.name,
+                "fuelType": {"fuelName": new_fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
             },
         )
@@ -184,7 +186,7 @@ class TestSaveReportFuel(TestCase):
             report_unit,
             {
                 "test_fuel_prop": "fuel_value",
-                "fuelName": fuel_type.name,
+                "fuelType": {"fuelName": fuel_type.name},
                 "emissions": [{"small_emission": 1}, {"large_emission": 2}],
             },
         )
@@ -207,7 +209,7 @@ class TestSaveReportFuel(TestCase):
             {
                 "id": report_fuel.id,
                 "test_fuel_prop": "updated!",
-                "fuelName": "Test Fuel Type",
+                "fuelType": {"fuelName": "Test Fuel Type"},
                 "emissions": [
                     {"id": report_emissions[1].id, "small_emission": 1},
                     {"id": report_emissions[3].id, "large_emission": 2},

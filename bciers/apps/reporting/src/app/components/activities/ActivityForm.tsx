@@ -10,6 +10,7 @@ import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
+import { UUID } from "crypto";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -31,6 +32,8 @@ interface Props {
     | EmptyWithUnits
     | EmptyWithFuels
     | EmptyOnlyEmissions;
+  reportVersionId: number;
+  facilityId: UUID;
 }
 
 // 🧩 Main component
@@ -40,6 +43,8 @@ export default function ActivityForm({
   taskListData,
   reportDate,
   defaultEmptySourceTypeState,
+  reportVersionId,
+  facilityId,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
@@ -120,13 +125,24 @@ export default function ActivityForm({
     setFormState(c.formData);
   };
 
-  // 🛠️ Function to submit form data to API
+  // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: any }) => {
     //Set states
     setErrorList([]);
     setIsLoading(true);
     setIsSuccess(false);
-    const response = { status: 200, error: false };
+
+    const response = await actionHandler(
+      `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
+      "POST",
+      "",
+      {
+        body: JSON.stringify({
+          activity_data: data.formData,
+        }),
+      },
+    );
+
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
@@ -135,7 +151,9 @@ export default function ActivityForm({
       return;
     }
 
-    console.log("SUBMITTED: ", JSON.stringify(data.formData));
+    // Apply new data to NextAuth JWT
+    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
+    console.log("RESPONSE: ", response);
   };
 
   const formIsLoading =

@@ -114,4 +114,5 @@ class SourceTypeModelTest(BaseTestCase):
             ("json_key", "json key", 100, None),
             ("configuration_elements", "configuration element", None, None),
             ("reportsourcetype_records", "report source type", None, 0),
+            ("emission_category_mappings", "emission category mapping", None, 0),
         ]
