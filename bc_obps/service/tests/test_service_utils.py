@@ -1,13 +1,14 @@
+import datetime
 from django.test import TestCase
-from reporting.tests.utils.bakers import report_version_baker
+from reporting.tests.utils.bakers import baker
 from service.utils.get_report_valid_year_from_version_id import get_report_valid_year_from_version_id
-from service.utils.constants import REPORT_VERSION_DATE_SUFFIX
 
 
 class TestServiceUtils(TestCase):
     def test_get_report_valid_year_from_version_id(self):
-        report_version = report_version_baker()
-        assert (
-            get_report_valid_year_from_version_id(report_version.id)
-            == f"{report_version.report.reporting_year_id}{REPORT_VERSION_DATE_SUFFIX}"
-        )
+        TEST_YEAR = 2024
+        DEFAULT_MONTH = 5
+        DEFAULT_DAY = 31
+        TEST_DATE = datetime.date(TEST_YEAR, DEFAULT_MONTH, DEFAULT_DAY)
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=TEST_YEAR)
+        assert get_report_valid_year_from_version_id(report_version.id) == TEST_DATE
