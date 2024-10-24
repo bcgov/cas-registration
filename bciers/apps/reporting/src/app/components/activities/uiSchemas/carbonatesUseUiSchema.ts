@@ -34,8 +34,8 @@ const uiSchema = {
         items: {
           "ui:order": [
             "gasType",
-            "emissions",
-            "equivalentEmissions",
+            "emission",
+            "equivalentEmission",
             "carbonateType",
             "methodology",
             "annualMassOfCarbonateTypeConsumedTonnes",

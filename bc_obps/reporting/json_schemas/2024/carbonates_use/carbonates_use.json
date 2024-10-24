@@ -9,8 +9,8 @@
         "title": "Carbonate data",
         "type": "object",
         "properties": {
-          "emissions": {
-            "title": "Emissions",
+          "emission": {
+            "title": "Emission",
             "type": "number"
           },
           "gasType": {
@@ -18,9 +18,10 @@
             "type": "string",
             "enum": []
           },
-          "equivalentEmissions": {
-            "title": "Equivalent Emissions",
-            "type": "number"
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "number",
+            "readOnly": true
           },
           "carbonateType": {
             "title": "Carbonate Type",
