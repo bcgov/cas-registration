@@ -1,9 +1,10 @@
 export interface FacilityRow {
   id: number;
-  bcghg_id: string;
-  name: string;
-  type: string;
-  status: string;
+  facility__bcghg_id: string;
+  facility__name: string;
+  facility__type: string;
+  facility__status: string;
+  facility__id: number;
 }
 
 export interface FacilityInitialData {
