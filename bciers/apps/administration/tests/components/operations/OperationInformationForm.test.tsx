@@ -10,6 +10,7 @@ import {
   getReportingActivities,
 } from "./mocks";
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
+import { OperationStatus } from "@bciers/utils/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -547,5 +548,40 @@ describe("the OperationInformationForm component", () => {
         /will the operator notify the director as soon as possible if this operation ceases to meet any of the criteria for the designation of the operation as a reporting operation and a regulated operation\?/i,
       ),
     );
+  });
+  it("should use formContext to correctly render BORO ID widget", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_admin",
+        },
+      },
+    });
+
+    render(
+      <OperationInformationForm
+        formData={{ ...formData, status: OperationStatus.REGISTERED }}
+        schema={{
+          type: "object",
+          properties: {
+            section1: {
+              title: "Section 1",
+              type: "object",
+              properties: {
+                bc_obps_regulated_operation: {
+                  type: "string",
+                  title: "BORO ID",
+                },
+              },
+            },
+          },
+        }}
+        operationId={operationId}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: `＋ Issue BORO ID` }),
+    ).toBeVisible();
   });
 });

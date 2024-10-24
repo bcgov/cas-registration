@@ -12,6 +12,7 @@ import {
   createAdministrationRegistrationInformationSchema,
   registrationInformationUiSchema,
 } from "./administrationRegistrationInformation";
+import { Apps } from "@bciers/utils/enums";
 
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 export const createAdministrationOperationInformationSchema = async (
@@ -21,7 +22,7 @@ export const createAdministrationOperationInformationSchema = async (
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
     properties: {
-      section1: await createOperationInformationSchema(),
+      section1: await createOperationInformationSchema(Apps.ADMINISTRATION),
       section2: await createMultipleOperatorsInformationSchema(),
       section3: await createAdministrationRegistrationInformationSchema(
         registrationPurposesValue,
