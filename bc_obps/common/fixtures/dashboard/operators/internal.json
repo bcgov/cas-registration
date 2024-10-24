@@ -21,11 +21,6 @@
             "title": "Contacts",
             "content": "View the contacts of this operator.",
             "href": "/administration/operators/operator-id/contacts"
-          },
-          {
-            "title": "Users",
-            "content": "View users and their access types of this operator.",
-            "href": "/administration/operators/operator-id/users"
           }
         ]
       }
