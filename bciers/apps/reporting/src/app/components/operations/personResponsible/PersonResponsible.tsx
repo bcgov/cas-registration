@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
+import { getContact } from "@bciers/actions/api";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import debounce from "lodash.debounce";
 import {
   personResponsibleSchema,
   personResponsibleUiSchema,
 } from "@reporting/src/data/jsonSchema/personResponsible";
-import getContact from "@reporting/src/app/utils/getContact";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import {
   Contact,

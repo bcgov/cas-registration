@@ -24,18 +24,23 @@ export default async function ActivityInit({
     "GET",
     "",
   );
+  if (orderedActivities.error) {
+    throw new Error("We couldn't find the activity list for this facility.");
+  }
 
   let currentActivity = orderedActivities[0];
   if (activityId)
     currentActivity = orderedActivities.find((obj: ActivityData) => {
       return obj.id === activityId;
     });
-
   const activityData = await actionHandler(
     `reporting/report-version/${versionId}/facility-report/${facilityId}/initial-activity-data?activity_id=${currentActivity.id}`,
     "GET",
     "",
   );
+  if (activityData.error) {
+    throw new Error("We couldn't find the activity data for this facility.");
+  }
   const activityDataObject = safeJsonParse(activityData);
 
   const defaultEmptySourceTypeState =
