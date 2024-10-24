@@ -220,11 +220,11 @@ describe("OperationsDataGrid component", () => {
 
     expect(operationInfoLinks[0]).toHaveAttribute(
       "href",
-      "operations/1?operations_title=Operation+1",
+      "/operations/1?operations_title=Operation+1",
     );
     expect(operationInfoLinks[1]).toHaveAttribute(
       "href",
-      "operations/2?operations_title=Operation+2",
+      "/operations/2?operations_title=Operation+2",
     );
   });
 });

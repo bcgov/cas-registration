@@ -15,6 +15,7 @@ export interface OperationsSearchParams {
   sort_field?: string;
   sort_order?: string;
   type?: string;
+  operator_id?: number;
 }
 
 export interface OperationInformationFormData {

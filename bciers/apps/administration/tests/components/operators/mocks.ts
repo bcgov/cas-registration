@@ -1,6 +1,8 @@
 const getCurrentOperator = vi.fn();
 const getBusinessStructures = vi.fn();
 
+const getOperator = vi.fn();
+
 vi.mock(
   "apps/administration/app/components/operators/getCurrentOperator",
   () => ({
@@ -13,5 +15,8 @@ vi.mock(
     default: getBusinessStructures,
   }),
 );
+vi.mock("@/administration/app/components/operators/getOperator", () => ({
+  default: getOperator,
+}));
 
-export { getCurrentOperator, getBusinessStructures };
+export { getCurrentOperator, getBusinessStructures, getOperator };
