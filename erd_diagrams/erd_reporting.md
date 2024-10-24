@@ -211,6 +211,11 @@ ReportFuel {
     ForeignKey report_unit
     ForeignKey fuel_type
 }
+EmissionCategory {
+    BigAutoField id
+    CharField category_name
+    CharField category_type
+}
 ReportEmission {
     BigAutoField id
     ForeignKey created_by
@@ -224,6 +229,7 @@ ReportEmission {
     ForeignKey gas_type
     ForeignKey report_source_type
     ForeignKey report_fuel
+    ManyToManyField emission_categories
 }
 ReportMethodology {
     BigAutoField id
@@ -250,6 +256,12 @@ ReportAdditionalData {
     IntegerField emissions_on_site_sequestration
     IntegerField emissions_off_site_transfer
     IntegerField electricity_generated
+}
+EmissionCategoryMapping {
+    BigAutoField id
+    ForeignKey emission_category
+    ForeignKey activity
+    ForeignKey source_type
 }
 Report }|--|| User : created_by
 Report }|--|| User : updated_by
@@ -332,6 +344,7 @@ ReportEmission }|--|| ReportVersion : report_version
 ReportEmission }|--|| GasType : gas_type
 ReportEmission }|--|| ReportSourceType : report_source_type
 ReportEmission }|--|| ReportFuel : report_fuel
+ReportEmission }|--|{ EmissionCategory : emission_categories
 ReportMethodology }|--|| User : created_by
 ReportMethodology }|--|| User : updated_by
 ReportMethodology }|--|| User : archived_by
@@ -341,3 +354,6 @@ ReportAdditionalData }|--|| User : created_by
 ReportAdditionalData }|--|| User : updated_by
 ReportAdditionalData }|--|| User : archived_by
 ReportAdditionalData ||--|| ReportVersion : report_version
+EmissionCategoryMapping }|--|| EmissionCategory : emission_category
+EmissionCategoryMapping }|--|| Activity : activity
+EmissionCategoryMapping }|--|| SourceType : source_type

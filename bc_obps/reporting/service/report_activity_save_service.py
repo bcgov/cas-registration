@@ -13,6 +13,7 @@ from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.source_type import SourceType
 from reporting.service.utils import exclude_keys, retrieve_ids
+from reporting.service.emission_category_mapping_service import EmissionCategoryMappingService
 
 
 class ReportActivitySaveService:
@@ -165,10 +166,10 @@ class ReportActivitySaveService:
         report_unit: ReportUnit | None,
         fuel_data: dict,
     ) -> ReportFuel:
-        json_data = exclude_keys(fuel_data, ['emissions', 'fuelName', 'id'])
+        json_data = exclude_keys(fuel_data, ['emissions', 'fuelType', 'id'])
 
         report_fuel_id = fuel_data.get('id', None)
-        fuel_type = FuelType.objects.get(name=fuel_data["fuelName"])
+        fuel_type = FuelType.objects.get(name=fuel_data["fuelType"]["fuelName"])
 
         if 'emissions' not in fuel_data:
             raise ValueError("Fuel is expecting emission data")
@@ -219,5 +220,6 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
         report_emission.set_create_or_update(self.user_guid)
+        EmissionCategoryMappingService.apply_emission_categories(report_source_type, report_fuel, report_emission)
 
         return report_emission
