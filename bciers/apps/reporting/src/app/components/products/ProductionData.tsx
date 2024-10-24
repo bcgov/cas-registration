@@ -1,6 +1,8 @@
 import ProductionDataForm from "./ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { getProductionData } from "@bciers/actions/api";
+import getFacilitiesInformationTaskList from "../taskList/facilitiesInformationTaskList";
+import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
 interface Props {
   report_version_id: number;
@@ -25,6 +27,16 @@ const ProductionData: React.FC<Props> = async ({
     allowedProductNames,
   );
 
+  const orderedActivities = await getOrderedActivities(
+    report_version_id,
+    facility_id,
+  );
+  const taskListElements = await getFacilitiesInformationTaskList(
+    report_version_id,
+    facility_id,
+    orderedActivities,
+  );
+
   return (
     <ProductionDataForm
       report_version_id={report_version_id}
@@ -32,6 +44,7 @@ const ProductionData: React.FC<Props> = async ({
       allowedProducts={allowedProducts}
       initialData={response.report_products}
       schema={schema}
+      taskListElements={taskListElements}
     />
   );
 };
