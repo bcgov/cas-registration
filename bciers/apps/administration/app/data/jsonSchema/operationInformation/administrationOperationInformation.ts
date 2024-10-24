@@ -12,12 +12,17 @@ import {
   createAdministrationRegistrationInformationSchema,
   registrationInformationUiSchema,
 } from "./administrationRegistrationInformation";
+import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 export const createAdministrationOperationInformationSchema = async (
   registrationPurposesValue: string[],
   optedIn: boolean,
 ): Promise<RJSFSchema> => {
+  const isNewEntrant = registrationPurposesValue?.includes(
+    RegistrationPurposes.NEW_ENTRANT_OPERATION,
+  );
+
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
     properties: {
@@ -53,8 +58,12 @@ export const administrationOperationInformationUiSchema: UiSchema = {
     ...registrationInformationUiSchema,
     "ui:order": [
       "registration_purposes",
+      "regulated_operation_preface",
       "regulated_products",
+      "opted_in_preface",
       "opted_in_operation",
+      "new_entrant_preface",
+      "new_entrant_operation_detail",
     ],
     registration_purposes: {
       "ui:widget": "ReadOnlyWidget",

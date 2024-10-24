@@ -17,6 +17,7 @@ from registration.models import (
     DocumentType,
     UserOperator,
     OptedInOperationDetail,
+    NewEntrantOperationDetail,
 )
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
@@ -161,6 +162,15 @@ class Operation(TimeStampedModel):
         db_comment="Details about the operation if it is opted in",
         related_name="operation",
     )
+
+    new_entrant_operation = models.OneToOneField(
+        NewEntrantOperationDetail,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        db_comment="Details about the operation if it is a new entrant",
+        related_name="operation",
+    )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
         m2m_fields=[regulated_products, activities, documents],
@@ -204,6 +214,13 @@ class Operation(TimeStampedModel):
         """
 
         return self.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).only('file').first()
+
+    def get_new_entrant_application(self) -> Optional[Document]:
+        """
+        Returns the new entrant application document associated with the operation (document only exists if the operation has registered as a New Entrant).
+        """
+
+        return self.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).only('file').first()
 
     def user_has_access(self, user_guid: UUID) -> bool:
         """

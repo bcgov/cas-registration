@@ -3,7 +3,10 @@ import { RJSFSchema } from "@rjsf/utils";
 
 export interface FacilityInformationFormData {}
 
-export interface NewEntrantOperationFormData {}
+export interface NewEntrantOperationFormData {
+  date_of_first_shipment: string | null;
+  new_entrant_application: string | null;
+}
 
 export interface OptedInOperationFormData {
   meets_section_3_emissions_requirements: boolean | null;

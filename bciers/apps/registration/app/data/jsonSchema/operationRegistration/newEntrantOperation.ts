@@ -6,27 +6,27 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 export const newEntrantOperationSchema: RJSFSchema = {
   title: "New Entrant Operation",
   type: "object",
-  required: ["operation_date_of_first_shipment", "statutory_declaration"],
+  required: ["date_of_first_shipment", "new_entrant_application"],
   properties: {
-    operation_date_of_first_shipment: {
+    date_of_first_shipment: {
       title: "When is this operation’s date of First Shipment?",
       type: "string",
       enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
       default: "On or after April 1, 2024",
     },
-    statutory_declaration: {
+    new_entrant_application: {
       type: "string",
-      title: "Statutory Declaration",
+      title: "Application and Statutory Declaration",
       format: "data-url",
     },
   },
   dependencies: {
-    operation_date_of_first_shipment: {
+    date_of_first_shipment: {
       allOf: [
         {
           if: {
             properties: {
-              operation_date_of_first_shipment: {
+              date_of_first_shipment: {
                 const: "On or before March 31, 2024",
               },
             },
@@ -44,7 +44,7 @@ export const newEntrantOperationSchema: RJSFSchema = {
         {
           if: {
             properties: {
-              operation_date_of_first_shipment: {
+              date_of_first_shipment: {
                 const: "On or after April 1, 2024",
               },
             },
@@ -68,12 +68,12 @@ export const newEntrantOperationUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
-    "operation_date_of_first_shipment",
+    "date_of_first_shipment",
     "on_or_before_march_31_section",
     "on_or_after_april_1_section",
-    "statutory_declaration",
+    "new_entrant_application",
   ],
-  operation_date_of_first_shipment: {
+  date_of_first_shipment: {
     "ui:widget": "RadioWidget",
     "ui:options": {
       inline: true,
@@ -93,7 +93,7 @@ export const newEntrantOperationUiSchema: UiSchema = {
       "url-2-tbd",
     ),
   },
-  statutory_declaration: {
+  new_entrant_application: {
     "ui:widget": "FileWidget",
     "ui:options": {
       accept: ".pdf",

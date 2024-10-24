@@ -42,7 +42,9 @@ def get_operation_v2(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[
 )
 @handle_http_errors()
 def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
+    code, resp = 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
+    print(resp.new_entrant_operation)
+    return code, resp
 
 
 ##### PUT ######
@@ -59,4 +61,6 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 def update_operation_v2(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:
+    print('\n\nPUTTING IN V2/OPERATIONS/ID\n')
+    print(payload)
     return 200, OperationServiceV2.update_operation(get_current_user_guid(request), payload, operation_id)

@@ -66,7 +66,6 @@ const OperationRegistrationPage = async ({
       return NewEntrantOperationPage({
         ...defaultProps,
       });
-    // to add opt in page
     case "Operation Representative":
       return OperationRepresentativePage(defaultProps);
     case "Submission":

@@ -25,7 +25,6 @@ from registration.models import (
 
 admin.site.register(AppRole)
 admin.site.register(NaicsCode)
-admin.site.register(Document)
 admin.site.register(User)
 admin.site.register(Operator)
 admin.site.register(UserOperator)
@@ -95,3 +94,12 @@ class OperationDesignatedOperatorTimelineAdmin(admin.ModelAdmin):
         'start_date',
         'end_date',
     )
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'type_name', 'file', 'description')
+
+    @staticmethod
+    def type_name(obj):
+        return obj.type.name
