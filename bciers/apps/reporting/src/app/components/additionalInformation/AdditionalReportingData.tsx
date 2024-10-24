@@ -25,7 +25,7 @@ export default function AdditionalReportingData({
   const [formData, setFormData] = useState<any>({});
   const [schema, setSchema] = useState<RJSFSchema>(
     additionalReportingDataSchema,
-  ); // Initialize with base schema
+  );
   const router = useRouter();
 
   const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
@@ -42,6 +42,12 @@ export default function AdditionalReportingData({
       title: "New entrant information",
       link: `/reports/${versionId}/new-entrant-information`,
     },
+
+    {
+      type: "Page",
+      title: "Operation emission summary",
+      link: `/reports/${versionId}/operation-emission-summary`,
+    },
   ];
 
   useEffect(() => {
@@ -49,56 +55,22 @@ export default function AdditionalReportingData({
       const result = await getRegistrationPurpose(versionId);
       const registrationPurpose = result?.registration_purposes;
 
-      if (
-        registrationPurpose?.length === 1 &&
-        registrationPurpose[0] === "Reporting Operation"
-      ) {
+      if (registrationPurpose?.includes("OBPS Regulated Operation")) {
         setSchema((prevSchema) => {
-          const dependencies = prevSchema.dependencies || {};
-          const captureEmissions =
-            typeof dependencies.capture_emissions === "object" &&
-            !Array.isArray(dependencies.capture_emissions)
-              ? dependencies.capture_emissions
-              : {}; // Ensure captureEmissions is an object
-
+          // Clone the schema and add the additional data section
           return {
             ...prevSchema,
-            dependencies: {
-              ...dependencies,
-              capture_emissions: {
-                ...captureEmissions,
-                oneOf:
-                  captureEmissions.oneOf?.map((item) => {
-                    // Ensure item is an object and has properties
-                    if (
-                      typeof item === "object" &&
-                      item !== null &&
-                      "properties" in item
-                    ) {
-                      const { properties } = item as any; // Cast item to have properties
-
-                      if (
-                        properties &&
-                        properties.capture_emissions &&
-                        Array.isArray(properties.capture_emissions.enum)
-                      ) {
-                        // Only modify if the first enum value is true
-                        if (properties.capture_emissions.enum[0] === true) {
-                          return {
-                            ...item,
-                            properties: {
-                              ...properties,
-                              electricity_generated: {
-                                type: "string",
-                                title: "Electricity generated",
-                              },
-                            },
-                          };
-                        }
-                      }
-                    }
-                    return item; // Return the original item if conditions aren't met
-                  }) || [],
+            properties: {
+              ...prevSchema.properties,
+              additional_data_section: {
+                type: "object",
+                title: "Additional data",
+                properties: {
+                  electricity_generated: {
+                    type: "string",
+                    title: "Electricity Generated",
+                  },
+                },
               },
             },
           };
@@ -115,9 +87,9 @@ export default function AdditionalReportingData({
 
     const payload = {
       report_version: versionId,
-      ...data,
+      ...data.captured_emissions_section,
+      ...data.additional_data_section,
     };
-
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
@@ -137,7 +109,7 @@ export default function AdditionalReportingData({
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
-      schema={schema} // Use the modified schema
+      schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
       baseUrl={baseUrl}
