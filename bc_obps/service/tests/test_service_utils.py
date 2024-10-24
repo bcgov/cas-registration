@@ -1,5 +1,6 @@
 from reporting.tests.utils.bakers import report_version_baker
-from service.utils import get_report_valid_year_from_version_id, REPORT_VERSION_DATE_SUFFIX
+from service.utils.get_report_valid_year_from_version_id import get_report_valid_year_from_version_id
+from service.utils.constants import REPORT_VERSION_DATE_SUFFIX
 
 
 def test_get_report_valid_year_from_version_id(self):

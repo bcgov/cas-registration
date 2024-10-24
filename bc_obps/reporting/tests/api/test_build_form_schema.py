@@ -27,6 +27,7 @@ class TestBuildFormSchema(CommonTestSetup):
             )
             assert response.status_code == 200
 
+    # PARAMETERS
     def test_invalid_without_version_id(self):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
@@ -50,6 +51,7 @@ class TestBuildFormSchema(CommonTestSetup):
         )
         assert response.status_code == 422
 
+    # SCHEMAS
     def test_error_if_no_valid_activity_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         operator = report_version.report.operator
