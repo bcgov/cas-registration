@@ -1,5 +1,6 @@
 from typing import List, Literal, Tuple
 from uuid import UUID
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
@@ -18,7 +19,7 @@ from .router import router
     response={200: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Saves the data for the production data page into multiple ReportProduct rows""",
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def save_production_data(
@@ -43,7 +44,7 @@ def save_production_data(
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the production data page from the multiple ReportProduct rows""",
     exclude_none=True,
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 def load_production_data(request: HttpRequest, report_version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
 
