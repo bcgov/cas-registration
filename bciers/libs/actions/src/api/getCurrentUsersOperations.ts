@@ -1,7 +1,12 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getCurrentUsersOperations() {
-  return await actionHandler("registration/v2/operations/current", "GET", "");
+  const response = await actionHandler(
+    "registration/v2/operations/current",
+    "GET",
+    "",
+  );
+  return response;
 }
 
 export default getCurrentUsersOperations;

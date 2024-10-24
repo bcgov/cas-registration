@@ -1,7 +1,12 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getReportingActivities() {
-  return await actionHandler("registration/reporting_activities", "GET", "");
+  const response = await actionHandler(
+    "registration/reporting_activities",
+    "GET",
+    "",
+  );
+  return response;
 }
 
 export default getReportingActivities;

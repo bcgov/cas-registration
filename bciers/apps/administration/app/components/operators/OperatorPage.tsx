@@ -2,7 +2,7 @@ import OperatorForm from "./OperatorForm";
 import { operatorSchema } from "../../data/jsonSchema/operator";
 import { RJSFSchema } from "@rjsf/utils";
 import getCurrentOperator from "./getCurrentOperator";
-import getBusinessStructures from "./getBusinessStructures";
+import { getBusinessStructures } from "@bciers/actions/api";
 import safeJsonParse from "libs/utils/safeJsonParse";
 import { auth } from "@/dashboard/auth";
 import { FrontEndRoles } from "@bciers/utils/enums";

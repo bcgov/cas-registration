@@ -5,9 +5,10 @@ export default async function getContact(
   id: string,
   pathToRevalidate: string = "",
 ) {
-  return await actionHandler(
+  const response = await actionHandler(
     `registration/contacts/${id}`,
     "GET",
     pathToRevalidate,
   );
+  return response;
 }
