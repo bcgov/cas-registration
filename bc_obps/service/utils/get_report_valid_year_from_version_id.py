@@ -1,9 +1,5 @@
 from reporting.models.report_version import ReportVersion
-
-REPORT_VERSION_DATE_SUFFIX = (
-    "-05-31"  # May 31st. Month and Day appended to reporting_year_id(calendar year as an int) to form a date string
-)
-# used to find the valid configuration for a report version
+from .constants import REPORT_VERSION_DATE_SUFFIX
 
 
 def get_report_valid_year_from_version_id(report_version_id: int) -> str:

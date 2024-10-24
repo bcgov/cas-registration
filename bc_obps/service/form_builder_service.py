@@ -1,5 +1,5 @@
 import json
-from service.utils import get_report_valid_year_from_version_id
+from service.utils.get_report_valid_year_from_version_id import get_report_valid_year_from_version_id
 from reporting.models import (
     Configuration,
     ConfigurationElement,
