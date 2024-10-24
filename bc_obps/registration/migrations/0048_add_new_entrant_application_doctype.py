@@ -27,7 +27,7 @@ def reverse_add_document_type_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('registration', '0046_historicalnewentrantoperationdetail_and_more'),
+        ('registration', '0047_historicalnewentrantoperationdetail_and_more'),
     ]
 
     operations = [

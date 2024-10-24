@@ -34,8 +34,6 @@ const OperationInformationForm = ({
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
-    console.log('\n\nFORM DATA\N')
-    console.log(data.formData)
     const response = await actionHandler(
       `registration/v2/operations/${operationId}`,
       "PUT",

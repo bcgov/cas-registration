@@ -60,10 +60,10 @@ export const administrationOperationInformationUiSchema: UiSchema = {
       "registration_purposes",
       "regulated_operation_preface",
       "regulated_products",
+      "opted_in_preface",
       "opted_in_operation",
       "new_entrant_preface",
-      "date_of_first_shipment",
-      "new_entrant_application",
+      "new_entrant_operation_detail",
     ],
     registration_purposes: {
       "ui:widget": "ReadOnlyWidget",

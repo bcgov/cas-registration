@@ -50,6 +50,11 @@ export const createAdministrationRegistrationInformationSchema = async (
         },
       }),
       ...(optedIn && {
+        opted_in_preface: {
+          // Not an actual field, just used to display a message      
+          type: "object",
+          readOnly: true,
+        },
         opted_in_operation: {
           type: "object",
           properties: {
@@ -79,21 +84,24 @@ export const createAdministrationRegistrationInformationSchema = async (
             },
           },
         },
+      }),
       ...(isNewEntrant && {
         new_entrant_preface: {
           // Not an actual field, just used to display a message
           type: "object",
           readOnly: true,
         },
-        date_of_first_shipment: {
-          type: "string",
-          title: "When is this operation's date of First Shipment?",
-          enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
-        },
-        new_entrant_application: {
-          type: "string",
-          title: "Application and Statutory Declaration",
-        },
+        new_entrant_operation_detail: {
+          date_of_first_shipment: {
+            type: "string",
+            title: "When is this operation's date of First Shipment?",
+            enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
+          },
+          new_entrant_application: {
+            type: "string",
+            title: "Application and Statutory Declaration",
+          },
+        }
       }),
     },
   };
@@ -106,8 +114,7 @@ export const registrationInformationUiSchema: UiSchema = {
     "regulated_operation_preface",
     "regulated_products",
     "new_entrant_preface",
-    "date_of_first_shipment",
-    "new_entrant_application",
+    "new_entrant_operation_detail",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
   regulated_operation_preface: {
@@ -119,22 +126,30 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",
   },
+  opted_in_preface: {
+    "ui:classNames": "text-bc-bg-blue text-lg",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": "Opted-In Operation",
+  },
   new_entrant_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "New Entrant Operation",
   },
-  date_of_first_shipment: {
-    "ui:widget": "SelectWidget",
-    "ui:options": {
-      inline: true,
+  new_entrant_operation_detail: {
+    date_of_first_shipment: {
+      "ui:widget": "SelectWidget",
+      "ui:options": {
+        inline: true,
+      },
     },
-  },
-  new_entrant_application: {
-    "ui:widget": "FileWidget",
-    "ui:options": {
-      filePreview: true,
-      accept: ".pdf",
+    new_entrant_application: {
+      "ui:widget": "FileWidget",
+      "ui:options": {
+        filePreview: true,
+        accept: ".pdf",
+      },
     },
-  },
+  }
+
 };

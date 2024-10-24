@@ -51,11 +51,14 @@ const NewEntrantOperationForm = ({
     };
     const response = await actionHandler(
       `registration/v2/operations/${operation}/registration/new-entrant-operation-detail`,
-      "POST",
+      "PUT",
       baseUrl, // Removing this line will cause the form to show the existing data(not consistent)
-      {body: body}
+      {
+        body: JSON.stringify({
+          ...e.formData,
+        }),
+      },
     );
-    console.log('HEEEEEERRRRRRRREEEEEEEEE')
     console.log('BODY')
     console.log(JSON.stringify({...e.formData}))
 
