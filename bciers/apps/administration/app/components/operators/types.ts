@@ -1,5 +1,7 @@
+import { UUID } from "crypto";
+
 export interface OperatorRow {
-  id: number;
+  id: UUID;
   legal_name: string;
   business_structure: string;
   cra_business_number: string;
