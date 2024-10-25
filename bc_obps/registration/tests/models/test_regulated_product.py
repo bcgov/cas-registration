@@ -9,6 +9,7 @@ class RegulatedProductModelTest(BaseTestCase):
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("operations", "operation", None, None),
+            ("report_products", "report product", None, 0),
         ]
         cls.test_object = RegulatedProduct.objects.create(
             name="test product",
