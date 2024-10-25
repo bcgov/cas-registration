@@ -24,6 +24,7 @@ const mockResponse = {
       facility__name: "Facility 1",
       facility__type: "Single Facility",
       facility__bcghg_id: "1-211113-0001",
+      facility__id: 1,
       status: "Active",
     },
     {
@@ -31,6 +32,7 @@ const mockResponse = {
       facility__name: "Facility 2",
       facility__type: "Large Facility",
       facility__bcghg_id: "1-211113-0002",
+      facility__id: 2,
       status: "Active",
     },
   ],
@@ -73,8 +75,18 @@ describe("FacilitiesDataGrid component", () => {
     // Check status
     expect(screen.getAllByText(/active/i)).toHaveLength(2);
     // Check the number of view details links
-    expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
-      2,
+    const viewDetailsLinks = screen.getAllByRole("link", {
+      name: /View Details/i,
+    });
+    expect(viewDetailsLinks).toHaveLength(2);
+    // we don't care about the exact href, just that it contains the facilityId
+    expect(viewDetailsLinks[0]).toHaveAttribute(
+      "href",
+      "/administration/operations/randomOperationUUID/facilities/1?operations_title=undefined&facilities_title=Facility 1",
+    );
+    expect(viewDetailsLinks[1]).toHaveAttribute(
+      "href",
+      "/administration/operations/randomOperationUUID/facilities/2?operations_title=undefined&facilities_title=Facility 2",
     );
   });
   it("makes API call with correct params when sorting", async () => {
