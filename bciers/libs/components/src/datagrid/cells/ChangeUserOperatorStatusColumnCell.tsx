@@ -21,7 +21,7 @@ const handleUpdateStatus = async (
   statusUpdate: Status,
   roleUpdate: UserOperatorRoles,
 ) => {
-  const response = await actionHandler(
+  return actionHandler(
     `registration/user-operators/${userOperatorId}/update-status`,
     "PUT",
     "",
@@ -32,7 +32,6 @@ const handleUpdateStatus = async (
       }),
     },
   );
-  return response;
 };
 
 const ChangeUserOperatorStatusColumnCell = (
