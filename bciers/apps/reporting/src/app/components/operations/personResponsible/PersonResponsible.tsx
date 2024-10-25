@@ -47,7 +47,7 @@ const PersonResponsible = ({ version_id }: Props) => {
   const saveAndContinueUrl =
     operationType === "Linear Facility Operation"
       ? `/reports/${version_id}/facilities/lfo-facilities${queryString}`
-      : `/reports/${version_id}/facilities/${facilityId}/review${queryString}`;
+      : `/reports/${version_id}/facilities/${facilityId}/review${queryString}&facilities_title=Facility`;
 
   const taskListElements: TaskListElement[] = [
     {
