@@ -23,4 +23,5 @@ class ReportVersionTest(BaseTestCase):
             ("reportmethodology_records", "report methodology", None, 0),
             ("reportsourcetype_records", "report source type", None, 0),
             ("reportunit_records", "report unit", None, 0),
+            ("report_products", "report product", None, 0),
         ]

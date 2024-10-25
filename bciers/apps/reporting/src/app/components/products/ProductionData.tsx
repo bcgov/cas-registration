@@ -2,7 +2,7 @@ import ProductionDataForm from "./ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { getProductionData } from "@bciers/actions/api";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
-import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformationTaskList";
+import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformation";
 import { Suspense } from "react";
 
 interface Props {

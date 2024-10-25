@@ -11,10 +11,16 @@ class TestReportProductEndpoints(CommonTestSetup):
         return super().setup_method()
 
     def test_get_returns_the_right_data_when_empty(self):
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.facility_report.report_version.report.operator
+        )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
         assert response.json() == {'report_products': [], 'allowed_products': []}
 
     def test_get_returns_the_right_data_with_data(self):
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.facility_report.report_version.report.operator
+        )
         self.facility_report.products.set(RegulatedProduct.objects.filter(id__in=[1, 2, 3]))
         rp1 = make_recipe(
             "reporting.tests.utils.report_product",

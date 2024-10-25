@@ -5,12 +5,15 @@ import { render, screen } from "@testing-library/react";
 vi.mock("@bciers/actions/api", () => ({
   getProductionData: vi.fn(),
 }));
+vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
+  getOrderedActivities: vi.fn().mockReturnValue([]),
+}));
 
 const getProductionDataMock = getProductionData as ReturnType<typeof vi.fn>;
 
 describe("The Production Data component", () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it("fetches the proper data and passes it to the form", async () => {
@@ -33,7 +36,7 @@ describe("The Production Data component", () => {
     });
     render(await ProductionData({ facility_id: "abc", report_version_id: 1 }));
 
-    expect(screen.getByText("Production Data")).toBeInTheDocument();
+    expect(screen.getAllByText(/production data/i)).toHaveLength(2); // One for the page, one for the tasklist
     expect(
       screen.getByText("Products that apply to this facility"),
     ).toBeInTheDocument();

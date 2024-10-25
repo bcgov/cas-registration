@@ -8,7 +8,7 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import {
   ActivityData,
   getFacilitiesInformationTaskList,
-} from "../taskList/2_facilitiesInformationTaskList";
+} from "../taskList/2_facilitiesInformation";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
 interface Props {
