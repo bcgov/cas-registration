@@ -3,8 +3,8 @@ export interface FacilityRow {
   facility__bcghg_id: string;
   facility__name: string;
   facility__type: string;
-  facility__status: string;
   facility__id: number;
+  status: string;
 }
 
 export interface FacilityInitialData {
