@@ -1,8 +1,9 @@
 import ProductionDataForm from "./ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { getProductionData } from "@bciers/actions/api";
-import getFacilitiesInformationTaskList from "../taskList/facilitiesInformationTaskList";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
+import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformationTaskList";
+import { Suspense } from "react";
 
 interface Props {
   report_version_id: number;
@@ -38,14 +39,16 @@ const ProductionData: React.FC<Props> = async ({
   );
 
   return (
-    <ProductionDataForm
-      report_version_id={report_version_id}
-      facility_id={facility_id}
-      allowedProducts={allowedProducts}
-      initialData={response.report_products}
-      schema={schema}
-      taskListElements={taskListElements}
-    />
+    <Suspense fallback="Loading Production Data Form">
+      <ProductionDataForm
+        report_version_id={report_version_id}
+        facility_id={facility_id}
+        allowedProducts={allowedProducts}
+        initialData={response.report_products}
+        schema={schema}
+        taskListElements={taskListElements}
+      />
+    </Suspense>
   );
 };
 

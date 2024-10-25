@@ -1,13 +1,12 @@
 "use client";
-
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-
 import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
+import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 
 interface Props {
   report_version_id: number;
@@ -60,13 +59,8 @@ const ProductionDataForm: React.FC<Props> = ({
 
   return (
     <MultiStepFormWithTaskList
-      initialStep={0}
-      steps={[
-        "Operation Information",
-        "Facilities Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
+      initialStep={1}
+      steps={multiStepHeaderSteps}
       taskListElements={taskListElements}
       schema={schema}
       uiSchema={productionDataUiSchema}
