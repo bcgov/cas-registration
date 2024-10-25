@@ -1,11 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getRegistrationPurposes() {
-  try {
-    return await actionHandler("registration/registration_purposes", "GET", "");
-  } catch (error) {
-    throw error;
-  }
+  return actionHandler("registration/registration_purposes", "GET", "");
 }
 
 export default getRegistrationPurposes;

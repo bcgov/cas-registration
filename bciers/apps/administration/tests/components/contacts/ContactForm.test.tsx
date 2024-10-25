@@ -4,7 +4,7 @@ import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import {
   contactsSchema,
   contactsUiSchema,
-} from "../../../app/data/jsonSchema/contact";
+} from "apps/administration/app/data/jsonSchema/contact";
 import ContactForm from "apps/administration/app/components/contacts/ContactForm";
 import { createContactSchema } from "apps/administration/app/components/contacts/createContactSchema";
 import { FrontendMessages } from "@bciers/utils/enums";
