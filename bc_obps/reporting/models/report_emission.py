@@ -4,10 +4,28 @@ from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.emission_category import EmissionCategory
+from django.db.models import DecimalField
+from django.db.models.fields.json import KeyTextTransform
+from django.db.models.functions import Cast
+
+
+class AnnotateEmissionsManager(models.Manager):
+    def get_queryset(self):  # type: ignore
+        return (
+            super()
+            .get_queryset()
+            .annotate(
+                emission=Cast(
+                    KeyTextTransform('emission', 'json_data'),
+                    output_field=DecimalField(max_digits=20, decimal_places=5),
+                )
+            )
+        )
 
 
 class ReportEmission(ReportDataBaseModel):
 
+    objects_with_decimal_emissions = AnnotateEmissionsManager()
     gas_type = models.ForeignKey(
         GasType,
         on_delete=models.PROTECT,
