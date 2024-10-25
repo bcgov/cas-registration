@@ -5,10 +5,10 @@ import { defaultEmtpySourceTypeMap } from "./uiSchemas/schemaMaps";
 import ActivityForm from "./ActivityForm";
 import { UUID } from "crypto";
 import Loading from "@bciers/components/loading/SkeletonForm";
-
-import getFacilitiesInformationTaskList, {
+import {
   ActivityData,
-} from "../taskList/facilitiesInformationTaskList";
+  getFacilitiesInformationTaskList,
+} from "../taskList/2_facilitiesInformationTaskList";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
 interface Props {

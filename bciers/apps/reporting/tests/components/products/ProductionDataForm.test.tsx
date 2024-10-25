@@ -28,6 +28,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
+        taskListElements={[]}
       />,
     );
 
@@ -44,6 +45,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
+        taskListElements={[]}
       />,
     );
 
@@ -81,6 +83,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
+        taskListElements={[]}
       />,
     );
 
@@ -135,6 +138,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
+        taskListElements={[]}
       />,
     );
 
