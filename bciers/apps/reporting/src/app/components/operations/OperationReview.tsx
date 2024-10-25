@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
@@ -12,6 +12,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
+import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 interface Props {
   formData: any;
@@ -51,7 +52,9 @@ export default function OperationReview({
   const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
+  const queryString = serializeSearchParams(useSearchParams());
+  const saveAndContinueUrl = `/reports/${version_id}/person-responsible${queryString}`;
+
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
     "MMM DD YYYY",

@@ -1,11 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getBusinessStructures() {
-  try {
-    return await actionHandler("registration/business_structures", "GET", "");
-  } catch (error) {
-    throw error;
-  }
+  return actionHandler(`registration/business_structures`, "GET", ``);
 }
 
 export default getBusinessStructures;

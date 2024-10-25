@@ -5,6 +5,7 @@ import { defaultEmtpySourceTypeMap } from "./uiSchemas/schemaMaps";
 import ActivityForm from "./ActivityForm";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { UUID } from "crypto";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 type ActivityData = { id: number; name: string; slug: string };
 interface Props {
@@ -24,18 +25,23 @@ export default async function ActivityInit({
     "GET",
     "",
   );
+  if (orderedActivities.error) {
+    throw new Error("We couldn't find the activity list for this facility.");
+  }
 
   let currentActivity = orderedActivities[0];
   if (activityId)
     currentActivity = orderedActivities.find((obj: ActivityData) => {
       return obj.id === activityId;
     });
-
   const activityData = await actionHandler(
     `reporting/report-version/${versionId}/facility-report/${facilityId}/initial-activity-data?activity_id=${currentActivity.id}`,
     "GET",
     "",
   );
+  if (activityData.error) {
+    throw new Error("We couldn't find the activity data for this facility.");
+  }
   const activityDataObject = safeJsonParse(activityData);
 
   const defaultEmptySourceTypeState =
@@ -73,7 +79,7 @@ export default async function ActivityInit({
 
   generateTasklistItems();
   return (
-    <Suspense fallback="Loading Schema">
+    <Suspense fallback={<Loading />}>
       <ActivityForm
         activityData={activityDataObject}
         currentActivity={currentActivity}

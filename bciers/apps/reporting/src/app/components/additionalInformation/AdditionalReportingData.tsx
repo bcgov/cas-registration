@@ -4,13 +4,14 @@ import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   additionalReportingDataSchema,
   additionalReportingDataUiSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { actionHandler } from "@bciers/actions";
+import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
@@ -27,8 +28,8 @@ export default function AdditionalReportingData({
     additionalReportingDataSchema,
   ); // Initialize with base schema
   const router = useRouter();
-
-  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+  const queryString = serializeSearchParams(useSearchParams());
+  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information${queryString}`;
 
   const taskListElements: TaskListElement[] = [
     {

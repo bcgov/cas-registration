@@ -21,7 +21,8 @@ import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import { IChangeEvent } from "@rjsf/core";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 interface Props {
   version_id: number;
@@ -118,6 +119,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     setFormData(event.formData);
   };
 
+  const queryString = serializeSearchParams(useSearchParams());
   const handleSave = async () => {
     setIsLoading(true); // Start loading when save is clicked
     const updatedFacility = {
@@ -144,7 +146,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
       setTimeout(() => {
         setIsSuccess(false);
       }, 3000);
-      router.push(`activities`);
+      router.push(`activities${queryString}`);
     }
   };
 

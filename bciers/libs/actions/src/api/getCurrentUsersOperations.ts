@@ -1,11 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 
 async function getCurrentUsersOperations() {
-  try {
-    return await actionHandler("registration/v2/operations/current", "GET", "");
-  } catch (error) {
-    throw error;
-  }
+  return actionHandler("registration/v2/operations/current", "GET", "");
 }
 
 export default getCurrentUsersOperations;

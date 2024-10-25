@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import { notFound } from "@bciers/testConfig/mocks";
 import { getOperator, getOperatorHasAdmin } from "../userOperators/mocks";
 
-import SelectOperatorReceivedPage from "../../../app/components/userOperators/SelectOperatorReceivedPage";
+import SelectOperatorReceivedPage from "apps/administration/app/components/userOperators/SelectOperatorReceivedPage";
 
 import { expectIcon } from "../helpers/expectIcon";
 import { expectMessage } from "../helpers/expectMessage";
