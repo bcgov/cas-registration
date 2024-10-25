@@ -151,7 +151,7 @@ describe("operationColumns function", () => {
     await user.click(screen.getByText("Continue"));
 
     expect(useRouter().push).toHaveBeenCalledWith(
-      `reports/${row.report_version_id}/review-operator-data?reports_title=${row.name}`,
+      `reports/15/review-operator-data?reports_title=Operation with report`,
     );
   });
 });
