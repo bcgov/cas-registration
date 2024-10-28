@@ -41,7 +41,12 @@ describe("AdditionalReportingData Component", () => {
   });
 
   it("renders form with correct initial fields", async () => {
-    render(<AdditionalReportingData versionId={versionId} />);
+    render(
+      <AdditionalReportingData
+        versionId={versionId}
+        includeElectricityGenerated={false}
+      />,
+    );
     const capturedEmissionsText = await screen.findByText(
       "Captured emissions (If applicable)",
     );
@@ -49,7 +54,12 @@ describe("AdditionalReportingData Component", () => {
   });
 
   it("updates formData when form input changes", async () => {
-    render(<AdditionalReportingData versionId={versionId} />);
+    render(
+      <AdditionalReportingData
+        versionId={versionId}
+        includeElectricityGenerated={false}
+      />,
+    );
 
     const yesRadioButton = screen.getByLabelText("Yes");
     fireEvent.click(yesRadioButton);
@@ -64,10 +74,11 @@ describe("AdditionalReportingData Component", () => {
     (getRegistrationPurpose as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       registration_purposes: ["OBPS Regulated Operation"],
     });
-    render(<AdditionalReportingData versionId={versionId} />);
-
-    await waitFor(() =>
-      expect(getRegistrationPurpose).toHaveBeenCalledWith(versionId),
+    render(
+      <AdditionalReportingData
+        versionId={versionId}
+        includeElectricityGenerated={true}
+      />,
     );
 
     const element = await screen.findByText("Electricity Generated");
@@ -75,7 +86,12 @@ describe("AdditionalReportingData Component", () => {
   });
 
   it("submits form data and redirects on success", async () => {
-    render(<AdditionalReportingData versionId={versionId} />);
+    render(
+      <AdditionalReportingData
+        versionId={versionId}
+        includeElectricityGenerated={false}
+      />,
+    );
 
     await waitFor(() => {
       const submitButton = screen.getByRole("button", {
