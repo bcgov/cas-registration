@@ -1,3 +1,4 @@
+from registration.models.user import User
 import re
 import typing
 from common.models import BaseModel
@@ -21,6 +22,14 @@ class BcObpsRegulatedOperation(BaseModel):
     issued_at = models.DateTimeField(
         auto_now_add=True,
         db_comment="The time the BC OBPS Regulated Operation ID was issued by an IRC user",
+    )
+    issued_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        db_comment="The IRC user who issued the BC OBPS Regulated Operation ID",
+        blank=True,
+        null=True,
+        related_name="bc_obps_regulated_operation_issued_by",
     )
     comments = models.TextField(
         blank=True,

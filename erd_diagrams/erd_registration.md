@@ -34,23 +34,6 @@ AppRole {
     CharField role_name
     CharField role_description
 }
-HistoricalBcObpsRegulatedOperation {
-    CharField id
-    DateTimeField issued_at
-    TextField comments
-    CharField status
-    UUIDField history_user_id
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-BcObpsRegulatedOperation {
-    CharField id
-    DateTimeField issued_at
-    TextField comments
-    CharField status
-}
 HistoricalBusinessRole {
     CharField role_name
     CharField role_description
@@ -117,6 +100,60 @@ Document {
     ForeignKey type
     CharField description
 }
+HistoricalUser {
+    CharField first_name
+    CharField last_name
+    CharField position_title
+    CharField email
+    CharField phone_number
+    UUIDField user_guid
+    UUIDField business_guid
+    CharField bceid_business_name
+    UUIDField history_user_id
+    ForeignKey app_role
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+HistoricalUser_documents {
+    BigIntegerField id
+    ForeignKey user
+    ForeignKey document
+    ForeignKey history
+    AutoField m2m_history_id
+}
+User {
+    CharField first_name
+    CharField last_name
+    CharField position_title
+    CharField email
+    CharField phone_number
+    UUIDField user_guid
+    UUIDField business_guid
+    CharField bceid_business_name
+    ForeignKey app_role
+    ManyToManyField documents
+}
+HistoricalBcObpsRegulatedOperation {
+    CharField id
+    DateTimeField issued_at
+    TextField comments
+    CharField status
+    UUIDField history_user_id
+    ForeignKey issued_by
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+BcObpsRegulatedOperation {
+    CharField id
+    DateTimeField issued_at
+    ForeignKey issued_by
+    TextField comments
+    CharField status
+}
 HistoricalContact {
     BigIntegerField id
     DateTimeField created_at
@@ -160,41 +197,6 @@ Contact {
     CharField phone_number
     ForeignKey business_role
     ForeignKey address
-    ManyToManyField documents
-}
-HistoricalUser {
-    CharField first_name
-    CharField last_name
-    CharField position_title
-    CharField email
-    CharField phone_number
-    UUIDField user_guid
-    UUIDField business_guid
-    CharField bceid_business_name
-    UUIDField history_user_id
-    ForeignKey app_role
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-HistoricalUser_documents {
-    BigIntegerField id
-    ForeignKey user
-    ForeignKey document
-    ForeignKey history
-    AutoField m2m_history_id
-}
-User {
-    CharField first_name
-    CharField last_name
-    CharField position_title
-    CharField email
-    CharField phone_number
-    UUIDField user_guid
-    UUIDField business_guid
-    CharField bceid_business_name
-    ForeignKey app_role
     ManyToManyField documents
 }
 HistoricalOperator {
@@ -882,6 +884,14 @@ Document }|--|| User : created_by
 Document }|--|| User : updated_by
 Document }|--|| User : archived_by
 Document }|--|| DocumentType : type
+HistoricalUser }|--|| AppRole : app_role
+HistoricalUser_documents }|--|| User : user
+HistoricalUser_documents }|--|| Document : document
+HistoricalUser_documents }|--|| HistoricalUser : history
+User }|--|| AppRole : app_role
+User }|--|{ Document : documents
+HistoricalBcObpsRegulatedOperation }|--|| User : issued_by
+BcObpsRegulatedOperation }|--|| User : issued_by
 HistoricalContact }|--|| User : created_by
 HistoricalContact }|--|| User : updated_by
 HistoricalContact }|--|| User : archived_by
@@ -896,12 +906,6 @@ Contact }|--|| User : archived_by
 Contact }|--|| BusinessRole : business_role
 Contact }|--|| Address : address
 Contact }|--|{ Document : documents
-HistoricalUser }|--|| AppRole : app_role
-HistoricalUser_documents }|--|| User : user
-HistoricalUser_documents }|--|| Document : document
-HistoricalUser_documents }|--|| HistoricalUser : history
-User }|--|| AppRole : app_role
-User }|--|{ Document : documents
 HistoricalOperator }|--|| User : created_by
 HistoricalOperator }|--|| User : updated_by
 HistoricalOperator }|--|| User : archived_by
