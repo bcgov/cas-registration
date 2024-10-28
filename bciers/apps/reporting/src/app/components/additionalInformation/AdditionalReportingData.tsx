@@ -1,35 +1,55 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   additionalReportingDataSchema,
   additionalReportingDataUiSchema,
+  getUpdatedSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { actionHandler } from "@bciers/actions";
-import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
 interface AdditionalReportingDataProps {
   versionId: number;
+  includeElectricityGenerated: boolean;
+}
+
+interface FormData {
+  captured_emissions_section: {
+    purpose_note?: string;
+    capture_emissions: boolean;
+    capture_type?: string[];
+    emissions_on_site_use?: number;
+    emissions_on_site_sequestration?: number;
+    emissions_off_site_transfer?: number;
+  };
+  additional_data_section?: {
+    electricity_generated?: string;
+  };
 }
 
 export default function AdditionalReportingData({
   versionId,
+  includeElectricityGenerated,
 }: AdditionalReportingDataProps) {
-  const [formData, setFormData] = useState<any>({});
-  const [schema, setSchema] = useState<RJSFSchema>(
-    additionalReportingDataSchema,
-  );
+  const [formData, setFormData] = useState<FormData>({
+    captured_emissions_section: {
+      capture_emissions: false,
+    },
+  });
+
   const router = useRouter();
-  const queryString = serializeSearchParams(useSearchParams());
-  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information${queryString}`;
+  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+
+  const schema: RJSFSchema = includeElectricityGenerated
+    ? getUpdatedSchema()
+    : additionalReportingDataSchema;
 
   const taskListElements: TaskListElement[] = [
     {
@@ -43,44 +63,12 @@ export default function AdditionalReportingData({
       title: "New entrant information",
       link: `/reports/${versionId}/new-entrant-information`,
     },
-
     {
       type: "Page",
       title: "Operation emission summary",
       link: `/reports/${versionId}/operation-emission-summary`,
     },
   ];
-
-  useEffect(() => {
-    const getRegistrationPurposes = async () => {
-      const result = await getRegistrationPurpose(versionId);
-      const registrationPurpose = result?.registration_purposes;
-
-      if (registrationPurpose?.includes("OBPS Regulated Operation")) {
-        setSchema((prevSchema) => {
-          // Clone the schema and add the additional data section
-          return {
-            ...prevSchema,
-            properties: {
-              ...prevSchema.properties,
-              additional_data_section: {
-                type: "object",
-                title: "Additional data",
-                properties: {
-                  electricity_generated: {
-                    type: "string",
-                    title: "Electricity Generated",
-                  },
-                },
-              },
-            },
-          };
-        });
-      }
-    };
-
-    getRegistrationPurposes();
-  }, [versionId]);
 
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/additional-data`;
@@ -91,11 +79,12 @@ export default function AdditionalReportingData({
       ...data.captured_emissions_section,
       ...data.additional_data_section,
     };
+
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
     if (response) {
-      router.push(`${saveAndContinueUrl}`); // Redirect on success
+      router.push(saveAndContinueUrl);
     }
   };
 
@@ -118,9 +107,7 @@ export default function AdditionalReportingData({
       onChange={(data: any) => {
         setFormData(data.formData);
       }}
-      onSubmit={(data: any) => {
-        return handleSubmit(data.formData);
-      }}
+      onSubmit={(data: any) => handleSubmit(data.formData)}
     />
   );
 }

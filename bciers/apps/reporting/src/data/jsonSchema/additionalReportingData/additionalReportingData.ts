@@ -143,3 +143,27 @@ export const additionalReportingDataUiSchema = {
     },
   },
 };
+
+/**
+ * Appends the electricity_generated field to the schema if includeElectricityGenerated is true.
+ *
+ * @returns The modified schema or the original schema if the flag is false.
+ */
+export function getUpdatedSchema(): RJSFSchema {
+  return {
+    ...additionalReportingDataSchema,
+    properties: {
+      ...additionalReportingDataSchema.properties,
+      additional_data_section: {
+        type: "object",
+        title: "Additional data",
+        properties: {
+          electricity_generated: {
+            type: "string",
+            title: "Electricity Generated",
+          },
+        },
+      },
+    },
+  };
+}
