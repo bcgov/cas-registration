@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import {
   additionalReportingDataSchema,
   additionalReportingDataUiSchema,
-  getUpdatedSchema,
+  additionalReportingDataWithElectricityGeneratedSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
 
@@ -30,11 +30,11 @@ interface FormData {
     emissions_off_site_transfer?: number;
   };
   additional_data_section?: {
-    electricity_generated?: string;
+    electricity_generated?: number;
   };
 }
 
-export default function AdditionalReportingData({
+export default function AdditionalReportingDataForm({
   versionId,
   includeElectricityGenerated,
 }: AdditionalReportingDataProps) {
@@ -48,7 +48,7 @@ export default function AdditionalReportingData({
   const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
 
   const schema: RJSFSchema = includeElectricityGenerated
-    ? getUpdatedSchema()
+    ? additionalReportingDataWithElectricityGeneratedSchema
     : additionalReportingDataSchema;
 
   const taskListElements: TaskListElement[] = [
