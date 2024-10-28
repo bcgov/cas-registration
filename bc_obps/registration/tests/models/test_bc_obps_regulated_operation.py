@@ -15,6 +15,7 @@ class TestBcObpsRegulatedOperationModel(BaseTestCase):
         cls.field_data = [
             ("id", "id", None, None),  # this is not ID because we override the default ID field
             ("issued_at", "issued at", None, None),
+            ("issued_by", "issued by", None, None),
             ("comments", "comments", None, None),
             ("operation", "operation", None, None),
             ("status", "status", None, None),

@@ -13,6 +13,7 @@ import {
 } from "./types";
 import { actionHandler } from "@bciers/actions";
 import { FormMode, FrontEndRoles } from "@bciers/utils/enums";
+import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
 const OperationInformationForm = ({
   formData,
@@ -30,6 +31,10 @@ const OperationInformationForm = ({
   // To get the user's role from the session
   const { data: session } = useSession();
   const role = session?.user?.app_role ?? "";
+  const isAuthorizedAdminUser = [
+    FrontEndRoles.CAS_ADMIN,
+    FrontEndRoles.CAS_ANALYST,
+  ].includes(role as FrontEndRoles);
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -74,6 +79,14 @@ const OperationInformationForm = ({
       formData={formData ?? {}}
       onSubmit={handleSubmit}
       onCancel={() => router.push("/operations")}
+      formContext={{
+        operationId,
+        isInternalUser: isAuthorizedAdminUser,
+        isEio: formData.registration_purpose?.includes(
+          RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+        ),
+        status: formData.status,
+      }}
     />
   );
 };
