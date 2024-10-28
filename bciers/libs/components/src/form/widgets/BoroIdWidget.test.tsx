@@ -31,7 +31,7 @@ const defaultFormContext = {
 };
 
 describe("RJSF boroIdWidget", () => {
-  it("should show Not Applicable when Operation is an EIO", async () => {
+  it("should show Not Applicable when Operation is an EIO", () => {
     const { container } = render(
       <FormBase
         schema={boroIdWidgetSchema}
@@ -49,7 +49,7 @@ describe("RJSF boroIdWidget", () => {
     expect(readOnlyBoroIdTestField).toHaveTextContent("Not applicable");
   });
 
-  it("for an external user, should show message when status is not registered", async () => {
+  it("for an external user, should show message when status is not registered", () => {
     const { container } = render(
       <FormBase
         schema={boroIdWidgetSchema}
@@ -70,7 +70,7 @@ describe("RJSF boroIdWidget", () => {
     );
   });
 
-  it("for an external user, should show message when operation does not have a BORO ID yet", async () => {
+  it("for an external user, should show message when operation does not have a BORO ID yet", () => {
     const { container } = render(
       <FormBase
         schema={boroIdWidgetSchema}
@@ -90,7 +90,7 @@ describe("RJSF boroIdWidget", () => {
     expect(readOnlyBoroIdTestField).toHaveTextContent(/Pending/i);
   });
 
-  it("for an external user, should show the readonly BORO ID", async () => {
+  it("for an external user, should show the readonly BORO ID", () => {
     const { container } = render(
       <FormBase
         schema={boroIdWidgetSchema}
@@ -112,7 +112,7 @@ describe("RJSF boroIdWidget", () => {
     );
   });
 
-  it("for an internal user, should show the readonly BORO ID", async () => {
+  it("for an internal user, should show the readonly BORO ID", () => {
     const { container } = render(
       <FormBase
         schema={boroIdWidgetSchema}

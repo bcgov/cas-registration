@@ -3,11 +3,11 @@ from .time_stamped_model import TimeStampedModel
 from .user_and_contact_common_info import UserAndContactCommonInfo
 from .address import Address
 from .app_role import AppRole
-from .bc_obps_regulated_operation import BcObpsRegulatedOperation
 from .business_role import BusinessRole
 from .business_structure import BusinessStructure
 from .document_type import DocumentType
 from .document import Document
+from .bc_obps_regulated_operation import BcObpsRegulatedOperation
 from .contact import Contact
 from .user import User
 from .parent_operator import ParentOperator
