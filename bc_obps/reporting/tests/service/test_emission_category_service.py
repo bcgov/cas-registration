@@ -4,7 +4,7 @@ from reporting.models.report_emission import ReportEmission
 from reporting.models.report_source_type import ReportSourceType
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
-from decimal import Decimal, getcontext
+from decimal import Decimal
 from model_bakery.baker import make
 
 
@@ -65,7 +65,6 @@ class TestEmissionCategoryService(TestCase):
         assert flaring_return_value == Decimal('200.41510')
 
     def test_returns_correct_value_all_categories(self):
-        getcontext().prec = 5  # Set precision to 5 to match our precision set in the report_emission model manager
         test_infrastructure = TestInfrastructure.build()
         act_st_1 = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithUnitAndFuel",
@@ -158,4 +157,67 @@ class TestEmissionCategoryService(TestCase):
             'excluded_biomass': 0,
             'excluded_non_biomass': Decimal('200.00002'),
             'lfo_excluded': 0,
+            'attributable_for_reporting': Decimal('1000.00010'),  # flaring + fugitive (addition of basic categories)
+            'attributable_for_threshold': Decimal('900.00009'),  # basic - woody_biomass
+            'reporting_only': Decimal(
+                '1000.00010'
+            ),  # fugitive + fuel_excluded + other_excluded - overlap (no overlaps in this scenario)
         }
+
+    def test_reporting_only_emissions_counted_once(self):
+        test_infrastructure = TestInfrastructure.build()
+        act_st_1 = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeWithUnitAndFuel",
+            has_unit=True,
+            has_fuel=True,
+        )
+        report_activity = test_infrastructure.make_report_activity()
+        report_source_type = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st_1,
+            source_type=act_st_1.source_type,
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+        report_fuel = make(
+            ReportFuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_unit": True},
+            report_unit=None,
+        )
+
+        report_emission = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"emission": 100.00001},
+        )
+
+        report_emission_2 = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"emission": 200.00002},
+        )
+
+        report_emission_3 = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"emission": 300.00003},
+        )
+
+        report_emission.emission_categories.set([2, 10, 11, 12, 13, 14]),
+        report_emission_2.emission_categories.set([2, 10, 11]),
+        report_emission_3.emission_categories.set([12, 13, 14])
+        reporting_only_emisisons = EmissionCategoryService.get_reporting_only_emissions(
+            report_activity.facility_report.id
+        )
+        # Each report_emission record was counted only once despite sharing categories that contribue to the reporting_only emissions total
+        # Should be: (report_emission_1 + report_emission_2 + report_emission_3)
+        assert reporting_only_emisisons == Decimal('600.00006')
