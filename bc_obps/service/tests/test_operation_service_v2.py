@@ -785,6 +785,7 @@ class TestGenerateBoroId:
         OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
         assert operation.bc_obps_regulated_operation is not None
+        assert operation.bc_obps_regulated_operation.issued_by == approved_user_operator.user
 
     @staticmethod
     def test_raises_exception_if_operation_is_eio():
@@ -819,17 +820,19 @@ class TestGenerateBoroId:
     @staticmethod
     def test_raises_exception_if_operation_already_has_boro_id():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        boro_id = baker.make(BcObpsRegulatedOperation, id='21-0001')
         operation = baker.make_recipe(
             'utils.operation',
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
+            bc_obps_regulated_operation=boro_id,
         )
-        baker.make(BcObpsRegulatedOperation, operation=operation, id='21-0001')
         baker.make(
             RegistrationPurpose,
             registration_purpose=RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
             operation=operation,
         )
-        OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
+        with pytest.raises(Exception, match="Operation already has a BORO ID."):
+            OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
         assert operation.bc_obps_regulated_operation is not None

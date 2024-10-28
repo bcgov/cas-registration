@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
+from registration.models.user import User
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.document_type import DocumentType
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -407,11 +408,11 @@ class OperationServiceV2:
                 raise Exception(error_message)
 
     @classmethod
-    def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> BcObpsRegulatedOperation | None:
+    def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
-        is_eio = operation.registration_purposes.all().filter(
+        is_eio = operation.registration_purposes.filter(
             registration_purpose=RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION
-        )
+        ).exists()
         if operation.bc_obps_regulated_operation:
             raise Exception('Operation already has a BORO ID.')
         if is_eio:
@@ -420,7 +421,10 @@ class OperationServiceV2:
             raise Exception('Operations must be registered before they can be issued a BORO ID.')
 
         operation.generate_unique_boro_id()
+        if operation.bc_obps_regulated_operation is None:
+            raise Exception('Failed to create a BORO ID for the operation.')
+        operation.bc_obps_regulated_operation.issued_by = User.objects.get(user_guid=user_guid)
+        operation.bc_obps_regulated_operation.save()
         operation.save(update_fields=['bc_obps_regulated_operation'])
-        # brianna do we want to do this, or better to set the verification columns?
-        operation.set_create_or_update(user_guid)
+
         return operation.bc_obps_regulated_operation
