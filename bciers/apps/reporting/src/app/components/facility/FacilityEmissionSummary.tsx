@@ -43,9 +43,9 @@ const FacilityEmissionSummary: React.FC<Props> = ({
   }, [versionId, facilityId]);
 
   const formData = {
-    attributableForReporting: 0,
-    attributableForReportingThreshold: 0,
-    reportingOnlyEmission: 0,
+    attributableForReporting: summaryData.attributable_for_reporting,
+    attributableForReportingThreshold: summaryData.attributable_for_threshold,
+    reportingOnlyEmission: summaryData.reporting_only,
     emissionCategories: {
       flaring: Number(summaryData.flaring),
       fugitive: Number(summaryData.fugitive),
