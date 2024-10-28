@@ -26,7 +26,10 @@ const getsummaryData = async (versionId: number, facilityId: UUID) => {
   );
 };
 
-const FacilityReview: React.FC<Props> = ({ versionId, facilityId }) => {
+const FacilityEmissionSummary: React.FC<Props> = ({
+  versionId,
+  facilityId,
+}) => {
   // const router = useRouter();
   const [summaryData, setSummaryData] = useState({} as any);
 
@@ -74,7 +77,10 @@ const FacilityReview: React.FC<Props> = ({ versionId, facilityId }) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <div className="container mx-auto p-4" data-testid="facility-review">
+      <div
+        className="container mx-auto p-4"
+        data-testid="facility-emission-summary"
+      >
         <MultiStepHeader stepIndex={1} steps={customStepNames} />
       </div>
       <div className="w-full flex">
@@ -101,4 +107,4 @@ const FacilityReview: React.FC<Props> = ({ versionId, facilityId }) => {
   );
 };
 
-export default FacilityReview;
+export default FacilityEmissionSummary;
