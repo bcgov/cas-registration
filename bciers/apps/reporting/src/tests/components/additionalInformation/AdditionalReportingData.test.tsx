@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import AdditionalReportingData from "@reporting/src/app/components/additionalInformation/AdditionalReportingData";
+import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
@@ -42,7 +42,7 @@ describe("AdditionalReportingData Component", () => {
 
   it("renders form with correct initial fields", async () => {
     render(
-      <AdditionalReportingData
+      <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={false}
       />,
@@ -55,7 +55,7 @@ describe("AdditionalReportingData Component", () => {
 
   it("updates formData when form input changes", async () => {
     render(
-      <AdditionalReportingData
+      <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={false}
       />,
@@ -75,7 +75,7 @@ describe("AdditionalReportingData Component", () => {
       registration_purposes: ["OBPS Regulated Operation"],
     });
     render(
-      <AdditionalReportingData
+      <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={true}
       />,
@@ -87,7 +87,7 @@ describe("AdditionalReportingData Component", () => {
 
   it("submits form data and redirects on success", async () => {
     render(
-      <AdditionalReportingData
+      <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={false}
       />,
