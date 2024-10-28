@@ -22,14 +22,19 @@ class TestOperationBoroIdEndpoint(CommonTestSetup):
             assert response.json()['detail'] == "Unauthorized"
 
     def test_authorized_role_can_patch(self):
-        operation = baker.make_recipe('utils.operation', status=Operation.Statuses.REGISTERED)
-
-        response = TestUtils.mock_patch_with_auth_role(
-            self,
-            "cas_admin",
-            self.content_type,
-            {},
-            custom_reverse_lazy("operation_boro_id", kwargs={'operation_id': operation.id}),
-        )
-        assert response.status_code == 200
-        assert response.json()['id'] is not None
+        roles = ["cas_admin", "cas_analyst"]
+        for role in roles:
+            response = TestUtils.mock_patch_with_auth_role(
+                self,
+                role,
+                self.content_type,
+                {},
+                custom_reverse_lazy(
+                    "operation_boro_id",
+                    kwargs={
+                        'operation_id': baker.make_recipe('utils.operation', status=Operation.Statuses.REGISTERED).id
+                    },
+                ),
+            )
+            assert response.status_code == 200
+            assert response.json()['id'] is not None
