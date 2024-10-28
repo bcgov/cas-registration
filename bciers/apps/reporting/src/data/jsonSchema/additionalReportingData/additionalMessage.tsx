@@ -3,7 +3,7 @@ import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 export const CapturedEmmissionsInfo = (
   <>
     <h2 className="inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 mb-6">
-      Captured emissions (Optional)
+      Captured emissions (If applicable)
     </h2>
     <Typography
       variant="body2"

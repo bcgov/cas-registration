@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import AdditionalReportingData from "@reporting/src/app/components/additionalInformation/AdditionalReportingData";
+import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
@@ -41,15 +41,25 @@ describe("AdditionalReportingData Component", () => {
   });
 
   it("renders form with correct initial fields", async () => {
-    render(<AdditionalReportingData versionId={versionId} />);
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+      />,
+    );
     const capturedEmissionsText = await screen.findByText(
-      "Captured emissions (Optional)",
+      "Captured emissions (If applicable)",
     );
     expect(capturedEmissionsText).toBeInTheDocument();
   });
 
   it("updates formData when form input changes", async () => {
-    render(<AdditionalReportingData versionId={versionId} />);
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+      />,
+    );
 
     const yesRadioButton = screen.getByLabelText("Yes");
     fireEvent.click(yesRadioButton);
@@ -62,22 +72,26 @@ describe("AdditionalReportingData Component", () => {
 
   it("updates schema dynamically based on registration purpose", async () => {
     (getRegistrationPurpose as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      registration_purposes: ["Reporting Operation"],
+      registration_purposes: ["OBPS Regulated Operation"],
     });
-
-    render(<AdditionalReportingData versionId={versionId} />);
-    await waitFor(() =>
-      expect(getRegistrationPurpose).toHaveBeenCalledWith(versionId),
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={true}
+      />,
     );
 
-    const yesRadioButton = screen.getByLabelText("Yes");
-    fireEvent.click(yesRadioButton);
-
-    expect(screen.getByText("Electricity generated")).toBeInTheDocument();
+    const element = await screen.findByText("Electricity Generated");
+    expect(element).toBeInTheDocument();
   });
 
   it("submits form data and redirects on success", async () => {
-    render(<AdditionalReportingData versionId={versionId} />);
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+      />,
+    );
 
     await waitFor(() => {
       const submitButton = screen.getByRole("button", {
