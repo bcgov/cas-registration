@@ -23,6 +23,9 @@ const mockSummaryData = {
   excluded_biomass: 200,
   excluded_non_biomass: 300,
   lfo_excluded: 400,
+  attributable_for_reporting: 777,
+  attributable_for_threshold: 888,
+  reporting_only: 999,
 };
 
 beforeEach(() => {
@@ -133,5 +136,29 @@ describe("FacilityEmissionSummary", () => {
         "Emissions from fat, oil and grease collection, refining and storage",
       ).value,
     ).toBe("0");
+  });
+
+  it("should render the attributable summary data", async () => {
+    (actionHandler as Mock).mockResolvedValueOnce(mockSummaryData); // Mock facility data
+
+    render(
+      <FacilityEmissionSummary
+        versionId={1}
+        facilityId={"00000000-0000-0000-0000-000000000002"}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledTimes(1); // Ensure initial fetches occurred
+    });
+
+    expect(
+      screen.getByLabelText("Emissions attributable for reporting").value,
+    ).toBe("777");
+    expect(
+      screen.getByLabelText("Emissions attributable for reporting threshold")
+        .value,
+    ).toBe("888");
+    expect(screen.getByLabelText("Reporting-only emissions").value).toBe("999");
   });
 });
