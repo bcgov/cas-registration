@@ -30,6 +30,7 @@ class TestInitialData(TestCase):
                 'Mass of Output Carbonates',
                 'Alternative Parameter Methodology',
                 'Feedstock Material Balance',
+                'Emissions Factor Methodology',
                 'Solids-HHV',
                 'Solids-CC',
                 'Make-up Chemical Use Methodology',
