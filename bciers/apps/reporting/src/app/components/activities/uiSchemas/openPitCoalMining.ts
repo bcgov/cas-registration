@@ -2,7 +2,6 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
-import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import ReadOnlyWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyWidget";
 
 const uiSchema = {
