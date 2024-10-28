@@ -241,6 +241,7 @@ ReportMethodology {
     DateTimeField archived_at
     JSONField json_data
     ForeignKey report_version
+    ForeignKey methodology
     OneToOneField report_emission
 }
 ReportRawActivityData {
@@ -361,6 +362,7 @@ ReportMethodology }|--|| User : created_by
 ReportMethodology }|--|| User : updated_by
 ReportMethodology }|--|| User : archived_by
 ReportMethodology }|--|| ReportVersion : report_version
+ReportMethodology }|--|| Methodology : methodology
 ReportMethodology ||--|| ReportEmission : report_emission
 ReportRawActivityData }|--|| User : created_by
 ReportRawActivityData }|--|| User : updated_by
