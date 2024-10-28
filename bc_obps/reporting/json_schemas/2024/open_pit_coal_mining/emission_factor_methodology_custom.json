@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "coalType": {
+      "title": "Coal type",
+      "type": "string",
+      "enum": ["Bituminous coal"]
+    },
+
+    "quantityOfCoal": {
+      "type": "number",
+      "title": "Quantity of coal"
+    },
+    "quantityOfCoalUnit": {
+      "type": "string",
+      "title": "Quantity of coal unit",
+      "default": "kt/year",
+      "readOnly": true
+    },
+
+    "emissionFactorUsed": {
+      "title": "Emission factor used",
+      "type": "string",
+      "enum": [
+        "Specified by the director",
+        "Fugitive Emission factor for coal mining from National Inventory Report"
+      ]
+    }
+  }
+}
