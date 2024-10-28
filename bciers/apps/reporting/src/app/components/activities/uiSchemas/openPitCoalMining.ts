@@ -3,6 +3,7 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
+import ReadOnlyWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyWidget";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -31,32 +32,22 @@ const uiSchema = {
           padding: "p-2",
         },
         items: {
-          "ui:order": [
-            "gasType",
-            "emission",
-            "equivalentEmission",
-            "carbonateType",
-            "methodology",
-            "coalType",
-            "emissionFactorUsed",
-            "quantityOfCoal",
-            "quantityOfCoalUnit",
-            "description",
-          ],
           methodology: {
             "ui:FieldTemplate": FieldTemplate,
             "ui:options": {
               label: false,
             },
-          },
-          emissions: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          gasType: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          equivalentEmissions: {
-            "ui:FieldTemplate": InlineFieldTemplate,
+            "ui:order": [
+              "methodology",
+              "coalType",
+              "quantityOfCoal",
+              "quantityOfCoalUnit",
+              "description",
+              "emissionFactorUsed",
+            ],
+            quantityOfCoalUnit: {
+              "ui:widget": ReadOnlyWidget,
+            },
           },
         },
       },
