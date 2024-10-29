@@ -18,9 +18,13 @@ useSession.mockReturnValue({
 });
 
 const mockReplace = vi.fn();
+const mockRouterBack = vi.fn();
+const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
   query: {},
   replace: mockReplace,
+  back: mockRouterBack,
+  push: mockRouterPush,
 });
 
 const operatorFormData = {
@@ -393,7 +397,12 @@ describe("OperatorForm component", () => {
   }, 60000);
   it("fills the partner and parent form fields, creates new operator, and redirects on success", async () => {
     render(
-      <OperatorForm schema={testSchema} formData={{}} isCreating={true} />,
+      <OperatorForm
+        schema={testSchema}
+        formData={{}}
+        isCreating={true}
+        isInternalUser={false}
+      />,
     );
 
     await fillMandatoryFields();
@@ -709,5 +718,40 @@ describe("OperatorForm component", () => {
     expect(
       screen.queryByRole("button", { name: "Edit" }),
     ).not.toBeInTheDocument();
+  });
+  it("calls the router.back function if is creating", async () => {
+    render(
+      <OperatorForm
+        schema={testSchema}
+        formData={operatorFormData}
+        isCreating={true}
+        isInternalUser={false}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(mockRouterBack).toHaveBeenCalledTimes(1);
+  });
+  it("calls the router.back function if user is internal", async () => {
+    render(
+      <OperatorForm
+        schema={testSchema}
+        formData={operatorFormData}
+        isInternalUser={true}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(mockRouterBack).toHaveBeenCalledTimes(1);
+  });
+  it("calls the router.push function if user is not internal and is not creating", async () => {
+    render(
+      <OperatorForm
+        schema={testSchema}
+        formData={operatorFormData}
+        isCreating={false}
+        isInternalUser={false}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(mockRouterPush).toHaveBeenCalledTimes(1);
   });
 });
