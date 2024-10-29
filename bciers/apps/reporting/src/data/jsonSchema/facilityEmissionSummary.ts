@@ -100,15 +100,4 @@ export const facilityEmissionSummaryUiSchema = {
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
-
-  // facility_name: {
-  //   "ui:options": { style: { width: "100%", textAlign: "left" } },
-  // },
-  // facility_type: {
-  //   "ui:options": { style: { width: "100%", textAlign: "left" } },
-  // },
-  // facility_bcghgid: {
-  //   "ui:readonly": true,
-  //   "ui:options": { style: { width: "100%", textAlign: "left" } },
-  // },
 };
