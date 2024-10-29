@@ -69,7 +69,9 @@ export default function OperatorForm({
           await update({ trigger: "update" }); // Indicate this is an update call to update the session token
         }
       }}
-      onCancel={() => (isCreatingState ? router.back() : router.push("/"))}
+      onCancel={() =>
+        isCreatingState || isInternalUser ? router.back() : router.push("/")
+      }
     />
   );
 }
