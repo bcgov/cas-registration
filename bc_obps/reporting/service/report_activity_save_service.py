@@ -214,9 +214,8 @@ class ReportActivitySaveService:
         gas_type = GasType.objects.get(chemical_formula=emission_data['gasType'])
 
         report_emission_id = emission_data.get('id')
-
         if 'methodology' not in emission_data:
-            raise ValueError("Fuel is expecting methodology data")
+            raise ValueError("Emission is expecting methodology data")
 
         report_emission, _ = ReportEmission.objects.update_or_create(
             id=report_emission_id,
@@ -244,7 +243,9 @@ class ReportActivitySaveService:
         json_data = exclude_keys(methodology_data, ['methodology'])
         methodology = Methodology.objects.get(name=methodology_data['methodology'])
 
+        report_methodology_id = methodology_data.get('id')
         report_methodology, _ = ReportMethodology.objects.update_or_create(
+            id=report_methodology_id,
             create_defaults={
                 "methodology": methodology,
                 "json_data": json_data,
