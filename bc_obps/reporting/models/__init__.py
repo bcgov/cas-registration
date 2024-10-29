@@ -27,6 +27,7 @@ from .custom_methodology_schema import CustomMethodologySchema
 from .report_additional_data import ReportAdditionalData
 from .emission_category import EmissionCategory
 from .emission_category_mapping import EmissionCategoryMapping
+from .report_raw_activity_data import ReportRawActivityData
 
 __all__ = [
     "ReportDataBaseModel",
@@ -55,4 +56,5 @@ __all__ = [
     "ReportAdditionalData",
     "EmissionCategory",
     "EmissionCategoryMapping",
+    "ReportRawActivityData"
 ]

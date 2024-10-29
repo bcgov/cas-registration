@@ -9,6 +9,7 @@ from reporting.models.gas_type import GasType
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
+from reporting.models import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.source_type import SourceType
@@ -32,6 +33,7 @@ class ReportActivitySaveService:
     activity: Activity
     user_guid: uuid.UUID
 
+
     def __init__(self, report_version_id: int, facility_id: uuid.UUID, activity_id: int, user_guid: uuid.UUID):
         self.user_guid = user_guid
         self.activity = Activity.objects.get(pk=activity_id)
@@ -41,6 +43,9 @@ class ReportActivitySaveService:
 
     @transaction.atomic()
     def save(self, data: dict) -> ReportActivity:
+        # Save the raw JSON data first
+        #self.save_raw_data(data)
+
         # Excluding the keys that are not part of the json_data
         activity_data = exclude_keys(data, ['sourceTypes', 'id'])
 

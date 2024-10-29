@@ -9,6 +9,7 @@ from reporting.models.report_activity import ReportActivity
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_methodology import ReportMethodology
+from reporting.models import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.tests.utils.bakers import report_version_baker, activity_baker, source_type_baker
@@ -98,3 +99,40 @@ def report_methodology_baker(**props):
     }
 
     return baker.make(ReportMethodology, **(default_props | props))
+
+
+def report_raw_activity_data_baker(**props):
+    """Baker for ReportRawActivityData with default test values"""
+    facility_report = props.get('facility_report') or facility_report_baker()
+    
+    default_props = {
+        "facility_report": facility_report,
+        "activity": props.get('activity') or activity_baker(),
+        "json_data": {
+            "sourceTypes": {
+                "testSourceType": {
+                    "data": "test_value",
+                    "units": [
+                        {
+                            "description": "test unit",
+                            "fuels": [
+                                {
+                                    "fuelType": {
+                                        "fuelName": "Diesel"
+                                    },
+                                    "emissions": [
+                                        {
+                                            "gasType": "CO2",
+                                            "amount": 100
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+    
+    return baker.make(ReportRawActivityData, **(default_props | props))
