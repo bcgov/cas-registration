@@ -11,7 +11,7 @@ import { validate as isValidUUID } from "uuid";
 import { BusinessStructure } from "./types";
 import UserOperatorReviewForm from "./UserOperatorReviewForm";
 import UserOperatorForm from "./UserOperatorForm";
-import safeJsonParse from "libs/utils/safeJsonParse";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 async function getBusinessStructures() {
   return actionHandler(

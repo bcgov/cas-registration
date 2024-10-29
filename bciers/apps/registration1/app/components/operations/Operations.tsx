@@ -6,7 +6,7 @@ import {
   OperationRow,
   OperationsSearchParams,
 } from "@/app/components/operations/types";
-import buildQueryParams from "@bciers/utils/buildQueryParams";
+import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 import OperationDataGrid from "./OperationDataGrid";
 
 const formatTimestamp = (timestamp: string) => {

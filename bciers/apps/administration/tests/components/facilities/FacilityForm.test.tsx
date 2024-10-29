@@ -22,7 +22,7 @@ import {
   facilitiesLfoSchema,
   facilitiesLfoUiSchema,
 } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
-import { FrontendMessages } from "@bciers/utils/enums";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";

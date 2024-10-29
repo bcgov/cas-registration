@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
-import serializeSearchParams from "@bciers/utils/serializeSearchParams";
+import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 // 📐 type for breadcrumb props
 type TBreadCrumbProps = {

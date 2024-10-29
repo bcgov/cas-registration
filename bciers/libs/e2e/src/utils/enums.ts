@@ -2,7 +2,7 @@ import {
   OperationStatus,
   OperatorStatus,
   UserOperatorStatus,
-} from "@bciers/utils/enums";
+} from "@bciers/utils/src/enums";
 
 // 🤳 app roles
 export enum AppRole {

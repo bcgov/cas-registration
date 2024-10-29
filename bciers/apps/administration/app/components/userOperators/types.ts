@@ -1,4 +1,4 @@
-import { Status } from "@bciers/utils/enums";
+import { Status } from "@bciers/utils/src/enums";
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import { ButtonOwnProps } from "@mui/material/Button";
 import { ReactNode } from "react";

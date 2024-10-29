@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { useSession } from "next-auth/react";
-import { Status } from "@bciers/utils/enums";
+import { Status } from "@bciers/utils/src/enums";
 import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
 
 export interface OperationsFormData {

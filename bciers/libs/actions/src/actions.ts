@@ -9,10 +9,10 @@ and can be called from server components or from client components.
 
 import { cookies } from "next/headers";
 import { ContentItem } from "@bciers/types/tiles";
-import getUUIDFromEndpoint from "@bciers/utils/getUUIDFromEndpoint";
+import getUUIDFromEndpoint from "@bciers/utils/src/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
-import safeJsonParse from "libs/utils/safeJsonParse";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {

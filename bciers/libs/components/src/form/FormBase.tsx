@@ -3,7 +3,7 @@ import readOnlyTheme from "./theme/readOnlyTheme";
 import { useMemo, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
-import customTransformErrors from "@bciers/utils/customTransformErrors";
+import customTransformErrors from "@bciers/utils/src/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
 
 // Best I can do for manual text validation for the DateWidget

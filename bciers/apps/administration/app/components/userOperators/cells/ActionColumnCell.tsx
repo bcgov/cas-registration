@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { Stack } from "@mui/system";
-import { UserOperatorRoles, Status } from "@bciers/utils/enums";
+import { UserOperatorRoles, Status } from "@bciers/utils/src/enums";
 import {
   AccessRequestGridRenderCellParams,
   AccessRequestStatusAction,

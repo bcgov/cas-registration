@@ -12,7 +12,7 @@ import {
   createRegistrationPurposeSchema,
   registrationPurposeUISchema,
 } from "./registrationPurpose";
-import { Apps } from "@bciers/utils/enums";
+import { Apps } from "@bciers/utils/src/enums";
 
 export const createRegistrationOperationInformationSchema =
   async (): Promise<RJSFSchema> => {

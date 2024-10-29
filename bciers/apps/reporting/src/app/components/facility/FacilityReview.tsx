@@ -22,7 +22,7 @@ import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import { IChangeEvent } from "@rjsf/core";
 import { useRouter, useSearchParams } from "next/navigation";
-import serializeSearchParams from "@bciers/utils/serializeSearchParams";
+import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 interface Props {
   version_id: number;

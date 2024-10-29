@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import MultiStepFormBase from "apps/registration1/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import Note from "@bciers/components/datagrid/Note";
-import { Status } from "@bciers/utils/enums";
+import { Status } from "@bciers/utils/src/enums";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 
 interface UserOperatorFormProps {

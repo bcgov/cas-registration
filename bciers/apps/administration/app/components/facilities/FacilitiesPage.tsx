@@ -7,7 +7,7 @@ import Facilities from "./Facilities";
 import Note from "@bciers/components/layout/Note";
 import getOperation from "@bciers/actions/api/getOperation";
 import { validate as isValidUUID } from "uuid";
-import { OperationTypes } from "@bciers/utils/enums";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export default async function FacilitiesPage({
   operationId,

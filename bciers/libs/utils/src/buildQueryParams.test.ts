@@ -1,5 +1,5 @@
 import { describe, expect } from "vitest";
-import buildQueryParams from "@bciers/utils/buildQueryParams";
+import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 
 describe("buildQueryParams function", () => {
   it("should return a query string from an object of key-value pairs", () => {

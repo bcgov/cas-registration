@@ -4,7 +4,7 @@ import fetchOperationsPageData from "./fetchOperationsPageData";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { auth } from "@/dashboard/auth";
-import { FrontEndRoles } from "@bciers/utils/enums";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 // 🧩 Main component
 export default async function OperationDataGridPage({

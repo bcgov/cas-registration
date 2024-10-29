@@ -7,9 +7,9 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TaskList from "@bciers/components/form/components/TaskList";
 import { createNestedFormData, createUnnestedFormData } from "./formDataUtils";
-import { FormMode } from "@bciers/utils/enums";
+import { FormMode } from "@bciers/utils/src/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-import { FrontendMessages } from "@bciers/utils/enums";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface SingleStepTaskListFormProps {
