@@ -23,6 +23,7 @@ class TestReportingDashboardService:
         operator = operator_baker()
         operations = operation_baker(operator_id=operator.id, _quantity=3)
 
+        # Create reports for first two operations
         r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
         r0 = ReportVersion.objects.get(pk=r0_version1_id).report
         latest_r0_revision = report_version_baker(report=r0)
@@ -31,29 +32,33 @@ class TestReportingDashboardService:
         r1 = ReportVersion.objects.get(pk=r1_version1_id).report
 
         result = ReportingDashboardService.get_operations_for_reporting_dashboard(user.user_guid, 5091).values()
+        result_list = list(result)
 
-        assert len(result) == 3
+        assert len(result_list) == 3
 
-        # Returns the latest version info if there are multiple versions
-        assert result[0]["id"] == operations[0].id
-        assert result[0]["name"] == operations[0].name
-        assert result[0]["bcghg_id"] == operations[0].bcghg_id
-        assert result[0]["report_id"] == r0.id
-        assert result[0]["report_version_id"] == latest_r0_revision.id
-        assert result[0]["report_status"] == latest_r0_revision.status
+        # Create dictionaries for easy lookup by operation ID
+        result_dict = {str(item['id']): item for item in result_list}
+        
+        # Test operation with multiple versions
+        op0_result = result_dict[str(operations[0].id)]
+        assert op0_result["name"] == operations[0].name
+        assert op0_result["bcghg_id"] == operations[0].bcghg_id
+        assert op0_result["report_id"] == r0.id
+        assert op0_result["report_version_id"] == latest_r0_revision.id
+        assert op0_result["report_status"] == latest_r0_revision.status
 
-        # Returns the only version info if there is only a single version
-        assert result[1]["id"] == operations[1].id
-        assert result[1]["name"] == operations[1].name
-        assert result[1]["bcghg_id"] == operations[1].bcghg_id
-        assert result[1]["report_id"] == r1.id
-        assert result[1]["report_version_id"] == r1.report_versions.first().id
-        assert result[1]["report_status"] == r1.report_versions.first().status
+        # Test operation with single version
+        op1_result = result_dict[str(operations[1].id)]
+        assert op1_result["name"] == operations[1].name
+        assert op1_result["bcghg_id"] == operations[1].bcghg_id
+        assert op1_result["report_id"] == r1.id
+        assert op1_result["report_version_id"] == r1.report_versions.first().id
+        assert op1_result["report_status"] == r1.report_versions.first().status
 
-        # Returns None if there is no report associated to that operation/year
-        assert result[2]["id"] == operations[2].id
-        assert result[2]["name"] == operations[2].name
-        assert result[2]["bcghg_id"] == operations[2].bcghg_id
-        assert result[2]["report_id"] is None
-        assert result[2]["report_version_id"] is None
-        assert result[2]["report_status"] is None
+        # Test operation with no report
+        op2_result = result_dict[str(operations[2].id)]
+        assert op2_result["name"] == operations[2].name
+        assert op2_result["bcghg_id"] == operations[2].bcghg_id
+        assert op2_result["report_id"] is None
+        assert op2_result["report_version_id"] is None
+        assert op2_result["report_status"] is None
