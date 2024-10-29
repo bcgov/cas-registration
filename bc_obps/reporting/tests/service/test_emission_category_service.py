@@ -93,7 +93,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 100.00001},
+            json_data={"emission": 100.0001},
         )
 
         report_emission_2 = make(
@@ -101,7 +101,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 200.00002},
+            json_data={"emission": 200.0002},
         )
 
         report_emission_3 = make(
@@ -109,7 +109,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 300.00003},
+            json_data={"emission": 300.0003},
         )
 
         report_emission_4 = make(
@@ -117,7 +117,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 400.00004},
+            json_data={"emission": 400.0004},
         )
 
         report_emission.emission_categories.set([1, 10])
@@ -131,21 +131,21 @@ class TestEmissionCategoryService(TestCase):
         excluded_non_biomass_value = EmissionCategoryService.get_total_emissions_by_emission_category(
             report_activity.facility_report.id, 12
         )
-        assert flaring_value == Decimal('300.00003')
-        assert woody_biomass_value == Decimal('100.00001')
-        assert excluded_non_biomass_value == Decimal('200.00002')
+        assert flaring_value == Decimal('300.0003')
+        assert woody_biomass_value == Decimal('100.0001')
+        assert excluded_non_biomass_value == Decimal('200.0002')
 
         report_emission_3.emission_categories.set([2])
         report_emission_4.emission_categories.set([2])
         fugitive_value = EmissionCategoryService.get_total_emissions_by_emission_category(
             report_activity.facility_report.id, 2
         )
-        assert fugitive_value == Decimal('700.00007')
+        assert fugitive_value == Decimal('700.0007')
 
         all_categories = EmissionCategoryService.get_all_category_totals(report_activity.facility_report.id)
         assert all_categories == {
-            'flaring': Decimal('300.00003'),
-            'fugitive': Decimal('700.00007'),
+            'flaring': Decimal('300.0003'),
+            'fugitive': Decimal('700.0007'),
             'industrial_process': 0,
             'onsite': 0,
             'stationary': 0,
@@ -153,14 +153,14 @@ class TestEmissionCategoryService(TestCase):
             'venting_non_useful': 0,
             'waste': 0,
             'wastewater': 0,
-            'woody_biomass': Decimal('100.00001'),
+            'woody_biomass': Decimal('100.0001'),
             'excluded_biomass': 0,
-            'excluded_non_biomass': Decimal('200.00002'),
+            'excluded_non_biomass': Decimal('200.0002'),
             'lfo_excluded': 0,
-            'attributable_for_reporting': Decimal('1000.00010'),  # flaring + fugitive (addition of basic categories)
-            'attributable_for_threshold': Decimal('900.00009'),  # basic - woody_biomass
+            'attributable_for_reporting': Decimal('1000.0010'),  # flaring + fugitive (addition of basic categories)
+            'attributable_for_threshold': Decimal('900.0009'),  # basic - woody_biomass
             'reporting_only': Decimal(
-                '1000.00010'
+                '1000.0010'
             ),  # fugitive + fuel_excluded + other_excluded - overlap (no overlaps in this scenario)
         }
 
@@ -193,7 +193,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 100.00001},
+            json_data={"emission": 100.0001},
         )
 
         report_emission_2 = make(
@@ -201,7 +201,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 200.00002},
+            json_data={"emission": 200.0002},
         )
 
         report_emission_3 = make(
@@ -209,7 +209,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 300.00003},
+            json_data={"emission": 300.0003},
         )
 
         report_emission.emission_categories.set([2, 10, 11, 12, 13, 14]),
@@ -220,4 +220,4 @@ class TestEmissionCategoryService(TestCase):
         )
         # Each report_emission record was counted only once despite sharing categories that contribue to the reporting_only emissions total
         # Should be: (report_emission_1 + report_emission_2 + report_emission_3)
-        assert reporting_only_emisisons == Decimal('600.00006')
+        assert reporting_only_emisisons == Decimal('600.0006')

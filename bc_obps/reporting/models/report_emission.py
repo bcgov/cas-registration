@@ -17,7 +17,7 @@ class AnnotateEmissionsManager(models.Manager):
             .annotate(
                 emission=Cast(
                     KeyTextTransform('emission', 'json_data'),
-                    output_field=DecimalField(max_digits=20, decimal_places=5),
+                    output_field=DecimalField(max_digits=20, decimal_places=4),
                 )
             )
         )
