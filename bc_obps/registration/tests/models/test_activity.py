@@ -15,6 +15,7 @@ class ActivityModelTest(BaseTestCase):
             ("configuration_elements", "configuration element", None, None),
             ("reportactivity_records", "report activity", None, 0),
             ("emission_category_mappings", "emission category mapping", None, 0),
+            ("reportrawactivitydata_records", "report raw activity data", None, 0),
         ]
         cls.test_object = Activity.objects.create(
             name="test activity", applicable_to=Activity.Applicability.ALL, slug="test_activity", weight=100.0
