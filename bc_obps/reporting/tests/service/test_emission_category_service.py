@@ -209,7 +209,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 300.0003},
+            json_data={"emission": 300.00029},
         )
 
         report_emission.emission_categories.set([2, 10, 11, 12, 13, 14]),
