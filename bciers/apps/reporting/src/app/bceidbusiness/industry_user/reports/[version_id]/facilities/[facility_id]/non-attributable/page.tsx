@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { UUID } from "crypto";
-import NonAttributatbleEmissions from "@reporting/src/app/components/reportInformation/NonAttributatbleEmissions";
+import NonAttributatbleEmissions from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributatbleEmissions";
 
 export default async function Page({
   params,

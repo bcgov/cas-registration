@@ -28,6 +28,7 @@ from .custom_methodology_schema import CustomMethodologySchema
 from .report_additional_data import ReportAdditionalData
 from .emission_category import EmissionCategory
 from .emission_category_mapping import EmissionCategoryMapping
+from .report_non_attributable_emissions import ReportNonAttributableEmissions
 from .report_product import ReportProduct
 
 __all__ = [
@@ -58,5 +59,6 @@ __all__ = [
     "ReportAdditionalData",
     "EmissionCategory",
     "EmissionCategoryMapping",
+    "ReportNonAttributableEmissions",
     "ReportRawActivityData",
 ]
