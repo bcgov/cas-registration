@@ -56,5 +56,5 @@ __all__ = [
     "ReportAdditionalData",
     "EmissionCategory",
     "EmissionCategoryMapping",
-    "ReportRawActivityData"
+    "ReportRawActivityData",
 ]

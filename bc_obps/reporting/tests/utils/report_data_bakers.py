@@ -101,7 +101,6 @@ def report_methodology_baker(**props):
     return baker.make(ReportMethodology, **(default_props | props))
 
 
-
 def report_raw_activity_data_baker(**props):
     """
     Baker function for creating ReportRawActivityData instances with default values.
@@ -112,7 +111,7 @@ def report_raw_activity_data_baker(**props):
     default_props = {
         "facility_report": facility_report,
         "activity": activity,
-        "json_data": '{"test": "raw_activity_data"}', 
+        "json_data": '{"test": "raw_activity_data"}',
     }
 
     return baker.make(ReportRawActivityData, **(default_props | props))

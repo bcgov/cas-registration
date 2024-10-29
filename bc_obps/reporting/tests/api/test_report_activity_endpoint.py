@@ -11,11 +11,11 @@ class TestReportActivityEndpoint(CommonTestSetup):
     def setup_method(self):
         """Set up before each test"""
         super().setup_method()
-        
+
         # Create basic test data
         self.facility_report = make_recipe('reporting.tests.utils.facility_report')
         self.activity = make_recipe('reporting.tests.utils.activity')
-        
+
         # Create endpoint
         self.endpoint = (
             f"/api/reporting/report-version/{self.facility_report.report_version.id}"
@@ -32,10 +32,7 @@ class TestReportActivityEndpoint(CommonTestSetup):
     def _make_request(self, role, authorize_operator=True):
         """Helper method to make a request with given role"""
         if authorize_operator:
-            TestUtils.authorize_current_user_as_operator_user(
-                self, 
-                operator=self.operator
-            )
+            TestUtils.authorize_current_user_as_operator_user(self, operator=self.operator)
 
         return TestUtils.mock_post_with_auth_role(
             self,
@@ -44,7 +41,7 @@ class TestReportActivityEndpoint(CommonTestSetup):
             data=json.dumps(self.test_payload),
             endpoint=self.endpoint,
         )
-    
+
     # AUTHORIZATION
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save")
     def test_authorization_matrix(self, mock_service: MagicMock):
@@ -62,22 +59,19 @@ class TestReportActivityEndpoint(CommonTestSetup):
 
         for role, should_authorize, expected_status in test_cases:
             mock_service.reset_mock()  # Reset mock between tests
-            response = self._make_request(
-                role=role, 
-                authorize_operator=should_authorize
-            )
-            assert response.status_code == expected_status, \
-                f"Role {role} (with authorize_operator={should_authorize}) " \
+            response = self._make_request(role=role, authorize_operator=should_authorize)
+            assert response.status_code == expected_status, (
+                f"Role {role} (with authorize_operator={should_authorize}) "
                 f"returned {response.status_code}, expected {expected_status}"
-            
+            )
+
             # Verify service calls
             if expected_status == 200:
                 mock_service.assert_called_once()
             else:
                 mock_service.assert_not_called()
-    
 
-    # SERVICE OUTPUT                
+    # SERVICE OUTPUT
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save")
     def test_returns_the_service_output(self, mock_service: MagicMock):
         """Test that the endpoint returns the service's output correctly"""

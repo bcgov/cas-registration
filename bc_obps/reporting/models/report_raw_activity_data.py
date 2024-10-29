@@ -12,7 +12,7 @@ class ReportRawActivityData(TimeStampedModel):
     A model to store raw activity data collected from forms before processing.
     This data is associated with a specific facility report and activity.
     """
-    
+
     facility_report = models.ForeignKey(
         FacilityReport,
         on_delete=models.CASCADE,
@@ -33,10 +33,11 @@ class ReportRawActivityData(TimeStampedModel):
 
     class Meta:
         """Meta class for ReportRawActivityData."""
+
         db_table = 'erc"."report_raw_activity_data'
         app_label = 'reporting'
         db_table_comment = "Stores raw activity JSON data before processing into report activities"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of the ReportRawActivityData instance."""
         return f"Raw Activity JSON Data for {self.facility_report} - {self.activity}"
