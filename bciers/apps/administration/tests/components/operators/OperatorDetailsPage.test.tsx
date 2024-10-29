@@ -29,6 +29,17 @@ describe("OperatorDetailsPage component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
+  it("renders the appropriate error component when operatorId is not a valid UUID", async () => {
+    await expect(async () => {
+      render(
+        await OperatorDetailsPage({
+          operatorId: "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e",
+        }),
+      );
+    }).rejects.toThrow(
+      "Invalid operator id: f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e",
+    );
+  });
 
   it("renders the appropriate error component when getOperator fails", async () => {
     getOperator.mockReturnValueOnce({

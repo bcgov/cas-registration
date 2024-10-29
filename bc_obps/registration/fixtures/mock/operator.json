@@ -121,7 +121,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e",
+    "pk": "edb1aff1-f888-4199-ab88-068364496347",
     "fields": {
       "legal_name": "New Operator 6 Legal Name",
       "trade_name": "New Operator 6 Trade Name",
@@ -141,7 +141,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+    "pk": "ea4314ea-1974-465a-a851-278c8f9c8daa",
     "fields": {
       "legal_name": "New Operator 7 Legal Name",
       "trade_name": "New Operator 7 Trade Name",
@@ -161,7 +161,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "43e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+    "pk": "04384911-264a-4510-b582-11ee704b8e41",
     "fields": {
       "legal_name": "New Operator 8 Legal Name",
       "trade_name": "New Operator 8 Trade Name",
@@ -181,7 +181,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "53e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+    "pk": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
     "fields": {
       "legal_name": "New Operator 9 Legal Name",
       "trade_name": "New Operator 9 Trade Name",
@@ -201,7 +201,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "63e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+    "pk": "bb979661-0782-49b2-9c64-acd8424b692b",
     "fields": {
       "legal_name": "New Operator 10 Legal Name",
       "trade_name": "New Operator 10 Trade Name",
@@ -221,7 +221,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "73e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+    "pk": "bb702949-e303-4788-9ba9-806232a5f711",
     "fields": {
       "legal_name": "New Operator 11 Legal Name",
       "trade_name": "New Operator 11 Trade Name",
@@ -241,7 +241,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "83e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+    "pk": "a35fb5ad-edd9-4465-982e-81b824644d07",
     "fields": {
       "legal_name": "New Operator 12 Legal Name",
       "trade_name": "New Operator 12 Trade Name",
@@ -261,7 +261,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": "93e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+    "pk": "5c847c75-3b17-414c-97f8-88ba81cb3821",
     "fields": {
       "legal_name": "New Operator 13 Legal Name",
       "trade_name": "New Operator 13 Trade Name",
