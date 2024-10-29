@@ -14,11 +14,13 @@ from reporting.models.report_unit import ReportUnit
 from reporting.models.source_type import SourceType
 from reporting.service.utils import exclude_keys, retrieve_ids
 from reporting.service.emission_category_mapping_service import EmissionCategoryMappingService
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 
 
 class ReportActivitySaveService:
     """
     Service that handles a json objects coming from an activity form:
+    - Saves raw json data in
     - Splits out json data in, and saves individual parts into a ReportActivity object and its ReportSourceType, ReportUnit, ReportFuel and ReportEmission dependencies.
     - Removes existing data in the report if not part of the newly saved data
 
@@ -43,6 +45,9 @@ class ReportActivitySaveService:
     def save(self, data: dict) -> ReportActivity:
         # Excluding the keys that are not part of the json_data
         activity_data = exclude_keys(data, ['sourceTypes', 'id'])
+
+        # Save raw json data
+        self.save_raw_data(data)
 
         # Only one ReportActivity record per report_version/faciltiy/activity should ever exist
         report_activity, _ = ReportActivity.objects.update_or_create(
@@ -223,3 +228,20 @@ class ReportActivitySaveService:
         EmissionCategoryMappingService.apply_emission_categories(report_source_type, report_fuel, report_emission)
 
         return report_emission
+
+    def save_raw_data(self, data: dict) -> ReportRawActivityData:
+        """
+        Save the raw activity data before processing.
+
+        Args:
+            data (dict): The raw JSON data to save
+
+        Returns:
+            ReportRawActivityData: The saved raw activity data object
+        """
+        report_raw_activity, _ = ReportRawActivityData.objects.update_or_create(
+            facility_report=self.facility_report, activity=self.activity, defaults={"json_data": data}
+        )
+        report_raw_activity.set_create_or_update(self.user_guid)
+
+        return report_raw_activity

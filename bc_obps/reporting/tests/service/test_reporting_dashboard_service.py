@@ -38,7 +38,7 @@ class TestReportingDashboardService:
 
         # Create dictionaries for easy lookup by operation ID
         result_dict = {str(item['id']): item for item in result_list}
-        
+
         # Test operation with multiple versions
         op0_result = result_dict[str(operations[0].id)]
         assert op0_result["name"] == operations[0].name
