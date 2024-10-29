@@ -17,6 +17,8 @@ const cancelUrl = "/reports";
 interface NonAttributableEmissionsProps {
   versionId: number;
   facilityId: UUID;
+  gasTypes: [];
+  emissionCategories: [];
 }
 
 export default function NonAttributableEmissionsForm({
