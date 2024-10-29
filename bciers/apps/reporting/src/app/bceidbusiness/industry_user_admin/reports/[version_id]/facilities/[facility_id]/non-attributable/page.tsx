@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
+import NonAttributableEmissions from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributatbleEmissions";
 import { UUID } from "crypto";
-import NonAttributatbleEmissions from "@reporting/src/app/components/reportInformation/NonAttributatbleEmissions";
-
 export default async function Page({
   params,
 }: {
@@ -10,7 +9,7 @@ export default async function Page({
 }) {
   return (
     <Suspense fallback={<Loading />}>
-      <NonAttributatbleEmissions
+      <NonAttributableEmissions
         versionId={params.version_id}
         facilityId={params.facility_id}
       />

@@ -1,7 +1,10 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import { RadioWidget } from "@bciers/components/form/widgets";
+import {
+  MultiSelectWidget,
+  RadioWidget,
+} from "@bciers/components/form/widgets";
 import { NonAttributableEmmissionsInfo } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/additionalMessage";
 import selectWidget from "@bciers/components/form/widgets/SelectWidget";
 
@@ -36,7 +39,11 @@ export const nonAttributableEmissionSchema: RJSFSchema = {
             },
             emissions_category: {
               type: "string",
-              title: "Emissions category",
+              title: "Emissions category (Optional)",
+            },
+            gas_type: {
+              type: "array",
+              title: "Gas type (Optional)",
             },
           },
         },
@@ -53,7 +60,6 @@ export const nonAttributableEmissionUiSchema = {
     "ui:title": NonAttributableEmmissionsInfo,
   },
   emissions_exceeded: {
-    "ui:title": "Did you capture emissions?",
     "ui:widget": RadioWidget,
   },
   emissions_category: {
@@ -61,4 +67,12 @@ export const nonAttributableEmissionUiSchema = {
     "ui:options": { style: { width: "100%", textAlign: "justify" } },
     "ui:placeholder": "Emissions category",
   },
+
+  gas_type: {
+    "ui:widget": MultiSelectWidget,
+    "ui:placeholder": "gas type",
+    uniqueItems: true,
+  },
 };
+
+export const getUpdatedSchema = () => {};

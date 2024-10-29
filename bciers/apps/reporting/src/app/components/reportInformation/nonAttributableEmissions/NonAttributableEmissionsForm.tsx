@@ -14,15 +14,15 @@ import { UUID } from "crypto";
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
-interface AdditionalReportingDataProps {
+interface NonAttributableEmissionsProps {
   versionId: number;
   facilityId: UUID;
 }
 
-export default function NonAttributatbleEmissions({
+export default function NonAttributableEmissionsForm({
   versionId,
   facilityId,
-}: AdditionalReportingDataProps) {
+}: NonAttributableEmissionsProps) {
   const [formData, setFormData] = useState<any>({});
   const router = useRouter();
 
