@@ -84,7 +84,6 @@ export default async function ActivityInit({
         activityData={activityDataObject}
         currentActivity={currentActivity}
         taskListData={taskListData}
-        reportDate="2024-04-01"
         defaultEmptySourceTypeState={defaultEmptySourceTypeState}
         reportVersionId={versionId}
         facilityId={facilityId}
