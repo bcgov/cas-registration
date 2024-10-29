@@ -56,13 +56,19 @@ class TestSaveReportEmission(TestCase):
         with pytest.raises(GasType.DoesNotExist):
             service_under_test.save_emission(report_source_type, report_fuel, {"gasType": "gasTypeThatDoesntExist"})
 
-        with_none_report_fuel = service_under_test.save_emission(report_source_type, None, {"gasType": "GGIRCA"})
+        with_none_report_fuel = service_under_test.save_emission(
+            report_source_type, None, {"gasType": "GGIRCA", "methodology": {"methodology": "Default HHV/Default EF"}}
+        )
         assert with_none_report_fuel.report_fuel is None
 
         return_value = service_under_test.save_emission(
             report_source_type,
             report_fuel,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert return_value.json_data == {"test_emission_prop": "something"}
@@ -117,14 +123,23 @@ class TestSaveReportEmission(TestCase):
         report_emission = service_under_test.save_emission(
             report_source_type,
             report_fuel,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         make_recipe("reporting.tests.utils.gas_type", chemical_formula="BCOBPS")
         updated_return_value = service_under_test.save_emission(
             report_source_type,
             report_fuel,
-            {"id": report_emission.id, "test_emission_prop": "new something", "gasType": "BCOBPS"},
+            {
+                "id": report_emission.id,
+                "test_emission_prop": "new something",
+                "gasType": "BCOBPS",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert report_emission.id == updated_return_value.id
