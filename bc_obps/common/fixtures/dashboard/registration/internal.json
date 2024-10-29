@@ -4,7 +4,7 @@
     "fields": {
       "name": "Internal Analyst Registration Dashboard",
       "data": {
-        "dashboard": "registration",
+        "dashboard": "Transfers",
         "access_roles": ["cas_analyst"],
         "tiles": [
           {

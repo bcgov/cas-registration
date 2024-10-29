@@ -32,18 +32,18 @@
             ]
           },
           {
-            "title": "Registration",
+            "title": "Transfers",
             "href": "/registration",
             "icon": "Layers",
-            "content": "View information of any event or to approve or decline operation registration.",
+            "content": "Transfer operations and facilities between Operators and view transfers.",
             "links": [
               {
-                "title": "Register an Operation",
-                "href": "/registration/operation"
+                "title": "Transfers",
+                "href": "/registration/transfers"
               },
               {
-                "title": "Report an Event",
-                "href": "/registration/event"
+                "title": "Transfer an operation or facility",
+                "href": "/registration/transfer"
               }
             ]
           },
