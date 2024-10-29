@@ -126,10 +126,9 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
-                "methodology": {"methodology": "Default HHV/Default EF"},
+                "methodology": {"id": 9003, "methodology": "Default HHV/Default EF"},
             },
         )
-
         make_recipe("reporting.tests.utils.gas_type", chemical_formula="BCOBPS")
         updated_return_value = service_under_test.save_emission(
             report_source_type,
@@ -138,7 +137,12 @@ class TestSaveReportEmission(TestCase):
                 "id": report_emission.id,
                 "test_emission_prop": "new something",
                 "gasType": "BCOBPS",
-                "methodology": {"methodology": "Default HHV/Default EF"},
+                "methodology": {
+                    "id": 9003,
+                    "methodology": "Default EF",
+                    "unitFuelCo2DefaultEmissionFactor": 3,
+                    "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                },
             },
         )
 

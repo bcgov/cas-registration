@@ -103,7 +103,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
-                "methodology": {"methodology": "Default HHV/Default EF"},
+                "methodology": {"id": 9002, "methodology": "Default HHV/Default EF"},
             },
         )
 
@@ -133,7 +133,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
-                "methodology": {"methodology": "Default HHV/Default EF"},
+                "methodology": {"id": 9002, "methodology": "Default HHV/Default EF"},
             },
         )
 
