@@ -4,7 +4,7 @@ import {
   actLink,
   naicsLink,
   ggerrLink,
-} from "@bciers/utils/urls";
+} from "@bciers/utils/src/urls";
 
 const optedInOperationPreface = (
   <div>

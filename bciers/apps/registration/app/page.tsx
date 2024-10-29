@@ -1,7 +1,7 @@
 import Tiles from "@bciers/components/navigation/Tiles";
 import { fetchDashboardData } from "@bciers/actions";
 import { ContentItem } from "@bciers/types/tiles";
-import evalDashboardRules from "@bciers/utils/evalDashboardRules";
+import evalDashboardRules from "@bciers/utils/src/evalDashboardRules";
 
 export default async function Page() {
   // 🚀 API fetch dashboard tiles

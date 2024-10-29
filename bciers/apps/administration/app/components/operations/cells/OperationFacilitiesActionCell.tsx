@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { OperationTypes } from "@bciers/utils/enums";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 const OperationFacilitiesActionCell = (isInternalUser: boolean) => {
   const renderCell = (params: GridRenderCellParams) => {

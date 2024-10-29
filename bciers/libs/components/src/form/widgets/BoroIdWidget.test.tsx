@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/testConfig/mocks";
-import { OperationStatus } from "@bciers/utils/enums";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 const boroIdWidgetLabel = "BORO ID";
 const boroIdValue = "21-0001";

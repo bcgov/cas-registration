@@ -1,5 +1,5 @@
 import { actionHandler } from "@bciers/actions";
-import buildQueryParams from "@bciers/utils/buildQueryParams";
+import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 import { OperationsSearchParams } from "./types";
 
 // 🛠️ Function to fetch operations

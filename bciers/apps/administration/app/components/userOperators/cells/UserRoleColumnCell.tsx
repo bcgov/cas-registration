@@ -1,7 +1,7 @@
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
-import { UserOperatorRoles, Status } from "@bciers/utils/enums";
+import { UserOperatorRoles, Status } from "@bciers/utils/src/enums";
 import { AccessRequestGridRenderCellParams } from "@/administration/app/components/userOperators/types";
 
 const UserRoleColumnCell = (params: AccessRequestGridRenderCellParams) => {

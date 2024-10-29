@@ -1,7 +1,7 @@
 "use client";
 import SelectOperatorForm from "apps/administration/app/components/userOperators/SelectOperatorForm";
 import { useSession } from "next-auth/react";
-import getUserFullName from "@bciers/utils/getUserFullName";
+import getUserFullName from "@bciers/utils/src/getUserFullName";
 export default function Page() {
   const { data: session } = useSession();
   const names = getUserFullName(session)?.split(" ");

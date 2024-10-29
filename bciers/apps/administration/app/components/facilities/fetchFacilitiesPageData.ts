@@ -1,4 +1,4 @@
-import buildQueryParams from "@bciers/utils/buildQueryParams";
+import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 import { actionHandler } from "@bciers/actions";
 import { FacilitiesSearchParams } from "./types";
 

@@ -2,7 +2,7 @@ import {
   Status,
   UserOperatorStatus,
   UserOperatorRoles,
-} from "@bciers/utils/enums";
+} from "@bciers/utils/src/enums";
 import { getToken } from "@bciers/actions";
 import {
   AccessRequest,

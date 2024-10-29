@@ -175,6 +175,7 @@ class OperationFilterSchema(FilterSchema):
     bc_obps_regulated_operation: Optional[str] = Field(
         None, json_schema_extra={'q': 'bc_obps_regulated_operation__id__icontains'}
     )
+    operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator__id__exact'})
 
 
 class OperationListOut(ModelSchema):

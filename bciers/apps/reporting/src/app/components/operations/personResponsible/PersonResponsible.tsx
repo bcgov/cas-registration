@@ -19,7 +19,7 @@ import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import serializeSearchParams from "@bciers/utils/serializeSearchParams";
+import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 interface Props {
   version_id: number;

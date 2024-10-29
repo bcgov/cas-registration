@@ -2,8 +2,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import SingleStepTaskListForm from "./SingleStepTaskListForm";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { FormMode } from "@bciers/utils/enums";
-import { FrontendMessages } from "@bciers/utils/enums";
+import { FormMode } from "@bciers/utils/src/enums";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 const section1: RJSFSchema = {
   type: "object",
   title: "Section 1",

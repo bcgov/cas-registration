@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
-import serializeSearchParams from "@bciers/utils/serializeSearchParams";
+import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 // 📐 type for breadcrumb props
 type TBreadCrumbProps = {
@@ -59,20 +59,26 @@ export default function Bread({
   const slicedPathNames =
     lastLinkIndex !== -1 ? pathNames.slice(0, lastLinkIndex + 1) : pathNames;
 
-  // 🛠️ Function to translate a uuid or number segment using querystring value
-  function translateNumericPart(segment: string, index: number): string {
+  // 🛠️ Function to translate an uuid or number segment using querystring value
+  function translateNumericPart(segment: string, index: number): string | null {
     if (isValidUUID(segment) || isNumeric(segment)) {
       const precedingSegment = pathNames[index - 1]
         ? unslugifyAndCapitalize(pathNames[index - 1])
         : "";
+
+      // Check if there is a title associated with the preceding segment
       if (
         precedingSegment &&
         crumbTitles[`${precedingSegment.toLowerCase()}_title`]
-      ) {
+      )
         return crumbTitles[`${precedingSegment.toLowerCase()}_title`];
-      }
-      return crumbTitles.title;
+
+      // If there's a title for the numeric/UUID segment itself, return it
+      // 🚨 If no title is found, omit the segment by returning null
+      return crumbTitles?.title || null;
     }
+
+    // If the segment is not a UUID or numeric value, return it as-is
     return segment;
   }
 
@@ -107,6 +113,11 @@ export default function Bread({
               const content = capitalizeLinks
                 ? translateNumericPart(unslugifyAndCapitalize(link), index)
                 : translateNumericPart(link, index);
+
+              // 🚨 Skip rendering if content is null (segment should be omitted)
+              if (!content) {
+                return null;
+              }
 
               if (!isLastItem) {
                 // 🔗 create a link

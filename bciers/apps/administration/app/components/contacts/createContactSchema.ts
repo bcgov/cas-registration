@@ -1,6 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import { UserOperatorUser } from "./types";
-import safeJsonParse from "libs/utils/safeJsonParse";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 // 🛠️ Function to create a contact schema with updated enum values
 export const createContactSchema = (

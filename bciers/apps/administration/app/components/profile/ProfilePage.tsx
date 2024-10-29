@@ -4,7 +4,7 @@ import {
   UserProfilePartialFormData,
 } from "@bciers/types/form/formData";
 import { auth } from "@/dashboard/auth";
-import getUserFullName from "@bciers/utils/getUserFullName";
+import getUserFullName from "@bciers/utils/src/getUserFullName";
 import UserForm from "@/administration/app/components/profile/ProfileForm";
 
 // 🚀 API call: GET user's data

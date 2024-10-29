@@ -12,7 +12,7 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
-import { FormMode, FrontEndRoles } from "@bciers/utils/enums";
+import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
 const OperationInformationForm = ({

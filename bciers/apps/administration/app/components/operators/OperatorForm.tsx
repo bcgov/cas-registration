@@ -5,7 +5,7 @@ import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListFo
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
-import { FormMode } from "@bciers/utils/enums";
+import { FormMode } from "@bciers/utils/src/enums";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -69,7 +69,9 @@ export default function OperatorForm({
           await update({ trigger: "update" }); // Indicate this is an update call to update the session token
         }
       }}
-      onCancel={() => (isCreatingState ? router.back() : router.push("/"))}
+      onCancel={() =>
+        isCreatingState || isInternalUser ? router.back() : router.push("/")
+      }
     />
   );
 }

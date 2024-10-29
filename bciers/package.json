@@ -18,6 +18,7 @@
     "coam:e2e:report": "nx run coam:report",
     "coam:test": "nx run coam:test",
     "components:test": "nx run components:test",
+    "utils:test": "nx run utils:test",
     "dev-all": "nx run-many -t dev -p dashboard,administration,registration,reporting,coam --maxParallel=5",
     "dev": "nx dev reporting",
     "dash": "nx dev dashboard -p 3000",
