@@ -9,7 +9,7 @@ import {
 import { UUID } from "crypto";
 import FacilityForm from "./FacilityForm";
 import getFacility from "./getFacility";
-import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
+import { FacilityTypes, OperationTypes } from "@bciers/utils/src/enums";
 import { getOperation } from "@bciers/actions/api";
 
 // 🧩 Main component

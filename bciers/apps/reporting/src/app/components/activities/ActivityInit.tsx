@@ -1,6 +1,6 @@
 import { actionHandler } from "@bciers/actions";
 import { Suspense } from "react";
-import safeJsonParse from "libs/utils/safeJsonParse";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { defaultEmtpySourceTypeMap } from "./uiSchemas/schemaMaps";
 import ActivityForm from "./ActivityForm";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";

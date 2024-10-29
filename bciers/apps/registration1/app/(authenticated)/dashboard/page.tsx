@@ -1,7 +1,7 @@
 import Tiles from "@/app/components/navigation/Tiles";
 import { getUserOperator } from "@/app/components/routes/select-operator/Page";
 import { actionHandler } from "@bciers/actions";
-import { FrontEndRoles } from "@bciers/utils/enums";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { auth } from "@/dashboard/auth";

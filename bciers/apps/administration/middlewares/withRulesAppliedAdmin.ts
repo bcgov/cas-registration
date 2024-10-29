@@ -6,7 +6,11 @@ import {
 } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-import { IDP, OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
+import {
+  IDP,
+  OperatorStatus,
+  UserOperatorStatus,
+} from "@bciers/utils/src/enums";
 import { fetchApi } from "@bciers/actions/api/fetchApi";
 import { appName } from "../middleware";
 

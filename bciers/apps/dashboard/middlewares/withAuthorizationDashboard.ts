@@ -7,8 +7,8 @@ import {
 
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-import { FrontEndRoles } from "@bciers/utils/enums";
-import isInAllowedPath from "@bciers/utils/isInAllowedList";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
+import isInAllowedPath from "@bciers/utils/src/isInAllowedList";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
 The middleware intercepts requests, and for restricted areas...

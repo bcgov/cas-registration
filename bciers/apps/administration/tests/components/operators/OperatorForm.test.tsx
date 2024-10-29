@@ -11,7 +11,7 @@ import expectField from "../helpers/expectField";
 import expectHeader from "../helpers/expectHeader";
 import { mockUseSession } from "../helpers/mockUseSession";
 
-import { FrontendMessages } from "@bciers/utils/enums";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 
 useSession.mockReturnValue({
   get: vi.fn(),

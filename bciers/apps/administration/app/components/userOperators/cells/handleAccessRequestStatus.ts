@@ -1,4 +1,4 @@
-import { Status, UserOperatorRoles } from "@bciers/utils/enums";
+import { Status, UserOperatorRoles } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
 
 export default async function handleAccessRequestStatus(

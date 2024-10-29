@@ -1,6 +1,6 @@
 import { getToken } from "@bciers/testConfig/mocks";
 import processAccessRequestData from "apps/administration/app/components/userOperators/processAccessRequestData";
-import { UserOperatorStatus, Status } from "@bciers/utils/enums";
+import { UserOperatorStatus, Status } from "@bciers/utils/src/enums";
 
 describe("processAccessRequestData", () => {
   beforeEach(async () => {

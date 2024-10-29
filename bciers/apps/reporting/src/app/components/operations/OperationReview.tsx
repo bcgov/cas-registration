@@ -9,10 +9,10 @@ import {
   operationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import safeJsonParse from "@bciers/utils/safeJsonParse";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
-import serializeSearchParams from "@bciers/utils/serializeSearchParams";
+import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 interface Props {
   formData: any;

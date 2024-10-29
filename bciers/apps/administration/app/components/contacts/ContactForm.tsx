@@ -8,7 +8,7 @@ import { actionHandler } from "@bciers/actions";
 import { ContactFormData } from "./types";
 import getUserData from "./getUserData";
 import { IChangeEvent } from "@rjsf/core";
-import { FormMode } from "@bciers/utils/enums";
+import { FormMode } from "@bciers/utils/src/enums";
 
 interface Props {
   schema: any;

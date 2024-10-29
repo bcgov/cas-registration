@@ -7,7 +7,7 @@ import { fetchDashboardData } from "@bciers/actions";
 import { OperatorRow } from "@/administration/app/components/operators/types";
 import { ContentItem } from "@bciers/types/tiles";
 import Tiles from "@bciers/components/navigation/Tiles";
-import updateDashboardDataHref from "@bciers/utils/updateDashboardDataHref";
+import updateDashboardDataHref from "@bciers/utils/src/updateDashboardDataHref";
 
 const OperatorDetailsPage = async ({ operatorId }: { operatorId: UUID }) => {
   let operator: OperatorRow | { error: string };

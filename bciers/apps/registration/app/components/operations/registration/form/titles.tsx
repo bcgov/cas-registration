@@ -1,4 +1,4 @@
-import { ggerrLink } from "@bciers/utils/urls";
+import { ggerrLink } from "@bciers/utils/src/urls";
 
 const GenerateNewEntrantFormMessage = (
   dateMessage: string,

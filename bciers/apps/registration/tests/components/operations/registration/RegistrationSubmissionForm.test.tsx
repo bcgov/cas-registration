@@ -6,7 +6,7 @@ import { submissionSchema } from "@/registration/app/data/jsonSchema/operationRe
 import RegistrationSubmissionForm from "apps/registration/app/components/operations/registration/RegistrationSubmissionForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { UUID } from "crypto";
-import { OperationStatus } from "@bciers/utils/enums";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 useSession.mockReturnValue({
   data: {

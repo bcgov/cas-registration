@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import updateDashboardDataHref from "@bciers/utils/updateDashboardDataHref";
+import updateDashboardDataHref from "@bciers/utils/src/updateDashboardDataHref";
 import { ContentItem } from "@bciers/types/tiles";
 
 const items: ContentItem[] = [

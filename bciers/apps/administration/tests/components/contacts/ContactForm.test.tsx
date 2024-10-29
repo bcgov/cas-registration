@@ -7,7 +7,7 @@ import {
 } from "apps/administration/app/data/jsonSchema/contact";
 import ContactForm from "apps/administration/app/components/contacts/ContactForm";
 import { createContactSchema } from "apps/administration/app/components/contacts/createContactSchema";
-import { FrontendMessages } from "@bciers/utils/enums";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 
 const mockReplace = vi.fn();
 useRouter.mockReturnValue({
