@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import FacilityEmissionSummary from "@reporting/src/app/components/facility/FacilityEmissionSummary";
 import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
@@ -10,22 +10,29 @@ vi.mock("@bciers/actions", () => ({
 }));
 
 const mockSummaryData = {
-  flaring: 500,
-  fugitive: 1000,
-  industrial_process: 1500,
-  onsite: 2000,
-  stationary: 2500,
-  venting_useful: 3000,
-  venting_non_useful: 3500,
-  waste: 4000,
-  wastewater: 4500,
-  woody_biomass: 100,
-  excluded_biomass: 200,
-  excluded_non_biomass: 300,
-  lfo_excluded: 400,
-  attributable_for_reporting: 777,
-  attributable_for_threshold: 888,
-  reporting_only: 999,
+  attributableForReporting: "777",
+  attributableForReportingThreshold: "888",
+  reportingOnlyEmission: "999",
+  emissionCategories: {
+    flaring: "500",
+    fugitive: "1000",
+    industrialProcess: "1500",
+    onSiteTransportation: "2000",
+    stationaryCombustion: "2500",
+    ventingUseful: "3000",
+    ventingNonUseful: "3500",
+    waste: "4000",
+    wastewater: "4500",
+  },
+  fuelExcluded: {
+    woodyBiomass: "100",
+    excludedBiomass: "200",
+    excludedNonBiomass: "300",
+  },
+  otherExcluded: {
+    lfoExcluded: "400",
+    fogExcluded: "0",
+  },
 };
 
 beforeEach(() => {
@@ -51,18 +58,13 @@ describe("FacilityEmissionSummary", () => {
   });
 
   it("should render the basic category summary data", async () => {
-    (actionHandler as Mock).mockResolvedValueOnce(mockSummaryData); // Mock facility data
-
     render(
       <FacilityEmissionSummary
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
+        summaryFormData={mockSummaryData}
       />,
     );
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(1); // Ensure initial fetches occurred
-    });
 
     expect(screen.getByLabelText("Flaring emissions").value).toBe("500");
     expect(screen.getByLabelText("Fugitive emissions").value).toBe("1000");
@@ -88,18 +90,13 @@ describe("FacilityEmissionSummary", () => {
   });
 
   it("should render the fuel excluded category summary data", async () => {
-    (actionHandler as Mock).mockResolvedValueOnce(mockSummaryData); // Mock facility data
-
     render(
       <FacilityEmissionSummary
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
+        summaryFormData={mockSummaryData}
       />,
     );
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(1); // Ensure initial fetches occurred
-    });
 
     expect(
       screen.getByLabelText("CO2 emissions from excluded woody biomass").value,
@@ -113,18 +110,13 @@ describe("FacilityEmissionSummary", () => {
   });
 
   it("should render the other excluded category summary data", async () => {
-    (actionHandler as Mock).mockResolvedValueOnce(mockSummaryData); // Mock facility data
-
     render(
       <FacilityEmissionSummary
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
+        summaryFormData={mockSummaryData}
       />,
     );
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(1); // Ensure initial fetches occurred
-    });
 
     expect(
       screen.getByLabelText(
@@ -139,18 +131,13 @@ describe("FacilityEmissionSummary", () => {
   });
 
   it("should render the attributable summary data", async () => {
-    (actionHandler as Mock).mockResolvedValueOnce(mockSummaryData); // Mock facility data
-
     render(
       <FacilityEmissionSummary
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
+        summaryFormData={mockSummaryData}
       />,
     );
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(1); // Ensure initial fetches occurred
-    });
 
     expect(
       screen.getByLabelText("Emissions attributable for reporting").value,

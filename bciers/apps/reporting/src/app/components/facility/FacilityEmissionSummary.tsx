@@ -47,8 +47,6 @@ const FacilityEmissionSummary: React.FC<Props> = ({
   facilityId,
   summaryFormData,
 }) => {
-  console.log(summaryFormData);
-
   const customStepNames = [
     "Operation Information",
     "Report Information",
