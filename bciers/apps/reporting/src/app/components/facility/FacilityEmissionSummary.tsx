@@ -11,7 +11,7 @@ import {
 } from "@reporting/src/data/jsonSchema/facilityEmissionSummary";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
-// import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Props {
   versionId: number;
@@ -30,7 +30,6 @@ const FacilityEmissionSummary: React.FC<Props> = ({
   versionId,
   facilityId,
 }) => {
-  // const router = useRouter();
   const [summaryData, setSummaryData] = useState({} as any);
 
   useEffect(() => {
@@ -70,10 +69,14 @@ const FacilityEmissionSummary: React.FC<Props> = ({
 
   const customStepNames = [
     "Operation Information",
-    "Facilities Information",
+    "Report Information",
+    "Additional Information",
     "Compliance Summary",
     "Sign-off & Submit",
   ];
+
+  const backRef = `/reports/${versionId}/facilities/${facilityId}/non-attributable`;
+  const continueRef = `/reports/${versionId}/facilities/${facilityId}/production`;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -91,15 +94,16 @@ const FacilityEmissionSummary: React.FC<Props> = ({
             uiSchema={facilityEmissionSummaryUiSchema}
             formData={formData}
           >
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="contained"
-                type="submit"
-                onClick={() => console.log("continue")}
-              >
-                Continue
-              </Button>
-            </div>
+            <Box display="flex" justifyContent="space-between" mt={3}>
+              <Link href={backRef} passHref>
+                <Button variant="outlined">Back</Button>
+              </Link>
+              <Link href={continueRef} passHref>
+                <Button variant="contained" color="primary">
+                  Continue
+                </Button>
+              </Link>
+            </Box>
           </FormBase>
         </div>
       </div>
