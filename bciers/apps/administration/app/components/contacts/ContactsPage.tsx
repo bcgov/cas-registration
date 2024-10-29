@@ -5,7 +5,7 @@ import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { auth } from "@/dashboard/auth";
-import { FrontEndRoles } from "@bciers/utils/enums";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 

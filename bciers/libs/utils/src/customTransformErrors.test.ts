@@ -1,5 +1,5 @@
 import { describe, expect } from "vitest";
-import customTransformErrors from "@bciers/utils/customTransformErrors";
+import customTransformErrors from "@bciers/utils/src/customTransformErrors";
 import { customFormatsErrorMessages } from "@bciers/components/form/FormBase";
 
 const requiredFieldError = [

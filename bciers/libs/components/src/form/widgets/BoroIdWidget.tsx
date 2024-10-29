@@ -5,7 +5,7 @@ import { Button } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import SnackBar from "../components/SnackBar";
-import { OperationStatus } from "@bciers/utils/enums";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 async function generateBoroId(id: string) {
   const response = await actionHandler(

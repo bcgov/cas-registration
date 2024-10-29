@@ -1,5 +1,5 @@
-import { ContentItem, LinkItem } from "../types/src/tiles";
-import { actionHandler } from "../actions/src/actions";
+import { ContentItem, LinkItem } from "@bciers/types/tiles";
+import { actionHandler } from "@bciers/actions";
 
 /**
  * Evaluates conditions for dashboard data items and their links.

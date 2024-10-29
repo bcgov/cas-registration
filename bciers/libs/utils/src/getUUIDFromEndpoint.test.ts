@@ -1,6 +1,6 @@
 import getUUIDFromEndpoint, {
   endpointAllowList,
-} from "@bciers/utils/getUUIDFromEndpoint";
+} from "@bciers/utils/src/getUUIDFromEndpoint";
 import { describe, expect } from "vitest";
 
 describe("getUUIDFromEndpoint", () => {

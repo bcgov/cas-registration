@@ -7,7 +7,7 @@ import {
   Status,
   UserOperatorRoles,
   UserOperatorStatus,
-} from "@bciers/utils/enums";
+} from "@bciers/utils/src/enums";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {

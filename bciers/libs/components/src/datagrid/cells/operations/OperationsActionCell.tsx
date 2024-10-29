@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { OperationStatus } from "@bciers/utils/enums";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 const OperationsActionCell = (isInternalUser: boolean) => {
   const renderCell = (params: GridRenderCellParams) => {
@@ -22,7 +22,7 @@ const OperationsActionCell = (isInternalUser: boolean) => {
         <Link
           className="action-cell-text"
           href={{
-            pathname: `operations/${params.row.id}`,
+            pathname: `/operations/${params.row.id}`,
             query: {
               operations_title: `${params.row.name}`,
             },

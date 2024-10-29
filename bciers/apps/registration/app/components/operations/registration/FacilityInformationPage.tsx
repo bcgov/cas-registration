@@ -2,7 +2,7 @@ import { UUID } from "crypto";
 import FacilityInformationForm from "apps/registration/app/components/operations/registration/FacilityInformationForm";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import { FacilitiesSearchParams } from "apps/administration/app/components/facilities/types";
-import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
+import { FacilityTypes, OperationTypes } from "@bciers/utils/src/enums";
 import getFacility from "apps/administration/app/components/facilities/getFacility";
 import { createNestedFormData } from "@bciers/components/form/formDataUtils";
 import { facilitiesSfoSchema } from "apps/administration/app/data/jsonSchema/facilitiesSfo";

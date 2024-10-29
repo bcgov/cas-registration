@@ -5,8 +5,8 @@ import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import { auth } from "@/dashboard/auth";
 import { actionHandler } from "@bciers/actions";
-import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
-import getUserFullName from "@bciers/utils/getUserFullName";
+import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/src/enums";
+import getUserFullName from "@bciers/utils/src/getUserFullName";
 import SelectOperator from "@/app/components/userOperators/SelectOperator";
 
 export const getUserOperator = async () => {

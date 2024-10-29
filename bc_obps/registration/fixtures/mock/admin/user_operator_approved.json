@@ -63,7 +63,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000003",
-      "operator": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e",
+      "operator": "edb1aff1-f888-4199-ab88-068364496347",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -99,7 +99,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000006",
-      "operator": "43e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "operator": "04384911-264a-4510-b582-11ee704b8e41",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -123,7 +123,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000008",
-      "operator": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -159,7 +159,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000011",
-      "operator": "53e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "operator": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -171,7 +171,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000012",
-      "operator": "63e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "operator": "bb979661-0782-49b2-9c64-acd8424b692b",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -183,7 +183,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000013",
-      "operator": "73e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "operator": "bb702949-e303-4788-9ba9-806232a5f711",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -243,7 +243,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000018",
-      "operator": "83e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -267,7 +267,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000020",
-      "operator": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3f",
+      "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
@@ -327,7 +327,7 @@
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000025",
-      "operator": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e",
+      "operator": "edb1aff1-f888-4199-ab88-068364496347",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,

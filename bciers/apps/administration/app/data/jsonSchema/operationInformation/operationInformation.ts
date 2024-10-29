@@ -1,7 +1,7 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getNaicsCodes, getReportingActivities } from "@bciers/actions/api";
-import { Apps } from "@bciers/utils/enums";
+import { Apps } from "@bciers/utils/src/enums";
 
 export const createOperationInformationSchema = async (
   app: Apps,

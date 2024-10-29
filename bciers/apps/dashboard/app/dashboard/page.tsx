@@ -4,10 +4,10 @@ import { fetchDashboardData } from "@bciers/actions";
 import { ContentItem } from "@bciers/types/tiles";
 import { auth } from "@/dashboard/auth";
 
-import { FrontEndRoles } from "@bciers/utils/enums";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import evalDashboardRules from "@bciers/utils/evalDashboardRules";
+import evalDashboardRules from "@bciers/utils/src/evalDashboardRules";
 
 export default async function Page() {
   const session = await auth();

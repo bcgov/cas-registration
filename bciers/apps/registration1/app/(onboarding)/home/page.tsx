@@ -10,7 +10,7 @@ import {
   bcObpsLink,
   bcObpsGuidanceLink,
   carbonTaxExemptionLink,
-} from "@bciers/utils/urls";
+} from "@bciers/utils/src/urls";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.

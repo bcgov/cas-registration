@@ -15,6 +15,7 @@ export interface ContactsSearchParams {
   page?: number;
   sort_field?: string;
   sort_order?: string;
+  operator_id?: UUID;
 }
 
 export interface ContactFormData {

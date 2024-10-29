@@ -12,7 +12,7 @@ import {
   createAdministrationRegistrationInformationSchema,
   registrationInformationUiSchema,
 } from "./administrationRegistrationInformation";
-import { Apps } from "@bciers/utils/enums";
+import { Apps } from "@bciers/utils/src/enums";
 
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 export const createAdministrationOperationInformationSchema = async (

@@ -29,7 +29,14 @@ from service.data_access_service.dashboard_service import DashboardDataService
 def list_dashboard_data(
     request: HttpRequest,
     dashboard: Literal[
-        'all', 'administration', 'bciers', 'registration-operation-detail', 'registration', 'reporting', 'coam'
+        'all',
+        'administration',
+        'bciers',
+        'registration-operation-detail',
+        'registration',
+        'reporting',
+        'coam',
+        'operators',
     ],
 ) -> Tuple[Literal[200], QuerySet[DashboardData]]:
     role = ""

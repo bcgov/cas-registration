@@ -10,7 +10,7 @@ import {
   getReportingActivities,
 } from "./mocks";
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
-import { OperationStatus } from "@bciers/utils/enums";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 useSession.mockReturnValue({
   data: {
