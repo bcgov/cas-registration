@@ -23,6 +23,7 @@ from .report_emission import ReportEmission
 from .report_fuel import ReportFuel
 from .report_unit import ReportUnit
 from .report_methodology import ReportMethodology
+from .report_raw_activity_data import ReportRawActivityData
 from .custom_methodology_schema import CustomMethodologySchema
 from .report_additional_data import ReportAdditionalData
 from .emission_category import EmissionCategory
@@ -55,4 +56,5 @@ __all__ = [
     "ReportAdditionalData",
     "EmissionCategory",
     "EmissionCategoryMapping",
+    "ReportRawActivityData"
 ]
