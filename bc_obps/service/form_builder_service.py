@@ -101,7 +101,6 @@ def handle_gas_types(
     activity_id: int,
     source_type_id: int,
     config_id: int,
-    report_date: str,
 ) -> None:
     # Convert QuerySet to a list for efficient iteration without extra database hits
     config_elements_list = list(config_element_for_gas_types)
@@ -147,7 +146,7 @@ def handle_gas_types(
         if not config_element_for_methodologies:
             raise Exception(
                 f'No configuration found for activity_id {activity_id} & source_type_id {source_type_id} '
-                f'& gas_type_id {gas_type_id} & report_date {report_date}'
+                f'& gas_type_id {gas_type_id} & configuration {config_id}'
             )
 
         # Append to oneOf branch for each gasType selection
@@ -212,7 +211,6 @@ def build_source_type_schema(
     config_id: int,
     activity_id: int,
     source_type_id: int,
-    report_date: str,
 ) -> Dict:
     try:
         source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
@@ -223,7 +221,7 @@ def build_source_type_schema(
         )
     except Exception:
         raise Exception(
-            f'No schema found for activity_id {activity_id} & source_type_id {source_type_id} & report_date {report_date}'
+            f'No schema found for activity_id {activity_id} & source_type_id {source_type_id} & configuration {config_id}'
         )
 
     # Fetch valid gas_type values for activity-sourceType pair
@@ -247,7 +245,6 @@ def build_source_type_schema(
         activity_id,
         source_type_id,
         config_id,
-        report_date,
     )
     return handle_source_type_schema(source_type_schema, gas_type_enum, gas_type_one_of)
 
@@ -260,7 +257,7 @@ def build_source_type_schema(
 # report_date is mandatory & determines the valid schemas & WCI configuration for the point in time that the report was created
 
 
-def build_schema(config_id: int, activity: int, source_types: List[str] | List[int], report_date: str) -> str:
+def build_schema(config_id: int, activity: int, source_types: List[str] | List[int]) -> str:
 
     # Get activity schema
     activity_schema = ActivityJsonSchema.objects.only('json_schema').get(
@@ -279,7 +276,7 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
 
     # Except if no valid config elements are found
     if not valid_config_elements:
-        raise Exception(f'No valid source_types found for activity_id {activity} & report_date {report_date}')
+        raise Exception(f'No valid source_types found for activity_id {activity} & configuration {config_id}')
     # If only one config element is found, the source type is mandatory & should be added to the schema
     elif valid_config_elements.count() == 1:
         first_valid_config_elements: Optional[ConfigurationElement] = valid_config_elements.first()
@@ -287,7 +284,7 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
             rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
             rjsf_schema['properties']['sourceTypes']['properties'][
                 first_valid_config_elements.source_type.json_key
-            ] = build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id, report_date)
+            ] = build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id)
 
     # If there are multiple config elements for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
@@ -309,7 +306,7 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
             valid_config_element = valid_config_elements.get(source_type__id=source_type)
             rjsf_schema['properties']['sourceTypes']['properties'][
                 valid_config_element.source_type.json_key
-            ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id, report_date)
+            ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id)
 
     return json.dumps({"schema": rjsf_schema})
 
@@ -342,8 +339,7 @@ class FormBuilderService:
             raise Exception('Cannot build a schema without Activity data')
 
         report_date = get_report_valid_year_from_version_id(report_version_id)
-        report_date_string = report_date.strftime('%Y-%m-%d')
         # Get config objects
         config = Configuration.objects.only('id').get(valid_from__lte=report_date, valid_to__gte=report_date)
-        schema = build_schema(config.id, activity, source_types, report_date_string)
+        schema = build_schema(config.id, activity, source_types)
         return schema
