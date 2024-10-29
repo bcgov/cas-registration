@@ -4,6 +4,7 @@ from reporting.models.activity_source_type_json_schema import ActivitySourceType
 from reporting.models.configuration import Configuration
 from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
+from reporting.models.methodology import Methodology
 from reporting.models.report_activity import ReportActivity
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
@@ -34,6 +35,7 @@ activity = Recipe(Activity)
 source_type = Recipe(SourceType)
 fuel_type = Recipe(FuelType)
 gas_type = Recipe(GasType)
+methodology = Recipe(Methodology)
 
 activity_json_schema = Recipe(
     ActivityJsonSchema,

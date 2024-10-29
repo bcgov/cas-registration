@@ -214,7 +214,7 @@ class TestReportActivitySaveService(TestCase):
 
         assert report_methodology[0].json_data == {}
         assert report_methodology[0].methodology_id == 1
-        assert report_methodology[0].report_emission_id == 1
+        assert report_methodology[0].report_emission_id == report_emissions[0].id
         assert report_methodology[0].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[1].json_data == {
@@ -223,7 +223,7 @@ class TestReportActivitySaveService(TestCase):
             "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
         }
         assert report_methodology[1].methodology_id == 1
-        assert report_methodology[1].report_emission_id == 2
+        assert report_methodology[1].report_emission_id == report_emissions[1].id
         assert report_methodology[1].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[2].json_data == {
@@ -231,7 +231,7 @@ class TestReportActivitySaveService(TestCase):
             "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
         }
         assert report_methodology[2].methodology_id == 2
-        assert report_methodology[2].report_emission_id == 3
+        assert report_methodology[2].report_emission_id == report_emissions[2].id
         assert report_methodology[2].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[3].json_data == {
@@ -240,7 +240,7 @@ class TestReportActivitySaveService(TestCase):
             "fuelAnnualWeightedAverageHighHeatingValue": 4,
         }
         assert report_methodology[3].methodology_id == 3
-        assert report_methodology[3].report_emission_id == 4
+        assert report_methodology[3].report_emission_id == report_emissions[3].id
         assert report_methodology[3].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[4].json_data == {
@@ -250,12 +250,12 @@ class TestReportActivitySaveService(TestCase):
             "unitFuelCo2EmissionFactorFieldUnits": "kg/GJ",
         }
         assert report_methodology[4].methodology_id == 4
-        assert report_methodology[4].report_emission_id == 5
+        assert report_methodology[4].report_emission_id == report_emissions[4].id
         assert report_methodology[4].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[5].json_data == {"fuelAnnualWeightedAverageCarbonContentWeightFraction": 6}
         assert report_methodology[5].methodology_id == 5
-        assert report_methodology[5].report_emission_id == 6
+        assert report_methodology[5].report_emission_id == report_emissions[5].id
         assert report_methodology[5].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[6].json_data == {
@@ -264,17 +264,17 @@ class TestReportActivitySaveService(TestCase):
             "unitFuelCo2MeasuredEmissionFactorFieldUnits": "kg/fuel units",
         }
         assert report_methodology[6].methodology_id == 6
-        assert report_methodology[6].report_emission_id == 7
+        assert report_methodology[6].report_emission_id == report_emissions[6].id
         assert report_methodology[6].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[7].json_data == {"description": "eight"}
         assert report_methodology[7].methodology_id == 7
-        assert report_methodology[7].report_emission_id == 8
+        assert report_methodology[7].report_emission_id == report_emissions[7].id
         assert report_methodology[7].report_version_id == test_infrastructure.facility_report.report_version.id
 
         assert report_methodology[8].json_data == {"description": "nine"}
         assert report_methodology[8].methodology_id == 8
-        assert report_methodology[8].report_emission_id == 9
+        assert report_methodology[8].report_emission_id == report_emissions[8].id
         assert report_methodology[8].report_version_id == test_infrastructure.facility_report.report_version.id
 
     def test_save_raw_data(self):
