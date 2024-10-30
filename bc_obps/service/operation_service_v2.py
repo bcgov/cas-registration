@@ -15,7 +15,6 @@ from registration.models.user_operator import UserOperator
 from registration.models import Operation
 from ninja import Query
 from django.db import transaction
-from service.data_access_service.document_service import DocumentDataAccessService
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.document_service import DocumentService
 from service.data_access_service.operation_service import OperationDataAccessService
@@ -30,10 +29,9 @@ from registration.schema.v2.operation import (
     OperationFilterSchema,
     OperationInformationIn,
     OptedInOperationDetailIn,
-    OperationStatutoryDeclarationIn,
+    OperationNewEntrantApplicationIn,
     RegistrationPurposeIn,
 )
-from registration.utils import files_have_same_hash
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
@@ -137,29 +135,28 @@ class OperationServiceV2:
         return operation.opted_in_operation
 
     @classmethod
-    def create_or_replace_statutory_declaration(
-        cls, user_guid: UUID, operation_id: UUID, payload: OperationStatutoryDeclarationIn
+    def create_or_replace_new_entrant_application(
+        cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationIn
     ) -> Operation:
-        existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(operation_id)
         operation = OperationDataAccessService.get_by_id(operation_id)
 
         # industry users can only edit operations that belong to their operator
         if not operation.user_has_access(user_guid):
             raise Exception(UNAUTHORIZED_MESSAGE)
 
-        # if there is an existing statutory declaration document, check if the new one is different
-        if existing_statutory_document:
-            # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
-            if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
-                existing_statutory_document.delete()
-            else:
-                return operation
-        # if there is no existing statutory declaration document, create a new one
-        document = DocumentDataAccessService.create_document(
-            user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
+        (
+            new_entrant_application_document,
+            new_entrant_application_document_created,
+        ) = DocumentService.create_or_replace_operation_document(
+            user_guid,
+            operation_id,
+            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
+            "new_entrant_application_and_statutory_declaration",
         )
-        if document:
-            operation.documents.set([document])
+        if new_entrant_application_document_created:
+            operation.documents.add(new_entrant_application_document)
+        operation.date_of_first_shipment = payload.date_of_first_shipment
+        operation.save(update_fields=['date_of_first_shipment'])
         operation.set_create_or_update(user_guid)
         return operation
 
@@ -202,10 +199,11 @@ class OperationServiceV2:
         operation_data = payload.dict(
             include={
                 'name',
-                "type",
-                "naics_code_id",
+                'type',
+                'naics_code_id',
                 'secondary_naics_code_id',
                 'tertiary_naics_code_id',
+                'date_of_first_shipment',
             }
         )
         operation_data['operator_id'] = user_operator.operator_id
@@ -413,7 +411,7 @@ class OperationServiceV2:
                         registration_purpose=RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION
                     ).exists()
                     and not operation.documents.filter(
-                        type=DocumentType.objects.get(name='signed_statutory_declaration')
+                        type=DocumentType.objects.get(name='new_entrant_application_and_statutory_declaration')
                     ).exists()
                 ),
                 "Operation must have a signed statutory declaration if it is a new entrant.",
