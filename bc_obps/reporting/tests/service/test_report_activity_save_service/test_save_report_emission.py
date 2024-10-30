@@ -1,3 +1,4 @@
+from unittest.mock import MagicMock, call, patch
 from django.test import TestCase
 import pytest
 from reporting.models.gas_type import GasType
@@ -11,7 +12,8 @@ from model_bakery.baker import make_recipe, make
 
 
 class TestSaveReportEmission(TestCase):
-    def test_save_emission(self):
+    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_methodology")
+    def test_save_emission(self, mock_save_methodology: MagicMock):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithUnitAndFuel",
@@ -67,7 +69,12 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
-                "methodology": {"methodology": "Default HHV/Default EF"},
+                "methodology": {
+                    "methodology": "Default HHV/Default EF",
+                    "fuelDefaultHighHeatingValue": 10,
+                    "unitFuelCo2DefaultEmissionFactor": 20,
+                    "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                },
             },
         )
 
@@ -79,6 +86,20 @@ class TestSaveReportEmission(TestCase):
         return_value.refresh_from_db()
         assert return_value.created_by == test_infrastructure.user
         assert return_value.updated_by is None
+
+        mock_save_methodology.assert_has_calls(
+            [
+                call(
+                    return_value,
+                    {
+                        "methodology": "Default HHV/Default EF",
+                        "fuelDefaultHighHeatingValue": 10,
+                        "unitFuelCo2DefaultEmissionFactor": 20,
+                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                    },
+                ),
+            ]
+        )
 
     def test_update_emission(self):
         test_infrastructure = TestInfrastructure.build()
