@@ -4,7 +4,7 @@ from ._operations._operation_id._registration import (
     operation_representative,
     submission,
     opted_in_operation,
-    statutory_declaration,
+    new_entrant_application,
 )
 from ._operations import operation_id
 from . import operations
