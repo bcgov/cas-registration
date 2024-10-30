@@ -88,8 +88,5 @@ describe("the OperationInformationPage component", () => {
       screen.getByText(/211110 - Oil and gas extraction \(except oil sands\)/i),
     ).toBeVisible();
     expect(screen.getByText(/212114 - Bituminous coal mining/i)).toBeVisible();
-
-    // Will add remaining tests for the form fields, though waiting on fix for nesting formData
-    // that is coming in another PR since the multiple operators data is not going in
   });
 });
