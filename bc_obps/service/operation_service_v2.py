@@ -451,3 +451,8 @@ class OperationServiceV2:
         operation.save(update_fields=['bc_obps_regulated_operation'])
 
         return operation.bc_obps_regulated_operation
+
+    @classmethod
+    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> None:
+        # TODO after db refactor in #2151
+        raise Exception('Feature to issue BCGHG ID is not yet complete')
