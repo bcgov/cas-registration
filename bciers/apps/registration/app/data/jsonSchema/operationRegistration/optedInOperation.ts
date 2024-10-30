@@ -65,7 +65,7 @@ export const optedInOperationSchema: RJSFSchema = {
 
 // Customizing the classNames for the RadioWidget label and choices to match the wireframes
 const customClassNamesForRadioWidget =
-  "[&>div:first-child]:w-[600px] md:[&>div:first-child]:mr-10 md:my-6 [&>div:nth-child(2)]:w-[200px]";
+  "[&>div:first-child]:w-[600px] md:[&>div:first-child]:mr-10 md:my-6";
 
 export const optedInOperationUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
