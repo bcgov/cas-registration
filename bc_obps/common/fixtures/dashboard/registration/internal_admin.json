@@ -8,16 +8,10 @@
         "access_roles": ["cas_admin"],
         "tiles": [
           {
-            "title": "Register an Operation",
+            "title": "Transfers",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/registration/operation"
-          },
-          {
-            "title": "Report an Event",
-            "icon": "File",
-            "content": "TBD here.",
-            "href": "/registration/event"
+            "href": "/registration/transfers"
           }
         ]
       }
