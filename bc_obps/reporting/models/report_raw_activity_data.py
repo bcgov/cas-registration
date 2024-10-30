@@ -37,7 +37,7 @@ class ReportRawActivityData(TimeStampedModel):
         db_table = 'erc"."report_raw_activity_data'
         app_label = 'reporting'
         db_table_comment = "Stores raw activity JSON data before processing into report activities"
-   
+
     constraints = [
         models.UniqueConstraint(name="unique_raw_data_facility_report_activity", fields=['facility_report', 'activity'])
     ]
