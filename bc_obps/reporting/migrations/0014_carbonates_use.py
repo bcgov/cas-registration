@@ -56,7 +56,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Calcination Fraction').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -66,7 +66,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Mass of Output Carbonates').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -76,7 +76,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -86,7 +86,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
         ]
@@ -102,7 +102,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
         activity_id=Activity.objects.get(name='Carbonate use').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
@@ -173,7 +173,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Calcination Fraction').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -187,7 +187,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Calcination Fraction').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -202,7 +202,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Calcination Fraction').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -218,7 +218,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Mass of Output Carbonates').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Annual mass of input carbonate type (tonnes)', field_units__isnull=True)
@@ -230,7 +230,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Mass of Output Carbonates').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Annual mass of output carbonate type (tonnes)', field_units__isnull=True)
@@ -242,7 +242,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Mass of Output Carbonates').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Number of input carbonate types', field_units__isnull=True)
@@ -254,7 +254,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Mass of Output Carbonates').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Number of output carbonate types', field_units__isnull=True)
@@ -267,7 +267,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # CO2 - Replacement Methodology
@@ -278,7 +278,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
@@ -315,7 +315,7 @@ def init_activity_schema_data(apps, schema_monitor):
     ActivitySchema.objects.create(
         activity_id=Activity.objects.get(name='Carbonate use').id,
         json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     )
 
@@ -355,7 +355,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 has_unit=False,
                 has_fuel=False,
                 json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             )
         ]

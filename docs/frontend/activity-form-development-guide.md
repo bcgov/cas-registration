@@ -23,7 +23,7 @@ In this example we are creating a config element that ends up like this in the d
       ).id,
       gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
       methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
-      valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+      valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
       valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
   )
 ```

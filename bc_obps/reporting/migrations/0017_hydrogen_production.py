@@ -30,7 +30,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='CEMS').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -40,7 +40,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Feedstock Material Balance').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
                 custom_methodology_schema_id=CustomMethodologySchema.objects.get(
                     activity_id=Activity.objects.get(name='Hydrogen production').id,
@@ -49,7 +49,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     ).id,
                     gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                     methodology_id=Methodology.objects.get(name='Feedstock Material Balance').id,
-                    valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                    valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                     valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
                 ).id,
             ),
@@ -60,7 +60,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -70,7 +70,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
         ]
@@ -86,7 +86,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
         activity_id=Activity.objects.get(name='Hydrogen production').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
@@ -108,7 +108,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
         name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock'
     )
     gas_type = GasType.objects.get(chemical_formula='CO2')
-    valid_from = Configuration.objects.get(valid_from='2024-01-01')
+    valid_from = Configuration.objects.get(valid_from='2023-01-01')
     valid_to = Configuration.objects.get(valid_to='2099-12-31')
 
     # CO2 - Alternative Parameter Measurement
@@ -182,7 +182,7 @@ def init_custom_schema_data(apps, schema_editor):
     )
     methodology = Methodology.objects.get(name='Feedstock Material Balance')
     gas_type = GasType.objects.get(chemical_formula='CO2')
-    valid_from = Configuration.objects.get(valid_from='2024-01-01')
+    valid_from = Configuration.objects.get(valid_from='2023-01-01')
     valid_to = Configuration.objects.get(valid_to='2099-12-31')
 
     # Create a new record in CustomMethodologySchema
@@ -234,7 +234,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 has_unit=False,
                 has_fuel=False,
                 json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             )
         ]
@@ -270,7 +270,7 @@ def init_activity_schema_data(apps, schema_monitor):
     ActivitySchema.objects.create(
         activity_id=Activity.objects.get(name='Hydrogen production').id,
         json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     )
 
