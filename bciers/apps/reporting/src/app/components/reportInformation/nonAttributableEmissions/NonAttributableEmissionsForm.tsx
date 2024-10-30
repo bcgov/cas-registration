@@ -36,15 +36,24 @@ export default function NonAttributableEmissionsForm({
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
   const taskListElements: TaskListElement[] = [
     {
-      type: "Page",
-      title: "Additional Reporting Data",
-      isActive: true,
-      link: `${BASE_URL}/${versionId}/additional-reporting-data`,
-    },
-    {
-      type: "Page",
-      title: "New Entrant Information",
-      link: SAVE_AND_CONTINUE_URL,
+      type: "Section",
+      title: "Facility1 Information",
+      isExpanded: true,
+      elements: [
+        {
+          type: "Section",
+          title: "Activities Information",
+          elements: [
+            { type: "Page", title: "General stationary combustion" },
+            { type: "Page", title: "Mobile Combustion" },
+            { type: "Page", title: "Cement Production" },
+          ],
+        },
+        { type: "Page", title: "Non-attributable emissions", isActive: true },
+        { type: "Page", title: "Emissions summary" },
+        { type: "Page", title: "Production Data" },
+        { type: "Page", title: "Allocations of emissions" },
+      ],
     },
   ];
 
