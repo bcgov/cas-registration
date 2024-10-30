@@ -9,7 +9,7 @@ def init_configuration_data(apps, schema_monitor):
     '''
 
     Configuration = apps.get_model('reporting', 'Configuration')
-    Configuration.objects.bulk_create([Configuration(slug='2024', valid_from='2024-01-01', valid_to='2099-12-31')])
+    Configuration.objects.bulk_create([Configuration(slug='2024', valid_from='2023-01-01', valid_to='2099-12-31')])
 
 
 def reverse_init_configuration_data(apps, schema_monitor):

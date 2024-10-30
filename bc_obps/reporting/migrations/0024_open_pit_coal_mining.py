@@ -28,7 +28,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Emissions Factor Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
                 custom_methodology_schema_id=CustomMethodologySchema.objects.get(
                     activity_id=Activity.objects.get(name='Open pit coal mining').id,
@@ -37,7 +37,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     ).id,
                     gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                     methodology_id=Methodology.objects.get(name='Emissions Factor Methodology').id,
-                    valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                    valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                     valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
                 ).id,
             ),
@@ -48,7 +48,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -58,7 +58,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
         ]
@@ -74,7 +74,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
         activity_id=Activity.objects.get(name='Open pit coal mining').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
@@ -96,7 +96,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Coal when broken or exposed to the atmosphere during mining').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # CH4 - Replacement Methodology - Description
@@ -105,7 +105,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Coal when broken or exposed to the atmosphere during mining').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
@@ -150,7 +150,7 @@ def init_custom_schema_data(apps, schema_editor):
     source_type = SourceType.objects.get(name='Coal when broken or exposed to the atmosphere during mining')
     methodology = Methodology.objects.get(name='Emissions Factor Methodology')
     gas_type = GasType.objects.get(chemical_formula='CH4')
-    valid_from = Configuration.objects.get(valid_from='2024-01-01')
+    valid_from = Configuration.objects.get(valid_from='2023-01-01')
     valid_to = Configuration.objects.get(valid_to='2099-12-31')
 
     # Create a new record in CustomMethodologySchema
@@ -192,7 +192,7 @@ def init_activity_schema_data(apps, schema_monitor):
     ActivitySchema.objects.create(
         activity_id=Activity.objects.get(name='Open pit coal mining').id,
         json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     )
 
@@ -232,7 +232,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 has_unit=False,
                 has_fuel=False,
                 json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
         ]

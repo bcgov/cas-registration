@@ -54,7 +54,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -62,7 +62,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Solids-CC').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -70,7 +70,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Make-up Chemical Use Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -78,7 +78,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -86,7 +86,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             # CH4
@@ -95,7 +95,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -103,7 +103,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -111,7 +111,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             # N2O
@@ -120,7 +120,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -128,7 +128,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -136,7 +136,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
         ]
@@ -152,7 +152,7 @@ def revere_init_configuration_element_data(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
@@ -234,7 +234,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Mass of spent liquor combusted (tonnes/year)', field_units__isnull=True),
@@ -244,7 +244,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Solids percentage by weight (%)', field_units__isnull=True),
@@ -254,7 +254,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -267,7 +267,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Solids-CC').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Mass of spent liquor combusted (tonnes/year)', field_units__isnull=True),
@@ -277,7 +277,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Solids-CC').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Solids percentage by weight (%)', field_units__isnull=True),
@@ -287,7 +287,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Solids-CC').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -300,7 +300,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Make-up Chemical Use Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Make-up quantity of CaCO3 used (tonnes/year)', field_units__isnull=True),
@@ -310,7 +310,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Make-up Chemical Use Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -323,7 +323,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
@@ -334,7 +334,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
@@ -347,7 +347,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Mass of spent liquor combusted (tonnes/year)', field_units__isnull=True),
@@ -357,7 +357,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Solids percentage by weight (%)', field_units__isnull=True),
@@ -367,7 +367,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -380,7 +380,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
@@ -391,7 +391,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
@@ -404,7 +404,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Mass of spent liquor combusted (tonnes/year)', field_units__isnull=True),
@@ -414,7 +414,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Solids percentage by weight (%)', field_units__isnull=True),
@@ -424,7 +424,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Solids-HHV').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(
@@ -437,7 +437,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
@@ -448,7 +448,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
@@ -489,7 +489,7 @@ def init_activity_schema_data(apps, schema_monitor):
     ActivitySchema.objects.create(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
         json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     )
 
@@ -529,7 +529,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 has_unit=False,
                 has_fuel=False,
                 json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             )
         ]
