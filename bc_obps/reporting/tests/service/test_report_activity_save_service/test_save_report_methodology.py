@@ -23,19 +23,22 @@ class TestSaveReportMethodology(TestCase):
 
         # test for no report emission, should not be allowed due to model constraints
         with self.assertRaises(ValidationError):
-          service_under_test.save_methodology(None, {"methodology": "Default HHV/Default EF"})
+            service_under_test.save_methodology(None, {"methodology": "Default HHV/Default EF"})
 
         return_value = service_under_test.save_methodology(
             report_emission,
             {
-                "id": 9001, "methodology": "Default HHV/Default EF", "fuelDefaultHighHeatingValue": 11,
+                "id": 9001,
+                "methodology": "Default HHV/Default EF",
+                "fuelDefaultHighHeatingValue": 11,
                 "unitFuelCo2DefaultEmissionFactor": 23,
                 "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
             },
         )
 
         assert return_value.json_data == {
-            "id": 9001,"fuelDefaultHighHeatingValue": 11,
+            "id": 9001,
+            "fuelDefaultHighHeatingValue": 11,
             "unitFuelCo2DefaultEmissionFactor": 23,
             "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
         }
@@ -83,7 +86,8 @@ class TestSaveReportMethodology(TestCase):
         assert updated_return_value.json_data == {
             "id": 9001,
             "unitFuelCo2DefaultEmissionFactor": 3,
-            "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ"}
+            "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+        }
         assert updated_return_value.methodology_id == Methodology.objects.get(name="Default HHV/Default EF").id
 
         updated_return_value.refresh_from_db()
