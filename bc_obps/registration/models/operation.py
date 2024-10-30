@@ -36,6 +36,10 @@ class Operation(TimeStampedModel):
         CLOSED = "Closed"
         TEMPORARILY_SHUTDOWN = "Temporarily Shutdown"
 
+    class DateOfFirstShipmentChoices(models.TextChoices):
+        ON_OR_BEFORE_MARCH_31_2024 = "On or before March 31, 2024"
+        ON_OR_AFTER_APRIL_1_2024 = "On or after April 1, 2024"
+
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
     )
@@ -152,7 +156,6 @@ class Operation(TimeStampedModel):
         blank=True,
         related_name='%(class)ss',
     )
-
     opted_in_operation = models.OneToOneField(
         OptedInOperationDetail,
         blank=True,
@@ -160,6 +163,13 @@ class Operation(TimeStampedModel):
         on_delete=models.SET_NULL,
         db_comment="Details about the operation if it is opted in",
         related_name="operation",
+    )
+    date_of_first_shipment = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        choices=DateOfFirstShipmentChoices.choices,
+        db_comment="The date of the operation's first shipment (determines which application and statutory declaration template should be used)",
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
@@ -190,6 +200,19 @@ class Operation(TimeStampedModel):
             .only('file')
             .first()
         )  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
+
+    def get_new_entrant_application(self) -> Optional[Document]:
+        """
+        Returns the new entrant application document associated with the operation (document only exists if the operation has registered as a New Entrant).
+        """
+
+        return (
+            self.documents.filter(
+                type=DocumentType.objects.get(name="new_entrant_application_and_statutory_declaration")
+            )
+            .only('file')
+            .first()
+        )
 
     def get_boundary_map(self) -> Optional[Document]:
         """

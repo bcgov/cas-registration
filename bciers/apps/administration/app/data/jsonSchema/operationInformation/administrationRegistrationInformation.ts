@@ -1,4 +1,5 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
@@ -11,13 +12,13 @@ export const createAdministrationRegistrationInformationSchema = async (
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
 
-  const isRegulatedProducts =
-    !registrationPurposesValue?.includes(
-      RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
-    ) &&
-    !registrationPurposesValue?.includes(
-      RegistrationPurposes.POTENTIAL_REPORTING_OPERATION,
-    );
+  const isRegulatedProducts = registrationPurposesValue?.includes(
+    RegistrationPurposes.OBPS_REGULATED_OPERATION,
+  );
+
+  const isNewEntrant = registrationPurposesValue?.includes(
+    RegistrationPurposes.NEW_ENTRANT_OPERATION,
+  );
 
   // create the schema with the fetched values
   const registrationInformationSchema: RJSFSchema = {
@@ -31,6 +32,11 @@ export const createAdministrationRegistrationInformationSchema = async (
         items: {},
       },
       ...(isRegulatedProducts && {
+        regulated_operation_preface: {
+          // Not an actual field, just used to display a message
+          type: "object",
+          readOnly: true,
+        },
         regulated_products: {
           title: "Regulated Product Name(s)",
           type: "array",
@@ -44,6 +50,11 @@ export const createAdministrationRegistrationInformationSchema = async (
         },
       }),
       ...(optedIn && {
+        opted_in_preface: {
+          // Not an actual field, just used to display a message
+          type: "object",
+          readOnly: true,
+        },
         opted_in_operation: {
           type: "object",
           properties: {
@@ -74,16 +85,67 @@ export const createAdministrationRegistrationInformationSchema = async (
           },
         },
       }),
+      ...(isNewEntrant && {
+        new_entrant_preface: {
+          // Not an actual field, just used to display a message
+          type: "object",
+          readOnly: true,
+        },
+        date_of_first_shipment: {
+          type: "string",
+          title: "When is this operation's date of First Shipment?",
+          enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
+        },
+        new_entrant_application: {
+          type: "string",
+          title: "New Entrant Application and Statutory Declaration",
+        },
+      }),
     },
   };
   return registrationInformationSchema;
 };
 
 export const registrationInformationUiSchema: UiSchema = {
-  "ui:order": ["registration_purpose", "regulated_products"],
+  "ui:order": [
+    "registration_purposes",
+    "regulated_operation_preface",
+    "regulated_products",
+    "new_entrant_preface",
+    "date_of_first_shipment",
+    "new_entrant_application",
+  ],
   "ui:FieldTemplate": SectionFieldTemplate,
+  regulated_operation_preface: {
+    "ui:classNames": "text-bc-bg-blue text-lg",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": "Regulated Operation",
+  },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",
+  },
+  opted_in_preface: {
+    "ui:classNames": "text-bc-bg-blue text-lg",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": "Opted-In Operation",
+  },
+  new_entrant_preface: {
+    "ui:classNames": "text-bc-bg-blue text-lg",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": "New Entrant Operation",
+  },
+  date_of_first_shipment: {
+    "ui:widget": "RadioWidget",
+    "ui:options": {
+      inline: true,
+    },
+  },
+  new_entrant_application: {
+    "ui:widget": "FileWidget",
+    "ui:options": {
+      filePreview: true,
+      accept: ".pdf",
+    },
   },
 };

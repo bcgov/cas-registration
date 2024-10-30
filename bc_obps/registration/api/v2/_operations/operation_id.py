@@ -22,8 +22,8 @@ from ninja.responses import codes_4xx
     response={200: OperationOutV2, codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the details of a specific operation by its ID. Unlike the v1 endpoint, this endpoint does not
-    return the statutory_declaration field as it can be quite large and cause slow requests. If you need the statutory_declaration field,
-    use the  operations/{operation_id}/registration/statutory-declaration endpoint or v1 of this endpoint""",
+    return the new entrant application field as it can be quite large and cause slow requests. If you need the new entrant application field,
+    use the  operations/{operation_id}/registration/new-entrant-application endpoint or v1 of this endpoint""",
     exclude_none=True,
     auth=authorize("approved_authorized_roles"),
 )

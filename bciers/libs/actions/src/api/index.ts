@@ -3,7 +3,7 @@ export { default as getCurrentUsersOperations } from "./getCurrentUsersOperation
 export { default as getNaicsCodes } from "./getNaicsCodes";
 export { default as getOperation } from "./getOperation";
 export { default as getOperationV2 } from "./getOperationV2";
-export { default as getOperationStatutoryDeclaration } from "./getOperationStatutoryDeclaration";
+export { default as getOperationNewEntrantApplication } from "./getOperationNewEntrantApplication";
 export { default as getOperationWithDocuments } from "./getOperationWithDocuments";
 export { default as getRegulatedProducts } from "./getRegulatedProducts";
 export { default as getReportingActivities } from "./getReportingActivities";
