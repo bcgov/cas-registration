@@ -8,6 +8,7 @@ BC_CORPORATE_REGISTRY_REGEX_MESSAGE = "BC Corporate Registry Number should be 1-
 CRA_BUSINESS_NUMBER_MESSAGE = "CRA Business Number should be 9 digits."
 
 BORO_ID_REGEX = r"^\d{2}-\d{4}$"
+BCGHG_ID_REGEX = r"^[1-2]\d{10}$"
 
 USER_CACHE_PREFIX = "user_cache_"
 
