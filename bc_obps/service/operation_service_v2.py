@@ -218,13 +218,38 @@ class OperationServiceV2:
         # set m2m relationships
         operation.activities.set(payload.activities)
 
-        boundary_map = DocumentService.create_or_replace_operation_document(user_guid, operation.id, payload.boundary_map, 'boundary_map')  # type: ignore # mypy is not aware of the schema validator
-
-        process_flow_diagram = DocumentService.create_or_replace_operation_document(
-            user_guid, operation.id, payload.process_flow_diagram, 'process_flow_diagram'  # type: ignore # mypy is not aware of the schema validator
-        )
-
-        operation.documents.set([boundary_map, process_flow_diagram])
+        # create or replace documents
+        operation_documents = [
+            doc
+            for doc, created in [
+                DocumentService.create_or_replace_operation_document(
+                    user_guid,
+                    operation.id,
+                    payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
+                    'boundary_map',
+                ),
+                DocumentService.create_or_replace_operation_document(
+                    user_guid,
+                    operation.id,
+                    payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
+                    'process_flow_diagram',
+                ),
+                *(
+                    [
+                        DocumentService.create_or_replace_operation_document(
+                            user_guid,
+                            operation.id,
+                            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
+                            'new_entrant_application_and_statutory_declaration',
+                        )
+                    ]
+                    if payload.new_entrant_application
+                    else []
+                ),
+            ]
+            if created
+        ]
+        operation.documents.add(*operation_documents)
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
