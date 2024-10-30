@@ -23,10 +23,11 @@ class ReportEmissionIterableSerializer(BaseSerializer[Iterable[ReportEmission]])
     def serialize(cls, obj: Iterable[ReportEmission]) -> dict:
         return [
             {
-                "gasType": emission.gas_type.chemical_formula,
-                **emission.json_data,
+                "id": report_emission.id,
+                "gasType": report_emission.gas_type.chemical_formula,
+                **report_emission.json_data,
             }
-            for emission in obj
+            for report_emission in obj
         ]
 
 
@@ -35,15 +36,16 @@ class ReportFuelIterableSerializer(BaseSerializer[Iterable[ReportFuel]]):
     def serialize(cls, obj: Iterable[ReportFuel]) -> dict:
         return [
             {
-                **fuel.json_data,
+                "id": report_fuel.id,
+                **report_fuel.json_data,
                 "fuelType": {
-                    "fuelName": fuel.fuel_type.name,
-                    "fuelUnit": fuel.fuel_type.unit,
-                    "fuelClassification": fuel.fuel_type.classification,
+                    "fuelName": report_fuel.fuel_type.name,
+                    "fuelUnit": report_fuel.fuel_type.unit,
+                    "fuelClassification": report_fuel.fuel_type.classification,
                 },
-                "emissions": ReportEmissionIterableSerializer.serialize(fuel.reportemission_records.all()),
+                "emissions": ReportEmissionIterableSerializer.serialize(report_fuel.reportemission_records.all()),
             }
-            for fuel in obj
+            for report_fuel in obj
         ]
 
 
@@ -52,6 +54,7 @@ class ReportUnitIterableSerializer(BaseSerializer[Iterable[ReportUnit]]):
     def serialize(cls, obj: Iterable[ReportUnit]) -> dict:
         return [
             {
+                "id": unit.id,
                 **unit.json_data,
                 "fuels": ReportFuelIterableSerializer.serialize(unit.reportfuel_records.all()),
             }
@@ -69,7 +72,10 @@ class ReportSourceTypeIterableSerializer(BaseSerializer[Iterable[ReportSourceTyp
 
     @classmethod
     def serialize_source_type(cls, obj: ReportSourceType) -> dict:
-        serialized = {**obj.json_data}
+        serialized = {
+            "id": obj.id,
+            **obj.json_data,
+        }
         if obj.activity_source_type_base_schema.has_unit:
             return {**serialized, "units": ReportUnitIterableSerializer.serialize(obj.reportunit_records.all())}
         if obj.activity_source_type_base_schema.has_fuel:
@@ -84,6 +90,7 @@ class ReportActivitySerializer(BaseSerializer[ReportActivity]):
 
     def serialize(obj: ReportActivity) -> dict:
         return {
+            "id": obj.id,
             **obj.json_data,
             "sourceTypes": ReportSourceTypeIterableSerializer.serialize(obj.reportsourcetype_records.all()),
         }
