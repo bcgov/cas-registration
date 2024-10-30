@@ -28,7 +28,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -38,7 +38,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Site-specific EF').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -48,7 +48,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -58,7 +58,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             # CH4
@@ -69,7 +69,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -79,7 +79,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Site-specific EF').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -89,7 +89,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -99,7 +99,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             # N2O
@@ -110,7 +110,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Default EF').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -120,7 +120,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Site-specific EF').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -130,7 +130,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
@@ -140,7 +140,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
         ]
@@ -156,7 +156,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
         activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
 
@@ -180,7 +180,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-CO2 Default Emission Factor', field_units='kg/fuel units')
@@ -193,7 +193,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Site-specific EF').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units='kg/fuel units')
@@ -206,7 +206,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # CO2 - Replacement Methodology - Description
@@ -217,7 +217,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
@@ -229,7 +229,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/fuel units')
@@ -242,7 +242,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Site-specific EF').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Emission Factor', field_units='kg/fuel units')
@@ -255,7 +255,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # CH4 - Replacement Methodology - Description
@@ -266,7 +266,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # N2O - Default EF - Unit-Fuel-N20 Default Emission Factor
@@ -277,7 +277,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Default EF').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/fuel units')
@@ -290,7 +290,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Site-specific EF').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Emission Factor', field_units='kg/fuel units')
@@ -303,7 +303,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # N2O - Replacement Methodology - Description
@@ -314,7 +314,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
@@ -351,7 +351,7 @@ def init_activity_schema_data(apps, schema_monitor):
     ActivitySchema.objects.create(
         activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id,
         json_schema=schema,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     )
 
@@ -392,7 +392,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 ).id,
                 has_unit=False,
                 json_schema=schema,
-                valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
         ]
