@@ -1,3 +1,4 @@
+from common.permissions import authorize
 from .router import router
 from registration.decorators import handle_http_errors
 from django.http import HttpRequest
@@ -15,7 +16,8 @@ from ..service.emission_category_service import EmissionCategoryService
 @router.get(
     "/emission-category",
     response={200: list, codes_4xx: Message, codes_5xx: Message},
-    url_name="get_activities",
+    url_name="get_emission_category",
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_emission_category(request: HttpRequest) -> Tuple[int, list]:

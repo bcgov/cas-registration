@@ -4,61 +4,58 @@ import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { useRouter } from "next/navigation";
+import { UUID } from "crypto";
 import {
-  nonAttributableEmissionSchema,
+  generateUpdatedSchema,
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
-import { UUID } from "crypto";
 
-const baseUrl = "/reports";
-const cancelUrl = "/reports";
+const BASE_URL = "/reports";
+const CANCEL_URL = "/reports";
 
 interface NonAttributableEmissionsProps {
   versionId: number;
   facilityId: UUID;
-  gasTypes: [];
-  emissionCategories: [];
+  gasTypes: { id: number; chemical_formula: string }[];
+  emissionCategories: { id: number; category_name: string }[];
 }
 
 export default function NonAttributableEmissionsForm({
   versionId,
   facilityId,
+  gasTypes,
+  emissionCategories,
 }: NonAttributableEmissionsProps) {
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState({});
+
   const router = useRouter();
 
-  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+  const SAVE_AND_CONTINUE_URL = `${BASE_URL}/${versionId}/facilities/${facilityId}/emissions-summary`;
 
+  const schema = generateUpdatedSchema(gasTypes, emissionCategories);
   const taskListElements: TaskListElement[] = [
     {
       type: "Page",
-      title: "Additional reporting data",
+      title: "Additional Reporting Data",
       isActive: true,
-      link: `/reports/${versionId}/additional-reporting-data`,
+      link: `${BASE_URL}/${versionId}/additional-reporting-data`,
     },
     {
       type: "Page",
-      title: "New entrant information",
-      link: `/reports/${versionId}/new-entrant-information`,
+      title: "New Entrant Information",
+      link: SAVE_AND_CONTINUE_URL,
     },
   ];
 
   const handleSubmit = async (data: any) => {
-    const endpoint = `reporting/report-version/${versionId}/additional-data`;
-    const method = "POST";
-
-    const payload = {
-      report_version: versionId,
-      ...data,
-      facilityId: facilityId,
-    };
-
-    const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(payload),
+    const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
+    const response = await actionHandler(endpoint, "POST", endpoint, {
+      body: JSON.stringify(data),
     });
+
     if (response) {
-      router.push(`${saveAndContinueUrl}`);
+      router.push(SAVE_AND_CONTINUE_URL);
     }
   };
 
@@ -73,17 +70,13 @@ export default function NonAttributableEmissionsForm({
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
-      schema={nonAttributableEmissionSchema}
+      schema={schema}
       uiSchema={nonAttributableEmissionUiSchema}
       formData={formData}
-      baseUrl={baseUrl}
-      cancelUrl={cancelUrl}
-      onChange={(data: any) => {
-        setFormData(data.formData);
-      }}
-      onSubmit={(data: any) => {
-        return handleSubmit(data.formData);
-      }}
+      baseUrl={BASE_URL}
+      cancelUrl={CANCEL_URL}
+      onChange={(data) => setFormData(data.formData)}
+      onSubmit={(data) => handleSubmit(data.formData)}
     />
   );
 }

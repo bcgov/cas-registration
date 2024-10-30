@@ -2,7 +2,7 @@ import { actionHandler } from "@bciers/actions";
 
 export const getAllEmissionCategories = async () => {
   return actionHandler(
-    `reporting/activities`,
+    `reporting/emission-category`,
     "GET",
     `reporting/emission-category`,
   );

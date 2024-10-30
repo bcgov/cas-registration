@@ -1,53 +1,17 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import {
-  MultiSelectWidget,
-  RadioWidget,
-} from "@bciers/components/form/widgets";
+import { RadioWidget, SelectWidget } from "@bciers/components/form/widgets";
 import { NonAttributableEmmissionsInfo } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/additionalMessage";
-import selectWidget from "@bciers/components/form/widgets/SelectWidget";
 
 export const nonAttributableEmissionSchema: RJSFSchema = {
   type: "object",
-  title: "Additional Reporting Data",
+  title: "Non-Attributable Emissions",
   properties: {
     info_note: { type: "object", readOnly: true },
     emissions_exceeded: {
       type: "boolean",
-      title: "Did your non-attributable emissions exceeded 100 tCO2e?",
-    },
-  },
-  dependencies: {
-    emissions_exceeded: {
-      oneOf: [
-        {
-          properties: {
-            emissions_exceeded: { enum: [false] },
-          },
-        },
-        {
-          properties: {
-            emissions_exceeded: { enum: [true] },
-            activity_name: {
-              type: "string",
-              title: "Activity name",
-            },
-            source_type: {
-              type: "string",
-              title: "Source type",
-            },
-            emissions_category: {
-              type: "string",
-              title: "Emissions category (Optional)",
-            },
-            gas_type: {
-              type: "array",
-              title: "Gas type (Optional)",
-            },
-          },
-        },
-      ],
+      title: "Did your non-attributable emissions exceed 100 tCO2e?",
     },
   },
 };
@@ -55,24 +19,67 @@ export const nonAttributableEmissionSchema: RJSFSchema = {
 export const nonAttributableEmissionUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  "ui:order": [
+    "info_note",
+    "emissions_exceeded",
+    "activity",
+    "source_type",
+    "emission_category",
+    "gas_type",
+  ],
   info_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": NonAttributableEmmissionsInfo,
   },
-  emissions_exceeded: {
-    "ui:widget": RadioWidget,
-  },
-  emissions_category: {
-    "ui:widget": selectWidget,
+  emissions_exceeded: { "ui:widget": RadioWidget },
+  emission_category: {
+    "ui:widget": SelectWidget,
+    "ui:placeholder": "Select Emissions Category",
     "ui:options": { style: { width: "100%", textAlign: "justify" } },
-    "ui:placeholder": "Emissions category",
   },
-
   gas_type: {
-    "ui:widget": MultiSelectWidget,
-    "ui:placeholder": "gas type",
+    "ui:widget": "MultiSelectWidget",
+    "ui:placeholder": "Select Gas Type",
     uniqueItems: true,
   },
 };
 
-export const getUpdatedSchema = () => {};
+export const generateUpdatedSchema = (
+  gasTypes: { id: number; chemical_formula: string }[],
+  emissionCategories: { id: number; category_name: string }[],
+): RJSFSchema => {
+  return {
+    ...nonAttributableEmissionSchema,
+    dependencies: {
+      emissions_exceeded: {
+        oneOf: [
+          { properties: { emissions_exceeded: { enum: [false] } } },
+          {
+            properties: {
+              emissions_exceeded: { enum: [true] },
+              activity: { type: "string", title: "Activity Name" },
+              source_type: { type: "string", title: "Source Type" },
+              gas_type: {
+                type: "array",
+                title: "Gas Type (Optional)",
+                items: {
+                  type: "number",
+                  enum: gasTypes.map((gas) => gas.id),
+                  enumNames: gasTypes.map((gas) => gas.chemical_formula),
+                },
+                uniqueItems: true,
+              },
+              emission_category: {
+                type: "string",
+                title: "Emission Category (Optional)",
+                enum: emissionCategories.map(
+                  (category) => category.category_name,
+                ),
+              },
+            },
+          },
+        ],
+      },
+    },
+  };
+};
