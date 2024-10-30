@@ -237,10 +237,10 @@ class ReportActivitySaveService:
 
     def save_methodology(
         self,
-        report_emission: ReportEmission | None,
+        report_emission: ReportEmission,
         methodology_data: dict,
     ) -> ReportMethodology:
-        json_data = exclude_keys(methodology_data, ['methodology'])
+        json_data = exclude_keys(methodology_data, ['methodology', 'id'])
         methodology = Methodology.objects.get(name=methodology_data['methodology'])
 
         report_methodology_id = methodology_data.get('id')
@@ -250,7 +250,7 @@ class ReportActivitySaveService:
                 "methodology": methodology,
                 "json_data": json_data,
                 "report_version": self.facility_report.report_version,
-                **({"report_emission": report_emission} if report_emission else {}),
+                "report_emission": report_emission,
             },
             defaults={"json_data": json_data, "methodology": methodology},
         )

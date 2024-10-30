@@ -212,7 +212,11 @@ class TestReportActivitySaveService(TestCase):
         ).order_by("id")
         assert report_methodology.count() == 9
 
-        assert report_methodology[0].json_data == {}
+        assert report_methodology[0].json_data == {
+            "fuelDefaultHighHeatingValue": 10,
+            "unitFuelCo2DefaultEmissionFactor": 20,
+            "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+        }
         assert report_methodology[0].methodology_id == 1
         assert report_methodology[0].report_emission_id == report_emissions[0].id
         assert report_methodology[0].report_version_id == test_infrastructure.facility_report.report_version.id

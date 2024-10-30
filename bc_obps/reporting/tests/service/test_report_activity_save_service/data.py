@@ -31,6 +31,9 @@ test_data = {
                                     "test_emission_str": "test",
                                     "methodology": {
                                         "methodology": "Default HHV/Default EF",
+                                        "fuelDefaultHighHeatingValue": 10,
+                                        "unitFuelCo2DefaultEmissionFactor": 20,
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
                                     },
                                 },
                             ],
