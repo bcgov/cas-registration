@@ -6,7 +6,10 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 class TestReportProductEndpoints(CommonTestSetup):
     def setup_method(self):
-        self.facility_report = make_recipe("reporting.tests.utils.facility_report")
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        self.facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        self.report_operation = make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
+
         self.endpoint_under_test = f"/api/reporting/report-version/{self.facility_report.report_version_id}/facilities/{self.facility_report.facility_id}/production-data"
         return super().setup_method()
 
@@ -21,7 +24,7 @@ class TestReportProductEndpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
-        self.facility_report.products.set(RegulatedProduct.objects.filter(id__in=[1, 2, 3]))
+        self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id__in=[1, 2, 3]))
         rp1 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=self.facility_report.report_version,

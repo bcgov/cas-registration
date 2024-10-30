@@ -26,7 +26,7 @@ class FacilityReportOut(ModelSchema):
     class Meta:
         alias_generator = to_snake
         model = FacilityReport
-        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products', 'facility']
+        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'facility']
 
 
 class FacilityReportIn(ModelSchema):
@@ -38,9 +38,8 @@ class FacilityReportIn(ModelSchema):
     facility_type: str
     facility_bcghgid: str
     activities: List[str]
-    products: List[str]
 
     class Meta:
         alias_generator = to_snake
         model = FacilityReport
-        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'products']
+        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities']

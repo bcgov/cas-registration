@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import Activity, RegulatedProduct
+from registration.models import Activity
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from registration.tests.utils.bakers import facility_baker
 from reporting.models import FacilityReport
@@ -19,7 +19,6 @@ class FacilityReportModelTest(BaseTestCase):
             report_version=report_version_baker(),
         )
         cls.test_object.activities.add(Activity.objects.first())
-        cls.test_object.products.add(RegulatedProduct.objects.first())
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
@@ -29,7 +28,6 @@ class FacilityReportModelTest(BaseTestCase):
             ("facility_type", "facility type", 1000, None),
             ("facility_bcghgid", "facility bcghgid", 1000, None),
             ("activities", "activities", None, 1),
-            ("products", "products", None, 1),
             ("reportactivity_records", "report activity", None, 0),
             ("reportrawactivitydata_records", "report raw activity data", None, 0),
             ("report_products", "report product", None, 0),

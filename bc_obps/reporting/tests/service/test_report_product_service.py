@@ -10,10 +10,15 @@ pytestmark = pytest.mark.django_db
 class TestReportProductService:
     def setup_method(self):
         self.test_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
-        self.facility_report = make_recipe(
-            "reporting.tests.utils.facility_report",
-            products=RegulatedProduct.objects.filter(id__in=[29, 1]),
+
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        self.facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        self.report_operation = make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=report_version,
+            regulated_products=RegulatedProduct.objects.filter(id__in=[29, 1]),
         )
+
         self.report_version_id = self.facility_report.report_version.id
         self.facility_id = self.facility_report.facility.id
 
@@ -79,7 +84,7 @@ class TestReportProductService:
         assert ReportProduct.objects.get(product_id=29) is not None
 
     def test_saves_additional_data(self):
-        self.facility_report.products.add(RegulatedProduct.objects.get(id=10))
+        self.report_operation.regulated_products.add(RegulatedProduct.objects.get(id=10))
 
         ReportProductService.save_production_data(
             self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
@@ -132,7 +137,7 @@ class TestReportProductService:
 
     def test_raises_if_facility_report_doesnt_list_products(self):
         products = make_recipe("registration.tests.utils.regulated_product", _quantity=3)
-        self.facility_report.products.set(products)
+        self.report_operation.regulated_products.set(products)
 
         with pytest.raises(
             ValueError,
@@ -214,7 +219,7 @@ class TestReportProductService:
                 "production_methodology": "test prod method",
             },
         ]
-        self.facility_report.products.set(products)
+        self.report_operation.regulated_products.set(products)
 
         ReportProductService.save_production_data(self.report_version_id, self.facility_id, data, self.test_user_guid)
 

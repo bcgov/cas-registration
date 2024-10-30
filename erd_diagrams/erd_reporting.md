@@ -90,7 +90,6 @@ FacilityReport {
     CharField facility_type
     CharField facility_bcghgid
     ManyToManyField activities
-    ManyToManyField products
 }
 GasType {
     BigAutoField id
@@ -323,7 +322,6 @@ FacilityReport }|--|| User : archived_by
 FacilityReport }|--|| Facility : facility
 FacilityReport }|--|| ReportVersion : report_version
 FacilityReport }|--|{ Activity : activities
-FacilityReport }|--|{ RegulatedProduct : products
 CustomMethodologySchema }|--|| Activity : activity
 CustomMethodologySchema }|--|| SourceType : source_type
 CustomMethodologySchema }|--|| GasType : gas_type
