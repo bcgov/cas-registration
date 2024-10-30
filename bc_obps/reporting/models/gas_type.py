@@ -12,6 +12,9 @@ class GasType(BaseModel):
     gwp = models.IntegerField(
         db_comment="GWP is the Global Warming Potential of a specific gas. The GWP value is used to convert gases into a CO2 equivalent value. For example, if CH4 gas has a gwp of 28, then 1 tonne of CH4 is equivalent to 28 tonnes of CO2 (CO2e). Source: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/392_2008#section6",
     )
+    cas_number = models.CharField(
+        db_comment="cas number is a unique value that identifes a gas_type (CO2, CH4...). https://www.cas.org/cas-data/cas-registry"
+    )
 
     def __str__(self) -> str:
         return self.name

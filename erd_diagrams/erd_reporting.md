@@ -97,6 +97,7 @@ GasType {
     CharField name
     CharField chemical_formula
     IntegerField gwp
+    CharField cas_number
 }
 FuelType {
     BigAutoField id
