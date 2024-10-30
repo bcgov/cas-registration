@@ -17,12 +17,13 @@ class TestDocumentService:
         file = data_url_to_file(MOCK_DATA_URL)
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        document = DocumentService.create_or_replace_operation_document(
+        document, created = DocumentService.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, file, 'boundary_map'
         )
 
         assert Document.objects.count() == 1
         assert document.type.name == 'boundary_map'
+        assert created is True
 
     @staticmethod
     def test_do_not_update_duplicate_operation_document():
@@ -36,7 +37,7 @@ class TestDocumentService:
         created_at = operation.documents.first().created_at
 
         updated_file = data_url_to_file(MOCK_DATA_URL)
-        document = DocumentService.create_or_replace_operation_document(
+        document, created = DocumentService.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, updated_file, 'boundary_map'
         )
 
@@ -45,6 +46,7 @@ class TestDocumentService:
         # MOCK_DATA_URL's filename is mock.pdf. When adding files to django, the name is appended, so we just check that 'mock' in the name
         assert document.file.name.find("mock") != -1
         assert document.created_at == created_at
+        assert created is False
 
     @staticmethod
     def test_update_operation_document():
@@ -57,7 +59,7 @@ class TestDocumentService:
         operation.documents.set([existing_document.id])
 
         updated_file = data_url_to_file(MOCK_DATA_URL_2)
-        document = DocumentService.create_or_replace_operation_document(
+        document, created = DocumentService.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, updated_file, 'boundary_map'
         )
 
@@ -65,3 +67,4 @@ class TestDocumentService:
         assert document.type.name == 'boundary_map'
         # MOCK_DATA_URL's filename is test.pdf
         assert document.file.name.find("test") != -1
+        assert created is True
