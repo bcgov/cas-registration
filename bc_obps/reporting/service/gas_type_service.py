@@ -5,5 +5,4 @@ from typing import List, Dict, Any
 class GasTypeService:
     @classmethod
     def get_all_gas_types(cls) -> List[Dict[str, Any]]:
-        # Fetch gas types as dictionaries
-        return list(GasType.objects.all().values())
+        return [dict(gas_type) for gas_type in GasType.objects.values()]
