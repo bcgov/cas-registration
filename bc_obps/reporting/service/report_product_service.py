@@ -5,6 +5,7 @@ from django.db.models import QuerySet
 from django.db import transaction
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.facility_report import FacilityReport
+from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 
 
@@ -18,9 +19,14 @@ class ReportProductService:
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
 
         # Delete the report products that are not in the data
-        # We want an error to be raised if the "product_id" key doesn't exist
+
+        # A KeyError is raised if the "product_id" key doesn't exist
         product_ids = [rp["product_id"] for rp in report_products]
-        allowed_product_ids = facility_report.products.values_list("id", flat=True)
+
+        # A DoesNotExist error is raised if the report doesn't have a ReportOperation object.
+        allowed_product_ids = ReportOperation.objects.get(
+            report_version_id=report_version_id
+        ).regulated_products.values_list("id", flat=True)
 
         if RegulatedProduct.objects.filter(id__in=product_ids).exclude(id__in=allowed_product_ids).exists():
             raise ValueError(

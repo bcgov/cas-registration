@@ -135,7 +135,6 @@ class TestReportService(TestCase):
                         facility_report.facility_type,
                         facility_report.facility_bcghgid,
                         facility_report.activities.count(),
-                        facility_report.products.count(),
                     ),
                     (
                         facility,
@@ -143,6 +142,5 @@ class TestReportService(TestCase):
                         facility.type,
                         facility.bcghg_id,
                         2,
-                        3,
                     ),
                 )

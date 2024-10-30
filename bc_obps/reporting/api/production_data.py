@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models.facility_report import FacilityReport
+from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.schema.report_product import ProductionDataOut, ReportProductSchemaIn
 from reporting.service.report_product_service import ReportProductService
@@ -51,10 +51,6 @@ def load_production_data(request: HttpRequest, report_version_id: int, facility_
     report_products = (
         ReportProduct.objects.filter(facility_report__facility_id=facility_id).order_by("product_id").all()
     )
-    allowed_products = (
-        FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
-        .products.order_by("id")
-        .all()
-    )
+    allowed_products = ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.all()
 
     return 200, {"report_products": report_products, "allowed_products": allowed_products}

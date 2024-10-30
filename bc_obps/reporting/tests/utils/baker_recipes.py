@@ -6,6 +6,7 @@ from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
 from reporting.models.methodology import Methodology
 from reporting.models.report_activity import ReportActivity
+from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
@@ -32,6 +33,7 @@ report = Recipe(
 report_version = Recipe(ReportVersion, report=foreign_key(report))
 
 facility_report = Recipe(FacilityReport, report_version=foreign_key(report_version), facility=foreign_key(facility))
+report_operation = Recipe(ReportOperation, report_version=foreign_key(report_version))
 
 configuration = Recipe(Configuration)
 
