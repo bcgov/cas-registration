@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0045_V1_11_0'),
-        ('reporting', '0023_emission_category_mapping_with_data'),
+        ('reporting', '0024_open_pit_coal_mining'),
     ]
 
     operations = [
