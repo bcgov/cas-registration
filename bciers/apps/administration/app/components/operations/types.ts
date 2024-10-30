@@ -66,4 +66,6 @@ export interface OperationInformationPartialFormData {
   regulated_products?: number[];
   forcasted_emmisions?: string;
   status?: string;
+  new_entrant_application?: string;
+  date_of_first_shipment?: string;
 }
