@@ -9,7 +9,7 @@ from reporting.models.report_activity import ReportActivity
 from reporting.schema.generic import Message
 from reporting.schema.report_activity_data import ReportActivityDataIn, ReportActivityDataOut
 from reporting.service.report_activity_save_service import ReportActivitySaveService
-from reporting.service.serializers import ReportActivitySerializer
+from reporting.service.report_activity_serializers import ReportActivitySerializer
 from service.error_service import custom_codes_4xx
 from .router import router
 

@@ -61,3 +61,7 @@ class TestReportActivityEndpoint(CommonTestSetup):
         assert response.status_code == 200
         mock_service.assert_called_once_with({"test_data": "1"})
         assert response.json() == 12345
+
+    @patch("reporting.service.report_activity_serializer.ReportActivitySerializer.serialize")
+    def test_get_returns_the_serialized_value_from_the_serializer(self, mock_serialize: MagicMock):
+        raise NotImplementedError
