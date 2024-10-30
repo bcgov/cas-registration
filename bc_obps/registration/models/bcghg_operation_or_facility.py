@@ -14,26 +14,26 @@ class BcghgOperationOrFacility(BaseModel):
     id = models.CharField(
         primary_key=True,
         max_length=255,
-        db_comment="The BC GHG ID of an operation or facility",
+        db_comment="The BCGHG ID of an operation or facility",
     )
     issued_at = models.DateTimeField(
         auto_now_add=True,
-        db_comment="The time the BC GHG ID was issued by an IRC user",
+        db_comment="The time the BCGHG ID was issued by an IRC user",
     )
     issued_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        db_comment="The IRC user who issued the BC GHG ID",
+        db_comment="The IRC user who issued the BCGHG ID",
         blank=True,
         null=True,
         related_name="bcghg_operation_or_facility_issued_by",
     )
     comments = models.TextField(
         blank=True,
-        db_comment="Comments from admins in the case that a BC GHG ID is revoked",
+        db_comment="Comments from admins in the case that a BCGHG ID is revoked",
     )
     history = HistoricalRecords(
-        table_name='erc_history"."bcghg_operation_or_facility',
+        table_name='erc_history"."bcghg_operation_or_facility_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 

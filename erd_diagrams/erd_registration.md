@@ -878,6 +878,23 @@ TransferEvent {
     CharField status
     ManyToManyField facilities
 }
+HistoricalBcghgOperationOrFacility {
+    CharField id
+    DateTimeField issued_at
+    TextField comments
+    UUIDField history_user_id
+    ForeignKey issued_by
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+BcghgOperationOrFacility {
+    CharField id
+    DateTimeField issued_at
+    ForeignKey issued_by
+    TextField comments
+}
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
 HistoricalDocument }|--|| User : archived_by
@@ -1102,3 +1119,5 @@ TransferEvent }|--|| Operation : operation
 TransferEvent }|--|| Operator : other_operator
 TransferEvent }|--|| Contact : other_operator_contact
 TransferEvent }|--|{ Facility : facilities
+HistoricalBcghgOperationOrFacility }|--|| User : issued_by
+BcghgOperationOrFacility }|--|| User : issued_by
