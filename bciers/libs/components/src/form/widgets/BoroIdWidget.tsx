@@ -51,6 +51,7 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, formContext }) => {
           const response = await generateBoroId(formContext?.operationId);
           if (response?.error) {
             setError(response.error);
+            return;
           }
           setIsSnackbarOpen(true);
           setBoroId(response?.id);

@@ -36,7 +36,11 @@ useParams.mockReturnValue({
 });
 
 useSession.mockReturnValue({
-  get: vi.fn(),
+  data: {
+    user: {
+      app_role: "industry_user_admin",
+    },
+  },
 });
 
 const mockReplace = vi.fn();

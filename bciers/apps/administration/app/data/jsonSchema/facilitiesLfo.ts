@@ -37,6 +37,7 @@ const section1: RJSFSchema = {
       } or ${currentYear}?`,
       default: false,
     },
+    bcghg_id: { type: "string", title: "BCGHGID" },
   },
   allOf: [
     {
@@ -138,6 +139,9 @@ export const facilitiesLfoUiSchema = {
       "ui:options": {
         arrayAddLabel: "Add Well Authorization Number",
       },
+    },
+    bcghg_id: {
+      "ui:widget": "BcghgIdWidget",
     },
   },
   section2: {
