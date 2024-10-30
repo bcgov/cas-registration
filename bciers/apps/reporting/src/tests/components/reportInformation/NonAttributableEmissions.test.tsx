@@ -5,6 +5,7 @@ import { vi } from "vitest";
 import NonAttributableEmissionsForm from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributableEmissionsForm";
 import { UUID } from "crypto";
 
+// Mock next/navigation and action handler
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
   useSearchParams: vi.fn(),
@@ -12,10 +13,6 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
-}));
-
-vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
-  getRegistrationPurpose: vi.fn(),
 }));
 
 describe("AdditionalReportingData Component", () => {
@@ -26,7 +23,7 @@ describe("AdditionalReportingData Component", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
-    (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
       prefetch: vi.fn(),
@@ -42,22 +39,7 @@ describe("AdditionalReportingData Component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders form with correct initial fields", async () => {
-    render(
-      <NonAttributableEmissionsForm
-        versionId={versionId}
-        facilityId={facilityId}
-        gasTypes={gasTypes}
-        emissionCategories={emissionCategories}
-      />,
-    );
-    const emissionExceededText = await screen.findByText(
-      "Did your non-attributable emissions exceed 100 tCO2e?",
-    );
-    expect(emissionExceededText).toBeInTheDocument();
-  });
-
-  it("updates formData when form input changes", async () => {
+  it("updates form data when an input changes", async () => {
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
@@ -69,14 +51,13 @@ describe("AdditionalReportingData Component", () => {
 
     const yesRadioButton = screen.getByLabelText("Yes");
     fireEvent.click(yesRadioButton);
-
     expect(yesRadioButton).toBeChecked();
 
     const activityNameField = await screen.findByText("Activity Name");
     expect(activityNameField).toBeInTheDocument();
   });
 
-  it("submits form data and redirects on success", async () => {
+  it("renders the form with the correct initial fields", async () => {
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
@@ -86,16 +67,27 @@ describe("AdditionalReportingData Component", () => {
       />,
     );
 
-    await waitFor(() => {
-      const submitButton = screen.getByRole("button", {
-        name: /Save And Continue/i,
-      });
-      expect(submitButton).toBeInTheDocument(); // Confirm it's in the document
-    });
+    const emissionExceededText = await screen.findByText(
+      "Did your non-attributable emissions exceed 100 tCO2e?",
+    );
+    expect(emissionExceededText).toBeInTheDocument();
+  });
 
-    const submitButton = screen.getByRole("button", {
+  it("submits form data and redirects on successful submission", async () => {
+    render(
+      <NonAttributableEmissionsForm
+        versionId={versionId}
+        facilityId={facilityId}
+        gasTypes={gasTypes}
+        emissionCategories={emissionCategories}
+      />,
+    );
+
+    const submitButton = await screen.findByRole("button", {
       name: /Save And Continue/i,
     });
+    expect(submitButton).toBeInTheDocument();
+
     fireEvent.click(submitButton);
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
