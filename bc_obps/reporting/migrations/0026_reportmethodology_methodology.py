@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0024_open_pit_coal_mining'),
+        ('reporting', '0025_report_raw_activity_data'),
     ]
 
     operations = [
