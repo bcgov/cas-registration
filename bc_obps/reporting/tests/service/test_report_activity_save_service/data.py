@@ -29,9 +29,12 @@ test_data = {
                                     "test_emission_number": 12345,
                                     "test_emission_bool": True,
                                     "test_emission_str": "test",
-                                    "methodology": "Default EV",
-                                    "methodology_field_1": 123,
-                                    "method_field_2": "Some description",
+                                    "methodology": {
+                                        "methodology": "Default HHV/Default EF",
+                                        "fuelDefaultHighHeatingValue": 10,
+                                        "unitFuelCo2DefaultEmissionFactor": 20,
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                    },
                                 },
                             ],
                         },
@@ -50,9 +53,20 @@ test_data = {
                             "emissions": [
                                 {
                                     "gasType": "CO2",
+                                    "methodology": {
+                                        "methodology": "Default HHV/Default EF",
+                                        "fuelDefaultHighHeatingValue": 11,
+                                        "unitFuelCo2DefaultEmissionFactor": 23,
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                    },
                                 },
                                 {
                                     "gasType": "N2O",
+                                    "methodology": {
+                                        "methodology": "Default EF",
+                                        "unitFuelCo2DefaultEmissionFactor": 3,
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                    },
                                 },
                             ],
                         },
@@ -63,9 +77,22 @@ test_data = {
                             "emissions": [
                                 {
                                     "gasType": "CO2",
+                                    "methodology": {
+                                        "methodology": "Measured HHV/Default EF",
+                                        "unitFuelCo2DefaultEmissionFactor": 4,
+                                        "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                                        "fuelAnnualWeightedAverageHighHeatingValue": 4,
+                                    },
                                 },
                                 {
                                     "gasType": "N2O",
+                                    "methodology": {
+                                        "methodology": "Measured Steam/Default EF",
+                                        "unitFuelAnnualSteamGenerated": 5,
+                                        "boilerRatio": 5,
+                                        "unitFuelCo2EmissionFactor": 5,
+                                        "unitFuelCo2EmissionFactorFieldUnits": "kg/GJ",
+                                    },
                                 },
                             ],
                         },
@@ -80,9 +107,19 @@ test_data = {
                             "emissions": [
                                 {
                                     "gasType": "CO2",
+                                    "methodology": {
+                                        "methodology": "Measured CC",
+                                        "fuelAnnualWeightedAverageCarbonContentWeightFraction": 6,
+                                    },
                                 },
                                 {
                                     "gasType": "N2O",
+                                    "methodology": {
+                                        "methodology": "Measured Steam/Measured EF",
+                                        "unitFuelAnnualSteamGenerated": 7,
+                                        "unitFuelCo2MeasuredEmissionFactor": 7,
+                                        "unitFuelCo2MeasuredEmissionFactorFieldUnits": "kg/fuel units",
+                                    },
                                 },
                             ],
                         },
@@ -93,9 +130,14 @@ test_data = {
                             "emissions": [
                                 {
                                     "gasType": "CO2",
+                                    "methodology": {
+                                        "methodology": "Alternative Parameter Measurement",
+                                        "description": "eight",
+                                    },
                                 },
                                 {
                                     "gasType": "N2O",
+                                    "methodology": {"methodology": "Replacement Methodology", "description": "nine"},
                                 },
                             ],
                         },

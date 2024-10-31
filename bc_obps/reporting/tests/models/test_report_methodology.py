@@ -12,4 +12,5 @@ class ReportMethodologyModelTest(BaseTestCase):
             *TIMESTAMP_COMMON_FIELDS,
             *REPORT_DATA_MODELS_COMMON_FIELDS,
             ("report_emission", "report emission", None, None),
+            ("methodology_id", "methodology", None, None),
         ]

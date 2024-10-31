@@ -50,4 +50,5 @@ class MethodologyModelTest(BaseTestCase):
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("configuration_elements", "configuration element", None, None),
+            ("reportmethodology_records", "report methodology", None, 0),
         ]

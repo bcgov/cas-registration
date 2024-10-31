@@ -6,8 +6,10 @@ from reporting.models.activity_source_type_json_schema import ActivitySourceType
 from reporting.models.facility_report import FacilityReport
 from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
+from reporting.models.methodology import Methodology
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_emission import ReportEmission
+from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
@@ -208,10 +210,12 @@ class ReportActivitySaveService:
         report_fuel: ReportFuel | None,
         emission_data: dict,
     ) -> ReportEmission:
-        json_data = exclude_keys(emission_data, ['gasType', 'id'])
+        json_data = exclude_keys(emission_data, ['gasType', 'id', 'methodology'])
         gas_type = GasType.objects.get(chemical_formula=emission_data['gasType'])
 
         report_emission_id = emission_data.get('id')
+        if 'methodology' not in emission_data:
+            raise ValueError("Emission is expecting methodology data")
 
         report_emission, _ = ReportEmission.objects.update_or_create(
             id=report_emission_id,
@@ -227,7 +231,32 @@ class ReportActivitySaveService:
         report_emission.set_create_or_update(self.user_guid)
         EmissionCategoryMappingService.apply_emission_categories(report_source_type, report_fuel, report_emission)
 
+        self.save_methodology(report_emission, emission_data['methodology'])
+
         return report_emission
+
+    def save_methodology(
+        self,
+        report_emission: ReportEmission,
+        methodology_data: dict,
+    ) -> ReportMethodology:
+        json_data = exclude_keys(methodology_data, ['methodology', 'id'])
+        methodology = Methodology.objects.get(name=methodology_data['methodology'])
+
+        report_methodology_id = methodology_data.get('id')
+        report_methodology, _ = ReportMethodology.objects.update_or_create(
+            id=report_methodology_id,
+            create_defaults={
+                "methodology": methodology,
+                "json_data": json_data,
+                "report_version": self.facility_report.report_version,
+                "report_emission": report_emission,
+            },
+            defaults={"json_data": json_data, "methodology": methodology},
+        )
+        report_methodology.set_create_or_update(self.user_guid)
+
+        return report_methodology
 
     def save_raw_data(self, data: dict) -> ReportRawActivityData:
         """

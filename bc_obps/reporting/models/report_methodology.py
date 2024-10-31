@@ -1,9 +1,17 @@
 from django.db import models
 from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_emission import ReportEmission
+from reporting.models.methodology import Methodology
 
 
 class ReportMethodology(ReportDataBaseModel):
+
+    methodology = models.ForeignKey(
+        Methodology,
+        on_delete=models.PROTECT,
+        related_name="%(class)s_records",
+        db_comment="The methodology this data applies to",
+    )
 
     report_emission = models.OneToOneField(
         ReportEmission,
