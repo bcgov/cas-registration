@@ -33,7 +33,7 @@ export const uiSchemaMap: UiSchemaMap = {
   refinery_fuel_gas: refineryFuelGasUiSchema,
   carbonate_use: carbonatesUseUiSchema,
   open_pit_coal_mining: openPitCoalMining,
-  storage_of_petroleum_products: storageOfPetroleumProductsUiSchema,
+  storage_petro_products: storageOfPetroleumProductsUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
@@ -56,5 +56,5 @@ export const defaultEmtpySourceTypeMap: DefaultEmptySourceTypeMap = {
   refinery_fuel_gas: withFuels,
   carbonate_use: onlyEmissions,
   open_pit_coal_mining: onlyEmissions,
-  storage_of_petroleum_products: onlyEmissions,
+  storage_petro_products: onlyEmissions,
 };
