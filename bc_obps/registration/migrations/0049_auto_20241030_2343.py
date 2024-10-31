@@ -2,6 +2,7 @@
 
 from django.db import migrations
 
+
 def add_document_type_data(apps, schema_monitor):
     '''
     Add new_entrant_application_and_statutory_declaration to erc.document_type
@@ -18,6 +19,7 @@ def reverse_add_document_type_data(apps, schema_monitor):
     DocumentType.objects.filter(
         name='new_entrant_application_and_statutory_declaration',
     ).delete()
+
 
 class Migration(migrations.Migration):
 
