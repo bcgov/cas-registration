@@ -27,7 +27,16 @@ export default function NonAttributableEmissionsForm({
   gasTypes,
   emissionCategories,
 }: NonAttributableEmissionsProps) {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    activities: [
+      {
+        activity: "",
+        source_type: "",
+        gas_type: [],
+        emission_category: "",
+      },
+    ],
+  });
 
   const router = useRouter();
 
@@ -60,9 +69,8 @@ export default function NonAttributableEmissionsForm({
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
     const response = await actionHandler(endpoint, "POST", endpoint, {
-      body: JSON.stringify(data),
+      body: JSON.stringify(data.activities),
     });
-
     if (response) {
       router.push(SAVE_AND_CONTINUE_URL);
     }

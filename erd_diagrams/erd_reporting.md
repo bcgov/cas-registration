@@ -304,7 +304,7 @@ ReportNonAttributableEmissions {
     DateTimeField updated_at
     ForeignKey archived_by
     DateTimeField archived_at
-    OneToOneField report_version
+    ForeignKey report_version
     CharField activity
     CharField source_type
     ForeignKey emission_category
@@ -418,6 +418,6 @@ ReportProduct }|--|| RegulatedProduct : product
 ReportNonAttributableEmissions }|--|| User : created_by
 ReportNonAttributableEmissions }|--|| User : updated_by
 ReportNonAttributableEmissions }|--|| User : archived_by
-ReportNonAttributableEmissions ||--|| ReportVersion : report_version
+ReportNonAttributableEmissions }|--|| ReportVersion : report_version
 ReportNonAttributableEmissions }|--|| EmissionCategory : emission_category
 ReportNonAttributableEmissions }|--|{ GasType : gas_type

@@ -19,6 +19,7 @@ class ReportVersionTest(BaseTestCase):
             ("reportemission_records", "report emission", None, 0),
             ("report_person_responsible", "report person responsible", None, None),
             ("report_additional_data", "report additional data", None, None),
+            ("report_non_attributable_emissions", "report non attributable emissions", None, None),
             ("reportfuel_records", "report fuel", None, 0),
             ("reportmethodology_records", "report methodology", None, 0),
             ("reportsourcetype_records", "report source type", None, 0),

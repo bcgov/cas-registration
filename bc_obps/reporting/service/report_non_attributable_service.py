@@ -15,16 +15,16 @@ class ReportNonAttributableService:
         # Fetch the EmissionCategory instance
         emission_category = EmissionCategory.objects.get(category_name=data.emission_category)
 
-        # Update or create the report non-attributable emissions record
-        report_non_attributable, created = ReportNonAttributableEmissions.objects.update_or_create(
+        # Create a new report non-attributable emissions record
+        report_non_attributable = ReportNonAttributableEmissions.objects.create(
             report_version_id=version_id,
-            defaults={
-                "activity": data.activity,
-                "source_type": data.source_type,
-                "emission_category": emission_category,
-            },
+            activity=data.activity,
+            source_type=data.source_type,
+            emission_category=emission_category,
         )
-        gas_types = GasType.objects.filter(id__in=data.gas_type)  # Assuming data.gas_type contains IDs
+
+        # Set gas types for the report
+        gas_types = GasType.objects.filter(chemical_formula__in=data.gas_type)  # Assuming data.gas_type contains IDs
         report_non_attributable.gas_type.set(gas_types)
         report_non_attributable.save()
 
