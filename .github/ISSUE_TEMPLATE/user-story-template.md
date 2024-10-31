@@ -1,17 +1,12 @@
 ---
 name: User Story Template
-about:
-  User stories are broken down product backlog items that are user-focused and
+about: User stories are broken down product backlog items that are user-focused and
   vertically-sliced.
-title: ""
-labels: User Story
-assignees: ""
+title: ''
+labels: Backlog Refinement, User Story
+assignees: ''
+
 ---
-
-#### Dependencies
-
-- Blocked by
-- Blocking
 
 #### Description:
 
@@ -30,7 +25,7 @@ Then
 - [ ] Checklist item
 - [ ] Meets the DOD
 
-**Definition of Ready** (Note: If any of these points are not applicable, mark N/A)
+#### Definition of Ready (Note: If any of these points are not applicable, mark N/A)
 
 - [ ] User story is included
 - [ ] User role and type are identified
@@ -40,7 +35,7 @@ Then
 - [ ] Dependencies are identified (technical, business, regulatory/policy)
 - [ ] Story has been estimated (under 13 pts)
 
-·**Definition of Done** (Note: If any of these points are not applicable, mark N/A)
+#### Definition of Done (Note: If any of these points are not applicable, mark N/A)
 
 - [ ] Acceptance criteria are tested by the CI pipeline
 - [ ] UI meets accessibility requirements
@@ -52,4 +47,9 @@ Then
 - [ ] Bugs or future work cards are identified and created
 - [ ] Reviewed and approved by Product Owner
 
+#### Blocked By/Blocking
+
+
 #### Notes:
+
+-
