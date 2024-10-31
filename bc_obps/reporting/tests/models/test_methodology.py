@@ -34,6 +34,8 @@ class TestInitialData(TestCase):
                 'Solids-HHV',
                 'Solids-CC',
                 'Make-up Chemical Use Methodology',
+                'WCI.203(f)(1)',
+                'WCI.203(f)(2)',
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list('name', flat=True)))
