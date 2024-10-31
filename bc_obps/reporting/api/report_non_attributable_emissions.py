@@ -9,23 +9,24 @@ from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 from .router import router
+from ..models import ReportNonAttributableEmissions
 from ..schema.report_non_attributable_emissions import ReportNonAttributableOut, ReportNonAttributableIn
 from ..service.report_non_attributable_service import ReportNonAttributableService
 
 
 @router.get(
     "/report-version/{version_id}/facilities/{facility_id}/non-attributable",
-    response={200: ReportNonAttributableOut, custom_codes_4xx: Message},
+    response={200: List[ReportNonAttributableOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
+    description="""Takes version_id (primary key of Report_Version model) and returns all non-attributable emissions for that report version.""",
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def get_report_operation_by_version_id(
+def get_report_non_attributable_by_version_id(
     request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], ReportNonAttributableOut]:
-    report_operation = ReportNonAttributableService.get_report_non_attributable_by_version_id(version_id)
-    return 200, report_operation  # type: ignore
+) -> tuple[Literal[200], list[ReportNonAttributableEmissions]]:
+    emissions = ReportNonAttributableService.get_report_non_attributable_by_version_id(version_id)
+    return 200, emissions
 
 
 @router.post(
