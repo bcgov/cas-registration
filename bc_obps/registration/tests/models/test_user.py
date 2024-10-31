@@ -130,7 +130,7 @@ class UserModelTest(BaseTestCase):
             ("transferevent_updated", "transfer event", None, None),
             ("transferevent_archived", "transfer event", None, None),
             ("bc_obps_regulated_operation_issued_by", "bc obps regulated operation", None, None),
-            ("bcghg_operation_or_facility_issued_by", "bcghg operation or facility", None, None),
+            ("bc_greenhouse_gas_id_issued_by", "bc greenhouse gas id", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
