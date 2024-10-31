@@ -161,9 +161,6 @@ class TestReportActivitySaveService(TestCase):
             "test_emission_number": 12345,
             "test_emission_bool": True,
             "test_emission_str": "test",
-            "methodology": "Default EV",
-            "methodology_field_1": 123,
-            "method_field_2": "Some description",
             "emission": 1,
             "equivalentEmission": '28.0000',
         }

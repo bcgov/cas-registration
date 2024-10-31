@@ -15,11 +15,13 @@ class TestInitialData(TestCase):
 class GasTypeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = GasType.objects.create(name="testGasType", chemical_formula='CO2')
+        cls.test_object = GasType.objects.create(name="testGasType", chemical_formula='CO2', gwp=1, cas_number='1-1-1')
         cls.field_data = [
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("chemical_formula", "chemical formula", 100, None),
             ("configuration_elements", "configuration element", None, None),
             ("reportemission_records", "report emission", None, 0),
+            ("gwp", "gwp", None, None),
+            ("cas_number", "cas number", None, None),
         ]
