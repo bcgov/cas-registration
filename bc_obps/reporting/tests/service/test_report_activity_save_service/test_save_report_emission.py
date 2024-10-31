@@ -61,7 +61,9 @@ class TestSaveReportEmission(TestCase):
             )
 
         with_none_report_fuel = service_under_test.save_emission(
-report_source_type, None, {"gasType": "GGIRCA", "emission":1, "methodology": {"methodology": "Default HHV/Default EF"}}
+            report_source_type,
+            None,
+            {"gasType": "GGIRCA", "emission": 1, "methodology": {"methodology": "Default HHV/Default EF"}},
         )
         assert with_none_report_fuel.report_fuel is None
 
@@ -166,9 +168,9 @@ report_source_type, None, {"gasType": "GGIRCA", "emission":1, "methodology": {"m
                 "id": report_emission.id,
                 "test_emission_prop": "new something",
                 "gasType": "BCOBPS",
+                "emission": 2,
                 "methodology": {
                     "id": 9003,
-                    "emission": 2,
                     "methodology": "Default EF",
                     "unitFuelCo2DefaultEmissionFactor": 3,
                     "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
@@ -230,7 +232,17 @@ report_source_type, None, {"gasType": "GGIRCA", "emission":1, "methodology": {"m
         return_value = service_under_test.save_emission(
             report_source_type,
             report_fuel,
-            {"test_emission_prop": "something", "gasType": "GGIRCA", "emission": "1.00123399"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "emission": "1.00123399",
+                "methodology": {
+                    "id": 9003,
+                    "methodology": "Default EF",
+                    "unitFuelCo2DefaultEmissionFactor": 3,
+                    "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+                },
+            },
         )
 
         # Rounds to 4 decimal places and returns correct equivalentEmission value
