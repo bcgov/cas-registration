@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 
-class BcghgOperationOrFacility(BaseModel):
+class BcGreenhouseGasId(BaseModel):
 
     id = models.CharField(
         primary_key=True,
@@ -26,20 +26,20 @@ class BcghgOperationOrFacility(BaseModel):
         db_comment="The IRC user who issued the BCGHG ID",
         blank=True,
         null=True,
-        related_name="bcghg_operation_or_facility_issued_by",
+        related_name="bc_greenhouse_gas_id_issued_by",
     )
     comments = models.TextField(
         blank=True,
         db_comment="Comments from admins in the case that a BCGHG ID is revoked",
     )
     history = HistoricalRecords(
-        table_name='erc_history"."bcghg_operation_or_facility_history',
+        table_name='erc_history"."bc_greenhouse_gas_id_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
     class Meta:
         db_table_comment = "Table to store BCGHG ID metadata. Once an operation or facility meets the criteria for an ID, then it is issued one."
-        db_table = 'erc"."bcghg_operation_or_facility'
+        db_table = 'erc"."bc_greenhouse_gas_id'
 
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:

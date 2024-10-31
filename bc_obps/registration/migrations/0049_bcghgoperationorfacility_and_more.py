@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='BcghgOperationOrFacility',
+            name='BcGreenhouseGasId',
             fields=[
                 (
                     'id',
@@ -43,18 +43,18 @@ class Migration(migrations.Migration):
                         db_comment='The IRC user who issued the BCGHG ID',
                         null=True,
                         on_delete=django.db.models.deletion.PROTECT,
-                        related_name='bcghg_operation_or_facility_issued_by',
+                        related_name='bc_greenhouse_gas_id_issued_by',
                         to='registration.user',
                     ),
                 ),
             ],
             options={
-                'db_table': 'erc"."bcghg_operation_or_facility',
+                'db_table': 'erc"."bc_greenhouse_gas_id',
                 'db_table_comment': 'Table to store BCGHG ID metadata. Once an operation or facility meets the criteria for an ID, then it is issued one.',
             },
         ),
         migrations.CreateModel(
-            name='HistoricalBcghgOperationOrFacility',
+            name='HistoricalBcGreenhouseGasId',
             fields=[
                 (
                     'id',
@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'historical bcghg operation or facility',
                 'verbose_name_plural': 'historical bcghg operation or facilitys',
-                'db_table': 'erc_history"."bcghg_operation_or_facility_history',
+                'db_table': 'erc_history"."bc_greenhouse_gas_id_history',
                 'ordering': ('-history_date', '-history_id'),
                 'get_latest_by': ('history_date', 'history_id'),
             },

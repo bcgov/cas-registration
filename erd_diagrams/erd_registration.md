@@ -878,7 +878,7 @@ TransferEvent {
     CharField status
     ManyToManyField facilities
 }
-HistoricalBcghgOperationOrFacility {
+HistoricalBcGreenhouseGasId {
     CharField id
     DateTimeField issued_at
     TextField comments
@@ -889,7 +889,7 @@ HistoricalBcghgOperationOrFacility {
     CharField history_change_reason
     CharField history_type
 }
-BcghgOperationOrFacility {
+BcGreenhouseGasId {
     CharField id
     DateTimeField issued_at
     ForeignKey issued_by
@@ -1119,5 +1119,5 @@ TransferEvent }|--|| Operation : operation
 TransferEvent }|--|| Operator : other_operator
 TransferEvent }|--|| Contact : other_operator_contact
 TransferEvent }|--|{ Facility : facilities
-HistoricalBcghgOperationOrFacility }|--|| User : issued_by
-BcghgOperationOrFacility }|--|| User : issued_by
+HistoricalBcGreenhouseGasId }|--|| User : issued_by
+BcGreenhouseGasId }|--|| User : issued_by

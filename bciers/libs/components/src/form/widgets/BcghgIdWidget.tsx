@@ -11,18 +11,13 @@ export enum EntityWithBcghgType {
   FACILITY = "facility",
 }
 
-async function generateBcghgId(
-  entityId: string,
-  entityType: EntityWithBcghgType,
-) {
+function generateBcghgId(entityId: string, entityType: EntityWithBcghgType) {
   const endpoint =
     entityType === EntityWithBcghgType.OPERATION
       ? `registration/v2/operations/${entityId}/bcghg-id`
       : `registration/facilities/${entityId}/bcghg-id`;
 
-  const response = await actionHandler(endpoint, "PATCH", "");
-
-  return response;
+  return actionHandler(endpoint, "PATCH", "");
 }
 
 const BcghgIdWidget: React.FC<WidgetProps> = ({ id, value, formContext }) => {
