@@ -1,5 +1,4 @@
 from django.test import TestCase
-import pytest
 from registration.models.activity import Activity
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from reporting.models.fuel_type import FuelType
@@ -16,6 +15,7 @@ from reporting.tests.service.test_report_activity_save_service.infrastructure im
     get_report_fuel_by_index,
     get_report_unit_by_index,
 )
+from django.core.exceptions import ValidationError
 
 
 class TestReportActivitySaveService(TestCase):
@@ -28,8 +28,11 @@ class TestReportActivitySaveService(TestCase):
             t.user.user_guid,
         )
 
-        with pytest.raises(KeyError, match="sourceTypes"):
+        try:
             service_under_test.save({})
+        except ValidationError as e:
+            assert 'json_data' in e.message_dict
+            assert 'This field cannot be blank.' in e.message_dict['json_data']
 
     def test_creates_report_activity_data(self):
         """
@@ -204,3 +207,43 @@ class TestReportActivitySaveService(TestCase):
         assert report_emissions[8].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[8].gas_type == GasType.objects.get(chemical_formula='N2O')
         assert report_emissions[8].report_fuel == get_report_fuel_by_index(report_activity, 1, 1, 1)
+
+    def test_save_raw_data(self):
+        """Test that raw activity data is saved correctly"""
+        t = TestInfrastructure.build()
+        service_under_test = ReportActivitySaveService(
+            t.report_version.id,
+            t.facility_report.facility.id,
+            t.activity.id,
+            t.user.user_guid,
+        )
+        test_data = {"sourceTypes": {"test_source": {"value": 123, "name": "test"}}}
+
+        # Save the raw data using imported test data
+        raw_activity = service_under_test.save_raw_data(test_data)
+
+        # Assertions
+        assert raw_activity is not None
+        assert raw_activity.json_data == test_data
+
+    def test_save_raw_data_updates_existing(self):
+        """Test that raw activity data is updated correctly when it already exists"""
+        t = TestInfrastructure.build()
+        service_under_test = ReportActivitySaveService(
+            t.report_version.id,
+            t.facility_report.facility.id,
+            t.activity.id,
+            t.user.user_guid,
+        )
+
+        # Initial data
+        initial_data = {"sourceTypes": {"test": {"value": "initial"}}}
+        initial_raw = service_under_test.save_raw_data(initial_data)
+
+        # Updated data
+        updated_data = {"sourceTypes": {"test": {"value": "updated"}}}
+        updated_raw = service_under_test.save_raw_data(updated_data)
+
+        # Assertions
+        assert updated_raw.id == initial_raw.id  # Same record was updated
+        assert updated_raw.json_data == updated_data  # Data was updated

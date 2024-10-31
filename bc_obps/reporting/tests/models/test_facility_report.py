@@ -31,4 +31,5 @@ class FacilityReportModelTest(BaseTestCase):
             ("activities", "activities", None, 1),
             ("products", "products", None, 1),
             ("reportactivity_records", "report activity", None, 0),
+            ("reportrawactivitydata_records", "report raw activity data", None, 0),
         ]
