@@ -1,16 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import OperationInformationPage from "apps/administration/app/components/operations/OperationInformationPage";
+import OperationInformationPage from "@/administration/app/components/operations/OperationInformationPage";
 import { getOperationWithDocuments } from "./mocks";
 import { useSession } from "@bciers/testConfig/mocks";
 import { fetchFormEnums } from "./OperationInformationForm.test";
-
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+import { beforeAll } from "vitest";
 
 const formData = {
   name: "Operation 3",
@@ -43,6 +36,16 @@ const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 describe("the OperationInformationPage component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+  beforeAll(() => {
+    vi.resetAllMocks();
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
   });
   it("renders the OperationInformationPage component", async () => {
     fetchFormEnums();
