@@ -17,8 +17,8 @@
             "type": "string",
             "enum": []
           },
-          "equivalentEmission": {
-            "title": "Equivalent Emission",
+          "equivalentEmissions": {
+            "title": "Equivalent Emissions",
             "type": "number",
             "readOnly": true
           }
