@@ -3,6 +3,7 @@ from registration.models.activity import Activity
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
+from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
@@ -160,9 +161,6 @@ class TestReportActivitySaveService(TestCase):
             "test_emission_number": 12345,
             "test_emission_bool": True,
             "test_emission_str": "test",
-            "methodology": "Default EV",
-            "methodology_field_1": 123,
-            "method_field_2": "Some description",
         }
         assert report_emissions[0].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[0].gas_type == GasType.objects.get(chemical_formula='CH4')
@@ -207,6 +205,81 @@ class TestReportActivitySaveService(TestCase):
         assert report_emissions[8].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[8].gas_type == GasType.objects.get(chemical_formula='N2O')
         assert report_emissions[8].report_fuel == get_report_fuel_by_index(report_activity, 1, 1, 1)
+
+        # Report Methodologies
+        report_methodology = ReportMethodology.objects.filter(
+            report_version=test_infrastructure.facility_report.report_version.id
+        ).order_by("id")
+        assert report_methodology.count() == 9
+
+        assert report_methodology[0].json_data == {
+            "fuelDefaultHighHeatingValue": 10,
+            "unitFuelCo2DefaultEmissionFactor": 20,
+            "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+        }
+        assert report_methodology[0].methodology_id == 1
+        assert report_methodology[0].report_emission_id == report_emissions[0].id
+        assert report_methodology[0].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[1].json_data == {
+            "fuelDefaultHighHeatingValue": 11,
+            "unitFuelCo2DefaultEmissionFactor": 23,
+            "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+        }
+        assert report_methodology[1].methodology_id == 1
+        assert report_methodology[1].report_emission_id == report_emissions[1].id
+        assert report_methodology[1].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[2].json_data == {
+            "unitFuelCo2DefaultEmissionFactor": 3,
+            "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+        }
+        assert report_methodology[2].methodology_id == 2
+        assert report_methodology[2].report_emission_id == report_emissions[2].id
+        assert report_methodology[2].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[3].json_data == {
+            "unitFuelCo2DefaultEmissionFactor": 4,
+            "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
+            "fuelAnnualWeightedAverageHighHeatingValue": 4,
+        }
+        assert report_methodology[3].methodology_id == 3
+        assert report_methodology[3].report_emission_id == report_emissions[3].id
+        assert report_methodology[3].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[4].json_data == {
+            "unitFuelAnnualSteamGenerated": 5,
+            "boilerRatio": 5,
+            "unitFuelCo2EmissionFactor": 5,
+            "unitFuelCo2EmissionFactorFieldUnits": "kg/GJ",
+        }
+        assert report_methodology[4].methodology_id == 4
+        assert report_methodology[4].report_emission_id == report_emissions[4].id
+        assert report_methodology[4].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[5].json_data == {"fuelAnnualWeightedAverageCarbonContentWeightFraction": 6}
+        assert report_methodology[5].methodology_id == 5
+        assert report_methodology[5].report_emission_id == report_emissions[5].id
+        assert report_methodology[5].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[6].json_data == {
+            "unitFuelAnnualSteamGenerated": 7,
+            "unitFuelCo2MeasuredEmissionFactor": 7,
+            "unitFuelCo2MeasuredEmissionFactorFieldUnits": "kg/fuel units",
+        }
+        assert report_methodology[6].methodology_id == 6
+        assert report_methodology[6].report_emission_id == report_emissions[6].id
+        assert report_methodology[6].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[7].json_data == {"description": "eight"}
+        assert report_methodology[7].methodology_id == 7
+        assert report_methodology[7].report_emission_id == report_emissions[7].id
+        assert report_methodology[7].report_version_id == test_infrastructure.facility_report.report_version.id
+
+        assert report_methodology[8].json_data == {"description": "nine"}
+        assert report_methodology[8].methodology_id == 8
+        assert report_methodology[8].report_emission_id == report_emissions[8].id
+        assert report_methodology[8].report_version_id == test_infrastructure.facility_report.report_version.id
 
     def test_save_raw_data(self):
         """Test that raw activity data is saved correctly"""

@@ -46,7 +46,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             report_fuel,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 2
@@ -96,7 +100,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             report_fuel,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"id": 9002, "methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 2
@@ -122,7 +130,11 @@ class TestSaveReportEmission(TestCase):
         updated_value = service_under_test.save_emission(
             report_source_type,
             updated_report_fuel,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"id": 9002, "methodology": "Default HHV/Default EF"},
+            },
         )
 
         # Categories were properly updated
@@ -164,7 +176,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
@@ -198,7 +214,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
@@ -232,7 +252,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
@@ -268,7 +292,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
@@ -305,7 +333,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
@@ -339,7 +371,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
@@ -376,7 +412,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
@@ -410,7 +450,11 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
-            {"test_emission_prop": "something", "gasType": "GGIRCA"},
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
 
         assert len(return_value.emission_categories.all()) == 1
