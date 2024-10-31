@@ -13,7 +13,6 @@ import { createAdministrationOperationInformationSchema } from "apps/administrat
 import { OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { mockDataUri } from "@/registration/tests/components/operations/registration/NewEntrantOperationForm.test";
 
 useSession.mockReturnValue({
   data: {
@@ -22,6 +21,7 @@ useSession.mockReturnValue({
     },
   },
 });
+const mockDataUri = "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
 
 export const fetchFormEnums = () => {
   // Naics codes
@@ -560,6 +560,7 @@ describe("the OperationInformationForm component", () => {
       ),
     );
   });
+
   it("should use formContext to correctly render BORO ID widget", async () => {
     useSession.mockReturnValue({
       data: {
@@ -638,6 +639,13 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should edit and submit the new entrant application form", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
     const testSchemaWithNewEntrant: RJSFSchema = {
       type: "object",
       properties: {
