@@ -1,7 +1,11 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import { RadioWidget, SelectWidget } from "@bciers/components/form/widgets";
+import {
+  CheckboxGroupWidget,
+  RadioWidget,
+  SelectWidget,
+} from "@bciers/components/form/widgets";
 import { NonAttributableEmmissionsInfo } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/additionalMessage";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 
@@ -34,6 +38,8 @@ export const nonAttributableEmissionUiSchema = {
       arrayAddLabel: "Add Activity",
       padding: "p-2",
       label: false,
+      bgColor: "white",
+      showHr: true,
     },
     items: {
       "ui:order": ["activity", "source_type", "emission_category", "gas_type"],
@@ -43,8 +49,11 @@ export const nonAttributableEmissionUiSchema = {
         "ui:options": { style: { width: "100%", textAlign: "justify" } },
       },
       gas_type: {
-        "ui:widget": SelectWidget,
-        "ui:placeholder": "Select Gas Type",
+        "ui:widget": CheckboxGroupWidget,
+        "ui:options": {
+          alignment: "top",
+          columns: 3,
+        },
       },
     },
   },
@@ -53,46 +62,46 @@ export const nonAttributableEmissionUiSchema = {
 export const generateUpdatedSchema = (
   gasTypes: { id: number; chemical_formula: string }[],
   emissionCategories: { id: number; category_name: string }[],
-): RJSFSchema => {
-  return {
-    ...nonAttributableEmissionSchema,
-    dependencies: {
-      emissions_exceeded: {
-        oneOf: [
-          {
-            properties: { emissions_exceeded: { enum: [false] } },
-          },
-          {
-            properties: {
-              emissions_exceeded: { enum: [true] },
-              activities: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    activity: { type: "string", title: "Activity Name" },
-                    source_type: { type: "string", title: "Source Type" },
-                    gas_type: {
+): RJSFSchema => ({
+  ...nonAttributableEmissionSchema,
+  dependencies: {
+    emissions_exceeded: {
+      oneOf: [
+        {
+          properties: { emissions_exceeded: { enum: [false] } },
+        },
+        {
+          properties: {
+            emissions_exceeded: { enum: [true] },
+            activities: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  activity: { type: "string", title: "Activity Name" },
+                  source_type: { type: "string", title: "Source Type" },
+                  gas_type: {
+                    type: "array", // Adjusted to array type
+                    title: "Gas Type (Optional)",
+                    items: {
                       type: "string",
-                      title: "Gas Type (Optional)",
-
                       enum: gasTypes.map((gas) => gas.chemical_formula),
-                      // enumNames: gasTypes.map((gas) => gas.chemical_formula),
                     },
-                    emission_category: {
-                      type: "string",
-                      title: "Emission Category (Optional)",
-                      enum: emissionCategories.map(
-                        (category) => category.category_name,
-                      ),
-                    },
+                    uniqueItems: true,
+                  },
+                  emission_category: {
+                    type: "string",
+                    title: "Emission Category (Optional)",
+                    enum: emissionCategories.map(
+                      (category) => category.category_name,
+                    ),
                   },
                 },
               },
             },
           },
-        ],
-      },
+        },
+      ],
     },
-  };
-};
+  },
+});

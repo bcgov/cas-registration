@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Tuple, List
 
 from django.http import HttpRequest
 
@@ -30,7 +30,7 @@ def get_report_operation_by_version_id(
 
 @router.post(
     "/report-version/{version_id}/facilities/{facility_id}/non-attributable",
-    response={201: ReportNonAttributableOut, custom_codes_4xx: Message},
+    response={201: List[ReportNonAttributableOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
@@ -38,7 +38,11 @@ def get_report_operation_by_version_id(
 )
 @handle_http_errors()
 def save_report(
-    request: HttpRequest, version_id: int, payload: ReportNonAttributableIn
-) -> Tuple[Literal[201], ReportNonAttributableOut]:
-    report_operation = ReportNonAttributableService.save_report_non_attributable_emissions(version_id, payload)
-    return 201, report_operation  # type: ignore
+    request: HttpRequest, version_id: int, payload: List[ReportNonAttributableIn]
+) -> Tuple[Literal[201], List[ReportNonAttributableOut]]:
+    saved_reports = []
+    for data in payload:
+        report_operation = ReportNonAttributableService.save_report_non_attributable_emissions(version_id, data)
+        saved_reports.append(report_operation)
+
+    return 201, saved_reports  # type: ignore

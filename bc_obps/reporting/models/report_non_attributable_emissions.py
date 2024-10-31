@@ -7,7 +7,7 @@ from reporting.models.gas_type import GasType
 
 
 class ReportNonAttributableEmissions(TimeStampedModel):
-    report_version = models.OneToOneField(
+    report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
         related_name="report_non_attributable_emissions",
@@ -28,6 +28,7 @@ class ReportNonAttributableEmissions(TimeStampedModel):
         db_comment="The emission category associated with this emission.",
         blank=True,
         null=True,
+        related_name="report_non_attributable_emissions",
     )
 
     gas_type = models.ManyToManyField(GasType, related_name="+")
