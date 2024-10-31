@@ -327,7 +327,10 @@ class TestOperationServiceV2:
         users_operation = baker.make_recipe(
             'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
         )
-        payload = OperationNewEntrantApplicationIn(new_entrant_application=MOCK_DATA_URL)
+        payload = OperationNewEntrantApplicationIn(
+            new_entrant_application=MOCK_DATA_URL,
+            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
+        )
         operation = OperationServiceV2.create_or_replace_new_entrant_application(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )
@@ -335,6 +338,13 @@ class TestOperationServiceV2:
         assert operation.id == users_operation.id
         assert operation.updated_by == approved_user_operator.user
         assert operation.updated_at is not None
+        assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
+        assert (
+            operation.documents.filter(
+                type=DocumentType.objects.get(name='new_entrant_application_and_statutory_declaration')
+            ).count()
+            == 1
+        )
 
     @staticmethod
     def test_register_operation_information_new_operation():
