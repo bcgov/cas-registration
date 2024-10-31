@@ -11,6 +11,7 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.tests.utils.bakers import report_version_baker, activity_baker, source_type_baker
 
 
@@ -98,3 +99,19 @@ def report_methodology_baker(**props):
     }
 
     return baker.make(ReportMethodology, **(default_props | props))
+
+
+def report_raw_activity_data_baker(**props):
+    """
+    Baker function for creating ReportRawActivityData instances with default values.
+    """
+    facility_report = props.get('facility_report') or facility_report_baker()
+    activity = props.get('activity') or activity_baker()
+
+    default_props = {
+        "facility_report": facility_report,
+        "activity": activity,
+        "json_data": '{"test": "raw_activity_data"}',
+    }
+
+    return baker.make(ReportRawActivityData, **(default_props | props))

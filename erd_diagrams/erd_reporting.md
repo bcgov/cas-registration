@@ -243,6 +243,18 @@ ReportMethodology {
     ForeignKey report_version
     OneToOneField report_emission
 }
+ReportRawActivityData {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey facility_report
+    ForeignKey activity
+    JSONField json_data
+}
 ReportAdditionalData {
     ForeignKey created_by
     DateTimeField created_at
@@ -350,6 +362,11 @@ ReportMethodology }|--|| User : updated_by
 ReportMethodology }|--|| User : archived_by
 ReportMethodology }|--|| ReportVersion : report_version
 ReportMethodology ||--|| ReportEmission : report_emission
+ReportRawActivityData }|--|| User : created_by
+ReportRawActivityData }|--|| User : updated_by
+ReportRawActivityData }|--|| User : archived_by
+ReportRawActivityData }|--|| FacilityReport : facility_report
+ReportRawActivityData }|--|| Activity : activity
 ReportAdditionalData }|--|| User : created_by
 ReportAdditionalData }|--|| User : updated_by
 ReportAdditionalData }|--|| User : archived_by
