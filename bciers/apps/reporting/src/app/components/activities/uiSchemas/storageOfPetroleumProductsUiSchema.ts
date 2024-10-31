@@ -34,7 +34,7 @@ const uiSchema = {
           "ui:order": [
             "gasType",
             "emission",
-            "equivalentEmission",
+            "equivalentEmissions",
             "methodology",
           ],
           methodology: {
@@ -55,7 +55,7 @@ const uiSchema = {
           gasType: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
-          equivalentEmission: {
+          equivalentEmissions: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
         },
