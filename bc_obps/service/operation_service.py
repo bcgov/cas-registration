@@ -217,7 +217,7 @@ class OperationService:
 
         base_qs = OperationDataAccessService.get_all_operations_for_user(user)
         list_of_filters = [
-            Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
+            Q(bcghg_id__id__icontains=bcghg_id) if bcghg_id else Q(),
             Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
             if bc_obps_regulated_operation
             else Q(),
@@ -255,9 +255,9 @@ class OperationService:
         payload_dict['operator_id'] = user_operator.operator_id
         payload_dict['naics_code_id'] = payload.naics_code  # type: ignore[attr-defined]
         # check that the operation doesn't already exist
-        bcghg_id: str = payload.bcghg_id  # type: ignore[attr-defined]
+        bcghg_id: Optional[str] = payload.bcghg_id
         if bcghg_id:
-            operation_exists: bool = Operation.objects.only('bcghg_id').filter(bcghg_id=bcghg_id).exists()
+            operation_exists: bool = Operation.objects.only('bcghg_id').filter(bcghg_id_id=bcghg_id).exists()
             if operation_exists:
                 raise Exception("Operation with this BCGHG ID already exists.")
 

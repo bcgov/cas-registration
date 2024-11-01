@@ -20,10 +20,11 @@ class OperationCreateIn(ModelSchema):
     # Not using Multiple operators for MVP
     # operation_has_multiple_operators: Optional[bool] = False
     # multiple_operators_array: Optional[list] = None
+    bcghg_id: Optional[str] = None
 
     class Meta:
         model = Operation
-        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
+        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products']
         populate_by_name = True
 
 
@@ -64,10 +65,11 @@ class OperationUpdateIn(ModelSchema):
 class OperationListOut(ModelSchema):
     operator: str = Field(..., alias="operator.legal_name")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     class Meta:
         model = Operation
-        fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
+        fields = ['id', 'name', 'submission_date', 'status']
         from_attributes = True
 
 
@@ -84,12 +86,8 @@ class OperationOut(ModelSchema):
     province: Optional[str] = Field(None, alias="point_of_contact.address.province")
     postal_code: Optional[str] = Field(None, alias="point_of_contact.address.postal_code")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
-    bcghg_id: Optional[str] = None
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     operator: Optional[OperatorForOperationOut] = None
-
-    @staticmethod
-    def resolve_bcghg_id(obj: Operation) -> str:
-        return obj.bcghg_id or ""
 
     @staticmethod
     def resolve_phone_number(obj: Operation) -> Optional[str]:

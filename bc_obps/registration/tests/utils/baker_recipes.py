@@ -1,6 +1,7 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document import Document
 from registration.models.event.transfer_event import TransferEvent
@@ -25,11 +26,11 @@ from registration.tests.utils.bakers import (
 )
 from registration.models.operator import Operator
 from model_bakery.recipe import Recipe, foreign_key, seq
-import uuid
 
 naics_code = Recipe(NaicsCode)
 address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
 document = Recipe(Document, file='test.pdf')
+bcghg_id = Recipe(BcGreenhouseGasId, id='23219990023')
 
 
 operator = Recipe(
@@ -81,7 +82,6 @@ irc_user = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
 operation = Recipe(
     Operation,
     naics_code=foreign_key(naics_code),
-    bcghg_id=uuid.uuid4,
     operator=foreign_key(operator_for_operation),
     created_by=foreign_key(industry_operator_user),
 )

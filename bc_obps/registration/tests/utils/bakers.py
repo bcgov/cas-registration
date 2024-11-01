@@ -97,7 +97,6 @@ def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operat
             Operation,
             point_of_contact=point_of_contact,
             naics_code=NaicsCode.objects.first(),
-            bcghg_id=uuid.uuid4(),
             operator_id=operator_id,
             **properties,
         )
@@ -106,7 +105,6 @@ def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operat
         Operation,
         point_of_contact=point_of_contact,
         naics_code=NaicsCode.objects.first(),
-        bcghg_id=uuid.uuid4(),
         operator=operator_baker(),
         **properties,
     )
