@@ -3,6 +3,7 @@ from registration.models import Facility
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
+    BC_GREENHOUSE_GAS_ID_FIXTURE,
     CONTACT_FIXTURE,
     DOCUMENT_FIXTURE,
     FACILITY_FIXTURE,
@@ -22,6 +23,7 @@ class FacilityModelTest(BaseTestCase):
         OPERATION_FIXTURE,
         DOCUMENT_FIXTURE,
         BC_OBPS_REGULATED_OPERATION_FIXTURE,
+        BC_GREENHOUSE_GAS_ID_FIXTURE,
         FACILITY_FIXTURE,
     ]
 

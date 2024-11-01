@@ -5,6 +5,7 @@ from registration.models import (
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
+    BC_GREENHOUSE_GAS_ID_FIXTURE,
     CONTACT_FIXTURE,
     DOCUMENT_FIXTURE,
     OPERATION_FIXTURE,
@@ -23,6 +24,7 @@ class WellAuthorizationNumberTest(BaseTestCase):
         OPERATION_FIXTURE,
         DOCUMENT_FIXTURE,
         BC_OBPS_REGULATED_OPERATION_FIXTURE,
+        BC_GREENHOUSE_GAS_ID_FIXTURE,
     ]
 
     @classmethod

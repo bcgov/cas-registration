@@ -13,6 +13,8 @@ class TestBcGreenhouseGasIdModel(BaseTestCase):
             ("issued_at", "issued at", None, None),
             ("issued_by", "issued by", None, None),
             ("comments", "comments", None, None),
+            ("operation", "operation", None, None),
+            ("facility", "facility", None, None),
         ]
 
     def test_check_id_format(self):
