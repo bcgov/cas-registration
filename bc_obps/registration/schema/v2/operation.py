@@ -1,6 +1,6 @@
 from uuid import UUID
-from typing import List, Optional
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
+from typing import List, Optional, Literal
 from registration.schema.v1.multiple_operator import MultipleOperatorOut
 from registration.models.contact import Contact
 from registration.schema.v1.operator import OperatorForOperationOut
@@ -50,6 +50,8 @@ class OperationInformationIn(ModelSchema):
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
+    date_of_first_shipment: Optional[str] = Field(None, alias="date_of_first_shipment")
+    new_entrant_application: Optional[str] = None
 
     @field_validator("boundary_map")
     @classmethod
@@ -60,6 +62,13 @@ class OperationInformationIn(ModelSchema):
     @classmethod
     def validate_process_flow_diagram(cls, value: str) -> ContentFile:
         return data_url_to_file(value)
+
+    @field_validator("new_entrant_application")
+    @classmethod
+    def validate_new_entrant_application(cls, value: Optional[str]) -> Optional[ContentFile]:
+        if value:
+            return data_url_to_file(value)
+        return None
 
     class Meta:
         model = Operation
@@ -104,6 +113,8 @@ class OperationOutV2(ModelSchema):
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
+    date_of_first_shipment: Optional[str] = None
+    new_entrant_application: Optional[str] = None
 
     @staticmethod
     def resolve_registration_purposes(obj: Operation) -> List[str]:
@@ -148,6 +159,13 @@ class OperationOutWithDocuments(OperationOutV2):
         process_flow_diagram = obj.get_process_flow_diagram()
         if process_flow_diagram:
             return file_to_data_url(process_flow_diagram)
+        return None
+
+    @staticmethod
+    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
+        new_entrant_application = obj.get_new_entrant_application()
+        if new_entrant_application:
+            return file_to_data_url(new_entrant_application)
         return None
 
 
@@ -206,28 +224,33 @@ class OperationRegistrationSubmissionIn(Schema):
     acknowledgement_of_information: bool
 
 
-class OperationStatutoryDeclarationIn(Schema):
-    statutory_declaration: str
+class OperationNewEntrantApplicationIn(Schema):
+    new_entrant_application: str
+    # not using model schema because I wanted to enforce the date_of_first_shipment to be not null and to be a specific value
+    date_of_first_shipment: Literal[
+        Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
+        Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
+    ] = Field(...)
 
-    @field_validator("statutory_declaration")
+    @field_validator("new_entrant_application")
     @classmethod
-    def validate_statutory_declaration(cls, value: str) -> ContentFile:
+    def validate_new_entrant_application(cls, value: str) -> ContentFile:
         return data_url_to_file(value)
 
 
-class OperationStatutoryDeclarationOut(ModelSchema):
-    statutory_declaration: Optional[str] = None
+class OperationNewEntrantApplicationOut(ModelSchema):
+    new_entrant_application: Optional[str] = None
 
     @staticmethod
-    def resolve_statutory_declaration(obj: Operation) -> Optional[str]:
-        statutory_declaration = obj.get_statutory_declaration()
-        if statutory_declaration:
-            return file_to_data_url(statutory_declaration)
+    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
+        new_entrant_application = obj.get_new_entrant_application()
+        if new_entrant_application:
+            return file_to_data_url(new_entrant_application)
         return None
 
     class Meta:
         model = Operation
-        fields = ['id', 'name']
+        fields = ['date_of_first_shipment']
 
 
 class OperationRepresentativeOut(ModelSchema):

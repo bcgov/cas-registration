@@ -49,7 +49,7 @@ const RadioWidget = ({
           const itemDisabled =
             Array.isArray(enumDisabled) &&
             enumDisabled.indexOf(option.value) !== -1;
-          const radio = (
+          return (
             <FormControlLabel
               control={
                 <Radio name={id} id={optionId(id, index)} color="primary" />
@@ -60,8 +60,6 @@ const RadioWidget = ({
               disabled={disabled || itemDisabled || readonly}
             />
           );
-
-          return radio;
         })}
     </RadioGroup>
   );

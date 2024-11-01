@@ -10,7 +10,7 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
 from registration.schema.v2.operation import (
     OperationRepresentativeIn,
-    OperationStatutoryDeclarationIn,
+    OperationNewEntrantApplicationIn,
     RegistrationPurposeIn,
 )
 from service.operation_service_v2 import OperationServiceV2
@@ -55,10 +55,10 @@ def set_up_valid_mock_operation(purpose: RegistrationPurpose.Purposes):
 
     if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
         # statutory dec if new entrant
-        signed_statutory_declaration = baker.make_recipe(
-            'utils.document', type=DocumentType.objects.get(name='signed_statutory_declaration')
+        new_entrant_application = baker.make_recipe(
+            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
-        operation.documents.add(signed_statutory_declaration)
+        operation.documents.add(new_entrant_application)
 
     if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
         # opt in record
@@ -322,20 +322,24 @@ class TestOperationServiceV2:
             OperationServiceV2.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
 
     @staticmethod
-    def test_create_or_replace_statutory_declaration():
+    def test_create_or_replace_new_entrant_application():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_operation = baker.make_recipe(
             'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
         )
-        payload = OperationStatutoryDeclarationIn(statutory_declaration=MOCK_DATA_URL)
-        operation = OperationServiceV2.create_or_replace_statutory_declaration(
+        payload = OperationNewEntrantApplicationIn(
+            new_entrant_application=MOCK_DATA_URL,
+            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
+        )
+        operation = OperationServiceV2.create_or_replace_new_entrant_application(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )
         operation.refresh_from_db()
-        # Just returning the operation without the statutory_declaration due to performance reasons
         assert operation.id == users_operation.id
         assert operation.updated_by == approved_user_operator.user
         assert operation.updated_at is not None
+        assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
+        assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
 
     @staticmethod
     def test_register_operation_information_new_operation():
@@ -612,6 +616,40 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.updated_at is not None
         assert operation.regulated_products.count() == 0
 
+    def test_update_operation_with_new_entrant_application_data(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
+        )
+        payload = OperationInformationIn(
+            registration_purpose='New Entrant Operation',
+            name="Test Update Operation Name",
+            type="SFO",
+            naics_code_id=2,
+            secondary_naics_code_id=3,
+            tertiary_naics_code_id=4,
+            activities=[3],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
+            new_entrant_application=MOCK_DATA_URL,
+        )
+        operation = OperationServiceV2.update_operation(
+            approved_user_operator.user.user_guid, payload, existing_operation.id
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        assert operation.activities.count() == 1
+        assert operation.documents.count() == 3
+        assert operation.created_by == approved_user_operator.user
+        assert operation.created_at is not None
+        assert operation.updated_at is not None
+        assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
+        assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
+
 
 class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
     def test_check_current_users_registered_operation_returns_true(self):
@@ -736,7 +774,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
     def test_raises_exception_if_no_new_entrant_info():
         operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION)
         # remove statutory declaration
-        operation.documents.filter(type=DocumentType.objects.get(name='signed_statutory_declaration')).delete()
+        operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).delete()
 
         with pytest.raises(
             Exception, match="Operation must have a signed statutory declaration if it is a new entrant."

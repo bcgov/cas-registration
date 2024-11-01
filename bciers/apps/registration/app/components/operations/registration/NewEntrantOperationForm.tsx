@@ -10,7 +10,7 @@ import {
 } from "apps/registration/app/components/operations/registration/types";
 
 interface NewEntrantOperationFormProps extends OperationRegistrationFormProps {
-  formData: NewEntrantOperationFormData;
+  formData: NewEntrantOperationFormData | {};
 }
 
 const NewEntrantOperationForm = ({
@@ -22,14 +22,13 @@ const NewEntrantOperationForm = ({
 }: NewEntrantOperationFormProps) => {
   const baseUrl = `/register-an-operation/${operation}`;
   const handleSubmit = async (e: IChangeEvent) => {
-    const method = "PUT";
-    const endpoint = `registration/v2/operations/${operation}/registration/statutory-declaration`;
-    const body = {
-      statutory_declaration: e.formData.statutory_declaration,
-    };
+    const endpoint = `registration/v2/operations/${operation}/registration/new-entrant-application`;
     // errors are handled in MultiStepBase
-    const response = await actionHandler(endpoint, method, `${baseUrl}`, {
-      body: JSON.stringify(body),
+    const response = await actionHandler(endpoint, "PUT", `${baseUrl}`, {
+      body: JSON.stringify({
+        new_entrant_application: e.formData.new_entrant_application,
+        date_of_first_shipment: e.formData.date_of_first_shipment,
+      }),
     });
     return response;
   };

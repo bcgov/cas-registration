@@ -13,10 +13,18 @@ const customTransformErrors = (
         [".cra_business_number", ".po_cra_business_number"].includes(
           error.property,
         )
-      )
+      ) {
         error.message = customFormatsErrorMessages.cra_business_number;
-      if (error.property === ".statutory_declaration")
-        error.message = customFormatsErrorMessages.statutory_declaration;
+        return error;
+      }
+      if (
+        ["statutory_declaration", "new_entrant_application"].includes(
+          error.property,
+        )
+      ) {
+        error.message = customFormatsErrorMessages.mandatory_attachment;
+        return error;
+      }
     }
     if (error?.name === "required") {
       error.message = "Required field";

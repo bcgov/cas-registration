@@ -9,7 +9,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import React from "react";
 import { newEntrantOperationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/newEntrantOperation";
-import NewEntrantOperationForm from "apps/registration/app/components/operations/registration/NewEntrantOperationForm";
+import NewEntrantOperationForm from "@/registration/app/components/operations/registration/NewEntrantOperationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
 
@@ -67,7 +67,7 @@ describe("the NewEntrantOperationForm component", () => {
     render(
       <NewEntrantOperationForm
         formData={{
-          statutory_declaration: mockDataUri,
+          new_entrant_application: mockDataUri,
         }}
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={newEntrantOperationSchema}
@@ -89,8 +89,6 @@ describe("the NewEntrantOperationForm component", () => {
         steps={allOperationRegistrationSteps}
       />,
     );
-    // root_on_or_before_march_31_section
-
     expect(
       container.querySelector("#root_on_or_after_april_1_section")?.children[0]
         .children[1],
@@ -149,7 +147,7 @@ describe("the NewEntrantOperationForm component", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText("Attachment is mandatory.")).toBeVisible();
   });
 
   it("should fill the form and redirect to the next page", async () => {
@@ -172,7 +170,7 @@ describe("the NewEntrantOperationForm component", () => {
 
     await userEvent.click(beforeMarch31Radio);
 
-    const input = screen.getByTestId("root_statutory_declaration");
+    const input = screen.getByTestId("root_new_entrant_application");
     await userEvent.upload(input, mockFile);
 
     expect(screen.getByText("test.pdf")).toBeVisible();
@@ -188,11 +186,11 @@ describe("the NewEntrantOperationForm component", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
 
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/statutory-declaration",
+      "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/new-entrant-application",
       "PUT",
       "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
       {
-        body: '{"statutory_declaration":"data:application/pdf;name=test.pdf;base64,dGVzdA=="}',
+        body: '{"new_entrant_application":"data:application/pdf;name=test.pdf;base64,dGVzdA==","date_of_first_shipment":"On or before March 31, 2024"}',
       },
     );
     await waitFor(() => {

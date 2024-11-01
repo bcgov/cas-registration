@@ -483,6 +483,7 @@ HistoricalOperation {
     DateTimeField verified_at
     DateTimeField submission_date
     CharField status
+    CharField date_of_first_shipment
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
@@ -546,6 +547,7 @@ Operation {
     CharField status
     OneToOneField bc_obps_regulated_operation
     OneToOneField opted_in_operation
+    CharField date_of_first_shipment
     ManyToManyField documents
     ManyToManyField contacts
     ManyToManyField regulated_products
