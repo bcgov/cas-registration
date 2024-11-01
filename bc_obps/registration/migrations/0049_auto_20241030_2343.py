@@ -5,19 +5,19 @@ from django.db import migrations
 
 def add_document_type_data(apps, schema_monitor):
     '''
-    Add new_entrant_application_and_statutory_declaration to erc.document_type
+    Add new_entrant_application to erc.document_type
     '''
     DocumentType = apps.get_model('registration', 'DocumentType')
-    DocumentType.objects.create(name='new_entrant_application_and_statutory_declaration')
+    DocumentType.objects.create(name='new_entrant_application')
 
 
 def reverse_add_document_type_data(apps, schema_monitor):
     '''
-    Remove new_entrant_application_and_statutory_declaration from erc.document_type
+    Remove new_entrant_application from erc.document_type
     '''
     DocumentType = apps.get_model('registration', 'DocumentType')
     DocumentType.objects.filter(
-        name='new_entrant_application_and_statutory_declaration',
+        name='new_entrant_application',
     ).delete()
 
 

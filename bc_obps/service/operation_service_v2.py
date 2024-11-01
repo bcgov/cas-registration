@@ -151,7 +151,7 @@ class OperationServiceV2:
             user_guid,
             operation_id,
             payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-            "new_entrant_application_and_statutory_declaration",
+            "new_entrant_application",
         )
         if new_entrant_application_document_created:
             operation.documents.add(new_entrant_application_document)
@@ -238,7 +238,7 @@ class OperationServiceV2:
                             user_guid,
                             operation.id,
                             payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                            'new_entrant_application_and_statutory_declaration',
+                            'new_entrant_application',
                         )
                     ]
                     if payload.new_entrant_application
@@ -411,7 +411,7 @@ class OperationServiceV2:
                         registration_purpose=RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION
                     ).exists()
                     and not operation.documents.filter(
-                        type=DocumentType.objects.get(name='new_entrant_application_and_statutory_declaration')
+                        type=DocumentType.objects.get(name='new_entrant_application')
                     ).exists()
                 ),
                 "Operation must have a signed statutory declaration if it is a new entrant.",

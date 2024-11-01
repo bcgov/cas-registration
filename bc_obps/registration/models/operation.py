@@ -206,13 +206,7 @@ class Operation(TimeStampedModel):
         Returns the new entrant application document associated with the operation (document only exists if the operation has registered as a New Entrant).
         """
 
-        return (
-            self.documents.filter(
-                type=DocumentType.objects.get(name="new_entrant_application_and_statutory_declaration")
-            )
-            .only('file')
-            .first()
-        )
+        return self.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).only('file').first()
 
     def get_boundary_map(self) -> Optional[Document]:
         """

@@ -716,14 +716,14 @@ describe("the OperationInformationForm component", () => {
     );
 
     await userEvent.click(afterAprilRadioButton);
-    const mockFile = new File(["test"], "test.pdf", {
+    const mockFile = new File(["test"], "mock_file.pdf", {
       type: "application/pdf",
     });
     const newEntrantApplicationDocument = screen.getByLabelText(
       /new entrant application and statutory declaration/i,
     );
     await userEvent.upload(newEntrantApplicationDocument, mockFile);
-    expect(screen.getByText("test.pdf")).toBeVisible();
+    expect(screen.getByText("mock_file.pdf")).toBeVisible();
     const submitButton = screen.getByRole("button", {
       name: "Submit",
     });
@@ -740,7 +740,7 @@ describe("the OperationInformationForm component", () => {
           registration_purposes: ["New Entrant Operation"],
           date_of_first_shipment: "On or after April 1, 2024",
           new_entrant_application:
-            "data:application/pdf;name=test.pdf;base64,dGVzdA==",
+            "data:application/pdf;name=mock_file.pdf;base64,dGVzdA==",
         }),
       },
     );
