@@ -61,6 +61,13 @@ describe("Facilities component", () => {
   });
 
   it("renders the SFO create facility form with pre-populated fields", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
     getOperation.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
       type: "Single Facility Operation",
@@ -83,6 +90,13 @@ describe("Facilities component", () => {
   });
 
   it("renders the LFO readonly form with form data", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
     getFacility.mockReturnValueOnce({
       name: "Test Facility Name",
       type: "Large Facility",

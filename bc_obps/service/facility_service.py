@@ -256,3 +256,8 @@ class FacilityService:
         for facility_data in payload:
             facilities.append(cls.create_facility_with_designated_operation(user_guid, facility_data))
         return facilities
+
+    @classmethod
+    def generate_bcghg_id(cls, user_guid: UUID, facility_id: UUID) -> None:
+        # TODO after db refactor in #2151
+        raise Exception('Feature to issue BCGHG ID is not yet complete')
