@@ -41,7 +41,9 @@ class Facility(TimeStampedModel):
         blank=True,
         null=True,
     )
-    bcghg_id = models.CharField(
+    bcghg_id = models.OneToOneField(
+        "BcGreenhouseGasId",
+        on_delete=models.PROTECT,
         max_length=1000,
         db_comment="A facility's BCGHG identifier.",
         blank=True,
