@@ -88,7 +88,6 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
         operation = baker.make_recipe(
             'utils.operation',
         )
-        # TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",

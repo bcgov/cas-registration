@@ -46,7 +46,7 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
         )
         file = data_url_to_file(MOCK_DATA_URL)
         new_entrant_application_doc, created = DocumentService.create_or_replace_operation_document(
-            approved_user_operator.user_id, operation.id, file, "new_entrant_application_and_statutory_declaration"
+            approved_user_operator.user_id, operation.id, file, "new_entrant_application"
         )
         operation.documents.add(new_entrant_application_doc)
         response = TestUtils.mock_get_with_auth_role(
@@ -167,5 +167,5 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         assert response_3.json()['name'] == operation.name
         operation_new_entrant_application = operation.documents.first()
         assert operation_new_entrant_application.file.name.find("mock") != -1
-        assert operation_new_entrant_application.type.name == "new_entrant_application_and_statutory_declaration"
+        assert operation_new_entrant_application.type.name == "new_entrant_application"
         assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024

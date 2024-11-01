@@ -55,10 +55,10 @@ def set_up_valid_mock_operation(purpose: RegistrationPurpose.Purposes):
 
     if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
         # statutory dec if new entrant
-        signed_new_entrant_application = baker.make_recipe(
-            'utils.document', type=DocumentType.objects.get(name='new_entrant_application_and_statutory_declaration')
+        new_entrant_application = baker.make_recipe(
+            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
-        operation.documents.add(signed_new_entrant_application)
+        operation.documents.add(new_entrant_application)
 
     if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
         # opt in record
@@ -339,12 +339,7 @@ class TestOperationServiceV2:
         assert operation.updated_by == approved_user_operator.user
         assert operation.updated_at is not None
         assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
-        assert (
-            operation.documents.filter(
-                type=DocumentType.objects.get(name='new_entrant_application_and_statutory_declaration')
-            ).count()
-            == 1
-        )
+        assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
 
     @staticmethod
     def test_register_operation_information_new_operation():
@@ -653,12 +648,7 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.created_at is not None
         assert operation.updated_at is not None
         assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
-        assert (
-            operation.documents.filter(
-                type=DocumentType.objects.get(name='new_entrant_application_and_statutory_declaration')
-            ).count()
-            == 1
-        )
+        assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
 
 
 class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
@@ -784,9 +774,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
     def test_raises_exception_if_no_new_entrant_info():
         operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION)
         # remove statutory declaration
-        operation.documents.filter(
-            type=DocumentType.objects.get(name='new_entrant_application_and_statutory_declaration')
-        ).delete()
+        operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).delete()
 
         with pytest.raises(
             Exception, match="Operation must have a signed statutory declaration if it is a new entrant."
