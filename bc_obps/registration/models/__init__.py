@@ -26,6 +26,7 @@ from .operation_designated_operator_timeline import OperationDesignatedOperatorT
 from .well_authorization_number import WellAuthorizationNumber
 from .registration_purpose import RegistrationPurpose
 from .event import ClosureEvent, TemporaryShutdownEvent, TransferEvent, RestartEvent
+from .bc_greenhouse_gas_id import BcGreenhouseGasId
 
 __all__ = [
     "Address",
@@ -58,4 +59,5 @@ __all__ = [
     "WellAuthorizationNumber",
     "RegistrationPurpose",
     "OptedInOperationDetail",
+    "BcGreenhouseGasId",
 ]

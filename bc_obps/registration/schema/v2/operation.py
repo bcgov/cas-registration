@@ -115,6 +115,7 @@ class OperationOutV2(ModelSchema):
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
     date_of_first_shipment: Optional[str] = None
     new_entrant_application: Optional[str] = None
+    bcghg_id: Optional[str] = None
 
     @staticmethod
     def resolve_registration_purposes(obj: Operation) -> List[str]:

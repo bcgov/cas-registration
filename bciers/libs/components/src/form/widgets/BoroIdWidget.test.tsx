@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -148,6 +148,11 @@ describe("RJSF boroIdWidget", () => {
       "PATCH",
       "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
     );
+    await waitFor(() => {
+      expect(
+        screen.getByText(/BORO ID issued successfully/i),
+      ).toBeInTheDocument();
+    });
     const readOnlyBoroIdTestField = container.querySelector(
       "#root_boroIdTestField",
     );
@@ -174,5 +179,10 @@ describe("RJSF boroIdWidget", () => {
       "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
     );
     expect(screen.getByText(/not for you/i)).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/BORO ID issued successfully/i),
+      ).not.toBeInTheDocument();
+    });
   });
 });

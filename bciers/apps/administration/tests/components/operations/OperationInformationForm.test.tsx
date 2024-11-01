@@ -560,8 +560,7 @@ describe("the OperationInformationForm component", () => {
       ),
     );
   });
-
-  it("should use formContext to correctly render BORO ID widget", async () => {
+  it("should use formContext to correctly render BORO ID and BCGHG ID widgets", async () => {
     useSession.mockReturnValue({
       data: {
         user: {
@@ -584,6 +583,10 @@ describe("the OperationInformationForm component", () => {
                   type: "string",
                   title: "BORO ID",
                 },
+                bcghg_id: {
+                  type: "string",
+                  title: "BCGHGID",
+                },
               },
             },
           },
@@ -594,6 +597,9 @@ describe("the OperationInformationForm component", () => {
 
     expect(
       screen.getByRole("button", { name: `＋ Issue BORO ID` }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
     ).toBeVisible();
   });
 

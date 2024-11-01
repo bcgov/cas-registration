@@ -103,6 +103,14 @@ export const createOperationInformationSchema = async (
             },
           }
         : {}),
+      ...(app === Apps.ADMINISTRATION
+        ? {
+            bcghg_id: {
+              type: "string",
+              title: "BCGHGID",
+            },
+          }
+        : {}),
     },
   };
   return operationInformationSchema;
@@ -144,5 +152,8 @@ export const operationInformationUISchema: UiSchema = {
   },
   bc_obps_regulated_operation: {
     "ui:widget": "BoroIdWidget",
+  },
+  bcghg_id: {
+    "ui:widget": "BcghgIdWidget",
   },
 };
