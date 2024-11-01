@@ -1,11 +1,9 @@
-from typing import Optional
+from typing import Optional, Tuple
 from uuid import UUID
 from service.data_access_service.document_service import DocumentDataAccessService
 from registration.models import Document, DocumentType, Operation
 from service.data_access_service.operation_service import OperationDataAccessService
-from registration.utils import (
-    files_have_same_hash,
-)
+from registration.utils import files_have_same_hash
 from django.core.files.base import ContentFile
 
 
@@ -18,8 +16,13 @@ class DocumentService:
     @classmethod
     def create_or_replace_operation_document(
         cls, user_guid: UUID, operation_id: UUID, file_data: ContentFile, document_type: str
-    ) -> Document:
-        """This function receives a document and operation id. Operations only have one of each type of document, so this function uses the type to check if an existing document needs to be replaced, or if no document exists and one must be created. This function does NOT set any m2m relationships."""
+    ) -> Tuple[Document, bool]:
+        """
+        This function receives a document and operation id.
+        Operations only have one of each type of document, so this function uses the type to check if an existing document needs to be replaced, or if no document exists and one must be created.
+        This function does NOT set any m2m relationships.
+        :returns: Tuple[Document, bool] where the bool is True if a new document was created, False if an existing document was updated
+        """
         existing_document = DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
         # if there is an existing  document, check if the new one is different
         if existing_document:
@@ -27,7 +30,7 @@ class DocumentService:
             if not files_have_same_hash(file_data, existing_document.file):
                 existing_document.delete()
             else:
-                return existing_document
+                return existing_document, False
         # if there is no existing document, create a new one
         document = DocumentDataAccessService.create_document(user_guid, file_data, document_type)
-        return document
+        return document, True

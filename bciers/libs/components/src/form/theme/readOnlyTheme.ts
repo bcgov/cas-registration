@@ -11,6 +11,7 @@ import { InlineFieldTemplate } from "../fields";
 import TitleFieldTemplate from "@bciers/components/form/fields/TitleFieldTemplate";
 import ReadOnlyArrayFieldTemplate from "../fields/readonly/ReadOnlyArrayFieldTemplate";
 import { BoroIdWidget } from "../widgets";
+import ReadOnlyRadioWidget from "../widgets/readOnly/ReadOnlyRadioWidget";
 
 const { templates: defaultTemplates } = getDefaultRegistry();
 
@@ -26,7 +27,7 @@ const readOnlyTheme = {
     MultiSelectWidget: ReadOnlyMultiSelectWidget,
     PhoneWidget: ReadOnlyWidget,
     PostalCodeWidget: ReadOnlyWidget,
-    RadioWidget: ReadOnlyBooleanWidget,
+    RadioWidget: ReadOnlyRadioWidget,
     SelectWidget: ReadOnlyWidget,
     TextWidget: ReadOnlyWidget,
     ToggleWidget: ReadOnlyBooleanWidget,

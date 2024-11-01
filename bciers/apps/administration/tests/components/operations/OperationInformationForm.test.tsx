@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
-import OperationInformationForm from "apps/administration/app/components/operations/OperationInformationForm";
+import OperationInformationForm from "@/administration/app/components/operations/OperationInformationForm";
 import { actionHandler, useSession } from "@bciers/testConfig/mocks";
 import {
   getBusinessStructures,
@@ -11,6 +11,8 @@ import {
 } from "./mocks";
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
 import { OperationStatus } from "@bciers/utils/src/enums";
+import { expect } from "vitest";
+import userEvent from "@testing-library/user-event";
 
 useSession.mockReturnValue({
   data: {
@@ -19,6 +21,7 @@ useSession.mockReturnValue({
     },
   },
 });
+const mockDataUri = "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
 
 export const fetchFormEnums = () => {
   // Naics codes
@@ -195,6 +198,14 @@ const optInFormData = {
     meets_notification_to_director_on_criteria_change: true,
   },
   opt_in: true,
+};
+
+const newEntrantFormData = {
+  name: "Operation 5",
+  type: "Single Facility Operation",
+  registration_purposes: ["New Entrant Operation"],
+  new_entrant_application: mockDataUri,
+  date_of_first_shipment: "On or before March 31, 2024",
 };
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
@@ -549,6 +560,7 @@ describe("the OperationInformationForm component", () => {
       ),
     );
   });
+
   it("should use formContext to correctly render BORO ID widget", async () => {
     useSession.mockReturnValue({
       data: {
@@ -583,5 +595,154 @@ describe("the OperationInformationForm component", () => {
     expect(
       screen.getByRole("button", { name: `＋ Issue BORO ID` }),
     ).toBeVisible();
+  });
+
+  it("should render the new entrant application information if purpose is new entrant", async () => {
+    fetchFormEnums();
+    getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
+    const modifiedSchema = await createAdministrationOperationInformationSchema(
+      newEntrantFormData.registration_purposes,
+      false,
+    );
+
+    const { container } = render(
+      <OperationInformationForm
+        formData={newEntrantFormData}
+        schema={modifiedSchema}
+        operationId={operationId}
+      />,
+    );
+    expect(
+      screen.getByRole("heading", {
+        name: /registration information/i,
+      }),
+    ).toBeVisible();
+    expect(
+      container.querySelector("#root_section3_registration_purposes"),
+    ).toHaveTextContent("New Entrant Operation");
+    expect(
+      container.querySelector("#root_section3_new_entrant_preface"),
+    ).toHaveTextContent("New Entrant Operation");
+    expect(
+      screen.getByText(/when is this operation's date of first shipment\?/i),
+    ).toBeVisible();
+    expect(screen.getByText(/on or before march 31, 2024/i)).toBeVisible();
+    expect(
+      screen.getByText(/new entrant application and statutory declaration/i),
+    ).toBeVisible();
+    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(
+      screen.getByRole("link", {
+        name: /preview/i,
+      }),
+    ).toHaveAttribute("href", mockDataUri);
+  });
+
+  it("should edit and submit the new entrant application form", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
+    const testSchemaWithNewEntrant: RJSFSchema = {
+      type: "object",
+      properties: {
+        section1: {
+          title: "Section 1",
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              title: "Operation Name",
+            },
+          },
+        },
+        section2: {
+          title: "Section 2",
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              title: "Operation Type",
+            },
+          },
+        },
+        section3: {
+          title: "Registration Information",
+          type: "object",
+          properties: {
+            registration_purposes: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["New Entrant Operation"],
+              },
+            },
+            new_entrant_preface: {
+              type: "string",
+            },
+            date_of_first_shipment: {
+              type: "string",
+              enum: [
+                "On or before March 31, 2024",
+                "On or after April 1, 2024",
+              ],
+            },
+            new_entrant_application: {
+              type: "string",
+              title: "New Entrant Application and Statutory Declaration",
+              format: "data-url",
+            },
+          },
+        },
+      },
+    };
+    fetchFormEnums();
+    getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
+
+    render(
+      <OperationInformationForm
+        formData={newEntrantFormData}
+        schema={testSchemaWithNewEntrant}
+        operationId={operationId}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const afterAprilRadioButton = screen.getByLabelText(
+      "On or after April 1, 2024",
+    );
+
+    await userEvent.click(afterAprilRadioButton);
+    const mockFile = new File(["test"], "mock_file.pdf", {
+      type: "application/pdf",
+    });
+    const newEntrantApplicationDocument = screen.getByLabelText(
+      /new entrant application and statutory declaration/i,
+    );
+    await userEvent.upload(newEntrantApplicationDocument, mockFile);
+    expect(screen.getByText("mock_file.pdf")).toBeVisible();
+    const submitButton = screen.getByRole("button", {
+      name: "Submit",
+    });
+    await userEvent.click(submitButton);
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/v2/operations/${operationId}`,
+      "PUT",
+      "",
+      {
+        body: JSON.stringify({
+          name: "Operation 5",
+          type: "Single Facility Operation",
+          registration_purposes: ["New Entrant Operation"],
+          date_of_first_shipment: "On or after April 1, 2024",
+          new_entrant_application:
+            "data:application/pdf;name=mock_file.pdf;base64,dGVzdA==",
+        }),
+      },
+    );
   });
 });

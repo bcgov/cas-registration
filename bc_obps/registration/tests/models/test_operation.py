@@ -93,6 +93,7 @@ class OperationModelTest(BaseTestCase):
             ("closure_events", "closure event", None, None),
             ("temporary_shutdown_events", "temporary shutdown event", None, None),
             ("contacts", "contacts", None, None),
+            ("date_of_first_shipment", "date of first shipment", 1000, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
