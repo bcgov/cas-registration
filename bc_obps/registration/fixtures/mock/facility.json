@@ -21,7 +21,7 @@
       "type": "Large Facility",
       "address": 1,
       "swrs_facility_id": 1002,
-      "bcghg_id": "23219990006",
+      "bcghg_id": "13219990006",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -35,7 +35,7 @@
       "name": "Facility 3",
       "type": "Medium Facility",
       "swrs_facility_id": 1003,
-      "bcghg_id": "23219990007",
+      "bcghg_id": "13219990007",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -49,7 +49,7 @@
       "name": "Facility 4",
       "type": "Small Aggregate",
       "swrs_facility_id": 1004,
-      "bcghg_id": "23219990008",
+      "bcghg_id": "13219990008",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -63,7 +63,7 @@
       "name": "Facility 5",
       "type": "Large Facility",
       "swrs_facility_id": 1005,
-      "bcghg_id": "23219990009",
+      "bcghg_id": "13219990009",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -77,7 +77,7 @@
       "name": "Facility 6",
       "type": "Large Facility",
       "swrs_facility_id": 1006,
-      "bcghg_id": "23219990010",
+      "bcghg_id": "13219990010",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -91,7 +91,7 @@
       "name": "Facility 7",
       "type": "Large Facility",
       "swrs_facility_id": 1007,
-      "bcghg_id": "23219990011",
+      "bcghg_id": "13219990011",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -105,7 +105,7 @@
       "name": "Facility 8",
       "type": "Large Facility",
       "swrs_facility_id": 1008,
-      "bcghg_id": "23219990012",
+      "bcghg_id": "13219990012",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -119,7 +119,7 @@
       "name": "Facility 9",
       "type": "Large Facility",
       "swrs_facility_id": 1009,
-      "bcghg_id": "23219990013",
+      "bcghg_id": "13219990013",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -133,7 +133,7 @@
       "name": "Facility 10",
       "type": "Large Facility",
       "swrs_facility_id": 1010,
-      "bcghg_id": "23219990014",
+      "bcghg_id": "13219990014",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -147,7 +147,7 @@
       "name": "Facility 11",
       "type": "Large Facility",
       "swrs_facility_id": 1011,
-      "bcghg_id": "23219990015",
+      "bcghg_id": "13219990015",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -161,7 +161,7 @@
       "name": "Facility 12",
       "type": "Large Facility",
       "swrs_facility_id": 1012,
-      "bcghg_id": "23219990016",
+      "bcghg_id": "13219990016",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -175,7 +175,7 @@
       "name": "Facility 13",
       "type": "Large Facility",
       "swrs_facility_id": 1013,
-      "bcghg_id": "23219990017",
+      "bcghg_id": "13219990017",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -189,7 +189,7 @@
       "name": "Facility 14",
       "type": "Large Facility",
       "swrs_facility_id": 1014,
-      "bcghg_id": "23219990018",
+      "bcghg_id": "13219990018",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -203,7 +203,7 @@
       "name": "Facility 15",
       "type": "Large Facility",
       "swrs_facility_id": 1015,
-      "bcghg_id": "23219990019",
+      "bcghg_id": "13219990019",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -217,7 +217,7 @@
       "name": "Facility 16",
       "type": "Large Facility",
       "swrs_facility_id": 1016,
-      "bcghg_id": "23219990020",
+      "bcghg_id": "13219990020",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -231,7 +231,7 @@
       "name": "Facility 17",
       "type": "Large Facility",
       "swrs_facility_id": 1017,
-      "bcghg_id": "23219990021",
+      "bcghg_id": "13219990021",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -245,7 +245,7 @@
       "name": "Facility 18",
       "type": "Large Facility",
       "swrs_facility_id": 1018,
-      "bcghg_id": "23219990022",
+      "bcghg_id": "13219990022",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -259,7 +259,7 @@
       "name": "Facility 19",
       "type": "Large Facility",
       "swrs_facility_id": 1019,
-      "bcghg_id": "23219990023",
+      "bcghg_id": "13219990023",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -273,7 +273,7 @@
       "name": "Facility 20",
       "type": "Large Facility",
       "swrs_facility_id": 1020,
-      "bcghg_id": "23219990024",
+      "bcghg_id": "13219990024",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -287,7 +287,7 @@
       "name": "Facility 21",
       "type": "Large Facility",
       "swrs_facility_id": 1021,
-      "bcghg_id": "23219990025",
+      "bcghg_id": "13219990025",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -301,7 +301,7 @@
       "name": "Facility 22",
       "type": "Single Facility",
       "swrs_facility_id": 1022,
-      "bcghg_id": "23219990026",
+      "bcghg_id": "13219990026",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -316,7 +316,7 @@
       "type": "Large Facility",
       "address": 2,
       "swrs_facility_id": 1023,
-      "bcghg_id": "23219990027",
+      "bcghg_id": "13219990027",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
