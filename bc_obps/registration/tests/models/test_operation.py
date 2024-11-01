@@ -1,4 +1,5 @@
 from datetime import datetime
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
     BcObpsRegulatedOperation,
@@ -14,6 +15,7 @@ from django.core.exceptions import ValidationError
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
+    BC_GREENHOUSE_GAS_ID_FIXTURE,
     CONTACT_FIXTURE,
     DOCUMENT_FIXTURE,
     OPERATION_FIXTURE,
@@ -22,6 +24,7 @@ from registration.tests.constants import (
     USER_FIXTURE,
 )
 from registration.tests.utils.bakers import operation_baker
+import pytest
 
 
 class OperationModelTest(BaseTestCase):
@@ -33,11 +36,12 @@ class OperationModelTest(BaseTestCase):
         OPERATION_FIXTURE,
         DOCUMENT_FIXTURE,
         BC_OBPS_REGULATED_OPERATION_FIXTURE,
+        BC_GREENHOUSE_GAS_ID_FIXTURE,
+        BC_GREENHOUSE_GAS_ID_FIXTURE,
     ]
 
     @classmethod
     def setUpTestData(cls):
-        # Get the first operation from the fixture with a swrs_facility_id so we can test the unique constraint
         cls.test_object = Operation.objects.filter(swrs_facility_id__isnull=False).first()
         cls.test_object.documents.set(
             [
@@ -113,7 +117,6 @@ class OperationModelTest(BaseTestCase):
             )
 
     def test_generate_unique_boro_id_existing_id(self):
-        # Case: Operation already has a BORO ID
         existing_id = baker.make(BcObpsRegulatedOperation, id='23-0001')  # Example existing ID for the current year
         self.test_object.bc_obps_regulated_operation = existing_id
         self.test_object.generate_unique_boro_id()
@@ -130,7 +133,6 @@ class OperationModelTest(BaseTestCase):
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation.pk,
             expected_id,
-            "Should generate a new ID for the current year.",
         )
 
     def test_generate_unique_boro_id_multiple_existing_ids_same_year(self):
@@ -156,7 +158,6 @@ class OperationModelTest(BaseTestCase):
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation.pk,
             expected_id,
-            "Should generate a new ID for the current year.",
         )
 
     def test_generate_unique_boro_id_multiple_existing_ids_different_year(self):
@@ -182,7 +183,6 @@ class OperationModelTest(BaseTestCase):
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation.pk,
             expected_id,
-            "Should generate a new ID for the current year.",
         )
 
     def test_unique_swrs_facility_id_constraint(self):
@@ -192,3 +192,46 @@ class OperationModelTest(BaseTestCase):
 
         with self.assertRaises(ValidationError, msg="Operation with this Swrs facility id already exists."):
             invalid_operation.save()
+
+    # BCGHG ID generation tests
+
+    def test_cannot_create_operation_with_duplicate_bcghg_id(self):
+        bcghg_id_instance = baker.make(BcGreenhouseGasId, id='14121100001')
+        operation_instance: Operation = baker.make_recipe('utils.operation')
+        operation_instance.bcghg_id = bcghg_id_instance
+        operation_instance.save(update_fields=['bcghg_id'])
+        with pytest.raises(ValidationError, match='Operation with this Bcghg id already exists.'):
+            baker.make_recipe('utils.operation', bcghg_id=bcghg_id_instance)
+
+    def test_does_not_generate_if_operation_has_existing_bcghg_id(self):
+        existing_id = baker.make(BcGreenhouseGasId, id='14121100001')
+        self.test_object.bcghg_id = existing_id
+        self.test_object.generate_unique_bcghg_id()
+        assert self.test_object.bcghg_id == existing_id
+
+    def test_does_not_generate_if_operation_type_is_invalid(self):
+        self.test_object.bcghg_id = None
+        self.test_object.type = 'Not my type'
+        self.test_object.save()
+        with pytest.raises(ValueError, match='Invalid operation type: Not my type'):
+            self.test_object.generate_unique_bcghg_id()
+
+    def test_generate_unique_bcghg_id(self):
+        self.test_object.bcghg_id = None
+        self.test_object.type = 'Linear Facility Operation'
+        self.test_object.naics_code = baker.make(NaicsCode, naics_code='555555')
+        self.test_object.generate_unique_bcghg_id()
+        expected_id = '25555550001'
+        assert self.test_object.bcghg_id.pk == expected_id
+
+    def test_generate_unique_bcghg_id_multiple_existing_ids(self):
+        existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002', '14862100001']
+        for existing_id in existing_ids:
+            baker.make_recipe('utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id))
+
+        self.test_object.bcghg_id = None
+        self.test_object.type = 'Single Facility Operation'
+        self.test_object.naics_code = baker.make(NaicsCode, naics_code='322121')
+        self.test_object.generate_unique_bcghg_id()
+        expected_id = '13221210004'
+        assert self.test_object.bcghg_id.pk == expected_id
