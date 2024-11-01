@@ -137,9 +137,6 @@ export const registrationInformationUiSchema: UiSchema = {
   },
   date_of_first_shipment: {
     "ui:widget": "RadioWidget",
-    "ui:options": {
-      inline: true,
-    },
   },
   new_entrant_application: {
     "ui:widget": "FileWidget",
