@@ -106,7 +106,7 @@ class TestReportActivityDataSerializers(SimpleTestCase):
     @patch("reporting.service.report_activity_serializers.ReportFuelIterableSerializer.serialize")
     def test_report_unit_serializer(self, mock_fuels_serializer: MagicMock, mock_reverse_manager: MagicMock):
         mock_fuels_serializer.return_value = 'serialized!'
-
+        mock_fuels_serializer.ass
         report_units = [
             prepare(ReportUnit, id=8971, json_data={"mock_json_prop": True}),
             prepare(ReportUnit, id=999999, json_data={"real_json_prop": False}),
@@ -193,24 +193,24 @@ class TestReportActivityDataSerializers(SimpleTestCase):
         assert mock_fuel_reverse_manager.all.call_count == 1
         assert mock_emission_reverse_manager.all.call_count == 1
         assert serialized == {
-            'anotherStWithUnit': {
-                'id': 1,
-                'units': 'units serialized!',
-                'with_unit_2': 1,
-            },
-            'stWithEmissionOnly': {
-                'emissions': 'emissions serialized!',
-                'id': 1,
-                'with_emission_only': 1,
-            },
-            'stWithFuelOnly': {
-                'fuels': 'fuels serialized!',
-                'id': 1,
-                'with_fuel_only': 1,
-            },
             'stWithUnit': {
                 'id': 1,
                 'units': 'units serialized!',
                 'with_unit_1': 1,
+            },
+            'anotherStWithUnit': {
+                'id': 2,
+                'units': 'units serialized!',
+                'with_unit_2': 1,
+            },
+            'stWithFuelOnly': {
+                'fuels': 'fuels serialized!',
+                'id': 3,
+                'with_fuel_only': 1,
+            },
+            'stWithEmissionOnly': {
+                'emissions': 'emissions serialized!',
+                'id': 4,
+                'with_emission_only': 1,
             },
         }

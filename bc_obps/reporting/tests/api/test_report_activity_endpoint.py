@@ -62,6 +62,97 @@ class TestReportActivityEndpoint(CommonTestSetup):
         mock_service.assert_called_once_with({"test_data": "1"})
         assert response.json() == 12345
 
-    @patch("reporting.service.report_activity_serializer.ReportActivitySerializer.serialize")
-    def test_get_returns_the_serialized_value_from_the_serializer(self, mock_serialize: MagicMock):
-        raise NotImplementedError
+    @patch("reporting.service.report_activity_load_service.ReportActivityLoadService.load")
+    def test_get_returns_the_serialized_value_from_the_serializer(self, mock_service: MagicMock):
+
+        facility_report = make_recipe('reporting.tests.utils.facility_report')
+        activity = make_recipe('reporting.tests.utils.activity')
+
+        endpoint_under_test = (
+            f"/api/reporting/report-version/{facility_report.report_version.id}"
+            + f"/facilities/{facility_report.facility.id}"
+            + f"/activity/{activity.id}/report-activity"
+        )
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+
+        mock_service.return_value = {"serialized!": True}
+
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test)
+
+        assert response.json() == {"serialized!": True}
+        assert response.status_code == 200
+        mock_service.assert_called_once()
+
+    def test_sets_and_returns_json_data_from_the_db(self):
+
+        report_version = make_recipe("reporting.tests.utils.report_version")
+
+        # let's get cooking
+        report_emission = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=report_version,
+            gas_type__chemical_formula="CaS",
+            json_data={"emission_prop": "emission!", "emission": 123},
+            report_fuel__report_version=report_version,
+            report_fuel__fuel_type__classification="fuel class",
+            report_fuel__fuel_type__name="fuel name",
+            report_fuel__fuel_type__unit="fuel unit",
+            report_fuel__json_data={"fuel_prop": "fuel!"},
+            report_fuel__report_unit__report_version=report_version,
+            report_fuel__report_unit__json_data={"unit_prop": "unit!"},
+            report_fuel__report_unit__report_source_type__report_version=report_version,
+            report_fuel__report_unit__report_source_type__json_data={"source_type_prop": "source type!"},
+            report_fuel__report_unit__report_source_type__source_type__json_key="testfueltypekey",
+            report_fuel__report_unit__report_source_type__report_activity__report_version=report_version,
+            report_fuel__report_unit__report_source_type__report_activity__json_data={"activity_prop": "activity!"},
+            report_fuel__report_unit__report_source_type__report_activity__facility_report__report_version=report_version,
+        )
+
+        endpoint_under_test = (
+            f"/api/reporting/report-version/{report_emission.report_version.id}"
+            + f"/facilities/{report_emission.report_fuel.report_unit.report_source_type.report_activity.facility_report.facility.id}"
+            + f"/activity/{report_emission.report_fuel.report_unit.report_source_type.report_activity.activity.id}/report-activity"
+        )
+
+        TestUtils.authorize_current_user_as_operator_user(
+            self,
+            operator=report_emission.report_fuel.report_unit.report_source_type.report_activity.facility_report.report_version.report.operator,
+        )
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test)
+
+        assert response.json() == {
+            "activity_prop": "activity!",
+            "id": report_emission.report_fuel.report_unit.report_source_type.report_activity.id,
+            "sourceTypes": {
+                "testfueltypekey": {
+                    "source_type_prop": "source type!",
+                    "id": report_emission.report_fuel.report_unit.report_source_type.id,
+                    "units": [
+                        {
+                            "unit_prop": "unit!",
+                            "id": report_emission.report_fuel.report_unit.id,
+                            "fuels": [
+                                {
+                                    "fuel_prop": "fuel!",
+                                    "id": report_emission.report_fuel.id,
+                                    "fuelType": {
+                                        "fuelName": "fuel name",
+                                        "fuelUnit": "fuel unit",
+                                        "fuelClassification": "fuel class",
+                                    },
+                                    "emissions": [
+                                        {
+                                            "emission_prop": "emission!",
+                                            "emission": 123,
+                                            "id": report_emission.id,
+                                            "gasType": "CaS",
+                                        }
+                                    ],
+                                }
+                            ],
+                        }
+                    ],
+                }
+            },
+        }

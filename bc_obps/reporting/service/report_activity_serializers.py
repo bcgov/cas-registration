@@ -14,13 +14,13 @@ TSerialized = TypeVar("TSerialized")
 class BaseSerializer(ABC, Generic[TSerialized]):
     @classmethod
     @abstractmethod
-    def serialize(cls, obj: TSerialized) -> dict:
+    def serialize(cls, obj: TSerialized) -> dict | list[dict]:
         pass
 
 
 class ReportEmissionIterableSerializer(BaseSerializer[Iterable[ReportEmission]]):
     @classmethod
-    def serialize(cls, obj: Iterable[ReportEmission]) -> dict:
+    def serialize(cls, obj: Iterable[ReportEmission]) -> list[dict]:
         return [
             {
                 "id": report_emission.id,
@@ -33,7 +33,7 @@ class ReportEmissionIterableSerializer(BaseSerializer[Iterable[ReportEmission]])
 
 class ReportFuelIterableSerializer(BaseSerializer[Iterable[ReportFuel]]):
     @classmethod
-    def serialize(cls, obj: Iterable[ReportFuel]) -> dict:
+    def serialize(cls, obj: Iterable[ReportFuel]) -> list[dict]:
         return [
             {
                 "id": report_fuel.id,
@@ -51,7 +51,7 @@ class ReportFuelIterableSerializer(BaseSerializer[Iterable[ReportFuel]]):
 
 class ReportUnitIterableSerializer(BaseSerializer[Iterable[ReportUnit]]):
     @classmethod
-    def serialize(cls, obj: Iterable[ReportUnit]) -> dict:
+    def serialize(cls, obj: Iterable[ReportUnit]) -> list[dict]:
         return [
             {
                 "id": unit.id,
@@ -80,7 +80,7 @@ class ReportSourceTypeIterableSerializer(BaseSerializer[Iterable[ReportSourceTyp
             return {**serialized, "units": ReportUnitIterableSerializer.serialize(obj.reportunit_records.all())}
         if obj.activity_source_type_base_schema.has_fuel:
             return {**serialized, "fuels": ReportFuelIterableSerializer.serialize(obj.reportfuel_records.all())}
-        return {**serialized, "emissions": ReportEmissionIterableSerializer.serialize(obj.reportfuel_records.all())}
+        return {**serialized, "emissions": ReportEmissionIterableSerializer.serialize(obj.reportemission_records.all())}
 
 
 class ReportActivitySerializer(BaseSerializer[ReportActivity]):
@@ -88,7 +88,8 @@ class ReportActivitySerializer(BaseSerializer[ReportActivity]):
     Serializes a ReportActivity object into a dict that can be loaded into the form that created it.
     """
 
-    def serialize(obj: ReportActivity) -> dict:
+    @classmethod
+    def serialize(cls, obj: ReportActivity) -> dict:
         return {
             "id": obj.id,
             **obj.json_data,

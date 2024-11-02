@@ -5,11 +5,10 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models.report_activity import ReportActivity
 from reporting.schema.generic import Message
-from reporting.schema.report_activity_data import ReportActivityDataIn, ReportActivityDataOut
+from reporting.schema.report_activity_data import ReportActivityDataIn
+from reporting.service.report_activity_load_service import ReportActivityLoadService
 from reporting.service.report_activity_save_service import ReportActivitySaveService
-from reporting.service.report_activity_serializers import ReportActivitySerializer
 from service.error_service import custom_codes_4xx
 from .router import router
 
@@ -40,9 +39,10 @@ def save_report_activity_data(
 
 @router.get(
     "report-version/{report_version_id}/facilities/{facility_id}/activity/{activity_id}/report-activity",
-    response={200: ReportActivityDataOut, custom_codes_4xx: Message},
+    response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Loads the initial data for an activity report form, for a given report version, facility and activity.""",
+    auth=authorize('approved_industry_user'),
 )
 # @handle_http_errors()
 def load_report_activity_data(
@@ -50,12 +50,8 @@ def load_report_activity_data(
     report_version_id: int,
     facility_id: UUID,
     activity_id: int,
-) -> Tuple[Literal[200], ReportActivityDataOut]:
+) -> Tuple[Literal[200], dict]:
 
-    r = ReportActivity.objects.get(
-        report_version_id=report_version_id, facility_report__facility_id=facility_id, activity_id=activity_id
-    )
+    data = ReportActivityLoadService.load(report_version_id, facility_id, activity_id)
 
-    s = ReportActivitySerializer.serialize(r)
-
-    return 200, {"form_data": s}
+    return 200, data
