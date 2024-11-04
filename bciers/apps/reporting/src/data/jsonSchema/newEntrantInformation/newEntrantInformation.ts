@@ -7,6 +7,7 @@ import {
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { DateWidget } from "@bciers/components/form/widgets";
 import { newEntrantInfo } from "@reporting/src/data/jsonSchema/newEntrantInformation/additionalMessage";
+import checkboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 
 export const newEntrantInformationSchema: RJSFSchema = {
   type: "object",
@@ -27,7 +28,8 @@ export const newEntrantInformationSchema: RJSFSchema = {
     },
     assertion_statement: {
       type: "boolean",
-      title: "Assertion statement",
+      title:
+        "I certify that this operation was a reporting operation on the date that the application for designation as a new entrant was submitted to the Director under GGIRCA.",
       default: false,
     },
 
@@ -127,6 +129,9 @@ export const newEntrantInformationUiSchema = {
   purpose_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": newEntrantInfo,
+  },
+  assertion_statement: {
+    "ui:widget": checkboxWidget,
   },
   date_of_authorization: {
     "ui:widget": DateWidget,
