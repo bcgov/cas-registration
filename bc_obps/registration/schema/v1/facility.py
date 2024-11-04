@@ -49,7 +49,7 @@ class FacilityOut(ModelSchema):
     postal_code: Optional[str] = Field(None, alias="address.postal_code")
     latitude_of_largest_emissions: float = Field(..., alias="latitude_of_largest_emissions")
     longitude_of_largest_emissions: float = Field(..., alias="longitude_of_largest_emissions")
-    bcghg_id: Optional[str] = None
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     class Meta:
         model = Facility

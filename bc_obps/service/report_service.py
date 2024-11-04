@@ -50,7 +50,7 @@ class ReportService:
             operator_trade_name=operator.trade_name,
             operation_name=operation.name,
             operation_type=operation.type,
-            operation_bcghgid=operation.bcghg_id,
+            operation_bcghgid=operation.bcghg_id.id if operation.bcghg_id else None,
             bc_obps_regulated_operation_id=(
                 operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
             ),
@@ -67,7 +67,7 @@ class ReportService:
                 facility=f,
                 facility_name=f.name,
                 facility_type=f.type,
-                facility_bcghgid=f.bcghg_id,
+                facility_bcghgid=f.bcghg_id.id if f.bcghg_id else None,
                 report_version=report_version,
             )
             facility_report.activities.add(*list(operation.activities.all()))
