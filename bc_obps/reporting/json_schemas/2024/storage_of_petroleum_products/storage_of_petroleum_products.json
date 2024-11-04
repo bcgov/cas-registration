@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "title": "Above-ground storage tanks",
+  "properties": {
+    "emissions": {
+      "type": "array",
+      "title": "Emissions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "emission": {
+            "title": "Emission",
+            "type": "number"
+          },
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "equivalentEmissions": {
+            "title": "Equivalent Emissions",
+            "type": "number",
+            "readOnly": true
+          }
+        }
+      }
+    }
+  }
+}

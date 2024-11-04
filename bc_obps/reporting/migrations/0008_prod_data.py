@@ -572,6 +572,8 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Measured CC and MW'),
             Methodology(name='Feedstock Material Balance'),
             Methodology(name='Emissions Factor Methodology'),
+            Methodology(name='WCI.203(f)(1)'),
+            Methodology(name='WCI.203(f)(2)'),
         ]
     )
 
@@ -604,6 +606,8 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Measured CC and MW',
             'Feedstock Material Balance',
             'Emissions Factor Methodology',
+            'WCI.203(f)(1)',
+            'WCI.203(f)(2)',
         ]
     ).delete()
 
