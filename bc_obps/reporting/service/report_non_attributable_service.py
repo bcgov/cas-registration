@@ -16,10 +16,8 @@ class ReportNonAttributableService:
     ) -> ReportNonAttributableEmissions:
         emission_category = EmissionCategory.objects.get(category_name=data.emission_category)
 
-        print("dta", data)
-        # Use `update_or_create` based on `id` if provided
         report_non_attributable, created = ReportNonAttributableEmissions.objects.update_or_create(
-            id=data.id if data.id else None,  # use `id` if present, else create new
+            id=data.id if data.id else None,
             defaults={
                 "report_version_id": version_id,
                 "activity": data.activity,
@@ -28,7 +26,6 @@ class ReportNonAttributableService:
             },
         )
 
-        # Update gas types
         gas_types = GasType.objects.filter(chemical_formula__in=data.gas_type)
         report_non_attributable.gas_type.set(gas_types)
         report_non_attributable.save()
