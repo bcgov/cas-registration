@@ -1,6 +1,7 @@
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
@@ -258,6 +259,13 @@ class FacilityService:
         return facilities
 
     @classmethod
-    def generate_bcghg_id(cls, user_guid: UUID, facility_id: UUID) -> None:
-        # TODO after db refactor in #2151
-        raise Exception('Feature to issue BCGHG ID is not yet complete')
+    def generate_bcghg_id(cls, user_guid: UUID, facility_id: UUID) -> BcGreenhouseGasId:
+        facility = FacilityService.get_if_authorized(user_guid, facility_id)
+        facility.generate_unique_bcghg_id()
+        if facility.bcghg_id is None:
+            raise Exception('Failed to create a BCGHG ID for the facility.')
+        facility.bcghg_id.issued_by = User.objects.get(user_guid=user_guid)
+        facility.bcghg_id.save()
+        facility.save(update_fields=['bcghg_id'])
+
+        return facility.bcghg_id

@@ -1,6 +1,7 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from service.facility_service import FacilityService
 from registration.schema.v2.operation import OperationBoroIdOut
 from registration.constants import V2
@@ -20,7 +21,7 @@ from registration.schema.generic import Message
     auth=authorize('authorized_irc_user'),
 )
 @handle_http_errors()
-def facility_bcghg_id(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200], None]:
+def facility_bcghg_id(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200], BcGreenhouseGasId]:
     return 200, FacilityService.generate_bcghg_id(
         get_current_user_guid(request),
         facility_id,

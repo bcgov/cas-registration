@@ -1,4 +1,5 @@
 from uuid import UUID
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from typing import List, Optional, Literal
 from registration.schema.v1.multiple_operator import MultipleOperatorOut
@@ -265,4 +266,10 @@ class OperationRepresentativeOut(ModelSchema):
 class OperationBoroIdOut(ModelSchema):
     class Meta:
         model = BcObpsRegulatedOperation
+        fields = ['id']
+
+
+class OperationBcghgIdOut(ModelSchema):
+    class Meta:
+        model = BcGreenhouseGasId
         fields = ['id']

@@ -884,3 +884,15 @@ class TestGenerateBoroId:
             OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
         assert operation.bc_obps_regulated_operation is not None
+
+
+class TestGenerateBcghgId:
+    @staticmethod
+    def test_generates_bcghg_id():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+
+        OperationServiceV2.generate_bcghg_id(approved_user_operator.user.user_guid, operation.id)
+        operation.refresh_from_db()
+        assert operation.bcghg_id is not None
+        assert operation.bcghg_id.issued_by == approved_user_operator.user
