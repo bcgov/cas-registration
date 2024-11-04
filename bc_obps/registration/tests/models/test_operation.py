@@ -24,7 +24,6 @@ from registration.tests.constants import (
     USER_FIXTURE,
 )
 from registration.tests.utils.bakers import operation_baker
-import pytest
 
 
 class OperationModelTest(BaseTestCase):
@@ -193,37 +192,7 @@ class OperationModelTest(BaseTestCase):
         with self.assertRaises(ValidationError, msg="Operation with this Swrs facility id already exists."):
             invalid_operation.save()
 
-    # BCGHG ID generation tests
-
-    def test_cannot_create_operation_with_duplicate_bcghg_id(self):
-        bcghg_id_instance = baker.make(BcGreenhouseGasId, id='14121100001')
-        operation_instance: Operation = baker.make_recipe('utils.operation')
-        operation_instance.bcghg_id = bcghg_id_instance
-        operation_instance.save(update_fields=['bcghg_id'])
-        with pytest.raises(ValidationError, match='Operation with this Bcghg id already exists.'):
-            baker.make_recipe('utils.operation', bcghg_id=bcghg_id_instance)
-
-    def test_does_not_generate_if_operation_has_existing_bcghg_id(self):
-        existing_id = baker.make(BcGreenhouseGasId, id='14121100001')
-        self.test_object.bcghg_id = existing_id
-        self.test_object.generate_unique_bcghg_id()
-        assert self.test_object.bcghg_id == existing_id
-
-    def test_does_not_generate_if_operation_type_is_invalid(self):
-        self.test_object.bcghg_id = None
-        self.test_object.type = 'Not my type'
-        self.test_object.save()
-        with pytest.raises(ValueError, match='Invalid operation type: Not my type'):
-            self.test_object.generate_unique_bcghg_id()
-
-    def test_generate_unique_bcghg_id(self):
-        self.test_object.bcghg_id = None
-        self.test_object.type = 'Linear Facility Operation'
-        self.test_object.naics_code = baker.make(NaicsCode, naics_code='555555')
-        self.test_object.generate_unique_bcghg_id()
-        expected_id = '25555550001'
-        assert self.test_object.bcghg_id.pk == expected_id
-
+    # More general BCGHG ID generation tests are in test_utils
     def test_generate_unique_bcghg_id_multiple_existing_ids(self):
         existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002', '14862100001']
         for existing_id in existing_ids:
