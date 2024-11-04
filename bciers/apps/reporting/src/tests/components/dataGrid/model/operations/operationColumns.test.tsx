@@ -66,7 +66,7 @@ describe("operationColumns function", () => {
 
     const row = {
       id: "2",
-      bcghg_id: "2",
+      bcghg_id: "12111130002",
       name: "Operation without report",
       report_id: null,
       report_version_id: null,
@@ -89,7 +89,7 @@ describe("operationColumns function", () => {
 
     const row = {
       id: "1",
-      bcghg_id: "1",
+      bcghg_id: "12111130002",
       name: "Operation with report",
       report_id: null,
       report_version_id: null,
@@ -112,7 +112,7 @@ describe("operationColumns function", () => {
 
     const row = {
       id: "1",
-      bcghg_id: "1",
+      bcghg_id: "12111130002",
       name: "Operation without report",
       report_id: 1,
       report_version_id: 1,
@@ -135,7 +135,7 @@ describe("operationColumns function", () => {
 
     const row = {
       id: "1",
-      bcghg_id: "1",
+      bcghg_id: "12111130002",
       name: "Operation with report",
       report_id: 15,
       report_version_id: 15,
