@@ -5,32 +5,6 @@ import os
 import json
 
 
-def init_additional_methodology_data(apps, schema_monitor):
-    '''
-    Add additional data to erc.methodology
-    '''
-    Methodology = apps.get_model('reporting', 'Methodology')
-    Methodology.objects.bulk_create(
-        [
-            Methodology(name='WCI.203(f)(1)'),
-            Methodology(name='WCI.203(f)(2)'),
-        ]
-    )
-
-
-def reverse_init_additional_methodology_data(apps, schema_monitor):
-    '''
-    Remove additional data from erc.methodology
-    '''
-    Methodology = apps.get_model('reporting', 'Methodology')
-    Methodology.objects.filter(
-        name__in=[
-            Methodology(name='WCI.203(f)(1)'),
-            Methodology(name='WCI.203(f)(2)'),
-        ]
-    ).delete()
-
-
 def init_configuration_element_data(apps, schema_monitor):
     '''
     Add initial data to erc.configuration_element
@@ -238,10 +212,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            init_additional_methodology_data,
-            reverse_init_additional_methodology_data,
-        ),
         migrations.RunPython(
             init_configuration_element_data,
             reverse_init_configuration_element_data,
