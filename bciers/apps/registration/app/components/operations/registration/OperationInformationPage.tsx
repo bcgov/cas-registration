@@ -4,6 +4,7 @@ import OperationInformationForm from "apps/registration/app/components/operation
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import { OperationInformationFormData } from "./types";
+import Modal from "@/libs/components/src/modal";
 
 const OperationInformationPage = async ({
   step,
@@ -22,12 +23,17 @@ const OperationInformationPage = async ({
     // using dot notation for error raises a TS error
     throw new Error("Failed to fetch operation data");
   return (
-    <OperationInformationForm
-      rawFormData={formData}
-      schema={await createRegistrationOperationInformationSchema()}
-      step={step}
-      steps={steps}
-    />
+    <>
+      <Modal
+        title={"Are you sure you want to change your registration purpose?"}
+      />
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={step}
+        steps={steps}
+      />
+    </>
   );
 };
 
