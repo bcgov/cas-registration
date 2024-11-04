@@ -527,3 +527,19 @@ class TestUpdateFacility:
 
         # Assert Updated State
         TestUtils.assert_facility_db_state(facility, expect_well_authorization_numbers=0)
+
+
+class TestGenerateBcghgId:
+    @staticmethod
+    def test_generates_bcghg_id():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
+        timeline.operation.operator = approved_user_operator.operator
+        timeline.operation.save()
+        timeline.end_date = None
+        timeline.save()
+
+        FacilityService.generate_bcghg_id(approved_user_operator.user.user_guid, timeline.facility.id)
+        timeline.facility.refresh_from_db()
+        assert timeline.facility.bcghg_id is not None
+        assert timeline.facility.bcghg_id.issued_by == approved_user_operator.user
