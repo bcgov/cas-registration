@@ -1,8 +1,8 @@
 from reporting.models import EmissionCategory
-from typing import List, Dict, Any
+from typing import List
 
 
 class EmissionCategoryService:
     @classmethod
-    def get_all_emission_categories(cls) -> List[Dict[str, Any]]:
-        return [dict(emission_category) for emission_category in EmissionCategory.objects.values()]
+    def get_all_emission_categories(cls) -> List[EmissionCategory]:
+        return list(EmissionCategory.objects.all())

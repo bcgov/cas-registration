@@ -18,16 +18,12 @@ class ReportNonAttributableEmissions(TimeStampedModel):
     source_type = models.CharField(
         max_length=255,
         db_comment="The type of source responsible for the emission.",
-        blank=True,
-        null=True,
     )
 
     emission_category = models.ForeignKey(
         EmissionCategory,
         on_delete=models.PROTECT,
         db_comment="The emission category associated with this emission.",
-        blank=True,
-        null=True,
         related_name="report_non_attributable_emissions",
     )
 

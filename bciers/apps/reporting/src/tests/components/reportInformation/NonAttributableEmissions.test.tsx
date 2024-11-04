@@ -8,14 +8,13 @@ import { UUID } from "crypto";
 // Mock next/navigation and action handler
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
-  useSearchParams: vi.fn(),
 }));
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
-describe("AdditionalReportingData Component", () => {
+describe("NonAttributableEmissionsForm Component", () => {
   const versionId = 1;
   const facilityId = "some-uuid" as UUID;
   const gasTypes = [{ id: 1, chemical_formula: "CO2" }];
@@ -39,13 +38,16 @@ describe("AdditionalReportingData Component", () => {
     vi.clearAllMocks();
   });
 
-  it("updates form data when an input changes", async () => {
+  it("updates form data when the 'emissions exceeded' radio button is clicked", async () => {
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
+        emissionFormData={[]}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
+        gasTypeMap={{ 1: "CO2" }}
+        emissionCategoryMap={{ 1: "Direct" }}
       />,
     );
 
@@ -53,7 +55,7 @@ describe("AdditionalReportingData Component", () => {
     fireEvent.click(yesRadioButton);
     expect(yesRadioButton).toBeChecked();
 
-    const activityNameField = await screen.findByText("Activity Name");
+    const activityNameField = await screen.findByText("Activity Name"); // Ensure the correct text matches
     expect(activityNameField).toBeInTheDocument();
   });
 
@@ -62,8 +64,11 @@ describe("AdditionalReportingData Component", () => {
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
+        emissionFormData={[]}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
+        gasTypeMap={{ 1: "CO2" }}
+        emissionCategoryMap={{ 1: "Direct" }}
       />,
     );
 
@@ -73,13 +78,16 @@ describe("AdditionalReportingData Component", () => {
     expect(emissionExceededText).toBeInTheDocument();
   });
 
-  it("submits form data and redirects on successful submission", async () => {
+  it("submits form data and redirects to summary page on successful submission", async () => {
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
+        emissionFormData={[]}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
+        gasTypeMap={{ 1: "CO2" }}
+        emissionCategoryMap={{ 1: "Direct" }}
       />,
     );
 
@@ -94,5 +102,30 @@ describe("AdditionalReportingData Component", () => {
     expect(mockPush).toHaveBeenCalledWith(
       `/reports/${versionId}/facilities/${facilityId}/emissions-summary`,
     );
+  });
+
+  it("handles submission failure gracefully", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      success: false,
+    });
+
+    render(
+      <NonAttributableEmissionsForm
+        versionId={versionId}
+        facilityId={facilityId}
+        emissionFormData={[]}
+        gasTypes={gasTypes}
+        emissionCategories={emissionCategories}
+        gasTypeMap={{ 1: "CO2" }}
+        emissionCategoryMap={{ 1: "Direct" }}
+      />,
+    );
+
+    const submitButton = await screen.findByRole("button", {
+      name: /Save And Continue/i,
+    });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => expect(actionHandler).toHaveBeenCalled());
   });
 });

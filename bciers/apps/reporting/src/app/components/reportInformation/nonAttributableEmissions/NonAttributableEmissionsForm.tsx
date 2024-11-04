@@ -15,6 +15,7 @@ const BASE_URL = "/reports";
 const CANCEL_URL = "/reports";
 
 interface ActivityData {
+  id: number;
   activity: string;
   source_type: string;
   emission_category: number;
@@ -47,6 +48,7 @@ export default function NonAttributableEmissionsForm({
     emissionFormData.length
       ? {
           activities: emissionFormData.map((item) => ({
+            id: item.id,
             activity: item.activity,
             source_type: item.source_type,
             emission_category: emissionCategoryMap[item.emission_category],
@@ -94,24 +96,10 @@ export default function NonAttributableEmissionsForm({
     },
   ];
 
-  const handleSubmit = async (data: any) => {
-    const updatedData = {
-      activities: data.activities.map(
-        (activity: { emission_category: string; gas_type: any[] }) => ({
-          ...activity,
-          emission_category: emissionCategories.find(
-            (category) => category.category_name === activity.emission_category,
-          )?.id,
-          gas_type: activity.gas_type.map(
-            (gas) => gasTypes.find((g) => g.chemical_formula === gas)?.id,
-          ),
-        }),
-      ),
-    };
-
+  const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
     const response = await actionHandler(endpoint, "POST", endpoint, {
-      body: JSON.stringify(updatedData.activities),
+      body: JSON.stringify(formData.activities),
     });
     if (response) {
       router.push(SAVE_AND_CONTINUE_URL);
@@ -134,8 +122,8 @@ export default function NonAttributableEmissionsForm({
       formData={formData}
       baseUrl={BASE_URL}
       cancelUrl={CANCEL_URL}
-      onChange={(data) => setFormData(data.formData)}
-      onSubmit={(data) => handleSubmit(data.formData)}
+      onChange={() => setFormData(formData)}
+      onSubmit={() => handleSubmit()}
     />
   );
 }
