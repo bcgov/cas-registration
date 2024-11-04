@@ -122,7 +122,7 @@ export default function NonAttributableEmissionsForm({
       formData={formData}
       baseUrl={BASE_URL}
       cancelUrl={CANCEL_URL}
-      onChange={() => setFormData(formData)}
+      onChange={(data) => setFormData(data.formData)}
       onSubmit={() => handleSubmit()}
     />
   );
