@@ -118,6 +118,8 @@ export const registrationInformationUiSchema: UiSchema = {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": "Regulated Operation",
+  registration_purpose: {
+    "ui:widget": "ComboBox",
   },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
