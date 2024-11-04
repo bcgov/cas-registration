@@ -14,29 +14,57 @@ import { actionHandler } from "@bciers/actions";
 const BASE_URL = "/reports";
 const CANCEL_URL = "/reports";
 
+interface ActivityData {
+  activity: string;
+  source_type: string;
+  emission_category: number;
+  gas_type: number[];
+}
+
 interface NonAttributableEmissionsProps {
   versionId: number;
   facilityId: UUID;
+  emissionFormData: ActivityData[]; // Define emissionFormData as an array of ActivityData
   gasTypes: { id: number; chemical_formula: string }[];
   emissionCategories: { id: number; category_name: string }[];
+  gasTypeMap: Record<number, string>;
+  emissionCategoryMap: Record<number, string>;
 }
 
 export default function NonAttributableEmissionsForm({
   versionId,
   facilityId,
+  emissionFormData,
   gasTypes,
   emissionCategories,
-}: NonAttributableEmissionsProps) {
-  const [formData, setFormData] = useState({
-    activities: [
-      {
-        activity: "",
-        source_type: "",
-        gas_type: [],
-        emission_category: "",
-      },
-    ],
-  });
+  gasTypeMap,
+  emissionCategoryMap,
+}: NonAttributableEmissionsProps & {
+  gasTypeMap: Record<number, string>;
+  emissionCategoryMap: Record<number, string>;
+}) {
+  const [formData, setFormData] = useState(
+    emissionFormData.length
+      ? {
+          activities: emissionFormData.map((item) => ({
+            activity: item.activity,
+            source_type: item.source_type,
+            emission_category: emissionCategoryMap[item.emission_category],
+            gas_type: item.gas_type.map((id) => gasTypeMap[id]),
+          })),
+          emissions_exceeded: true,
+        }
+      : {
+          activities: [
+            {
+              activity: "",
+              source_type: "",
+              gas_type: [],
+              emission_category: "",
+            },
+          ],
+        },
+  );
 
   const router = useRouter();
 
@@ -67,9 +95,23 @@ export default function NonAttributableEmissionsForm({
   ];
 
   const handleSubmit = async (data: any) => {
+    const updatedData = {
+      activities: data.activities.map(
+        (activity: { emission_category: string; gas_type: any[] }) => ({
+          ...activity,
+          emission_category: emissionCategories.find(
+            (category) => category.category_name === activity.emission_category,
+          )?.id,
+          gas_type: activity.gas_type.map(
+            (gas) => gasTypes.find((g) => g.chemical_formula === gas)?.id,
+          ),
+        }),
+      ),
+    };
+
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
     const response = await actionHandler(endpoint, "POST", endpoint, {
-      body: JSON.stringify(data.activities),
+      body: JSON.stringify(updatedData.activities),
     });
     if (response) {
       router.push(SAVE_AND_CONTINUE_URL);
