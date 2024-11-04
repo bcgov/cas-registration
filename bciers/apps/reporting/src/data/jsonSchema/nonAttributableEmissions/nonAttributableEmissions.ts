@@ -81,8 +81,8 @@ export const generateUpdatedSchema = (
                   activity: { type: "string", title: "Activity Name" },
                   source_type: { type: "string", title: "Source Type" },
                   gas_type: {
-                    type: "array", // Adjusted to array type
-                    title: "Gas Type (Optional)",
+                    type: "array",
+                    title: "Gas Type",
                     items: {
                       type: "string",
                       enum: gasTypes.map((gas) => gas.chemical_formula),
@@ -91,7 +91,7 @@ export const generateUpdatedSchema = (
                   },
                   emission_category: {
                     type: "string",
-                    title: "Emission Category (Optional)",
+                    title: "Emission Category",
                     enum: emissionCategories.map(
                       (category) => category.category_name,
                     ),

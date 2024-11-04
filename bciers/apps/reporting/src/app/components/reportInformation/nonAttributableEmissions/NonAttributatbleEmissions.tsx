@@ -22,7 +22,6 @@ export default async function NonAttributableEmissions({
     facilityId,
   );
 
-  // Create the mappings here
   const gasTypeMap = gasTypes.reduce(
     (
       acc: { [x: string]: any },

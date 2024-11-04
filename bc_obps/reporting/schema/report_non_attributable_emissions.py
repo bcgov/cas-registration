@@ -1,8 +1,8 @@
+from typing import List, Optional
 from ninja import ModelSchema
-
 from reporting.models import ReportNonAttributableEmissions
 from pydantic import alias_generators
-from typing import List
+from pydantic import Field
 
 
 def to_camel(string: str) -> str:
@@ -21,7 +21,7 @@ class ReportNonAttributableOut(ModelSchema):
     class Meta:
         alias_generator = to_snake
         model = ReportNonAttributableEmissions
-        fields = ['activity', 'source_type', 'emission_category', 'gas_type']
+        fields = ['id', 'activity', 'source_type', 'emission_category', 'gas_type']
 
 
 class ReportNonAttributableIn(ModelSchema):
@@ -29,6 +29,7 @@ class ReportNonAttributableIn(ModelSchema):
     Schema for the save report operation endpoint request input
     """
 
+    id: Optional[int] = Field(None)
     activity: str
     source_type: str
     emission_category: str
@@ -37,9 +38,4 @@ class ReportNonAttributableIn(ModelSchema):
     class Meta:
         alias_generator = to_snake
         model = ReportNonAttributableEmissions
-        fields = [
-            'activity',
-            'source_type',
-            'emission_category',
-            'gas_type',
-        ]
+        fields = ['id', 'activity', 'source_type', 'emission_category', 'gas_type']
