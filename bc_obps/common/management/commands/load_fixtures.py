@@ -38,6 +38,7 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/user.json',
                 f'{fixture_base_dir}/contact.json',
                 f'{fixture_base_dir}/bc_obps_regulated_operation.json',
+                f'{fixture_base_dir}/bc_greenhouse_gas_id.json',
                 f'{fixture_base_dir}/operator.json',
                 f'{fixture_base_dir}/operation.json',
                 f'{fixture_base_dir}/user_operator.json',
