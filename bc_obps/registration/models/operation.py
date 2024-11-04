@@ -3,7 +3,6 @@ import re
 from uuid import UUID
 import uuid
 from django.db import models
-from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.constants import BORO_ID_REGEX
 from registration.models import (
     TimeStampedModel,
@@ -269,41 +268,9 @@ class Operation(TimeStampedModel):
         self.bc_obps_regulated_operation = new_boro_id_instance
 
     def generate_unique_bcghg_id(self) -> None:
-        """
-        Generate a unique BCGHG ID based on the operation type, NAICS code, and the latest BCGHG ID with the same type and code.
-        """
-        # if the operation already has a BCGHG ID, do nothing
-        if self.bcghg_id:
-            return None
+        from registration.utils import generate_unique_bcghg_id_for_operation_or_facility
 
-        # this is to make mypy happy. NAICS code is required
-        if not self.naics_code:
-            raise ValueError('BCGHG cannot be generated. Operation is missing NAICS code.')
-
-        if self.type == 'Single Facility Operation':
-            first_digit = '1'
-        elif self.type == 'Linear Facility Operation':
-            first_digit = '2'
-        else:
-            raise ValueError(f"Invalid operation type: {self.type}")
-
-        naics_code = self.naics_code.naics_code
-        latest_bcghg_id = (
-            BcGreenhouseGasId.objects.filter(id__startswith=str(first_digit + naics_code))
-            .order_by('-id')
-            .values_list('id', flat=True)
-            .first()
-        )
-
-        if latest_bcghg_id:
-            new_bcghg_id = str(int(latest_bcghg_id) + 1)
-        else:
-            new_bcghg_id = str(
-                f"{first_digit}{naics_code}{1:04d}"
-            )  # Pad the number with zeros to make it 4 digits long
-
-        new_bcghg_id_instance = BcGreenhouseGasId.objects.create(id=new_bcghg_id)
-        self.bcghg_id = new_bcghg_id_instance
+        generate_unique_bcghg_id_for_operation_or_facility(self)
 
     @property
     def current_designated_operator(self) -> Operator:

@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+
 from registration.models.well_authorization_number import WellAuthorizationNumber
 from registration.models import Address, TimeStampedModel, Operation
 from simple_history.models import HistoricalRecords
@@ -78,3 +79,8 @@ class Facility(TimeStampedModel):
         Returns the current designated operation of the facility.
         """
         return self.designated_operations.get(end_date__isnull=True).operation
+
+    def generate_unique_bcghg_id(self) -> None:
+        from registration.utils import generate_unique_bcghg_id_for_operation_or_facility
+
+        generate_unique_bcghg_id_for_operation_or_facility(self)

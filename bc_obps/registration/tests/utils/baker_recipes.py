@@ -27,7 +27,7 @@ from registration.tests.utils.bakers import (
 from registration.models.operator import Operator
 from model_bakery.recipe import Recipe, foreign_key, seq
 
-naics_code = Recipe(NaicsCode)
+naics_code = Recipe(NaicsCode, naics_code='486210')
 address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
 document = Recipe(Document, file='test.pdf')
 bcghg_id = Recipe(BcGreenhouseGasId, id='23219990023')

@@ -469,23 +469,6 @@ OptedInOperationDetail {
     BooleanField meets_reporting_and_regulated_obligations
     BooleanField meets_notification_to_director_on_criteria_change
 }
-HistoricalBcGreenhouseGasId {
-    CharField id
-    DateTimeField issued_at
-    TextField comments
-    UUIDField history_user_id
-    ForeignKey issued_by
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-BcGreenhouseGasId {
-    CharField id
-    DateTimeField issued_at
-    ForeignKey issued_by
-    TextField comments
-}
 HistoricalOperation {
     DateTimeField created_at
     DateTimeField updated_at
@@ -895,6 +878,23 @@ TransferEvent {
     CharField status
     ManyToManyField facilities
 }
+HistoricalBcGreenhouseGasId {
+    CharField id
+    DateTimeField issued_at
+    TextField comments
+    UUIDField history_user_id
+    ForeignKey issued_by
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+BcGreenhouseGasId {
+    CharField id
+    DateTimeField issued_at
+    ForeignKey issued_by
+    TextField comments
+}
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
 HistoricalDocument }|--|| User : archived_by
@@ -989,8 +989,6 @@ HistoricalOptedInOperationDetail }|--|| User : archived_by
 OptedInOperationDetail }|--|| User : created_by
 OptedInOperationDetail }|--|| User : updated_by
 OptedInOperationDetail }|--|| User : archived_by
-HistoricalBcGreenhouseGasId }|--|| User : issued_by
-BcGreenhouseGasId }|--|| User : issued_by
 HistoricalOperation }|--|| User : created_by
 HistoricalOperation }|--|| User : updated_by
 HistoricalOperation }|--|| User : archived_by
@@ -1125,3 +1123,5 @@ TransferEvent }|--|| Operation : operation
 TransferEvent }|--|| Operator : other_operator
 TransferEvent }|--|| Contact : other_operator_contact
 TransferEvent }|--|{ Facility : facilities
+HistoricalBcGreenhouseGasId }|--|| User : issued_by
+BcGreenhouseGasId }|--|| User : issued_by
