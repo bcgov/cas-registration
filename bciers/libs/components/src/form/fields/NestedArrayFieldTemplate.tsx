@@ -2,6 +2,7 @@ import Button from "@mui/material/Button";
 import { ArrayFieldTemplateProps, FieldTemplateProps } from "@rjsf/utils";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import AddIcon from "@mui/icons-material/Add";
+import { BC_GOV_BACKGROUND_COLOR_GREY } from "@bciers/styles";
 
 function BasicFieldTemplate({ children }: FieldTemplateProps) {
   return <>{children}</>;
@@ -18,6 +19,8 @@ const NestedArrayFieldTemplate = ({
     (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
+  const bgColor = (uiSchema?.["ui:options"]?.bgColor as string) || "#f2f2f2";
+  const showHr = uiSchema?.["ui:options"]?.showHr ?? false;
   const padding = uiSchema?.["ui:options"]?.padding;
   const verticalBorder = uiSchema?.["ui:options"]?.verticalBorder
     ? {
@@ -44,8 +47,11 @@ const NestedArrayFieldTemplate = ({
               }}
             />
             <div
-              style={verticalBorder}
-              className={`min-w-full bg-[#f2f2f2] rounded-md ${padding}`}
+              style={{
+                ...verticalBorder,
+                backgroundColor: bgColor,
+              }}
+              className={`min-w-full rounded-md ${padding}`}
             >
               {customTitleName && (
                 <span className="emission-array-header">
@@ -75,6 +81,11 @@ const NestedArrayFieldTemplate = ({
                 },
               }}
             </div>
+            {showHr && (
+              <hr
+                style={{ color: BC_GOV_BACKGROUND_COLOR_GREY, margin: "1px 0" }}
+              />
+            )}
           </div>
         );
       })}
