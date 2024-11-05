@@ -68,7 +68,7 @@ def init_gas_type_gwp_cas_number_values(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0026_reportmethodology_methodology'),
+        ('reporting', '0027_storage_of_petroleum_products'),
     ]
 
     operations = [
