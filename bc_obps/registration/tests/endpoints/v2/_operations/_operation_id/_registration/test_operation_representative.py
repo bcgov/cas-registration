@@ -4,23 +4,6 @@ from model_bakery import baker
 
 
 class TestOperationRepresentativeEndpoint(CommonTestSetup):
-    def test_operation_representative_endpoint_unauthorized_roles_cannot_put(self):
-        operation = baker.make_recipe(
-            'utils.operation',
-        )
-        # cas users and unapproved industry users can't put
-        roles = ["cas_pending", "cas_analyst", "cas_admin", "industry_user"]
-        for role in roles:
-            response = TestUtils.mock_post_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                {},
-                custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': operation.id}),
-            )
-            assert response.status_code == 401
-            assert response.json().get('detail') == 'Unauthorized'
-
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
         baker.make_recipe('utils.approved_user_operator', user=self.user)

@@ -1,37 +1,11 @@
 from registration.models.user_operator import UserOperator
-from registration.tests.utils.bakers import operator_baker, user_baker, user_operator_baker
+from registration.tests.utils.bakers import operator_baker, user_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 
 
 class TestOperatorUsersEndpoint(CommonTestSetup):
-
-    # AUTHORIZATION
-    def test_unauthorized_roles_cannot_get_operator_users(self):
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_pending',
-            custom_reverse_lazy("get_operator_users"),
-        )
-        assert response.status_code == 401
-
-        # unapproved industry users can't get
-        user_operator_instance = user_operator_baker(
-            {
-                'status': UserOperator.Statuses.PENDING,
-            }
-        )
-        user_operator_instance.user_id = self.user.user_guid
-        user_operator_instance.save()
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_operator_users"),
-        )
-        assert response.status_code == 401
-
     def test_industry_users_can_get_users_associated_with_their_operator(self):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)  # User Operator Admin

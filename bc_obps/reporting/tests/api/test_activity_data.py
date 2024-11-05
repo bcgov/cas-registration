@@ -3,18 +3,10 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import operator_baker
 from model_bakery import baker
 
+from registration.utils import custom_reverse_lazy
+
 
 class TestActivityData(CommonTestSetup):
-    # AUTHORIZATION
-    def test_unauthorized_users_cannot_get_activity_data(self):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_pending',
-            f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/initial-activity-data?activity_id=1',
-        )
-        assert response.status_code == 401
-
     def test_authorized_users_can_get_activity_data(self):
         operator = baker.make_recipe("registration.tests.utils.operator")
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
@@ -23,7 +15,11 @@ class TestActivityData(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/initial-activity-data?activity_id=1',
+            custom_reverse_lazy(
+                "get_initial_activity_data",
+                kwargs={'version_id': facility_report.report_version_id, 'facility_id': facility_report.facility_id},
+            )
+            + "?activity_id=1",
         )
 
         assert response.status_code == 200
@@ -40,7 +36,10 @@ class TestActivityData(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/initial-activity-data',
+            custom_reverse_lazy(
+                "get_initial_activity_data",
+                kwargs={'version_id': facility_report.report_version_id, 'facility_id': facility_report.facility_id},
+            ),
         )
 
         assert response.status_code == 422

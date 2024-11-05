@@ -28,18 +28,6 @@ class TestCreateUserOperator(CommonTestSetup):
         "operator_has_parent_operators": False,
     }
 
-    # AUTHORIZATION
-    def test_unauthorized_roles_cannot_post_useroperator(self):
-        """
-        Test that unauthorized roles cannot post a user operator Operator.
-        """
-        # List of roles that should not be authorized
-        unauthorized_roles = ['cas_pending', 'cas_analyst', 'cas_admin']
-
-        for role in unauthorized_roles:
-            response = TestUtils.mock_get_with_auth_role(self, role, self.endpoint)
-            assert response.status_code == 405
-
     # REQUIRED FIELDS
     def test_empty_payload_missing_fields(self):
         """

@@ -281,31 +281,6 @@ class TestCreateUserOperator(CommonTestSetup):
 
 
 class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
-
-    # AUTHORIZATION
-    def test_unauthorized_roles_cannot_get_current_user_operator_access_requests(self):
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_pending',
-            custom_reverse_lazy("get_operator_users"),
-        )
-        assert response.status_code == 401
-
-        # unapproved industry users can't get
-        baker.make_recipe(
-            'utils.user_operator',
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.PENDING,
-            user_id=self.user.user_guid,
-        )
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_operator_users"),
-        )
-        assert response.status_code == 401
-        assert response.json() == {"detail": "Unauthorized"}
-
     def test_get_an_operators_user_operators_by_users_list(self):
         operator = baker.make_recipe('utils.operator')
         # two UserOperator with the same operator

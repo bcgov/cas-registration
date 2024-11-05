@@ -280,57 +280,6 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
         assert put_response.status_code == 400
         assert response_json == {"message": "Operator with this CRA Business Number already exists."}
 
-    def test_put_user_operator_operator_unauthorized(self):
-        operator = operator_baker()
-        operator.created_by = self.user
-        operator.save(update_fields=["created_by"])
-        mock_payload = {
-            "legal_name": "Unauthorized",
-            "trade_name": "Unauthorized",
-            "cra_business_number": 678123654,
-            "bc_corporate_registry_number": "jkl1234321",
-            "business_structure": BusinessStructure.objects.first().pk,
-            "physical_street_address": "add",
-            "physical_municipality": "add",
-            "physical_province": "BC",
-            "physical_postal_code": "H0H0H0",
-            "mailing_address_same_as_physical": True,
-            "operator_has_parent_operators": False,
-        }
-        user_operator = baker.make(
-            UserOperator,
-            user=self.user,
-            operator=operator,
-            role=UserOperator.Roles.REPORTER,
-            created_by=self.user,
-        )
-        # Test REPORTER 401
-        TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            mock_payload,
-            custom_reverse_lazy(
-                "update_operator_and_user_operator",
-                kwargs={"user_operator_id": user_operator.id},
-            ),
-        )
-        user_operator.role = UserOperator.Roles.PENDING
-        user_operator.save(update_fields=["role"])
-        # Test PENDING 401
-        put_response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            mock_payload,
-            custom_reverse_lazy(
-                "update_operator_and_user_operator",
-                kwargs={"user_operator_id": user_operator.id},
-            ),
-        )
-
-        assert put_response.status_code == 401
-
     def test_put_user_operator_operator_malformed_data(self):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)

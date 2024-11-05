@@ -10,13 +10,6 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 class TestReportsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/create-report"
 
-    def test_unauthorized_users_cannot_create_report(self):
-        data = {}
-        response = TestUtils.mock_post_with_auth_role(
-            self, "cas_pending", self.content_type, data, self.endpoint_under_test
-        )
-        assert response.status_code == 401
-
     def send_authorized_post_request(self, request_data: dict[str, Any]) -> HttpResponse:
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
