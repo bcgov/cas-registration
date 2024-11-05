@@ -13,6 +13,7 @@ from registration.schema.v2.operation import (
     OperationNewEntrantApplicationIn,
     RegistrationPurposeIn,
 )
+from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.operation_service_v2 import OperationServiceV2
 import pytest
 from registration.models.multiple_operator import MultipleOperator
@@ -666,7 +667,10 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
 
         # Check that the method returns True when there is a registered operation
         assert Operation.objects.count() == 1
-        assert OperationServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id) is True
+        assert (
+            OperationDataAccessServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id)
+            is True
+        )
 
         # Create an operation with a different status
         baker.make_recipe(
@@ -678,7 +682,10 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
 
         # Ensure the method still returns True with mixed statuses
         assert Operation.objects.count() == 2
-        assert OperationServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id) is True
+        assert (
+            OperationDataAccessServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id)
+            is True
+        )
 
     def test_check_current_users_registered_operation_returns_false(self):
         # Create a user operator and an operation with a non-registered status
@@ -694,7 +701,10 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
 
         # Check that the method returns False when there is no registered operation
         assert Operation.objects.count() == 1
-        assert OperationServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id) is False
+        assert (
+            OperationDataAccessServiceV2.check_current_users_registered_operation(approved_user_operator.operator.id)
+            is False
+        )
 
 
 class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
