@@ -1,39 +1,62 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import call, patch, MagicMock
 from django.test import SimpleTestCase
 from reporting.models.report_emission import ReportEmission
 from model_bakery.baker import prepare
 from reporting.models.report_fuel import ReportFuel
+from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.service.report_activity_serializers import (
     ReportEmissionIterableSerializer,
     ReportFuelIterableSerializer,
+    ReportMethodologySerializer,
     ReportSourceTypeIterableSerializer,
     ReportUnitIterableSerializer,
 )
 
 
 class TestReportActivityDataSerializers(SimpleTestCase):
-    def test_report_emissions_serializer(self):
+    def test_report_methodology_serializer(self):
+        report_methodology = prepare(
+            ReportMethodology,
+            id=1983898,
+            methodology__name="Test Methodology",
+            json_data={"field": "field", "a": True},
+        )
+        serialized = ReportMethodologySerializer.serialize(report_methodology)
 
+        assert serialized == {
+            'id': 1983898,
+            'methodology': 'Test Methodology',
+            'field': 'field',
+            'a': True,
+        }
+
+    @patch("reporting.models.report_emission.ReportEmission.report_methodology")
+    @patch("reporting.service.report_activity_serializers.ReportMethodologySerializer.serialize")
+    def test_report_emissions_serializer(self, mock_methodology_serializer: MagicMock, mock_reverse_manager: MagicMock):
+        mock_methodology_serializer.return_value = 'serialized!'
         report_emissions = [
             prepare(
                 ReportEmission,
                 id=92871,
                 gas_type__chemical_formula="CaS",
-                json_data={"testprop1": "test", "emission": 1234},
+                json_data={"testprop1": "test", "emission": 1234, "methodology": {"methodology": "data"}},
             ),
             prepare(
                 ReportEmission,
                 id=987134,
                 gas_type__chemical_formula="GaS",
-                json_data={"testprop2": "test", "emission": 0},
+                json_data={"testprop2": "test", "emission": 0, "methodology": {"methodology2": "data2"}},
             ),
         ]
 
         serialized = ReportEmissionIterableSerializer.serialize(report_emissions)
 
-        print(serialized)
+        assert mock_methodology_serializer.mock_calls == [
+            call(mock_reverse_manager),
+            call(mock_reverse_manager),
+        ]
 
         assert serialized == [
             {
@@ -41,12 +64,14 @@ class TestReportActivityDataSerializers(SimpleTestCase):
                 'gasType': 'CaS',
                 'id': 92871,
                 'testprop1': 'test',
+                'methodology': 'serialized!',
             },
             {
                 'emission': 0,
                 'gasType': 'GaS',
                 'id': 987134,
                 'testprop2': 'test',
+                'methodology': 'serialized!',
             },
         ]
 

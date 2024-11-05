@@ -91,6 +91,9 @@ class TestReportActivityEndpoint(CommonTestSetup):
         # let's get cooking
         report_emission = make_recipe(
             "reporting.tests.utils.report_emission",
+            report_methodology__report_version=report_version,
+            report_methodology__methodology__name="Test Method",
+            report_methodology__json_data={"method_prop": True},
             report_version=report_version,
             gas_type__chemical_formula="CaS",
             json_data={"emission_prop": "emission!", "emission": 123},
@@ -147,6 +150,11 @@ class TestReportActivityEndpoint(CommonTestSetup):
                                             "emission": 123,
                                             "id": report_emission.id,
                                             "gasType": "CaS",
+                                            "methodology": {
+                                                "id": report_emission.report_methodology.id,
+                                                "methodology": "Test Method",
+                                                "method_prop": True,
+                                            },
                                         }
                                     ],
                                 }
