@@ -16,10 +16,12 @@ const cancelUrl = "/reports";
 
 interface AdditionalReportingDataProps {
   versionId: number;
+  reportProducts: [];
 }
 
 export default function NewEntrantInformationForm({
   versionId,
+  reportProducts,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>();
 

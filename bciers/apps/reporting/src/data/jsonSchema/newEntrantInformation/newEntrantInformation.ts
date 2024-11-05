@@ -11,7 +11,7 @@ import checkboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 
 export const newEntrantInformationSchema: RJSFSchema = {
   type: "object",
-  title: "Additional Reporting Data",
+  title: "New Entrant Information",
   properties: {
     purpose_note: { type: "object", readOnly: true },
     date_of_authorization: {
@@ -115,7 +115,7 @@ export const newEntrantInformationSchema: RJSFSchema = {
 export const newEntrantInformationUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:options": { label: false },
+
   "ui:order": [
     "purpose_note",
     "date_of_authorization",
@@ -195,3 +195,5 @@ export const newEntrantInformationUiSchema = {
     },
   },
 };
+
+const getUpdatedSchema = () => {};
