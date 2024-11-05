@@ -21,7 +21,6 @@ from service.data_access_service.dashboard_service import DashboardDataService
 @router.get(
     "/dashboard-data",
     response={200: List[DashboardDataSchemaOut], codes_4xx: Message},
-    url_name="list_dashboard_data",
     tags=TAG_DASHBOARD_TILES,
     auth=authorize("authorized_roles"),
 )

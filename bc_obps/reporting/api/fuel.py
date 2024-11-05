@@ -16,7 +16,6 @@ from ninja.responses import codes_4xx, codes_5xx
 @router.get(
     "/fuel",
     response={200: FuelTypeSchema, codes_4xx: Message, codes_5xx: Message},
-    url_name="fuel",
 )
 @handle_http_errors()
 def get_fuel_data(
