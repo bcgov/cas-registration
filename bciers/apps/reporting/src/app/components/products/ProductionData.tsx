@@ -36,7 +36,7 @@ const ProductionData: React.FC<Props> = async ({
     report_version_id,
     facility_id,
   );
-  const taskListElements = await getFacilitiesInformationTaskList(
+  const taskListElements = getFacilitiesInformationTaskList(
     report_version_id,
     facility_id,
     orderedActivities,

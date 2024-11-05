@@ -11,15 +11,15 @@ class ReportNewEntrant(TimeStampedModel):
         db_comment="The associated report version for this new entrant record",
         primary_key=True,
     )
-    authorization_date = models.DateTimeField(
+    authorization_date = models.DateField(
         db_comment="Date of authorization for emission reporting",
     )
-    first_shipment_date = models.DateTimeField(
+    first_shipment_date = models.DateField(
         blank=True,
         null=True,
         db_comment="Date of the first shipment related to this report (if applicable)",
     )
-    new_entrant_period_start = models.DateTimeField(
+    new_entrant_period_start = models.DateField(
         blank=True,
         null=True,
         db_comment="Start date of the new entrant reporting period",

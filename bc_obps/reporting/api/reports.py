@@ -41,7 +41,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
 )
 @handle_http_errors()
 def get_report_operation_by_version_id(
-        request: HttpRequest, version_id: int
+    request: HttpRequest, version_id: int
 ) -> Tuple[Literal[200], ReportOperationOut]:
     report_operation = ReportService.get_report_operation_by_version_id(version_id)
     return 200, report_operation  # type: ignore
@@ -57,7 +57,7 @@ def get_report_operation_by_version_id(
 )
 @handle_http_errors()
 def save_report(
-        request: HttpRequest, version_id: int, payload: ReportOperationIn
+    request: HttpRequest, version_id: int, payload: ReportOperationIn
 ) -> Tuple[Literal[201], ReportOperationOut]:
     report_operation = ReportService.save_report_operation(version_id, payload)
     return 201, report_operation  # type: ignore
@@ -76,7 +76,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
 
 
 @router.get(
-    "/report-version/{version_id}/regulated-products",
+    "/report-version/{version_id}/report-operation/regulated-products",
     response={200: List[RegulatedProductOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves all regulated products associated with a report operation identified by its version ID.""",
@@ -84,7 +84,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
 )
 @handle_http_errors()
 def get_regulated_products_by_version_id(
-        request: HttpRequest, version_id: int
+    request: HttpRequest, version_id: int
 ) -> Tuple[Literal[200], List[RegulatedProductOut]]:
     regulated_products = ReportService.get_regulated_products_by_version_id(version_id)
     return 200, regulated_products
