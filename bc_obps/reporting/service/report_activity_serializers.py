@@ -5,6 +5,7 @@ from typing import Generic, TypeVar
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
+from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 
@@ -15,7 +16,17 @@ class BaseSerializer(ABC, Generic[TSerialized]):
     @classmethod
     @abstractmethod
     def serialize(cls, obj: TSerialized) -> dict | list[dict]:
-        pass
+        raise NotImplementedError("BaseSerializer.serialize : This is an abstract method that should be overridden.")
+
+
+class ReportMethodologySerializer(BaseSerializer[ReportMethodology]):
+    @classmethod
+    def serialize(cls, obj: ReportMethodology) -> dict | list[dict]:
+        return {
+            "id": obj.id,
+            "methodology": obj.methodology.name,
+            **obj.json_data,
+        }
 
 
 class ReportEmissionIterableSerializer(BaseSerializer[Iterable[ReportEmission]]):
@@ -26,6 +37,7 @@ class ReportEmissionIterableSerializer(BaseSerializer[Iterable[ReportEmission]])
                 "id": report_emission.id,
                 "gasType": report_emission.gas_type.chemical_formula,
                 **report_emission.json_data,
+                "methodology": ReportMethodologySerializer.serialize(report_emission.report_methodology),
             }
             for report_emission in obj
         ]
