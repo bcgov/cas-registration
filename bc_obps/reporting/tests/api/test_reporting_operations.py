@@ -57,7 +57,7 @@ class TestReportingOperationsEndpoint(CommonTestSetup):
             assert item['id'] == str(operation.id)
             assert item['bcghg_id'] == operation.bcghg_id
             assert item['name'] == operation.name
-            # The non none test cases were handled in the service test
+            # The non-none test cases were handled in the service test
             assert item['report_id'] is None
             assert item['report_version_id'] is None
             assert item['report_status'] is None
