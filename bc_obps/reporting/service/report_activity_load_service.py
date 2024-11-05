@@ -7,8 +7,10 @@ class ReportActivityLoadService:
     @classmethod
     def load(cls, report_version_id: int, facility_id: UUID, activity_id: int) -> dict:
 
-        r = ReportActivity.objects.get(
-            report_version_id=report_version_id, facility_report__facility_id=facility_id, activity_id=activity_id
-        )
-
-        return ReportActivitySerializer.serialize(r)
+        try:
+            r = ReportActivity.objects.get(
+                report_version_id=report_version_id, facility_report__facility_id=facility_id, activity_id=activity_id
+            )
+            return ReportActivitySerializer.serialize(r)
+        except ReportActivity.DoesNotExist:
+            return {}
