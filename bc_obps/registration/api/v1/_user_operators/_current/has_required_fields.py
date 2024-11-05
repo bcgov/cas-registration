@@ -3,7 +3,7 @@ from typing import Dict, Literal, Tuple
 from registration.api.router import router
 from registration.constants import USER_OPERATOR_TAGS
 from service.operator_service_v2 import OperatorServiceV2
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 from common.permissions import authorize
 from django.core.exceptions import ObjectDoesNotExist

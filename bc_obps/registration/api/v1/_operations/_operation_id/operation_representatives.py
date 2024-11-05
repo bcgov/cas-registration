@@ -4,7 +4,7 @@ from registration.api.router import router
 from typing import List
 from django.db.models import QuerySet
 from django.http import HttpRequest
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from registration.models.contact import Contact
 from registration.schema.v1.contact import OperationRepresentativeListOut

@@ -2,7 +2,7 @@ from typing import Literal, Tuple
 from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.constants import USER_TAGS
 from registration.models.user import User
 from registration.schema.v1.user import UserContactPageOut

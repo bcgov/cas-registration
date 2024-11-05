@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 from ninja.responses import codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
 
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.constants import PAGE_SIZE
 from registration.decorators import handle_http_errors
 from registration.models.operation import Operation

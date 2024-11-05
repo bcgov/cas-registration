@@ -1,5 +1,5 @@
 from common.permissions import authorize
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from registration.schema.generic import Message

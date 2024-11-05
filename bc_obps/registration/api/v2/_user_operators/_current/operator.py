@@ -7,7 +7,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple
 from django.http import HttpRequest
 from service.data_access_service.user_service import UserDataAccessService
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.schema.generic import Message
 from registration.api.router import router
