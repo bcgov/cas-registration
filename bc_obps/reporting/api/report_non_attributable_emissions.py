@@ -1,4 +1,5 @@
 from typing import Literal, Tuple, List
+from uuid import UUID
 
 from django.http import HttpRequest
 
@@ -19,13 +20,15 @@ from ..service.report_non_attributable_service import ReportNonAttributableServi
     response={200: List[ReportNonAttributableOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns all non-attributable emissions for that report version.""",
-    auth=authorize("approved_industry_user"),
+    # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_report_non_attributable_by_version_id(
-    request: HttpRequest, version_id: int
+    request: HttpRequest, version_id: int, facility_id: UUID
 ) -> tuple[Literal[200], list[ReportNonAttributableEmissions]]:
-    emissions = ReportNonAttributableService.get_report_non_attributable_by_version_id(version_id)
+    emissions = ReportNonAttributableService.get_report_non_attributable_by_version_id(
+        version_id, facility_id=facility_id
+    )
     return 200, emissions
 
 
@@ -39,10 +42,12 @@ def get_report_non_attributable_by_version_id(
 )
 @handle_http_errors()
 def save_report(
-    request: HttpRequest, version_id: int, payload: List[ReportNonAttributableIn]
+    request: HttpRequest, version_id: int, facility_id: UUID, payload: List[ReportNonAttributableIn]
 ) -> Tuple[Literal[201], List[ReportNonAttributableOut]]:
     saved_reports = []
     for data in payload:
-        report_operation = ReportNonAttributableService.save_report_non_attributable_emissions(version_id, data)
+        report_operation = ReportNonAttributableService.save_report_non_attributable_emissions(
+            version_id, facility_id, data
+        )
         saved_reports.append(report_operation)
     return 201, saved_reports  # type: ignore
