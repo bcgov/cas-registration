@@ -4,6 +4,7 @@ import { getOperationWithDocuments } from "./mocks";
 import { useSession } from "@bciers/testConfig/mocks";
 import { fetchFormEnums } from "./OperationInformationForm.test";
 import { beforeAll } from "vitest";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 const formData = {
   name: "Operation 3",
@@ -47,7 +48,7 @@ describe("the OperationInformationPage component", () => {
       },
     });
   });
-  it("renders the OperationInformationPage component", async () => {
+  it("renders the OperationInformationPage component without Registration Information", async () => {
     fetchFormEnums();
     getOperationWithDocuments.mockResolvedValueOnce(formData);
     render(await OperationInformationPage({ operationId }));
@@ -72,14 +73,11 @@ describe("the OperationInformationPage component", () => {
     ).toBeVisible();
 
     expect(
-      screen.getByRole("heading", { name: "Registration Information" }),
-    ).toBeVisible();
-    expect(
-      screen.getByText(/The purpose of this registration+/i),
-    ).toBeVisible();
+      screen.queryByRole("heading", { name: "Registration Information" }),
+    ).not.toBeInTheDocument();
   });
 
-  it("should render the form", async () => {
+  it("should render the form without Registration Information", async () => {
     fetchFormEnums();
     getOperationWithDocuments.mockResolvedValueOnce(formData);
 
@@ -91,5 +89,20 @@ describe("the OperationInformationPage component", () => {
       screen.getByText(/211110 - Oil and gas extraction \(except oil sands\)/i),
     ).toBeVisible();
     expect(screen.getByText(/212114 - Bituminous coal mining/i)).toBeVisible();
+  });
+  it("should render the form with Registration Information", async () => {
+    fetchFormEnums();
+    getOperationWithDocuments.mockResolvedValueOnce({
+      status: OperationStatus.REGISTERED,
+    });
+
+    render(await OperationInformationPage({ operationId }));
+
+    expect(
+      screen.getByRole("heading", { name: "Registration Information" }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/The purpose of this registration+/i),
+    ).toBeVisible();
   });
 });

@@ -12,33 +12,27 @@ import {
   createAdministrationRegistrationInformationSchema,
   registrationInformationUiSchema,
 } from "./administrationRegistrationInformation";
-import { Apps } from "@bciers/utils/src/enums";
+import { Apps, OperationStatus } from "@bciers/utils/src/enums";
 
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 export const createAdministrationOperationInformationSchema = async (
   registrationPurposesValue: string[],
   optedIn: boolean,
+  status: OperationStatus,
 ): Promise<RJSFSchema> => {
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
     properties: {
       section1: await createOperationInformationSchema(Apps.ADMINISTRATION),
       section2: await createMultipleOperatorsInformationSchema(),
-      section3: await createAdministrationRegistrationInformationSchema(
-        registrationPurposesValue,
-        optedIn,
-      ),
+      ...(status === OperationStatus.REGISTERED && {
+        section3: await createAdministrationRegistrationInformationSchema(
+          registrationPurposesValue,
+          optedIn,
+        ),
+      }),
     },
   };
-  if (
-    !administrationOperationInformationSchema.properties ||
-    typeof administrationOperationInformationSchema.properties.section3 !==
-      "object"
-  ) {
-    throw new Error(
-      "Invalid schema: section3 is not an object or properties is undefined",
-    );
-  }
 
   return administrationOperationInformationSchema;
 };
