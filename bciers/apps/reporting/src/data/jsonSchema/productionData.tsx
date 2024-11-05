@@ -6,7 +6,10 @@ import {
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import { RJSFSchema, UiSchema, WidgetProps } from "@rjsf/utils";
 
-const ProductionDataTitleWidget: React.FC<WidgetProps> = ({ id, value }) => {
+export const ProductionDataTitleWidget: React.FC<WidgetProps> = ({
+  id,
+  value,
+}) => {
   return (
     <div id={id} className="w-full mt-8">
       <u>Product:</u> {value}

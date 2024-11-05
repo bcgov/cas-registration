@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
-import NewEntrantInformationForm from "@reporting/src/app/components/additionalInformation/newEntrantInformation/NewEntrantInformationForm";
+import NewEntrantInformationForm from "./NewEntrantInformationForm";
 import { getReportProducts } from "@reporting/src/app/utils/getReportProducts";
 
 export default async function NewEntrantInformation({
@@ -14,7 +14,7 @@ export default async function NewEntrantInformation({
     <Suspense fallback={<Loading />}>
       <NewEntrantInformationForm
         versionId={versionId}
-        reportProducts={reportProducts}
+        products={reportProducts}
       />
     </Suspense>
   );
