@@ -148,6 +148,7 @@ const NewOperationRepresentativeForm: FC<
         uiSchema={createOperationRepresentativeUiSchema(
           Boolean(existingContactId),
         )}
+        formContext={{ operationId: operation }}
         onChange={handleChange}
         onSubmit={submitHandler}
         formData={formState}
