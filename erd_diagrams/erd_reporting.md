@@ -277,6 +277,21 @@ EmissionCategoryMapping {
     ForeignKey activity
     ForeignKey source_type
 }
+ReportNonAttributableEmissions {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey report_version
+    ForeignKey facility_report
+    CharField activity
+    CharField source_type
+    ForeignKey emission_category
+    ManyToManyField gas_type
+}
 ReportProduct {
     BigAutoField id
     ForeignKey created_by
@@ -395,6 +410,13 @@ ReportAdditionalData ||--|| ReportVersion : report_version
 EmissionCategoryMapping }|--|| EmissionCategory : emission_category
 EmissionCategoryMapping }|--|| Activity : activity
 EmissionCategoryMapping }|--|| SourceType : source_type
+ReportNonAttributableEmissions }|--|| User : created_by
+ReportNonAttributableEmissions }|--|| User : updated_by
+ReportNonAttributableEmissions }|--|| User : archived_by
+ReportNonAttributableEmissions }|--|| ReportVersion : report_version
+ReportNonAttributableEmissions }|--|| FacilityReport : facility_report
+ReportNonAttributableEmissions }|--|| EmissionCategory : emission_category
+ReportNonAttributableEmissions }|--|{ GasType : gas_type
 ReportProduct }|--|| User : created_by
 ReportProduct }|--|| User : updated_by
 ReportProduct }|--|| User : archived_by
