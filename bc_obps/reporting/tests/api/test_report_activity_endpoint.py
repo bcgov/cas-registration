@@ -49,7 +49,7 @@ class TestReportActivityEndpoint(CommonTestSetup):
 
     # SERVICE OUTPUT
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save")
-    def test_returns_the_service_output(self, mock_service: MagicMock):
+    def test_post_returns_the_service_output(self, mock_service: MagicMock):
         """Test that the endpoint returns the service's output correctly"""
         # Arrange
         mock_service.return_value = SimpleNamespace(id=12345)
