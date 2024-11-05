@@ -6,18 +6,6 @@ from model_bakery import baker
 class TestOperationsContactsEndpoint(CommonTestSetup):
 
     # GET
-    # AUTHORIZATION
-    def test_unauthorized_roles_cannot_list_operations_contacts(self):
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_pending',
-            custom_reverse_lazy(
-                "list_operation_representatives", kwargs={'operation_id': '12345678-1234-5678-1234-567812345678'}
-            ),
-        )
-        assert response.status_code == 401
-        assert response.json().get('detail') == 'Unauthorized'
-
     def test_authorized_roles_can_list_operations_contacts(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation_1 = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)

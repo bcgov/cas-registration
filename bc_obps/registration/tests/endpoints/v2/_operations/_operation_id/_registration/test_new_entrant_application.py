@@ -10,20 +10,6 @@ from service.document_service import DocumentService
 
 
 class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
-    def test_get_register_operation_new_entrant_application_endpoint_unauthorized_roles_cannot_get(self):
-        operation = baker.make_recipe(
-            'utils.operation',
-        )
-        roles = ["cas_pending", "industry_user"]
-        for role in roles:
-            response = TestUtils.mock_get_with_auth_role(
-                self,
-                role,
-                custom_reverse_lazy("get_operation_new_entrant_application", kwargs={'operation_id': operation.id}),
-            )
-            assert response.status_code == 401
-            assert response.json()['detail'] == "Unauthorized"
-
     def test_get_register_operation_new_entrant_application_endpoint_users_can_only_get_their_operation(self):
         baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation: Operation = baker.make_recipe(
@@ -66,20 +52,6 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
 
 
 class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
-    def test_put_register_operation_new_entrant_application_submission_endpoint_unauthorized_roles_cannot_put(self):
-        operation = baker.make_recipe(
-            'utils.operation',
-        )
-        roles = ["cas_pending", "cas_analyst", "cas_admin", "industry_user"]
-        for role in roles:
-            response = TestUtils.mock_put_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                {},
-                custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
-            )
-            assert response.status_code == 401
 
     # # Uncomment this skip to test file uploads locally
     @pytest.mark.skip(

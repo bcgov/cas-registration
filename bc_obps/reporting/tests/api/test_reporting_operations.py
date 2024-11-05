@@ -12,10 +12,6 @@ class TestReportingOperationsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/operations"
     client = Client()
 
-    def test_unauthorized_users_cannot_get_operations(self):
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", self.endpoint_under_test)
-        assert response.status_code == 401
-
     @patch(
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
     )

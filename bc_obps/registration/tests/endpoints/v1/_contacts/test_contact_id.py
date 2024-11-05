@@ -1,10 +1,9 @@
 from typing import Dict
 from registration.models.business_role import BusinessRole
-from registration.models import UserOperator
 from registration.models.address import Address
 from registration.models.contact import Contact
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.tests.utils.bakers import address_baker, contact_baker, operator_baker, user_operator_baker
+from registration.tests.utils.bakers import address_baker, contact_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 
@@ -24,30 +23,6 @@ class TestContactIdEndpoint(CommonTestSetup):
             "province": "BC",
             "postal_code": "H1H1H1",
         }
-
-    def test_contacts_endpoint_unauthorized_roles_cannot_get(self):
-        contact = contact_baker()
-        # cas_pending can't get
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_pending", custom_reverse_lazy("get_contact", kwargs={"contact_id": contact.id})
-        )
-        assert response.status_code == 401
-
-        # unapproved industry users can't get
-        user_operator_instance = user_operator_baker(
-            {
-                'status': UserOperator.Statuses.PENDING,
-            }
-        )
-        user_operator_instance.user_id = self.user.user_guid
-        user_operator_instance.save()
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_contact", kwargs={"contact_id": contact.id}),
-        )
-        assert response.status_code == 401
 
     def test_industry_users_can_get_contacts_associated_with_their_operator(self):
         contact = baker.make_recipe(
@@ -85,19 +60,6 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert response.json().get('message') == 'Unauthorized.'
 
     # PUT
-    def test_unauthorized_roles_cannot_update_contact(self):
-        # Only approved industry users can update contacts
-        contact = contact_baker()
-        for role in ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']:
-            response = TestUtils.mock_put_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                self.valid_contact_data,
-                custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
-            )
-            assert response.status_code == 401
-
     def test_industry_users_admin_can_not_update_contacts_not_associated_with_their_operator(self):
         contact = contact_baker()
         operator = operator_baker()

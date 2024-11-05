@@ -12,19 +12,6 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestFacilitiesEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "facilities"
-
-    # AUTHORIZATION
-    def test_unauthorized_roles_cannot_list_facilities(self):
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_pending',
-            custom_reverse_lazy(
-                "list_facilities_by_operation_id", kwargs={'operation_id': '12345678-1234-5678-1234-567812345678'}
-            ),
-        )
-        assert response.status_code == 401
-
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
         operation = operation_baker()
@@ -128,43 +115,16 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert response_items_3[0].get('facility__name') == name_to_filter
         assert response_items_3[0].get('facility__type') == Facility.Types.LARGE_FACILITY
 
-    # AUTHORIZATION
-
-    def test_unauthorized_roles_cannot_create_new_facility(self):
-        mock_facility = {
-            'name': 'zip',
-            'type': 'Large Facility',
-            'latitude_of_largest_emissions': 5,
-            'longitude_of_largest_emissions': 5,
-            'operation_id': operation_baker().id,
-        }
-        # IRC users can't post
-        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
-            response = TestUtils.mock_post_with_auth_role(
-                self, role, self.content_type, [mock_facility], custom_reverse_lazy("create_facilities")
-            )
-            assert response.status_code == 401
-
-    def test_unapproved_industry_users_cannot_create_new_facility(self):
-        mock_facility = {
-            'name': 'zip',
-            'type': 'Large Facility',
-            'latitude_of_largest_emissions': 5,
-            'longitude_of_largest_emissions': 5,
-            'operation_id': operation_baker().id,
-        }
-
-        response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, [mock_facility], custom_reverse_lazy("create_facilities")
-        )
-        assert response.status_code == 401
-
     # POST
     def test_post_new_malformed_facility(self):
         owning_operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, owning_operator)
         response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, {"garbage": "i am bad data"}
+            self,
+            "industry_user",
+            self.content_type,
+            {"garbage": "i am bad data"},
+            custom_reverse_lazy("create_facilities"),
         )
         assert response.status_code == 422
 

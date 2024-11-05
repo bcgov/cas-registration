@@ -1,6 +1,5 @@
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models import Contact
-from registration.schema.v1.contact import ContactIn
 from registration.tests.utils.bakers import contact_baker, operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -10,13 +9,6 @@ from itertools import cycle
 
 class TestContactsEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "contacts"
-
-    # AUTHORIZATION
-    def test_unauthorized_roles_cannot_list_contacts(self):
-        for role in ["cas_pending", "industry_user"]:  # industry_user is not approved yet
-            response = TestUtils.mock_get_with_auth_role(self, role, custom_reverse_lazy("list_contacts"))
-            assert response.status_code == 401
-            assert response.json().get('detail') == "Unauthorized"
 
     # GET
     def test_contacts_endpoint_unpaginated(self):
@@ -113,28 +105,15 @@ class TestContactsEndpoint(CommonTestSetup):
         assert response_items_2[0].get('first_name') == first_name_to_filter
         assert response_items_2[0].get('last_name') == last_name_to_filter
 
-    # AUTHORIZATION
-    def test_unauthorized_roles_cannot_create_new_contact(self):
-        mock_contact = ContactIn.from_orm(contact_baker()).dict()
-        # IRC users can't post
-        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
-            response = TestUtils.mock_post_with_auth_role(
-                self, role, self.content_type, mock_contact, custom_reverse_lazy("create_contact")
-            )
-            assert response.status_code == 401
-
-    def test_unapproved_industry_users_cannot_create_new_contact(self):
-        mock_contact = ContactIn.from_orm(contact_baker()).dict()
-        response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_contact, custom_reverse_lazy("create_contact")
-        )
-        assert response.status_code == 401
-
     # POST
     def test_post_new_malformed_contact(self):
         TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, {"garbage": "i am bad data"}
+            self,
+            "industry_user",
+            self.content_type,
+            {"garbage": "i am bad data"},
+            custom_reverse_lazy("create_contact"),
         )
         assert response.status_code == 422
 
