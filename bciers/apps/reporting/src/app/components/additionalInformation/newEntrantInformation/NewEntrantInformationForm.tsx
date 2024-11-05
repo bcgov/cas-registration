@@ -7,21 +7,21 @@ import { useRouter } from "next/navigation";
 
 import { actionHandler } from "@bciers/actions";
 import {
-  newEntrantInformationSchema,
-  newEntrantInformationUiSchema,
-} from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformation";
+  createNewEntrantInformationSchema,
+  createNewEntrantInformationUiSchema,
+} from "@reporting/src/data/jsonSchema/newEntrantInformation";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
 interface AdditionalReportingDataProps {
   versionId: number;
-  reportProducts: [];
+  products: [];
 }
 
 export default function NewEntrantInformationForm({
   versionId,
-  reportProducts,
+  products,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>();
 
@@ -72,8 +72,8 @@ export default function NewEntrantInformationForm({
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
-      schema={newEntrantInformationSchema}
-      uiSchema={newEntrantInformationUiSchema}
+      schema={createNewEntrantInformationSchema(products)}
+      uiSchema={createNewEntrantInformationUiSchema(products)}
       formData={formData}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
