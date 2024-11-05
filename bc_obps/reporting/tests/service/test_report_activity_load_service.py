@@ -1,4 +1,5 @@
 from unittest.mock import patch
+import uuid
 import pytest
 from unittest.mock import MagicMock
 from model_bakery.baker import make_recipe
@@ -25,3 +26,9 @@ class TestReportActivityLoadService:
 
         assert serialized == {"successful test": True}
         mock_serializer.assert_called_once_with(ReportActivity.objects.get(id=report_activity.id))
+
+    def test_returns_empty_dict_if_no_report_activity_record_exists_yet(self):
+
+        serialized = ReportActivityLoadService.load(1000, uuid.UUID(int=0), 1000)
+
+        assert serialized == {}
