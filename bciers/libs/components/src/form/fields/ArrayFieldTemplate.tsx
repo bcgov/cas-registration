@@ -1,5 +1,9 @@
 import Button from "@mui/material/Button";
-import { ArrayFieldTemplateProps, FieldTemplateProps } from "@rjsf/utils";
+import {
+  ArrayFieldTemplateProps,
+  FieldTemplateProps,
+  getUiOptions,
+} from "@rjsf/utils";
 
 function BasicFieldTemplate({ children }: FieldTemplateProps) {
   return <>{children}</>;
@@ -26,11 +30,13 @@ const ArrayFieldTemplate = ({
   items,
   onAddClick,
   uiSchema,
+  registry,
 }: ArrayFieldTemplateProps) => {
-  const arrayAddLabel =
-    (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
-  const canDeleteFirst =
-    (uiSchema?.["ui:options"]?.canDeleteFirst as boolean) || false;
+  const {
+    removable = true,
+    arrayAddLabel = "Add",
+    canDeleteFirst = false,
+  } = getUiOptions(uiSchema, registry.globalUiOptions);
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
 
@@ -39,23 +45,25 @@ const ArrayFieldTemplate = ({
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            <div className="text-bc-bg-blue text-lg flex align-center my-10">
-              {customTitleName && (
-                <span>
-                  {customTitleName} {i + 1}
-                </span>
-              )}
-              {(i !== 0 || canDeleteFirst) && (
-                <button
-                  onClick={item.onDropIndexClick(item.index)}
-                  className="border-none bg-transparent p-0 ml-6"
-                  title="Remove item"
-                  aria-label="Remove item"
-                >
-                  <MinusSVG />
-                </button>
-              )}
-            </div>
+            {(customTitleName || (removable && i !== 0)) && (
+              <div className="text-bc-bg-blue text-lg flex align-center my-10">
+                {customTitleName && (
+                  <span>
+                    {customTitleName} {i + 1}
+                  </span>
+                )}
+                {((removable && i !== 0) || canDeleteFirst) && (
+                  <button
+                    onClick={item.onDropIndexClick(item.index)}
+                    className="border-none bg-transparent p-0 ml-6"
+                    title="Remove item"
+                    aria-label="Remove item"
+                  >
+                    <MinusSVG />
+                  </button>
+                )}
+              </div>
+            )}
             {{
               ...item.children,
               props: {
@@ -79,7 +87,7 @@ const ArrayFieldTemplate = ({
           className="w-fit my-8 normal-case"
           onClick={onAddClick}
         >
-          {arrayAddLabel}
+          {arrayAddLabel as any}
         </Button>
       )}
     </div>

@@ -1,5 +1,5 @@
 from django.db import models
-from registration.models import Activity, RegulatedProduct
+from registration.models import Activity
 from registration.models.facility import Facility
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import ReportVersion
@@ -44,7 +44,6 @@ class FacilityReport(TimeStampedModel):
 
     # We don't create a backwards relation since these are registration models
     activities = models.ManyToManyField(Activity, related_name="+")
-    products = models.ManyToManyField(RegulatedProduct, related_name="+")
 
     class Meta:
         db_table_comment = "A table to store individual facility information as part of a report"

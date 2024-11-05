@@ -71,7 +71,6 @@ class ReportService:
                 report_version=report_version,
             )
             facility_report.activities.add(*list(operation.activities.all()))
-            facility_report.products.add(*list(operation.regulated_products.all()))
 
         return report_version.id
 

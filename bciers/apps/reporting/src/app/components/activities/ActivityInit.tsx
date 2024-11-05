@@ -3,11 +3,14 @@ import { Suspense } from "react";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { defaultEmtpySourceTypeMap } from "./uiSchemas/schemaMaps";
 import ActivityForm from "./ActivityForm";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { UUID } from "crypto";
 import Loading from "@bciers/components/loading/SkeletonForm";
+import {
+  ActivityData,
+  getFacilitiesInformationTaskList,
+} from "../taskList/2_facilitiesInformation";
+import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
-type ActivityData = { id: number; name: string; slug: string };
 interface Props {
   versionId: number;
   facilityId: UUID;
@@ -20,14 +23,7 @@ export default async function ActivityInit({
   facilityId,
   activityId,
 }: Readonly<Props>) {
-  const orderedActivities = await actionHandler(
-    `reporting/report-version/${versionId}/facility-report/${facilityId}/activity-list`,
-    "GET",
-    "",
-  );
-  if (orderedActivities.error) {
-    throw new Error("We couldn't find the activity list for this facility.");
-  }
+  const orderedActivities = await getOrderedActivities(versionId, facilityId);
 
   let currentActivity = orderedActivities[0];
   if (activityId)
@@ -47,37 +43,18 @@ export default async function ActivityInit({
   const defaultEmptySourceTypeState =
     defaultEmtpySourceTypeMap[currentActivity.slug];
 
-  const taskListData: TaskListElement[] = [
-    {
-      type: "Section",
-      title: "Activities Information",
-      isExpanded: true,
-      elements: [],
-    },
-  ];
-  const sectionElements: TaskListElement[] = [];
-  const generateTasklistItems = () => {
-    orderedActivities.forEach((activity: ActivityData) => {
-      sectionElements.push({
-        type: "Page",
-        title: activity.name,
-        isActive: activity.id === currentActivity.id,
-        link: `?activity_id=${activity.id}`,
-      });
-    });
-    taskListData[0].elements = sectionElements;
-  };
-  const additionalPages = [
-    "Non-attributable Emissions",
-    "Emissions Summary",
-    "Production Data",
-    "Allocation of Emissions",
-  ];
-  additionalPages.forEach((taskListPage) => {
-    taskListData.push({ type: "Page", title: taskListPage });
-  });
+  const taskListData = getFacilitiesInformationTaskList(
+    versionId,
+    facilityId,
+    orderedActivities,
+  );
 
-  generateTasklistItems();
+  const currentActivityTaskListElement = taskListData[0]?.elements?.find(
+    (e) => e.title == currentActivity.name,
+  );
+  if (currentActivityTaskListElement)
+    currentActivityTaskListElement.isActive = true;
+
   return (
     <Suspense fallback={<Loading />}>
       <ActivityForm
