@@ -23,17 +23,12 @@ const OperationInformationPage = async ({
     // using dot notation for error raises a TS error
     throw new Error("Failed to fetch operation data");
   return (
-    <>
-      <Modal
-        title={"Are you sure you want to change your registration purpose?"}
-      />
-      <OperationInformationForm
-        rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        step={step}
-        steps={steps}
-      />
-    </>
+    <OperationInformationForm
+      rawFormData={{}}
+      schema={await createRegistrationOperationInformationSchema()}
+      step={step}
+      steps={steps}
+    />
   );
 };
 
