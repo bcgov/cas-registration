@@ -1,3 +1,4 @@
+from registration.models.contact import Contact
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document_type import DocumentType
@@ -11,6 +12,7 @@ from registration.models.address import Address
 from registration.schema.v2.operation import (
     OperationRepresentativeIn,
     OperationNewEntrantApplicationIn,
+    OperationRepresentativeRemove,
     RegistrationPurposeIn,
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
@@ -886,13 +888,36 @@ class TestGenerateBoroId:
         assert operation.bc_obps_regulated_operation is not None
 
 
-class TestGenerateBcghgId:
+class TestRemoveOperationRepresentative:
     @staticmethod
-    def test_generates_bcghg_id():
+    def test_cannot_remove_anything_from_other_users_operations():
+        user = baker.make_recipe('utils.industry_operator_user')
+        operation = baker.make_recipe(
+            'utils.operation',
+        )
+        contact1 = baker.make_recipe('utils.contact', id=1)
+        contact2 = baker.make_recipe('utils.contact', id=2)
+        operation.contacts.add(contact1, contact2)
+        operation.save()
+        with pytest.raises(Exception, match="Unauthorized."):
+            OperationServiceV2.remove_operation_representative(user.user_guid, operation.id, {id: contact1.id})
+
+    @staticmethod
+    def test_removes_operation_representative():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        contact1 = baker.make_recipe('utils.contact', id=1)
+        contact2 = baker.make_recipe('utils.contact', id=2)
+        operation.contacts.add(contact1, contact2)
+        operation.save()
 
-        OperationServiceV2.generate_bcghg_id(approved_user_operator.user.user_guid, operation.id)
+        OperationServiceV2.remove_operation_representative(
+            approved_user_operator.user.user_guid, operation.id, OperationRepresentativeRemove(id=contact2.id)
+        )
         operation.refresh_from_db()
-        assert operation.bcghg_id is not None
-        assert operation.bcghg_id.issued_by == approved_user_operator.user
+
+        assert operation.contacts.count() == 1
+        assert operation.contacts.first().id == 1
+        assert operation.updated_by == approved_user_operator.user
+        # confirm the contact was only removed from the operation, not removed from the db
+        assert Contact.objects.filter(id=2).exists()
