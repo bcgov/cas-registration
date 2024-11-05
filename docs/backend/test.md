@@ -105,3 +105,33 @@ class MyModelTestCase(BaseTestCase):
 ```
 
 In this example, `MyModelTestCase` inherits from `BaseTestCase`, and the `field_data` list is defined with the expected field attributes. The `setUpTestData` method sets up the test data for the `test_object` model instance, allowing the tests to run using this data.
+
+## Endpoint Permission Testing
+
+Our endpoint permission testing framework automatically verifies access restrictions for each role on specified endpoints. By following a simple setup, we ensure new endpoints are correctly tested for role permissions, and the system will notify us if any endpoints lack coverage.
+
+### Adding New Endpoints for Testing
+
+To add a new endpoint to the test suite, update the `endpoints_to_test` dictionary in the test configuration. This dictionary is organized by roles, with each role having a list of endpoints it has access to. For each new endpoint, specify:
+
+- `method`: The HTTP method (`get`, `post`, etc.).
+- `endpoint_name`: The endpoint name (must match the endpoint's URL pattern name).
+- `kwargs` (optional): Any URL parameters required by the endpoint, such as `id`s.
+
+Here’s an example of how to add a new endpoint for a role:
+
+```python
+{
+    "method": "get",
+    "endpoint_name": "new_endpoint_name",
+    "kwargs": {"item_id": random_uuid},
+}
+```
+
+### Ensuring All Endpoints are Covered
+
+The test suite includes a check to confirm all endpoints are covered in the endpoints_to_test dictionary. If any new endpoints are added but not included in endpoints_to_test, the test will fail and list the untested endpoints, helping us maintain comprehensive testing coverage.
+
+### Excluding Certain Endpoints
+
+For endpoints that don’t require permission checks, add them to the exclusion_list within the test_all_api_endpoints_are_permission_tested function. Common examples are endpoints open to all users or those managed by other teams.
