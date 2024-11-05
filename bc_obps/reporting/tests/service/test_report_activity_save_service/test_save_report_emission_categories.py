@@ -49,6 +49,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -103,6 +104,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"id": 9002, "methodology": "Default HHV/Default EF"},
             },
         )
@@ -133,6 +135,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"id": 9002, "methodology": "Default HHV/Default EF"},
             },
         )
@@ -179,6 +182,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -217,6 +221,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -255,6 +260,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -295,6 +301,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -336,6 +343,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -374,6 +382,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -415,6 +424,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
@@ -453,6 +463,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
+                "emission": 1,
                 "methodology": {"methodology": "Default HHV/Default EF"},
             },
         )
