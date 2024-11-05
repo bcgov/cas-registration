@@ -10,7 +10,9 @@ class ReportNonAttributableEmissionsModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.emission_category = EmissionCategory.objects.create(category_name="Default Category", category_type="basic")
-        cls.gas_type = GasType.objects.create(name="Default Gas", chemical_formula="H2O")
+        cls.gas_type = GasType.objects.create(
+            name="Default Gas", chemical_formula="H2O", cas_number="124-38-9", gwp=100
+        )
         cls.test_object = ReportNonAttributableEmissions.objects.create(
             activity="activity",
             source_type="source_type",
