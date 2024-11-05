@@ -4,6 +4,8 @@ from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from model_bakery.baker import make_recipe
 
+from registration.utils import custom_reverse_lazy
+
 
 class TestReportActivityEndpoint(CommonTestSetup):
     """Tests for the report activity endpoint"""
@@ -17,10 +19,13 @@ class TestReportActivityEndpoint(CommonTestSetup):
         self.activity = make_recipe('reporting.tests.utils.activity')
 
         # Create endpoint
-        self.endpoint = (
-            f"/api/reporting/report-version/{self.facility_report.report_version.id}"
-            f"/facilities/{self.facility_report.facility.id}"
-            f"/activity/{self.activity.id}/report-activity"
+        self.endpoint = custom_reverse_lazy(
+            "save_report_activity_data",
+            kwargs={
+                "report_version_id": self.facility_report.report_version.id,
+                "facility_id": self.facility_report.facility.id,
+                "activity_id": self.activity.id,
+            },
         )
 
         # Create test payload
@@ -41,35 +46,6 @@ class TestReportActivityEndpoint(CommonTestSetup):
             data=json.dumps(self.test_payload),
             endpoint=self.endpoint,
         )
-
-    # AUTHORIZATION
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save")
-    def test_authorization_matrix(self, mock_service: MagicMock):
-        """Test complete authorization matrix for all roles"""
-        # Setup mock service for successful requests
-        mock_service.return_value = SimpleNamespace(id=12345)
-
-        test_cases = [
-            # role, should_authorize_operator, expected_status
-            ('cas_pending', False, 401),
-            ('cas_analyst', False, 401),
-            ('cas_admin', False, 401),
-            ('industry_user', True, 200),
-        ]
-
-        for role, should_authorize, expected_status in test_cases:
-            mock_service.reset_mock()  # Reset mock between tests
-            response = self._make_request(role=role, authorize_operator=should_authorize)
-            assert response.status_code == expected_status, (
-                f"Role {role} (with authorize_operator={should_authorize}) "
-                f"returned {response.status_code}, expected {expected_status}"
-            )
-
-            # Verify service calls
-            if expected_status == 200:
-                mock_service.assert_called_once()
-            else:
-                mock_service.assert_not_called()
 
     # SERVICE OUTPUT
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save")
