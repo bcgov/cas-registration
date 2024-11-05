@@ -4,7 +4,7 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
 from service.operation_service import OperationService
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.models import Operation

@@ -5,7 +5,7 @@ from registration.models.contact import Contact
 from registration.schema.v2.operation import OperationRepresentativeIn, OperationRepresentativeOut
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.api.router import router
 from common.permissions import authorize

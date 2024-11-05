@@ -1,7 +1,7 @@
 from typing import Dict, Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from service.data_access_service.user_service import UserDataAccessService
 from registration.decorators import handle_http_errors

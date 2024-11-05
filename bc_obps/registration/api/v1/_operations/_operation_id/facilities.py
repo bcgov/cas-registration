@@ -10,7 +10,7 @@ from registration.api.router import router
 from typing import List, Literal, Optional
 from django.db.models import QuerySet
 from django.http import HttpRequest
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.constants import FACILITY_TAGS
 from registration.decorators import handle_http_errors
 from ninja.pagination import paginate, PageNumberPagination
