@@ -11,7 +11,11 @@ import { InlineFieldTemplate } from "../fields";
 import TitleFieldTemplate from "@bciers/components/form/fields/TitleFieldTemplate";
 import ReadOnlyArrayFieldTemplate from "../fields/readonly/ReadOnlyArrayFieldTemplate";
 import ReadOnlyRadioWidget from "../widgets/readOnly/ReadOnlyRadioWidget";
-import { BcghgIdWidget, BoroIdWidget } from "../widgets";
+import {
+  BcghgIdWidget,
+  BoroIdWidget,
+  OperationRepresentativeWidget,
+} from "../widgets";
 
 const { templates: defaultTemplates } = getDefaultRegistry();
 
@@ -34,6 +38,7 @@ const readOnlyTheme = {
     URLWidget: ReadOnlyWidget,
     BoroIdWidget: BoroIdWidget,
     BcghgIdWidget: BcghgIdWidget,
+    OperationRepresentativeWidget: OperationRepresentativeWidget,
   },
   templates: {
     ...defaultTemplates,
