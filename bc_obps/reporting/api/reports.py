@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Tuple, List
 
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -12,6 +12,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
+from ..schema.report_regulated_products import RegulatedProductOut
 from ..models import ReportingYear, ReportVersion
 from ..schema.report_version import ReportingVersionOut
 
@@ -40,7 +41,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
 )
 @handle_http_errors()
 def get_report_operation_by_version_id(
-    request: HttpRequest, version_id: int
+        request: HttpRequest, version_id: int
 ) -> Tuple[Literal[200], ReportOperationOut]:
     report_operation = ReportService.get_report_operation_by_version_id(version_id)
     return 200, report_operation  # type: ignore
@@ -56,7 +57,7 @@ def get_report_operation_by_version_id(
 )
 @handle_http_errors()
 def save_report(
-    request: HttpRequest, version_id: int, payload: ReportOperationIn
+        request: HttpRequest, version_id: int, payload: ReportOperationIn
 ) -> Tuple[Literal[201], ReportOperationOut]:
     report_operation = ReportService.save_report_operation(version_id, payload)
     return 201, report_operation  # type: ignore
@@ -72,6 +73,21 @@ def save_report(
 @handle_http_errors()
 def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYear]:
     return 200, ReportingYearService.get_current_reporting_year()
+
+
+@router.get(
+    "/report-version/{version_id}/regulated-products",
+    response={200: List[RegulatedProductOut], custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Retrieves all regulated products associated with a report operation identified by its version ID.""",
+    # auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_regulated_products_by_version_id(
+        request: HttpRequest, version_id: int
+) -> Tuple[Literal[200], List[RegulatedProductOut]]:
+    regulated_products = ReportService.get_regulated_products_by_version_id(version_id)
+    return 200, regulated_products
 
 
 @router.get(

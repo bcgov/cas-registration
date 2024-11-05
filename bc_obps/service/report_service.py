@@ -1,3 +1,4 @@
+from typing import List
 from uuid import UUID
 from django.db import transaction
 from django.db.models import QuerySet
@@ -9,6 +10,7 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.schema.report_operation import ReportOperationIn
+from reporting.schema.report_regulated_products import RegulatedProductOut
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
@@ -114,6 +116,17 @@ class ReportService:
         report_version.save()
 
         return report_operation
+
+    @classmethod
+    def get_regulated_products_by_version_id(cls, version_id: int) -> List[RegulatedProductOut]:
+        # Fetch the ReportOperation by version ID
+        report_operation = ReportOperation.objects.get(report_version_id=version_id)
+
+        # Retrieve associated regulated products
+        regulated_products = report_operation.regulated_products.all()
+
+        # Map to the output schema (assuming RegulatedProductOut has a 'name' field)
+        return [RegulatedProductOut(id=product.id, name=product.name) for product in regulated_products]
 
     @staticmethod
     def get_report_type_by_version_id(version_id: int) -> ReportVersion:
