@@ -4,6 +4,7 @@ from registration.models.operation import Operation
 import pytest
 import base64
 from model_bakery import baker
+from common.permissions import raise_401_if_user_not_authorized
 from registration.models import User, UserOperator, AppRole
 from registration.utils import (
     file_to_data_url,
@@ -11,7 +12,6 @@ from registration.utils import (
     files_have_same_hash,
     update_model_instance,
     generate_useful_error,
-    raise_401_if_user_not_authorized,
 )
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
