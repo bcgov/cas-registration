@@ -305,6 +305,7 @@ ReportNonAttributableEmissions {
     ForeignKey archived_by
     DateTimeField archived_at
     ForeignKey report_version
+    ForeignKey facility_report
     CharField activity
     CharField source_type
     ForeignKey emission_category
@@ -419,5 +420,6 @@ ReportNonAttributableEmissions }|--|| User : created_by
 ReportNonAttributableEmissions }|--|| User : updated_by
 ReportNonAttributableEmissions }|--|| User : archived_by
 ReportNonAttributableEmissions }|--|| ReportVersion : report_version
+ReportNonAttributableEmissions }|--|| FacilityReport : facility_report
 ReportNonAttributableEmissions }|--|| EmissionCategory : emission_category
 ReportNonAttributableEmissions }|--|{ GasType : gas_type
