@@ -236,6 +236,7 @@ describe("the OperationInformationForm component", () => {
       await createAdministrationOperationInformationSchema(
         formData.registration_purposes,
         false,
+        OperationStatus.REGISTERED,
       );
     render(
       <OperationInformationForm
@@ -609,6 +610,7 @@ describe("the OperationInformationForm component", () => {
     const modifiedSchema = await createAdministrationOperationInformationSchema(
       newEntrantFormData.registration_purposes,
       false,
+      OperationStatus.REGISTERED,
     );
 
     const { container } = render(
