@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0051_bcgreenhousegasid_historicalbcgreenhousegasid'),
-        ('reporting', '0027_storage_of_petroleum_products'),
+        ('reporting', '0029_remove_facilityreport_products_reportproduct_and_more'),
     ]
 
     operations = [
