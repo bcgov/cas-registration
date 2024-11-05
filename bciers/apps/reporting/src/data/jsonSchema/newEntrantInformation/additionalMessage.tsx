@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
+import { WidgetProps } from "@rjsf/utils";
 export const newEntrantInfo = (
   <>
     <Typography
@@ -13,3 +14,11 @@ export const newEntrantInfo = (
     </Typography>
   </>
 );
+
+const ProductionDataTitleWidget: React.FC<WidgetProps> = ({ id, value }) => {
+  return (
+    <div id={id} className="w-full mt-8">
+      <u>Product:</u> {value}
+    </div>
+  );
+};
