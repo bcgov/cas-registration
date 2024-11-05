@@ -1,11 +1,4 @@
 from reporting.models import EmissionCategory
-from typing import List
-
-
-class EmissionCategoryService:
-    @classmethod
-    def get_all_emission_categories(cls) -> List[EmissionCategory]:
-        return list(EmissionCategory.objects.all())
 from reporting.models.report_emission import ReportEmission
 from decimal import Decimal
 from django.db.models import Sum
@@ -16,6 +9,10 @@ class EmissionCategoryService:
     """
     Service that applies an emission category to an emission based on the reported activity, source_type and in the case of fuel_excluded categories, fuel_classification
     """
+
+    @classmethod
+    def get_all_emission_categories(cls) -> List[EmissionCategory]:
+        return list(EmissionCategory.objects.all())
 
     @staticmethod
     def get_total_emissions_by_emission_category(facility_report_id: int, emission_category_id: int) -> Decimal | int:
