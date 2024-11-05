@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -14,6 +14,7 @@ const mockActivityData = {
 };
 
 const mockReportDate = "2024-01-01";
+const mockUUID = " 00000000-0000-0000-0000-000000000001";
 
 const mockdefaultSourceType = { units: [{ fuels: [{ emissions: [{}] }] }] };
 
@@ -54,9 +55,13 @@ describe("ActivityForm component", () => {
         taskListData={[]}
         reportDate={mockReportDate}
         defaultEmptySourceTypeState={mockdefaultSourceType as EmptyWithUnits}
+        reportVersionId={1}
+        facilityId={mockUUID}
       />,
     );
-    await flushPromises();
+    await act(async () => {
+      await flushPromises();
+    });
 
     // Check if the source type booleans are rendered
     expect(screen.getAllByText(/First Test Source Type Title/i).length).toBe(2);
@@ -109,9 +114,13 @@ describe("ActivityForm component", () => {
         taskListData={[]}
         reportDate={mockReportDate}
         defaultEmptySourceTypeState={mockdefaultSourceType as EmptyWithUnits}
+        reportVersionId={1}
+        facilityId={mockUUID}
       />,
     );
-    await flushPromises();
+    await act(async () => {
+      await flushPromises();
+    });
 
     // Check if the units array within the source type schema is rendered
     expect(screen.getAllByText(/Unit/i).length).toBe(1);
