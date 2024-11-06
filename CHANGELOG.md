@@ -1,3 +1,20 @@
+# [1.13.0](https://github.com/bcgov/cas-registration/compare/v1.12.0...v1.13.0) (2024-11-06)
+
+### Bug Fixes
+
+- Add boolean option to allow deletion of first array field template item ([011f5bc](https://github.com/bcgov/cas-registration/commit/011f5bc7f05b616124a978beedf9d9031ecda59c))
+- Add empty default so formdata on LFO array has initial section 2 validation ([ec45a45](https://github.com/bcgov/cas-registration/commit/ec45a45d5f78a39057c8d6070341d3f0d489aaa4))
+- facility report cannot list products ([06b32b9](https://github.com/bcgov/cas-registration/commit/06b32b979cc68e347cb5a670c05a8a501e8d1be6))
+- Set operation.opt_in to true when opted-in operation is selected ([354ef8e](https://github.com/bcgov/cas-registration/commit/354ef8e2e5d4c5d41f9857ef53569e20c7631535))
+
+### Features
+
+- [rebase] Integrate save_methodology func in save report activity file and add fk migration associated ([5756d2d](https://github.com/bcgov/cas-registration/commit/5756d2d8b310a835e9192fb42bed9a9646ca37dd))
+- add operator details dashboard for internal users ([1190787](https://github.com/bcgov/cas-registration/commit/1190787e2edf640234bb655600a5d31e4a85c138))
+- apply emission categories to emission records on save/update ([a6d92ce](https://github.com/bcgov/cas-registration/commit/a6d92ce124a866afd4ac02f4e34ef39831a461e6))
+- Display opt-in information on operation details page if opted-in ([3456fc1](https://github.com/bcgov/cas-registration/commit/3456fc1ccad0f184e2555b5fe179f740466647ef))
+- show BORO ID on operation form ([97aeac7](https://github.com/bcgov/cas-registration/commit/97aeac7493925155714cb5702d713a9667f28aee))
+
 # [1.12.0](https://github.com/bcgov/cas-registration/compare/v1.11.0...v1.12.0) (2024-10-23)
 
 ### Bug Fixes
