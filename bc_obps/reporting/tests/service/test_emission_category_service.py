@@ -38,7 +38,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 101},
+            json_data={"equivalentEmission": 101},
         )
 
         report_emission_2 = make(
@@ -46,7 +46,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 99.4151},
+            json_data={"equivalentEmission": 99.4151},
         )
 
         # id 1 = Flaring
@@ -62,7 +62,7 @@ class TestEmissionCategoryService(TestCase):
         flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category(
             report_activity.facility_report.id, 1
         )
-        assert flaring_return_value == Decimal('200.41510')
+        assert flaring_return_value == Decimal('200.4151')
 
     def test_returns_correct_value_all_categories(self):
         test_infrastructure = TestInfrastructure.build()
@@ -93,7 +93,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 100.0001},
+            json_data={"equivalentEmission": 100.0001},
         )
 
         report_emission_2 = make(
@@ -101,7 +101,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 200.0002},
+            json_data={"equivalentEmission": 200.0002},
         )
 
         report_emission_3 = make(
@@ -109,7 +109,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 300.0003},
+            json_data={"equivalentEmission": 300.0003},
         )
 
         report_emission_4 = make(
@@ -117,7 +117,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 400.0004},
+            json_data={"equivalentEmission": 400.0004},
         )
 
         report_emission.emission_categories.set([1, 10])
@@ -193,7 +193,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 100.0001},
+            json_data={"equivalentEmission": 100.0001},
         )
 
         report_emission_2 = make(
@@ -201,7 +201,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 200.0002},
+            json_data={"equivalentEmission": 200.0002},
         )
 
         report_emission_3 = make(
@@ -209,7 +209,7 @@ class TestEmissionCategoryService(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=test_infrastructure.report_version,
-            json_data={"emission": 300.00029},
+            json_data={"equivalentEmission": 300.00029},
         )
 
         report_emission.emission_categories.set([2, 10, 11, 12, 13, 14]),
