@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "title": "Anode consumption",
+  "properties": {
+    "emissions": {
+      "title": "Emission Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "title": "Gas type",
+            "type": "string",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emissions (tonnes)",
+            "type": "number"
+          },
+          "equivalentEmission": {
+            "title": "Equivalent emissions (tC02e)",
+            "type": "number",
+            "readOnly": true
+          }
+        }
+      }
+    }
+  }
+}
