@@ -15,7 +15,7 @@ class TestReportingOperationsEndpoint(CommonTestSetup):
     @patch(
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
     )
-    @patch("reporting.api.operations.get_current_user_guid")
+    @patch("common.api.utils.get_current_user_guid")
     @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
     def test_returns_data_as_provided_by_the_service(
         self,
