@@ -60,6 +60,18 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_registration_purpose_by_version_id",
                 "kwargs": {"version_id": random_int},
             },
+            {"method": "get", "endpoint_name": "get_gas_type"},
+            {"method": "get", "endpoint_name": "get_emission_category"},
+            {
+                "method": "get",
+                "endpoint_name": "load_production_data",
+                "kwargs": {"report_version_id": random_int, "facility_id": random_uuid},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_report_non_attributable_by_version_id",
+                "kwargs": {"version_id": random_int, "facility_id": random_uuid},
+            },
             {"method": "post", "endpoint_name": "create_operation"},
             {"method": "post", "endpoint_name": "create_facilities"},
             {"method": "post", "endpoint_name": "create_contact"},
@@ -82,6 +94,11 @@ class TestEndpointPermissions(TestCase):
                 "method": "post",
                 "endpoint_name": "save_report_activity_data",
                 "kwargs": {"report_version_id": random_int, "facility_id": random_uuid, "activity_id": random_int},
+            },
+            {
+                "method": "post",
+                "endpoint_name": "save_production_data",
+                "kwargs": {"report_version_id": random_int, "facility_id": random_uuid},
             },
             {
                 "method": "put",

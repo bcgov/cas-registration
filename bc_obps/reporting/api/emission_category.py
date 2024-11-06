@@ -18,7 +18,6 @@ from ..service.emission_category_service import EmissionCategoryService
 @router.get(
     "/emission-category",
     response={200: List[EmissionCategorySchema], codes_4xx: Message, codes_5xx: Message},
-    url_name="get_emission_category",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()

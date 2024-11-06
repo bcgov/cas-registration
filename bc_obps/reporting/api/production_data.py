@@ -9,7 +9,7 @@ from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.schema.report_product import ProductionDataOut, ReportProductSchemaIn
 from reporting.service.report_product_service import ReportProductService
-from service.error_service import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.generic import Message
 from .router import router
 
@@ -46,6 +46,7 @@ def save_production_data(
     exclude_none=True,
     auth=authorize("approved_industry_user"),
 )
+@handle_http_errors()
 def load_production_data(request: HttpRequest, report_version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
 
     report_products = (
