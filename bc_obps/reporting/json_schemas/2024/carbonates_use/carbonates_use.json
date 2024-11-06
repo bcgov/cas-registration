@@ -20,7 +20,7 @@
           },
           "equivalentEmission": {
             "title": "Equivalent Emission",
-            "type": "number",
+            "type": "string",
             "readOnly": true
           },
           "carbonateType": {
