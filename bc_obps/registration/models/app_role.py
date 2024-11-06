@@ -1,4 +1,8 @@
+import typing
 from typing import List
+from django.core.cache import cache
+
+from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from common.models import BaseModel
 from django.db import models
 from simple_history.models import HistoricalRecords
@@ -53,3 +57,19 @@ class AppRole(BaseModel):
             return list(AppRole.objects.exclude(role_name="cas_pending").values_list("role_name", flat=True))
         except Exception:
             return []
+
+    @typing.no_type_check
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when the app role is saved.
+        """
+        cache.delete(PERMISSION_CONFIGS_CACHE_KEY)  # Clear the cache when an app role is saved
+        super().save(*args, **kwargs)
+
+    @typing.no_type_check
+    def delete(self, *args, **kwargs):
+        """
+        Override the delete method to clear the cache when the app role is deleted.
+        """
+        cache.delete(PERMISSION_CONFIGS_CACHE_KEY)
+        super().delete(*args, **kwargs)
