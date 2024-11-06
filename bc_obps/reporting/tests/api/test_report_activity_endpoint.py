@@ -1,6 +1,6 @@
 import json
 from types import SimpleNamespace
-from unittest.mock import patch, MagicMock
+from unittest.mock import ANY, patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from model_bakery.baker import make_recipe
 
@@ -48,19 +48,26 @@ class TestReportActivityEndpoint(CommonTestSetup):
         )
 
     # SERVICE OUTPUT
+    @patch("reporting.api.report_activity.load_report_activity_data")
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save")
-    def test_post_returns_the_service_output(self, mock_service: MagicMock):
+    def test_post_saves_then_calls_the_load_function(self, mock_service_save: MagicMock, mock_load_endpoint: MagicMock):
         """Test that the endpoint returns the service's output correctly"""
         # Arrange
-        mock_service.return_value = SimpleNamespace(id=12345)
+        mock_service_save.return_value = SimpleNamespace(id=12345)
+        mock_load_endpoint.return_value = (200, {"loaded_saved_data": True})
 
         # Act
         response = self._make_request("industry_user")
 
         # Assert
+
+        mock_service_save.assert_called_once_with({"test_data": "1"})
+        mock_load_endpoint.assert_called_once_with(
+            ANY, self.facility_report.report_version.id, self.facility_report.facility.id, self.activity.id
+        )
+
         assert response.status_code == 200
-        mock_service.assert_called_once_with({"test_data": "1"})
-        assert response.json() == 12345
+        assert response.json() == {'loaded_saved_data': True}
 
     @patch("reporting.service.report_activity_load_service.ReportActivityLoadService.load")
     def test_get_returns_the_serialized_value_from_the_serializer(self, mock_service: MagicMock):

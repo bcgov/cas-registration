@@ -21,7 +21,8 @@
           "equivalentEmission": {
             "title": "Equivalent Emission",
             "type": "string",
-            "readOnly": true
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
           },
           "carbonateType": {
             "title": "Carbonate Type",
