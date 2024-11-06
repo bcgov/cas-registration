@@ -232,14 +232,11 @@ class TestEndpointPermissions(TestCase):
             data={},
         )
 
-    @patch("common.api.utils.get_current_user_guid")
     @patch("common.permissions.check_permission_for_role")
     def test_endpoint_permissions_by_role(
         self,
         mock_check_permission_for_role: MagicMock,
-        mock_get_current_user_guid: MagicMock,
     ):
-        mock_get_current_user_guid.return_value = self.random_uuid
         for role, configs in self.endpoints_to_test.items():
             for config in configs:
                 with self.subTest(endpoint=config["endpoint_name"]):
@@ -262,7 +259,7 @@ class TestEndpointPermissions(TestCase):
             "create_user_profile",
             "get_user_profile",
             "get_user_role",
-            # TODO: Need to ask from Reporting Team
+            # TODO: Pending on the answer from Reporting Team
             "get_activities",
             "get_fuel_data",
         ]
