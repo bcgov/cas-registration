@@ -19,23 +19,6 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
         "process_flow_diagram": MOCK_DATA_URL,
     }
 
-    def test_register_edit_operation_information_endpoint_unauthorized_roles_cannot_put(self):
-        operation = baker.make_recipe(
-            'utils.operation',
-        )
-        # cas users and unapproved industry users can't put
-        roles = ["cas_pending", "cas_analyst", "cas_admin", "industry_user"]
-        for role in roles:
-            response = TestUtils.mock_put_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                json.dumps(self.mock_payload),
-                custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
-            )
-            assert response.status_code == 401
-            assert response.json()['detail'] == "Unauthorized"
-
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
         baker.make_recipe('utils.approved_user_operator', user=self.user)

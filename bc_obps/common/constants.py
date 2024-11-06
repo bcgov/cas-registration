@@ -13,3 +13,5 @@ AUDIT_FIELDS = [
     "archived_at",
     "archived_by",
 ]
+
+PERMISSION_CONFIGS_CACHE_KEY = "permission_configs"

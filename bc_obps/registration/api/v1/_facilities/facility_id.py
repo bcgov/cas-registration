@@ -6,7 +6,7 @@ from registration.schema.v1.facility import FacilityIn
 from registration.schema.v1.facility import FacilityOut
 
 from service.facility_service import FacilityService
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 
 from common.permissions import authorize
 

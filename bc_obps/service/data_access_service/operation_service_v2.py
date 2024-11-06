@@ -1,4 +1,6 @@
 from typing import List
+from uuid import UUID
+
 from registration.enums.enums import OperationTypes
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.schema.v2.operation import OperationListOut
@@ -52,3 +54,10 @@ class OperationDataAccessServiceV2:
                 .annotate(sfo_facility_id=Subquery(facilities_subquery, output_field=UUIDField()))
                 .only(*only_fields)
             )
+
+    @classmethod
+    def check_current_users_registered_operation(cls, operator_id: UUID) -> bool:
+        """
+        Returns True if the userOperator's operator has at least one operation with status 'Registered', False otherwise.
+        """
+        return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()

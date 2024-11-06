@@ -1,19 +1,21 @@
 import logging
 from django.db.models import QuerySet
-from typing import Any, List, TypeVar, Union, Iterable, Dict, Optional
+from typing import Any, TypeVar, Union, Iterable, Dict, Optional
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
-from django.http import HttpRequest
-
-from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
+from registration.constants import DEFAULT_API_NAMESPACE
 import requests
 import base64
 import re
 import hashlib
 from django.core.files.base import ContentFile
-from ninja.errors import HttpError
-from registration.models import Document, Operation, Operator, User, UserOperator
+from registration.models import (
+    Document,
+    Operation,
+    Operator,
+    UserOperator,
+)
 from django.urls import reverse_lazy
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -72,49 +74,6 @@ def generate_useful_error(error: ValidationError) -> Optional[str]:
         formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
         return f"{formatted_key}: {value[0]}"
     return None
-
-
-def raise_401_if_user_not_authorized(
-    request: HttpRequest,
-    authorized_app_roles: List[str],
-    authorized_user_operator_roles: Optional[List[str]] = None,
-    industry_user_must_be_approved: bool = True,
-) -> None:
-    """
-    Raise a 401 error if a user is not authorized. To be authorized the user must:
-        - be logged in (request.current_user exists)
-        - have an authorized app_role
-        - if the user's app_role is industry_user, then they must additionally have status = 'Approved' in the user_operator table unless industry_user_must_be_approved is set to False (defaults to True)
-    """
-    if not hasattr(request, 'current_user'):
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    user: User = request.current_user
-    role_name = getattr(user.app_role, "role_name")
-    if role_name not in authorized_app_roles:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
-    if user.is_industry_user():
-        # We always need to pass authorized_user_operator_roles if the user is an industry user
-        if not authorized_user_operator_roles:
-            raise HttpError(401, UNAUTHORIZED_MESSAGE)
-        if industry_user_must_be_approved:
-            approved_user_operator = user.user_operators.filter(status=UserOperator.Statuses.APPROVED).exists()
-            if not approved_user_operator:
-                raise HttpError(401, UNAUTHORIZED_MESSAGE)
-        # If authorized_user_operator_roles is the same as all industry user operator roles, then we can skip the check (Means all industry user roles are authorized)
-        if sorted(authorized_user_operator_roles) != sorted(UserOperator.get_all_industry_user_operator_roles()):
-            user_operator_role = None
-            try:
-                user_operator = (
-                    UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
-                    .only('role')
-                    .get(user=user.user_guid)
-                )
-                user_operator_role = user_operator.role
-            except UserOperator.DoesNotExist:
-                pass
-            if not user_operator_role or user_operator_role not in authorized_user_operator_roles:
-                raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
 # File helpers

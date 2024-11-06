@@ -1,6 +1,6 @@
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from registration.models.user_operator import UserOperator
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService

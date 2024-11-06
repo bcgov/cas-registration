@@ -10,7 +10,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.schema.facility_report import FacilityReportOut, FacilityReportIn
 from reporting.schema.activity import FacilityReportActivityDataOut
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.models import Activity, Operation
 from reporting.models import FacilityReport, ReportVersion, Report
 from django.db.models import QuerySet

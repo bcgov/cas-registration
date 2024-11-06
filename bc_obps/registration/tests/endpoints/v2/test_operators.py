@@ -1,18 +1,11 @@
 from registration.constants import PAGE_SIZE
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-
 from registration.tests.utils.bakers import operator_baker
 from registration.utils import custom_reverse_lazy
 
 
 class TestOperatorsEndpoint(CommonTestSetup):
     endpoint = custom_reverse_lazy("list_operators_v2")
-
-    # AUTHORIZATION
-
-    def test_unauthorized_roles_cannot_list_operators_v2(self):
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', self.endpoint)
-        assert response.status_code == 401
 
     def test_operators_endpoint_list_operators_v2_paginated(self):
         # Create 60 operators with unique corp numbers

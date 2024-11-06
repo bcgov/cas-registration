@@ -4,6 +4,7 @@ from registration.models.operation import Operation
 import pytest
 import base64
 from model_bakery import baker
+from common.permissions import raise_401_if_user_not_authorized
 from registration.models import User, UserOperator, AppRole
 from registration.utils import (
     file_to_data_url,
@@ -11,7 +12,6 @@ from registration.utils import (
     files_have_same_hash,
     update_model_instance,
     generate_useful_error,
-    raise_401_if_user_not_authorized,
 )
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
@@ -363,7 +363,6 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
             timeline.facility.generate_unique_bcghg_id()
 
     def test_generate_unique_bcghg_id_for_operation(self):
-        # brianna
         operation: Operation = baker.make_recipe('utils.operation', type='Linear Facility Operation')
         operation.generate_unique_bcghg_id()
         expected_id = f'2{operation.naics_code.naics_code}0001'

@@ -7,7 +7,7 @@ from registration.schema.v2.operation import OperationCreateOut, OperationInform
 from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from ..router import router
 from registration.schema.generic import Message

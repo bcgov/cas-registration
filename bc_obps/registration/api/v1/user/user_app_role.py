@@ -1,7 +1,7 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.constants import USER_TAGS
 from registration.decorators import handle_http_errors
 from registration.models import AppRole

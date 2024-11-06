@@ -12,14 +12,10 @@ class TestReportingOperationsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/operations"
     client = Client()
 
-    def test_unauthorized_users_cannot_get_operations(self):
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", self.endpoint_under_test)
-        assert response.status_code == 401
-
     @patch(
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
     )
-    @patch("reporting.api.operations.get_current_user_guid")
+    @patch("common.api.utils.get_current_user_guid")
     @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
     def test_returns_data_as_provided_by_the_service(
         self,
@@ -57,7 +53,7 @@ class TestReportingOperationsEndpoint(CommonTestSetup):
             assert item['id'] == str(operation.id)
             assert item['bcghg_id'] == operation.bcghg_id
             assert item['name'] == operation.name
-            # The non none test cases were handled in the service test
+            # The non-none test cases were handled in the service test
             assert item['report_id'] is None
             assert item['report_version_id'] is None
             assert item['report_status'] is None

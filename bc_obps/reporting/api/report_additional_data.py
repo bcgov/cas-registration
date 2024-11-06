@@ -34,7 +34,7 @@ def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def save_report_contact(
+def save_report_additional_data(
     request: HttpRequest, version_id: int, payload: ReportAdditionalDataIn
 ) -> tuple[Literal[201], ReportAdditionalData]:
     # Ensure the correct parameters are passed to the service function
@@ -50,7 +50,7 @@ def save_report_contact(
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_report_person_responsible_by_version_id(
+def get_report_additional_data_by_version_id(
     request: HttpRequest, report_version_id: int
 ) -> Tuple[Literal[200], ReportAdditionalDataOut]:
     report_person_responsible = ReportAdditionalDataService.get_report_person_responsible_by_version_id(
