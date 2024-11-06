@@ -15,7 +15,7 @@ from .router import router
 
 @router.post(
     "report-version/{report_version_id}/facilities/{facility_id}/activity/{activity_id}/report-activity",
-    response={200: int, custom_codes_4xx: Message},
+    response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Saves the data for an activity report form, for a given report version, facility and activity; returns the id of the ReportActivity record on success.""",
     auth=authorize('approved_industry_user'),
@@ -27,14 +27,14 @@ def save_report_activity_data(
     facility_id: UUID,
     activity_id: int,
     payload: ReportActivityDataIn,
-) -> Tuple[Literal[200], int]:
+) -> Tuple[Literal[200], dict]:
 
     user_guid = get_current_user_guid(request)
 
     service = ReportActivitySaveService(report_version_id, facility_id, activity_id, user_guid)
-    report_activity = service.save(payload.activity_data)
+    service.save(payload.activity_data)
 
-    return 200, report_activity.id
+    return load_report_activity_data(request, report_version_id, facility_id, activity_id)
 
 
 @router.get(
