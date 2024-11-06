@@ -25,6 +25,7 @@ interface Props {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
+  activityFormData: object;
   currentActivity: { id: number; name: string; slug: string };
   taskListData: TaskListElement[];
   defaultEmptySourceTypeState:
@@ -38,6 +39,7 @@ interface Props {
 // 🧩 Main component
 export default function ActivityForm({
   activityData,
+  activityFormData,
   currentActivity,
   taskListData,
   defaultEmptySourceTypeState,
@@ -50,7 +52,7 @@ export default function ActivityForm({
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
-  const [formState, setFormState] = useState({} as any);
+  const [formState, setFormState] = useState(activityFormData as any);
   const [jsonSchema, setJsonSchema] = useState({});
   const [uiSchema, setUiSchema] = useState({});
   const [previousActivityId, setPreviousActivityId] = useState<number>();
@@ -105,7 +107,7 @@ export default function ActivityForm({
         selectedKeys.push(Number(key));
       }
     }
-    if (previousActivityId !== activityId) setFormState({});
+    if (previousActivityId !== activityId) setFormState(activityFormData);
     fetchSchemaData(selectedSourceTypes, selectedKeys);
     return () => {
       isFetching = false;
@@ -144,14 +146,14 @@ export default function ActivityForm({
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
+    // Apply new data to NextAuth JWT
+    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
+    console.log("RESPONSE: ", response);
+
     if (response.error) {
       setErrorList([{ message: response.error }]);
       return;
     }
-
-    // Apply new data to NextAuth JWT
-    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
-    console.log("RESPONSE: ", response);
   };
 
   const formIsLoading =
@@ -175,6 +177,7 @@ export default function ActivityForm({
             onChange={handleFormChange}
             onError={(e: any) => console.log("ERROR: ", e)}
             onSubmit={submitHandler}
+            omitExtraData={false}
           >
             {errorList.length > 0 &&
               errorList.map((e: any) => (
