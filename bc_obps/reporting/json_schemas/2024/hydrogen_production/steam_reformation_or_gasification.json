@@ -18,7 +18,9 @@
           },
           "equivalentEmission": {
             "title": "Equivalent Emission",
-            "type": "number"
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
           }
         }
       }
