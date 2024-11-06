@@ -268,7 +268,7 @@ class Operation(TimeStampedModel):
         self.bc_obps_regulated_operation = new_boro_id_instance
 
     def generate_unique_bcghg_id(self) -> None:
-        from registration.utils import generate_unique_bcghg_id_for_operation_or_facility
+        from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
 
         generate_unique_bcghg_id_for_operation_or_facility(self)
 
