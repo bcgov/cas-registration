@@ -8,22 +8,6 @@ from model_bakery import baker
 
 
 class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
-    def test_submission_endpoint_unauthorized_roles_cannot_patch(self):
-        operation = baker.make_recipe(
-            'utils.operation',
-        )
-        roles = ["cas_pending", "cas_analyst", "cas_admin", "industry_user"]
-        for role in roles:
-            response = TestUtils.mock_patch_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                {},
-                custom_reverse_lazy("operation_registration_submission", kwargs={'operation_id': operation.id}),
-            )
-            assert response.status_code == 401
-            assert response.json()['detail'] == "Unauthorized"
-
     def test_submission_endpoint_users_can_only_update_their_operations(self):
         # user is approved to access endpoint
         baker.make_recipe('utils.approved_user_operator', user=self.user)

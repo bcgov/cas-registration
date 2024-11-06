@@ -9,7 +9,7 @@ from common.constants import TAG_DASHBOARD_TILES
 from common.models import DashboardData
 from common.schema.v1 import DashboardDataSchemaOut
 
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.models import AppRole
 from registration.decorators import handle_http_errors
 from common.permissions import authorize
@@ -21,7 +21,6 @@ from service.data_access_service.dashboard_service import DashboardDataService
 @router.get(
     "/dashboard-data",
     response={200: List[DashboardDataSchemaOut], codes_4xx: Message},
-    url_name="list_dashboard_data",
     tags=TAG_DASHBOARD_TILES,
     auth=authorize("authorized_roles"),
 )

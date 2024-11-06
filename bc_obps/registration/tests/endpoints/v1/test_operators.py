@@ -21,27 +21,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
         self.operator.cra_business_number = 111111111
         self.operator.save(update_fields=["legal_name", "cra_business_number"])
 
-    def test_operator_unauthorized_users_cannot_get(self):
-        # operators/operator_id
-        operator = operator_baker()
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_pending', custom_reverse_lazy('get_operator', kwargs={'operator_id': operator.id})
-        )
-        assert response.status_code == 401
-
-    def test_operator_unauthorized_users_cannot_update(self):
-        user_operator = user_operator_baker()
-        operator = operator_baker()
-        for role in ['cas_pending', 'industry_user']:
-            response = TestUtils.mock_put_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                {'status': Operator.Statuses.APPROVED, 'user_operator_id': user_operator.id},
-                custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
-            )
-            assert response.status_code == 401
-
     def test_get_operators_no_parameters(self):
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')

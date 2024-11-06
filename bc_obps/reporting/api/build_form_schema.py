@@ -14,7 +14,6 @@ from ninja.responses import codes_4xx, codes_5xx
 @router.get(
     "/build-form-schema",
     response={200: str, codes_4xx: Message, codes_5xx: Message},
-    url_name="build_form_schema",
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()

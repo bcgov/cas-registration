@@ -1,7 +1,7 @@
 from typing import List, Literal, Tuple
 from django.http import HttpRequest
 from registration.models.operation import Operation
-from registration.api.utils.current_user_utils import get_current_user_guid
+from common.api.utils import get_current_user_guid
 from registration.schema.v2.operation import (
     OperationCurrentOut,
 )

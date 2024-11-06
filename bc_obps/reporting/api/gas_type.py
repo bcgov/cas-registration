@@ -18,7 +18,6 @@ from ..service.gas_type_service import GasTypeService
 @router.get(
     "/gas-type",
     response={200: List[GasTypeSchema], codes_4xx: Message, codes_5xx: Message},
-    url_name="get_gas_type",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()

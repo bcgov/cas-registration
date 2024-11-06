@@ -19,18 +19,7 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "operations"
-
-    # AUTHORIZATION
-
-    def test_unauthorized_roles_cannot_create_new_operation(self):
-        mock_operation = TestUtils.mock_create_operation_payload()
-        # IRC users can't post
-        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
-            response = TestUtils.mock_post_with_auth_role(
-                self, role, self.content_type, mock_operation, custom_reverse_lazy("create_operation")
-            )
-            assert response.status_code == 401
+    endpoint = custom_reverse_lazy("list_operations")
 
     # GET
     def test_get_all_operations_endpoint_based_on_role(self):

@@ -63,13 +63,6 @@ class OperationServiceV2:
         )
 
     @classmethod
-    def check_current_users_registered_operation(cls, operator_id: UUID) -> bool:
-        """
-        Returns True if the userOperator's operator has at least one operation with status 'Registered', False otherwise.
-        """
-        return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()
-
-    @classmethod
     @transaction.atomic()
     def set_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Operation:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)

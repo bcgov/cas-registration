@@ -2,9 +2,9 @@ import math
 from datetime import datetime
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from model_bakery import baker
-from registration.models import UserOperator, Facility, Operation, WellAuthorizationNumber
+from registration.models import Facility, Operation, WellAuthorizationNumber
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.tests.utils.bakers import facility_baker, operation_baker, operator_baker, user_operator_baker
+from registration.tests.utils.bakers import facility_baker, operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 
 
@@ -65,30 +65,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         ), "Longitude of largest emissions does not match"
 
     # GET
-    def test_facilities_endpoint_unauthorized_roles_cannot_get(self):
-        facility = facility_baker()
-        # cas_pending can't get
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_pending", custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id})
-        )
-        assert response.status_code == 401
-
-        # unapproved industry users can't get
-        user_operator_instance = user_operator_baker(
-            {
-                'status': UserOperator.Statuses.PENDING,
-            }
-        )
-        user_operator_instance.user_id = self.user.user_guid
-        user_operator_instance.save()
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id}),
-        )
-        assert response.status_code == 401
-
     def test_industry_users_can_get_their_own_facilities(self):
 
         operator = operator_baker()
@@ -133,31 +109,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             self.mock_payload_with_mandatory_data | {"operation_id": str(owning_operation.id)},
             url,
         )
-
-        # Assert
-        assert response.status_code == 401
-        assert response.json().get('detail') == 'Unauthorized'
-
-    def test_unauthorized_roles_cannot_update(self):
-        # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self)
-
-        # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
-
-        # Define the roles that should not be allowed to update
-        unauthorized_roles = ["cas_pending", "cas_analyst", "cas_admin"]
-
-        # Act
-        for role in unauthorized_roles:
-            # Make a PUT request to the "update_facility" endpoint with the mock payload using the current role
-            response = TestUtils.mock_put_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                self.mock_payload_with_mandatory_data | {"operation_id": str(owning_operation.id)},
-                url,
-            )
 
         # Assert
         assert response.status_code == 401

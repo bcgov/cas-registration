@@ -42,13 +42,13 @@ class User(UserAndContactCommonInfo):
 
     def is_irc_user(self) -> bool:
         """
-        Return whether or not the user is an IRC user.
+        Return whether the user is an IRC user.
         """
         return self.app_role.role_name in AppRole.get_authorized_irc_roles()
 
     def is_industry_user(self) -> bool:
         """
-        Return whether or not the user is an industry user.
+        Return whether the user is an industry user.
         """
         return self.app_role.role_name == "industry_user"
 

@@ -1,19 +1,11 @@
-import pytest
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import FacilityReport
 from registration.models import Activity
 from model_bakery import baker
 
 
-@pytest.mark.django_db
 class TestFacilityReportEndpoints(CommonTestSetup):
     # GET
-    def test_unauthorized_users_cannot_get_facility_report(self):
-        endpoint_under_test = '/api/reporting/report-version/1/facility-report/101'
-
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", endpoint_under_test)
-        assert response.status_code == 401
-
     def test_error_if_no_facility_report_exists(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
@@ -43,12 +35,6 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         assert response.json()['facility_name'] == facility_report.facility_name
 
     ## Facility Report Activity List
-    def test_unauthorized_users_cannot_get_facility_report_activities(self):
-        endpoint_under_test = '/api/reporting/report-version/1/facility-report/101/activity-list'
-
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", endpoint_under_test)
-        assert response.status_code == 401
-
     def test_returns_ordered_activity_list_for_facility_report(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)

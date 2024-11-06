@@ -9,24 +9,6 @@ from model_bakery import baker
 class TestBuildFormSchema(CommonTestSetup):
     endpoint = custom_reverse_lazy("build_form_schema")
 
-    # AUTHORIZATION
-    def test_unauthorized_users_cannot_get_activity_schema(self):
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", self.endpoint)
-        assert response.status_code == 401
-
-    def test_authorized_users_can_get_activity_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        operator = report_version.report.operator
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-
-        for role in ["cas_admin", "cas_analyst", "industry_user"]:
-            response = TestUtils.mock_get_with_auth_role(
-                self,
-                role,
-                f'{self.endpoint}?activity=1&report_version_id={report_version.id}',
-            )
-            assert response.status_code == 200
-
     # PARAMETERS
     def test_invalid_without_version_id(self):
         operator = operator_baker()

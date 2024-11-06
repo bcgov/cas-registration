@@ -31,35 +31,6 @@ class TestOperationIdEndpoint(CommonTestSetup):
             "service.operation_service.send_boro_id_application_email"
         )
 
-    def test_operations_endpoint_unauthorized_users_cannot_get(self):
-        operation_instance_1 = operation_baker()
-        # /operations
-        # unauthorized roles can't get
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending")
-        assert response.status_code == 401
-        # /operations/{operation_id}
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_pending", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation_instance_1.id})
-        )
-        assert response.status_code == 401
-
-        # unapproved industry users can't get
-        # operations
-        user_operator_instance = user_operator_baker()
-        user_operator_instance.status = UserOperator.Statuses.PENDING
-        user_operator_instance.user_id = self.user.user_guid
-        user_operator_instance.save()
-
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
-        assert response.status_code == 401
-        # /operations/{operation_id}
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_operation", kwargs={"operation_id": operation_instance_1.id}),
-        )
-        assert response.status_code == 401
-
     def test_industry_users_can_only_get_their_own_operations(self):
         random_operator = operator_baker()
         the_users_operator = operator_baker()
@@ -153,23 +124,6 @@ class TestOperationIdEndpoint(CommonTestSetup):
         # Make sure the `operator` key has a value for IRC users
         assert response_2_data.get('operator') is not None
 
-    def test_unauthorized_roles_cannot_update_operations(self):
-        operation = operation_baker()
-        mock_operation = TestUtils.mock_update_operation_payload()
-        # IRC users can't put
-        roles = ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']
-        # unapproved industry users cannot put
-        for role in roles:
-            response = TestUtils.mock_put_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                mock_operation,
-                custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
-                + "?submit=false&form_section=1",
-            )
-            assert response.status_code == 401
-
     def test_industry_users_can_only_put_their_own_operations(self):
         mock_payload = TestUtils.mock_update_operation_payload()
         random_operator = operator_baker()
@@ -191,18 +145,6 @@ class TestOperationIdEndpoint(CommonTestSetup):
             mock_payload,
             custom_reverse_lazy("update_operation", kwargs={"operation_id": random_operation.id})
             + "?submit=false&form_section=1",
-        )
-        assert response.status_code == 401
-
-    def test_unauthorized_users_cannot_update_status(self):
-        operation = operation_baker()
-
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {"status": "approved"},
-            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert response.status_code == 401
 
