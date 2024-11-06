@@ -363,7 +363,6 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
             timeline.facility.generate_unique_bcghg_id()
 
     def test_generate_unique_bcghg_id_for_operation(self):
-        # brianna
         operation: Operation = baker.make_recipe('utils.operation', type='Linear Facility Operation')
         operation.generate_unique_bcghg_id()
         expected_id = f'2{operation.naics_code.naics_code}0001'
