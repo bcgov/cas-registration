@@ -1,5 +1,8 @@
 from typing import Callable, Dict, Literal, Optional, List, Union
+from django.core.cache import cache
 from django.http import HttpRequest
+
+from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from registration.constants import UNAUTHORIZED_MESSAGE
 from ninja.errors import HttpError
 from registration.models import AppRole, UserOperator, User
@@ -62,6 +65,10 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
 
     NOTE: We must make this a function so we don't hit database when collecting tests.(we don't have access to DB during collection)
     """
+    cached_result: Optional[Dict[str, Dict]] = cache.get(PERMISSION_CONFIGS_CACHE_KEY)
+    if cached_result is not None:
+        return cached_result.get(permission)
+
     all_authorized_app_roles = AppRole.get_all_authorized_app_roles()
     all_industry_user_operator_roles = UserOperator.get_all_industry_user_operator_roles()
     permission_configs: Dict[str, Dict] = {
@@ -100,6 +107,7 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
             'authorized_app_roles': AppRole.get_authorized_irc_roles(),
         },
     }
+    cache.set(PERMISSION_CONFIGS_CACHE_KEY, permission_configs, timeout=3600)  # 1 hour
     return permission_configs.get(permission)
 
 

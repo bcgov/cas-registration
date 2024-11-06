@@ -1,7 +1,10 @@
 from typing import List, Optional
 import typing
 import uuid
+from django.core.cache import cache
 from django.db import models
+
+from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from registration.models import TimeStampedModel, User, Operator, Contact, BusinessRole
 from simple_history.models import HistoricalRecords
 
@@ -108,4 +111,10 @@ class UserOperator(TimeStampedModel):
         # Add a user_friendly_id to the UserOperator if it doesn't already have one
         if not self.user_friendly_id:
             self.user_friendly_id = UserOperator.objects.count() + 1
+        cache.delete(PERMISSION_CONFIGS_CACHE_KEY)  # Clear the cache when a user operator is saved
         super().save(*args, **kwargs)
+
+    @typing.no_type_check
+    def delete(self, *args, **kwargs):
+        cache.delete(PERMISSION_CONFIGS_CACHE_KEY)  # Clear the cache when a user operator is deleted
+        super().delete(*args, **kwargs)
