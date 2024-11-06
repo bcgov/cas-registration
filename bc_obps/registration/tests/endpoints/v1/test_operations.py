@@ -235,7 +235,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator2.id,
             name='Kwik-E-Mart',
             status=Operation.Statuses.DECLINED,
-            bcghg_id=23219990023,
+            bcghg_id=baker.make_recipe('utils.bcghg_id'),
             bc_obps_regulated_operation_id='21-0001',
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
         )
@@ -244,6 +244,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy('list_operations') + "?status=approved"
         )
+
         assert response.status_code == 200
         response_data = response.json().get('data')
         assert len(response_data) == 10
@@ -254,6 +255,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy('list_operations') + "?status=abc"
         )
+
         assert response.status_code == 200
         response_data = response.json().get('data')
         assert len(response_data) == 0
@@ -262,6 +264,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy('list_operations') + "?name=kwik-e-mart"
         )
+
         assert response.status_code == 200
         response_data = response.json().get('data')
         assert len(response_data) == 1
@@ -270,6 +273,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy('list_operations') + "?name=abc"
         )
+
         assert response.status_code == 200
         response_data = response.json().get('data')
         assert len(response_data) == 0
@@ -281,6 +285,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             custom_reverse_lazy('list_operations')
             + "?name=kwik&status=dec&bcghg_id=23219990023&bc_obps_regulated_operation=0001",
         )
+
         assert response.status_code == 200
         response_data = response.json().get('data')
         assert len(response_data) == 1
@@ -297,6 +302,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             mock_operation,
             custom_reverse_lazy("create_operation"),
         )
+
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
         assert post_response.json().get('id') is not None
@@ -402,10 +408,11 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_existing_operation_with_same_bcghg_id(self):
         operation_instance = operation_baker()
-        operation_instance.bcghg_id = 'aaa1234567'
+        bcghg_id = baker.make_recipe('utils.bcghg_id')
+        operation_instance.bcghg_id = bcghg_id
         operation_instance.save(update_fields=['bcghg_id'])
         mock_operation2 = TestUtils.mock_create_operation_payload()
-        mock_operation2['bcghg_id'] = 'aaa1234567'
+        mock_operation2['bcghg_id'] = bcghg_id.id
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
@@ -415,6 +422,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             mock_operation2,
             custom_reverse_lazy("create_operation"),
         )
+
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 

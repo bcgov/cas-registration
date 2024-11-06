@@ -115,7 +115,7 @@ class OperationOutV2(ModelSchema):
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
     date_of_first_shipment: Optional[str] = None
     new_entrant_application: Optional[str] = None
-    bcghg_id: Optional[str] = None
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     @staticmethod
     def resolve_registration_purposes(obj: Operation) -> List[str]:
@@ -171,9 +171,11 @@ class OperationOutWithDocuments(OperationOutV2):
 
 
 class OperationCreateOut(ModelSchema):
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+
     class Config:
         model = Operation
-        model_fields = ['id', 'name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
+        model_fields = ['id', 'name', 'type', 'naics_code', 'opt_in', 'regulated_products']
         populate_by_name = True
 
 
@@ -187,7 +189,7 @@ class OperationFilterSchema(FilterSchema):
     # NOTE: we could simply use the `q` parameter to filter by related fields but,
     # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
-    bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__icontains'})
+    bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
     name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
     type: Optional[str] = Field(None, json_schema_extra={'q': 'type__icontains'})
     status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
@@ -200,13 +202,13 @@ class OperationFilterSchema(FilterSchema):
 class OperationListOut(ModelSchema):
     operator: str = Field(..., alias="operator.legal_name")
     sfo_facility_id: Optional[UUID] = Field(None, alias="sfo_facility_id")  # this is an annotated field in the query
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     class Meta:
         model = Operation
         fields = [
             'id',
             'name',
-            'bcghg_id',
             'type',
             'status',
             'bc_obps_regulated_operation',

@@ -11,7 +11,7 @@ vi.mock("@bciers/actions", () => ({
 
 const mockFacilityData = {
   id: "00000000-0000-0000-0000-000000000000",
-  bcghg_id: "BCGHGID12345",
+  bcghg_id: "12111130002",
   name: "Facility1",
   facility_type: "SFO",
   activities: [7, 10],

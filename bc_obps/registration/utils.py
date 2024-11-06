@@ -5,6 +5,7 @@ from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from django.http import HttpRequest
+
 from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
 import requests
 import base64
@@ -12,13 +13,7 @@ import re
 import hashlib
 from django.core.files.base import ContentFile
 from ninja.errors import HttpError
-from registration.models import (
-    Document,
-    Operation,
-    Operator,
-    User,
-    UserOperator,
-)
+from registration.models import Document, Operation, Operator, User, UserOperator
 from django.urls import reverse_lazy
 from datetime import datetime
 from zoneinfo import ZoneInfo

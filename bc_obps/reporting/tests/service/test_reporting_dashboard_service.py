@@ -42,7 +42,7 @@ class TestReportingDashboardService:
         # Test operation with multiple versions
         op0_result = result_dict[str(operations[0].id)]
         assert op0_result["name"] == operations[0].name
-        assert op0_result["bcghg_id"] == operations[0].bcghg_id
+        assert op0_result["bcghg_id_id"] == (operations[0].bcghg_id.id if operations[0].bcghg_id is not None else None)
         assert op0_result["report_id"] == r0.id
         assert op0_result["report_version_id"] == latest_r0_revision.id
         assert op0_result["report_status"] == latest_r0_revision.status
@@ -50,7 +50,7 @@ class TestReportingDashboardService:
         # Test operation with single version
         op1_result = result_dict[str(operations[1].id)]
         assert op1_result["name"] == operations[1].name
-        assert op1_result["bcghg_id"] == operations[1].bcghg_id
+        assert op1_result["bcghg_id_id"] == (operations[1].bcghg_id.id if operations[0].bcghg_id is not None else None)
         assert op1_result["report_id"] == r1.id
         assert op1_result["report_version_id"] == r1.report_versions.first().id
         assert op1_result["report_status"] == r1.report_versions.first().status
@@ -58,7 +58,7 @@ class TestReportingDashboardService:
         # Test operation with no report
         op2_result = result_dict[str(operations[2].id)]
         assert op2_result["name"] == operations[2].name
-        assert op2_result["bcghg_id"] == operations[2].bcghg_id
+        assert op2_result["bcghg_id_id"] == (operations[2].bcghg_id.id if operations[0].bcghg_id is not None else None)
         assert op2_result["report_id"] is None
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None

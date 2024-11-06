@@ -46,7 +46,7 @@ const facilityInitialData = {
       is_current_year: null,
       starting_date: null,
       facility__type: "Large Facility",
-      facility__bcghg_id: null,
+      facility__bcghg_id__id: null,
     },
     {
       id: "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
@@ -54,7 +54,7 @@ const facilityInitialData = {
       is_current_year: null,
       starting_date: null,
       facility__type: "Medium LFO",
-      facility__bcghg_id: "23219990007",
+      facility__bcghg_id__id: "23219990007",
     },
   ],
   row_count: 20,

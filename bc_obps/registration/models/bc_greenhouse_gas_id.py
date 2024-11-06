@@ -11,11 +11,7 @@ from django.core.exceptions import ValidationError
 
 class BcGreenhouseGasId(BaseModel):
 
-    id = models.CharField(
-        primary_key=True,
-        max_length=255,
-        db_comment="The BCGHG ID of an operation or facility",
-    )
+    id = models.CharField(primary_key=True, max_length=255, db_comment="The BCGHG ID of an operation or facility")
     issued_at = models.DateTimeField(
         auto_now_add=True,
         db_comment="The time the BCGHG ID was issued by an IRC user",

@@ -1,8 +1,12 @@
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
+from registration.models.naics_code import NaicsCode
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import Facility
+from model_bakery import baker
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
+    BC_GREENHOUSE_GAS_ID_FIXTURE,
     CONTACT_FIXTURE,
     DOCUMENT_FIXTURE,
     FACILITY_FIXTURE,
@@ -22,6 +26,7 @@ class FacilityModelTest(BaseTestCase):
         OPERATION_FIXTURE,
         DOCUMENT_FIXTURE,
         BC_OBPS_REGULATED_OPERATION_FIXTURE,
+        BC_GREENHOUSE_GAS_ID_FIXTURE,
         FACILITY_FIXTURE,
     ]
 
@@ -48,3 +53,20 @@ class FacilityModelTest(BaseTestCase):
             ("closure_events", "closure event", None, None),
             ("temporary_shutdown_events", "temporary shutdown event", None, None),
         ]
+
+    # More general BCGHG ID generation tests are in test_utils
+    def test_generate_unique_bcghg_id_multiple_existing_ids_facility(self):
+        existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002', '14862100001']
+        for existing_id in existing_ids:
+            baker.make_recipe('utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id))
+        facility_designated_operation_timeline = baker.make_recipe(
+            'utils.facility_designated_operation_timeline', facility=self.test_object, end_date=None
+        )
+        facility_designated_operation_timeline.operation.type = 'Single Facility Operation'
+        facility_designated_operation_timeline.operation.naics_code = baker.make(NaicsCode, naics_code='322121')
+        facility_designated_operation_timeline.operation.save()
+
+        self.test_object.bcghg_id = None
+        self.test_object.generate_unique_bcghg_id()
+        expected_id = '13221210004'
+        assert self.test_object.bcghg_id.pk == expected_id

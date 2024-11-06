@@ -108,7 +108,7 @@
       "type": "Single Facility Operation",
       "naics_code": 21,
       "opt_in": false,
-      "bcghg_id": "23219990000",
+      "bcghg_id": "23219999999",
       "regulated_products": [],
       "status": "Pending",
       "created_at": "2024-1-28T15:27:00.000Z",
@@ -421,22 +421,6 @@
       "status": "Pending",
       "created_at": "2024-1-11T15:27:00.000Z",
       "activities": [1, 5]
-    }
-  },
-  {
-    "model": "registration.operation",
-    "fields": {
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
-      "submission_date": "2024-01-14T15:27:00.000Z",
-      "point_of_contact": 7,
-      "name": "Operation 6",
-      "type": "Single Facility Operation",
-      "naics_code": 21,
-      "opt_in": false,
-      "bcghg_id": "23219990000",
-      "regulated_products": [],
-      "status": "Declined"
     }
   },
   {
