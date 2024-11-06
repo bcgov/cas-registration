@@ -478,7 +478,6 @@ HistoricalOperation {
     CharField type
     BooleanField operation_has_multiple_operators
     IntegerField swrs_facility_id
-    CharField bcghg_id
     BooleanField opt_in
     DateTimeField verified_at
     DateTimeField submission_date
@@ -492,6 +491,7 @@ HistoricalOperation {
     ForeignKey naics_code
     ForeignKey secondary_naics_code
     ForeignKey tertiary_naics_code
+    ForeignKey bcghg_id
     ForeignKey verified_by
     ForeignKey point_of_contact
     ForeignKey bc_obps_regulated_operation
@@ -538,7 +538,7 @@ Operation {
     ForeignKey secondary_naics_code
     ForeignKey tertiary_naics_code
     IntegerField swrs_facility_id
-    CharField bcghg_id
+    OneToOneField bcghg_id
     BooleanField opt_in
     DateTimeField verified_at
     ForeignKey verified_by
@@ -586,7 +586,6 @@ HistoricalFacility {
     DateTimeField starting_date
     CharField type
     IntegerField swrs_facility_id
-    CharField bcghg_id
     DecimalField latitude_of_largest_emissions
     DecimalField longitude_of_largest_emissions
     UUIDField history_user_id
@@ -594,6 +593,7 @@ HistoricalFacility {
     ForeignKey updated_by
     ForeignKey archived_by
     ForeignKey address
+    ForeignKey bcghg_id
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
@@ -613,7 +613,7 @@ Facility {
     CharField type
     ForeignKey address
     IntegerField swrs_facility_id
-    CharField bcghg_id
+    OneToOneField bcghg_id
     DecimalField latitude_of_largest_emissions
     DecimalField longitude_of_largest_emissions
     ManyToManyField well_authorization_numbers
@@ -996,6 +996,7 @@ HistoricalOperation }|--|| Operator : operator
 HistoricalOperation }|--|| NaicsCode : naics_code
 HistoricalOperation }|--|| NaicsCode : secondary_naics_code
 HistoricalOperation }|--|| NaicsCode : tertiary_naics_code
+HistoricalOperation }|--|| BcGreenhouseGasId : bcghg_id
 HistoricalOperation }|--|| User : verified_by
 HistoricalOperation }|--|| Contact : point_of_contact
 HistoricalOperation }|--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
@@ -1016,6 +1017,7 @@ Operation }|--|| Operator : operator
 Operation }|--|| NaicsCode : naics_code
 Operation }|--|| NaicsCode : secondary_naics_code
 Operation }|--|| NaicsCode : tertiary_naics_code
+Operation ||--|| BcGreenhouseGasId : bcghg_id
 Operation }|--|| User : verified_by
 Operation }|--|| Contact : point_of_contact
 Operation ||--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
@@ -1034,10 +1036,12 @@ HistoricalFacility }|--|| User : created_by
 HistoricalFacility }|--|| User : updated_by
 HistoricalFacility }|--|| User : archived_by
 HistoricalFacility }|--|| Address : address
+HistoricalFacility }|--|| BcGreenhouseGasId : bcghg_id
 Facility }|--|| User : created_by
 Facility }|--|| User : updated_by
 Facility }|--|| User : archived_by
 Facility }|--|| Address : address
+Facility ||--|| BcGreenhouseGasId : bcghg_id
 Facility }|--|{ WellAuthorizationNumber : well_authorization_numbers
 HistoricalFacilityDesignatedOperationTimeline }|--|| User : created_by
 HistoricalFacilityDesignatedOperationTimeline }|--|| User : updated_by

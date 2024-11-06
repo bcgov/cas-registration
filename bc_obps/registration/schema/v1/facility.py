@@ -5,16 +5,18 @@ from typing import List, Optional
 
 
 class FacilityListOut(ModelSchema):
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+
     class Meta:
         model = Facility
-        fields = ['id', 'name', 'is_current_year', 'starting_date', 'type', 'bcghg_id']
+        fields = ['id', 'name', 'is_current_year', 'starting_date', 'type']
 
 
 class FacilityFilterSchema(FilterSchema):
     # NOTE: we could simply use the `q` parameter to filter by name and ... but,
     # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
-    bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__icontains'})
+    bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
     name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
     type: Optional[str] = Field(None, json_schema_extra={'q': 'type__icontains'})
 
@@ -47,7 +49,7 @@ class FacilityOut(ModelSchema):
     postal_code: Optional[str] = Field(None, alias="address.postal_code")
     latitude_of_largest_emissions: float = Field(..., alias="latitude_of_largest_emissions")
     longitude_of_largest_emissions: float = Field(..., alias="longitude_of_largest_emissions")
-    bcghg_id: Optional[str] = None
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     class Meta:
         model = Facility

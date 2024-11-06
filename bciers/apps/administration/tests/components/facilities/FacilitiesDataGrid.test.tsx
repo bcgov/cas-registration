@@ -23,7 +23,7 @@ const mockResponse = {
       id: 1,
       facility__name: "Facility 1",
       facility__type: "Single Facility",
-      facility__bcghg_id: "1-211113-0001",
+      facility__bcghg_id__id: "12111130001",
       facility__id: 1,
       status: "Active",
     },
@@ -31,7 +31,7 @@ const mockResponse = {
       id: 2,
       facility__name: "Facility 2",
       facility__type: "Large Facility",
-      facility__bcghg_id: "1-211113-0002",
+      facility__bcghg_id__id: "1-211113-0002",
       facility__id: 2,
       status: "Active",
     },
@@ -67,7 +67,7 @@ describe("FacilitiesDataGrid component", () => {
 
     // Check data displays
     expect(screen.getByText(/Facility 1/i)).toBeVisible();
-    expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
+    expect(screen.getByText(/12111130001/i)).toBeVisible();
     expect(screen.getAllByText(/Single Facility/i)).toHaveLength(1);
     expect(screen.getByText(/Facility 2/i)).toBeVisible();
     expect(screen.getByText(/1-211113-0002/i)).toBeVisible();

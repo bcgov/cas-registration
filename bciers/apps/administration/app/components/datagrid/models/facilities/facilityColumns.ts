@@ -12,7 +12,7 @@ const facilityColumns = (
     },
     { field: "facility__type", headerName: "Facility Type", width: 200 },
     { field: "status", headerName: "Status", width: 200 },
-    { field: "facility__bcghg_id", headerName: "BC GHG ID", width: 200 },
+    { field: "facility__bcghg_id__id", headerName: "BC GHG ID", width: 200 },
     {
       field: "action",
       headerName: "Actions",

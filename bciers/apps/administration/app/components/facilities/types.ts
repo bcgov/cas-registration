@@ -1,6 +1,6 @@
 export interface FacilityRow {
   id: number;
-  facility__bcghg_id: string;
+  facility__bcghg_id__id: string;
   facility__name: string;
   facility__type: string;
   facility__id: number;

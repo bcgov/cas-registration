@@ -19,7 +19,7 @@ const mockResponse = {
       id: 1,
       operator: "FakeOperator",
       name: "Operation 1",
-      bcghg_id: "1-211113-0001",
+      bcghg_id: "12111130001",
       type: "Single Facility Operation",
       sfo_facility_id: null,
       status: "Draft",
@@ -29,7 +29,7 @@ const mockResponse = {
       id: 2,
       operator: "FakeOperator",
       name: "Operation 2",
-      bcghg_id: "1-211113-0002",
+      bcghg_id: "12111130002",
       type: "Linear Facility Operation",
       sfo_facility_id: null,
       status: "Registered",
@@ -39,7 +39,7 @@ const mockResponse = {
       id: 3,
       operator: "FakeOperator",
       name: "Operation 3",
-      bcghg_id: "1-211113-0003",
+      bcghg_id: "12111130003",
       type: "Single Facility Operation",
       sfo_facility_id: null,
       status: "Not Started",
@@ -49,7 +49,7 @@ const mockResponse = {
       id: 4,
       operator: "FakeOperator",
       name: "Operation 4",
-      bcghg_id: "1-211113-0004",
+      bcghg_id: "12111130004",
       type: "Single Facility Operation",
       status: "Draft",
       sfo_facility_id: "facility-test-id",
@@ -98,7 +98,7 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getByText(/24-0001/i)).toBeVisible();
     expect(screen.getByText(/Registered/i)).toBeVisible();
     expect(screen.getByText(/Not Started/i)).toBeVisible();
-    expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
+    expect(screen.getByText(/12111130001/i)).toBeVisible();
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
     expect(
       screen.getAllByRole("link", { name: /View Facilities/i }),
@@ -153,7 +153,7 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getByText(/Registered/i)).toBeVisible();
     expect(screen.getByText(/Not Started/i)).toBeVisible();
     expect(screen.getAllByText(/Draft/i)).toHaveLength(2);
-    expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
+    expect(screen.getByText(/12111130001/i)).toBeVisible();
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
 
     expect(

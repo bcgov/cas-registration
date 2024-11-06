@@ -1,5 +1,7 @@
 import uuid
 from django.db import models
+
+
 from registration.models.well_authorization_number import WellAuthorizationNumber
 from registration.models import Address, TimeStampedModel, Operation
 from simple_history.models import HistoricalRecords
@@ -41,7 +43,9 @@ class Facility(TimeStampedModel):
         blank=True,
         null=True,
     )
-    bcghg_id = models.CharField(
+    bcghg_id = models.OneToOneField(
+        "BcGreenhouseGasId",
+        on_delete=models.PROTECT,
         max_length=1000,
         db_comment="A facility's BCGHG identifier.",
         blank=True,
@@ -76,3 +80,8 @@ class Facility(TimeStampedModel):
         Returns the current designated operation of the facility.
         """
         return self.designated_operations.get(end_date__isnull=True).operation
+
+    def generate_unique_bcghg_id(self) -> None:
+        from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
+
+        generate_unique_bcghg_id_for_operation_or_facility(self)

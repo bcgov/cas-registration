@@ -83,9 +83,11 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
     )
-    bcghg_id = models.CharField(
+    bcghg_id = models.OneToOneField(
+        "BcGreenhouseGasId",
+        on_delete=models.PROTECT,
         max_length=1000,
-        db_comment="An operation's BCGHG identifier. Only needed if the operation submitted a report the previous year.",
+        db_comment="An operation's BCGHG identifier.",
         blank=True,
         null=True,
     )
@@ -264,6 +266,11 @@ class Operation(TimeStampedModel):
 
         new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id)
         self.bc_obps_regulated_operation = new_boro_id_instance
+
+    def generate_unique_bcghg_id(self) -> None:
+        from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
+
+        generate_unique_bcghg_id_for_operation_or_facility(self)
 
     @property
     def current_designated_operator(self) -> Operator:

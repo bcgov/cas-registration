@@ -1,16 +1,18 @@
 from typing import Optional
 from ninja import FilterSchema, ModelSchema
 from registration.models.operation import Operation
+from ninja import Field
 
 
 class ReportingDashboardOperationOut(ModelSchema):
     report_id: int | None
     report_version_id: int | None
     report_status: str | None
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     class Meta:
         model = Operation
-        fields = ["id", "name", "bcghg_id"]
+        fields = ["id", "name"]
 
 
 class ReportingDashboardOperationFilterSchema(FilterSchema):

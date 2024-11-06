@@ -98,7 +98,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator2.id,
             name='Kwik-E-Mart',
             status=Operation.Statuses.DECLINED,
-            bcghg_id=23219990023,
+            bcghg_id=baker.make_recipe('utils.bcghg_id'),
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
             type="Brie",
         )
