@@ -75,6 +75,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_report_non_attributable_by_version_id",
                 "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
             },
+            {
+                "method": "get",
+                "endpoint_name": "load_report_activity_data",
+                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
+            },
             {"method": "post", "endpoint_name": "create_operation"},
             {"method": "post", "endpoint_name": "create_facilities"},
             {"method": "post", "endpoint_name": "create_contact"},
@@ -100,11 +105,7 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "post",
                 "endpoint_name": "save_report_activity_data",
-                "kwargs": {
-                    "report_version_id": mock_int,
-                    "facility_id": mock_uuid,
-                    "activity_id": mock_int,
-                },
+                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
             },
             {
                 "method": "post",
