@@ -22,7 +22,7 @@ class EmissionCategoryService:
         )
         category_sum = records.aggregate(emission_sum=Sum('emission'))
 
-        return 0 if category_sum['emission_sum'] is None else category_sum['emission_sum']
+        return category_sum['emission_sum'] or 0
 
     @staticmethod
     def get_reporting_only_emissions(facility_report_id: int) -> Decimal | int:
