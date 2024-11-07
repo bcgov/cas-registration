@@ -3,7 +3,7 @@ from registration.utils import custom_reverse_lazy
 from model_bakery import baker
 
 
-class TestOperationRepresentativeEndpoint(CommonTestSetup):
+class TestOperationRepresentativePostEndpoint(CommonTestSetup):
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
         baker.make_recipe('utils.approved_user_operator', user=self.user)
@@ -150,6 +150,60 @@ class TestOperationRepresentativeEndpoint(CommonTestSetup):
             self.content_type,
             {'bad_data': 'I am bad data'},
             custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': operation.id}),
+        )
+
+        # Assert
+        assert response.status_code == 422
+
+
+class TestOperationRepresentativePutEndpoint(CommonTestSetup):
+    def test_users_cannot_update_other_users_operations(self):
+        # authorize current user
+        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        # create operation not belonging to current user
+        operation = baker.make_recipe(
+            'utils.operation',
+        )
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {'id': 1},
+            custom_reverse_lazy("remove_operation_representative", kwargs={'operation_id': operation.id}),
+        )
+        assert response.status_code == 401
+        assert response.json().get('message') == 'Unauthorized.'
+
+    def test_remove_operation_representative_endpoint_success(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        users_operator = approved_user_operator.operator
+        operation = baker.make_recipe('utils.operation', operator=users_operator)
+        contact = baker.make_recipe('utils.contact')
+        users_operator.contacts.add(contact)
+        data = {
+            'id': contact.id,
+        }
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            data,
+            custom_reverse_lazy("remove_operation_representative", kwargs={'operation_id': operation.id}),
+        )
+        assert response.status_code == 200
+        assert response.json() == {'id': contact.id}
+        assert operation.contacts.count() == 0
+
+    def test_remove_operation_representative_endpoint_bad_data(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {'bad_data': 'I am bad data'},
+            custom_reverse_lazy("remove_operation_representative", kwargs={'operation_id': operation.id}),
         )
 
         # Assert

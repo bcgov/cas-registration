@@ -29,6 +29,7 @@ from service.data_access_service.registration_purpose_service import Registratio
 from registration.schema.v2.operation import (
     OperationFilterSchema,
     OperationInformationIn,
+    OperationRepresentativeRemove,
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
     RegistrationPurposeIn,
@@ -179,6 +180,16 @@ class OperationServiceV2:
         operation.contacts.add(contact)
         operation.set_create_or_update(user_guid)
         return contact
+
+    @classmethod
+    @transaction.atomic()
+    def remove_operation_representative(
+        cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeRemove
+    ) -> OperationRepresentativeRemove:
+        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation.contacts.remove(payload.id)
+        operation.set_create_or_update(user_guid)
+        return OperationRepresentativeRemove(id=payload.id)
 
     @classmethod
     @transaction.atomic()

@@ -181,7 +181,7 @@ export const operationRepresentativeUiSchema: UiSchema = {
     "ui:title": operationRepresentativePreface,
   },
   operation_representatives: {
-    "ui:widget": "ReadOnlyMultiSelectWidget",
+    "ui:widget": "OperationRepresentativeWidget",
     "ui:inline": true,
     "ui:classNames": "[&>div:last-child]:w-full",
   },

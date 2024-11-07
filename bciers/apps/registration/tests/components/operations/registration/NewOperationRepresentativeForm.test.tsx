@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import { actionHandler, useSession } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
@@ -133,6 +133,7 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
     expect(screen.getByText(/operation representative\(s\):/i)).toBeVisible();
     expect(screen.getByText(/john doe/i)).toBeVisible();
+    expect(screen.getByTestId("DeleteOutlineIcon")).toBeVisible();
 
     //This button should not be visible before clicking the add new operation representative button
     expect(
@@ -320,4 +321,31 @@ describe("the NewOperationRepresentativeForm component", () => {
     },
     { timeout: 10000 },
   );
+  it("remove an operation representative", async () => {
+    render(
+      <NewOperationRepresentativeForm
+        formData={{
+          operation_representatives: [3],
+        }}
+        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
+        step={5}
+        existingOperationRepresentatives={existingOperationRepresentativesMock}
+        contacts={contactsMock}
+      />,
+    );
+    await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
+      "PUT",
+      "registration/administration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d",
+      {
+        body: '{"id":3}',
+      },
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Operation Representative removed successfully/i),
+      ).toBeVisible();
+    });
+  });
 });
