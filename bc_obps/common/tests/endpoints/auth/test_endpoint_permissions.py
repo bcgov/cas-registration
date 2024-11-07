@@ -141,6 +141,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "operation_registration_submission",
                 "kwargs": {"operation_id": mock_uuid},
             },
+            {
+                "method": "put",
+                "endpoint_name": "remove_operation_representative",
+                "kwargs": {"operation_id": mock_uuid},
+            },
         ],
         "all_roles": [
             {"method": "get", "endpoint_name": "get_reporting_year"},
