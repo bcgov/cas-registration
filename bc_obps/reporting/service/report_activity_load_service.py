@@ -12,7 +12,17 @@ class ReportActivityLoadService:
         form and we can safely return an empty object.
         """
         try:
-            r = ReportActivity.objects.get(
+            r = ReportActivity.objects.prefetch_related(
+                "facility_report",
+                "reportsourcetype_records",
+                "reportsourcetype_records__reportunit_records",
+                "reportsourcetype_records__reportfuel_records",
+                "reportsourcetype_records__reportemission_records",
+                "reportsourcetype_records__reportemission_records__report_methodology",
+                "reportsourcetype_records__reportunit_records__reportfuel_records",
+                "reportsourcetype_records__reportunit_records__reportfuel_records__reportemission_records",
+                "reportsourcetype_records__reportunit_records__reportfuel_records__reportemission_records__report_methodology",
+            ).get(
                 report_version_id=report_version_id, facility_report__facility_id=facility_id, activity_id=activity_id
             )
             return ReportActivitySerializer.serialize(r)
