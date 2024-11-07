@@ -192,7 +192,7 @@ class TestOperationRepresentativePutEndpoint(CommonTestSetup):
             custom_reverse_lazy("remove_operation_representative", kwargs={'operation_id': operation.id}),
         )
         assert response.status_code == 200
-        assert response.json() == contact.id
+        assert response.json() == {'id': contact.id}
         assert operation.contacts.count() == 0
 
     def test_remove_operation_representative_endpoint_bad_data(self):
