@@ -41,6 +41,14 @@ class OperationRepresentativeIn(ModelSchema):
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
 
 
+class OperationRepresentativeRemove(ModelSchema):
+    id: int
+
+    class Meta:
+        model = Contact
+        fields = ['id']
+
+
 class OperationInformationIn(ModelSchema):
     registration_purpose: Optional[RegistrationPurpose.Purposes] = None
     regulated_products: Optional[list] = None
