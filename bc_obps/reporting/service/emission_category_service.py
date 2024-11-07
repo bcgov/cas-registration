@@ -25,24 +25,15 @@ class EmissionCategoryService:
         return 0 if category_sum['emission_sum'] is None else category_sum['emission_sum']
 
     @staticmethod
-    def get_reporting_only_emissions(facility_report_id: int) -> Decimal:
+    def get_reporting_only_emissions(facility_report_id: int) -> Decimal | int:
         # Fugitive, fuel_excluded, other_excluded
-        category_ids = [2, 10, 11, 12, 13, 14]
-        # We will ignore a report_emission record with the .exclude() below if we have already its emissions to the total (don't count an emission more than once)
-        traversed_report_emission_ids: List[int] = []
-        reporting_only_total = Decimal('0')
-        for category_id in category_ids:
-            records = ReportEmission.objects_with_decimal_emissions.filter(
-                report_source_type__report_activity__facility_report_id=facility_report_id,
-                emission_categories__id=category_id,
-            ).exclude(pk__in=traversed_report_emission_ids)
-            category_sum = records.aggregate(emission_sum=Sum('emission'))
-            if category_sum['emission_sum'] is not None:
-                reporting_only_total += Decimal(category_sum['emission_sum'])
-            # Add all IDs of the report_emission records that contributed to the sum to the ignore list
-            traversed_report_emission_ids = traversed_report_emission_ids + list(records.values_list('id', flat=True))
+        records = ReportEmission.objects_with_decimal_emissions.filter(
+            report_source_type__report_activity__facility_report_id=facility_report_id,
+            emission_categories__id__in=[2, 10, 11, 12, 13, 14],
+        ).distinct()
 
-        return reporting_only_total
+        total_reporting_only = records.aggregate(emission_sum=Sum('emission'))
+        return total_reporting_only['emission_sum'] or 0
 
     @classmethod
     def get_all_category_totals(cls, facility_report_id: int) -> Dict[str, Decimal | int]:
