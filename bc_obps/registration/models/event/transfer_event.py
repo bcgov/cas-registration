@@ -7,7 +7,7 @@ from simple_history.models import HistoricalRecords
 class TransferEvent(EventBaseModel):
     class Statuses(models.TextChoices):
         COMPLETE = "Complete"
-        PENDING = "Pending"
+        TO_BE_TRANSFERRED = "To be transferred"
         TRANSFERRED = "Transferred"
 
     class FutureDesignatedOperatorChoices(models.TextChoices):
@@ -36,7 +36,7 @@ class TransferEvent(EventBaseModel):
     status = models.CharField(
         max_length=100,
         choices=Statuses.choices,
-        default=Statuses.PENDING,
+        default=Statuses.TO_BE_TRANSFERRED,
     )
     history = HistoricalRecords(
         table_name='erc_history"."transfer_event_history',
