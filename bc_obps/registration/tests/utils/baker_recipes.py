@@ -84,6 +84,7 @@ operation = Recipe(
     naics_code=foreign_key(naics_code),
     operator=foreign_key(operator_for_operation),
     created_by=foreign_key(industry_operator_user),
+    type='Single Facility Operation',
 )
 
 

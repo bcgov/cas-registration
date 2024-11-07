@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.user import User
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.document_type import DocumentType
@@ -446,6 +447,13 @@ class OperationServiceV2:
         return operation.bc_obps_regulated_operation
 
     @classmethod
-    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> None:
-        # TODO after db refactor in #2151
-        raise Exception('Feature to issue BCGHG ID is not yet complete')
+    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> BcGreenhouseGasId:
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation.generate_unique_bcghg_id()
+        if operation.bcghg_id is None:
+            raise Exception('Failed to create a BCGHG ID for the operation.')
+        operation.bcghg_id.issued_by = User.objects.get(user_guid=user_guid)
+        operation.bcghg_id.save()
+        operation.save(update_fields=['bcghg_id'])
+
+        return operation.bcghg_id
