@@ -45,7 +45,7 @@ def create_operation_representative(
 @handle_http_errors()
 def remove_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeRemove
-) -> Tuple[Literal[200], int]:
+) -> Tuple[Literal[200], OperationRepresentativeRemove]:
     return 200, OperationServiceV2.remove_operation_representative(
         get_current_user_guid(request), operation_id, payload
     )
