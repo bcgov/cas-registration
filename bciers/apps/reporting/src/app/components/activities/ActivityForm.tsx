@@ -1,5 +1,4 @@
 "use client";
-import FormBase from "@bciers/components/form/FormBase";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { useEffect, useState } from "react";
 import { actionHandler } from "@bciers/actions";
@@ -11,6 +10,10 @@ import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
+import { withTheme } from "@rjsf/core";
+import formTheme from "@bciers/components/form/theme/defaultTheme";
+
+const Form = withTheme(formTheme);
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -25,6 +28,7 @@ interface Props {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
+  activityFormData: object;
   currentActivity: { id: number; name: string; slug: string };
   taskListData: TaskListElement[];
   defaultEmptySourceTypeState:
@@ -38,6 +42,7 @@ interface Props {
 // 🧩 Main component
 export default function ActivityForm({
   activityData,
+  activityFormData,
   currentActivity,
   taskListData,
   defaultEmptySourceTypeState,
@@ -50,7 +55,7 @@ export default function ActivityForm({
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
-  const [formState, setFormState] = useState({} as any);
+  const [formState, setFormState] = useState(activityFormData as any);
   const [jsonSchema, setJsonSchema] = useState({});
   const [uiSchema, setUiSchema] = useState({});
   const [previousActivityId, setPreviousActivityId] = useState<number>();
@@ -68,6 +73,7 @@ export default function ActivityForm({
 
   useEffect(() => {
     let isFetching = true;
+
     const fetchSchemaData = async (
       selectedSourceTypes: string,
       selectedKeys: number[],
@@ -97,6 +103,7 @@ export default function ActivityForm({
       setPreviousActivityId(activityId);
       setUiSchema(getUiSchema(currentActivity.slug));
     };
+
     let selectedSourceTypes = "";
     const selectedKeys = [];
     for (const [key, value] of Object.entries(sourceTypeMap)) {
@@ -105,7 +112,7 @@ export default function ActivityForm({
         selectedKeys.push(Number(key));
       }
     }
-    if (previousActivityId !== activityId) setFormState({});
+    if (previousActivityId !== activityId) setFormState(activityFormData);
     fetchSchemaData(selectedSourceTypes, selectedKeys);
     return () => {
       isFetching = false;
@@ -140,18 +147,19 @@ export default function ActivityForm({
         }),
       },
     );
+    setFormState(response);
 
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
+
+    // Apply new data to NextAuth JWT
+    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
+    console.log("RESPONSE: ", response);
 
     if (response.error) {
       setErrorList([{ message: response.error }]);
       return;
     }
-
-    // Apply new data to NextAuth JWT
-    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
-    console.log("RESPONSE: ", response);
   };
 
   const formIsLoading =
@@ -166,7 +174,7 @@ export default function ActivityForm({
         "Loading Form..."
       ) : (
         <div className="w-full">
-          <FormBase
+          <Form
             schema={jsonSchema}
             fields={CUSTOM_FIELDS}
             formData={formState}
@@ -193,7 +201,7 @@ export default function ActivityForm({
                 {isSuccess ? "✅ Success" : "Submit"}
               </Button>
             </div>
-          </FormBase>
+          </Form>
         </div>
       )}
     </div>

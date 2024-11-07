@@ -10,6 +10,7 @@ import {
   getFacilitiesInformationTaskList,
 } from "../taskList/2_facilitiesInformation";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
+import { getActivityFormData } from "../../utils/getActivityFormData";
 
 interface Props {
   versionId: number;
@@ -35,10 +36,17 @@ export default async function ActivityInit({
     "GET",
     "",
   );
+
   if (activityData.error) {
     throw new Error("We couldn't find the activity data for this facility.");
   }
   const activityDataObject = safeJsonParse(activityData);
+
+  const formData = await getActivityFormData(
+    versionId,
+    facilityId,
+    currentActivity.id,
+  );
 
   const defaultEmptySourceTypeState =
     defaultEmtpySourceTypeMap[currentActivity.slug];
@@ -59,6 +67,7 @@ export default async function ActivityInit({
     <Suspense fallback={<Loading />}>
       <ActivityForm
         activityData={activityDataObject}
+        activityFormData={formData}
         currentActivity={currentActivity}
         taskListData={taskListData}
         defaultEmptySourceTypeState={defaultEmptySourceTypeState}
