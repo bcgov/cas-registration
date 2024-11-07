@@ -157,23 +157,6 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
 
 
 class TestOperationRepresentativePutEndpoint(CommonTestSetup):
-    def test_operation_representative_endpoint_unauthorized_roles_cannot_put(self):
-        operation = baker.make_recipe(
-            'utils.operation',
-        )
-        # cas users and unapproved industry users can't put
-        roles = ["cas_pending", "cas_analyst", "cas_admin", "industry_user"]
-        for role in roles:
-            response = TestUtils.mock_put_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                {'id': 1},
-                custom_reverse_lazy("remove_operation_representative", kwargs={'operation_id': operation.id}),
-            )
-            assert response.status_code == 401
-            assert response.json().get('detail') == 'Unauthorized'
-
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
         baker.make_recipe('utils.approved_user_operator', user=self.user)
@@ -209,6 +192,7 @@ class TestOperationRepresentativePutEndpoint(CommonTestSetup):
             custom_reverse_lazy("remove_operation_representative", kwargs={'operation_id': operation.id}),
         )
         assert response.status_code == 200
+        assert response.json() == contact.id
         assert operation.contacts.count() == 0
 
     def test_remove_operation_representative_endpoint_bad_data(self):

@@ -185,10 +185,11 @@ class OperationServiceV2:
     @transaction.atomic()
     def remove_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeRemove
-    ) -> None:
+    ) -> int:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
         operation.contacts.remove(payload.id)
         operation.set_create_or_update(user_guid)
+        return payload.id
 
     @classmethod
     @transaction.atomic()

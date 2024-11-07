@@ -8,6 +8,7 @@ import { useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 import SnackBar from "../components/SnackBar";
+import { IconButton } from "@mui/material";
 
 async function removeOperationRepresentative(
   operation_id: string,
@@ -49,21 +50,23 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   const displayOptions = selectedOptions.map((option) => (
     <>
       {option.label}
-      <DeleteOutlineIcon
-        key={option.id}
-        style={{ color: BC_GOV_SEMANTICS_RED }}
-        onClick={async () => {
-          const response = await removeOperationRepresentative(
-            formContext?.operationId,
-            option.id,
-          );
-          if (response?.error) {
-            setError(response.error);
-            return;
-          }
-          setIsSnackbarOpen(true);
-        }}
-      />
+      <IconButton aria-label="delete">
+        <DeleteOutlineIcon
+          key={option.id}
+          style={{ color: BC_GOV_SEMANTICS_RED }}
+          onClick={async () => {
+            const response = await removeOperationRepresentative(
+              formContext?.operationId,
+              option.id,
+            );
+            if (response?.error) {
+              setError(response.error);
+              return;
+            }
+            setIsSnackbarOpen(true);
+          }}
+        />
+      </IconButton>
     </>
   ));
 
