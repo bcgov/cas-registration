@@ -25,7 +25,6 @@ const TransfersDataGrid = ({
     row_count: number;
   };
 }) => {
-  console.log("initialData", initialData);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(

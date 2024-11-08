@@ -1,4 +1,6 @@
 from typing import List, Optional
+from uuid import UUID, uuid4
+
 from registration.models.facility import Facility
 from registration.models.event.transfer_event import TransferEvent
 from ninja import ModelSchema, Field, FilterSchema
@@ -11,12 +13,20 @@ class FacilityForTransferEventGrid(ModelSchema):
 
 
 class TransferEventListOut(ModelSchema):
-    operation: Optional[str] = Field(None, alias="operation.name")
-    facilities: Optional[List[FacilityForTransferEventGrid]] = None
+    # operation: Optional[str] = Field(None, alias="operation.name")
+    # facilities: Optional[List[FacilityForTransferEventGrid]] = None
+    operation__name: Optional[str] = Field(None, alias="operation__name")
+    facilities__name: Optional[str] = Field(None, alias="facilities__name")
+    facility__id: Optional[UUID] = Field(None, alias="facilities__id")
+    id: UUID
 
     class Meta:
         model = TransferEvent
-        fields = ['id', 'effective_date', 'status','created_at']
+        fields = ['effective_date', 'status','created_at']
+
+    @staticmethod
+    def resolve_id(obj):
+        return uuid4()
 
 
 class TransferEventFilterSchema(FilterSchema):
@@ -24,7 +34,6 @@ class TransferEventFilterSchema(FilterSchema):
     # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
     effective_date: Optional[str] = Field(None, json_schema_extra={'q': 'effective_date__icontains'})
-    operation: Optional[str] = Field(None, json_schema_extra={'q': 'operation__name__icontains'})
-    # facilities: Optional[str] = None
-    facilities: Optional[str] = Field(None, json_schema_extra={'q': 'facilities__name__icontains'})
+    operation__name: Optional[str] = Field(None, json_schema_extra={'q': 'operation__name__icontains'})
+    facilities__name: Optional[str] = Field(None, json_schema_extra={'q': 'facilities__name__icontains'})
     status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})

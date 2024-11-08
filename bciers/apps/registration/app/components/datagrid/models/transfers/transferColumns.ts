@@ -5,14 +5,14 @@ const transferColumns = (
 ) => {
   const columns: GridColDef[] = [
     {
-      field: "submission_date",
+      field: "created_at",
       headerName: "Submission Date",
       sortable: false,
       // Set flex to 1 to make the column take up all the remaining width if user zooms out
       width: 200,
     },
-    { field: "operation", headerName: "Operation", width: 200 },
-    { field: "facilities", headerName: "Facility", flex: 1 },
+    { field: "operation__name", headerName: "Operation", width: 200 },
+    { field: "facilities__name", headerName: "Facility", flex: 1 },
     {
       field: "status",
       headerName: "Status",
