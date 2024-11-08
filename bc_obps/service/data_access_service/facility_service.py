@@ -1,26 +1,11 @@
 from registration.models.operation import Operation
-from service.user_operator_service import UserOperatorService
-from registration.models import Facility, User
+from registration.models import Facility
 from django.db.models import QuerySet
 from uuid import UUID
 from ninja.types import DictStrAny
 
 
 class FacilityDataAccessService:
-    @classmethod
-    def get_all_facilities_for_user(cls, user: User) -> QuerySet[Facility]:
-        queryset = Facility.objects.all()
-        if user.is_irc_user():
-            # IRC users can see all facilities
-            return queryset
-        else:
-            # Industry users can only see operations associated with their own operator and that are not ended
-            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(
-                designated_operations__operation__operator_id=user_operator.operator_id,
-                designated_operations__end_date__isnull=True,
-            ).distinct()
-
     @classmethod
     def get_current_facilities_by_operation(cls, operation: Operation) -> QuerySet[Facility]:
         return Facility.objects.filter(
