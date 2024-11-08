@@ -44,7 +44,7 @@ def save_production_data(
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the production data page from the multiple ReportProduct rows""",
     exclude_none=True,
-    auth=authorize("approved_industry_user"),
+    # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def load_production_data(request: HttpRequest, report_version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:

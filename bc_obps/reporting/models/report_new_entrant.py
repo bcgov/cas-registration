@@ -6,7 +6,7 @@ from reporting.models.report_version import ReportVersion
 class ReportNewEntrant(TimeStampedModel):
     report_version = models.OneToOneField(
         ReportVersion,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="report_new_entrant",
         db_comment="The associated report version for this new entrant record",
         primary_key=True,
@@ -24,7 +24,7 @@ class ReportNewEntrant(TimeStampedModel):
         null=True,
         db_comment="Start date of the new entrant reporting period",
     )
-    assertion_statement_certified = models.BooleanField(
+    assertion_statement = models.BooleanField(
         blank=True,
         null=True,
         db_comment="Indicates if the assertion statement is certified",

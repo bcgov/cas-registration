@@ -1,5 +1,8 @@
 from model_bakery import baker
+
+from registration.models import RegulatedProduct
 from registration.tests.utils.bakers import facility_baker
+from reporting.models import ReportNewEntrant, ReportNewEntrantProduction
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from reporting.models.facility_report import FacilityReport
@@ -115,3 +118,25 @@ def report_raw_activity_data_baker(**props):
     }
 
     return baker.make(ReportRawActivityData, **(default_props | props))
+
+
+def report_new_entrant_baker(**props) -> ReportNewEntrant:
+    # Check if 'report_version' is provided in props, if not, create a new ReportVersion instance
+    if "report_version" not in props:
+        props["report_version"] = report_version_baker()  # Assuming the `report_version_baker` function is available
+
+    # Use baker to create a ReportNewEntrant instance with provided or default properties
+    report = baker.make(ReportNewEntrant, **props)
+
+    return report
+
+
+def report_new_entrant_production_baker(**props):
+    report_new_entrant = props.get('report_new_entrant') or report_new_entrant_baker()
+    product = props.get('product') or baker.make(RegulatedProduct)
+    default_props = {
+        "product": product,
+        "report_new_entrant": report_new_entrant,
+        "production_amount": 500,
+    }
+    return baker.make(ReportNewEntrantProduction, **(default_props | props))
