@@ -137,26 +137,6 @@ export default function OperationReview({
           allRegulatedProducts,
         ),
       );
-
-      const helperText =
-        updatedFormData.operation_report_type === "Simple Report" ? (
-          <small>
-            Simple reports are submitted by operations that previously emitted
-            greater than or equal to 10,000 tCO2e of attributable emissions in a
-            reporting period, but now emit under 10,000 tCO2e of attributable
-            emissions in a reporting period and have an obligation to continue
-            reporting emissions for three consecutive reporting periods. This
-            report type is not applicable for opted-in operations.
-          </small>
-        ) : null;
-
-      setUiSchema({
-        ...operationReviewUiSchema,
-        operation_report_type: {
-          "ui:widget": "select",
-          "ui:help": helperText,
-        },
-      });
     }
     if (facilityReport?.facility_id) {
       setFacilityId(facilityReport.facility_id);
@@ -192,7 +172,33 @@ export default function OperationReview({
   };
 
   const onChangeHandler = (data: { formData: any }) => {
-    setFormDataState(data.formData);
+    const updatedFormData = data.formData;
+
+    const helperText =
+      updatedFormData.operation_report_type === "Simple Report" ? (
+        <small>
+          Simple Reports are submitted by reporting operations that previously
+          emitted greater than or equal to 10 000 tCO2e of attributable
+          emissions in a reporting period, but now emit under 10 000 tCO2e of
+          attributable emissions and have an obligation to continue reporting
+          emissions for three consecutive reporting periods. This report type is
+          not applicable for any operations that received third party
+          verification in the immediately preceding reporting period, and is not
+          applicable for opted-in operations.
+        </small>
+      ) : (
+        ""
+      );
+
+    setUiSchema({
+      ...operationReviewUiSchema,
+      operation_report_type: {
+        "ui:widget": "select",
+        "ui:help": helperText,
+      },
+    });
+
+    setFormDataState(updatedFormData);
   };
 
   if (!formData) {
