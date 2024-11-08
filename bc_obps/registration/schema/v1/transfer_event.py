@@ -25,5 +25,6 @@ class TransferEventFilterSchema(FilterSchema):
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
     effective_date: Optional[str] = Field(None, json_schema_extra={'q': 'effective_date__icontains'})
     operation: Optional[str] = Field(None, json_schema_extra={'q': 'operation__name__icontains'})
-    facilities: Optional[str] = Field(None, json_schema_extra={'q': 'facilities__icontains'})
+    # facilities: Optional[str] = None
+    facilities: Optional[str] = Field(None, json_schema_extra={'q': 'facilities__name__icontains'})
     status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})

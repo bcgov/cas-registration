@@ -12,7 +12,7 @@ const transferColumns = (
       width: 200,
     },
     { field: "operation", headerName: "Operation", width: 200 },
-    { field: "facility", headerName: "Facility", flex: 1 },
+    { field: "facilities", headerName: "Facility", flex: 1 },
     {
       field: "status",
       headerName: "Status",
