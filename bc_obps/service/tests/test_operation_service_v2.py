@@ -8,7 +8,6 @@ from registration.models.document_type import DocumentType
 from registration.models.activity import Activity
 from registration.models.business_role import BusinessRole
 from registration.models.regulated_product import RegulatedProduct
-from registration.models.registration_purpose import RegistrationPurpose
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
@@ -16,7 +15,6 @@ from registration.schema.v2.operation import (
     OperationRepresentativeIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeRemove,
-    RegistrationPurposeIn,
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.operation_service_v2 import OperationServiceV2
@@ -33,10 +31,9 @@ from model_bakery import baker
 pytestmark = pytest.mark.django_db
 
 
-def set_up_valid_mock_operation(purpose: RegistrationPurpose.Purposes):
+def set_up_valid_mock_operation(purpose: Operation.Purposes):
     # create operation and purpose
     operation = baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT)
-    baker.make(RegistrationPurpose, registration_purpose=purpose, operation=operation)
 
     # create mock valid operation rep
     address = baker.make_recipe('utils.address')
@@ -59,14 +56,14 @@ def set_up_valid_mock_operation(purpose: RegistrationPurpose.Purposes):
 
     operation.documents.set([boundary_map, process_flow_diagram])
 
-    if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
+    if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
         # statutory dec if new entrant
         new_entrant_application = baker.make_recipe(
             'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
         operation.documents.add(new_entrant_application)
 
-    if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
+    if purpose == Operation.Purposes.OPTED_IN_OPERATION:
         # opt in record
         opted_in_operation_detail = baker.make_recipe('utils.opted_in_operation_detail')
         operation.opted_in_operation = opted_in_operation_detail
@@ -85,96 +82,43 @@ class TestOperationServiceV2:
         random_operator = baker.make_recipe(
             'utils.operator', cra_business_number=123456789, bc_corporate_registry_number='abc1234567'
         )
-        operation = baker.make_recipe('utils.operation', operator=random_operator)
+        operation = baker.make_recipe(
+            'utils.operation', operator=random_operator, registration_purpose='Potential Reporting Operation'
+        )
 
-        payload = RegistrationPurposeIn(registration_purpose='Reporting Operation')
+        payload = OperationInformationIn(registration_purpose='Reporting Operation')
         with pytest.raises(Exception):
-
-            OperationServiceV2.set_registration_purpose(user.user_guid, operation.id, payload)
+            OperationServiceV2.create_or_update_operation_v2(user.user_guid, operation.id, payload)
 
     @staticmethod
     def test_assigns_single_selected_purpose():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        payload = RegistrationPurposeIn(registration_purpose='Potential Reporting Operation')
-        OperationServiceV2.set_registration_purpose(approved_user_operator.user.user_guid, operation.id, payload)
+        operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose='Potential Reporting Operation',
+        )
+        payload = OperationInformationIn(registration_purpose='Reporting Operation')
+        OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload, operation.id)
 
-        registration_purposes = RegistrationPurpose.objects.filter(operation_id=operation.id)
-        assert registration_purposes.count() == 1
-        assert list(registration_purposes.values_list('registration_purpose', flat=True)) == [
-            'Potential Reporting Operation'
-        ]
         operation.refresh_from_db()  # refresh the operation object to get the updated audit columns
         assert operation.updated_at is not None
         assert operation.updated_by == approved_user_operator.user
-
-    @staticmethod
-    def test_assigns_selected_and_additional_purpose():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-
-        payload = RegistrationPurposeIn(registration_purpose='OBPS Regulated Operation', regulated_products=[1, 2, 6])
-        OperationServiceV2.set_registration_purpose(approved_user_operator.user.user_guid, operation.id, payload)
-
-        registration_purposes = RegistrationPurpose.objects.filter(operation_id=operation.id)
-        assert registration_purposes.count() == 2
-        assert list(registration_purposes.values_list('registration_purpose', flat=True)) == [
-            'OBPS Regulated Operation',
-            'Reporting Operation',
-        ]
-        assert operation.regulated_products.count() == 3
-        assert list(operation.regulated_products.values_list('name', flat=True)) == [
-            RegulatedProduct.objects.get(pk=1).name,
-            RegulatedProduct.objects.get(pk=2).name,
-            RegulatedProduct.objects.get(pk=6).name,
-        ]
-
-    @staticmethod
-    def test_assigns_selected_and_additional_purposes():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-
-        payload = RegistrationPurposeIn(registration_purpose='New Entrant Operation', regulated_products=[4])
-        OperationServiceV2.set_registration_purpose(approved_user_operator.user.user_guid, operation.id, payload)
-
-        registration_purposes = RegistrationPurpose.objects.filter(operation_id=operation.id)
-        assert registration_purposes.count() == 3
-        assert sorted(list(registration_purposes.values_list('registration_purpose', flat=True))) == sorted(
-            [
-                'New Entrant Operation',
-                'OBPS Regulated Operation',
-                'Reporting Operation',
-            ]
-        )
-        assert operation.regulated_products.count() == 1
-        assert list(operation.regulated_products.values_list('name', flat=True)) == [
-            RegulatedProduct.objects.get(pk=4).name,
-        ]
+        assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
 
     @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-
-        payload = RegistrationPurposeIn(registration_purpose='Opted-in Operation')
-        OperationServiceV2.set_registration_purpose(approved_user_operator.user.user_guid, operation.id, payload)
-
-        registration_purposes = RegistrationPurpose.objects.filter(operation_id=operation.id)
-        assert registration_purposes.count() == 3
-        assert sorted(list(registration_purposes.values_list('registration_purpose', flat=True))) == sorted(
-            [
-                'Opted-in Operation',
-                'OBPS Regulated Operation',
-                'Reporting Operation',
-            ]
+        operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, registration_purpose='Opted-in Operation'
         )
+
         operation.refresh_from_db()
         assert operation.opted_in_operation is not None
         assert OptedInOperationDetail.objects.count() == 1
 
     @staticmethod
     def test_list_current_users_unregistered_operations():
-
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_unregistered_operation = baker.make_recipe(
             'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.PENDING
@@ -194,7 +138,7 @@ class TestOperationServiceV2:
     @staticmethod
     def test_update_operation_status_success():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        users_operation = set_up_valid_mock_operation(RegistrationPurpose.Purposes.OPTED_IN_OPERATION)
+        users_operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
         users_operation.operator = approved_user_operator.operator
         users_operation.save()
 
@@ -209,6 +153,7 @@ class TestOperationServiceV2:
         assert datetime.now(ZoneInfo("UTC")).replace(microsecond=0) - updated_operation.submission_date.replace(
             microsecond=0
         ) < timedelta(seconds=2)
+        assert updated_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
 
     @staticmethod
     def test_update_operation_status_fail():
@@ -374,7 +319,7 @@ class TestOperationServiceV2:
         assert operation.created_at is not None
         assert operation.updated_by is not None  # the operation is created first, and then we add the purpose
         # check purpose
-        assert operation.registration_purposes.count() == 1
+        assert operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
 
     @staticmethod
@@ -403,7 +348,7 @@ class TestOperationServiceV2:
         assert operation.updated_by == approved_user_operator.user
         assert operation.updated_at is not None
         # check purpose
-        assert operation.registration_purposes.count() == 1
+        assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
 
 
@@ -427,6 +372,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         assert Operation.objects.count() == 1
         assert operation.activities.count() == 1
         assert operation.documents.count() == 2
+        assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert operation.created_by == approved_user_operator.user
         assert operation.created_at is not None
         assert operation.updated_at is None
@@ -597,6 +543,7 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.created_at is not None
         assert operation.updated_at is not None
         assert operation.regulated_products.count() == 1
+        assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
 
     def test_update_operation_with_no_regulated_products(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
@@ -625,6 +572,7 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.created_at is not None
         assert operation.updated_at is not None
         assert operation.regulated_products.count() == 0
+        assert operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
 
     def test_update_operation_with_new_entrant_application_data(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
@@ -659,6 +607,7 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.updated_at is not None
         assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
         assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
+        assert operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
 
 
 class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:

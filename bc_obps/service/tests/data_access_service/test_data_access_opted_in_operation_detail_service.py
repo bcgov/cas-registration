@@ -1,6 +1,6 @@
 import pytest
 from model_bakery import baker
-from registration.schema.v2.operation import OptedInOperationDetailIn, RegistrationPurposeIn
+from registration.schema.v2.operation import OptedInOperationDetailIn
 from service.operation_service_v2 import OperationServiceV2
 from service.operation_service import OperationService
 
@@ -12,12 +12,10 @@ class TestDataAccessOptedInOperationService:
     def test_update_opted_in_operation_detail():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
-        )
-        # Marking the operation as opted-in
-        purpose_payload = RegistrationPurposeIn(registration_purpose='Opted-in Operation')
-        OperationServiceV2.set_registration_purpose(
-            approved_user_operator.user.user_guid, users_operation.id, purpose_payload
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            registration_purpose='Opted-in Operation',
         )
         opted_in_operation_detail_payload = OptedInOperationDetailIn(
             meets_section_3_emissions_requirements=True,

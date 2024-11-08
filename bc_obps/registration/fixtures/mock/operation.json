@@ -16,7 +16,8 @@
       "regulated_products": [],
       "status": "Not Started",
       "created_at": "2024-2-01T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "Reporting Operation"
     }
   },
   {
@@ -35,7 +36,8 @@
       "status": "Not Started",
       "created_at": "2024-2-02T15:27:00.000Z",
       "activities": [1, 5],
-      "contacts": [10]
+      "contacts": [10],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {
@@ -55,7 +57,8 @@
       "status": "Approved",
       "bc_obps_regulated_operation": "21-0001",
       "created_at": "2024-1-31T15:27:00.000Z",
-      "activities": [1, 5, 17]
+      "activities": [1, 5, 17],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {
@@ -75,7 +78,8 @@
       "regulated_products": [],
       "status": "Approved",
       "created_at": "2024-1-30T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {
@@ -110,9 +114,10 @@
       "opt_in": false,
       "bcghg_id": "23219999999",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-28T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "Opted-in Operation"
     }
   },
   {
@@ -128,9 +133,10 @@
       "opt_in": false,
       "bcghg_id": "23219990006",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-27T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "Potential Reporting Operation"
     }
   },
   {
@@ -146,9 +152,10 @@
       "opt_in": false,
       "bcghg_id": "23219990007",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-26T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "Electricity Import Operation"
     }
   },
   {
@@ -164,9 +171,10 @@
       "opt_in": false,
       "bcghg_id": "23219990008",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-25T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "New Entrant Operation"
     }
   },
   {
@@ -182,9 +190,10 @@
       "opt_in": false,
       "bcghg_id": "23219990009",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-24T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "Reporting Operation"
     }
   },
   {
@@ -200,9 +209,10 @@
       "opt_in": false,
       "bcghg_id": "23219990010",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-23T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {
@@ -218,9 +228,10 @@
       "opt_in": false,
       "bcghg_id": "23219990011",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-22T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "Reporting Operation"
     }
   },
   {
@@ -236,9 +247,10 @@
       "opt_in": false,
       "bcghg_id": "23219990012",
       "regulated_products": [],
-      "status": "Pending",
+      "status": "Draft",
       "created_at": "2024-1-21T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {
@@ -256,7 +268,8 @@
       "bcghg_id": "23219990013",
       "created_at": "2024-1-20T15:27:00.000Z",
       "regulated_products": [1, 2, 3, 4],
-      "status": "Transferred"
+      "status": "Transferred",
+      "registration_purpose": "Electricity Import Operation"
     }
   },
   {
@@ -275,7 +288,8 @@
       "regulated_products": [],
       "status": "Closed",
       "created_at": "2024-1-19T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {
@@ -294,7 +308,8 @@
       "regulated_products": [],
       "status": "Temporarily Shutdown",
       "created_at": "2024-1-18T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "Potential Reporting Operation"
     }
   },
   {
@@ -311,9 +326,10 @@
       "opt_in": false,
       "bcghg_id": "23219990016",
       "regulated_products": [],
-      "status": "Changes Requested",
+      "status": "Draft",
       "created_at": "2024-1-17T15:27:00.000Z",
-      "activities": [1, 5]
+      "activities": [1, 5],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {

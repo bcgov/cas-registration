@@ -1,6 +1,6 @@
 from typing import List
 from django.http import HttpRequest
-from registration.models.registration_purpose import RegistrationPurpose
+from registration.models.operation import Operation
 from registration.decorators import handle_http_errors
 from registration.api.router import router
 from typing import Literal, Tuple
@@ -12,12 +12,12 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 REGISTRATION_PURPOSES_LITERALS = Literal[
-    RegistrationPurpose.Purposes.REPORTING_OPERATION,
-    RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-    RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION,
-    RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
-    RegistrationPurpose.Purposes.OPTED_IN_OPERATION,
-    RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
+    Operation.Purposes.REPORTING_OPERATION,
+    Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+    Operation.Purposes.NEW_ENTRANT_OPERATION,
+    Operation.Purposes.OBPS_REGULATED_OPERATION,
+    Operation.Purposes.OPTED_IN_OPERATION,
+    Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
 ]
 
 
@@ -28,5 +28,5 @@ REGISTRATION_PURPOSES_LITERALS = Literal[
 )
 @handle_http_errors()
 def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[str]]:
-    purposes = [purpose.value for purpose in RegistrationPurpose.Purposes]
+    purposes = [purpose.value for purpose in Operation.Purposes]
     return 200, purposes
