@@ -57,6 +57,10 @@
   .link-button-outlined {
     @apply link-button-base text-bc-primary-blue border border-solid border-bc-bg-blue hover:bg-bc-bg-blue hover:bg-gray-100;
   }
+  .section-heading-label {
+    /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
+    @apply [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:text-bc-bg-blue [&>label]:mb-4;
+  }
 }
 
 /* CSS resets */
