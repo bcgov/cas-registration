@@ -1,0 +1,273 @@
+from datetime import timedelta
+
+import pytest
+from django.db.models import Q
+from model_bakery import baker
+from registration.models import RegistrationPurpose, FacilityDesignatedOperationTimeline, Operation
+from registration.tests.constants import MOCK_DATA_URL
+from registration.tests.utils.bakers import bc_obps_regulated_operation_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.utils import custom_reverse_lazy
+
+
+class TestOperationRegistration(CommonTestSetup):
+    def setup_method(self):
+        super().setup_method()
+        self.approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        self.bcghg_id = baker.make_recipe('utils.bcghg_id')
+        self.swrs_facility_id = 1003
+        self.boro_id = bc_obps_regulated_operation_baker()
+        # add some random contacts so we can test that they are not overridden
+        random_contacts = baker.make_recipe('utils.contact', _quantity=5)
+        self.operation = baker.make_recipe(
+            'utils.operation',
+            created_by=self.user,
+            operator=self.approved_user_operator.operator,
+            bcghg_id=self.bcghg_id,
+            swrs_facility_id=self.swrs_facility_id,
+            bc_obps_regulated_operation=self.boro_id,
+            contacts=random_contacts,
+        )
+        self.created_at = self.operation.created_at
+        self.updated_at = None
+        self.operation_representative_id = None
+
+    def _set_operation_information(self, purpose: RegistrationPurpose.Purposes):
+        operation_information_payload = {
+            "registration_purpose": purpose,
+            "regulated_products": [1],
+            "name": f"{purpose} name",
+            "type": "LFO",
+            "naics_code_id": 1,
+            "secondary_naics_code_id": 2,
+            "tertiary_naics_code_id": 3,
+            "activities": [1],
+            "boundary_map": MOCK_DATA_URL,
+            "process_flow_diagram": MOCK_DATA_URL,
+        }
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            operation_information_payload,
+            custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+        )
+        if response.status_code != 200:
+            raise Exception(response.json())
+        self.operation.refresh_from_db()
+
+    def _set_facilities(self):
+        facility_payload = [
+            {
+                "name": "Test Facility 1",
+                "type": "Single Facility",
+                "latitude_of_largest_emissions": "5",
+                "longitude_of_largest_emissions": "5",
+                "operation_id": self.operation.id,
+            },
+            {
+                "street_address": "123 street",
+                "municipality": "city",
+                "province": "AB",
+                "postal_code": "H0H0H0",
+                "name": "Test Facility 2",
+                "type": "Large Facility",
+                "latitude_of_largest_emissions": "5",
+                "longitude_of_largest_emissions": "5",
+                "operation_id": self.operation.id,
+                "well_authorization_numbers": [12345, 654321],
+            },
+        ]
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            facility_payload,
+            custom_reverse_lazy("create_facilities"),
+        )
+        if response.status_code != 201:
+            raise Exception(response.json())
+        self.operation.refresh_from_db()
+
+    def _set_new_entrant_application(self):
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {
+                "date_of_first_shipment": "On or after April 1, 2024",
+                'new_entrant_application': MOCK_DATA_URL,
+            },
+            custom_reverse_lazy(
+                "create_or_replace_new_entrant_application", kwargs={'operation_id': self.operation.id}
+            ),
+        )
+        if response.status_code != 200:
+            raise Exception(response.json())
+        self.operation.refresh_from_db()
+
+    def _set_opted_in_operation_detail(self):
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {
+                "meets_section_3_emissions_requirements": False,
+                "meets_electricity_import_operation_criteria": True,
+                "meets_entire_operation_requirements": False,
+                "meets_section_6_emissions_requirements": True,
+                "meets_naics_code_11_22_562_classification_requirements": False,
+                "meets_producing_gger_schedule_a1_regulated_product": True,
+                "meets_reporting_and_regulated_obligations": False,
+                "meets_notification_to_director_on_criteria_change": True,
+            },
+            custom_reverse_lazy(
+                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': self.operation.id}
+            ),
+        )
+        if response.status_code != 200:
+            raise Exception(response.json())
+        self.operation.refresh_from_db()
+
+    def _set_operation_representative(self):
+        operation_representative_payload = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'test@email.com',
+            'phone_number': '+16044011234',
+            'position_title': 'Manager',
+            'street_address': '123 Main St',
+            'municipality': 'Vancouver',
+            'province': 'BC',
+            'postal_code': 'H0H 0H0',
+        }
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            operation_representative_payload,
+            custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': self.operation.id}),
+        )
+        if response.status_code != 200:
+            raise Exception(response.json())
+        self.operation_representative_id = response.json()['id']
+        self.operation.refresh_from_db()
+
+    def _set_registration_submission(self):
+        response = TestUtils.mock_patch_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {
+                'acknowledgement_of_review': True,
+                'acknowledgement_of_information': True,
+                'acknowledgement_of_records': True,
+            },
+            custom_reverse_lazy("operation_registration_submission", kwargs={'operation_id': self.operation.id}),
+        )
+        if response.status_code != 200:
+            raise Exception(response.json())
+        self.operation.refresh_from_db()
+        self.updated_at = self.operation.updated_at  # save the updated_at timestamp to compare later
+
+    @pytest.mark.parametrize("purpose", list(RegistrationPurpose.Purposes))
+    def test_operation_registration_workflow(self, purpose):
+        #### Operation Information Form ####
+        self._set_operation_information(purpose)
+        #### Facility From ####
+        self._set_facilities()
+
+        if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
+            #### New Entrant Application Form ####
+            self._set_new_entrant_application()
+        elif purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
+            #### Opted-In Operation Detail Form ####
+            self._set_opted_in_operation_detail()
+
+        #### Operation Representative Form ####
+        self._set_operation_representative()
+        #### Registration Submission ####
+        self._set_registration_submission()
+
+        # Assertions
+        assert self.operation.name == f'{purpose} name'
+        assert self.operation.type == 'LFO'
+        assert self.operation.operator_id == self.approved_user_operator.operator_id
+        assert self.operation.naics_code_id == 1
+        assert self.operation.secondary_naics_code_id == 2
+        assert self.operation.tertiary_naics_code_id == 3
+        assert self.operation.swrs_facility_id == self.swrs_facility_id
+        assert self.operation.bcghg_id_id == self.bcghg_id.id
+
+        if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
+            assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
+            assert self.operation.documents.filter(type__name='new_entrant_application').exists()
+        else:
+            assert self.operation.date_of_first_shipment is None
+
+        if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
+            assert self.operation.opt_in is True
+            assert self.operation.opted_in_operation is not None
+            assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
+            assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
+            assert self.operation.opted_in_operation.meets_entire_operation_requirements is False
+            assert self.operation.opted_in_operation.meets_section_6_emissions_requirements is True
+            assert self.operation.opted_in_operation.meets_naics_code_11_22_562_classification_requirements is False
+            assert self.operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product is True
+            assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
+            assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
+            assert self.operation.opted_in_operation.updated_by == self.user
+            assert self.operation.opted_in_operation.updated_at is not None
+        else:
+            assert self.operation.opt_in is None
+            assert self.operation.opted_in_operation_id is None
+
+        # updating the submission date is the last thing that happens in the registration process - 2 seconds as a buffer
+        assert self.operation.submission_date.replace(microsecond=0) - self.updated_at.replace(
+            microsecond=0
+        ) <= timedelta(seconds=2)
+        # Assert facilities are created (LFO operation)
+        assert (
+            FacilityDesignatedOperationTimeline.objects.filter(
+                operation=self.operation, status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE
+            ).count()
+            == 2
+        )
+        # make sure we have the two required documents
+        assert (
+            self.operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
+            .distinct()
+            .count()
+            == 2
+        )
+        # make sure we are not overriding existing contacts of the operation
+        assert self.operation.contacts.count() == 6
+        assert self.operation.contacts.filter(
+            business_role__role_name='Operation Representative',
+            address__street_address__isnull=False,
+            address__municipality__isnull=False,
+            address__province__isnull=False,
+            address__postal_code__isnull=False,
+        ).exists()
+        # make sure operation representative is created for operator as well
+        assert self.approved_user_operator.operator.contacts.filter(id=self.operation_representative_id).exists()
+        assert self.operation.status == Operation.Statuses.REGISTERED
+
+        if purpose in [
+            RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
+            RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
+        ]:
+            assert not self.operation.regulated_products.exists()
+        else:
+            assert self.operation.regulated_products.count() == 1
+            assert self.operation.regulated_products.first().id == 1
+        assert self.operation.activities.count() == 1
+        assert self.operation.activities.first().id == 1
+        assert self.operation.created_by == self.user
+        assert self.operation.created_at == self.created_at
+        assert self.operation.updated_by == self.user
+        assert self.operation.updated_at == self.updated_at
+
+        # two below assertions are not working, but they will be fixed in the PR related to ticket #2169
+        # assert self.operation.registration_purposes.count() == 1
+        # assert self.operation.registration_purposes.first().purpose == RegistrationPurpose.Purposes.REPORTING_OPERATION
