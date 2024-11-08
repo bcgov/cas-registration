@@ -63,6 +63,7 @@ describe("FacilityEmissionSummary", () => {
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
+        taskListElements={[]}
       />,
     );
 
@@ -95,6 +96,7 @@ describe("FacilityEmissionSummary", () => {
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
+        taskListElements={[]}
       />,
     );
 
@@ -115,6 +117,7 @@ describe("FacilityEmissionSummary", () => {
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
+        taskListElements={[]}
       />,
     );
 
@@ -136,6 +139,7 @@ describe("FacilityEmissionSummary", () => {
         versionId={1}
         facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
+        taskListElements={[]}
       />,
     );
 
