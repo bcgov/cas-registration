@@ -20,12 +20,6 @@
             "href": "/administration/operations"
           },
           {
-            "title": "Facilities",
-            "icon": "File",
-            "content": "View all facilities here.",
-            "href": "/administration/facilities"
-          },
-          {
             "title": "Operator Administrators and Access Requests",
             "icon": "Inbox",
             "content": "View all operator administrators and administrator access requests here.",
