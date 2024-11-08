@@ -4,7 +4,7 @@ import {
 } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 
-const trasnsferGroupColumns = (
+const transferGroupColumns = (
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
   const columnGroupModel: GridColumnGroupingModel = [
@@ -21,10 +21,10 @@ const trasnsferGroupColumns = (
       children: [{ field: "operation" }],
     },
     {
-      groupId: "facility",
+      groupId: "facilities",
       headerName: "Facility",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "facility" }],
+      children: [{ field: "facilities" }],
     },
     {
       groupId: "status",
@@ -49,4 +49,4 @@ const trasnsferGroupColumns = (
   return columnGroupModel;
 };
 
-export default trasnsferGroupColumns;
+export default transferGroupColumns;
