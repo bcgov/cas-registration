@@ -15,6 +15,8 @@ from .reports import get_report_type_by_version
 from .gas_type import get_gas_type
 from .emission_category import get_emission_category
 from .production_data import save_production_data
+from .report_new_entrant_data import save_new_entrant_data
+from .report_new_entrant_data import get_new_entrant_data
 from .report_non_attributable_emissions import save_report
 from .report_activity import save_report_activity_data, load_report_activity_data
 from .report_facilities import get_report_facility_list_by_version_id

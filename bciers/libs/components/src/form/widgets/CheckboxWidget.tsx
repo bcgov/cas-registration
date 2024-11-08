@@ -12,6 +12,7 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
   uiSchema,
 }) => {
   const alignment = uiSchema?.["ui:options"]?.alignment || "center";
+  const customLabel = uiSchema?.["ui:options"]?.label || label;
 
   return (
     <FormControlLabel
@@ -31,7 +32,7 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
           }}
         />
       }
-      label={label}
+      label={customLabel}
       style={{
         alignItems: alignment === "top" ? "flex-start" : "center",
       }}
