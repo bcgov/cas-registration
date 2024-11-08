@@ -46,11 +46,11 @@ export default async function fetchTransferEventsPageData(
       "GET",
       "",
     );
-    const formattedRows = formatTransferRows(pageData.items);
+    // const formattedRows = formatTransferRows(pageData.items);
     // brianna why is frontend showing Facility 2 twice? initial data is ok
     return {
-      rows: formattedRows,
-      row_count: formattedRows.length,
+      rows: pageData.items,
+      row_count: pageData.count,
     };
   } catch (error) {
     throw error;

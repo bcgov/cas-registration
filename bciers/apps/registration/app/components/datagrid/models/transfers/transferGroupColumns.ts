@@ -9,22 +9,22 @@ const transferGroupColumns = (
 ) => {
   const columnGroupModel: GridColumnGroupingModel = [
     {
-      groupId: "submission_date",
+      groupId: "created_at",
       headerName: "Submission Date",
       renderHeaderGroup: EmptyGroupCell,
-      children: [{ field: "submission_date" }],
+      children: [{ field: "created_at" }],
     },
     {
-      groupId: "operation",
+      groupId: "operation__name",
       headerName: "Operation",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "operation" }],
+      children: [{ field: "operation__name" }],
     },
     {
-      groupId: "facilities",
+      groupId: "facilities__name",
       headerName: "Facility",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "facilities" }],
+      children: [{ field: "facilities__name" }],
     },
     {
       groupId: "status",
