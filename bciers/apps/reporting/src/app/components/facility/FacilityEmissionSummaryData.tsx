@@ -2,6 +2,8 @@ import React from "react";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import FacilityEmissionSummary from "./FacilityEmissionSummary";
+import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformation";
+import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
 interface Props {
   versionId: number;
@@ -21,6 +23,19 @@ const FacilityEmissionSummaryData = async ({
   facilityId,
 }: Props) => {
   const summaryData = await getsummaryData(versionId, facilityId);
+  const orderedActivities = await getOrderedActivities(versionId, facilityId);
+
+  const taskListData = getFacilitiesInformationTaskList(
+    versionId,
+    facilityId,
+    orderedActivities,
+  );
+
+  const emissionSummaryTaskListElement = taskListData.find(
+    (e) => e.title == "Emissions Summary",
+  );
+  if (emissionSummaryTaskListElement)
+    emissionSummaryTaskListElement.isActive = true;
 
   const formData = {
     attributableForReporting: summaryData.attributable_for_reporting,
@@ -53,6 +68,7 @@ const FacilityEmissionSummaryData = async ({
       versionId={versionId}
       facilityId={facilityId}
       summaryFormData={formData}
+      taskListElements={taskListData}
     />
   );
 };

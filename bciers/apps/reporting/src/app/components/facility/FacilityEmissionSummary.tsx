@@ -4,7 +4,7 @@ import { Box, Button } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { tasklistData } from "@reporting/src/app/components/facility/TaskListElements";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
   facilityEmissionSummaryUiSchema,
   facilityEmissionSummarySchema,
@@ -40,12 +40,14 @@ interface Props {
       fogExcluded: string; // To be handled once we implement a way to capture FOG emissions
     };
   };
+  taskListElements: TaskListElement[];
 }
 
 const FacilityEmissionSummary: React.FC<Props> = ({
   versionId,
   facilityId,
   summaryFormData,
+  taskListElements,
 }) => {
   const customStepNames = [
     "Operation Information",
@@ -67,7 +69,7 @@ const FacilityEmissionSummary: React.FC<Props> = ({
         <MultiStepHeader stepIndex={1} steps={customStepNames} />
       </div>
       <div className="w-full flex">
-        <ReportingTaskList elements={tasklistData} />
+        <ReportingTaskList elements={taskListElements} />
         <div className="w-full md:max-w-[60%]">
           <FormBase
             schema={facilityEmissionSummarySchema}
