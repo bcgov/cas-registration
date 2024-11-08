@@ -20,15 +20,16 @@ const DateWidget: React.FC<WidgetProps> = ({
   value,
   options,
 }) => {
+  const simpleDateFormat = options?.simpleDateFormat || false;
+
   const handleChange = (d: Dayjs | null) => {
     if (!d || !d.isValid()) {
       return onChange("invalid date");
     }
 
-    // Set the time to 9am UTC to avoid timezone issues since PST is UTC -8 hours
-    // This should be enough offset to take eastern timezones into account which have
-    // less than 8 hours difference eg Atlantic Standard Time is UTC -4 hours
-    const newDate = dayjs(d).utc().set("hour", 9).toISOString();
+    const newDate = simpleDateFormat
+      ? d.utc().format("YYYY-MM-DD") // Return just the date (no time)
+      : d.utc().set("hour", 9).toISOString(); // Return full ISO string with time
 
     return onChange(newDate);
   };
@@ -45,10 +46,13 @@ const DateWidget: React.FC<WidgetProps> = ({
     },
   };
 
+  // Ensure the value is in the correct format
+  const formattedValue = value ? dayjs(value).utc().format("YYYY-MM-DD") : null;
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
-        value={value ? dayjs(value).utc() : null}
+        value={formattedValue ? dayjs(formattedValue).utc() : null}
         onChange={handleChange}
         disabled={disabled || readonly}
         format="YYYY-MM-DD"

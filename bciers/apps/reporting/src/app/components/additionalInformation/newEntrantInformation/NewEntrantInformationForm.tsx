@@ -10,6 +10,7 @@ import {
   createNewEntrantInformationSchema,
   createNewEntrantInformationUiSchema,
 } from "@reporting/src/data/jsonSchema/newEntrantInformation";
+import { IChangeEvent } from "@rjsf/core";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
@@ -17,16 +18,25 @@ const cancelUrl = "/reports";
 interface AdditionalReportingDataProps {
   versionId: number;
   products: [];
+  initialFormData: {};
+  dateOfAuthorization: string;
+  dateOfFirstShipment: string;
+  dateOfNewEntrantPeriod: string;
 }
 
 export default function NewEntrantInformationForm({
   versionId,
   products,
+  initialFormData,
+  dateOfAuthorization,
+  dateOfFirstShipment,
+  dateOfNewEntrantPeriod,
 }: AdditionalReportingDataProps) {
-  const [formData, setFormData] = useState<FormData>();
+  const [formData, setFormData] = useState(initialFormData || {});
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+  const saveAndContinueUrl = `/reports/${versionId}/compliance-summary`;
 
   const taskListElements: TaskListElement[] = [
     {
@@ -43,18 +53,21 @@ export default function NewEntrantInformationForm({
     },
   ];
 
-  const handleSubmit = async (data: any) => {
-    const endpoint = `reporting/report-version/${versionId}/additional-data`;
+  const handleChange = (e: IChangeEvent) => {
+    const updatedData = { ...e.formData };
+    setFormData(updatedData);
+    if (updatedData.assertion_statement) {
+      setSubmitButtonDisabled(false);
+    } else {
+      setSubmitButtonDisabled(true);
+    }
+  };
+  const handleSubmit = async () => {
+    const endpoint = `reporting/report-version/${versionId}/new-entrant-data`;
     const method = "POST";
 
-    const payload = {
-      report_version: versionId,
-      ...data.captured_emissions_section,
-      ...data.additional_data_section,
-    };
-
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(payload),
+      body: JSON.stringify(formData),
     });
     if (response) {
       router.push(saveAndContinueUrl);
@@ -72,15 +85,19 @@ export default function NewEntrantInformationForm({
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
-      schema={createNewEntrantInformationSchema(products)}
+      schema={createNewEntrantInformationSchema(
+        products,
+        dateOfAuthorization,
+        dateOfFirstShipment,
+        dateOfNewEntrantPeriod,
+      )}
       uiSchema={createNewEntrantInformationUiSchema(products)}
       formData={formData}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
-      onChange={(data: any) => {
-        setFormData(data.formData);
-      }}
-      onSubmit={(data: any) => handleSubmit(data.formData)}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      submitButtonDisabled={submitButtonDisabled}
     />
   );
 }

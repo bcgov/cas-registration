@@ -10,14 +10,20 @@ import checkboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import { Typography } from "@mui/material";
 
-const ProductionDataTitleWidget: React.FC<WidgetProps> = ({ id, value }) => {
+export const ProductionDataTitleWidget: React.FC<Partial<WidgetProps>> = ({
+  id,
+  value,
+  children,
+}) => {
   return (
     <div id={id} className="w-full mt-8">
-      <u>Product:</u> {value}
+      <h2 className="inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 mb-12">
+        <u>Product:</u> {value}
+      </h2>
+      {children}
     </div>
   );
 };
-
 export const newEntrantInfo = (
   <>
     <Typography
@@ -34,10 +40,14 @@ export const newEntrantInfo = (
 type Product = {
   id: number;
   name: string;
+  production_amount: number;
 };
 
 export const createNewEntrantInformationSchema = (
   selectedProducts: Product[],
+  dateOfAuthorization: string,
+  dateOfFirstShipment: string,
+  dateOfNewEntrantPeriod: string,
 ) =>
   ({
     type: "object",
@@ -47,38 +57,45 @@ export const createNewEntrantInformationSchema = (
       date_of_authorization: {
         type: "string",
         title: "Date of authorization",
+        default: `${dateOfAuthorization}`,
       },
       date_of_first_shipment: {
         type: "string",
         title: "Date of first shipment",
+        default: `${dateOfFirstShipment}`,
       },
       date_of_new_entrant_period_began: {
         type: "string",
         title: "Date new entrant period began",
+        default: `${dateOfNewEntrantPeriod}`,
       },
       assertion_statement: {
         type: "boolean",
-        title:
-          "I certify that this operation was a reporting operation on the date that the application for designation as a new entrant was submitted to the Director under GGIRCA.",
+        title: "Assertion statement",
         default: false,
       },
-      ...selectedProducts.reduce(
-        (acc, product) => ({
-          ...acc,
-          [`product_${product.id}`]: {
-            type: "object",
-            title: `Product: ${product.name}`,
-            properties: {
-              production_after_new_entrant: {
-                type: "number",
-                title: "Production after new entrant period began",
+      products: {
+        type: "object",
+        properties: {
+          ...selectedProducts?.reduce(
+            (acc, product) => ({
+              ...acc,
+              [`${product.id}`]: {
+                type: "object",
+                title: `Product: ${product.name}`,
+                properties: {
+                  production_amount: {
+                    type: "number",
+                    title: "Production after new entrant period began",
+                    default: product.production_amount,
+                  },
+                },
               },
-            },
-          },
-        }),
-        {},
-      ),
-
+            }),
+            {},
+          ),
+        },
+      },
       emission_after_new_entrant: {
         type: "object",
         title: "Emission categories after new entrant period began",
@@ -129,7 +146,7 @@ export const createNewEntrantInformationSchema = (
             type: "number",
             title: "CO2 emissions from excluded woody biomass",
           },
-          other_emissions_from_excluded_biomasss: {
+          other_emissions_from_excluded_biomass: {
             type: "number",
             title: "Other emissions from excluded biomass",
           },
@@ -171,30 +188,50 @@ export const createNewEntrantInformationUiSchema = (
 
   assertion_statement: {
     "ui:widget": checkboxWidget,
+    "ui:options": {
+      label:
+        "I certify that this operation was a reporting operation on the date that the application for designation as a new entrant was submitted to the Director under GGIRCA.",
+    },
   },
 
   date_of_authorization: {
     "ui:widget": DateWidget,
+    "ui:options": {
+      simpleDateFormat: true,
+    },
   },
 
   date_of_first_shipment: {
     "ui:widget": DateWidget,
+    "ui:options": {
+      simpleDateFormat: true,
+    },
   },
 
   date_of_new_entrant_period_began: {
     "ui:widget": DateWidget,
+    "ui:options": {
+      simpleDateFormat: true,
+    },
   },
 
-  ...selectedProducts.reduce<{ [key: string]: any }>((acc, product) => {
-    acc[`product_${product.id}`] = {
-      "ui:FieldTemplate": SectionFieldTemplate,
-      "ui:widget": ProductionDataTitleWidget,
-      production_after_new_entrant: {
-        "ui:FieldTemplate": InlineFieldTemplate,
-      },
-    };
-    return acc;
-  }, {}),
+  products: {
+    "ui:options": { label: false },
+    "ui:FieldTemplate": ({ children }) => <>{children}</>,
+    ...selectedProducts?.reduce((acc, product) => {
+      acc[product.id] = {
+        "ui:FieldTemplate": ({ id, children }) => (
+          <ProductionDataTitleWidget id={id} value={product.name}>
+            {children}
+          </ProductionDataTitleWidget>
+        ),
+        production_amount: {
+          "ui:FieldTemplate": InlineFieldTemplate,
+        },
+      };
+      return acc;
+    }, {}),
+  },
 
   emission_after_new_entrant: {
     "ui:FieldTemplate": SectionFieldTemplate,
@@ -232,7 +269,7 @@ export const createNewEntrantInformationUiSchema = (
     co2_emissions_from_excluded_woody_biomass: {
       "ui:FieldTemplate": InlineFieldTemplate,
     },
-    other_emissions_from_excluded_biomasss: {
+    other_emissions_from_excluded_biomass: {
       "ui:FieldTemplate": InlineFieldTemplate,
     },
     emissions_from_excluded_non_biomass: {
