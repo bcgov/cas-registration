@@ -5,25 +5,34 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 
 export const formatTransferRows = (rows: GridRowsProp) => {
-  return rows.map(
-    ({
-      id,
-      operation,
-      facilities,
-      status,
-      effective_date,
-      submission_date,
-    }) => {
+  const operationRows = rows
+    .filter((row) => row.operation)
+    .map(({ id, operation, status, effective_date, created_at }) => {
       return {
         id,
-        operation,
-        facilities: facilities ?? "N/A",
+        operation: operation,
+        facility: "N/A",
         status,
-        submission_date: formatTimestamp(submission_date),
+        submission_date: formatTimestamp(created_at),
         effective_date: formatTimestamp(effective_date),
       };
-    },
-  );
+    });
+  const facilityRows = rows
+    .filter((row) => row.facilities)
+    .flatMap(({ id, facilities, status, effective_date, created_at }) => {
+      return (facilities || []).map((facility) => {
+        console.log("facility", facility);
+        return {
+          id,
+          operation: "N/A",
+          facility: facility.name, // Use individual facility here
+          status,
+          submission_date: formatTimestamp(created_at),
+          effective_date: formatTimestamp(effective_date),
+        };
+      });
+    });
+  return [...operationRows, ...facilityRows];
 };
 // 🛠️ Function to fetch transfers
 export default async function fetchTransferEventsPageData(
@@ -37,9 +46,11 @@ export default async function fetchTransferEventsPageData(
       "GET",
       "",
     );
+    const formattedRows = formatTransferRows(pageData.items);
+    // brianna why is frontend showing Facility 2 twice? initial data is ok
     return {
-      rows: formatTransferRows(pageData.items),
-      row_count: pageData.count,
+      rows: formattedRows,
+      row_count: formattedRows.length,
     };
   } catch (error) {
     throw error;

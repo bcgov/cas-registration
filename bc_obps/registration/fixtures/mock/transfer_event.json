@@ -11,8 +11,7 @@
       "description": "Sold my operation to the other operator so that I could move to Hawaii. Don't tell my employees they don't know.",
       "status": "Transferred",
       "other_operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "other_operator_contact": 13,
-      "future_designated_operator": "Other Operator"
+      "other_operator_contact": 13
     }
   },
   {
@@ -24,8 +23,7 @@
       "effective_date": "2024-08-21T09:00:00Z",
       "description": "I was the designated operator but I'm being relieved of my duties because my other operators don't trust me anymore. Transfer this operation over to another one of the operators in our multiple-operators relationship. See if you can do better Mia!",
       "other_operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "other_operator_contact": 15,
-      "future_designated_operator": "Other Operator"
+      "other_operator_contact": 15
     }
   },
   {
@@ -43,8 +41,7 @@
       "effective_date": "2024-12-25T09:00:00Z",
       "description": "I don't know what I'm doing but this seems like the right thing to do.",
       "other_operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "other_operator_contact": 15,
-      "future_designated_operator": "Not sure"
+      "other_operator_contact": 15
     }
   }
 ]
