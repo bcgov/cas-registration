@@ -10,9 +10,9 @@ import {
   updateSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import safeJsonParse from "@bciers/utils/safeJsonParse";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 interface Props {
   formData: any;
@@ -220,7 +220,7 @@ export default function OperationReview({
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
-      onSubmit={(data) => submitHandler(data, version_id)}
+      onSubmit={(data: { formData?: any }) => submitHandler(data, version_id)}
       onChange={onChangeHandler}
     />
   );
