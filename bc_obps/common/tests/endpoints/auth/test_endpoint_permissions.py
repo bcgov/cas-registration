@@ -239,6 +239,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_facility_report_by_version_id",
                 "kwargs": {"version_id": mock_int},
             },
+            {
+                "method": "get",
+                "endpoint_name": "get_emission_summary_totals",
+                "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
+            },
         ],
         "authorized_irc_user_and_industry_admin_user": [
             {
