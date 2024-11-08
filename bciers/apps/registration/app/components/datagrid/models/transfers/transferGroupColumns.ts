@@ -4,7 +4,7 @@ import {
 } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 
-const contactGroupColumns = (
+const trasnsferGroupColumns = (
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
   const columnGroupModel: GridColumnGroupingModel = [
@@ -49,4 +49,4 @@ const contactGroupColumns = (
   return columnGroupModel;
 };
 
-export default contactGroupColumns;
+export default trasnsferGroupColumns;

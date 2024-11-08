@@ -11,12 +11,12 @@ class FacilityForTransferEventGrid(ModelSchema):
 
 
 class TransferEventListOut(ModelSchema):
-    operation: str = Field(None, alias="operation.name")
+    operation: Optional[str] = Field(None, alias="operation.name")
     facilities: Optional[List[FacilityForTransferEventGrid]] = None
 
     class Meta:
         model = TransferEvent
-        fields = ['id', 'effective_date', 'status']
+        fields = ['id', 'effective_date', 'status','created_at']
 
 
 class TransferEventFilterSchema(FilterSchema):
