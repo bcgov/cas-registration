@@ -212,5 +212,15 @@
       "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
       "start_date": "2024-06-05T23:20:07Z"
     }
+  },
+  {
+    "model": "registration.facilitydesignatedoperationtimeline",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-20T23:20:02Z",
+      "facility": "459b80f9-b5f3-48aa-9727-90c30eaf3a58",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
+      "start_date": "2024-06-28T23:20:02Z"
+    }
   }
 ]
