@@ -33,10 +33,8 @@ RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
     asdf install && \
     asdf reshim
 
-# Get poetry version from .tool-versions
-ARG poetry_version=$(grep poetry .tool-versions | awk '{print $2}')
 # Add Poetry's bin directory to PATH
-ENV PATH="${HOME}/.asdf/installs/poetry/${poetry_version}/bin:${PATH}"
+ENV PATH="${HOME}/.asdf/installs/poetry/1.8.1/bin:${PATH}"
 
 # Configuring poetry to behave properly with asdf
 RUN poetry config virtualenvs.prefer-active-python true
