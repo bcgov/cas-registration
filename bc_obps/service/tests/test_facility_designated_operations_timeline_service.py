@@ -1,3 +1,4 @@
+from registration.models import FacilityDesignatedOperationTimeline
 from registration.schema.v1.facility_designated_operation_timeline import (
     FacilityDesignatedOperationTimelineFilterSchema,
 )
@@ -38,8 +39,19 @@ class TestGetTimeline:
     def test_get_timeline_by_operation_id_industry_user():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         users_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        # user's timeline
-        baker.make_recipe('utils.facility_designated_operation_timeline', operation=users_operation)
+        # user's timeline - 5 transferred, 10 active to make sure the filter is working
+        baker.make_recipe(
+            'utils.facility_designated_operation_timeline',
+            operation=users_operation,
+            _quantity=5,
+            status=FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
+        )
+        baker.make_recipe(
+            'utils.facility_designated_operation_timeline',
+            operation=users_operation,
+            _quantity=10,
+            status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
+        )
         # random timeline
         baker.make_recipe('utils.facility_designated_operation_timeline')
 
@@ -47,7 +59,9 @@ class TestGetTimeline:
             approved_user_operator.user, users_operation.id
         )
         # the industry user should only be able to see their one
-        assert facilities.count() == 1
+        assert facilities.count() == 10
+        # Make sure the status filter is working
+        assert all(facility.status == FacilityDesignatedOperationTimeline.Statuses.ACTIVE for facility in facilities)
 
 
 class TestListTimeline:
