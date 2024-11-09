@@ -211,6 +211,7 @@ class OperationFilterSchema(FilterSchema):
 class OperationListOut(ModelSchema):
     operator: str = Field(..., alias="operator.legal_name")
     sfo_facility_id: Optional[UUID] = Field(None, alias="sfo_facility_id")  # this is an annotated field in the query
+    sfo_facility_name: Optional[str] = Field(None, alias="sfo_facility_name")  # this is an annotated field in the query
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     class Meta:
