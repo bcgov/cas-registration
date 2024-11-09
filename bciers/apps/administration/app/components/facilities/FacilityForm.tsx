@@ -53,6 +53,7 @@ export default function FacilityForm({
         facilityId: formData.id,
         isInternalUser: isAuthorizedAdminUser,
       }}
+      allowEdit={!isAuthorizedAdminUser}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
         const updatedFormData = { ...formState, ...data.formData };
