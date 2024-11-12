@@ -7,7 +7,6 @@ from registration.models.facility_designated_operation_timeline import FacilityD
 from registration.models.document_type import DocumentType
 from registration.models.activity import Activity
 from registration.models.business_role import BusinessRole
-from registration.models.regulated_product import RegulatedProduct
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
