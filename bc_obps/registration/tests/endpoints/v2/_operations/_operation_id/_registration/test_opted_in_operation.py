@@ -69,7 +69,7 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "meets_notification_to_director_on_criteria_change": True,
             },
             custom_reverse_lazy(
-                "operation_registration_get_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': operation.id}
             ),
         )
         assert response.status_code == 401
@@ -99,7 +99,7 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "meets_notification_to_director_on_criteria_change": False,
             },
             custom_reverse_lazy(
-                "operation_registration_get_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': operation.id}
             ),
         )
         # Assert
@@ -135,7 +135,7 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "bad data": "im bad",
             },
             custom_reverse_lazy(
-                "operation_registration_get_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': operation.id}
             ),
         )
         assert response.status_code == 422

@@ -9,6 +9,7 @@ from registration.models import (
     RegulatedProduct,
     Operator,
     Operation,
+    User,
 )
 from model_bakery import baker
 from django.core.exceptions import ValidationError
@@ -204,3 +205,21 @@ class OperationModelTest(BaseTestCase):
         self.test_object.generate_unique_bcghg_id()
         expected_id = '13221210004'
         assert self.test_object.bcghg_id.pk == expected_id
+
+    def test_user_has_access_to_operation(self):
+        random_user_operator = baker.make_recipe('utils.user_operator')
+        operation_for_random_user_operator = baker.make_recipe(
+            'utils.operation', operator=random_user_operator.operator
+        )
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=User.objects.first())
+        operation_for_approved_user_operator = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator
+        )
+        self.assertFalse(
+            operation_for_random_user_operator.user_has_access(approved_user_operator.user.user_guid),
+            "There is no approved user-operator association.",
+        )
+        self.assertTrue(
+            operation_for_approved_user_operator.user_has_access(approved_user_operator.user.user_guid),
+            "There is an approved user-operator association.",
+        )

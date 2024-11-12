@@ -37,6 +37,8 @@ from registration.schema.v2.operation import (
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 class OperationServiceV2:
@@ -105,10 +107,13 @@ class OperationServiceV2:
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
+        fields_to_update = ['status']
         if status == Operation.Statuses.REGISTERED:
             cls.raise_exception_if_operation_missing_registration_information(operation)
+            operation.submission_date = datetime.now(ZoneInfo("UTC"))
+            fields_to_update.append('submission_date')
         operation.status = Operation.Statuses(status)
-        operation.save(update_fields=['status'])
+        operation.save(update_fields=fields_to_update)
         operation.set_create_or_update(user_guid)
         return operation
 

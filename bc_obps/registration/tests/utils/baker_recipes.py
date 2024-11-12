@@ -1,7 +1,7 @@
 from datetime import datetime
 from itertools import cycle
 from zoneinfo import ZoneInfo
-
+from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document import Document
@@ -32,6 +32,7 @@ naics_code = Recipe(NaicsCode, naics_code='486210')
 address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
 document = Recipe(Document, file='test.pdf')
 bcghg_id = Recipe(BcGreenhouseGasId, id='23219990023')
+boro_id = Recipe(BcObpsRegulatedOperation, id=seq("99-", start=1001))
 
 
 operator = Recipe(

@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
 from registration.models.contact import Contact
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -202,6 +205,10 @@ class TestOperationServiceV2:
         assert updated_operation.status == Operation.Statuses.REGISTERED
         assert updated_operation.updated_by == approved_user_operator.user
         assert updated_operation.updated_at is not None
+        # make sure the submission_date is set - using 2 seconds as a buffer for the test
+        assert datetime.now(ZoneInfo("UTC")).replace(microsecond=0) - updated_operation.submission_date.replace(
+            microsecond=0
+        ) < timedelta(seconds=2)
 
     @staticmethod
     def test_update_operation_status_fail():
