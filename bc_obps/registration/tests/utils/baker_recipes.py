@@ -138,7 +138,6 @@ other_operator_for_transfer_event = Recipe(
 
 transfer_event = Recipe(
     TransferEvent,
-    future_designated_operator=TransferEvent.FutureDesignatedOperatorChoices.MY_OPERATOR,
     other_operator=foreign_key(other_operator_for_transfer_event),
     other_operator_contact=foreign_key(contact_for_transfer_event),
 )
