@@ -39,6 +39,7 @@ class TestOperationRegistration(CommonTestSetup):
         self.updated_at = None
         self.operation_representative_id = None
         self.purposes_with_no_regulated_products = [
+            RegistrationPurpose.Purposes.REPORTING_OPERATION,
             RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
             RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
         ]
@@ -268,10 +269,7 @@ class TestOperationRegistration(CommonTestSetup):
         # make sure operation representative is created for operator as well
         assert self.approved_user_operator.operator.contacts.filter(id=self.operation_representative_id).exists()
 
-        if purpose in [
-            RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-            RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
-        ]:
+        if purpose in self.purposes_with_no_regulated_products:
             assert not self.operation.regulated_products.exists()
         else:
             assert self.operation.regulated_products.count() == 2
