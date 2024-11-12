@@ -4,7 +4,6 @@ from registration.models import TimeStampedModel, Operation, Facility
 
 
 class EventBaseModel(TimeStampedModel):
-    # brianna how does this work operation/facilities?
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the event")
     effective_date = models.DateTimeField(db_comment="The effective date of the event")
     operation = models.ForeignKey(Operation, null=True, blank=True, on_delete=models.PROTECT)

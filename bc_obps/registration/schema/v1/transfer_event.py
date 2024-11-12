@@ -13,8 +13,6 @@ class FacilityForTransferEventGrid(ModelSchema):
 
 
 class TransferEventListOut(ModelSchema):
-    # operation: Optional[str] = Field(None, alias="operation.name")
-    # facilities: Optional[List[FacilityForTransferEventGrid]] = None
     operation__name: Optional[str] = Field(None, alias="operation__name")
     facilities__name: Optional[str] = Field(None, alias="facilities__name")
     facility__id: Optional[UUID] = Field(None, alias="facilities__id")
