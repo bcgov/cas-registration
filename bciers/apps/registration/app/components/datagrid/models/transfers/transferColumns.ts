@@ -7,7 +7,6 @@ const transferColumns = (
     {
       field: "created_at",
       headerName: "Submission Date",
-      sortable: false,
       // Set flex to 1 to make the column take up all the remaining width if user zooms out
       width: 200,
     },
@@ -21,7 +20,6 @@ const transferColumns = (
     {
       field: "effective_date",
       headerName: "Effective Date",
-      sortable: false,
       width: 200,
     },
     {
