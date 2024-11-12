@@ -88,9 +88,11 @@ const InlineArrayFieldTemplate = ({
           {arrayAddLabel}
         </Button>
       )}
-      <div className="w-full px-[14px] py-4 items-center">
-        <b>Note:</b> {note}
-      </div>
+      {note && (
+        <div className="w-full px-[14px] py-4 items-center">
+          <b>Note:</b> {note}
+        </div>
+      )}
     </div>
   );
 };
