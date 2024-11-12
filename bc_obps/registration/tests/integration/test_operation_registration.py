@@ -1,47 +1,58 @@
 from datetime import timedelta
-
 import pytest
 from django.db.models import Q
 from model_bakery import baker
+
+from registration.enums.enums import OperationTypes
 from registration.models import RegistrationPurpose, FacilityDesignatedOperationTimeline, Operation
 from registration.tests.constants import MOCK_DATA_URL
-from registration.tests.utils.bakers import bc_obps_regulated_operation_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
 
 class TestOperationRegistration(CommonTestSetup):
-    def setup_method(self):
-        super().setup_method()
+    def _prepare_test_data(self, operation_type: OperationTypes):
         self.approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         self.bcghg_id = baker.make_recipe('utils.bcghg_id')
-        self.swrs_facility_id = 1003
-        self.boro_id = bc_obps_regulated_operation_baker()
-        # add some random contacts so we can test that they are not overridden
+        self.boro_id = baker.make_recipe('utils.boro_id')
+        # add some random contacts and facilities so we can test that they are not overridden
         random_contacts = baker.make_recipe('utils.contact', _quantity=5)
         self.operation = baker.make_recipe(
             'utils.operation',
             created_by=self.user,
             operator=self.approved_user_operator.operator,
             bcghg_id=self.bcghg_id,
-            swrs_facility_id=self.swrs_facility_id,
             bc_obps_regulated_operation=self.boro_id,
             contacts=random_contacts,
+            type=operation_type,
         )
+        # add some facilities so we can test that they are not overridden
+        if operation_type == OperationTypes.LFO:
+            baker.make_recipe(
+                'utils.facility_designated_operation_timeline',
+                operation=self.operation,
+                status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
+                _quantity=5,
+            )
+        # saving the created_at, updated_at and operation_representative_id to compare later
         self.created_at = self.operation.created_at
         self.updated_at = None
         self.operation_representative_id = None
+        self.purposes_with_no_regulated_products = [
+            RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
+            RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
+        ]
 
-    def _set_operation_information(self, purpose: RegistrationPurpose.Purposes):
+    def _set_operation_information(self, purpose: RegistrationPurpose.Purposes, operation_type: OperationTypes):
         operation_information_payload = {
             "registration_purpose": purpose,
-            "regulated_products": [1],
+            "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
             "name": f"{purpose} name",
-            "type": "LFO",
+            "type": operation_type,
             "naics_code_id": 1,
             "secondary_naics_code_id": 2,
             "tertiary_naics_code_id": 3,
-            "activities": [1],
+            "activities": [1, 2],
             "boundary_map": MOCK_DATA_URL,
             "process_flow_diagram": MOCK_DATA_URL,
         }
@@ -58,13 +69,6 @@ class TestOperationRegistration(CommonTestSetup):
 
     def _set_facilities(self):
         facility_payload = [
-            {
-                "name": "Test Facility 1",
-                "type": "Single Facility",
-                "latitude_of_largest_emissions": "5",
-                "longitude_of_largest_emissions": "5",
-                "operation_id": self.operation.id,
-            },
             {
                 "street_address": "123 street",
                 "municipality": "city",
@@ -170,10 +174,13 @@ class TestOperationRegistration(CommonTestSetup):
         self.operation.refresh_from_db()
         self.updated_at = self.operation.updated_at  # save the updated_at timestamp to compare later
 
+    @pytest.mark.parametrize("operation_type", [OperationTypes.SFO.value, OperationTypes.LFO.value])
     @pytest.mark.parametrize("purpose", list(RegistrationPurpose.Purposes))
-    def test_operation_registration_workflow(self, purpose):
+    def test_operation_registration_workflow(self, operation_type, purpose):
+        #### prepare test data
+        self._prepare_test_data(operation_type)
         #### Operation Information Form ####
-        self._set_operation_information(purpose)
+        self._set_operation_information(purpose, operation_type)
         #### Facility From ####
         self._set_facilities()
 
@@ -191,13 +198,14 @@ class TestOperationRegistration(CommonTestSetup):
 
         # Assertions
         assert self.operation.name == f'{purpose} name'
-        assert self.operation.type == 'LFO'
+        assert self.operation.type == operation_type
         assert self.operation.operator_id == self.approved_user_operator.operator_id
         assert self.operation.naics_code_id == 1
         assert self.operation.secondary_naics_code_id == 2
         assert self.operation.tertiary_naics_code_id == 3
-        assert self.operation.swrs_facility_id == self.swrs_facility_id
         assert self.operation.bcghg_id_id == self.bcghg_id.id
+        assert self.operation.activities.count() == 2
+        assert list(self.operation.activities.values_list('id', flat=True)) == [1, 2]
 
         if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
             assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
@@ -222,17 +230,6 @@ class TestOperationRegistration(CommonTestSetup):
             assert self.operation.opt_in is None
             assert self.operation.opted_in_operation_id is None
 
-        # updating the submission date is the last thing that happens in the registration process - 2 seconds as a buffer
-        assert self.operation.submission_date.replace(microsecond=0) - self.updated_at.replace(
-            microsecond=0
-        ) <= timedelta(seconds=2)
-        # Assert facilities are created (LFO operation)
-        assert (
-            FacilityDesignatedOperationTimeline.objects.filter(
-                operation=self.operation, status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE
-            ).count()
-            == 2
-        )
         # make sure we have the two required documents
         assert (
             self.operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
@@ -240,6 +237,25 @@ class TestOperationRegistration(CommonTestSetup):
             .count()
             == 2
         )
+
+        # make sure we have the facility
+        if operation_type == OperationTypes.LFO:
+            # for LFO  5 existing facilities + 1 new facility
+            assert (
+                FacilityDesignatedOperationTimeline.objects.filter(
+                    operation=self.operation, status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE
+                ).count()
+                == 6
+            )
+        elif operation_type == OperationTypes.SFO:
+            # for SFO we only have the new facility
+            assert (
+                FacilityDesignatedOperationTimeline.objects.filter(
+                    operation=self.operation, status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE
+                ).count()
+                == 1
+            )
+
         # make sure we are not overriding existing contacts of the operation
         assert self.operation.contacts.count() == 6
         assert self.operation.contacts.filter(
@@ -251,7 +267,6 @@ class TestOperationRegistration(CommonTestSetup):
         ).exists()
         # make sure operation representative is created for operator as well
         assert self.approved_user_operator.operator.contacts.filter(id=self.operation_representative_id).exists()
-        assert self.operation.status == Operation.Statuses.REGISTERED
 
         if purpose in [
             RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
@@ -259,10 +274,16 @@ class TestOperationRegistration(CommonTestSetup):
         ]:
             assert not self.operation.regulated_products.exists()
         else:
-            assert self.operation.regulated_products.count() == 1
-            assert self.operation.regulated_products.first().id == 1
-        assert self.operation.activities.count() == 1
-        assert self.operation.activities.first().id == 1
+            assert self.operation.regulated_products.count() == 2
+            assert list(self.operation.regulated_products.values_list('id', flat=True)) == [1, 2]
+
+        assert self.operation.status == Operation.Statuses.REGISTERED
+        # updating the submission date is the last thing that happens in the registration process - 2 seconds as a buffer
+        assert self.operation.submission_date.replace(microsecond=0) - self.updated_at.replace(
+            microsecond=0
+        ) <= timedelta(seconds=2)
+
+        # assert timestamps and user
         assert self.operation.created_by == self.user
         assert self.operation.created_at == self.created_at
         assert self.operation.updated_by == self.user
