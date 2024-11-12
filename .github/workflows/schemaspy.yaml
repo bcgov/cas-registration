@@ -6,6 +6,7 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   generate-schema-spy:
     name: Generate SchemaSpy Documentation
