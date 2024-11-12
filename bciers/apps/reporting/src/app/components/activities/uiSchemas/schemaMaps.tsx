@@ -8,6 +8,7 @@ import pulpAndPaperUiSchema from "./pulpAndPaperUiSchema";
 import refineryFuelGasUiSchema from "./refineryFuelGasUiSchema";
 import openPitCoalMining from "@reporting/src/app/components/activities/uiSchemas/openPitCoalMining";
 import storageOfPetroleumProductsUiSchema from "./storageOfPetroleumProductsUiSchema";
+import aluminumUiSchema from "./aluminumUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -34,6 +35,7 @@ export const uiSchemaMap: UiSchemaMap = {
   carbonate_use: carbonatesUseUiSchema,
   open_pit_coal_mining: openPitCoalMining,
   storage_petro_products: storageOfPetroleumProductsUiSchema,
+  aluminum_production: aluminumUiSchema
 };
 
 export const getUiSchema = (slug: string) => {
@@ -57,4 +59,5 @@ export const defaultEmtpySourceTypeMap: DefaultEmptySourceTypeMap = {
   carbonate_use: onlyEmissions,
   open_pit_coal_mining: onlyEmissions,
   storage_petro_products: onlyEmissions,
+  aluminum_production: onlyEmissions,
 };

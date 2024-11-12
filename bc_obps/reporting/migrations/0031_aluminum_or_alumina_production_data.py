@@ -875,7 +875,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True)
     )
-    # C2F6 - Replacement Methodology
+    # # C2F6 - Replacement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(
             name='Aluminum or alumina production'
@@ -947,7 +947,7 @@ def init_activity_schema_data(apps, schema_monitor):
     import os
 
     cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/alumina_production/activity.json') as alum:
+    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/activity.json') as alum:
         schema = json.load(alum)
 
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
@@ -985,14 +985,14 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     import os
 
     cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/alumina_production/anode_consumption_acbgcc.json') as alum_st1:
+    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/anode_consumption_acbgcc.json') as alum_st1:
         schema1 = json.load(alum_st1)
     with open(
-        f'{cwd}/reporting/json_schemas/2024/alumina_production/anode_effects.json'
+        f'{cwd}/reporting/json_schemas/2024/aluminum_production/anode_effects.json'
     ) as alum_st2:
         schema2 = json.load(alum_st2)
     with open(
-        f'{cwd}/reporting/json_schemas/2024/alumina_production/cover_gas_from_electrolysis.json'
+        f'{cwd}/reporting/json_schemas/2024/aluminum_production/cover_gas_from_electrolysis.json'
     ) as alum_st3:
         schema3 = json.load(alum_st3)
 
@@ -1060,7 +1060,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0026_reportmethodology_methodology')]
+    dependencies = [('reporting', '0030_report_non_attributable_emissions')]
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),

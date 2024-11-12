@@ -1,0 +1,15 @@
+{
+  "title": "Alumina production",
+  "type": "object",
+  "properties": {
+    "smelterTechType": {
+      "title": "Smelter technology type",
+      "type": "string",
+      "enum": ["Prebake", "Soderbake"]
+    },
+    "annualAluminumProduction": {
+      "title": "Annual aluminium production",
+      "type": "number"
+    }
+  }
+}

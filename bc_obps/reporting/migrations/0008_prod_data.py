@@ -726,13 +726,13 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(field_name='Anode Effect Duration', field_type='number', field_units=None),
             ReportingField(field_name='Frequency and Duration Methodology', field_type='string', field_units=None),
             ReportingField(field_name='Slope Coefficient', field_type='number', field_units=None),
-            ReportingField(field_name='Last Date of Slope Coefficients Measurement', field_type='date', field_units=None),
+            ReportingField(field_name='Last Date of Slope Coefficients Measurement', field_type='string', field_units=None),
             ReportingField(field_name='Anode Effect Overvoltage Factor', field_type='number', field_units=None),
             ReportingField(field_name='Potline Overvoltage', field_type='number', field_units=None),
             ReportingField(field_name='Current Efficiency', field_type='number', field_units=None),
             ReportingField(field_name='Overvoltage Methodology', field_type='string', field_units=None),
             ReportingField(field_name='Overvoltage Emission Factor', field_type='number', field_units=None),
-            ReportingField(field_name='Last Date of Overvoltage Emission Factor Measurement', field_type='date', field_units=None),
+            ReportingField(field_name='Last Date of Overvoltage Emission Factor Measurement', field_type='string', field_units=None),
         ]
     )
 
