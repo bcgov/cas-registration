@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # If we're in the CI environment, don't hit Google Cloud Storage
-if os.environ.get('CI', None) == 'true':
+if True or os.environ.get('CI', None) == 'true':
     # Use local file storage for tests
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
