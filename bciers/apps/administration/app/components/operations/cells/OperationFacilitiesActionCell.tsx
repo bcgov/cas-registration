@@ -24,12 +24,13 @@ const OperationFacilitiesActionCell = (isInternalUser: boolean) => {
       operations_title: params.row.name,
     };
 
-    const query = isSfo
-      ? {
-          ...baseQuery,
-          facilities_title: params.row.name,
-        }
-      : baseQuery;
+    const query =
+      isSfo && params.row.sfo_facility_name
+        ? {
+            ...baseQuery,
+            facilities_title: params.row.sfo_facility_name,
+          }
+        : baseQuery;
 
     return (
       <Link

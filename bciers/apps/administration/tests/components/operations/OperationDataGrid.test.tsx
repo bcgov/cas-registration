@@ -22,6 +22,7 @@ const mockResponse = {
       bcghg_id: "12111130001",
       type: "Single Facility Operation",
       sfo_facility_id: null,
+      sfo_facility_name: null,
       status: "Draft",
       bc_obps_regulated_operation: "N/A",
     },
@@ -32,6 +33,7 @@ const mockResponse = {
       bcghg_id: "12111130002",
       type: "Linear Facility Operation",
       sfo_facility_id: null,
+      sfo_facility_name: null,
       status: "Registered",
       bc_obps_regulated_operation: "24-0001",
     },
@@ -42,6 +44,7 @@ const mockResponse = {
       bcghg_id: "12111130003",
       type: "Single Facility Operation",
       sfo_facility_id: null,
+      sfo_facility_name: null,
       status: "Not Started",
       bc_obps_regulated_operation: "N/A",
     },
@@ -53,6 +56,7 @@ const mockResponse = {
       type: "Single Facility Operation",
       status: "Draft",
       sfo_facility_id: "facility-test-id",
+      sfo_facility_name: "Facility Test Name",
       bc_obps_regulated_operation: "N/A",
     },
   ],
@@ -190,7 +194,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLink).toHaveAttribute(
       "href",
-      "operations/4/facilities/facility-test-id?operations_title=Operation+4&facilities_title=Operation+4",
+      "operations/4/facilities/facility-test-id?operations_title=Operation+4&facilities_title=Facility+Test+Name",
     );
   });
 
@@ -199,13 +203,13 @@ describe("OperationsDataGrid component", () => {
       <OperationDataGrid isInternalUser={false} initialData={mockResponse} />,
     );
 
-    const facilityLink = screen.getAllByRole("link", {
+    const facilityLinks = screen.getAllByRole("link", {
       name: /Edit details/i,
     });
 
-    expect(facilityLink[0]).toHaveAttribute(
+    expect(facilityLinks[0]).toHaveAttribute(
       "href",
-      "operations/1/facilities/add-facility?operations_title=Operation+1&facilities_title=Operation+1",
+      "operations/1/facilities/add-facility?operations_title=Operation+1",
     );
   });
 

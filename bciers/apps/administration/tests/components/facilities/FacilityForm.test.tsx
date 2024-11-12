@@ -23,7 +23,7 @@ import {
   facilitiesLfoUiSchema,
 } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import { FrontendMessages } from "@bciers/utils/src/enums";
-
+import { expect } from "vitest";
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
 const facilityName = "bloop";
@@ -841,5 +841,61 @@ describe("FacilityForm component", () => {
 
     // Assert that router.push was called with the correct URL
     expect(mockReplace).toHaveBeenCalledWith(urlOperationFacilities);
+  });
+  it("should use formContext to correctly render BCGHG ID widgets for internal users", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_admin",
+        },
+      },
+    });
+
+    render(
+      <FacilityForm
+        formData={sfoFormData}
+        schema={{
+          type: "object",
+          properties: {
+            section1: {
+              title: "Section 1",
+              type: "object",
+              properties: {
+                bcghg_id: {
+                  type: "string",
+                  title: "BCGHGID",
+                },
+              },
+            },
+          },
+        }}
+        uiSchema={facilitiesSfoUiSchema}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
+    ).toBeVisible();
+  });
+  it("should not render the edit button for internal users", () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_admin",
+        },
+      },
+    });
+
+    render(
+      <FacilityForm
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
+        formData={sfoFormData}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Edit" }),
+    ).not.toBeInTheDocument();
   });
 });
