@@ -1,4 +1,5 @@
 from datetime import datetime
+from itertools import cycle
 from zoneinfo import ZoneInfo
 
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
@@ -147,7 +148,7 @@ facility_designated_operation_timeline = Recipe(
     FacilityDesignatedOperationTimeline,
     operation=foreign_key(operation),
     facility=foreign_key(facility),
-    status=FacilityDesignatedOperationTimeline.Statuses.TEMPORARILY_SHUTDOWN,
+    status=cycle([status for status in FacilityDesignatedOperationTimeline.Statuses]),
     end_date=datetime.now(ZoneInfo("UTC")),
 )
 

@@ -14,7 +14,7 @@ export default async function Page({
     <FacilitiesPage
       operationId={operationId}
       searchParams={searchParams}
-      isExternalUser={true}
+      isExternalUser={false}
     />
   );
 }
