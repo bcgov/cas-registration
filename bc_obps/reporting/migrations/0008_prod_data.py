@@ -376,7 +376,7 @@ def init_fuel_type_data(apps, schema_monitor):
             FuelType(name="Bituminous Coal", unit="tonnes", classification="Non-biomass"),
             FuelType(name="Butane", unit="kilolitres", classification="Non-biomass"),
             FuelType(name="C/D Waste - Plastic", unit="tonnes", classification="Exempted Non-biomass"),
-            FuelType(name="C/D Waste - Wood", unit="tonnes", classification="Woody Biomass"),
+            FuelType(name="C/D Waste - Wood", unit="tonnes", classification="Other Exempted Biomass"),
             FuelType(name="Carpet fibre", unit="tonnes", classification="Exempted Non-biomass"),
             FuelType(name="Coal Coke", unit="tonnes", classification="Non-biomass"),
             FuelType(name="Comubstible Tall Oil", unit="kilolitres", classification="Woody Biomass"),
