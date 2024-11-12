@@ -1,3 +1,4 @@
+from registration.tests.utils.bakers import select_random_registration_purpose
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
@@ -93,6 +94,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator1.id,
             status=Operation.Statuses.PENDING,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+            registration_purpose=select_random_registration_purpose(),
             _quantity=30,
         )
         baker.make(
@@ -100,6 +102,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator2.id,
             status=Operation.Statuses.APPROVED,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+            registration_purpose=select_random_registration_purpose(),
             _quantity=30,
         )
         baker.make(
@@ -107,6 +110,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator2.id,
             status=Operation.Statuses.NOT_STARTED,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+            registration_purpose=select_random_registration_purpose(),
         )
         for role in ['cas_admin', 'cas_analyst']:
             response = TestUtils.mock_get_with_auth_role(self, role)

@@ -87,6 +87,7 @@ operation = Recipe(
     operator=foreign_key(operator_for_operation),
     created_by=foreign_key(industry_operator_user),
     type='Single Facility Operation',
+    registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
 )
 
 
