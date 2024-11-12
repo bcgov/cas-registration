@@ -384,7 +384,7 @@ class OperationServiceV2:
         """
 
         def check_conditions() -> Generator[Tuple[Callable[[], bool], str], None, None]:
-            yield lambda: operation.registration_purpose.exists(), "Operation must have a registration purpose."
+            yield lambda: operation.registration_purpose.not_null(), "Operation must have a registration purpose."
             yield (
                 lambda: operation.contacts.filter(
                     business_role__role_name='Operation Representative',

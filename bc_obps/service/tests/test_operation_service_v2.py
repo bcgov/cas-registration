@@ -782,12 +782,10 @@ class TestGenerateBoroId:
     def test_generates_boro_id():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.REGISTERED
-        )
-        baker.make(
-            RegistrationPurpose,
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
             registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-            operation=operation,
         )
         OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
