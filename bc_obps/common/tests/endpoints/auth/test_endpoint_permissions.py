@@ -181,6 +181,7 @@ class TestEndpointPermissions(TestCase):
             {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {"operation_id": mock_uuid}},
             {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {'facility_id': mock_uuid}},
             {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {'operation_id': mock_uuid}},
+            {"method": "get", "endpoint_name": "list_transfer_events"},
         ],
         "approved_authorized_roles": [
             {"method": "get", "endpoint_name": "list_operations"},

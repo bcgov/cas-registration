@@ -17,4 +17,4 @@ class TransferEventService:
     ) -> QuerySet[TransferEvent]:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        return filters.filter(TransferEvent.objects.order_by(sort_by)).values('effective_date', 'status','created_at', 'operation__name', 'facilities__name', 'facilities__id').distinct()
+        return filters.filter(TransferEvent.objects.order_by(sort_by)).values('effective_date', 'status','created_at', 'operation__name', 'operation__id','facilities__name', 'facilities__id').distinct()
