@@ -1,10 +1,10 @@
 export interface TransferRow {
-  id: number;
-  operation: string;
-  facilities: string;
+  id: string;
+  operation__name: string;
+  facilities__name: string;
   status: string;
+  created_at: string;
   effective_date: string;
-  submission_date: string;
 }
 
 export interface TransfersSearchParams {
