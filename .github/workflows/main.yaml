@@ -137,3 +137,5 @@ jobs:
     uses: ./.github/workflows/trivy.yaml
   codeql:
     uses: ./.github/workflows/codeql.yaml
+  schemaspy:
+    uses: ./.github/workflows/schemaspy.yaml
