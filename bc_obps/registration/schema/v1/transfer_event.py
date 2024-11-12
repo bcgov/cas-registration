@@ -13,6 +13,7 @@ class FacilityForTransferEventGrid(ModelSchema):
 
 
 class TransferEventListOut(ModelSchema):
+    operation__id: Optional[UUID] = None
     operation__name: Optional[str] = Field(None, alias="operation__name")
     facilities__name: Optional[str] = Field(None, alias="facilities__name")
     facility__id: Optional[UUID] = Field(None, alias="facilities__id")
@@ -24,7 +25,8 @@ class TransferEventListOut(ModelSchema):
 
     @staticmethod
     def resolve_id(obj):
-        return uuid4()
+        return obj['operation__id'] if obj['operation__id'] else obj['facilities__id']
+
 
 
 class TransferEventFilterSchema(FilterSchema):
