@@ -1,11 +1,11 @@
-import TransferDataGrid from "./TransferDataGrid";
+import TransferDataGrid from "./TransfersDataGrid";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { TransferRow, TransfersSearchParams } from "./types";
 import fetchTransferEventsPageData from "./fetchTransferEventsPageData";
 
 // 🧩 Main component
-export default async function TransferDataGridPage({
+export default async function TransfersDataGridPage({
   searchParams,
 }: {
   searchParams: TransfersSearchParams;
@@ -15,6 +15,7 @@ export default async function TransferDataGridPage({
     rows: TransferRow[];
     row_count: number;
   } = await fetchTransferEventsPageData(searchParams);
+  console.log("transfers", transfers);
   if (!transfers) {
     return <div>No transfers data in database.</div>;
   }
