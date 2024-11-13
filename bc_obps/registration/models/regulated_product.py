@@ -7,6 +7,8 @@ from django.core.cache import cache
 
 class RegulatedProduct(BaseModel):
     name = models.CharField(max_length=1000, db_comment="The name of a regulated product")
+    unit = models.CharField(max_length=1000, null=True, db_comment="The unit of measure for the regulated product")
+    is_regulated = models.BooleanField(db_comment="Indicates if the product is regulated")
     history = HistoricalRecords(
         table_name='erc_history"."regulated_product_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
