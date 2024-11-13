@@ -1,0 +1,80 @@
+name: SchemaSpy
+on:
+  push:
+    branches:
+      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-schema-spy:
+    name: Generate SchemaSpy Documentation
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: default
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: default
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        name: checkout code
+      - name: vars
+        id: vars
+        shell: bash
+        run: |
+          # find out the version from bc_obps .tool-versions file, which is used across the project and generate random secret for django
+          export PYTHON_VERSION=$(cat bc_obps/.tool-versions | grep python | cut -d' ' -f2)
+          export POETRY_VERSION=$(cat bc_obps/.tool-versions | grep poetry | cut -d' ' -f2)
+          export DJANGO_SECRET=$(openssl rand -base64 20 | tr -dc 'A-Za-z0-9!$#')
+          echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+          echo "POETRY_VERSION=$POETRY_VERSION" >> $GITHUB_OUTPUT
+          echo "DJANGO_SECRET=$DJANGO_SECRET" >> $GITHUB_OUTPUT
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{steps.vars.outputs.PYTHON_VERSION}}
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{steps.vars.outputs.POETRY_VERSION}}
+      - name: Install Dependencies
+        working-directory: bc_obps
+        run: |
+          poetry install
+      - name: Run Migrations
+        working-directory: bc_obps
+        env:
+          DB_USER: postgres
+          DB_NAME: default
+          DB_PASSWORD: default
+          DB_PORT: "5432"
+          DB_HOST: "127.0.0.1"
+          DJANGO_SECRET_KEY: ${{steps.vars.outputs.DJANGO_SECRET}}
+          ALLOWED_HOSTS: localhost,0.0.0.0,127.0.0.1
+          ENVIRONMENT: dev
+          CI: true
+        run: |
+          poetry run python manage.py custom_migrate
+      - name: Create Output Folder
+        run: |
+          mkdir output
+          chmod a+rwx -R output
+      - name: Run Schemaspy
+        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db default -host 127.0.0.1 -port 5432 -u postgres -p default -schemas erc,erc_history
+      - name: Deploy to Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: output
+          target-folder: schemaspy
