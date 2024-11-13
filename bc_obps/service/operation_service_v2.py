@@ -384,7 +384,7 @@ class OperationServiceV2:
         """
 
         def check_conditions() -> Generator[Tuple[Callable[[], bool], str], None, None]:
-            yield lambda: operation.registration_purpose.not_null(), "Operation must have a registration purpose."
+            yield lambda: operation.registration_purpose is not None, "Operation must have a registration purpose."
             yield (
                 lambda: operation.contacts.filter(
                     business_role__role_name='Operation Representative',
@@ -411,7 +411,7 @@ class OperationServiceV2:
             )
             yield (
                 lambda: not (
-                    operation.registration_purpose.equals(Operation.Purposes.NEW_ENTRANT_OPERATION)
+                    operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
                     and not operation.documents.filter(
                         type=DocumentType.objects.get(name='new_entrant_application')
                     ).exists()
@@ -420,7 +420,7 @@ class OperationServiceV2:
             )
             yield (
                 lambda: not (
-                    operation.registration_purpose.equals(Operation.Purposes.OPTED_IN_OPERATION)
+                    operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
                     and not cls.is_operation_opt_in_information_complete(operation)
                 ),
                 "Operation must have completed opt-in information if it is opted in.",
@@ -433,7 +433,7 @@ class OperationServiceV2:
     @classmethod
     def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
-        is_eio = operation.registration_purpose.equals(Operation.Purposes.ELECTRICITY_IMPORT_OPERATION)
+        is_eio = operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         if operation.bc_obps_regulated_operation:
             raise Exception('Operation already has a BORO ID.')
         if is_eio:

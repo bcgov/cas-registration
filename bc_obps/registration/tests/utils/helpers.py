@@ -17,10 +17,16 @@ from registration.models import (
 from model_bakery import baker
 from django.test import Client
 from phonenumber_field.modelfields import PhoneNumberField
-from registration.tests.utils.bakers import contact_baker, operation_baker, facility_baker
+from registration.tests.utils.bakers import (
+    contact_baker,
+    operation_baker,
+    facility_baker,
+    select_random_registration_purpose,
+)
 from registration.constants import BASE_ENDPOINT
 
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+from registration.models.operation import Operation
 from registration.tests.utils.bakers import operator_baker, address_baker
 
 
@@ -179,12 +185,14 @@ class TestUtils:
         activities = baker.make(Activity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         point_of_contact = contact_baker()
+        registration_purpose = select_random_registration_purpose()
         return {
             "name": "Springfield Nuclear Power Plant",
             "type": "Single Facility Operation",
             "naics_code_id": naics_code.id,
             "activities": [activity.id for activity in activities],
             "regulated_products": [product.id for product in regulated_products],
+            "registration_purpose": registration_purpose,
             "point_of_contact_id": point_of_contact.id,
             "is_external_point_of_contact": False,
             "street_address": "19 Evergreen Terrace",

@@ -117,7 +117,7 @@ class OperationOut(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status']
+        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status', 'registration_purpose']
         from_attributes = True
 
 

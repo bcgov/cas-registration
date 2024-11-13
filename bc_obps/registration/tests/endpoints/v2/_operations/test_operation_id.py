@@ -90,6 +90,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
         assert response_data.get("id") == str(operation.id)
+        print(response_data)
         assert response_data.get("registration_purpose") == 'Potential Reporting Operation'
 
     def test_operations_with_documents_endpoint_get_success(self):

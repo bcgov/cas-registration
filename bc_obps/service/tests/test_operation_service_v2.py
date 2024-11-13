@@ -109,11 +109,13 @@ class TestOperationServiceV2:
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, registration_purpose='Opted-in Operation'
+            'utils.operation',
+            operator=approved_user_operator.operator,
         )
+        payload = OperationInformationIn(registration_purpose=Operation.Purposes.OPTED_IN_OPERATION)
+        OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload, operation.id)
 
         operation.refresh_from_db()
-        assert operation.opted_in_operation is not None
         assert OptedInOperationDetail.objects.count() == 1
 
     @staticmethod
@@ -160,7 +162,9 @@ class TestOperationServiceV2:
         users_operation = baker.make_recipe(
             'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
         )
-        with pytest.raises(Exception, match="Operation must have a registration purpose."):
+        users_operation.contacts.set([])
+
+        with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
             OperationServiceV2.update_status(
                 approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
             )
@@ -670,6 +674,9 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
     @staticmethod
     def test_raises_exception_if_no_purpose():
         operation = baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT)
+        # the only way to not have a registration purpose on an operation is to first set one when creating the operation,
+        # then manually remove it
+        operation.registration_purpose = None
 
         with pytest.raises(Exception, match="Operation must have a registration purpose."):
             OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
@@ -785,7 +792,6 @@ class TestGenerateBoroId:
             'utils.operation',
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
-            registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
         )
         OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
