@@ -21,7 +21,7 @@ from registration.schema.generic import Message
     tags=TRANSFER_EVENT_TAGS,
     description="""Retrieves a paginated list of transfer events based on the provided filters.
     The endpoint allows authorized users to view and sort transfer events filtered by various criteria such as operation, facility, and status.""",
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("authorized_irc_user"),
 )
 @handle_http_errors()
 @paginate(CustomPagination)
