@@ -108,6 +108,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             'postal_code',
             'statutory_declaration',
             'bc_obps_regulated_operation',
+            'registration_purpose',
         }
         assert sorted(response_1_data.keys()) == sorted(response_keys)
         # Make sure the `operator` key has None value for industry users
