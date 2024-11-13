@@ -86,12 +86,12 @@ Create the name of the service account to use
 {{/*
 Define environment variables for the application.
 */}}
-{{- define "cas-bciers.backendEnvVars" -}}
+{{- define "cas-registration.backendEnvVars" -}}
 - name: DJANGO_SECRET_KEY
   valueFrom:
     secretKeyRef:
       key: django-secret-key
-      name: {{ include "cas-bciers.fullname" . }}-backend
+      name: {{ include "cas-registration.fullname" . }}-backend
 - name: CHES_CLIENT_SECRET
   valueFrom:
     secretKeyRef:
@@ -145,7 +145,7 @@ Define environment variables for the application.
   valueFrom:
     secretKeyRef:
       key: bucket_name
-      name: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+      name: gcp-{{ .Release.Namespace }}-registration-attach-service-account-key
 - name: GOOGLE_APPLICATION_CREDENTIALS
   value: "/attachment-credentials/attachment-credentials.json"
 - name: ENVIRONMENT
