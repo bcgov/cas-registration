@@ -5,7 +5,6 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 
 export const formatTransferRows = (rows: GridRowsProp) => {
-  console.log("rows", rows);
   return rows.map(
     ({
       id,

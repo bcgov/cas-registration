@@ -1,5 +1,5 @@
-from typing import List, Optional
-from uuid import UUID, uuid4
+from typing import Optional
+from uuid import UUID
 
 from registration.models.facility import Facility
 from registration.models.event.transfer_event import TransferEvent
@@ -19,14 +19,19 @@ class TransferEventListOut(ModelSchema):
     facility__id: Optional[UUID] = Field(None, alias="facilities__id")
     id: UUID
 
+    @staticmethod
+    def resolve_id(obj: TransferEvent) -> UUID:
+        operation_id = getattr(obj, 'operation__id', None)
+        facility_id = getattr(obj, 'facilities__id', None)
+
+        record_id = operation_id if operation_id else facility_id
+        if not isinstance(record_id, UUID):
+            raise Exception('Missing valid UUID')
+        return record_id
+
     class Meta:
         model = TransferEvent
-        fields = ['effective_date', 'status','created_at']
-
-    @staticmethod
-    def resolve_id(obj):
-        return obj['operation__id'] if obj['operation__id'] else obj['facilities__id']
-
+        fields = ['effective_date', 'status', 'created_at']
 
 
 class TransferEventFilterSchema(FilterSchema):

@@ -10,6 +10,7 @@ class TransferEvent(EventBaseModel):
         COMPLETE = "Complete"
         TO_BE_TRANSFERRED = "To be transferred"
         TRANSFERRED = "Transferred"
+
     description = models.TextField(db_comment="Description of the transfer or change in designated operator.")
     other_operator = models.ForeignKey(
         Operator,

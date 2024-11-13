@@ -1,6 +1,5 @@
 from registration.models.event.transfer_event import TransferEvent
-from typing import Optional
-from django.db.models import QuerySet
+from typing import Optional, Dict, Any, List
 
 
 from registration.schema.v1.transfer_event import TransferEventFilterSchema
@@ -14,7 +13,20 @@ class TransferEventService:
         sort_field: Optional[str],
         sort_order: Optional[str],
         filters: TransferEventFilterSchema = Query(...),
-    ) -> QuerySet[TransferEvent]:
+    ) -> List[Dict[str, Any]]:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        return filters.filter(TransferEvent.objects.order_by(sort_by)).values('effective_date', 'status','created_at', 'operation__name', 'operation__id','facilities__name', 'facilities__id').distinct()
+        queryset = (
+            filters.filter(TransferEvent.objects.order_by(sort_by))
+            .values(
+                'effective_date',
+                'status',
+                'created_at',
+                'operation__name',
+                'operation__id',
+                'facilities__name',
+                'facilities__id',
+            )
+            .distinct()
+        )
+        return list(queryset)
