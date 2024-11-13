@@ -147,13 +147,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_operations_endpoint_get_method_paginated(self):
         operator1 = operator_baker()
-        baker.make(
-            Operation,
-            operator_id=operator1.id,
-            status=Operation.Statuses.PENDING,
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-            _quantity=60,
-        )
+        baker.make_recipe('utils.operation', operator_id=operator1.id, status=Operation.Statuses.PENDING, _quantity=60)
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
@@ -192,30 +186,27 @@ class TestOperationsEndpoint(CommonTestSetup):
             BcObpsRegulatedOperation,
             id='21-0001',
         )
-        baker.make(
-            Operation,
+        baker.make_recipe(
+            'utils.operation',
             operator_id=operator1.id,
             name='Springfield Nuclear Power Plant',
             status=Operation.Statuses.PENDING,
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
             _quantity=10,
         )
-        baker.make(
-            Operation,
+        baker.make_recipe(
+            'utils.operation',
             operator_id=operator2.id,
             name='Krusty Burger',
             status=Operation.Statuses.APPROVED,
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
             _quantity=10,
         )
-        baker.make(
-            Operation,
+        baker.make_recipe(
+            'utils.operation',
             operator_id=operator2.id,
             name='Kwik-E-Mart',
             status=Operation.Statuses.DECLINED,
             bcghg_id=baker.make_recipe('utils.bcghg_id'),
             bc_obps_regulated_operation_id='21-0001',
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
         )
 
         # Get the default page 1 response
@@ -413,6 +404,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             "name": "My New Operation",
             "type": "Type 1",
             "regulated_products": [],
+            "registration_purpose": select_random_registration_purpose()
             # activities=[],
         }
         operator = operator_baker()

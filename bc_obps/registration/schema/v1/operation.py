@@ -24,7 +24,7 @@ class OperationCreateIn(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products']
+        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'registration_purpose']
         populate_by_name = True
 
 
