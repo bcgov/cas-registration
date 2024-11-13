@@ -4,7 +4,7 @@ from django.db.models import Q
 from model_bakery import baker
 
 from registration.enums.enums import OperationTypes
-from registration.models import RegistrationPurpose, FacilityDesignatedOperationTimeline, Operation
+from registration.models import FacilityDesignatedOperationTimeline, Operation
 from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -39,12 +39,12 @@ class TestOperationRegistration(CommonTestSetup):
         self.updated_at = None
         self.operation_representative_id = None
         self.purposes_with_no_regulated_products = [
-            RegistrationPurpose.Purposes.REPORTING_OPERATION,
-            RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-            RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
+            Operation.Purposes.REPORTING_OPERATION,
+            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+            Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
         ]
 
-    def _set_operation_information(self, purpose: RegistrationPurpose.Purposes, operation_type: OperationTypes):
+    def _set_operation_information(self, purpose: Operation.Purposes, operation_type: OperationTypes):
         operation_information_payload = {
             "registration_purpose": purpose,
             "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
@@ -176,7 +176,7 @@ class TestOperationRegistration(CommonTestSetup):
         self.updated_at = self.operation.updated_at  # save the updated_at timestamp to compare later
 
     @pytest.mark.parametrize("operation_type", [OperationTypes.SFO.value, OperationTypes.LFO.value])
-    @pytest.mark.parametrize("purpose", list(RegistrationPurpose.Purposes))
+    @pytest.mark.parametrize("purpose", list(Operation.Purposes))
     def test_operation_registration_workflow(self, operation_type, purpose):
         #### prepare test data
         self._prepare_test_data(operation_type)
@@ -185,10 +185,10 @@ class TestOperationRegistration(CommonTestSetup):
         #### Facility From ####
         self._set_facilities()
 
-        if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
+        if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             #### New Entrant Application Form ####
             self._set_new_entrant_application()
-        elif purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
+        elif purpose == Operation.Purposes.OPTED_IN_OPERATION:
             #### Opted-In Operation Detail Form ####
             self._set_opted_in_operation_detail()
 
@@ -208,13 +208,13 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.activities.count() == 2
         assert list(self.operation.activities.values_list('id', flat=True)) == [1, 2]
 
-        if purpose == RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
+        if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
             assert self.operation.documents.filter(type__name='new_entrant_application').exists()
         else:
             assert self.operation.date_of_first_shipment is None
 
-        if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
+        if purpose == Operation.Purposes.OPTED_IN_OPERATION:
             assert self.operation.opt_in is True
             assert self.operation.opted_in_operation is not None
             assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False

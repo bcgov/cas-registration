@@ -221,6 +221,10 @@ class OperationServiceV2:
         operation: Operation
         operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
 
+        if operation_data['registration_purpose'] == Operation.Purposes.OPTED_IN_OPERATION:
+            operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
+            operation.save(update_fields=['opted_in_operation'])
+
         # set m2m relationships
         operation.activities.set(payload.activities)
 

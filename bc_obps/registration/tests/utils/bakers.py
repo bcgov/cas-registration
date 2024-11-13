@@ -91,7 +91,7 @@ def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operat
         properties["type"] = cycle(["sfo", "lfo"])
 
     if "registration_purpose" not in properties:
-        properties["registration_purpose"] = cycle(Operation.Purposes.choices[1])
+        properties["registration_purpose"] = cycle([choice for choice in Operation.Purposes])
 
     point_of_contact = properties.get("point_of_contact")
     if point_of_contact:

@@ -109,7 +109,7 @@ class OperationOutV2(ModelSchema):
     operator: Optional[OperatorForOperationOut] = None
     boundary_map: Optional[str] = None
     process_flow_diagram: Optional[str] = None
-    registration_purposes: Optional[str] = None
+    registration_purpose: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None

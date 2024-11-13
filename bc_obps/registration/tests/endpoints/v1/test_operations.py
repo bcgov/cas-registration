@@ -131,24 +131,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         # Endpoint ignores user_operator records with a 'DECLINED' status
         operator1 = operator_baker()
         operator2 = operator_baker()
-        baker.make(
-            Operation,
-            operator_id=operator1.id,
-            status=Operation.Statuses.PENDING,
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-        )
-        baker.make(
-            Operation,
-            operator_id=operator2.id,
-            status=Operation.Statuses.APPROVED,
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-        )
-        baker.make(
-            Operation,
-            operator_id=operator2.id,
-            status=Operation.Statuses.NOT_STARTED,
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-        )
+        baker.make_recipe('utils.operation', operator_id=operator1.id, status=Operation.Statuses.PENDING)
+        baker.make_recipe('utils.operation', operator_id=operator2.id, status=Operation.Statuses.APPROVED)
+        baker.make_recipe('utils.operation', operator_id=operator2.id, status=Operation.Statuses.NOT_STARTED)
         baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.DECLINED, operator_id=operator1.id
         )

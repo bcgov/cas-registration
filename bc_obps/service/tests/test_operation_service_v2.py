@@ -85,7 +85,15 @@ class TestOperationServiceV2:
             'utils.operation', operator=random_operator, registration_purpose='Potential Reporting Operation'
         )
 
-        payload = OperationInformationIn(registration_purpose='Reporting Operation')
+        payload = OperationInformationIn(
+            registration_purpose='Reporting Operation',
+            name="string",
+            type="SFO",
+            naics_code_id=1,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+        )
         with pytest.raises(Exception):
             OperationServiceV2.create_or_update_operation_v2(user.user_guid, operation.id, payload)
 
@@ -97,7 +105,15 @@ class TestOperationServiceV2:
             operator=approved_user_operator.operator,
             registration_purpose='Potential Reporting Operation',
         )
-        payload = OperationInformationIn(registration_purpose='Reporting Operation')
+        payload = OperationInformationIn(
+            registration_purpose='Reporting Operation',
+            name="string",
+            type="SFO",
+            naics_code_id=1,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+        )
         OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload, operation.id)
 
         operation.refresh_from_db()  # refresh the operation object to get the updated audit columns
@@ -111,8 +127,17 @@ class TestOperationServiceV2:
         operation = baker.make_recipe(
             'utils.operation',
             operator=approved_user_operator.operator,
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
         )
-        payload = OperationInformationIn(registration_purpose=Operation.Purposes.OPTED_IN_OPERATION)
+        payload = OperationInformationIn(
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+            name="string",
+            type="SFO",
+            naics_code_id=1,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+        )
         OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload, operation.id)
 
         operation.refresh_from_db()

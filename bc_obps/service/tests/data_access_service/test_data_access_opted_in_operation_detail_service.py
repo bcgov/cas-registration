@@ -1,6 +1,7 @@
 import pytest
 from model_bakery import baker
 from registration.schema.v2.operation import OptedInOperationDetailIn
+from registration.models.operation import Operation
 from service.operation_service_v2 import OperationServiceV2
 from service.operation_service import OperationService
 
@@ -15,7 +16,7 @@ class TestDataAccessOptedInOperationService:
             'utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            registration_purpose='Opted-in Operation',
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
         )
         opted_in_operation_detail_payload = OptedInOperationDetailIn(
             meets_section_3_emissions_requirements=True,
