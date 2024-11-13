@@ -394,20 +394,6 @@ files = [
 Django = ">=3.2"
 
 [[package]]
-name = "django-diagram"
-version = "0.0.1"
-description = "Generate an Entity Relationship Diagram for a Django project in Mermaid format"
-optional = false
-python-versions = "*"
-files = [
-    {file = "django-diagram-0.0.1.tar.gz", hash = "sha256:7fa243ddaf3e71c0438274424214b7fd38d68acbf3f17f015460d40a0a4a05ab"},
-    {file = "django_diagram-0.0.1-py3-none-any.whl", hash = "sha256:84fef6edc2ace54c7304c445d6f48ba9b44fd19f328410caa17b19f92013c659"},
-]
-
-[package.dependencies]
-django = ">=3.0"
-
-[[package]]
 name = "django-extensions"
 version = "3.2.3"
 description = "Extensions for Django"
@@ -2064,4 +2050,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "4da5fd56db8e271fbf77c263a772940366e5142b7a4e320077326b36fd7d3cab"
+content-hash = "ba8192f2b5c8aa4a7552e3c74b38d3c1fb939d19f8778925d913d80b12ea8362"
