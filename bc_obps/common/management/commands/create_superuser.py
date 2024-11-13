@@ -20,6 +20,9 @@ class Command(BaseCommand):
             except IntegrityError:
                 self.stdout.write(self.style.ERROR('Superuser already exists.'))
                 return None
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'An error occurred while creating the superuser: {str(e)}'))
+                return None
 
-        self.stdout.write(self.style.ERROR('Superuser not created.'))
-        raise Exception('Superuser not created.')
+        self.stdout.write(self.style.ERROR('Superuser credentials not found.'))
+        raise Exception('Superuser credentials not found.')
