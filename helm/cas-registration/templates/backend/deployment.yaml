@@ -33,14 +33,14 @@ spec:
             - "manage.py"
             - "create_superuser"
           env:
-            {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
+            {{- include "cas-registration.backendEnvVars" . | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
-            {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
+            {{- include "cas-registration.backendEnvVars" . | nindent 12 }}
             {{- if hasSuffix "-prod" .Release.Namespace }}
             - name: SENTRY_ENVIRONMENT
               value: {{ include "cas-registration.namespaceSuffix" . }}
