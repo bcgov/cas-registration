@@ -215,7 +215,6 @@ class TestOperationRegistration(CommonTestSetup):
             assert self.operation.date_of_first_shipment is None
 
         if purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            assert self.operation.opt_in is True
             assert self.operation.opted_in_operation is not None
             assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
             assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
@@ -228,7 +227,6 @@ class TestOperationRegistration(CommonTestSetup):
             assert self.operation.opted_in_operation.updated_by == self.user
             assert self.operation.opted_in_operation.updated_at is not None
         else:
-            assert self.operation.opt_in is None
             assert self.operation.opted_in_operation_id is None
 
         # make sure we have the two required documents

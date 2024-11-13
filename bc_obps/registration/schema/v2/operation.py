@@ -42,8 +42,8 @@ class OperationRepresentativeRemove(ModelSchema):
 
 class OperationInformationIn(ModelSchema):
     registration_purpose: Optional[Operation.Purposes] = None
-    regulated_products: Optional[list] = None
-    activities: list[int]
+    regulated_products: Optional[List[int]] = None
+    activities: List[int]
     boundary_map: str
     process_flow_diagram: str
     naics_code_id: int

@@ -222,11 +222,16 @@ class OperationServiceV2:
         operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
 
         if operation_data['registration_purpose'] == Operation.Purposes.OPTED_IN_OPERATION:
-            operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
+            opted_in_data = {}
+            operation.opted_in_operation, _ = OptedInOperationDetail.custom_update_or_create(
+                OptedInOperationDetail, user_guid, **opted_in_data
+            )
             operation.save(update_fields=['opted_in_operation'])
 
         # set m2m relationships
         operation.activities.set(payload.activities)
+        if payload.regulated_products:
+            operation.regulated_products.set(payload.regulated_products)
 
         # create or replace documents
         operation_documents = [
