@@ -15,7 +15,6 @@ export default async function TransfersDataGridPage({
     rows: TransferRow[];
     row_count: number;
   } = await fetchTransferEventsPageData(searchParams);
-  console.log("transfers", transfers);
   if (!transfers) {
     return <div>No transfers data in database.</div>;
   }
