@@ -1,9 +1,9 @@
 [
   {
     "model": "registration.operation",
-    "pk": "00000000-0000-0000-0000-000000000001",
+    "pk": "ebc45617-ae4c-4c76-ab36-5a59c3aef407",
     "fields": {
-      "operator": "00000000-0000-0000-0000-000000000000",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
       "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 1",
@@ -13,7 +13,7 @@
       "opt_in": false,
       "bcghg_id": "23219990001",
       "regulated_products": [],
-      "status": "Approved",
+      "status": "Registered",
       "bc_obps_regulated_operation": "21-0001",
       "created_at": "2024-1-31T15:27:00.000Z",
       "activities": []
@@ -21,9 +21,9 @@
   },
   {
     "model": "registration.operation",
-    "pk": "00000000-0000-0000-0000-000000000002",
+    "pk": "2e36a496-3f66-408f-b2b9-69f4fa7bba0e",
     "fields": {
-      "operator": "00000000-0000-0000-0000-000000000000",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
       "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 2",
@@ -33,7 +33,7 @@
       "opt_in": false,
       "bcghg_id": "23219990002",
       "regulated_products": [],
-      "status": "Approved",
+      "status": "Registered",
       "bc_obps_regulated_operation": "21-0002",
       "created_at": "2024-1-31T15:27:00.000Z",
       "activities": []
@@ -41,9 +41,9 @@
   },
   {
     "model": "registration.operation",
-    "pk": "00000000-0000-0000-0000-000000000003",
+    "pk": "d046cdec-554d-4c54-9160-fcd6c20e3566",
     "fields": {
-      "operator": "00000000-0000-0000-0000-000000000000",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
       "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 3",
@@ -53,7 +53,7 @@
       "opt_in": false,
       "bcghg_id": "23219990003",
       "regulated_products": [],
-      "status": "Approved",
+      "status": "Registered",
       "bc_obps_regulated_operation": "21-0003",
       "created_at": "2024-1-31T15:27:00.000Z",
       "activities": []
@@ -61,9 +61,9 @@
   },
   {
     "model": "registration.operation",
-    "pk": "00000000-0000-0000-0000-000000000004",
+    "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb8",
     "fields": {
-      "operator": "00000000-0000-0000-0000-000000000000",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
       "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 4",
@@ -73,7 +73,7 @@
       "opt_in": false,
       "bcghg_id": "23219990004",
       "regulated_products": [],
-      "status": "Approved",
+      "status": "Registered",
       "bc_obps_regulated_operation": "21-0004",
       "created_at": "2024-1-31T15:27:00.000Z",
       "activities": []

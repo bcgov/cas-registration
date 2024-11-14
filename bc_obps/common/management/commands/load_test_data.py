@@ -16,6 +16,10 @@ class Command(BaseCommand):
             f'{fixture_base_dir}/operator.json',
             f'{fixture_base_dir}/operation.json',
             f'{fixture_base_dir}/operation_designated_operator_timeline.json',
+            f'{fixture_base_dir}/user_operator.json',
+            f'{fixture_base_dir}/registration_purpose.json',
+            f'{fixture_base_dir}/facility.json',
+            f'{fixture_base_dir}/facility_designated_operation_timeline.json',
         ]
 
         for fixture in fixtures:
