@@ -6,6 +6,7 @@ from registration.models.event.transfer_event import TransferEvent
 from ninja import ModelSchema, Field, FilterSchema
 from django.db.models import Q
 import re
+from typing import Dict, Any
 
 
 class FacilityForTransferEventGrid(ModelSchema):
@@ -22,9 +23,9 @@ class TransferEventListOut(ModelSchema):
     id: UUID
 
     @staticmethod
-    def resolve_id(obj: TransferEvent) -> UUID:
-        operation_id = getattr(obj, 'operation__id', None)
-        facility_id = getattr(obj, 'facilities__id', None)
+    def resolve_id(obj: Dict[str, Any]) -> UUID:
+        operation_id = obj.get('operation__id', None)
+        facility_id = obj.get('facilities__id', None)
 
         record_id = operation_id if operation_id else facility_id
         if not isinstance(record_id, UUID):
