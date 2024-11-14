@@ -44,6 +44,7 @@ class TestDataAccessOptedInOperationService:
         )
         opted_in_operation.refresh_from_db()
         assert updated_operation.opted_in_operation is not None
+        assert updated_operation.opt_in is True
         assert opted_in_operation is not None
         assert opted_in_operation.meets_section_3_emissions_requirements is True
         assert opted_in_operation.meets_electricity_import_operation_criteria is True
