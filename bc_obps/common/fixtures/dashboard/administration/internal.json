@@ -23,13 +23,7 @@
             "title": "Operator Administrators and Access Requests",
             "icon": "Inbox",
             "content": "View all operator administrators and administrator access requests here.",
-            "href": "/administration/tbd"
-          },
-          {
-            "title": "Operation Administrations",
-            "icon": "Layers",
-            "content": "View the administration of operations here.",
-            "href": "/administration/tbd"
+            "href": "/administration/operator-administrators-and-access-requests"
           },
           {
             "title": "Contacts",
