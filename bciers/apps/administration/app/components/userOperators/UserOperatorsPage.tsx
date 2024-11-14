@@ -23,9 +23,9 @@ export default async function UserOperatorsPage({
   return (
     <>
       <Note>
-        <b>Note: </b>Once "Approved", the user will have access to their
-        operator dashboard with full admin permissions,and can grant access and
-        designate permissions to other authorized users there.
+        <b>Note: </b>Once &quot;Approved&quot;, the user will have access to
+        their operator dashboard with full admin permissions,and can grant
+        access and designate permissions to other authorized users there.
       </Note>
       <Suspense fallback={<Loading />}>
         <UserOperatorDataGrid initialData={userOperatorData} />

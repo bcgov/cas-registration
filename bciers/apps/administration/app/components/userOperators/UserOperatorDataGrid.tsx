@@ -5,14 +5,13 @@ import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { useMemo, useState } from "react";
 import userOperatorColumns from "@/administration/app/components/datagrid/models/userOperators/userOperatorColumns";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
-import { GridRenderCellParams } from "@mui/x-data-grid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import userOperatorGroupColumns from "@/administration/app/components/datagrid/models/userOperators/userOperatorGroupColumns";
 import getUserOperatorsPageData from "@/administration/app/components/userOperators/getUserOperatorsPageData";
 
 const UserOperatorsActionCell = ActionCellFactory({
-  generateHref: (params: GridRenderCellParams) => {
-    return "TBD"; // Will be implemented in a future ticket
+  generateHref: () => {
+    return "TBD"; // Will be implemented in a future ticket by using `params: GridRenderCellParams`
   },
   cellText: "View Details",
 });
