@@ -148,6 +148,15 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
+    def create_opted_in_operation_detail(cls, user_guid: UUID, operation: Operation) -> Operation:
+        operation.opt_in = True
+        operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
+        operation.save(update_fields=['opted_in_operation', 'opt_in'])
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
     def remove_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeRemove
     ) -> OperationRepresentativeRemove:
@@ -222,6 +231,9 @@ class OperationServiceV2:
         ]
         operation.documents.add(*operation_documents)
 
+        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            operation = cls.create_opted_in_operation_detail(user_guid, operation)
+
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
@@ -246,11 +258,10 @@ class OperationServiceV2:
         )
 
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            operation.opt_in = True
-            operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
-            operation.save(update_fields=['opted_in_operation', 'opt_in'])
+            operation = cls.create_opted_in_operation_detail(user_guid, operation)
 
         cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
+        operation.set_create_or_update(user_guid)
 
         return operation
 
