@@ -86,12 +86,12 @@ Create the name of the service account to use
 {{/*
 Define environment variables for the application.
 */}}
-{{- define "cas-registration.backendEnvVars" -}}
+{{- define "cas-bciers.backendEnvVars" -}}
 - name: DJANGO_SECRET_KEY
   valueFrom:
     secretKeyRef:
       key: django-secret-key
-      name: {{ include "cas-registration.fullname" . }}-backend
+      name: {{ include "cas-bciers.fullname" . }}-backend
 - name: CHES_CLIENT_SECRET
   valueFrom:
     secretKeyRef:
@@ -116,27 +116,27 @@ Define environment variables for the application.
   valueFrom:
     secretKeyRef:
       key: user
-      name: cas-obps-postgres-pguser-registration
+      name: cas-obps-postgres-pguser-bciers
 - name: DB_PASSWORD
   valueFrom:
     secretKeyRef:
       key: password
-      name: cas-obps-postgres-pguser-registration
+      name: cas-obps-postgres-pguser-bciers
 - name: DB_NAME
   valueFrom:
     secretKeyRef:
       key: dbname
-      name: cas-obps-postgres-pguser-registration
+      name: cas-obps-postgres-pguser-bciers
 - name: DB_PORT
   valueFrom:
     secretKeyRef:
       key: pgbouncer-port
-      name: cas-obps-postgres-pguser-registration
+      name: cas-obps-postgres-pguser-bciers
 - name: DB_HOST
   valueFrom:
     secretKeyRef:
       key: pgbouncer-host
-      name: cas-obps-postgres-pguser-registration
+      name: cas-obps-postgres-pguser-bciers
 - name: ALLOWED_HOSTS
   value: '*'
 - name: BACKEND_HOST
@@ -145,7 +145,7 @@ Define environment variables for the application.
   valueFrom:
     secretKeyRef:
       key: bucket_name
-      name: gcp-{{ .Release.Namespace }}-registration-attach-service-account-key
+      name: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
 - name: GOOGLE_APPLICATION_CREDENTIALS
   value: "/attachment-credentials/attachment-credentials.json"
 - name: ENVIRONMENT
