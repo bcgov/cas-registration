@@ -2,8 +2,8 @@
   {
     "model": "registration.user",
     "fields": {
-      "user_guid": "00000000-0000-0000-0000-000000000000",
-      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+      "user_guid": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "business_guid": "00000000-0000-0000-0000-000000000000",
       "bceid_business_name": "Example Business",
       "first_name": "Default",
       "last_name": "IDIR-USER",
@@ -11,6 +11,20 @@
       "email": "test2@email.com",
       "phone_number": "+16044015432",
       "app_role": "cas_admin"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+      "bceid_business_name": "Registered Operator",
+      "first_name": "bc-cas-dev",
+      "last_name": "Industry User",
+      "position_title": "Code Monkey",
+      "email": "email@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "industry_user"
     }
   }
 ]
