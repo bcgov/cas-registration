@@ -706,8 +706,12 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(field_name='Hydrogen content in pitch', field_type='number', field_units=None),
             ReportingField(field_name='Sulphur content in calcinated coke', field_type='number', field_units=None),
             ReportingField(field_name='Ash content in calcinated coke', field_type='number', field_units=None),
-            ReportingField(field_name='Carbon in skimmed dust from Søderberg cells', field_type='number', field_units=None),
-            ReportingField(field_name='Packing coke consumption per tonne of baked anode', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Carbon in skimmed dust from Søderberg cells', field_type='number', field_units=None
+            ),
+            ReportingField(
+                field_name='Packing coke consumption per tonne of baked anode', field_type='number', field_units=None
+            ),
             ReportingField(field_name='Baked anode production', field_type='number', field_units=None),
             ReportingField(field_name='Ash content in packing coke', field_type='number', field_units=None),
             ReportingField(field_name='Sulphur content in packing coke', field_type='number', field_units=None),
@@ -726,13 +730,17 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(field_name='Anode Effect Duration', field_type='number', field_units=None),
             ReportingField(field_name='Frequency and Duration Methodology', field_type='string', field_units=None),
             ReportingField(field_name='Slope Coefficient', field_type='number', field_units=None),
-            ReportingField(field_name='Last Date of Slope Coefficients Measurement', field_type='string', field_units=None),
+            ReportingField(
+                field_name='Last Date of Slope Coefficients Measurement', field_type='string', field_units=None
+            ),
             ReportingField(field_name='Anode Effect Overvoltage Factor', field_type='number', field_units=None),
             ReportingField(field_name='Potline Overvoltage', field_type='number', field_units=None),
             ReportingField(field_name='Current Efficiency', field_type='number', field_units=None),
             ReportingField(field_name='Overvoltage Methodology', field_type='string', field_units=None),
             ReportingField(field_name='Overvoltage Emission Factor', field_type='number', field_units=None),
-            ReportingField(field_name='Last Date of Overvoltage Emission Factor Measurement', field_type='string', field_units=None),
+            ReportingField(
+                field_name='Last Date of Overvoltage Emission Factor Measurement', field_type='string', field_units=None
+            ),
         ]
     )
 

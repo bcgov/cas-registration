@@ -5,11 +5,48 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
-import { DateWidget } from "@bciers/components/form/widgets";
+import { DateWidget, MultiSelectWidget } from "@bciers/components/form/widgets";
+import { SectionFieldTemplate } from "@bciers/components/form/fields";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  "ui:order": [
+    "annualEmissions",
+    "smelterTechType",
+    "anodeCathodeBackingGreenCokeCalcination",
+    "anodeEffects",
+    "coverGasFromElectrolysisCells",
+    "sourceTypes",
+  ],
+  annualEmissions: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:options": {
+      label: false,
+    },
+  },
+  annualAnodeConsumptionForPrebakeCells: {
+    "ui:FieldTemplate": InlineFieldTemplate,
+  },
+  annualCF4EmissionsFromAnodeEffectsForPrebakeCells: {
+    "ui:FieldTemplate": InlineFieldTemplate,
+  },
+  annualC2F6EmissionsFromAnodeEffectsForPrebakeCells: {
+    "ui:FieldTemplate": InlineFieldTemplate,
+  },
+  annualAnodePasteConsumptionForSoderbergCells: {
+    "ui:FieldTemplate": InlineFieldTemplate,
+  },
+  annualCF4EmissionsFromAnodeEffectsForSoderbergCells: {
+    "ui:FieldTemplate": InlineFieldTemplate,
+  },
+  annualC2F6EmissionsFromAnodeEffectsForSoderbergCells: {
+    "ui:FieldTemplate": InlineFieldTemplate,
+  },
+  smelterTechType: {
+    "ui:widget": MultiSelectWidget,
+    "ui:placeholder": "Select Smelter Technology Type(s)",
+  },
   anodeCathodeBackingGreenCokeCalcination: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxWidgetLeft,
