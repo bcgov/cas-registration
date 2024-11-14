@@ -4,12 +4,77 @@
   "properties": {
     "smelterTechType": {
       "title": "Smelter technology type",
-      "type": "string",
-      "enum": ["Prebake", "Soderbake"]
-    },
-    "annualAluminumProduction": {
-      "title": "Annual aluminium production",
-      "type": "number"
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["Prebake", "Soderberg"]
+      }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "smelterTechType": {
+            "contains": {
+              "enum": ["Prebake"]
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "annualEmissions": {
+            "type": "object",
+            "properties": {
+              "annualAnodeConsumptionForPrebakeCells": {
+                "type": "number",
+                "title": "Annual Anode Consumption for Prebake Cells"
+              },
+              "annualCF4EmissionsFromAnodeEffectsForPrebakeCells": {
+                "type": "number",
+                "title": "Annual CF4 Emissions from Anode Effects for Prebake Cells"
+              },
+              "annualC2F6EmissionsFromAnodeEffectsForPrebakeCells": {
+                "type": "number",
+                "title": "Annual C2F6 Emissions from Anode Effects for Prebake Cells"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "smelterTechType": {
+            "contains": {
+              "enum": ["Soderberg"]
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "annualEmissions": {
+            "type": "object",
+            "properties": {
+              "annualAnodePasteConsumptionForSoderbergCells": {
+                "type": "number",
+                "title": "Annual Anode Paste Consumption for Soderberg Cells"
+              },
+              "annualCF4EmissionsFromAnodeEffectsForSoderbergCells": {
+                "type": "number",
+                "title": "Annual CF4 Emissions from Anode Effects for Soderberg Cells"
+              },
+              "annualC2F6EmissionsFromAnodeEffectsForSoderbergCells": {
+                "type": "number",
+                "title": "Annual C2F6 Emissions from Anode Effects for Soderberg Cells"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

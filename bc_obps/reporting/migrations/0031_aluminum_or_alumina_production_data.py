@@ -22,9 +22,7 @@ def init_configuration_element_data(apps, schema_monitor):
         [
             # Source type is Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination and gas type is CO2
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
@@ -34,9 +32,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
@@ -46,9 +42,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
@@ -58,9 +52,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
@@ -70,9 +62,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
@@ -82,9 +72,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
@@ -95,48 +83,32 @@ def init_configuration_element_data(apps, schema_monitor):
             ),
             # Source type is Anode effects and gas type is CF4
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
                 methodology_id=Methodology.objects.get(name='Slope method').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
                 methodology_id=Methodology.objects.get(name='Overvoltage method').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -144,36 +116,24 @@ def init_configuration_element_data(apps, schema_monitor):
             ),
             # Source type is also Anode effects and Gas type is C2F6
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='C2F6').id,
                 methodology_id=Methodology.objects.get(name='C2F6 anode effects').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='C2F6').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='C2F6').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -181,48 +141,32 @@ def init_configuration_element_data(apps, schema_monitor):
             ),
             # Source type is Cover gas from electrolysis cells and gastype is SF6
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Cover gas from electrolysis cells'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
                 gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
                 methodology_id=Methodology.objects.get(name='Inventory').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Cover gas from electrolysis cells'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
                 gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
                 methodology_id=Methodology.objects.get(name='Input/output').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Cover gas from electrolysis cells'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
                 gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Cover gas from electrolysis cells'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
                 gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -240,9 +184,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ReportingActivity = apps.get_model('reporting', 'ReportingActivity')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
-        reporting_activity_id=ReportingActivity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        reporting_activity_id=ReportingActivity.objects.get(name='Aluminum or alumina production').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
@@ -263,9 +205,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # SOURCE TYPE: Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination
     # CO2 - Anode Consumption - Prebaked
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -277,9 +217,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Sulphur Content in Baked Anodes', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -292,9 +230,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     )
     # CO2 - Anode Consumption - Soderberg
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -306,9 +242,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Emissions of benzene-soluble matter', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -320,9 +254,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Average binder (pitch) content in paste', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -330,13 +262,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Anode Consumption - Soderberg').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Sulphur content in pitch', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Sulphur content in pitch', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -344,13 +272,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Anode Consumption - Soderberg').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Ash content in pitch', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Ash content in pitch', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -358,13 +282,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Anode Consumption - Soderberg').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Hydrogen content in pitch', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Hydrogen content in pitch', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -376,9 +296,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Sulphur content in calcinated coke', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -390,9 +308,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Ash content in calcinated coke', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -405,9 +321,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     )
     # CO2 - Anode/Cathode Baking
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -416,12 +330,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Packing coke consumption per tonne of baked anode', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Packing coke consumption per tonne of baked anode', field_units__isnull=True
+        )
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -429,13 +343,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Anode/Cathode Baking').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Baked anode production', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Baked anode production', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -447,9 +357,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Ash content in packing coke', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -461,9 +369,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Sulphur content in packing coke', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -471,13 +377,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Anode/Cathode Baking').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Green anode consumption', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Green anode consumption', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -485,13 +387,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Anode/Cathode Baking').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Hydrogen content in pitch', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Hydrogen content in pitch', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -503,9 +401,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Pitch content in green anode', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -513,14 +409,10 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Anode/Cathode Baking').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Recovered tar', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Recovered tar', field_units__isnull=True))
     # CO2 - Green Coke Calcination
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -528,13 +420,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Green Coke Calcination').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Green coke feed', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Green coke feed', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -546,9 +434,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Humidity in green coke feed', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -560,9 +446,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Volatiles in green coke feed', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -574,9 +458,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Sulphur content in green coke feed', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -588,9 +470,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Sulphur content in calcinated coke', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -598,13 +478,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Green Coke Calcination').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Calcinated coke produced', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Calcinated coke produced', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -616,9 +492,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Under-calcinated coke produced', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -626,14 +500,10 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Green Coke Calcination').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Coke dust emissions', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Coke dust emissions', field_units__isnull=True))
     # CO2 - Alternative Parameter Measurement
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -641,14 +511,10 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # CO2 - Replacement Methodology
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
@@ -656,18 +522,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # SOURCE TYPE: Anode effects
     # CF4 - Slope method
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Slope method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -676,40 +536,24 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Anode Effect minutes per cell-day', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Slope method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Anode Effect Frequency', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Anode Effect Frequency', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Slope method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Anode Effect Duration', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Anode Effect Duration', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Slope method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -718,26 +562,16 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Frequency and Duration Methodology', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Slope method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Slope Coefficient', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Slope Coefficient', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Slope method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -747,12 +581,8 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     )
     # CF4 - Overvoltage method
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Overvoltage method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -761,54 +591,32 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Anode Effect Overvoltage Factor', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Overvoltage method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Potline Overvoltage', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Potline Overvoltage', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Overvoltage method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Current Efficiency', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Current Efficiency', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Overvoltage method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Overvoltage Methodology', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Overvoltage Methodology', field_units__isnull=True))
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Overvoltage method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -817,110 +625,73 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         ReportingField.objects.get(field_name='Overvoltage Emission Factor', field_units__isnull=True)
     )
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Overvoltage method').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Last Date of Overvoltage Emission Factor Measurement', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Last Date of Overvoltage Emission Factor Measurement', field_units__isnull=True
+        )
     )
     # CF4 - Alternative Parameter Measurement
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # CF4 - Replacement Methodology
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # C2F6 - Alternative Parameter Measurement
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='C2F6').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # # C2F6 - Replacement Methodology
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Anode effects'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='C2F6').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # SOURCE TYPE: Cover gas from electrolysis cells
     # SF6 - Alternative Parameter Measurement
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Cover gas from electrolysis cells'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
         gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # SF6 - Replacement Methodology
     ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
-        source_type_id=SourceType.objects.get(
-            name='Cover gas from electrolysis cells'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+        source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
         gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+
 
 def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
@@ -931,9 +702,7 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
 
     ConfigurationElement.reporting_fields.through.objects.filter(
         configurationelement_id__in=ConfigurationElement.objects.filter(
-            activity_id=Activity.objects.get(
-                name='Aluminum or alumina production'
-            ).id
+            activity_id=Activity.objects.get(name='Aluminum or alumina production').id
         ).values_list('id', flat=True)
     ).delete()
 
@@ -954,9 +723,7 @@ def init_activity_schema_data(apps, schema_monitor):
     Activity = apps.get_model('registration', 'Activity')
     Configuration = apps.get_model('reporting', 'Configuration')
     ActivitySchema.objects.create(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id,
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         json_schema=schema,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -969,11 +736,7 @@ def reverse_init_activity_schema_data(apps, schema_monitor):
     '''
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id
-    ).delete()
+    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Aluminum or alumina production').id).delete()
 
 
 # SOURCE TYPE
@@ -987,13 +750,9 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     cwd = os.getcwd()
     with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/anode_consumption_acbgcc.json') as alum_st1:
         schema1 = json.load(alum_st1)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/aluminum_production/anode_effects.json'
-    ) as alum_st2:
+    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/anode_effects.json') as alum_st2:
         schema2 = json.load(alum_st2)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/aluminum_production/cover_gas_from_electrolysis.json'
-    ) as alum_st3:
+    with open(f'{cwd}/reporting/json_schemas/2024/aluminum_production/cover_gas_from_electrolysis.json') as alum_st3:
         schema3 = json.load(alum_st3)
 
     ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
@@ -1003,9 +762,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     ActivitySourceTypeSchema.objects.bulk_create(
         [
             ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
@@ -1016,12 +773,8 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 has_fuel=False,
             ),
             ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Anode effects'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Anode effects').id,
                 json_schema=schema2,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1029,12 +782,8 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 has_fuel=False,
             ),
             ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='Aluminum or alumina production'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Cover gas from electrolysis cells'
-                ).id,
+                activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
+                source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
                 json_schema=schema3,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1052,15 +801,13 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
     ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(
-            name='Aluminum or alumina production'
-        ).id
+        activity_id=Activity.objects.get(name='Aluminum or alumina production').id
     ).delete()
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0030_report_non_attributable_emissions')]
+    dependencies = [('reporting', '0031_alter_reportemission_managers')]
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),

@@ -35,7 +35,7 @@ export const uiSchemaMap: UiSchemaMap = {
   carbonate_use: carbonatesUseUiSchema,
   open_pit_coal_mining: openPitCoalMining,
   storage_petro_products: storageOfPetroleumProductsUiSchema,
-  aluminum_production: aluminumUiSchema
+  aluminum_production: aluminumUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
