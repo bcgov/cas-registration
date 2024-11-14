@@ -81,3 +81,72 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Define environment variables for the application.
+*/}}
+{{- define "cas-bciers.backendEnvVars" -}}
+- name: DJANGO_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      key: django-secret-key
+      name: {{ include "cas-bciers.fullname" . }}-backend
+- name: CHES_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      key: clientSecret
+      name: ches-integration
+- name: CHES_CLIENT_ID
+  valueFrom:
+    secretKeyRef:
+      key: clientId
+      name: ches-integration
+- name: CHES_TOKEN_ENDPOINT
+  valueFrom:
+    secretKeyRef:
+      key: tokenEndpoint
+      name: ches-integration
+- name: CHES_API_URL
+  valueFrom:
+    secretKeyRef:
+      key: apiUrl
+      name: ches-integration
+- name: DB_USER
+  valueFrom:
+    secretKeyRef:
+      key: user
+      name: cas-obps-postgres-pguser-registration
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      key: password
+      name: cas-obps-postgres-pguser-registration
+- name: DB_NAME
+  valueFrom:
+    secretKeyRef:
+      key: dbname
+      name: cas-obps-postgres-pguser-registration
+- name: DB_PORT
+  valueFrom:
+    secretKeyRef:
+      key: pgbouncer-port
+      name: cas-obps-postgres-pguser-registration
+- name: DB_HOST
+  valueFrom:
+    secretKeyRef:
+      key: pgbouncer-host
+      name: cas-obps-postgres-pguser-registration
+- name: ALLOWED_HOSTS
+  value: '*'
+- name: BACKEND_HOST
+  value: {{ .Values.backend.route.host }}
+- name: GS_BUCKET_NAME
+  valueFrom:
+    secretKeyRef:
+      key: bucket_name
+      name: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+- name: GOOGLE_APPLICATION_CREDENTIALS
+  value: "/attachment-credentials/attachment-credentials.json"
+- name: ENVIRONMENT
+  value: {{ .Values.backend.environment }}
+{{- end }}

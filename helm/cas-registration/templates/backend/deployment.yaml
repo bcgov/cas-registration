@@ -21,74 +21,26 @@ spec:
 {{- include "cas-registration.selectorLabels" . | nindent 8 }}
         component: backend
     spec:
+      {{- if hasSuffix "-dev" .Release.Namespace }}
+      initContainers:
+        - name: create-superuser
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          command:
+            - "poetry"
+            - "run"
+            - "python"
+            - "manage.py"
+            - "create_superuser"
+          env:
+            {{- include "cas-registration.backendEnvVars" . | nindent 12 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
-            - name: DJANGO_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: django-secret-key
-                  name: {{ include "cas-registration.fullname" . }}-backend
-            - name: CHES_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  key: clientSecret
-                  name: ches-integration
-            - name: CHES_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  key: clientId
-                  name: ches-integration
-            - name: CHES_TOKEN_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  key: tokenEndpoint
-                  name: ches-integration
-            - name: CHES_API_URL
-              valueFrom:
-                secretKeyRef:
-                  key: apiUrl
-                  name: ches-integration
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  key: user
-                  name: cas-obps-postgres-pguser-registration
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: password
-                  name: cas-obps-postgres-pguser-registration
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  key: dbname
-                  name: cas-obps-postgres-pguser-registration
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  key: pgbouncer-port
-                  name: cas-obps-postgres-pguser-registration
-            - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: pgbouncer-host
-                  name: cas-obps-postgres-pguser-registration
-            - name: ALLOWED_HOSTS
-              value: '*'
-            - name: BACKEND_HOST
-              value: {{ .Values.backend.route.host }}
-            - name: GS_BUCKET_NAME
-              valueFrom:
-                secretKeyRef:
-                  key: bucket_name
-                  name: gcp-{{ .Release.Namespace }}-reg-attachments-service-account-key
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: "/attachment-credentials/attachment-credentials.json"
-            - name: ENVIRONMENT
-              value: {{ .Values.backend.environment }}
+            {{- include "cas-registration.backendEnvVars" . | nindent 12 }}
             {{- if hasSuffix "-prod" .Release.Namespace }}
             - name: SENTRY_ENVIRONMENT
               value: {{ include "cas-registration.namespaceSuffix" . }}
