@@ -1,4 +1,4 @@
-import { Status } from "@bciers/utils/src/enums";
+import { Status, UserOperatorStatus } from "@bciers/utils/src/enums";
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import { ButtonOwnProps } from "@mui/material/Button";
 import { ReactNode } from "react";
@@ -64,4 +64,21 @@ export interface AccessRequest {
   operator: {
     legal_name: string;
   };
+}
+
+export interface UserOperatorsSearchParams {
+  [key: string]: string | number | undefined;
+  sort_field?: string;
+  sort_order?: string;
+}
+
+export interface UserOperatorDataGridRow {
+  id: number;
+  user_friendly_id: string;
+  status: string;
+  user__first_name: string;
+  user__last_name: string;
+  user__email: string;
+  user__bceid_business_name: string;
+  operator__legal_name: string;
 }
