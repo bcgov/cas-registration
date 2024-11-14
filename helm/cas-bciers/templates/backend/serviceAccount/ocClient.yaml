@@ -1,3 +1,4 @@
+{{- if not (hasSuffix "-prod" .Release.Namespace)}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -5,3 +6,5 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
 {{- include "cas-bciers.labels" . | nindent 4 }}
+
+{{ end }}
