@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: exec-in-pod
+  labels:
+{{- include "cas-bciers.labels" . | nindent 4 }}
+rules:
+  - verbs:
+      - get
+      - list
+    apiGroups:
+      - ''
+    resources:
+      - pods
+  - verbs:
+      - create
+    apiGroups:
+      - ''
+    resources:
+      - pods/exec
