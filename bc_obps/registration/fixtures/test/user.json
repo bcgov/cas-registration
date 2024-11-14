@@ -1,0 +1,16 @@
+[
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000000",
+      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+      "bceid_business_name": "Example Business",
+      "first_name": "Default",
+      "last_name": "IDIR-USER",
+      "position_title": "Code Monkey",
+      "email": "test2@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "cas_admin"
+    }
+  }
+]

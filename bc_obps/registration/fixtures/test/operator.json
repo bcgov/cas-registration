@@ -1,0 +1,42 @@
+[
+  {
+    "model": "registration.operator",
+    "pk": "00000000-0000-0000-0000-000000000000",
+    "fields": {
+      "legal_name": "Registered Operator",
+      "trade_name": "Registered Operator",
+      "cra_business_number": 123456789,
+      "bc_corporate_registry_number": "abc1234567",
+      "business_structure": "Sole Proprietorship",
+      "physical_address": 1,
+      "mailing_address": 1,
+      "website": "http://www.example.com",
+      "documents": [],
+      "contacts": [],
+      "status": "Approved",
+      "is_new": false,
+      "verified_at": "2024-01-03 08:09:51.133556-08",
+      "verified_by": "00000000-0000-0000-0000-000000000000"
+    }
+  },
+  {
+    "model": "registration.operator",
+    "pk": "00000000-0000-0000-0000-000000000001",
+    "fields": {
+      "legal_name": "Fresh Operator",
+      "trade_name": "Fresh Operator",
+      "cra_business_number": 987654321,
+      "bc_corporate_registry_number": "def1234567",
+      "business_structure": "General Partnership",
+      "physical_address": 2,
+      "mailing_address": 2,
+      "website": "http://www.example2.com",
+      "documents": [],
+      "contacts": [],
+      "status": "Approved",
+      "is_new": false,
+      "verified_at": "2024-01-03 08:09:51.133556-08",
+      "verified_by": "00000000-0000-0000-0000-000000000000"
+    }
+  }
+]

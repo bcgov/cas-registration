@@ -1,0 +1,42 @@
+[
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000000",
+      "created_at": "2024-06-05T23:20:41.567Z",
+      "operation": "00000000-0000-0000-0000-000000000001",
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000000",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "operation": "00000000-0000-0000-0000-000000000002",
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000000",
+      "created_at": "2024-06-05T23:20:41.567Z",
+      "operation": "00000000-0000-0000-0000-000000000003",
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000000",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "operation": "00000000-0000-0000-0000-000000000004",
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
+  }
+]
