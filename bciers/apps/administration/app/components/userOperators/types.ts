@@ -75,7 +75,7 @@ export interface UserOperatorsSearchParams {
 export interface UserOperatorDataGridRow {
   id: number;
   user_friendly_id: string;
-  status: string;
+  status: UserOperatorStatus;
   user__first_name: string;
   user__last_name: string;
   user__email: string;
