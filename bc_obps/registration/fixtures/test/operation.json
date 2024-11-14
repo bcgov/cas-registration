@@ -1,0 +1,82 @@
+[
+  {
+    "model": "registration.operation",
+    "pk": "00000000-0000-0000-0000-000000000001",
+    "fields": {
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 1",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990001",
+      "regulated_products": [],
+      "status": "Approved",
+      "bc_obps_regulated_operation": "21-0001",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "00000000-0000-0000-0000-000000000002",
+    "fields": {
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 2",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990002",
+      "regulated_products": [],
+      "status": "Approved",
+      "bc_obps_regulated_operation": "21-0002",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "00000000-0000-0000-0000-000000000003",
+    "fields": {
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 3",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990003",
+      "regulated_products": [],
+      "status": "Approved",
+      "bc_obps_regulated_operation": "21-0003",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "00000000-0000-0000-0000-000000000004",
+    "fields": {
+      "operator": "00000000-0000-0000-0000-000000000000",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 4",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990004",
+      "regulated_products": [],
+      "status": "Approved",
+      "bc_obps_regulated_operation": "21-0004",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
+  }
+]
