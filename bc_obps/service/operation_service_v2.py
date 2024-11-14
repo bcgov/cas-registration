@@ -63,43 +63,6 @@ class OperationServiceV2:
             ~Q(status=Operation.Statuses.REGISTERED)
         )
 
-    # @classmethod
-    # @transaction.atomic()
-    # def set_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Operation:
-    #     operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
-
-    #     purpose_choice = next(
-    #         (choice for choice in RegistrationPurpose.Purposes if choice.value == payload.registration_purpose), None
-    #     )
-    #     purposes: List[RegistrationPurpose.Purposes] = []
-    #     # add the payload's purpose as long as it's not reporting or regulated (will add these later)
-    #     if purpose_choice in [
-    #         RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-    #         RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
-    #     ]:
-    #         purposes.append(purpose_choice)
-    #     else:
-    #         reporting_and_regulated_purposes = [
-    #             RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
-    #             RegistrationPurpose.Purposes.REPORTING_OPERATION,
-    #         ]
-    #         if purpose_choice and purpose_choice not in reporting_and_regulated_purposes:
-    #             reporting_and_regulated_purposes.append(purpose_choice)
-    #         purposes.extend(reporting_and_regulated_purposes)
-    #         if payload.regulated_products:
-    #             operation.regulated_products.set(payload.regulated_products)
-
-    #     for purpose in purposes:
-    #         RegistrationPurposeDataAccessService.create_registration_purpose(
-    #             user_guid, operation_id, {'registration_purpose': purpose}
-    #         )
-    #         if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
-    #             operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
-    #             operation.opt_in = True
-    #             operation.save(update_fields=['opted_in_operation', 'opt_in'])
-    #     operation.set_create_or_update(user_guid)
-    #     return operation
-
     @classmethod
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:

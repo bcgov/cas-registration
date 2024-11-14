@@ -17,11 +17,8 @@ const OperationInformationPage = async ({
 
   if (operation?.error) throw new Error("Error fetching operation information");
 
-  const registrationPurposes = operation?.registration_purposes;
-
   const formSchema = await createAdministrationOperationInformationSchema(
-    operation?.registration_purposes,
-    operation?.opt_in,
+    operation?.registration_purpose,
     operation.status,
   );
 
@@ -29,7 +26,7 @@ const OperationInformationPage = async ({
     <OperationInformationForm
       formData={{
         ...operation,
-        registration_purpose: registrationPurposes,
+        registration_purpose: operation?.registration_purpose,
       }}
       operationId={operationId}
       schema={formSchema}

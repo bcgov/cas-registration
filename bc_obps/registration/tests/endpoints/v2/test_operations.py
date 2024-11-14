@@ -3,7 +3,6 @@ from registration.constants import PAGE_SIZE
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
-    NaicsCode,
     Operation,
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils

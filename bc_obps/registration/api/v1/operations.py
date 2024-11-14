@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import List, Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
@@ -12,6 +12,7 @@ from registration.schema.v1 import (
     OperationPaginatedOut,
     OperationFilterSchema,
 )
+from registration.models.operation import Operation
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
@@ -33,6 +34,29 @@ def list_operations(
     request: HttpRequest, filters: OperationFilterSchema = Query(...)
 ) -> Tuple[Literal[200], DictStrAny]:
     return 200, OperationService.list_operations(get_current_user_guid(request), filters)
+
+
+REGISTRATION_PURPOSES_LITERALS = Literal[
+    Operation.Purposes.REPORTING_OPERATION,
+    Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+    Operation.Purposes.NEW_ENTRANT_OPERATION,
+    Operation.Purposes.OBPS_REGULATED_OPERATION,
+    Operation.Purposes.OPTED_IN_OPERATION,
+    Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+]
+
+
+@router.get(
+    "/registration_purposes",
+    response={200: List[REGISTRATION_PURPOSES_LITERALS], custom_codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    description="""Retrieves a list of strings representing the valid options for an operation's registration purpose (aka registration category).""",
+    auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[str]]:
+    purposes = [purpose.value for purpose in Operation.Purposes]
+    return 200, purposes
 
 
 ##### POST #####

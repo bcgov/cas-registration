@@ -1,6 +1,5 @@
 import pytest
 from registration.tests.constants import MOCK_DATA_URL
-from registration.tests.utils.helpers import TestUtils
 from registration.models.operation import Operation
 from model_bakery import baker
 from registration.schema.v2.operation import OptedInOperationDetailIn, OperationInformationIn

@@ -26,7 +26,6 @@ from registration.tests.utils.bakers import (
 from registration.constants import BASE_ENDPOINT
 
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
-from registration.models.operation import Operation
 from registration.tests.utils.bakers import operator_baker, address_baker
 
 
