@@ -116,27 +116,27 @@ Define environment variables for the application.
   valueFrom:
     secretKeyRef:
       key: user
-      name: cas-obps-postgres-pguser-bciers
+      name: cas-obps-postgres-pguser-registration
 - name: DB_PASSWORD
   valueFrom:
     secretKeyRef:
       key: password
-      name: cas-obps-postgres-pguser-bciers
+      name: cas-obps-postgres-pguser-registration
 - name: DB_NAME
   valueFrom:
     secretKeyRef:
       key: dbname
-      name: cas-obps-postgres-pguser-bciers
+      name: cas-obps-postgres-pguser-registration
 - name: DB_PORT
   valueFrom:
     secretKeyRef:
       key: pgbouncer-port
-      name: cas-obps-postgres-pguser-bciers
+      name: cas-obps-postgres-pguser-registration
 - name: DB_HOST
   valueFrom:
     secretKeyRef:
       key: pgbouncer-host
-      name: cas-obps-postgres-pguser-bciers
+      name: cas-obps-postgres-pguser-registration
 - name: ALLOWED_HOSTS
   value: '*'
 - name: BACKEND_HOST
