@@ -1,7 +1,12 @@
-from typing import Dict
+from typing import Dict, Optional
 from uuid import UUID
 
 from django.db import transaction
+from django.db.models import QuerySet
+from django.db.models.functions import Lower
+from ninja import Query
+
+from registration.schema.v2.user_operator import UserOperatorFilterSchema
 from registration.utils import update_model_instance
 from registration.models import Operator, UserOperator
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
@@ -71,3 +76,23 @@ class UserOperatorServiceV2:
         OperatorServiceV2.update_operator(user_guid, payload)
 
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
+
+    @classmethod
+    def list_user_operators_v2(
+        cls, sort_field: Optional[str], sort_order: Optional[str], filters: UserOperatorFilterSchema = Query(...)
+    ) -> QuerySet[UserOperator]:
+        # Used to show internal users the list of user_operators to approve/deny
+        base_qs = UserOperatorDataAccessService.get_all_admin_user_operators()
+
+        # `created_at` and `user_friendly_id` are not case-insensitive fields and Lower() cannot be applied to them
+        if sort_field in ['created_at', 'user_friendly_id']:
+            sort_direction = "-" if sort_order == "desc" else ""
+            return filters.filter(base_qs).order_by(f"{sort_direction}{sort_field}")
+
+        # Use Lower for case-insensitive ordering
+        lower_sort_field = Lower(sort_field)
+        if sort_order == "desc":
+            # Apply descending order
+            return filters.filter(base_qs).order_by(lower_sort_field.desc())
+        # Apply ascending order
+        return filters.filter(base_qs).order_by(lower_sort_field)

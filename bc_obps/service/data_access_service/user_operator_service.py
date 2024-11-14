@@ -56,3 +56,7 @@ class UserOperatorDataAccessService:
         Based on the Constraint, there should only be one UserOperator associated with a user and operator.
         """
         return user.user_operators.only("operator_id").filter(status=UserOperator.Statuses.APPROVED).first()
+
+    @classmethod
+    def get_all_admin_user_operators(cls) -> QuerySet[UserOperator]:
+        return UserOperator.objects.select_related("user", "operator").filter(role=UserOperator.Roles.ADMIN)
