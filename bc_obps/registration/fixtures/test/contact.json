@@ -1,0 +1,28 @@
+[
+  {
+    "model": "registration.contact",
+    "pk": 1,
+    "fields": {
+      "business_role": "Operation Representative",
+      "first_name": "John",
+      "last_name": "Doe",
+      "position_title": "Manager",
+      "address": 1,
+      "email": "john.doe@example.com",
+      "phone_number": "+16044011234"
+    }
+  },
+  {
+    "model": "registration.contact",
+    "pk": 2,
+    "fields": {
+      "business_role": "Operation Representative",
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "position_title": "Manager",
+      "address": 2,
+      "email": "jane.smith@example.com",
+      "phone_number": "+16044011234"
+    }
+  }
+]

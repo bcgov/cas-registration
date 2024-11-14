@@ -1,0 +1,62 @@
+[
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 1",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990001",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afa",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 2",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990002",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afb",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 3",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990003",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afc",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 4",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990004",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  }
+]

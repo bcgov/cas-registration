@@ -1,0 +1,22 @@
+[
+  {
+    "model": "registration.address",
+    "pk": 1,
+    "fields": {
+      "street_address": "123 Main St",
+      "municipality": "Cityville",
+      "province": "ON",
+      "postal_code": "A1B 2C3"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 2,
+    "fields": {
+      "street_address": "456 Elm St",
+      "municipality": "Townsville",
+      "province": "BC",
+      "postal_code": "X0Y 1Z0"
+    }
+  }
+]
