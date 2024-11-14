@@ -1,0 +1,27 @@
+{{- if not (hasSuffix "-prod" .Release.Namespace)}}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-test-data
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      name: load-test-data
+    spec:
+      serviceAccount: oc-client
+      containers:
+        - name: load-test-data
+          image: openshift/origin-cli
+          command:
+            - bash
+            - '-c'
+            - |
+              PODNAME=$(oc get pods --selector component=backend,app.kubernetes.io/instance=cas-bciers --field-selector=status.phase==Running -o name | head -n 1 | sed 's/pod\///g')
+              oc exec $PODNAME -- bash -c 'poetry run python manage.py load_test_data'
+      restartPolicy: Never
+
+{{ end }}
