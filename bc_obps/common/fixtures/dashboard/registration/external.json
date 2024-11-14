@@ -10,7 +10,7 @@
           {
             "title": "Register an Operation",
             "icon": "File",
-            "content": "TBD here.",
+            "content": "Start a new registration here.",
             "href": "/registration/register-an-operation",
             "conditions": [
               {
@@ -24,7 +24,7 @@
           {
             "title": "Register an Operation<sup style='color: red;'>*</sup><small> (action required)</small>",
             "icon": "File",
-            "content": "TBD here.",
+            "content": "Start a new registration here.",
             "href": "/registration/register-an-operation",
             "conditions": [
               {
@@ -36,10 +36,15 @@
             ]
           },
           {
-            "title": "Report an Event",
+            "title": "Report Transfers and Closures",
             "icon": "File",
-            "content": "TBD here.",
-            "href": "/registration/event"
+            "content": "Report a transfer, closure, temporary shut down, or re-start for your operation or facility(s).",
+            "href": "/registration/event",
+            "conditions": [
+              {
+                "value": false
+              }
+            ]
           }
         ]
       }
