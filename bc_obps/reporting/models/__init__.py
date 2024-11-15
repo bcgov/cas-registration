@@ -31,7 +31,7 @@ from .emission_category_mapping import EmissionCategoryMapping
 from .report_non_attributable_emissions import ReportNonAttributableEmissions
 from .report_product import ReportProduct
 from .report_verification import ReportVerification
-from .report_attachments import ReportAttachments
+from .report_attachment import ReportAttachment
 
 __all__ = [
     "ReportDataBaseModel",
@@ -64,5 +64,5 @@ __all__ = [
     "ReportNonAttributableEmissions",
     "ReportRawActivityData",
     "ReportVerification",
-    "ReportAttachments",
+    "ReportAttachment",
 ]

@@ -1,9 +1,9 @@
 import { actionHandler } from "../actions";
 
-async function postAttachments(report_version_id: number, data: any) {
+async function postAttachments(report_version_id: number, fileData: FormData) {
   const endpoint = `reporting/report-version/${report_version_id}/attachments`;
   return actionHandler(endpoint, "POST", endpoint, {
-    body: JSON.stringify(data),
+    body: fileData,
   });
 }
 
