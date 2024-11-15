@@ -30,5 +30,85 @@
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "For SFO Operation 4"
     }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990005",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 5"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990006",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 6"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990007",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 7"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990008",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 8"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "33219990001",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For LFO Operation 1"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "33219990002",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For LFO Operation 2"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "43219990001",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For LFO Facility 1-1"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "43219990002",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For LFO Facility 1-2"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "43219990003",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For LFO Facility 2-1"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "43219990004",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For LFO Facility 2-2"
+    }
   }
 ]
