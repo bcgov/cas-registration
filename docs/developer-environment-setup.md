@@ -139,3 +139,12 @@ We use [gitlint](https://jorisroovers.com/gitlint/) to check commit message form
 This project follows the commit message conventions outlined by [Conventional Commits](https://www.conventionalcommits.org/). Besides the standard commit types (message prefixes) **feat** and **fix**, we use some other types described there based on the Angular convention; some common ones among those are **test**, **docs**, **chore** and **refactor**. You can find the configuration details in the [.gitlint](../.gitlint) file
 
 We also extend this prefix convention to the naming of **branches**, eg: `docs/#githubissuenumber-add-readme` or `feat/#githubissuenumber-some-feature`.
+
+## Yarn Modern Troubleshooting
+
+Some developers have had issues when setting up a new environment with yarn modern, corepack & asdf. Here are some steps that have worked to get the environment working in that case:
+
+1. remove yarn from your global asdf setup (in ~/.tools-version for example)
+2. run asdf reshim
+3. go to cas-registration/bciers and run corepack enable
+4. yarn --version should return 4.2.0 and not 1.yy.zz
