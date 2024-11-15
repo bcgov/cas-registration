@@ -38,5 +38,45 @@
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
       "start_date": "2024-06-05T23:20:40Z"
     }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb0",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb1",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb2",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb3",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "start_date": "2024-06-05T23:20:40Z"
+    }
   }
 ]

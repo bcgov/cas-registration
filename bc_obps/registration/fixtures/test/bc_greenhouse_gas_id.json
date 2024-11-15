@@ -30,5 +30,37 @@
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "For SFO Operation 4"
     }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990005",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 5"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990006",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 6"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990007",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 7"
+    }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "23219990008",
+      "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "For SFO Operation 8"
+    }
   }
 ]

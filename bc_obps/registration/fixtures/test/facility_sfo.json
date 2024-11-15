@@ -58,5 +58,65 @@
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afd",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 5",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990005",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afe",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 6",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990006",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3af0",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 7",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990007",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3af1",
+    "fields": {
+      "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "SFO Facility 8",
+      "type": "Single Facility",
+      "swrs_facility_id": 1022,
+      "bcghg_id": "23219990008",
+      "address": 1,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
   }
 ]
