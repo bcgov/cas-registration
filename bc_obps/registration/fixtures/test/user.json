@@ -16,14 +16,14 @@
   {
     "model": "registration.user",
     "fields": {
-      "user_guid": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Registered Operator",
-      "first_name": "bc-cas-dev",
-      "last_name": "Industry User",
-      "position_title": "Code Monkey",
+      "user_guid": "59038013-a0c1-4c70-b025-a8312062d4c9",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
+      "bceid_business_name": "Cas, Bcgov",
+      "first_name": "Tammie",
+      "last_name": "Test",
+      "position_title": "UATC",
       "email": "email@email.com",
-      "phone_number": "+16044015432",
+      "phone_number": "+12502222222",
       "app_role": "industry_user"
     }
   }
