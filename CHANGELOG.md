@@ -1,3 +1,13 @@
+# [1.14.0](https://github.com/bcgov/cas-registration/compare/v1.13.0...v1.14.0) (2024-11-15)
+
+### Features
+
+- add facility emission summary page ([11c314c](https://github.com/bcgov/cas-registration/commit/11c314c620bcbc8c4b8d02180451ba50dae519c9))
+- add schemaspy.yaml to provide database schema documentation on main merge. ([570a811](https://github.com/bcgov/cas-registration/commit/570a811de4d65a1e588544e3aed4f6c3ce748082))
+- add widget to remove operation rep to reg form ([8cadd8d](https://github.com/bcgov/cas-registration/commit/8cadd8d7cc62b030555c45290e96b221f8e8c4aa))
+- internal users can view facility information ([99e64fa](https://github.com/bcgov/cas-registration/commit/99e64faf28b4749d6a5b3fbd4e0efe8cb95d6b61))
+- serialize report activity into a dict ([1c95d64](https://github.com/bcgov/cas-registration/commit/1c95d64e2d9e69b73640724315e34134c6b49c8b))
+
 # [1.13.0](https://github.com/bcgov/cas-registration/compare/v1.12.0...v1.13.0) (2024-11-06)
 
 ### Bug Fixes
