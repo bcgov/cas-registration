@@ -6,11 +6,13 @@ from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from ninja import Query
 
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.schema.v2.user_operator import UserOperatorFilterSchema
 from registration.utils import update_model_instance
 from registration.models import Operator, UserOperator
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.schema.v2.operator import OperatorIn
+from service.data_access_service.user_service import UserDataAccessService
 from service.operator_service_v2 import OperatorServiceV2
 
 
@@ -79,10 +81,20 @@ class UserOperatorServiceV2:
 
     @classmethod
     def list_user_operators_v2(
-        cls, sort_field: Optional[str], sort_order: Optional[str], filters: UserOperatorFilterSchema = Query(...)
+        cls,
+        user_guid: UUID,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: UserOperatorFilterSchema = Query(...),
     ) -> QuerySet[UserOperator]:
+
+        user = UserDataAccessService.get_by_guid(user_guid)
+        # This service is only available to IRC users
+        if not user.is_irc_user():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
         # Used to show internal users the list of user_operators to approve/deny
-        base_qs = UserOperatorDataAccessService.get_all_admin_user_operators()
+        base_qs = UserOperatorDataAccessService.get_admin_user_operator_requests_for_irc_users()
 
         # `created_at` and `user_friendly_id` are not case-insensitive fields and Lower() cannot be applied to them
         if sort_field in ['created_at', 'user_friendly_id']:
