@@ -34,6 +34,10 @@ spec:
             - "create_superuser"
           env:
             {{- include "cas-registration.backendEnvVars" . | nindent 12 }}
+          volumeMounts:
+            - mountPath: "/attachment-credentials"
+              name: gcs-attachment-credentials
+              readOnly: true
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-backend
