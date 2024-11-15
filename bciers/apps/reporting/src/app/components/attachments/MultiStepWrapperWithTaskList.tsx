@@ -1,25 +1,40 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
+import Link from "next/link";
 
 interface Props {
   initialStep: number;
   steps: string[];
   taskListElements: TaskListElement[];
+  onSubmit: () => Promise<void>;
   children?: React.ReactNode;
+  cancelUrl?: string;
+  saveButtonText?: string;
 }
 
 const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   initialStep,
   steps,
   taskListElements,
+  onSubmit,
   children,
+  cancelUrl,
+  saveButtonText,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    await onSubmit();
+    setIsSubmitting(false);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -30,7 +45,27 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
         <div className="hidden md:block">
           <ReportingTaskList elements={taskListElements} />
         </div>
-        <div className="w-full">{children}</div>
+        <div className="w-full">
+          {children}
+          <Box display="flex" justifyContent="space-between" mt={3}>
+            {cancelUrl && (
+              <Link href={cancelUrl} passHref>
+                <Button variant="outlined">Cancel</Button>
+              </Link>
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={isSubmitting}
+              onClick={handleSubmit}
+            >
+              {isSubmitting
+                ? "Saving..."
+                : saveButtonText ?? "Save and Continue"}
+            </Button>
+          </Box>
+        </div>
       </div>
     </Box>
   );
