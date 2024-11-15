@@ -2,7 +2,7 @@
   {
     "model": "registration.useroperator",
     "fields": {
-      "user": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "user": "59038013-a0c1-4c70-b025-a8312062d4c9",
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
       "role": "admin",
       "status": "Approved",
