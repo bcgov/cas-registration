@@ -1,12 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { Box, Button } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import Link from "next/link";
+
+/**
+ * Similar to the MultiStepFormWithTaskList,
+ * except doesn't display a for, but can be used as a wrapper for any other page for a consistent look.
+ */
 
 interface Props {
   initialStep: number;
