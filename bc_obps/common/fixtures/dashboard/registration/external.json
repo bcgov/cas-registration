@@ -10,7 +10,7 @@
           {
             "title": "Register an Operation",
             "icon": "File",
-            "content": "Start a new registration here.",
+            "content": "Register your operations here.",
             "href": "/registration/register-an-operation",
             "conditions": [
               {
@@ -24,7 +24,7 @@
           {
             "title": "Register an Operation<sup style='color: red;'>*</sup><small> (action required)</small>",
             "icon": "File",
-            "content": "Start a new registration here.",
+            "content": "Register your operations here.",
             "href": "/registration/register-an-operation",
             "conditions": [
               {
