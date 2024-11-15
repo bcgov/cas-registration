@@ -78,5 +78,81 @@
       "created_at": "2024-1-31T15:27:00.000Z",
       "activities": []
     }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb0",
+    "fields": {
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 5 - unregistered",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990005",
+      "regulated_products": [],
+      "status": "Approved",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb1",
+    "fields": {
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 6 - unregistered",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990006",
+      "regulated_products": [],
+      "status": "Approved",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb2",
+    "fields": {
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 7 - unregistered",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990007",
+      "regulated_products": [],
+      "status": "Approved",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb3",
+    "fields": {
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "documents": [],
+      "point_of_contact": 1,
+      "name": "SFO Operation 8 - unregistered",
+      "submission_date": "2023-12-16T15:27:00.000Z",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990008",
+      "regulated_products": [],
+      "status": "Approved",
+      "created_at": "2024-1-31T15:27:00.000Z",
+      "activities": []
+    }
   }
 ]
