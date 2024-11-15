@@ -7,7 +7,6 @@ FOLDER_NAME = 'report_attachments/%Y/'
 
 
 class ReportAttachment(TimeStampedModel):
-
     class ReportAttachmentType(models.TextChoices):
         verification_statement = "verification_statement"
         wci_352_362 = "wci_352_362"
@@ -25,6 +24,10 @@ class ReportAttachment(TimeStampedModel):
         max_length=1000,
         choices=ReportAttachmentType.choices,
         db_comment="The type of attachment this record represents",
+    )
+    attachment_name = CharField(
+        max_length=1000,
+        db_comment="The name of the original file that was uploaded, since django adds a hash to avoid file name collisions",
     )
 
     class Meta:
