@@ -62,5 +62,21 @@
       "registration_purpose": "OBPS Regulated Operation",
       "operation_id": "460102aa-e275-46fe-a38e-1e5a3c7badb3"
     }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 1,
+    "fields": {
+      "registration_purpose": "OBPS Regulated Operation",
+      "operation_id": "1f045617-ae4c-4c76-ab36-5a59c3aef407"
+    }
+  },
+  {
+    "model": "registration.registrationpurpose",
+    "pk": 1,
+    "fields": {
+      "registration_purpose": "OBPS Regulated Operation",
+      "operation_id": "1f06a496-3f66-408f-b2b9-69f4fa7bba0e"
+    }
   }
 ]
