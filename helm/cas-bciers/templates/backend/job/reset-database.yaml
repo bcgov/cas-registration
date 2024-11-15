@@ -55,22 +55,6 @@ spec:
                 secretKeyRef:
                   key: user
                   name: cas-obps-postgres-pguser-registration
-{{- if (hasSuffix "-test" .Release.Namespace)}}
-          command:
-            - /usr/bin/env
-            - bash
-            - -c
-            - |
-              psql -c "create schema if not exists preserve;";
-              psql -c "create table preserve.user as (select * from erc.user);";
-              psql -c "drop schema if exists public cascade;";
-              psql -c "create schema public;";
-              psql -c "grant all on schema public to $(APP_USER);";
-              psql -c "drop schema if exists erc cascade;";
-              psql -c "drop schema if exists erc_history cascade;";
-              psql -c "drop schema if exists common cascade;";
-{{ end }}
-{{- if (hasSuffix "-dev" .Release.Namespace)}}
           command:
             - /usr/bin/env
             - bash
@@ -82,6 +66,5 @@ spec:
               psql -c "drop schema if exists erc cascade;";
               psql -c "drop schema if exists erc_history cascade;";
               psql -c "drop schema if exists common cascade;";
-{{ end }}
       restartPolicy: Never
 {{ end }}
