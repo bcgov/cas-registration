@@ -31,7 +31,10 @@ ReportVersion {
     DateTimeField archived_at
     ForeignKey report
     BooleanField is_latest_submitted
+<<<<<<< HEAD
     CharField report_type
+=======
+>>>>>>> 49d11b96b (chore: removing pdf files)
     CharField status
 }
 ReportPersonResponsible {
@@ -312,6 +315,21 @@ ReportProduct {
     FloatField quantity_sold_during_period
     FloatField quantity_throughput_during_period
 }
+<<<<<<< HEAD
+=======
+ReportAttachment {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey report_version
+    FileField attachment
+    CharField attachment_type
+}
+>>>>>>> 49d11b96b (chore: removing pdf files)
 Report }|--|| User : created_by
 Report }|--|| User : updated_by
 Report }|--|| User : archived_by
@@ -424,3 +442,10 @@ ReportProduct }|--|| User : archived_by
 ReportProduct }|--|| ReportVersion : report_version
 ReportProduct }|--|| FacilityReport : facility_report
 ReportProduct }|--|| RegulatedProduct : product
+<<<<<<< HEAD
+=======
+ReportAttachment }|--|| User : created_by
+ReportAttachment }|--|| User : updated_by
+ReportAttachment }|--|| User : archived_by
+ReportAttachment }|--|| ReportVersion : report_version
+>>>>>>> 49d11b96b (chore: removing pdf files)
