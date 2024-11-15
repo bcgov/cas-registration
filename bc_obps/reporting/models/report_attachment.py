@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Q, CharField, FileField, ForeignKey
+from django.db.models import CharField, FileField, ForeignKey
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 

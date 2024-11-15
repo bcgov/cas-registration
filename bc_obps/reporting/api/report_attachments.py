@@ -6,7 +6,6 @@ from django.http import HttpRequest, StreamingHttpResponse
 from ninja import File, Form, UploadedFile
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models import report_version
 from reporting.models.report_attachment import ReportAttachment
 from reporting.schema.generic import Message
 from reporting.schema.report_attachment import ReportAttachmentOut
@@ -22,6 +21,7 @@ from .router import router
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
+@transaction.atomic()
 def save_report_attachments(
     request: HttpRequest,
     report_version_id: int,
@@ -29,15 +29,13 @@ def save_report_attachments(
     files: List[UploadedFile] = File(...),
 ) -> Literal[200]:
 
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    for f in files:
-        print(f)
-    print("~~~")
-    for n in file_types:
-        print(n)
-
     for index, file_type in enumerate(file_types):
-        ReportAttachment.objects.filter(report_version_id=report_version_id, attachment_type=file_type).delete()
+
+        report_attachment = ReportAttachment.objects.get(report_version_id=report_version_id, attachment_type=file_type)
+
+        # Delete file from storage then from db
+        report_attachment.attachment.delete()
+        report_attachment.delete()
 
         attachment = ReportAttachment(
             report_version_id=report_version_id,
@@ -50,7 +48,13 @@ def save_report_attachments(
     return 200
 
 
-@router.get("report-version/{report_version_id}/attachments")
+@router.get(
+    "report-version/{report_version_id}/attachments",
+    response={200: List[ReportAttachmentOut], custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Returns the list of file attachments for a report version.""",
+    auth=authorize("approved_industry_user"),
+)
 def load_report_attachments(
     request: HttpRequest,
     report_version_id: int,
@@ -58,7 +62,9 @@ def load_report_attachments(
     return ReportAttachment.objects.filter(report_version_id=report_version_id)
 
 
-@router.get("report-version/{report_version_id}/attachments/{file_id}")
+@router.get(
+    "report-version/{report_version_id}/attachments/{file_id}",
+)
 def download_report_attachment_file(request: HttpRequest, report_version_id: int, file_id: int):
 
     file = ReportAttachment.objects.get(id=file_id, report_version_id=report_version_id)

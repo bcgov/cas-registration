@@ -18,4 +18,4 @@ from .report_non_attributable_emissions import save_report
 from .report_activity import save_report_activity_data, load_report_activity_data
 from .report_facilities import get_report_facility_list_by_version_id
 from .report_verification import get_report_verification_by_version_id, save_report_verification
-from .attachments import save_report_attachments
+from .report_attachments import load_report_attachments, download_report_attachment_file

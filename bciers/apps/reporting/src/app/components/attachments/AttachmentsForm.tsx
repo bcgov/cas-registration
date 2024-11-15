@@ -6,10 +6,18 @@ import postAttachments from "@bciers/actions/api/postAttachments";
 import MultiStepWrapperWithTaskList from "./MultiStepWrapperWithTaskList";
 import AttachmentElement from "./AttachmentElement";
 import { useState } from "react";
+import { UploadedAttachment } from "./types";
 
-interface Props extends HasReportVersion {}
+interface Props extends HasReportVersion {
+  uploaded_attachments: {
+    [attachment_type: string]: UploadedAttachment;
+  };
+}
 
-const AttachmentsForm: React.FC<Props> = ({ version_id }) => {
+const AttachmentsForm: React.FC<Props> = ({
+  version_id,
+  uploaded_attachments,
+}) => {
   const taskListElements = getSignOffAndSubmitSteps(version_id);
   const [files, setFiles] = useState<{ [filename: string]: File }>({});
 
@@ -51,10 +59,12 @@ const AttachmentsForm: React.FC<Props> = ({ version_id }) => {
         <AttachmentElement
           title="Verification statement"
           onFileChange={(file) => handleChange("verification_statement", file)}
+          uploadedAttachment={uploaded_attachments.verification_statement}
         />
         <AttachmentElement
           title="WCI.352 and WCI.362"
           onFileChange={(file) => handleChange("wci_352_362", file)}
+          uploadedAttachment={uploaded_attachments.wci_352_362}
         />
       </MultiStepWrapperWithTaskList>
     </>

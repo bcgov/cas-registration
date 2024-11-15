@@ -1,20 +1,23 @@
 import { ChangeEvent, MutableRefObject, useRef, useState } from "react";
+import { UploadedAttachment } from "./types";
 
 interface Props {
-  value?: string;
+  uploadedAttachment?: UploadedAttachment;
   accept?: string;
   title: string;
   onFileChange: (file: File | undefined) => void;
 }
 
 const AttachmentElement: React.FC<Props> = ({
-  value,
+  uploadedAttachment,
   accept = "application/pdf",
   title,
   onFileChange,
 }) => {
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
-  const [currentValue, setCurrentValue] = useState(value);
+  const [currentValue, setCurrentValue] = useState(
+    uploadedAttachment?.file_name,
+  );
   const [currentFile, setCurrentFile] = useState<File>();
 
   const handleClick = () => {
@@ -31,7 +34,6 @@ const AttachmentElement: React.FC<Props> = ({
 
     if (evt.target.files.length > 0) {
       const file = evt.target.files[0];
-
       setCurrentFile(file);
       setCurrentValue(file.name);
       onFileChange(file);
@@ -63,9 +65,10 @@ const AttachmentElement: React.FC<Props> = ({
       {currentFile || currentValue ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
-            <a download={`preview`} href={"#"} className="file-download">
+            <a download={currentValue} href={"#"} className="file-download">
               {currentValue}
             </a>
+            {currentFile && <span className="ml-3">- will upload on save</span>}
           </li>
         </ul>
       ) : (
