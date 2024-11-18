@@ -19,8 +19,7 @@ export default async function OperationReviewFormData({
   const registrationPurpose = await getRegistrationPurpose(version_id);
   const facilityReport = await getFacilityReport(version_id);
 
-  const registrationPurposeString =
-    registrationPurpose?.registration_purposes?.join(", ") || "";
+  const registrationPurposeString = registrationPurpose?.registration_purposes;
 
   return (
     <OperationReview
