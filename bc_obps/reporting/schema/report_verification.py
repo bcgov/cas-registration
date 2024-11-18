@@ -11,7 +11,7 @@ class ReportVerificationIn(ModelSchema):
     verification_body_name: str
     accredited_by: str
     scope_of_verification: str
-    threats_to_independence: str
+    threats_to_independence: bool
     verification_conclusion: str
     visit_name: str
     visit_type: Optional[str] = Field(None)
