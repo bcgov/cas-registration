@@ -17,7 +17,7 @@ from ..schema.report_additional_data import ReportAdditionalDataOut, ReportAddit
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the registration purpose for the operation associated with the given report version ID.""",
-    auth=authorize("approved_industry_user"),
+    # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
