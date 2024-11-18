@@ -1,8 +1,7 @@
-from ninja import Schema
+from datetime import date
+
 from pydantic import BaseModel
 from typing import Dict, Optional, List
-
-from registration.schema.v1 import RegulatedProductSchema
 
 
 class EmissionAfterNewEntrantSchema(BaseModel):
@@ -43,28 +42,28 @@ class ReportNewEntrantSchemaIn(BaseModel):
     other_excluded_emissions: OtherExcludedEmissionsSchema
 
 
-class ReportNewEntrantSchemaOut(BaseModel):
-    authorization_date: Optional[str] = None
-    first_shipment_date: Optional[str] = None
-    new_entrant_period_start: Optional[str] = None
-    assertion_statement: Optional[bool] = None
-    flaring_emissions: Optional[int] = None
-    fugitive_emissions: Optional[int] = None
-    industrial_process_emissions: Optional[int] = None
-    on_site_transportation_emissions: Optional[int] = None
-    stationary_fuel_combustion_emissions: Optional[int] = None
-    venting_emissions_useful: Optional[int] = None
-    venting_emissions_non_useful: Optional[int] = None
-    emissions_from_waste: Optional[int] = None
-    emissions_from_wastewater: Optional[int] = None
-    co2_emissions_from_excluded_woody_biomass: Optional[int] = None
-    other_emissions_from_excluded_biomass: Optional[int] = None
-    emissions_from_excluded_non_biomass: Optional[int] = None
-    emissions_from_line_tracing: Optional[int] = None
-    emissions_from_fat_oil: Optional[int] = None
-    selected_products: Optional[List[Dict[int, Dict[str, int]]]] = None
+class ProductOut(BaseModel):
+    product_id: int
+    product_name: str
+    production_amount: int
 
 
-class ReportNewEntrantDataOut(Schema):
-    regulated_products: List[RegulatedProductSchema]
-    report_new_entrant_data: ReportNewEntrantSchemaOut
+class EmissionCategoryOut(BaseModel):
+    id: int
+    category_name: str
+    category_type: str
+
+
+class EmissionOut(BaseModel):
+    emission_category: EmissionCategoryOut
+    emission_amount: int
+
+
+class ReportNewEntrantDataOut(BaseModel):
+    report_version_id: int
+    authorization_date: Optional[date]
+    first_shipment_date: Optional[date]
+    new_entrant_period_start: Optional[date]
+    assertion_statement: bool
+    selected_products: List[ProductOut]
+    emissions: List[EmissionOut]

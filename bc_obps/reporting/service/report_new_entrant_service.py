@@ -5,25 +5,53 @@ from django.db import transaction
 from django.forms import model_to_dict
 
 from registration.models import RegulatedProduct
-from reporting.models import ReportVersion, ReportNewEntrant, ReportNewEntrantProduction
+from reporting.models import ReportVersion, ReportNewEntrant, ReportNewEntrantProduction, EmissionCategory
 from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
 
 
 class ReportNewEntrantService:
     @classmethod
     def get_new_entrant_data(cls, report_version_id: int) -> dict:
+        # Fetch the ReportNewEntrant instance
         report_new_entrant = ReportNewEntrant.objects.filter(report_version_id=report_version_id).first()
 
         if not report_new_entrant:
             return {}
 
+        # Initialize the result data dictionary
         result_data: Dict = model_to_dict(report_new_entrant, exclude=['selected_products'])
 
+        # Fetch production data and associated products
         result_data['selected_products'] = [
-            {production.product_id: {"production_amount": production.production_amount}}
+            {
+                "product_name": production.product.name,
+                "production_amount": production.production_amount,
+                "product_id": production.product.id,
+            }
             for production in report_new_entrant.productions.all()
         ]
 
+        # Get all emission categories
+        all_emission_categories = EmissionCategory.objects.all()
+
+        # Fetch emissions data, if it exists
+        emissions_map = {
+            emission.emission_category.id: emission.emission
+            for emission in report_new_entrant.report_new_entrant_emissions.all()
+        }
+
+        # Map all emission categories to emissions or return emission_amount as None if missing
+        result_data['emissions'] = [
+            {
+                "id": category.id,
+                "category_name": category.category_name,
+                "category_type": category.category_type,
+                "emission_amount": emissions_map.get(category.id),  # Returns None if no emission data
+            }
+            for category in all_emission_categories
+        ]
+
+        # Convert date fields to ISO format
         for key, value in result_data.items():
             if isinstance(value, date):
                 result_data[key] = value.isoformat()

@@ -80,7 +80,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     response={200: List[RegulatedProductOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves all regulated products associated with a report operation identified by its version ID.""",
-    # auth=authorize("approved_authorized_roles"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_regulated_products_by_version_id(
