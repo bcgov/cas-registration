@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0030_report_non_attributable_emissions'),
+        ('reporting', '0031_alter_reportemission_managers'),
     ]
 
     operations = [

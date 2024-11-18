@@ -132,7 +132,9 @@ describe("OperationReview Component", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Simple reports are submitted by operations/i),
+        screen.getByText(
+          /Simple Reports are submitted by reporting operations/i,
+        ),
       ).toBeInTheDocument();
     });
   });
