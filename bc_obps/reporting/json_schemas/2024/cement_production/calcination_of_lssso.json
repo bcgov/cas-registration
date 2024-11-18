@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "title": "Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material",
+  "properties": {
+    "emissions": {
+      "title": "Emission Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "title": "Gas type",
+            "type": "string",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emissions (tonnes)",
+            "type": "number"
+          },
+          "equivalentEmission": {
+            "title": "Equivalent emissions (tC02e)",
+            "type": "number",
+            "readOnly": true
+          },
+          "timesMissingDataProceduresWereFollowed": {
+            "title": "Number of times in the reporting year that missing data procedures were followed",
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

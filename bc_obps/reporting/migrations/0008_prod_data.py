@@ -574,6 +574,8 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Emissions Factor Methodology'),
             Methodology(name='WCI.203(f)(1)'),
             Methodology(name='WCI.203(f)(2)'),
+            Methodology(name='Calcination Emissions'),
+            Methodology(name='Oxidation Emissions'),
         ]
     )
 
@@ -608,6 +610,8 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Emissions Factor Methodology',
             'WCI.203(f)(1)',
             'WCI.203(f)(2)',
+            'Calcination Emissions',
+            'Oxidation Emissions',
         ]
     ).delete()
 
@@ -689,6 +693,19 @@ def init_reporting_field_data(apps, schema_monitor):
                 field_name='Annual Weighted Average Molecular Weight', field_type='number', field_units=None
             ),
             ReportingField(field_name='Molar Volume Conversion Factor', field_type='number', field_units=None),
+            ReportingField(field_name='Month', field_type='string', field_units=None),
+            ReportingField(field_name='Clinker Production (t)', field_type='number', field_units=None),
+            ReportingField(field_name='Emission Factor (t CO2/t clinker)', field_type='number', field_units=None),
+            ReportingField(field_name='Total Calcium Content of Clinker (weight fraction)', field_type='number', field_units=None),
+            ReportingField(field_name='Total Magnesium Content of Clinker (weight fraction)', field_type='number', field_units=None),
+            ReportingField(field_name='Non-calcined Calcium oxide content of Clinker (weight fraction)', field_type='number', field_units=None),
+            ReportingField(field_name='Non-calcined Magnesium oxide content of Clinker (weight fraction)', field_type='number', field_units=None),
+            ReportingField(field_name='Quantity of non-carbonate raw materials entering the kiln (tonnes)', field_type='number', field_units=None),
+            ReportingField(field_name='Quarter', field_type='string', field_units=None),
+            ReportingField(field_name='Quantity of CKD not recycled back to kilns (t)', field_type='number', field_units=None),
+            ReportingField(field_name='Emission Factor (t CO2/t CKD)', field_type='number', field_units=None),
+            ReportingField(field_name='Amount of raw material consumed (t)', field_type='number', field_units=None),
+            ReportingField(field_name='Raw material organic carbon content (weight fraction)', field_type='number', field_units=None),
         ]
     )
 
@@ -717,6 +734,19 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
             'Annual Weighted Average Carbon Content',
             'Annual Weighted Average Molecular Weight',
             'Molar Volume Conversion Factor',
+            'Month',
+            'Clinker Production (t)',
+            'Emission Factor (t CO2/t clinker)',
+            'Total Calcium Content of Clinker (weight fraction)',
+            'Total Magnesium Content of Clinker (weight fraction)',
+            'Non-calcined Calcium oxide content of Clinker (weight fraction)',
+            'Non-calcined Magnesium oxide content of Clinker (weight fraction)',
+            'Quantity of non-carbonate raw materials entering the kiln (tonnes)',
+            'Quarter',
+            'Quantity of CKD not recycled back to kilns (t)',
+            'Emission Factor (t CO2/t CKD)',
+            'Amount of raw material consumed (t)',
+            'Raw material organic carbon content (weight fraction)',
         ]
     ).delete()
 
