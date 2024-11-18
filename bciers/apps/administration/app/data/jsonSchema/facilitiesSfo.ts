@@ -76,6 +76,7 @@ const section2: RJSFSchema = {
       type: "string",
       title: "Province",
       anyOf: provinceOptions,
+      default: "BC",
     },
     postal_code: {
       type: "string",
