@@ -20,6 +20,7 @@ const ProductionData: React.FC<Props> = async ({
   const allowedProducts = response.allowed_products.map((p) => ({
     product_id: p.id,
     product_name: p.name,
+    unit: p.unit,
   }));
 
   const schema: any = buildProductionDataSchema(
