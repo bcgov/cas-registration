@@ -140,16 +140,6 @@ Define environment variables for the application.
   value: '*'
 - name: BACKEND_HOST
   value: {{ .Values.backend.route.host }}
-- name: DJANGO_SUPERUSER_USERNAME
-  valueFrom:
-    secretKeyRef:
-      key: username
-      name: django-superuser
-- name: DJANGO_SUPERUSER_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      key: password
-      name: django-superuser
 - name: GS_BUCKET_NAME
   valueFrom:
     secretKeyRef:
