@@ -51,7 +51,7 @@ def get_report_operation_by_version_id(
     response={201: ReportOperationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
-    Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, aznd Activities.""",
+    Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
@@ -79,7 +79,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     response={200: ReportingVersionOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Retrieve the report type for a specific reporting version, including the reporting year and due date.",
-    # auth=authorize("all_roles"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
