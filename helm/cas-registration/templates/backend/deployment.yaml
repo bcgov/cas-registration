@@ -21,34 +21,34 @@ spec:
 {{- include "cas-registration.selectorLabels" . | nindent 8 }}
         component: backend
     spec:
-      {{- if hasSuffix "-dev" .Release.Namespace }}
-      initContainers:
-        - name: create-superuser
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
-          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
-          command:
-            - "poetry"
-            - "run"
-            - "python"
-            - "manage.py"
-            - "create_superuser"
-          env:
-            {{- include "cas-registration.backendEnvVars" . | nindent 12 }}
-            - name: DJANGO_SUPERUSER_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: username
-                  name: django-superuser
-            - name: DJANGO_SUPERUSER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: password
-                  name: django-superuser
-          volumeMounts:
-            - mountPath: "/attachment-credentials"
-              name: gcs-attachment-credentials
-              readOnly: true
-      {{- end }}
+      # {{- if hasSuffix "-dev" .Release.Namespace }}
+      # initContainers:
+      #   - name: create-superuser
+      #     image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+      #     imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+      #     command:
+      #       - "poetry"
+      #       - "run"
+      #       - "python"
+      #       - "manage.py"
+      #       - "create_superuser"
+      #     env:
+      #       {{- include "cas-registration.backendEnvVars" . | nindent 12 }}
+      #       - name: DJANGO_SUPERUSER_USERNAME
+      #         valueFrom:
+      #           secretKeyRef:
+      #             key: username
+      #             name: django-superuser
+      #       - name: DJANGO_SUPERUSER_PASSWORD
+      #         valueFrom:
+      #           secretKeyRef:
+      #             key: password
+      #             name: django-superuser
+      #     volumeMounts:
+      #       - mountPath: "/attachment-credentials"
+      #         name: gcs-attachment-credentials
+      #         readOnly: true
+      # {{- end }}
       containers:
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
