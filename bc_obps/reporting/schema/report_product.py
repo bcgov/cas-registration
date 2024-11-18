@@ -25,7 +25,7 @@ class ReportProductSchemaIn(ReportProductSchema):
 class ReportProductSchemaOut(ReportProductSchema):
     product_id: int = Field(..., alias="product.id")
     product_name: str = Field(..., alias="product.name")
-    unit: str = "tonnes"
+    unit: str = Field(..., alias="product.unit")
 
 
 class ProductionDataOut(Schema):
