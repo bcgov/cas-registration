@@ -40,14 +40,8 @@ class ReportVerification(TimeStampedModel):
         db_comment="The scope of the verification"
     )
 
-    class ThreatsToIndependence(models.TextChoices):
-        YES = "Yes"
-        NO = "No"
-
-    threats_to_independence = models.CharField(
-        max_length=3,
-        choices=ThreatsToIndependence.choices,
-        db_comment="The indication of threats to independence"
+    threats_to_independence = models.BooleanField(
+        db_comment="Whether or not there is an indication of threats to independence", default=False
     )
 
     class VerificationConclusion(models.TextChoices):
