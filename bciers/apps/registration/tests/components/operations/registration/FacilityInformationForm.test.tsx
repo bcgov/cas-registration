@@ -92,9 +92,6 @@ const fillAddressFields = (index: number) => {
   fireEvent.change(screen.getAllByLabelText(/Municipality/i)[index], {
     target: { value: "Test City" },
   });
-  fireEvent.change(screen.getAllByLabelText(/Province/i)[index], {
-    target: { value: "BC" },
-  });
   fireEvent.change(screen.getAllByLabelText(/Postal Code/i)[index], {
     target: { value: "V8X3K1" },
   });
@@ -214,6 +211,7 @@ describe("the FacilityInformationForm component", () => {
             starting_date: "2024-01-01T09:00:00.000Z",
             street_address: "123 Test St",
             municipality: "Test City",
+            province: "BC",
             postal_code: "V8X3K1",
             latitude_of_largest_emissions: 0.1,
             longitude_of_largest_emissions: 0.1,
@@ -267,6 +265,7 @@ describe("the FacilityInformationForm component", () => {
             starting_date: "2024-01-01T09:00:00.000Z",
             street_address: "123 Test St",
             municipality: "Test City",
+            province: "BC",
             postal_code: "V8X3K1",
             latitude_of_largest_emissions: 0.1,
             longitude_of_largest_emissions: 0.1,
@@ -324,7 +323,7 @@ describe("the FacilityInformationForm component", () => {
         fireEvent.click(submitButton);
       });
 
-      const mockData = {
+      const expectedMockData = {
         name: "Test Facility",
         type: "Large Facility",
         well_authorization_numbers: [],
@@ -332,6 +331,7 @@ describe("the FacilityInformationForm component", () => {
         starting_date: "2024-01-01T09:00:00.000Z",
         street_address: "123 Test St",
         municipality: "Test City",
+        province: "BC",
         postal_code: "V8X3K1",
         latitude_of_largest_emissions: 0.1,
         longitude_of_largest_emissions: 0.1,
@@ -343,7 +343,7 @@ describe("the FacilityInformationForm component", () => {
         "POST",
         "",
         {
-          body: JSON.stringify([mockData, mockData]),
+          body: JSON.stringify([expectedMockData, expectedMockData]),
         },
       );
     },
