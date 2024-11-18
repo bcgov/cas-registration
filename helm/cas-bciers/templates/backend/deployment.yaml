@@ -34,6 +34,16 @@ spec:
             - "create_superuser"
           env:
             {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
+            - name: DJANGO_SUPERUSER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: django-superuser
+            - name: DJANGO_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: django-superuser
           volumeMounts:
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials
@@ -45,6 +55,18 @@ spec:
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
             {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
+            {{- if hasSuffix "-dev" .Release.Namespace }}
+            - name: DJANGO_SUPERUSER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: django-superuser
+            - name: DJANGO_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: django-superuser
+            {{- end }}
             {{- if hasSuffix "-prod" .Release.Namespace }}
             - name: SENTRY_ENVIRONMENT
               value: {{ include "cas-bciers.namespaceSuffix" . }}
