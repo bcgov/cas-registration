@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import SignOffPage from "@reporting/src/app/components/signOff/signOffPage";
+import SignOffPage from "@reporting/src/app/components/signOff/SignOffPage";
 
 describe("SignOffPage Component", () => {
   it("renders the form with correct fields and values", async () => {

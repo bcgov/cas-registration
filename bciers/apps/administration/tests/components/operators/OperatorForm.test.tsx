@@ -6,10 +6,10 @@ import { operatorSchema } from "apps/administration/app/data/jsonSchema/operator
 import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
 import { createOperatorSchema } from "apps/administration/app/components/operators/OperatorPage";
 
-import expectButton from "../helpers/expectButton";
-import expectField from "../helpers/expectField";
-import expectHeader from "../helpers/expectHeader";
-import { mockUseSession } from "../helpers/mockUseSession";
+import expectButton from "@bciers/testConfig/helpers/expectButton";
+import expectField from "@bciers/testConfig/helpers/expectField";
+import expectHeader from "@bciers/testConfig/helpers/expectHeader";
+import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 
 import { FrontendMessages } from "@bciers/utils/src/enums";
 

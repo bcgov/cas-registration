@@ -8,9 +8,9 @@ import {
 
 import SelectOperatorConfirmPage from "apps/administration/app/components/userOperators/SelectOperatorConfirmPage";
 
-import { expectIcon } from "../helpers/expectIcon";
-import { expectLink } from "../helpers/expectLink";
-import { expectMessage } from "../helpers/expectMessage";
+import { expectIcon } from "@bciers/testConfig/helpers/expectIcon";
+import { expectLink } from "@bciers/testConfig/helpers/expectLink";
+import { expectMessage } from "@bciers/testConfig/helpers/expectMessage";
 import { id, operatorJSON } from "./constants";
 
 // ⛏️ Helper function to mock the state of the operator based on admin presence and access decline status

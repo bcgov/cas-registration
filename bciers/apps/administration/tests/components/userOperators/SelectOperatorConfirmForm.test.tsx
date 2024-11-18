@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import SelectOperatorConfirmForm from "apps/administration/app/components/userOperators/SelectOperatorConfirmForm";
-import { expectButton } from "../helpers/expectButton";
-import { expectIcon } from "../helpers/expectIcon";
-import { expectLink } from "../helpers/expectLink";
-import { expectMessage } from "../helpers/expectMessage";
+import { expectButton } from "@bciers/testConfig/helpers/expectButton";
+import { expectIcon } from "@bciers/testConfig/helpers/expectIcon";
+import { expectLink } from "@bciers/testConfig/helpers/expectLink";
+import { expectMessage } from "@bciers/testConfig/helpers/expectMessage";
 
 const operatorJSON = {
   id: 1,
