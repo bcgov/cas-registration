@@ -84,6 +84,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
@@ -94,7 +95,7 @@
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990001",
-      "regulated_products": [],
+      "regulated_products": [1, 2],
       "status": "Draft",
       "created_at": "2024-1-29T15:27:00.000Z",
       "activities": [1, 5]
@@ -102,6 +103,7 @@
   },
   {
     "model": "registration.operation",
+
     "pk": "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
