@@ -25,9 +25,7 @@ from registration.models import (
 
 admin.site.register(AppRole)
 admin.site.register(NaicsCode)
-admin.site.register(User)
 admin.site.register(Operator)
-admin.site.register(UserOperator)
 admin.site.register(ParentOperator)
 admin.site.register(RegulatedProduct)
 admin.site.register(Activity)
@@ -103,3 +101,27 @@ class DocumentAdmin(admin.ModelAdmin):
     @staticmethod
     def type_name(obj: Document) -> str:
         return obj.type.name
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('user_guid', 'first_name', 'last_name', 'email', 'position_title', 'role')
+    search_fields = ('user_guid', 'first_name', 'last_name')
+
+    @staticmethod
+    def role(obj: User) -> str:
+        return obj.app_role.role_name
+
+
+@admin.register(UserOperator)
+class UserOperatorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user_full_name', 'operator_legal_name', 'role', 'status')
+    ordering = ('-created_at',)
+
+    @staticmethod
+    def user_full_name(obj: UserOperator) -> str:
+        return obj.user.first_name + ' ' + obj.user.last_name
+
+    @staticmethod
+    def operator_legal_name(obj: UserOperator) -> str:
+        return obj.operator.legal_name
