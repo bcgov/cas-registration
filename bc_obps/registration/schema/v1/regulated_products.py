@@ -9,4 +9,4 @@ class RegulatedProductSchema(ModelSchema):
 
     class Meta:
         model = RegulatedProduct
-        fields = ["id", "name", "unit","is_regulated"]
+        fields = ["id", "name", "unit", "is_regulated"]
