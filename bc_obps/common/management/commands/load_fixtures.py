@@ -18,6 +18,7 @@ class Command(BaseCommand):
             f'{fixture_base_dir}/bc_greenhouse_gas_id.json',
             f'{fixture_base_dir}/operator.json',
             f'{fixture_base_dir}/operation.json',
+            f'{fixture_base_dir}/multiple_operator.json',
             f'{fixture_base_dir}/document.json',
             f'{fixture_base_dir}/user_operator.json',
             f'{fixture_base_dir}/facility.json',
