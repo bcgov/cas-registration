@@ -1,4 +1,7 @@
 from typing import Any, Dict
+
+from model_bakery import baker
+
 from registration.models.operator import Operator
 from registration.models.user_operator import UserOperator
 
@@ -269,3 +272,56 @@ class TestCreateUserOperator(CommonTestSetup):
         assert user_operator is not None
         assert user_operator.role == UserOperator.Roles.ADMIN
         assert user_operator.status == UserOperator.Statuses.APPROVED
+
+
+class TestListUserOperators(CommonTestSetup):
+    def test_list_user_operators_v2_returns_valid_data(self):
+        approved_admin_user_operators = []
+        for _ in range(2):
+            # add 2 approved admin user operators to test the endpoint
+            approved_admin_user_operators.append(
+                baker.make_recipe(
+                    'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+                )
+            )
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("list_user_operators_v2"))
+
+        assert response.status_code == 200
+        response_data = response.json()
+        assert len(response_data) == 2
+        # assert one of the approved admin user operators is in the response
+        approved_admin_user_operator_to_check = approved_admin_user_operators[0]
+        approved_admin_user_operator_in_response = next(
+            (
+                user_operator
+                for user_operator in response_data["items"]
+                if user_operator["id"] == str(approved_admin_user_operator_to_check.id)
+            ),
+            None,
+        )
+        assert approved_admin_user_operator_in_response is not None
+        assert approved_admin_user_operator_in_response["id"] == str(approved_admin_user_operator_to_check.id)
+        assert (
+            approved_admin_user_operator_in_response["user_friendly_id"]
+            == approved_admin_user_operator_to_check.user_friendly_id
+        )
+        assert approved_admin_user_operator_in_response["status"] == approved_admin_user_operator_to_check.status
+        assert (
+            approved_admin_user_operator_in_response["user__first_name"]
+            == approved_admin_user_operator_to_check.user.first_name
+        )
+        assert (
+            approved_admin_user_operator_in_response["user__last_name"]
+            == approved_admin_user_operator_to_check.user.last_name
+        )
+        assert (
+            approved_admin_user_operator_in_response["user__email"] == approved_admin_user_operator_to_check.user.email
+        )
+        assert (
+            approved_admin_user_operator_in_response["user__bceid_business_name"]
+            == approved_admin_user_operator_to_check.user.bceid_business_name
+        )
+        assert (
+            approved_admin_user_operator_in_response["operator__legal_name"]
+            == approved_admin_user_operator_to_check.operator.legal_name
+        )
