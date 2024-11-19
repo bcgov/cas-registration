@@ -287,6 +287,4 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.updated_by == self.user
         assert self.operation.updated_at == self.updated_at
 
-        # two below assertions are not working, but they will be fixed in the PR related to ticket #2169
-        # assert self.operation.registration_purposes.count() == 1
-        # assert self.operation.registration_purposes.first().purpose == RegistrationPurpose.Purposes.REPORTING_OPERATION
+        assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
