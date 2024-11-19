@@ -1,4 +1,3 @@
-import re
 from registration.models import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
