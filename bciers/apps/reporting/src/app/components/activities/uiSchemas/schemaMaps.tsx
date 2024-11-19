@@ -16,6 +16,7 @@ import ogExtractionNonCompressionUiSchema from "./ogExtractionNonCompressionUiSc
 import industrialWastewaterProcessingUiSchema from "@reporting/src/app/components/activities/uiSchemas/industrialWastewaterProcessingUiSchema";
 import ogExtractionOtherThanNcNpUiSchema from "./ogExtractionOtherThanNcNpUiSchema";
 import electricityGenerationUiSchema from "./electricityGenerationUiSchema";
+import cementProductionUISchema from "./cementProductionUISchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -43,6 +44,7 @@ export const uiSchemaMap: UiSchemaMap = {
   ind_wastewater_processing: industrialWastewaterProcessingUiSchema,
   og_activities_other_than_non_compression: ogExtractionOtherThanNcNpUiSchema,
   electricity_generation: electricityGenerationUiSchema,
+  cement_production: cementProductionUISchema,
 };
 
 export const getUiSchema = (slug: string) => {
