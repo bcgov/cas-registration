@@ -20,7 +20,8 @@
           "equivalentEmission": {
             "title": "Equivalent emissions (tC02e)",
             "type": "number",
-            "readOnly": true
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
           },
           "timesMissingDataProceduresWereFollowed": {
             "title": "Number of times in the reporting year that missing data procedures were followed",
