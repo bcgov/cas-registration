@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0054_V1_13_0'),
-        ('reporting', '0030_report_non_attributable_emissions'),
+        ('reporting', '0031_alter_reportemission_managers'),
     ]
 
     operations = [

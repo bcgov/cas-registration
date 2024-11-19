@@ -54,6 +54,7 @@ const AttachmentElement: React.FC<Props> = ({
         className="hidden"
         value=""
         accept={accept}
+        data-testid="attachment-file-picker"
       />
       {fileName ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
