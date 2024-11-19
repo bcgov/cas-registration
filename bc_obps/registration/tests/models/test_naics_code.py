@@ -16,4 +16,5 @@ class NaicsCodeModelTest(BaseTestCase):
             ("operations", "operation", None, None),
             ("operations_naics_secondary", "operation", None, None),
             ("operations_naics_tertiary", "operation", None, None),
+            ("naicsregulatoryvalue_records", "naics regulatory value", None, None),
         ]
