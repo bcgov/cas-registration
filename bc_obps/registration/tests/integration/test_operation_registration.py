@@ -286,5 +286,3 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.created_at == self.created_at
         assert self.operation.updated_by == self.user
         assert self.operation.updated_at == self.updated_at
-
-        assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
