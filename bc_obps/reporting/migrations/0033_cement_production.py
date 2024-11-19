@@ -242,7 +242,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
+        methodology_id=Methodology.objects.get(name='Oxidation Emissions').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
@@ -254,7 +254,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
+        methodology_id=Methodology.objects.get(name='Oxidation Emissions').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
@@ -267,7 +267,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
@@ -280,7 +280,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
+        methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
