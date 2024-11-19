@@ -101,7 +101,6 @@ class TestInitialData(TestCase):
                 ('331511', 'Iron foundries'),
                 ('412110', 'Petroleum, petroleum products, and other hydrocarbons merchant wholesalers'),
                 ('486210', 'Pipeline transportation of natural gas'),
-                ('418990', 'All other merchant wholesalers'),
             ]
         )
         existing_codes = sorted(list(NaicsCode.objects.values_list('naics_code', 'naics_description')))
