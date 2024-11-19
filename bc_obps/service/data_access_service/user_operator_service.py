@@ -61,7 +61,7 @@ class UserOperatorDataAccessService:
     def get_admin_user_operator_requests_for_irc_users(cls) -> QuerySet[UserOperator]:
         # Base query excluding operators with status 'Declined'
         qs = UserOperator.objects.select_related("user", "operator").exclude(
-            operator__status=UserOperator.Statuses.DECLINED
+            operator__status=Operator.Statuses.DECLINED
         )
         # Subquery to check if an approved admin user exists for the operator
         approved_admin_operator_exists = UserOperator.objects.filter(
