@@ -34,6 +34,6 @@ spec:
           command:
             - /bin/sh
             - -ec
-            - "curl -fail-with-body https://$(BACKEND_HOST)/api/common/create-superuser"
+            - "curl --fail-with-body https://$(BACKEND_HOST)/api/common/create-superuser"
       restartPolicy: Never
 {{ end }}
