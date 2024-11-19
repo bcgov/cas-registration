@@ -1,5 +1,5 @@
 import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
-import { getOperationV2 } from "@bciers/actions/api";
+import { getOperationRegistration } from "@bciers/actions/api";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
@@ -16,7 +16,7 @@ const OperationInformationPage = async ({
 }) => {
   let formData: OperationInformationFormData | { error: string } | {} = {};
   if (operation && isValidUUID(operation))
-    formData = await getOperationV2(operation);
+    formData = await getOperationRegistration(operation);
 
   if (formData && "error" in formData)
     // using dot notation for error raises a TS error
