@@ -36,6 +36,7 @@ const auth = vi.fn();
 const fetchOperationsPageData = vi.fn();
 const fetchOperatorsPageData = vi.fn();
 const fetchTransferEventsPageData = vi.fn();
+const getUserOperatorsPageData = vi.fn();
 
 export {
   actionHandler,
@@ -49,6 +50,7 @@ export {
   useSession,
   fetchOperationsPageData,
   fetchOperatorsPageData,
+  getUserOperatorsPageData,
   notFound,
   fetchTransferEventsPageData,
 };
