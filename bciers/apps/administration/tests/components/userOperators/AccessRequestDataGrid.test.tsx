@@ -86,11 +86,13 @@ describe("Access Requests DataGrid", () => {
     // Check Actions
     expect(screen.getAllByRole("button", { name: "Approve" })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: "Decline" })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "Undo" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Edit" })).toHaveLength(2);
   });
   it("user can APPROVE the request", async () => {
     handleAccessRequestStatus.mockResolvedValue({
       status: "Approved",
+      first_name: "John",
+      last_name: "Doe",
     });
     render(<AccessRequestDataGrid initialData={mockInitialData} />);
     const approveButton = screen.getByRole("button", { name: "Approve" });
@@ -104,10 +106,13 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getAllByRole("gridcell", { name: "Approved" })).toHaveLength(
       2,
     );
+    expect(screen.getByText(/John Doe is now approved/i));
   });
   it("user can DECLINE the request", async () => {
     handleAccessRequestStatus.mockResolvedValue({
       status: "Declined",
+      first_name: "John",
+      last_name: "Doe",
     });
     render(<AccessRequestDataGrid initialData={mockInitialData} />);
     const declineButton = screen.getByRole("button", { name: "Decline" });
@@ -121,13 +126,16 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getAllByRole("gridcell", { name: "Declined" })).toHaveLength(
       2,
     );
+    expect(screen.getByText(/John Doe is now declined/i));
   });
-  it("user can UNDO the request", async () => {
+  it("user can EDIT the request", async () => {
     handleAccessRequestStatus.mockResolvedValue({
       status: "Pending",
+      first_name: "John",
+      last_name: "Doe",
     });
     render(<AccessRequestDataGrid initialData={mockInitialData} />);
-    const undoButton = screen.getAllByRole("button", { name: "Undo" })[0];
+    const undoButton = screen.getAllByRole("button", { name: "Edit" })[0];
     await userEvent.click(undoButton);
     expect(handleAccessRequestStatus).toHaveBeenCalledWith(
       "2",
@@ -138,5 +146,6 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getAllByRole("gridcell", { name: "Pending" })).toHaveLength(
       2,
     );
+    expect(screen.getByText(/John Doe is now pending/i));
   });
 });
