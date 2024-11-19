@@ -241,12 +241,6 @@ def init_product_emission_intensity_data(apps, schema_monitor):
                 valid_from='2023-01-01',
                 valid_to='9999-12-31',
             ),
-            ProductEmissionIntensity(
-                product_id=(Product.objects.get(name='Wood products: wood pellets').id),
-                product_weighted_average_emission_intensity='0.1048',
-                valid_from='2023-01-01',
-                valid_to='9999-12-31',
-            ),
         ]
     )
 
