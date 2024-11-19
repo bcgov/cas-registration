@@ -10,13 +10,240 @@ def init_product_emission_intensity_data(apps, schema_monitor):
     '''
 
     Product = apps.get_model('registration', 'RegulatedProduct')
-    ProductEmissionIntensity = apps.get_model('reporting', 'NaicsRegulatoryValue')
+    ProductEmissionIntensity = apps.get_model('reporting', 'ProductEmissionIntensity')
     ProductEmissionIntensity.objects.bulk_create(
         [
             ProductEmissionIntensity(
-                naics_code_id=(Product.objects.get().id),
-                reduction_factor='0.65',
-                tightening_rate='0.01',
+                product_id=(Product.objects.get(name='BC-specific refinery complexity throughput').id),
+                product_weighted_average_emission_intensity='0.0049',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Cement equivalent').id),
+                product_weighted_average_emission_intensity='0.6262',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Chemicals: pure hydrogen peroxide').id),
+                product_weighted_average_emission_intensity='1.0700',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Compression, centrifugal - consumed energy').id),
+                product_weighted_average_emission_intensity='0.4513',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Compression, positve displacement - consumed energy').id),
+                product_weighted_average_emission_intensity='0.5547',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Forged steel balls: less than 3.5 inches diameter').id),
+                product_weighted_average_emission_intensity='0.1055',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Forged steel balls: greater than 4 inches diameter').id),
+                product_weighted_average_emission_intensity='0.1830',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Gypsum wallboard').id),
+                product_weighted_average_emission_intensity='0.1183',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Lime at 94.5% CaO and lime kiln dust').id),
+                product_weighted_average_emission_intensity='1.0663',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Limestone for sale').id),
+                product_weighted_average_emission_intensity='0.0192',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Liquefied natural gas').id),
+                product_weighted_average_emission_intensity='0',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Mining: coal').id),
+                product_weighted_average_emission_intensity='0.0457',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Mining: copper-equivalent, open pit').id),
+                product_weighted_average_emission_intensity='1.6262',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Mining: copper-equivalent, underground').id),
+                product_weighted_average_emission_intensity='0.4236',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Mining: critical mineral, other than copper').id),
+                product_weighted_average_emission_intensity='0',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Mining: gold-equivalent').id),
+                product_weighted_average_emission_intensity='3868.9968',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Processing sour gas - oil equivalent').id),
+                product_weighted_average_emission_intensity='0.0786',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Processing sweet gas - oil equivalent').id),
+                product_weighted_average_emission_intensity='0.0192',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Pulp and paper: chemical pulp').id),
+                product_weighted_average_emission_intensity='0.3177',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Pulp and paper: non-chemical pulp').id),
+                product_weighted_average_emission_intensity='0.1258',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Pulp and paper: paper (except newsprint and tissue paper)').id),
+                product_weighted_average_emission_intensity='0.1129',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Pulp and paper: tissue Paper').id),
+                product_weighted_average_emission_intensity='0.2606',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Rendering and meat processing: protein and fat').id),
+                product_weighted_average_emission_intensity='0.3862',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Renewable diesel').id),
+                product_weighted_average_emission_intensity='0',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Smelting: aluminum').id),
+                product_weighted_average_emission_intensity='2.4307',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Smelting: lead-zinc').id),
+                product_weighted_average_emission_intensity='1.1622',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Sold electricity').id),
+                product_weighted_average_emission_intensity='52.0363',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Sold Heat').id),
+                product_weighted_average_emission_intensity='0.0078',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Steel wire: HDG-process (hot dip galvanization)').id),
+                product_weighted_average_emission_intensity='0.1736',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Steel wire: Non-HDG').id),
+                product_weighted_average_emission_intensity='0.0055',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Sugar: liquid').id),
+                product_weighted_average_emission_intensity='0.2593',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Sugar: solid').id),
+                product_weighted_average_emission_intensity='0.2369',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Wood products: lumber').id),
+                product_weighted_average_emission_intensity='0.0196',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Wood products: medium density fibreboard (MDF)').id),
+                product_weighted_average_emission_intensity='0.0817',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Wood products: plywood').id),
+                product_weighted_average_emission_intensity='0.0784',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Wood products: veneer').id),
+                product_weighted_average_emission_intensity='0.0849',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Wood products: wood chips (including hog fuel)').id),
+                product_weighted_average_emission_intensity='0.0075',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Wood products: wood pellets').id),
+                product_weighted_average_emission_intensity='0.1048',
+                valid_from='2023-01-01',
+                valid_to='9999-12-31',
+            ),
+            ProductEmissionIntensity(
+                product_id=(Product.objects.get(name='Wood products: wood pellets').id),
+                product_weighted_average_emission_intensity='0.1048',
                 valid_from='2023-01-01',
                 valid_to='9999-12-31',
             ),
@@ -75,4 +302,5 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'This table contains the emission intensity value of a product and the from/to date values that the emission intesity is valid for that product.',
             },
         ),
+        migrations.RunPython(init_product_emission_intensity_data),  # No revert necessary
     ]
