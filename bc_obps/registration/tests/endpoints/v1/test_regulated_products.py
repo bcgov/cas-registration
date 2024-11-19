@@ -1,3 +1,4 @@
+import re
 from registration.models import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -12,3 +13,4 @@ class TestRegulatedProductsEndpoint(CommonTestSetup):
         assert len(response.json()) == RegulatedProduct.objects.count()
         assert response.json()[0]["id"] is not None
         assert response.json()[0]["name"] is not None
+        assert response.json()[0]["is_regulated"] is not None

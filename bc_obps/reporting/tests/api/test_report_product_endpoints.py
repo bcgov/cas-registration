@@ -43,13 +43,13 @@ class TestReportProductEndpoints(CommonTestSetup):
         )
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
-
         assert response.json() == {
             "report_products": [
                 {
                     "product_id": rp1.product.id,
                     "product_name": rp1.product.name,
-                    "unit": "tonnes",
+                    "unit": rp1.product.unit,
+                    "is_regulated": rp1.product.is_regulated,
                     "annual_production": rp1.annual_production,
                     "production_data_apr_dec": rp1.production_data_apr_dec,
                     "production_methodology": rp1.production_methodology,
@@ -57,7 +57,8 @@ class TestReportProductEndpoints(CommonTestSetup):
                 {
                     "product_id": rp2.product.id,
                     "product_name": rp2.product.name,
-                    "unit": "tonnes",
+                    "unit": rp2.product.unit,
+                    "is_regulated": rp2.product.is_regulated,
                     "annual_production": rp2.annual_production,
                     "production_data_apr_dec": rp2.production_data_apr_dec,
                     "production_methodology": rp2.production_methodology,
@@ -71,14 +72,20 @@ class TestReportProductEndpoints(CommonTestSetup):
                 {
                     "id": 1,
                     "name": RegulatedProduct.objects.get(id=1).name,
+                    "unit": RegulatedProduct.objects.get(id=1).unit,
+                    "is_regulated": RegulatedProduct.objects.get(id=1).is_regulated,
                 },
                 {
                     "id": 2,
                     "name": RegulatedProduct.objects.get(id=2).name,
+                    "unit": RegulatedProduct.objects.get(id=2).unit,
+                    "is_regulated": RegulatedProduct.objects.get(id=2).is_regulated,
                 },
                 {
                     "id": 3,
                     "name": RegulatedProduct.objects.get(id=3).name,
+                    "unit": RegulatedProduct.objects.get(id=3).unit,
+                    "is_regulated": RegulatedProduct.objects.get(id=3).is_regulated,
                 },
             ],
         }
