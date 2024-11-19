@@ -83,6 +83,7 @@ const section2: RJSFSchema = {
       type: "string",
       title: "Province",
       anyOf: provinceOptions,
+      default: "BC",
     },
     postal_code: {
       type: "string",
@@ -147,7 +148,7 @@ export const facilitiesLfoUiSchema = {
   section2: {
     "ui:FieldTemplate": SectionFieldTemplate,
     province: {
-      "ui:widget": "ComboBox",
+      "ui:widget": "ReadOnlyComboBoxWidget",
     },
     postal_code: {
       "ui:widget": "PostalCodeWidget",
