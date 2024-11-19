@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { actionHandler } from "../../../../../libs/actions/src/actions";
 
 async function postAttachments(report_version_id: number, fileData: FormData) {

@@ -2,12 +2,12 @@
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 import { HasReportVersion } from "../../utils/defaultPageFactory";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
-import MultiStepWrapperWithTaskList from "./MultiStepWrapperWithTaskList";
 import AttachmentElement from "./AttachmentElement";
 import { useState } from "react";
 import { UploadedAttachment } from "./types";
 import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -72,7 +72,6 @@ const AttachmentsForm: React.FC<Props> = ({
       onFileChange={(file) => handleChange(fileType, file)}
       fileId={getFileId(fileType)}
       fileName={getFileName(fileType)}
-      reportVersionId={version_id}
     />
   );
 
