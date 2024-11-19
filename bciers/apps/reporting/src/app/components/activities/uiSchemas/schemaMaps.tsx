@@ -59,5 +59,5 @@ export const defaultEmtpySourceTypeMap: DefaultEmptySourceTypeMap = {
   carbonate_use: onlyEmissions,
   open_pit_coal_mining: onlyEmissions,
   storage_petro_products: onlyEmissions,
-  calcinationUsedToProductClinker: onlyEmissions
+  calcinationUsedToProductClinker: onlyEmissions,
 };
