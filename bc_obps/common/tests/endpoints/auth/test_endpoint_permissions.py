@@ -64,6 +64,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_registration_purpose_by_version_id",
                 "kwargs": {"version_id": mock_int},
             },
+            {
+                "method": "get",
+                "endpoint_name": "get_report_facility_list_by_version_id",
+                "kwargs": {"version_id": mock_int},
+            },
             {"method": "get", "endpoint_name": "get_gas_type"},
             {"method": "get", "endpoint_name": "get_emission_category"},
             {
@@ -100,6 +105,11 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "post",
                 "endpoint_name": "save_report_additional_data",
+                "kwargs": {"version_id": mock_int},
+            },
+            {
+                "method": "post",
+                "endpoint_name": "save_report_verification",
                 "kwargs": {"version_id": mock_int},
             },
             {"method": "post", "endpoint_name": "save_report_contact", "kwargs": {"version_id": mock_int}},
