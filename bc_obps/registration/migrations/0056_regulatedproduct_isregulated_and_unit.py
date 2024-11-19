@@ -137,15 +137,15 @@ class Migration(migrations.Migration):
         RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
 
         RegulatedProduct.objects.create(
-                name='Oil and gas non-processing, non-compression',
-                unit=None,
-                is_regulated=False,
-            )
+            name='Oil and gas non-processing, non-compression',
+            unit=None,
+            is_regulated=False,
+        )
         RegulatedProduct.objects.create(
-                name='Fat, oil and grease collection, refining and storage',
-                unit=None,
-                is_regulated=False,
-            )
+            name='Fat, oil and grease collection, refining and storage',
+            unit=None,
+            is_regulated=False,
+        )
 
     operations = [
         migrations.AddField(
@@ -157,7 +157,7 @@ class Migration(migrations.Migration):
             model_name='historicalregulatedproduct',
             name='unit',
             field=models.CharField(
-                db_comment='The unit of measure for the regulated product', max_length=1000, null=True
+                db_comment='The unit of measure for the regulated product', max_length=1000, blank=True
             ),
         ),
         migrations.AddField(
@@ -169,7 +169,7 @@ class Migration(migrations.Migration):
             model_name='regulatedproduct',
             name='unit',
             field=models.CharField(
-                db_comment='The unit of measure for the regulated product', max_length=1000, null=True
+                db_comment='The unit of measure for the regulated product', max_length=1000, blank=True
             ),
         ),
         migrations.RunPython(update_regulated_product_units_and_is_regulated),
