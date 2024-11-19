@@ -112,9 +112,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Month', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Month', field_units__isnull=True))
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
         source_type_id=SourceType.objects.get(
@@ -124,9 +122,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Clinker Production (t)', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Clinker Production (t)', field_units__isnull=True))
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
         source_type_id=SourceType.objects.get(
@@ -149,7 +145,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Total Calcium Content of Clinker (weight fraction)', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Total Calcium Content of Clinker (weight fraction)', field_units__isnull=True
+        )
     )
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -161,7 +159,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Total Magnesium Content of Clinker (weight fraction)', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Total Magnesium Content of Clinker (weight fraction)', field_units__isnull=True
+        )
     )
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -173,7 +173,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Non-calcined Calcium oxide content of Clinker (weight fraction)', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Non-calcined Calcium oxide content of Clinker (weight fraction)', field_units__isnull=True
+        )
     )
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -185,7 +187,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Non-calcined Magnesium oxide content of Clinker (weight fraction)', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Non-calcined Magnesium oxide content of Clinker (weight fraction)', field_units__isnull=True
+        )
     )
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -197,7 +201,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Quantity of non-carbonate raw materials entering the kiln (tonnes)', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Quantity of non-carbonate raw materials entering the kiln (tonnes)', field_units__isnull=True
+        )
     )
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -208,9 +214,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Quarter', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Quarter', field_units__isnull=True))
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
         source_type_id=SourceType.objects.get(
@@ -221,7 +225,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Quantity of CKD not recycled back to kilns (t)', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Quantity of CKD not recycled back to kilns (t)', field_units__isnull=True
+        )
     )
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -258,7 +264,9 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Raw material organic carbon content (weight fraction)', field_units__isnull=True)
+        ReportingField.objects.get(
+            field_name='Raw material organic carbon content (weight fraction)', field_units__isnull=True
+        )
     )
     # Alternative Parameter Methodology
     ConfigurationElement.objects.get(
@@ -270,9 +278,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # Replacement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -283,9 +289,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Description', field_units__isnull=True)
-    )
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
 
 def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
@@ -373,9 +377,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     '''
     ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
-    ActivitySourceTypeJsonSchema.objects.filter(
-        activity_id=Activity.objects.get(name='Cement production').id
-    ).delete()
+    ActivitySourceTypeJsonSchema.objects.filter(activity_id=Activity.objects.get(name='Cement production').id).delete()
 
 
 class Migration(migrations.Migration):

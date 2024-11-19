@@ -92,6 +92,8 @@ class TestInitialData(TestCase):
                 "Direct measurement",
                 "Mass balance",
                 "Measured heat",
+                "Calcination Emissions",
+                "Oxidation Emissions",
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
