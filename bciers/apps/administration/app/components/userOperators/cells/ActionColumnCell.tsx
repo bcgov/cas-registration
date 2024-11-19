@@ -9,10 +9,13 @@ import {
   AccessRequestGridRenderCellParams,
   AccessRequestStatusAction,
 } from "@/administration/app/components/userOperators/types";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import handleAccessRequestStatus from "./handleAccessRequestStatus";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const {
     status: userOperatorStatus,
     id: userOperatorId,
@@ -43,7 +46,7 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
           return [
             {
               statusTo: Status.PENDING,
-              title: "Undo",
+              title: "Edit",
               color: "primary",
             },
           ];
@@ -55,36 +58,51 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
   );
 
   return (
-    <Stack direction="row" spacing={1}>
-      {buttonsToShow(userOperatorStatus).map((item, index) => (
-        <Button
-          variant={item.title === "Undo" ? "text" : "outlined"}
-          key={index}
-          onClick={async () => {
-            const res = await handleAccessRequestStatus(
-              userOperatorId,
-              item.statusTo,
-              userOperatorRole as UserOperatorRoles,
-            );
-            params.api.updateRows([
-              {
-                ...params.row,
-                // If the user is pending, we want to default the access type dropdown to Reporter
-                userRole:
-                  item.statusTo === Status.PENDING
-                    ? "reporter"
-                    : userOperatorRole,
-                status: res.status,
-              },
-            ]);
-          }}
-          color={item.color}
-          endIcon={item.icon}
-        >
-          {item.title}
-        </Button>
-      ))}
-    </Stack>
+    <>
+      <Stack direction="row" spacing={1}>
+        {buttonsToShow(userOperatorStatus).map((item, index) => (
+          <Button
+            variant={item.title === "Undo" ? "text" : "outlined"}
+            key={index}
+            onClick={async () => {
+              const res = await handleAccessRequestStatus(
+                userOperatorId,
+                item.statusTo,
+                userOperatorRole as UserOperatorRoles,
+              );
+              if (!res?.error) {
+                setSnackbarMessage(
+                  `${res.first_name} ${
+                    res.last_name
+                  } is now ${res.status.toLowerCase()}`,
+                );
+                setIsSnackbarOpen(true);
+              }
+              params.api.updateRows([
+                {
+                  ...params.row,
+                  // If the user is pending, we want to default the access type dropdown to Reporter
+                  userRole:
+                    item.statusTo === Status.PENDING
+                      ? "reporter"
+                      : userOperatorRole,
+                  status: res.status,
+                },
+              ]);
+            }}
+            color={item.color}
+            endIcon={item.icon}
+          >
+            {item.title}
+          </Button>
+        ))}
+      </Stack>
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message={snackbarMessage}
+        setIsSnackbarOpen={setIsSnackbarOpen}
+      />
+    </>
   );
 };
 
