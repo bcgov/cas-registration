@@ -57,7 +57,6 @@ const sfoFormData = {
   longitude_of_largest_emissions: "4.000000",
   street_address: "adf",
   municipality: "ad",
-  province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
   is_current_year: true,
@@ -72,7 +71,6 @@ const lfoFormData = {
   longitude_of_largest_emissions: "4.000000",
   street_address: "adf",
   municipality: "ad",
-  province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
   is_current_year: true,
@@ -86,7 +84,6 @@ const defaultFillFormValues = {
   well_authorization_numbers: [355],
   street_address: "address",
   municipality: "city",
-  province: "Alberta",
   postal_code: "H0H 0H0",
   latitude_of_largest_emissions: 48.3,
   longitude_of_largest_emissions: 123.32,
@@ -99,7 +96,6 @@ const defaultUpdateFormValues = {
   well_authorization_numbers: [123],
   street_address: "123 New Address",
   municipality: "New City",
-  province: "Alberta",
   postal_code: "A1A 1A1",
   latitude_of_largest_emissions: 8.35,
   longitude_of_largest_emissions: -23.3,
@@ -112,6 +108,7 @@ const sfoResponsePost = [
     name: "test facility name",
     type: "Single Facility",
     is_current_year: false,
+    province: "BC",
     latitude_of_largest_emissions: 48.3,
     longitude_of_largest_emissions: 123.32,
     operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
@@ -127,7 +124,7 @@ const lfoResponsePost = [
     starting_date: "2024-07-07T09:00:00.000Z",
     street_address: "address",
     municipality: "city",
-    province: "AB",
+    province: "BC",
     postal_code: "H0H0H0",
     latitude_of_largest_emissions: 48.3,
     longitude_of_largest_emissions: 123.32,
@@ -155,17 +152,23 @@ const checkMandatoryFieldValues = async (schema: RJSFSchema) => {
   ).toHaveValue(defaultFillFormValues.longitude_of_largest_emissions);
 };
 // ⛏️ Helper function to check optional field values
-const checkOptionalFieldValues = ({
-  street_address = defaultFillFormValues.street_address,
-  municipality = defaultFillFormValues.municipality,
-  province = defaultFillFormValues.province,
-  postal_code = defaultFillFormValues.postal_code,
-  latitude_of_largest_emissions = defaultFillFormValues.latitude_of_largest_emissions,
-  longitude_of_largest_emissions = defaultFillFormValues.longitude_of_largest_emissions,
-} = {}) => {
+const checkOptionalFieldValues = (
+  container: Element | null = null,
+  {
+    street_address = defaultFillFormValues.street_address,
+    municipality = defaultFillFormValues.municipality,
+    postal_code = defaultFillFormValues.postal_code,
+    latitude_of_largest_emissions = defaultFillFormValues.latitude_of_largest_emissions,
+    longitude_of_largest_emissions = defaultFillFormValues.longitude_of_largest_emissions,
+  } = {},
+) => {
   expect(screen.getByLabelText(/Street address+/i)).toHaveValue(street_address);
   expect(screen.getByLabelText(/Municipality+/i)).toHaveValue(municipality);
-  expect(screen.getByLabelText(/Province+/i)).toHaveValue(province);
+  if (container) {
+    expect(
+      container.querySelector("#root_section2_province"),
+    ).toHaveTextContent("British Columbia");
+  }
   expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue(postal_code);
   expect(
     screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
@@ -211,11 +214,6 @@ export const editFormFields = async (schema: RJSFSchema) => {
   await userEvent.type(
     screen.getByLabelText(/Municipality+/i),
     defaultUpdateFormValues.municipality,
-  );
-  const provinceDropdown = screen.getByLabelText(/Province+/i);
-  await userEvent.click(provinceDropdown);
-  await userEvent.click(
-    screen.getByText(new RegExp(defaultUpdateFormValues.province, "i")),
   );
   await userEvent.clear(screen.getByLabelText(/Postal Code+/i));
   await userEvent.type(
@@ -294,12 +292,6 @@ const fillOptionalFields = async (schema: RJSFSchema) => {
   await userEvent.type(
     screen.getByLabelText(/Municipality+/i),
     defaultFillFormValues.municipality,
-  );
-
-  const provinceDropdown = screen.getByLabelText(/Province+/i);
-  await userEvent.click(provinceDropdown);
-  await userEvent.click(
-    screen.getByText(new RegExp(defaultFillFormValues.province, "i")),
   );
 
   await userEvent.type(
@@ -399,7 +391,9 @@ describe("FacilityForm component", () => {
     ).toBeVisible();
     expect(screen.getByLabelText(/Street address+/i)).toHaveValue("");
     expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Province+/i)).toHaveValue("");
+    expect(
+      container.querySelector("#root_section2_province"),
+    ).toHaveTextContent("British Columbia");
     expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("");
     expect(
       screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
@@ -449,7 +443,9 @@ describe("FacilityForm component", () => {
     ).toBeVisible();
     expect(screen.getByLabelText(/Street address+/i)).toHaveValue("");
     expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Province+/i)).toHaveValue("");
+    expect(
+      container.querySelector("#root_section2_province"),
+    ).toHaveTextContent("British Columbia");
     expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("");
     expect(
       screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),

@@ -33,7 +33,6 @@ export default function FacilityForm({
     FrontEndRoles.CAS_ADMIN,
     FrontEndRoles.CAS_ANALYST,
   ].includes(role as FrontEndRoles);
-
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
