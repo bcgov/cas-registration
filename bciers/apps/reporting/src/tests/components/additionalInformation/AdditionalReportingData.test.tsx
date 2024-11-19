@@ -72,7 +72,7 @@ describe("AdditionalReportingData Component", () => {
 
   it("updates schema dynamically based on registration purpose", async () => {
     (getRegistrationPurpose as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      registration_purposes: ["OBPS Regulated Operation"],
+      registration_purpose: "OBPS Regulated Operation",
     });
     render(
       <AdditionalReportingDataForm
