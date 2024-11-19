@@ -60,8 +60,8 @@ class OperationModelTest(BaseTestCase):
         )
         cls.test_object.regulated_products.set(
             [
-                RegulatedProduct.objects.create(name="test"),
-                RegulatedProduct.objects.create(name="test2"),
+                RegulatedProduct.objects.create(name="test", unit="test unit", is_regulated=True),
+                RegulatedProduct.objects.create(name="test2", unit="test2 unit2", is_regulated=False),
             ]
         )
         cls.field_data = [
