@@ -31,6 +31,7 @@ from .emission_category_mapping import EmissionCategoryMapping
 from .report_non_attributable_emissions import ReportNonAttributableEmissions
 from .report_product import ReportProduct
 from .naics_regulatory_value import NaicsRegulatoryValue
+from .product_emission_intensity import ProductEmissionIntensity
 
 __all__ = [
     "ReportDataBaseModel",
@@ -63,4 +64,5 @@ __all__ = [
     "ReportNonAttributableEmissions",
     "ReportRawActivityData",
     "NaicsRegulatoryValue",
+    "ProductEmissionIntensity",
 ]
