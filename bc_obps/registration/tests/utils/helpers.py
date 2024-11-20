@@ -179,6 +179,24 @@ class TestUtils:
         return "+17787777777"
 
     @staticmethod
+    def mock_create_operation_v1_payload():
+        naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
+        regulated_products = baker.make(RegulatedProduct, _quantity=2)
+        point_of_contact = contact_baker()
+        return {
+            "name": "Springfield Nuclear Power Plant",
+            "type": "Single Facility Operation",
+            "naics_code_id": naics_code.id,
+            "regulated_products": [product.id for product in regulated_products],
+            "point_of_contact_id": point_of_contact.id,
+            "is_external_point_of_contact": False,
+            "street_address": "19 Evergreen Terrace",
+            "municipality": "Springfield",
+            "province": "BC",
+            "postal_code": "V1V 1V1",
+        }
+
+    @staticmethod
     def mock_create_operation_payload():
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         activities = baker.make(Activity, _quantity=2)

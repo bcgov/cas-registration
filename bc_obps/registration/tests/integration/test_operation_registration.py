@@ -276,6 +276,7 @@ class TestOperationRegistration(CommonTestSetup):
             assert list(self.operation.regulated_products.values_list('id', flat=True)) == [1, 2]
 
         assert self.operation.status == Operation.Statuses.REGISTERED
+        assert self.operation.registration_purpose is not None
         # updating the submission date is the last thing that happens in the registration process - 2 seconds as a buffer
         assert self.operation.submission_date.replace(microsecond=0) - self.updated_at.replace(
             microsecond=0

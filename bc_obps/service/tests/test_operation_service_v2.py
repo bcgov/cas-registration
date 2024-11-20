@@ -141,6 +141,7 @@ class TestOperationServiceV2:
         OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload, operation.id)
 
         operation.refresh_from_db()
+        assert operation.opted_in_operation is not None
         assert OptedInOperationDetail.objects.count() == 1
 
     @staticmethod

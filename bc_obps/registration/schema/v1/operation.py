@@ -24,7 +24,7 @@ class OperationCreateIn(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'registration_purpose']
+        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products']
         populate_by_name = True
 
 
@@ -117,7 +117,7 @@ class OperationOut(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status', 'registration_purpose']
+        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status']
         from_attributes = True
 
 

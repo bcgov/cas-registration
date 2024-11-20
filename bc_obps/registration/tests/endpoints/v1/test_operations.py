@@ -1,4 +1,3 @@
-from registration.tests.utils.bakers import select_random_registration_purpose
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
@@ -94,7 +93,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator1.id,
             status=Operation.Statuses.PENDING,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-            registration_purpose=select_random_registration_purpose(),
             _quantity=30,
         )
         baker.make(
@@ -102,7 +100,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator2.id,
             status=Operation.Statuses.APPROVED,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-            registration_purpose=select_random_registration_purpose(),
             _quantity=30,
         )
         baker.make(
@@ -110,7 +107,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator2.id,
             status=Operation.Statuses.NOT_STARTED,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-            registration_purpose=select_random_registration_purpose(),
         )
         for role in ['cas_admin', 'cas_analyst']:
             response = TestUtils.mock_get_with_auth_role(self, role)
@@ -287,7 +283,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.DECLINED, operator_id=operator2.id
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
-        mock_operation = TestUtils.mock_create_operation_payload()
+        mock_operation = TestUtils.mock_create_operation_v1_payload()
         post_response = TestUtils.mock_post_with_auth_role(self, "industry_user", self.content_type, mock_operation)
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
@@ -301,73 +297,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert post_response.status_code == 201
 
-    # commenting out this unit test for now because multiple_operators are not included in MVP
-    # def test_post_new_operation_with_multiple_operators(self):
-    #     naics_code = baker.make(NaicsCode)
-    #     contact = baker.make(Contact)
-    #     regulated_products = baker.make(RegulatedProduct, _quantity=2)
-    #     # activities = baker.make(Activity, _quantity=2)
-    #     operator = operator_baker()
-    #     mock_operation = OperationCreateIn(
-    #         name='Springfield Nuclear Power Plant',
-    #         type='Single Facility Operation',
-    #         naics_code_id=naics_code.id,
-    #         # operation_has_multiple_operators=True,
-    #         # multiple_operators_array=[
-    #         #     {
-    #         #         "mo_legal_name": "test",
-    #         #         "mo_trade_name": "test",
-    #         #         "mo_cra_business_number": 123,
-    #         #         "mo_bc_corporate_registry_number": 'abc1234567',
-    #         #         "mo_business_structure": "BC Corporation",
-    #         #         "mo_website": "https://www.test-mo.com",
-    #         #         "mo_physical_street_address": "test",
-    #         #         "mo_physical_municipality": "test",
-    #         #         "mo_physical_province": "BC",
-    #         #         "mo_physical_postal_code": "V1V 1V1",
-    #         #         "mo_mailing_address_same_as_physical": True,
-    #         #         "mo_mailing_street_address": "test",
-    #         #         "mo_mailing_municipality": "test",
-    #         #         "mo_mailing_province": "BC",
-    #         #         "mo_mailing_postal_code": "V1V 1V1",
-    #         #     },
-    #         #     {
-    #         #         "mo_legal_name": "test2",
-    #         #         "mo_trade_name": "test2",
-    #         #         "mo_cra_business_number": 123,
-    #         #         "mo_bc_corporate_registry_number": 'wer1234567',
-    #         #         "mo_business_structure": "BC Corporation",
-    #         #         "mo_physical_street_address": "test",
-    #         #         "mo_physical_municipality": "test",
-    #         #         "mo_physical_province": "BC",
-    #         #         "mo_physical_postal_code": "V1V 1V1",
-    #         #         "mo_mailing_address_same_as_physical": True,
-    #         #         "mo_mailing_street_address": "test",
-    #         #         "mo_mailing_municipality": "test",
-    #         #         "mo_mailing_province": "BC",
-    #         #         "mo_mailing_postal_code": "V1V 1V1",
-    #         #     },
-    #         # ],
-    #         # activities=activities,
-    #         regulated_products=regulated_products,
-    #         contacts=[contact.id],
-    #         operator_id=operator.id,
-    #     )
-    #     post_response = TestUtils.mock_post_with_auth_role(
-    #         self, 'industry_user', content_type, mock_operation.model_dump_json()
-    #     )
-    #     assert post_response.status_code == 201
-    #     assert post_response.json().get('id') is not None
-    #     baker.make(
-    #         UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
-    #     )
-    #     get_response = TestUtils.mock_get_with_auth_role(self, 'industry_user').json()[0]
-    #     assert (
-    #         'operation_has_multiple_operators' in get_response
-    #         and get_response['operation_has_multiple_operators'] == True
-    #     )
-    #     assert 'multiple_operators_array' in get_response and len(get_response['multiple_operators_array']) == 2
-
     def test_post_new_malformed_operation(self):
         TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         response = TestUtils.mock_post_with_auth_role(
@@ -380,7 +309,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         bcghg_id = baker.make_recipe('utils.bcghg_id')
         operation_instance.bcghg_id = bcghg_id
         operation_instance.save(update_fields=['bcghg_id'])
-        mock_operation2 = TestUtils.mock_create_operation_payload()
+        mock_operation2 = TestUtils.mock_create_operation_v1_payload()
         mock_operation2['bcghg_id'] = bcghg_id.id
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -404,13 +333,11 @@ class TestOperationsEndpoint(CommonTestSetup):
             "name": "My New Operation",
             "type": "Type 1",
             "regulated_products": [],
-            "registration_purpose": select_random_registration_purpose()
-            # activities=[],
         }
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, data=new_operation_payload
+            self, "industry_user", self.content_type, new_operation_payload, custom_reverse_lazy("create_operation")
         )
         assert post_response.status_code == 201
         assert Operation.objects.count() == 1

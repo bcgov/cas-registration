@@ -185,7 +185,8 @@ class Operation(TimeStampedModel):
         max_length=1000,
         choices=Purposes.choices,
         null=True,
-        db_comment="The industry user-selected registration purpose (category)",
+        blank=True,
+        db_comment="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered).",
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
