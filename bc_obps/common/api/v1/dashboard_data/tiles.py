@@ -1,6 +1,5 @@
 from django.http import HttpRequest
 from django.db.models import QuerySet
-from ninja.responses import codes_4xx
 from typing import List, Literal, Tuple
 from uuid import UUID
 
@@ -16,11 +15,12 @@ from common.permissions import authorize
 from registration.schema.generic import Message
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.dashboard_service import DashboardDataService
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
     "/dashboard-data",
-    response={200: List[DashboardDataSchemaOut], codes_4xx: Message},
+    response={200: List[DashboardDataSchemaOut], custom_codes_4xx: Message},
     tags=TAG_DASHBOARD_TILES,
     auth=authorize("authorized_roles"),
 )
