@@ -9,7 +9,7 @@ import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
 import { fillMandatoryFields } from "@bciers/testConfig/helpers/fillMandatoryFields";
 
-// ✨ Mock useRouter
+// ✨ Mocks
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
   push: mockRouterPush,
