@@ -3,7 +3,6 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from django.db.models import QuerySet
-from ninja.responses import codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
 
 from common.api.utils import get_current_user_guid
@@ -14,6 +13,7 @@ from reporting.schema.generic import Message
 from reporting.constants import DASHBOARD_TAGS
 from reporting.schema.operation import ReportingDashboardOperationOut
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.reporting_year_service import ReportingYearService
 
 
@@ -22,7 +22,7 @@ from .router import router
 
 @router.get(
     "/operations",
-    response={200: List[ReportingDashboardOperationOut], codes_4xx: Message},
+    response={200: List[ReportingDashboardOperationOut], custom_codes_4xx: Message},
     tags=DASHBOARD_TAGS,
     description="""Returns a list of operators for the current reporting year, for the current user. Populates
     the main reporting dashboard page.""",

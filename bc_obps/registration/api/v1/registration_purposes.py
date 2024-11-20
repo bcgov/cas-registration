@@ -5,10 +5,8 @@ from registration.decorators import handle_http_errors
 from registration.api.router import router
 from typing import Literal, Tuple
 from common.permissions import authorize
-
-
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 ##### GET #####
 
@@ -25,7 +23,7 @@ REGISTRATION_PURPOSES_LITERALS = Literal[
 
 @router.get(
     "/registration_purposes",
-    response={200: List[REGISTRATION_PURPOSES_LITERALS], codes_4xx: Message},
+    response={200: List[REGISTRATION_PURPOSES_LITERALS], custom_codes_4xx: Message},
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()

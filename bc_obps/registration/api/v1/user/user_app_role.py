@@ -9,12 +9,12 @@ from service.data_access_service.user_service import UserDataAccessService
 from registration.schema.v1 import UserAppRoleOut
 from registration.schema.generic import Message
 from registration.api.router import router
-from ninja.responses import codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
     "user/user-app-role",
-    response={200: UserAppRoleOut, codes_4xx: Message},
+    response={200: UserAppRoleOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the application role of the current user.
     The endpoint uses the user's GUID to look up and return their associated application role.""",

@@ -4,6 +4,7 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.operation_service import OperationService
 from registration.decorators import handle_http_errors
 from registration.api.router import router
@@ -13,12 +14,11 @@ from registration.schema.v1 import (
     OperationUpdateStatusOut,
 )
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx, codes_5xx
 
 
 @router.put(
     "/operations/{operation_id}/update-status",
-    response={200: OperationUpdateStatusOut, codes_4xx: Message, codes_5xx: Message},
+    response={200: OperationUpdateStatusOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Updates the status of an operation.
     When an operation is approved or declined, it is marked as verified with the current timestamp and the user who performed the action.
