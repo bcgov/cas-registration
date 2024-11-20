@@ -1,18 +1,11 @@
 from typing import Optional
 from uuid import UUID
 
-from registration.models.facility import Facility
 from registration.models.event.transfer_event import TransferEvent
 from ninja import ModelSchema, Field, FilterSchema
 from django.db.models import Q
 import re
 from typing import Dict, Any
-
-
-class FacilityForTransferEventGrid(ModelSchema):
-    class Meta:
-        model = Facility
-        fields = ['name']
 
 
 class TransferEventListOut(ModelSchema):
@@ -46,7 +39,8 @@ class TransferEventFilterSchema(FilterSchema):
     facilities__name: Optional[str] = Field(None, json_schema_extra={'q': 'facilities__name__icontains'})
     status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
 
-    def filtering_including_not_applicable(self, field: str, value: str) -> Q:
+    @staticmethod
+    def filtering_including_not_applicable(field: str, value: str) -> Q:
         if value and re.search(value, 'n/a', re.IGNORECASE):
             return Q(**{f"{field}__icontains": value}) | Q(**{f"{field}__isnull": True})
         return Q(**{f"{field}__icontains": value}) if value else Q()

@@ -7,7 +7,6 @@ const transferColumns = (
     {
       field: "created_at",
       headerName: "Submission Date",
-      // Set flex to 1 to make the column take up all the remaining width if user zooms out
       width: 200,
     },
     { field: "operation__name", headerName: "Operation", width: 200 },

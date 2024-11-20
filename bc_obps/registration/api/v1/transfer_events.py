@@ -1,4 +1,5 @@
-from typing import List, Literal, Optional, Dict, Any
+from typing import List, Literal, Optional
+from registration.models.event.transfer_event import TransferEvent
 from registration.schema.v1.transfer_event import TransferEventFilterSchema, TransferEventListOut
 from service.transfer_event_service import TransferEventService
 from common.permissions import authorize
@@ -11,6 +12,7 @@ from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from registration.schema.generic import Message
+from django.db.models import QuerySet
 
 
 @router.get(
@@ -29,6 +31,6 @@ def list_transfer_events(
     sort_field: Optional[str] = "status",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
-) -> List[Dict[str, Any]]:
+) -> QuerySet[TransferEvent]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
     return TransferEventService.list_transfer_events(sort_field, sort_order, filters)

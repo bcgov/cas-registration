@@ -1,7 +1,7 @@
+from typing import cast
+from django.db.models import QuerySet
 from registration.models.event.transfer_event import TransferEvent
-from typing import Optional, Dict, Any, List
-
-
+from typing import Optional
 from registration.schema.v1.transfer_event import TransferEventFilterSchema
 from ninja import Query
 
@@ -13,7 +13,7 @@ class TransferEventService:
         sort_field: Optional[str],
         sort_order: Optional[str],
         filters: TransferEventFilterSchema = Query(...),
-    ) -> List[Dict[str, Any]]:
+    ) -> QuerySet[TransferEvent]:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         queryset = (
@@ -29,4 +29,4 @@ class TransferEventService:
             )
             .distinct()
         )
-        return list(queryset)
+        return cast(QuerySet[TransferEvent], queryset)

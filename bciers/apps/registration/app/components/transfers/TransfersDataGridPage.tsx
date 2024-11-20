@@ -15,9 +15,8 @@ export default async function TransfersDataGridPage({
     rows: TransferRow[];
     row_count: number;
   } = await fetchTransferEventsPageData(searchParams);
-  if (!transfers) {
-    return <div>No transfers data in database.</div>;
-  }
+  if (!transfers || "error" in transfers)
+    throw new Error("Failed to retrieve transfers");
 
   // Render the DataGrid component
   return (
