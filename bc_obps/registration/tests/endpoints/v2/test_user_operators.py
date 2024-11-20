@@ -1,16 +1,10 @@
 from typing import Any, Dict
-
 from model_bakery import baker
-
+from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models.operator import Operator
 from registration.models.user_operator import UserOperator
-
-from registration.models import (
-    BusinessStructure,
-)
-from registration.tests.utils.bakers import (
-    operator_baker,
-)
+from registration.models import BusinessStructure
+from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
@@ -275,6 +269,113 @@ class TestCreateUserOperator(CommonTestSetup):
 
 
 class TestListUserOperators(CommonTestSetup):
+    url = custom_reverse_lazy("list_user_operators_v2")
+
+    def test_list_user_operators_v2_paginated(self):
+        for _ in range(50):
+            baker.make_recipe(
+                'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+            )
+        # Get the default page 1 response
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.url)
+        assert response.status_code == 200
+        response_items_1 = response.json().get('items')
+        response_count_1 = response.json().get('count')
+        # save the id of the first paginated response item
+        page_1_response_id = response_items_1[0].get('id')
+        assert len(response_items_1) == NINJA_PAGINATION_PER_PAGE
+        assert response_count_1 == 50  # total count of user operators
+        # Get the page 2 response
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            self.url + "?page=2&sort_field=created_at&sort_order=desc",
+        )
+        assert response.status_code == 200
+        response_items_2 = response.json().get('items')
+        response_count_2 = response.json().get('count')
+        # save the id of the first paginated response item
+        page_2_response_id = response_items_2[0].get('id')
+        assert len(response_items_2) == NINJA_PAGINATION_PER_PAGE
+        # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
+        assert page_1_response_id != page_2_response_id
+        assert response_count_2 == response_count_1  # total count should be the same
+
+        # Get the page 2 response but with a different sort order
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            self.url + "?page=2&sort_field=created_at&sort_order=asc",
+        )
+        assert response.status_code == 200
+        response_items_2_reverse = response.json().get('items')
+        # save the id of the first paginated response item
+        page_2_response_id_reverse = response_items_2_reverse[0].get('id')
+        assert len(response_items_2_reverse) == NINJA_PAGINATION_PER_PAGE
+        # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
+        assert page_2_response_id != page_2_response_id_reverse
+
+        # make sure sorting is working
+        page_2_first_user_operator = UserOperator.objects.get(pk=page_2_response_id)
+        page_2_first_user_operator_reverse = UserOperator.objects.get(pk=page_2_response_id_reverse)
+        assert page_2_first_user_operator.created_at > page_2_first_user_operator_reverse.created_at
+
+    def test_list_user_operators_v2_with_filter(self):
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="Jane", last_name="Doe"),
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="Bob", last_name="Smith"),
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.DECLINED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="John", last_name="Doe"),
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.DECLINED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="Henry", last_name="Ives"),
+        )
+
+        # Get the default page 1 response
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self.url + "?user__first_name=Jane"
+        )  # filtering user__first_name with Jane
+        assert response.status_code == 200
+        response_items_1 = response.json().get('items')
+        assert response_items_1[0].get('user__first_name') == "Jane"
+        # Test with a type filter that doesn't exist
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self.url + "?user__first_name=John&user__last_name=Smith"
+        )
+        assert response.status_code == 200
+        assert response.json().get('count') == 0
+
+        # Test with a first_name and last_name filter
+        first_name_to_filter, last_name_to_filter = response_items_1[0].get('user__first_name'), response_items_1[
+            0
+        ].get('user__last_name')
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            self.url + f"?user__first_name={first_name_to_filter}&user__last_name={last_name_to_filter}",
+        )
+        assert response.status_code == 200
+        response_items_2 = response.json().get('items')
+        assert len(response_items_2) == 1
+        assert response.json().get('count') == 1
+        assert response_items_2[0].get('user__first_name') == first_name_to_filter
+        assert response_items_2[0].get('user__last_name') == last_name_to_filter
+
     def test_list_user_operators_v2_returns_valid_data(self):
         approved_admin_user_operators = []
         for _ in range(2):
@@ -284,7 +385,7 @@ class TestListUserOperators(CommonTestSetup):
                     'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
                 )
             )
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("list_user_operators_v2"))
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.url)
 
         assert response.status_code == 200
         response_data = response.json()
