@@ -145,6 +145,16 @@ class Migration(migrations.Migration):
             unit=None,
             is_regulated=False,
         )
+    
+    def reverse_add_unregulated_products(apps, schema_editor):
+        RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
+
+        RegulatedProduct.objects.filter(
+            name='Oil and gas non-processing, non-compression',
+        ).delete()
+        RegulatedProduct.objects.filter(
+            name='Fat, oil and grease collection, refining and storage',
+        ).delete()
 
     operations = [
         migrations.AddField(
@@ -172,5 +182,5 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.RunPython(update_regulated_product_units_and_is_regulated),
-        migrations.RunPython(add_unregulated_products),
+        migrations.RunPython(add_unregulated_products, reverse_add_unregulated_products),
     ]
