@@ -13,8 +13,6 @@ export const verificationSchema: RJSFSchema = {
     "accredited_by",
     "scope_of_verification",
     "visit_name",
-    "threats_to_independence",
-    "verification_conclusion",
   ],
   properties: {
     verification_body_name: {
@@ -39,15 +37,6 @@ export const verificationSchema: RJSFSchema = {
       title: "Sites visited",
       type: "string",
       enum: ["Other", "None"], // modified in components/signOff/verification/createVerificationSchema.ts
-    },
-    threats_to_independence: {
-      title: "Were there any threats to independence noted",
-      type: "boolean",
-    },
-    verification_conclusion: {
-      title: "Verification conclusion",
-      type: "string",
-      enum: ["Positive", "Modified", "Negative"],
     },
     verification_note: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -101,11 +90,22 @@ export const verificationSchema: RJSFSchema = {
               title: "Type of site visit",
               enum: ["Virtual", "In person"],
             },
+            threats_to_independence: {
+              title: "Were there any threats to independence noted",
+              type: "boolean",
+            },
+            verification_conclusion: {
+              title: "Verification conclusion",
+              type: "string",
+              enum: ["Positive", "Modified", "Negative"],
+            },
           },
           required: [
             "other_facility_name",
             "other_facility_coordinates",
             "visit_type",
+            "threats_to_independence",
+            "verification_conclusion",
           ],
         },
       ],

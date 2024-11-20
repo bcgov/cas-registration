@@ -7,11 +7,11 @@ class ReportVerificationTest(BaseTestCase):
     """
     Test case for the ReportVerification model to verify its fields and functionality.
     """
-    
+
     @classmethod
     def setUpTestData(cls):
         # Create a test instance of ReportVerification using the baker
-        cls.test_object = report_verification_baker()        
+        cls.test_object = report_verification_baker()
         # Define the field data to validate in tests
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
@@ -26,7 +26,3 @@ class ReportVerificationTest(BaseTestCase):
             ("other_facility_name", "other facility name", None, None),
             ("other_facility_coordinates", "other facility coordinates", None, None),
         ]
-        
-        
-        
-        

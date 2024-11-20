@@ -80,8 +80,8 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
                 {isSubmitting
                   ? "Saving..."
                   : buttonText
-                    ? buttonText
-                    : "Save and Continue"}
+                  ? buttonText
+                  : "Save and Continue"}
               </Button>
             </Box>
             <div className="min-h-[48px] box-border mt-4">
