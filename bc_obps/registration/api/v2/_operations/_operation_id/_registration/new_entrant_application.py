@@ -2,7 +2,8 @@ from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
-from ninja.responses import codes_4xx
+
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.operation_service import OperationService
 from registration.schema.v2.operation import (
     OperationUpdateOut,
@@ -23,7 +24,7 @@ from registration.schema.generic import Message
 
 @router.get(
     "/v2/operations/{uuid:operation_id}/registration/new-entrant-application",
-    response={200: OperationNewEntrantApplicationOut, codes_4xx: Message},
+    response={200: OperationNewEntrantApplicationOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the new entrant application document of a specific operation by its ID. The endpoint checks if the current user is authorized to access the operation.
     Industry users can only access operations they are permitted to view. If an unauthorized user attempts to access the operation, an error is raised.""",
@@ -37,7 +38,7 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
 
 @router.put(
     "/v2/operations/{uuid:operation_id}/registration/new-entrant-application",
-    response={200: OperationUpdateOut, codes_4xx: Message},
+    response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Creates or replaces a new entrant application document for an Operation",
     auth=authorize("approved_industry_user"),

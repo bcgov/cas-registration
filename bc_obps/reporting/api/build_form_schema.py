@@ -1,3 +1,4 @@
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.form_builder_service import FormBuilderService
 from common.permissions import authorize
 from .router import router
@@ -6,14 +7,13 @@ from django.http import HttpRequest
 from typing import Tuple
 
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx, codes_5xx
 
 ##### GET #####
 
 
 @router.get(
     "/build-form-schema",
-    response={200: str, codes_4xx: Message, codes_5xx: Message},
+    response={200: str, custom_codes_4xx: Message},
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()

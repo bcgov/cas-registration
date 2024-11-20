@@ -1,16 +1,14 @@
 from common.permissions import authorize
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.models import FacilityReport
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from registration.decorators import handle_http_errors
 from django.http import HttpRequest
 from typing import Tuple, List, Dict
 from uuid import UUID
 from decimal import Decimal
-
 from reporting.schema.generic import Message
-from ninja.responses import codes_4xx, codes_5xx
-
 from reporting.models import EmissionCategory
 from reporting.schema.emission_category import EmissionCategorySchema
 
@@ -20,7 +18,7 @@ from reporting.schema.emission_category import EmissionCategorySchema
 
 @router.get(
     "/emission-category",
-    response={200: List[EmissionCategorySchema], codes_4xx: Message, codes_5xx: Message},
+    response={200: List[EmissionCategorySchema], custom_codes_4xx: Message},
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
@@ -30,7 +28,7 @@ def get_emission_category(request: HttpRequest) -> Tuple[int, List[EmissionCateg
 
 @router.get(
     "/report-version/{version_id}/facility-report/{facility_id}/emission-summary",
-    response={200: Dict[str, Decimal | int], codes_4xx: Message, codes_5xx: Message},
+    response={200: Dict[str, Decimal | int], custom_codes_4xx: Message},
     url_name="get_emission_summary_totals",
     auth=authorize("approved_authorized_roles"),
 )

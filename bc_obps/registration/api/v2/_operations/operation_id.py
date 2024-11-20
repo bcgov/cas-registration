@@ -4,6 +4,7 @@ from registration.schema.v2.operation import OperationOutV2, OperationInformatio
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.operation_service import OperationService
 from service.operation_service_v2 import OperationServiceV2
 from common.api.utils import get_current_user_guid
@@ -11,7 +12,6 @@ from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.models import Operation
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx
 
 
 ##### GET #####
@@ -19,7 +19,7 @@ from ninja.responses import codes_4xx
 
 @router.get(
     "/v2/operations/{uuid:operation_id}",
-    response={200: OperationOutV2, codes_4xx: Message},
+    response={200: OperationOutV2, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the details of a specific operation by its ID. Unlike the v1 endpoint, this endpoint does not
     return the new entrant application field as it can be quite large and cause slow requests. If you need the new entrant application field,
@@ -34,7 +34,7 @@ def get_operation_v2(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[
 
 @router.get(
     "/v2/operations/{uuid:operation_id}/with-documents",
-    response={200: OperationOutWithDocuments, codes_4xx: Message},
+    response={200: OperationOutWithDocuments, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the details of a specific operation by its ID along with it's documents""",
     exclude_none=True,
@@ -50,7 +50,7 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 
 @router.put(
     "/v2/operations/{uuid:operation_id}",
-    response={200: OperationOutV2, codes_4xx: Message},
+    response={200: OperationOutV2, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Updates the details of a specific operation by its ID.",
     auth=authorize("approved_industry_user"),
