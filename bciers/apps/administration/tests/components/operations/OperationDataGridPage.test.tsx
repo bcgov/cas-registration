@@ -51,11 +51,12 @@ describe("Operations component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders a message when there are no operations in the database", async () => {
+  it("throws an error when there's a problem fetching data", async () => {
     fetchOperationsPageData.mockReturnValueOnce(undefined);
-    render(await Operations({ searchParams: {} }));
+    await expect(async () => {
+      render(await Operations({ searchParams: {} }));
+    }).rejects.toThrow("Failed to retrieve operations");
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
-    expect(screen.getByText(/No operations data in database./i)).toBeVisible();
   });
 
   it("renders the OperationDataGrid component when there are operations in the database", async () => {

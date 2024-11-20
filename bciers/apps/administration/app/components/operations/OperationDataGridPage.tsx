@@ -20,9 +20,8 @@ export default async function OperationDataGridPage({
     rows: OperationRow[];
     row_count: number;
   } = await fetchOperationsPageData(searchParams);
-  if (!operations) {
-    return <div>No operations data in database.</div>;
-  }
+  if (!operations || "error" in operations)
+    throw new Error("Failed to retrieve operations");
 
   const isAuthorizedAdminUser = [
     FrontEndRoles.CAS_ADMIN,
