@@ -62,3 +62,49 @@ beforeEach(() => {
 ```
 
 We have some global mocks set up, so even if you haven't written any mocking code, it's useful to add a `beforeEach` to clean the slate before every test.
+
+#### Vitest Helpers
+
+A collection of reusable helpers for simplifying and standardizing writing test cases by abstracting repetitive test logic into reusable functions. Found at `bciers/libs/testConfig/src/helpers/*`
+
+### Vitest Helpers Summary
+
+This is a collection of reusable helpers for simplifying and standardizing test case writing in React applications. These helpers are built with `@testing-library/react` and `@testing-library/user-event`.
+
+---
+
+### **1. `expectButton`**
+
+Verifies the visibility and state (enabled or disabled) of a button identified by its accessible name.
+
+### **2. `expectField`**
+
+Checks that an input field with a specific label is visible, editable, and matches an expected value.
+
+### **3. `expectHeaders`**
+
+Asserts the presence and visibility of a list of headers (e.g., `<h1>`, `<h2>`) in the document.
+
+### **4. `expectIcons`**
+
+Ensures that a set of icons with specific accessible names is visible in the document.
+
+### **5. `expectParam`**
+
+Validates that a query parameter in the URL matches an expected value.
+
+### **6. `expectMessage`**
+
+Verifies the visibility of a specific message or text on the page.
+
+### **7. `fillMandatoryFields`**
+
+Automates filling out mandatory form fields using predefined labels, field types, and test data.
+
+### **8. `mockUseSession`**
+
+Mocks the `useSession` hook for testing authentication-related functionality by simulating session data.
+
+### **9. `selectComboboxOption`**
+
+Selects a specific option from a combobox (dropdown) by its label or accessible name.

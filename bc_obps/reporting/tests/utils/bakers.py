@@ -111,10 +111,9 @@ def reporting_year_baker(**props) -> ReportingYear:
     return baker.make(ReportingYear, **props)
 
 
-
 def report_verification_baker(report_version=None) -> ReportVerification:
     if report_version is None:
-        report_version = report_version_baker()  
+        report_version = report_version_baker()
 
     return baker.make(
         ReportVerification,
@@ -126,6 +125,6 @@ def report_verification_baker(report_version=None) -> ReportVerification:
         verification_conclusion=ReportVerification.VerificationConclusion.POSITIVE,
         visit_name="Default Site",
         visit_type=ReportVerification.VisitType.IN_PERSON,
-        other_facility_name=None, 
-        other_facility_coordinates=None, 
+        other_facility_name=None,
+        other_facility_coordinates=None,
     )

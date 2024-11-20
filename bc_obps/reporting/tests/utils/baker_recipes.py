@@ -18,6 +18,8 @@ from reporting.models.reporting_year import ReportingYear
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from reporting.models.facility_report import FacilityReport
+from reporting.models.report_verification import ReportVerification
+
 from registration.tests.utils.baker_recipes import operation, operator, facility, regulated_product
 from model_bakery.recipe import Recipe, foreign_key, seq
 from reporting.models.source_type import SourceType
@@ -141,4 +143,17 @@ report_non_attributable_emissions = Recipe(
     source_type="Test Source Type",
     emission_category=foreign_key(emission_category),
     gas_type=[foreign_key(gas_type)],
+)
+report_verification = Recipe(
+    ReportVerification,
+    report_version=foreign_key(report_version),
+    verification_body_name="Default Verification Body",
+    accredited_by=ReportVerification.AccreditedBy.ANAB,
+    scope_of_verification=ReportVerification.ScopeOfVerification.BC_OBPS,
+    threats_to_independence=False,
+    verification_conclusion=ReportVerification.VerificationConclusion.POSITIVE,
+    visit_name="Default Site",
+    visit_type=ReportVerification.VisitType.IN_PERSON,
+    other_facility_name=None,
+    other_facility_coordinates=None,
 )

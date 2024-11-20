@@ -16,11 +16,17 @@ useRouter.mockReturnValue({
 });
 
 // 🏷 Constants
-const buttonCancel = "Cancel";
-const buttonSaveAndContinue = "Save and Continue";
-const mockVersionId = 3;
-const mockRouteSubmit = `/reports/${mockVersionId}/attachment`;
-const mandatoryFormFields = [
+const config = {
+  buttons: {
+    cancel: "Cancel",
+    saveAndContinue: "Save and Continue",
+  },
+  mockVersionId: 3,
+  mockRouteSubmit: `/reports/3/attachments`,
+};
+
+// 🏷 Common Fields
+const commonMandatoryFormFields = [
   {
     label: "Verification body name",
     type: "text",
@@ -33,42 +39,90 @@ const mandatoryFormFields = [
     key: "scope_of_verification",
   },
   { label: "Sites visited", type: "combobox", key: "visit_name" },
-  {
-    label: "Type of site visit",
-    type: "radio",
-    key: "visit_type",
-  },
-  {
-    label: "Please indicate the site visited",
-    type: "text",
-    key: "other_facility_name",
-  },
-  {
-    label: "Geographic coordinates",
-    type: "text",
-    key: "other_facility_coordinates",
-  },
-  {
-    label: "Were there any threats to independence noted",
-    type: "radio",
-    key: "threats_to_independence",
-  },
-  {
-    label: "Verification conclusion",
-    type: "combobox",
-    key: "verification_conclusion",
-  },
 ];
-const verificationFormData = {
-  verification_body_name: "Test",
-  accredited_by: "SCC",
-  scope_of_verification: "Supplementary Report",
-  visit_name: "Other",
-  visit_type: "Virtual",
-  other_facility_name: "Other Facility",
-  other_facility_coordinates: "Lat 41; Long 35",
-  threats_to_independence: "No",
-  verification_conclusion: "Modified",
+
+const specificMandatoryFields = {
+  facility: [{ label: "Type of site visit", type: "radio", key: "visit_type" }],
+  conditional: [
+    { label: "Type of site visit", type: "radio", key: "visit_type" },
+    {
+      label: "Please indicate the site visited",
+      type: "text",
+      key: "other_facility_name",
+    },
+    {
+      label: "Geographic coordinates",
+      type: "text",
+      key: "other_facility_coordinates",
+    },
+    {
+      label: "Were there any threats to independence noted",
+      type: "radio",
+      key: "threats_to_independence",
+    },
+    {
+      label: "Verification conclusion",
+      type: "combobox",
+      key: "verification_conclusion",
+    },
+  ],
+};
+
+const formDataSets = {
+  default: {
+    verification_body_name: "Test",
+    accredited_by: "SCC",
+    scope_of_verification: "Supplementary Report",
+    visit_name: "None",
+  },
+  facility: {
+    verification_body_name: "Test",
+    accredited_by: "SCC",
+    scope_of_verification: "Supplementary Report",
+    visit_name: "Facility A",
+    visit_type: "Virtual",
+  },
+  conditional: {
+    verification_body_name: "Test",
+    accredited_by: "SCC",
+    scope_of_verification: "Supplementary Report",
+    visit_name: "Other",
+    visit_type: "Virtual",
+    other_facility_name: "Other Facility",
+    other_facility_coordinates: "Lat 41; Long 35",
+    threats_to_independence: "No",
+    verification_conclusion: "Modified",
+  },
+};
+
+// 🛠 Helpers
+const renderVerificationForm = () => {
+  render(
+    <VerificationForm
+      version_id={config.mockVersionId}
+      verificationSchema={verificationSchema}
+      verificationUiSchema={verificationUiSchema}
+      initialData={{}}
+      taskListElements={[]}
+    />,
+  );
+};
+
+const submitFormAndAssert = async (
+  fields: { label: string; type: string; key: string }[],
+  data: Record<string, string | number>,
+) => {
+  await fillMandatoryFields(fields, data);
+  const button = screen.getByRole("button", {
+    name: config.buttons.saveAndContinue,
+  });
+  fireEvent.click(button);
+
+  await waitFor(() => {
+    expect(screen.queryByText(/Required field/i)).not.toBeInTheDocument();
+    expect(mockRouterPush).toHaveBeenCalledTimes(1);
+    expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
+  });
 };
 
 // 🧪 Test suite
@@ -76,73 +130,71 @@ describe("VerificationForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
   it("renders the form with correct fields", () => {
-    render(
-      <VerificationForm
-        versionId={mockVersionId}
-        verificationSchema={verificationSchema}
-        verificationUiSchema={verificationUiSchema}
-      />,
-    );
-    // Assert fields and buttons
-    expectField([
-      "Verification body name",
-      "Accredited by",
-      "Scope of verification",
-      "Sites visited",
-      "Verification conclusion",
-    ]);
-    expect(
-      screen.getByText(/Were there any threats to independence noted/i),
-    ).toBeVisible();
-    expectButton(buttonCancel);
-    expectButton(buttonSaveAndContinue);
+    renderVerificationForm();
+    expectField(commonMandatoryFormFields.map((field) => field.label));
+    expectButton(config.buttons.cancel);
+    expectButton(config.buttons.saveAndContinue);
   });
+
   it("does not allow form submission if there are validation errors", async () => {
-    render(
-      <VerificationForm
-        versionId={mockVersionId}
-        verificationSchema={verificationSchema}
-        verificationUiSchema={verificationUiSchema}
-      />,
+    renderVerificationForm();
+    fireEvent.click(
+      screen.getByRole("button", { name: config.buttons.saveAndContinue }),
     );
 
-    const button = screen.getByRole("button", { name: buttonSaveAndContinue });
-
-    // Attempt to submit without filling mandatory fields
-    fireEvent.click(button);
-
-    // Assert validation errors
-    await waitFor(() =>
-      expect(screen.queryAllByText(/Required field/i)).toHaveLength(6),
-    );
+    await waitFor(() => {
+      expect(screen.queryAllByText(/Required field/i)).toHaveLength(4);
+    });
   });
+
   it(
     "fills mandatory fields and submits successfully",
     {
-      timeout: 20000,
+      timeout: 10000,
     },
     async () => {
-      render(
-        <VerificationForm
-          versionId={mockVersionId}
-          verificationSchema={verificationSchema}
-          verificationUiSchema={verificationUiSchema}
-        />,
+      renderVerificationForm();
+      await submitFormAndAssert(
+        commonMandatoryFormFields,
+        formDataSets.default,
       );
-      // Complete the form
-      await fillMandatoryFields(mandatoryFormFields, verificationFormData);
-      // Submit the form
-      const button = screen.getByRole("button", {
-        name: buttonSaveAndContinue,
-      });
-      fireEvent.click(button);
-      // Assertions
-      await waitFor(() => {
-        expect(screen.queryByText(/Required field/i)).not.toBeInTheDocument();
-        expect(mockRouterPush).toHaveBeenCalledTimes(1);
-        expect(mockRouterPush).toHaveBeenCalledWith(mockRouteSubmit);
-      });
+    },
+  );
+
+  it(
+    "fills facility mandatory fields and submits successfully",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      (verificationSchema.properties?.visit_name as any).enum = [
+        ...(verificationSchema.properties?.visit_name as any).enum,
+        "Facility A",
+      ];
+
+      renderVerificationForm();
+      const fields = [
+        ...commonMandatoryFormFields,
+        ...specificMandatoryFields.facility,
+      ];
+      await submitFormAndAssert(fields, formDataSets.facility);
+    },
+  );
+
+  it(
+    "fills other conditionally mandatory fields and submits successfully",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      renderVerificationForm();
+      const fields = [
+        ...commonMandatoryFormFields,
+        ...specificMandatoryFields.conditional,
+      ];
+      await submitFormAndAssert(fields, formDataSets.conditional);
     },
   );
 });
