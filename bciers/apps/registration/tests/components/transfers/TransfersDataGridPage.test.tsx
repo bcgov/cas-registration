@@ -73,11 +73,12 @@ describe("Transfers component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders a message when there are no transfers in the database", async () => {
+  it("throws an error when there's a problem fetching data", async () => {
     fetchTransferEventsPageData.mockReturnValueOnce(undefined);
-    render(await TransfersDataGridPage({ searchParams: {} }));
+    await expect(async () => {
+      render(await TransfersDataGridPage({ searchParams: {} }));
+    }).rejects.toThrow("Failed to retrieve transfers");
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
-    expect(screen.getByText(/No transfers data in database./i)).toBeVisible();
   });
 
   it("renders the TransfersDataGrid component when there are transfers in the database", async () => {
