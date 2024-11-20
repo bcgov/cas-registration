@@ -9,13 +9,13 @@ from registration.schema.v1.user import UserContactPageOut
 from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.user_service import UserService
 
 
 @router.get(
     "/users/{user_id}",
-    response={200: UserContactPageOut, codes_4xx: Message},
+    response={200: UserContactPageOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the details of a specific user by its ID.
     We check if the user is authorized to access the user's details by comparing the business_guid of the user with the business_guid of the current user.""",
