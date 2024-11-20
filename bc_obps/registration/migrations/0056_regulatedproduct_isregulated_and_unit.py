@@ -166,7 +166,7 @@ class Migration(migrations.Migration):
             model_name='historicalregulatedproduct',
             name='unit',
             field=models.CharField(
-                db_comment='The unit of measure for the regulated product', max_length=1000, blank=True
+                db_comment='The unit of measure for the regulated product', max_length=1000, blank=False, null=True
             ),
         ),
         migrations.AddField(
@@ -178,7 +178,7 @@ class Migration(migrations.Migration):
             model_name='regulatedproduct',
             name='unit',
             field=models.CharField(
-                db_comment='The unit of measure for the regulated product', max_length=1000, blank=True
+                db_comment='The unit of measure for the regulated product', max_length=1000, blank=False, null=True
             ),
         ),
         migrations.RunPython(update_regulated_product_units_and_is_regulated),
