@@ -22,15 +22,14 @@ interface AdditionalReportingDataProps {
   dateOfAuthorization: string;
   dateOfFirstShipment: string;
   dateOfNewEntrantPeriod: string;
+  emissions: [];
 }
 
 export default function NewEntrantInformationForm({
   versionId,
   products,
   initialFormData,
-  dateOfAuthorization,
-  dateOfFirstShipment,
-  dateOfNewEntrantPeriod,
+  emissions,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState(initialFormData || {});
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
@@ -62,12 +61,12 @@ export default function NewEntrantInformationForm({
       setSubmitButtonDisabled(true);
     }
   };
-  const handleSubmit = async () => {
+  const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/new-entrant-data`;
     const method = "POST";
 
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(formData),
+      body: JSON.stringify(data),
     });
     if (response) {
       router.push(saveAndContinueUrl);
@@ -85,18 +84,13 @@ export default function NewEntrantInformationForm({
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
-      schema={createNewEntrantInformationSchema(
-        products,
-        dateOfAuthorization,
-        dateOfFirstShipment,
-        dateOfNewEntrantPeriod,
-      )}
+      schema={createNewEntrantInformationSchema(products, emissions)}
       uiSchema={createNewEntrantInformationUiSchema(products)}
       formData={formData}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
-      onChange={handleChange}
-      onSubmit={handleSubmit}
+      onChange={(data) => handleChange(data.formData)}
+      onSubmit={(data) => handleSubmit(data.formData)}
       submitButtonDisabled={submitButtonDisabled}
     />
   );
