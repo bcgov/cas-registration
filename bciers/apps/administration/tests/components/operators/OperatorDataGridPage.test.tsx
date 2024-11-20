@@ -54,11 +54,13 @@ describe("OperatorDataGridPage component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders a message when there are no operators in the database", async () => {
+  it("throws an error when there's a problem fetching data", async () => {
     fetchOperatorsPageData.mockReturnValueOnce(undefined);
-    render(await Operators({ searchParams: {} }));
+    await expect(async () => {
+      render(await Operators({ searchParams: {} }));
+    }).rejects.toThrow("Failed to retrieve operators");
+
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
-    expect(screen.getByText(/No operator data in database./i)).toBeVisible();
   });
 
   it("renders the OperatorDataGrid component when there are operators in the database", async () => {
