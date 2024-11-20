@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0055_V1_14_0'),
+        ('registration', '0056_remove_historicaltransferevent_future_designated_operator_and_more'),
     ]
 
     def update_regulated_product_units_and_is_regulated(apps, schema_editor):
