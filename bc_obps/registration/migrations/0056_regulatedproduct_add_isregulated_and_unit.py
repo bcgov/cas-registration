@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
             unit=None,
             is_regulated=False,
         )
-    
+
     def reverse_add_unregulated_products(apps, schema_editor):
         RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
 
