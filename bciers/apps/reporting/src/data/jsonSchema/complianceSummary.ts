@@ -44,7 +44,7 @@ export const complianceSummarySchema: RJSFSchema = {
         },
         compliancePeriod: {
           type: "string",
-          title: "Compliance Period",
+          title: "Compliance period",
         },
       },
     },
