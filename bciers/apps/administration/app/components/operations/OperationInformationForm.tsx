@@ -13,7 +13,10 @@ import {
 } from "./types";
 import { actionHandler } from "@bciers/actions";
 import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
-import { RegistrationPurposes, regulatedOperationPurposes } from "apps/registration/app/components/operations/registration/enums";
+import {
+  RegistrationPurposes,
+  regulatedOperationPurposes,
+} from "apps/registration/app/components/operations/registration/enums";
 
 const OperationInformationForm = ({
   formData,
