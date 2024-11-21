@@ -91,6 +91,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "load_report_activity_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
             },
+            {"method": "get", "endpoint_name": "load_report_attachments", "kwargs": {"report_version_id": mock_int}},
             {"method": "post", "endpoint_name": "create_operation"},
             {"method": "post", "endpoint_name": "create_facilities"},
             {"method": "post", "endpoint_name": "create_contact"},
@@ -128,6 +129,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "save_production_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
             },
+            {"method": "get", "endpoint_name": "save_report_attachments", "kwargs": {"report_version_id": mock_int}},
             {
                 "method": "get",
                 "endpoint_name": "register_get_operation_information",

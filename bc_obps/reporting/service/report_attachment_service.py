@@ -15,6 +15,7 @@ class ReportAttachmentService:
         attachment_type: str,
         attachment_file: UploadedFile,
     ) -> None:
+
         if attachment_file.size and attachment_file.size > MAX_UPLOAD_SIZE:
             raise ValidationError(f"File attachment size shall not exceed {MAX_UPLOAD_SIZE} bytes.")
 
