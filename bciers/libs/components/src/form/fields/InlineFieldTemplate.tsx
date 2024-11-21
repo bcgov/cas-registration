@@ -48,7 +48,7 @@ function InlineFieldTemplate({
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
           >
             {" "}
-            <p>{options.displayUnit}</p>
+            <p>{options.displayUnit as any}</p>
           </div>
         )}
         {isErrors && (

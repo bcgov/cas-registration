@@ -35,7 +35,7 @@ export const complianceSummarySchema: RJSFSchema = {
         initialCompliancePeriod: {
           type: "string",
           title: "Initial compliance period",
-          value: "2024",
+          default: "2024",
         },
         compliancePeriod: {
           type: "string",
