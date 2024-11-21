@@ -27,8 +27,6 @@ function InlineFieldTemplate({
   const inline = options?.inline;
   const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
 
-  const unit = children.props.children[0].props.schema.unit;
-
   return (
     <div className="mb-4 md:mb-2">
       <div
@@ -50,7 +48,7 @@ function InlineFieldTemplate({
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
           >
             {" "}
-            <p>{unit}</p>
+            <p>{options.displayUnit}</p>
           </div>
         )}
         {isErrors && (

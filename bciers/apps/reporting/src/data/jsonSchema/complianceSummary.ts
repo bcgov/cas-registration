@@ -9,27 +9,22 @@ export const complianceSummarySchema: RJSFSchema = {
     attributableForReporting: {
       type: "string",
       title: "Emissions attributable for reporting",
-      unit: "tCO2e",
     },
     reportingOnlyEmission: {
       type: "string",
       title: "Reporting-only emissions",
-      unit: "tCO2e",
     },
     emissionsLimit: {
       type: "string",
       title: "Emissions limit",
-      unit: "tCO2e",
     },
     excessEmissions: {
       type: "string",
       title: "Excess emissions",
-      unit: "tCO2e",
     },
     creditedEmissions: {
       type: "string",
       title: "Credited emissions",
-      unit: "tCO2e",
     },
     regulatoryValues: {
       type: "object",
@@ -59,22 +54,18 @@ export const complianceSummarySchema: RJSFSchema = {
           annualProduction: {
             type: "string",
             title: "Annual production",
-            unit: "production unit",
           },
           emissionIntensity: {
             type: "string",
             title: "Weighted average emission intensity",
-            unit: "tCO2e/production unit",
           },
           allocatedIndustrialProcessEmissions: {
             type: "string",
             title: "Emissions allocated to industrial process",
-            unit: "tCO2e",
           },
           allocatedComplianceEmissions: {
             type: "string",
             title: "Emissions allocated to compliance",
-            unit: "tCO2e",
           },
         },
       },
@@ -88,27 +79,27 @@ export const complianceSummaryUiSchema = {
   "ui:disabled": true,
   attributableForReporting: {
     "ui:options": {
-      displayUnit: true,
+      displayUnit: "tCO2e",
     },
   },
   reportingOnlyEmission: {
     "ui:options": {
-      displayUnit: true,
+      displayUnit: "tCO2e",
     },
   },
   emissionsLimit: {
     "ui:options": {
-      displayUnit: true,
+      displayUnit: "tCO2e",
     },
   },
   excessEmissions: {
     "ui:options": {
-      displayUnit: true,
+      displayUnit: "tCO2e",
     },
   },
   creditedEmissions: {
     "ui:options": {
-      displayUnit: true,
+      displayUnit: "tCO2e",
     },
   },
   regulatoryValues: {
@@ -132,22 +123,22 @@ export const complianceSummaryUiSchema = {
       },
       annualProduction: {
         "ui:options": {
-          displayUnit: true,
+          displayUnit: "production unit",
         },
       },
       emissionIntensity: {
         "ui:options": {
-          displayUnit: true,
+          displayUnit: "tCO2e/production unit",
         },
       },
       allocatedIndustrialProcessEmissions: {
         "ui:options": {
-          displayUnit: true,
+          displayUnit: "tCO2e",
         },
       },
       allocatedComplianceEmissions: {
         "ui:options": {
-          displayUnit: true,
+          displayUnit: "tCO2e",
         },
       },
     },
