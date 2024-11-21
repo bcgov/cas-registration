@@ -161,7 +161,6 @@ const formData = {
   naics_code_id: 1,
   secondary_naics_code_id: 2,
   operation_has_multiple_operators: true,
-  registration_purposes: ["Non-Regulated"],
   activities: [1, 2, 3, 4, 5],
   multiple_operators_array: [
     {
@@ -177,7 +176,7 @@ const formData = {
       mo_postal_code: "V1V1V1",
     },
   ],
-  registration_purpose: "Non-Regulated",
+  registration_purpose: "Reporting Operation",
   regulated_products: [6],
   opt_in: false,
 };
@@ -185,7 +184,6 @@ const formData = {
 const optInFormData = {
   name: "Operation 5",
   type: "Single Facility Operation",
-  registration_purposes: ["Opted-in Operation"],
   registration_purpose: "Opted-in Operation",
   opted_in_operation: {
     meets_section_3_emissions_requirements: true,
@@ -203,7 +201,7 @@ const optInFormData = {
 const newEntrantFormData = {
   name: "Operation 5",
   type: "Single Facility Operation",
-  registration_purposes: ["New Entrant Operation"],
+  registration_purpose: "New Entrant Operation",
   new_entrant_application: mockDataUri,
   date_of_first_shipment: "On or before March 31, 2024",
 };
@@ -234,8 +232,7 @@ describe("the OperationInformationForm component", () => {
     fetchFormEnums();
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
-        formData.registration_purposes,
-        false,
+        formData.registration_purpose,
         OperationStatus.REGISTERED,
       );
     render(
@@ -281,7 +278,7 @@ describe("the OperationInformationForm component", () => {
         /The purpose of this registration is to register as a\:/i,
       ),
     ).toBeVisible();
-    expect(screen.getByText(/Non-Regulated/i)).toBeVisible();
+    expect(screen.getByText(/Reporting Operation/i)).toBeVisible();
   });
 
   it("should enable editing when the Edit button is clicked", async () => {
@@ -608,8 +605,7 @@ describe("the OperationInformationForm component", () => {
     fetchFormEnums();
     getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
     const modifiedSchema = await createAdministrationOperationInformationSchema(
-      newEntrantFormData.registration_purposes,
-      false,
+      newEntrantFormData.registration_purpose,
       OperationStatus.REGISTERED,
     );
 
@@ -626,7 +622,12 @@ describe("the OperationInformationForm component", () => {
       }),
     ).toBeVisible();
     expect(
-      container.querySelector("#root_section3_registration_purposes"),
+      screen.getByText(
+        /The purpose of this registration is to register as a\:/i,
+      ),
+    ).toBeVisible();
+    expect(
+      container.querySelector("#root_section3_registration_purpose"),
     ).toHaveTextContent("New Entrant Operation");
     expect(
       container.querySelector("#root_section3_new_entrant_preface"),
@@ -681,12 +682,9 @@ describe("the OperationInformationForm component", () => {
           title: "Registration Information",
           type: "object",
           properties: {
-            registration_purposes: {
-              type: "array",
-              items: {
-                type: "string",
-                enum: ["New Entrant Operation"],
-              },
+            registration_purpose: {
+              type: "string",
+              enum: ["New Entrant Operation"],
             },
             new_entrant_preface: {
               type: "string",
@@ -745,7 +743,7 @@ describe("the OperationInformationForm component", () => {
         body: JSON.stringify({
           name: "Operation 5",
           type: "Single Facility Operation",
-          registration_purposes: ["New Entrant Operation"],
+          registration_purpose: "New Entrant Operation",
           date_of_first_shipment: "On or after April 1, 2024",
           new_entrant_application:
             "data:application/pdf;name=mock_file.pdf;base64,dGVzdA==",

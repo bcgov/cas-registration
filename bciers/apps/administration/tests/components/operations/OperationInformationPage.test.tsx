@@ -12,7 +12,6 @@ const formData = {
   naics_code_id: 1,
   secondary_naics_code_id: 2,
   operation_has_multiple_operators: true,
-  registration_purposes: ["Non-Regulated"],
   multiple_operators_array: [
     {
       mo_is_extraprovincial_company: false,
@@ -27,7 +26,7 @@ const formData = {
       mo_postal_code: "V1V1V1",
     },
   ],
-  registration_purpose: "Non-Regulated",
+  registration_purpose: "Reporting Operation",
   regulated_products: [6],
   opt_in: false,
 };

@@ -24,6 +24,14 @@ from django.core.exceptions import ValidationError
 
 
 class Operation(TimeStampedModel):
+    class Purposes(models.TextChoices):
+        REPORTING_OPERATION = 'Reporting Operation'
+        OBPS_REGULATED_OPERATION = 'OBPS Regulated Operation'
+        OPTED_IN_OPERATION = 'Opted-in Operation'
+        NEW_ENTRANT_OPERATION = 'New Entrant Operation'
+        ELECTRICITY_IMPORT_OPERATION = 'Electricity Import Operation'
+        POTENTIAL_REPORTING_OPERATION = 'Potential Reporting Operation'
+
     class Statuses(models.TextChoices):
         NOT_STARTED = "Not Started"
         DRAFT = "Draft"
@@ -172,6 +180,13 @@ class Operation(TimeStampedModel):
         null=True,
         choices=DateOfFirstShipmentChoices.choices,
         db_comment="The date of the operation's first shipment (determines which application and statutory declaration template should be used)",
+    )
+    registration_purpose = models.CharField(
+        max_length=1000,
+        choices=Purposes.choices,
+        null=True,
+        blank=True,
+        db_comment="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered).",
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',

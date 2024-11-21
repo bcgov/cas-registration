@@ -95,7 +95,7 @@ describe("the OperationRegistrationPage component", () => {
       count: 0,
     });
     actionHandler.mockResolvedValueOnce({
-      registration_purposes: ["OBPS Regulated Operation"],
+      registration_purpose: "OBPS Regulated Operation",
     });
     render(
       await OperationRegistrationPage({
@@ -112,7 +112,7 @@ describe("the OperationRegistrationPage component", () => {
 
   it("should render 5 steps and the Opt-in Application Form if the registration purpose is Opt-in", async () => {
     actionHandler.mockResolvedValueOnce({
-      registration_purposes: ["Opted-in Operation"],
+      registration_purpose: "Opted-in Operation",
     });
     render(
       await OperationRegistrationPage({
@@ -129,7 +129,7 @@ describe("the OperationRegistrationPage component", () => {
 
   it("should render 5 steps and the New Entrant Application Form if the registration purpose is New Entrant", async () => {
     actionHandler.mockResolvedValueOnce({
-      registration_purposes: ["New Entrant Operation"],
+      registration_purpose: "New Entrant Operation",
     });
     render(
       await OperationRegistrationPage({
@@ -147,7 +147,7 @@ describe("the OperationRegistrationPage component", () => {
   it("should render the Operation Representative Form and 4 steps", async () => {
     // purpose
     actionHandler.mockResolvedValueOnce({
-      registration_purposes: ["OBPS Regulated Operation"],
+      registration_purpose: "OBPS Regulated Operation",
     });
 
     // contacts
@@ -174,7 +174,7 @@ describe("the OperationRegistrationPage component", () => {
 
   it("should render the Submission Form and 5 steps", async () => {
     actionHandler.mockResolvedValueOnce({
-      registration_purposes: ["New Entrant Operation"],
+      registration_purpose: "New Entrant Operation",
     });
     render(
       await OperationRegistrationPage({

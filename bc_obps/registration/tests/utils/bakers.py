@@ -37,6 +37,10 @@ def generate_random_bc_corporate_registry_number():
     return dummy_data
 
 
+def select_random_registration_purpose():
+    return random.choice([choice.value for choice in Operation.Purposes])
+
+
 def user_baker(custom_properties=None) -> User:
     properties = {}
     if custom_properties:
@@ -85,6 +89,9 @@ def operator_baker(custom_properties=None) -> Operator:
 def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operation, List[Operation]]:
     if "type" not in properties:
         properties["type"] = cycle(["sfo", "lfo"])
+
+    if "registration_purpose" not in properties:
+        properties["registration_purpose"] = cycle([choice for choice in Operation.Purposes])
 
     point_of_contact = properties.get("point_of_contact")
     if point_of_contact:
@@ -160,7 +167,6 @@ def facility_designated_operation_timeline_baker(
 
 
 def facility_baker(*args, **kwargs):
-
     return baker.make(
         Facility, latitude_of_largest_emissions=48.407326, longitude_of_largest_emissions=-123.329773, *args, **kwargs
     )

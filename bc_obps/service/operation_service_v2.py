@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Callable, Generator
+from typing import Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.user import User
@@ -24,15 +24,12 @@ from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
 from service.operation_service import OperationService
-from registration.models.registration_purpose import RegistrationPurpose
-from service.data_access_service.registration_purpose_service import RegistrationPurposeDataAccessService
 from registration.schema.v2.operation import (
     OperationFilterSchema,
     OperationInformationIn,
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
-    RegistrationPurposeIn,
 )
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
@@ -68,43 +65,6 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def set_registration_purpose(cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn) -> Operation:
-        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
-
-        purpose_choice = next(
-            (choice for choice in RegistrationPurpose.Purposes if choice.value == payload.registration_purpose), None
-        )
-        purposes: List[RegistrationPurpose.Purposes] = []
-        # add the payload's purpose as long as it's not reporting or regulated (will add these later)
-        if purpose_choice in [
-            RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION,
-            RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION,
-        ]:
-            purposes.append(purpose_choice)
-        else:
-            reporting_and_regulated_purposes = [
-                RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
-                RegistrationPurpose.Purposes.REPORTING_OPERATION,
-            ]
-            if purpose_choice and purpose_choice not in reporting_and_regulated_purposes:
-                reporting_and_regulated_purposes.append(purpose_choice)
-            purposes.extend(reporting_and_regulated_purposes)
-            if payload.regulated_products:
-                operation.regulated_products.set(payload.regulated_products)
-
-        for purpose in purposes:
-            RegistrationPurposeDataAccessService.create_registration_purpose(
-                user_guid, operation_id, {'registration_purpose': purpose}
-            )
-            if purpose == RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
-                operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
-                operation.opt_in = True
-                operation.save(update_fields=['opted_in_operation', 'opt_in'])
-        operation.set_create_or_update(user_guid)
-        return operation
-
-    @classmethod
-    @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         fields_to_update = ['status']
@@ -126,7 +86,7 @@ class OperationServiceV2:
         if not operation.opted_in_operation:
             raise Exception("Operation does not have an opted-in operation.")
         return OptedInOperationDataAccessService.update_opted_in_operation_detail(
-            user_guid, operation.opted_in_operation.id, payload.dict()
+            user_guid, operation.opted_in_operation.id, payload
         )
 
     @classmethod
@@ -188,6 +148,15 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
+    def create_opted_in_operation_detail(cls, user_guid: UUID, operation: Operation) -> Operation:
+        operation.opt_in = True
+        operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
+        operation.save(update_fields=['opted_in_operation', 'opt_in'])
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
     def remove_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeRemove
     ) -> OperationRepresentativeRemove:
@@ -214,6 +183,7 @@ class OperationServiceV2:
                 'secondary_naics_code_id',
                 'tertiary_naics_code_id',
                 'date_of_first_shipment',
+                'registration_purpose',
             }
         )
         operation_data['operator_id'] = user_operator.operator_id
@@ -225,6 +195,8 @@ class OperationServiceV2:
 
         # set m2m relationships
         operation.activities.set(payload.activities)
+        if payload.regulated_products:
+            operation.regulated_products.set(payload.regulated_products)
 
         # create or replace documents
         operation_documents = [
@@ -259,6 +231,9 @@ class OperationServiceV2:
         ]
         operation.documents.add(*operation_documents)
 
+        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            operation = cls.create_opted_in_operation_detail(user_guid, operation)
+
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
@@ -282,11 +257,12 @@ class OperationServiceV2:
             operation_id,
         )
 
-        registration_payload = RegistrationPurposeIn(
-            registration_purpose=payload.registration_purpose, regulated_products=payload.regulated_products
-        )
-        cls.set_registration_purpose(user_guid, operation.id, registration_payload)
+        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            # TODO in ticket 2169 - replace this with create_or_update_-----
+            operation = cls.create_opted_in_operation_detail(user_guid, operation)
+
         cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
+        operation.set_create_or_update(user_guid)
 
         return operation
 
@@ -390,7 +366,7 @@ class OperationServiceV2:
         """
 
         def check_conditions() -> Generator[Tuple[Callable[[], bool], str], None, None]:
-            yield lambda: operation.registration_purposes.exists(), "Operation must have a registration purpose."
+            yield lambda: operation.registration_purpose is not None, "Operation must have a registration purpose."
             yield (
                 lambda: operation.contacts.filter(
                     business_role__role_name='Operation Representative',
@@ -417,9 +393,7 @@ class OperationServiceV2:
             )
             yield (
                 lambda: not (
-                    operation.registration_purposes.filter(
-                        registration_purpose=RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION
-                    ).exists()
+                    operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
                     and not operation.documents.filter(
                         type=DocumentType.objects.get(name='new_entrant_application')
                     ).exists()
@@ -428,9 +402,7 @@ class OperationServiceV2:
             )
             yield (
                 lambda: not (
-                    operation.registration_purposes.filter(
-                        registration_purpose=RegistrationPurpose.Purposes.OPTED_IN_OPERATION
-                    ).exists()
+                    operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
                     and not cls.is_operation_opt_in_information_complete(operation)
                 ),
                 "Operation must have completed opt-in information if it is opted in.",
@@ -443,9 +415,7 @@ class OperationServiceV2:
     @classmethod
     def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
-        is_eio = operation.registration_purposes.filter(
-            registration_purpose=RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION
-        ).exists()
+        is_eio = operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         if operation.bc_obps_regulated_operation:
             raise Exception('Operation already has a BORO ID.')
         if is_eio:

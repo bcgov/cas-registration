@@ -3,7 +3,6 @@ from registration.constants import PAGE_SIZE
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
-    NaicsCode,
     Operation,
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -22,11 +21,10 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_operations_endpoint_list_operations_v2_paginated(self):
         operator1 = operator_baker()
-        baker.make(
-            Operation,
+        baker.make_recipe(
+            'utils.operation',
             operator_id=operator1.id,
             status=Operation.Statuses.PENDING,
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
             _quantity=60,
         )
         # Get the default page 1 response
@@ -68,31 +66,28 @@ class TestOperationsEndpoint(CommonTestSetup):
         operator1 = operator_baker()
         operator2 = operator_baker()
 
-        baker.make(
-            Operation,
+        baker.make_recipe(
+            'utils.operation',
             operator_id=operator1.id,
             name='Springfield Nuclear Power Plant',
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
             type='Gouda',
             status=Operation.Statuses.PENDING,
             _quantity=10,
         )
-        baker.make(
-            Operation,
+        baker.make_recipe(
+            'utils.operation',
             operator_id=operator2.id,
             name='Krusty Burger',
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
             type='Cheddar',
             status=Operation.Statuses.PENDING,
             _quantity=10,
         )
-        baker.make(
-            Operation,
+        baker.make_recipe(
+            'utils.operation',
             operator_id=operator2.id,
             name='Kwik-E-Mart',
             status=Operation.Statuses.DECLINED,
             bcghg_id=baker.make_recipe('utils.bcghg_id'),
-            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
             type="Brie",
         )
 

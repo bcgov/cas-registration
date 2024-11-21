@@ -1,4 +1,4 @@
-from registration.models.registration_purpose import RegistrationPurpose
+from registration.models.operation import Operation
 from registration.utils import custom_reverse_lazy
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from model_bakery import baker
@@ -11,4 +11,4 @@ class TestRegistrationPurposesEndpoint(CommonTestSetup):
             self, "industry_user", custom_reverse_lazy('get_registration_purposes')
         )
         assert response.status_code == 200
-        assert len(response.json()) == len(RegistrationPurpose.Purposes)
+        assert len(response.json()) == len(Operation.Purposes)
