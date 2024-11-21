@@ -112,7 +112,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000007",
       "operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
-      "role": "pending",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null,
@@ -196,8 +196,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000014",
       "operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Declined",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 17

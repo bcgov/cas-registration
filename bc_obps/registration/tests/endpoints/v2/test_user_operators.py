@@ -1,13 +1,10 @@
 from typing import Any, Dict
+from model_bakery import baker
+from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models.operator import Operator
 from registration.models.user_operator import UserOperator
-
-from registration.models import (
-    BusinessStructure,
-)
-from registration.tests.utils.bakers import (
-    operator_baker,
-)
+from registration.models import BusinessStructure
+from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
@@ -269,3 +266,173 @@ class TestCreateUserOperator(CommonTestSetup):
         assert user_operator is not None
         assert user_operator.role == UserOperator.Roles.ADMIN
         assert user_operator.status == UserOperator.Statuses.APPROVED
+
+
+class TestListUserOperators(CommonTestSetup):
+    url = custom_reverse_lazy("list_user_operators_v2")
+
+    def test_list_user_operators_v2_paginated(self):
+        for _ in range(50):
+            baker.make_recipe(
+                'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+            )
+        # Get the default page 1 response
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.url)
+        assert response.status_code == 200
+        response_items_1 = response.json().get('items')
+        response_count_1 = response.json().get('count')
+        # save the id of the first paginated response item
+        page_1_response_id = response_items_1[0].get('id')
+        assert len(response_items_1) == NINJA_PAGINATION_PER_PAGE
+        assert response_count_1 == 50  # total count of user operators
+        # Get the page 2 response
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            self.url + "?page=2&sort_field=created_at&sort_order=desc",
+        )
+        assert response.status_code == 200
+        response_items_2 = response.json().get('items')
+        response_count_2 = response.json().get('count')
+        # save the id of the first paginated response item
+        page_2_response_id = response_items_2[0].get('id')
+        assert len(response_items_2) == NINJA_PAGINATION_PER_PAGE
+        # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
+        assert page_1_response_id != page_2_response_id
+        assert response_count_2 == response_count_1  # total count should be the same
+
+        # Get the page 2 response but with a different sort order
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            self.url + "?page=2&sort_field=created_at&sort_order=asc",
+        )
+        assert response.status_code == 200
+        response_items_2_reverse = response.json().get('items')
+        # save the id of the first paginated response item
+        page_2_response_id_reverse = response_items_2_reverse[0].get('id')
+        assert len(response_items_2_reverse) == NINJA_PAGINATION_PER_PAGE
+        # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
+        assert page_2_response_id != page_2_response_id_reverse
+
+        # make sure sorting is working
+        page_2_first_user_operator = UserOperator.objects.get(pk=page_2_response_id)
+        page_2_first_user_operator_reverse = UserOperator.objects.get(pk=page_2_response_id_reverse)
+        assert page_2_first_user_operator.created_at > page_2_first_user_operator_reverse.created_at
+
+    def test_list_user_operators_v2_with_filter(self):
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="Jane", last_name="Doe"),
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="Bob", last_name="Smith"),
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.DECLINED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="John", last_name="Doe"),
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.DECLINED,
+            user=baker.make_recipe('utils.industry_operator_user', first_name="Henry", last_name="Ives"),
+        )
+
+        # Get the default page 1 response
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self.url + "?user__first_name=Jane"
+        )  # filtering user__first_name with Jane
+        assert response.status_code == 200
+        response_items_1 = response.json().get('items')
+        assert response_items_1[0].get('user__first_name') == "Jane"
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self.url + "?user__first_name=John&user__last_name=Smith"
+        )
+        assert response.status_code == 200
+        assert response.json().get('count') == 0
+
+        # Test with a first_name and last_name filter
+        first_name_to_filter, last_name_to_filter = response_items_1[0].get('user__first_name'), response_items_1[
+            0
+        ].get('user__last_name')
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            self.url + f"?user__first_name={first_name_to_filter}&user__last_name={last_name_to_filter}",
+        )
+        assert response.status_code == 200
+        response_items_2 = response.json().get('items')
+        assert len(response_items_2) == 1
+        assert response.json().get('count') == 1
+        assert response_items_2[0].get('user__first_name') == first_name_to_filter
+        assert response_items_2[0].get('user__last_name') == last_name_to_filter
+
+    def test_list_user_operators_v2_returns_valid_data(self):
+        approved_admin_user_operators = []
+        for _ in range(2):
+            # add 2 approved admin user operators to test the endpoint
+            approved_admin_user_operators.append(
+                baker.make_recipe(
+                    'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+                )
+            )
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.url)
+
+        assert response.status_code == 200
+        response_data = response.json()
+        assert len(response_data) == 2
+        # assert one of the approved admin user operators (as a sample) is in the response and has proper data
+        approved_admin_user_operator_to_check = approved_admin_user_operators[0]
+        approved_admin_user_operator_in_response = next(
+            (
+                user_operator
+                for user_operator in response_data["items"]
+                if user_operator["id"] == str(approved_admin_user_operator_to_check.id)
+            ),
+            None,
+        )
+        assert approved_admin_user_operator_in_response is not None
+        assert approved_admin_user_operator_in_response["id"] == str(approved_admin_user_operator_to_check.id)
+        assert (
+            approved_admin_user_operator_in_response["user_friendly_id"]
+            == approved_admin_user_operator_to_check.user_friendly_id
+        )
+        assert approved_admin_user_operator_in_response["status"] == approved_admin_user_operator_to_check.status
+        assert (
+            approved_admin_user_operator_in_response["user__first_name"]
+            == approved_admin_user_operator_to_check.user.first_name
+        )
+        assert (
+            approved_admin_user_operator_in_response["user__last_name"]
+            == approved_admin_user_operator_to_check.user.last_name
+        )
+        assert (
+            approved_admin_user_operator_in_response["user__email"] == approved_admin_user_operator_to_check.user.email
+        )
+        assert (
+            approved_admin_user_operator_in_response["user__bceid_business_name"]
+            == approved_admin_user_operator_to_check.user.bceid_business_name
+        )
+        assert (
+            approved_admin_user_operator_in_response["operator__legal_name"]
+            == approved_admin_user_operator_to_check.operator.legal_name
+        )
+        # make sure keys are what we expect based on the schema (using sorted to ensure order doesn't matter)
+        assert set(approved_admin_user_operator_in_response.keys()) == {
+            "id",
+            "user_friendly_id",
+            "status",
+            "user__first_name",
+            "user__last_name",
+            "user__email",
+            "user__bceid_business_name",
+            "operator__legal_name",
+        }

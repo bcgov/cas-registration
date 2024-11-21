@@ -170,6 +170,7 @@ class TestEndpointPermissions(TestCase):
         ],
         "authorized_irc_user": [
             {"method": "get", "endpoint_name": "list_user_operators"},
+            {"method": "get", "endpoint_name": "list_user_operators_v2"},
             {"method": "put", "endpoint_name": "update_operator_status", "kwargs": {"operator_id": mock_uuid}},
             {
                 "method": "put",

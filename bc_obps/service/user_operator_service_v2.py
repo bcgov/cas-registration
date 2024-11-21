@@ -1,11 +1,18 @@
-from typing import Dict
+from typing import Dict, Optional
 from uuid import UUID
 
 from django.db import transaction
+from django.db.models import QuerySet
+from django.db.models.functions import Lower
+from ninja import Query
+
+from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.schema.v2.user_operator import UserOperatorFilterSchema
 from registration.utils import update_model_instance
 from registration.models import Operator, UserOperator
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.schema.v2.operator import OperatorIn
+from service.data_access_service.user_service import UserDataAccessService
 from service.operator_service_v2 import OperatorServiceV2
 
 
@@ -71,3 +78,33 @@ class UserOperatorServiceV2:
         OperatorServiceV2.update_operator(user_guid, payload)
 
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
+
+    @classmethod
+    def list_user_operators_v2(
+        cls,
+        user_guid: UUID,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: UserOperatorFilterSchema = Query(...),
+    ) -> QuerySet[UserOperator]:
+
+        user = UserDataAccessService.get_by_guid(user_guid)
+        # This service is only available to IRC users
+        if not user.is_irc_user():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
+        # Used to show internal users the list of user_operators to approve/deny
+        base_qs = UserOperatorDataAccessService.get_admin_user_operator_requests_for_irc_users()
+
+        # `created_at` and `user_friendly_id` are not case-insensitive fields and Lower() cannot be applied to them
+        if sort_field in ['created_at', 'user_friendly_id']:
+            sort_direction = "-" if sort_order == "desc" else ""
+            return filters.filter(base_qs).order_by(f"{sort_direction}{sort_field}")
+
+        # Use Lower for case-insensitive ordering
+        lower_sort_field = Lower(sort_field)
+        if sort_order == "desc":
+            # Apply descending order
+            return filters.filter(base_qs).order_by(lower_sort_field.desc())
+        # Apply ascending order
+        return filters.filter(base_qs).order_by(lower_sort_field)
