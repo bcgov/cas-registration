@@ -39,13 +39,19 @@ const ArrayFieldTemplate = ({
   } = getUiOptions(uiSchema, registry.globalUiOptions);
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
+  const customItemName = uiSchema?.["ui:options"]?.customItemName as boolean;
 
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            {(customTitleName || (removable && i !== 0)) && (
+            {customItemName && (
+              <div className="py-2 w-full font-bold text-bc-bg-blue mb-4">
+                <span>{item.children.props.formData.name}</span>
+              </div>
+            )}
+            {(customTitleName || (removable && i !== 0)) && !customItemName && (
               <div className="text-bc-bg-blue text-lg flex align-center my-10">
                 {customTitleName && (
                   <span>
@@ -73,6 +79,8 @@ const ArrayFieldTemplate = ({
                   "ui:FieldTemplate": BasicFieldTemplate,
                   "ui:options": {
                     label: false,
+                    inline: true,
+                    unit: "test",
                   },
                 },
               },
