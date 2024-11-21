@@ -86,7 +86,7 @@ class OperationServiceV2:
         if not operation.opted_in_operation:
             raise Exception("Operation does not have an opted-in operation.")
         return OptedInOperationDataAccessService.update_opted_in_operation_detail(
-            user_guid, operation.opted_in_operation.id, payload.dict()
+            user_guid, operation.opted_in_operation.id, payload
         )
 
     @classmethod
@@ -258,6 +258,7 @@ class OperationServiceV2:
         )
 
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            # TODO in ticket 2169 - replace this with create_or_update_-----
             operation = cls.create_opted_in_operation_detail(user_guid, operation)
 
         cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
