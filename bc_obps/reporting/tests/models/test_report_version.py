@@ -27,4 +27,5 @@ class ReportVersionTest(BaseTestCase):
             ("reportunit_records", "report unit", None, 0),
             ("report_products", "report product", None, 0),
             ("report_verification", "report verification", None, None),
+            ("report_attachments", "report attachment", None, 0),
         ]

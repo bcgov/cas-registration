@@ -8,11 +8,10 @@ class ReportAdditionalDataTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_object = ReportAttachment()
         cls.field_data = [
+            ("id", "ID", None, None),
             *TIMESTAMP_COMMON_FIELDS,
             ("report_version", "report version", None, None),
-            ("capture_emissions", "capture emissions", None, None),
-            ("emissions_on_site_use", "emissions on site use", None, None),
-            ("emissions_on_site_sequestration", "emissions on site sequestration", None, None),
-            ("emissions_off_site_transfer", "emissions off site transfer", None, None),
-            ("electricity_generated", "electricity generated", None, None),
+            ("attachment", "attachment", None, None),
+            ("attachment_type", "attachment type", None, None),
+            ("attachment_name", "attachment name", None, None),
         ]
