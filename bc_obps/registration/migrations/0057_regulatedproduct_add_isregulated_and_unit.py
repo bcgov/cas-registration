@@ -124,12 +124,6 @@ class Migration(migrations.Migration):
         RegulatedProduct.objects.filter(
             name='Forged steel balls: greater than 4 inches diameter',
         ).update(unit='Tonne forged steel balls')
-        RegulatedProduct.objects.filter(
-            name='Mining: critical mineral, other than copper',
-        ).update(unit=None)
-        RegulatedProduct.objects.filter(
-            name='Smelting: critical mineral, other than aluminun and lead-zinc',
-        ).update(unit=None)
 
     def add_unregulated_products(apps, schema_editor):
         RegulatedProduct = apps.get_model('registration', 'RegulatedProduct')
