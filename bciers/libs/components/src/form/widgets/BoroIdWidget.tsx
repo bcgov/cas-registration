@@ -21,7 +21,7 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, formContext }) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [error, setError] = useState(undefined);
 
-  if (formContext.isEio) {
+  if (!formContext.isRegulatedOperation) {
     return (
       <div id={id} className="read-only-widget whitespace-pre-line">
         Not applicable
