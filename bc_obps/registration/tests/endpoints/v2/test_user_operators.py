@@ -353,7 +353,6 @@ class TestListUserOperators(CommonTestSetup):
         assert response.status_code == 200
         response_items_1 = response.json().get('items')
         assert response_items_1[0].get('user__first_name') == "Jane"
-        # Test with a type filter that doesn't exist
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", self.url + "?user__first_name=John&user__last_name=Smith"
         )
@@ -390,7 +389,7 @@ class TestListUserOperators(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json()
         assert len(response_data) == 2
-        # assert one of the approved admin user operators is in the response
+        # assert one of the approved admin user operators (as a sample) is in the response and has proper data
         approved_admin_user_operator_to_check = approved_admin_user_operators[0]
         approved_admin_user_operator_in_response = next(
             (
@@ -426,3 +425,14 @@ class TestListUserOperators(CommonTestSetup):
             approved_admin_user_operator_in_response["operator__legal_name"]
             == approved_admin_user_operator_to_check.operator.legal_name
         )
+        # make sure keys are what we expect based on the schema (using sorted to ensure order doesn't matter)
+        assert set(approved_admin_user_operator_in_response.keys()) == {
+            "id",
+            "user_friendly_id",
+            "status",
+            "user__first_name",
+            "user__last_name",
+            "user__email",
+            "user__bceid_business_name",
+            "operator__legal_name",
+        }

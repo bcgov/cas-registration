@@ -1,3 +1,5 @@
+from itertools import cycle
+
 import pytest
 from model_bakery import baker
 
@@ -44,7 +46,7 @@ class TestUserOperatorServiceV2:
         assert Operator.objects.first().status == Operator.Statuses.APPROVED
 
     @staticmethod
-    def test_list_user_operators_v2():
+    def test_list_user_operators_v2_industry_users_are_not_authorized():
         filters_1 = UserOperatorFilterSchema(
             user_friendly_id="1",
             status="pending",
@@ -62,17 +64,31 @@ class TestUserOperatorServiceV2:
                 user_guid=industry_user.user_guid, filters=filters_1, sort_field="created_at", sort_order="asc"
             )
 
+    @staticmethod
+    def test_list_user_operators_v2():
+
         # add some user operators
-        for _ in range(5):
-            baker.make_recipe(
-                'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-            )
-            baker.make_recipe(
-                'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DECLINED
-            )
-            baker.make_recipe(
-                'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
-            )
+        baker.make_recipe(
+            'utils.user_operator',
+            user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            _quantity=5,
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.DECLINED,
+            _quantity=5,
+        )
+        baker.make_recipe(
+            'utils.user_operator',
+            user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+            _quantity=5,
+        )
 
         assert UserOperator.objects.count() == 15
 

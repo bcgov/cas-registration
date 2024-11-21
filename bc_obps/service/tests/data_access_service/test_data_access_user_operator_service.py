@@ -1,3 +1,5 @@
+from itertools import cycle
+
 import pytest
 from model_bakery import baker
 from registration.models import Operator
@@ -23,58 +25,75 @@ class TestDataAccessUserOperatorService:
 
         # Prepare user operators for various roles and statuses
         # Declined operator with user operators (should be excluded in final result)
-        for _ in range(5):
-            user_operators_with_declined_operator.append(
-                baker.make_recipe(
-                    'utils.user_operator',
-                    role=UserOperator.Roles.ADMIN,
-                    status=UserOperator.Statuses.PENDING,
-                    operator=declined_operator,
-                )
+        user_operators_with_declined_operator.extend(
+            baker.make_recipe(
+                'utils.user_operator',
+                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.PENDING,
+                operator=declined_operator,
+                _quantity=5,
             )
+        )
 
-            # Approved admin user operators (should be included in final result)
-            approved_admin_user_operators.append(
-                baker.make_recipe(
-                    'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-                )
+        # Approved admin user operators (should be included in final result)
+        approved_admin_user_operators.extend(
+            baker.make_recipe(
+                'utils.user_operator',
+                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.APPROVED,
+                _quantity=5,
             )
+        )
 
-            # Pending admin user operators for approved operator (should be included in final result)
-            pending_admin_user_operators_for_approved_operator.append(
-                baker.make_recipe(
-                    'utils.user_operator',
-                    operator=approved_operator,
-                    role=UserOperator.Roles.ADMIN,
-                    status=UserOperator.Statuses.PENDING,
-                )
+        # Pending(status) admin user operators for approved operator (should be included in final result)
+        pending_admin_user_operators_for_approved_operator.extend(
+            baker.make_recipe(
+                'utils.user_operator',
+                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                operator=approved_operator,
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.PENDING,
+                _quantity=5,
             )
+        )
 
-            # Declined admin user operators (should be included in final result)
-            declined_admin_user_operators.append(
-                baker.make_recipe(
-                    'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DECLINED
-                )
+        # Declined admin user operators (should be included in final result)
+        declined_admin_user_operators.extend(
+            baker.make_recipe(
+                'utils.user_operator',
+                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.DECLINED,
+                _quantity=5,
             )
+        )
 
-            # Declined pending user operators (should be included in final result only if no approved admin exists)
-            declined_pending_user_operators.append(
-                baker.make_recipe(
-                    'utils.user_operator', role=UserOperator.Roles.PENDING, status=UserOperator.Statuses.DECLINED
-                )
+        # Declined pending (role) user operators (should be included in final result only if no approved admin exists)
+        declined_pending_user_operators.extend(
+            baker.make_recipe(
+                'utils.user_operator',
+                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                role=UserOperator.Roles.PENDING,
+                status=UserOperator.Statuses.DECLINED,
+                _quantity=5,
             )
+        )
 
-            # Pending user operators for the approved operator, with a PENDING status (should be excluded due to approved admin user)
-            pending_user_operators_with_pending_status.append(
-                baker.make_recipe(
-                    'utils.user_operator',
-                    role=UserOperator.Roles.PENDING,
-                    status=UserOperator.Statuses.PENDING,
-                    operator=approved_operator,
-                )
+        # Pending (role/status) user operators for the approved operator(should be excluded due to approved admin user)
+        pending_user_operators_with_pending_status.extend(
+            baker.make_recipe(
+                'utils.user_operator',
+                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                role=UserOperator.Roles.PENDING,
+                status=UserOperator.Statuses.PENDING,
+                operator=approved_operator,
+                _quantity=5,
             )
+        )
 
-        # Add approved admin user for the approved operator (to prevent showing pending user operators for this operator)
+        # Add approved admin user for the approved operator (to prevent showing pending(status) user operators for this operator)
         approved_user_operator_for_approved_operator = baker.make_recipe(
             'utils.user_operator',
             role=UserOperator.Roles.ADMIN,
