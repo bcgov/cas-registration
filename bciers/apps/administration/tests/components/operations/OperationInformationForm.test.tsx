@@ -13,6 +13,7 @@ import { createAdministrationOperationInformationSchema } from "apps/administrat
 import { OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
+import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -569,7 +570,11 @@ describe("the OperationInformationForm component", () => {
 
     render(
       <OperationInformationForm
-        formData={{ ...formData, status: OperationStatus.REGISTERED }}
+        formData={{
+          ...formData,
+          registration_purpose: RegistrationPurposes.OBPS_REGULATED_OPERATION,
+          status: OperationStatus.REGISTERED,
+        }}
         schema={{
           type: "object",
           properties: {
