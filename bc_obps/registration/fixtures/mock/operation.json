@@ -370,6 +370,7 @@
       "bcghg_id": "23219990018",
       "regulated_products": [],
       "status": "Registered",
+      "registration_purpose": "OBPS Regulated Operation",
       "created_at": "2024-1-15T15:27:00.000Z",
       "activities": [1, 5]
     }
