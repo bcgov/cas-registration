@@ -20,7 +20,7 @@ def revert_remove_naics_code(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0055_V1_14_0'),
+        ('registration', '0057_remove_registrationpurpose_archived_by_and_more.py'),
     ]
 
     operations = [migrations.RunPython(remove_naics_code, revert_remove_naics_code)]  # No revert necessary
