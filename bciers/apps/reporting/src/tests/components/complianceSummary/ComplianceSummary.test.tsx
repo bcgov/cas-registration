@@ -33,23 +33,6 @@ const mockSummaryData = {
   ],
 };
 
-beforeEach(() => {
-  window.alert = vi.fn(); // or vi.fn() if using Vitest
-  vi.mock("next/navigation", () => {
-    const actual = vi.importActual("next/navigation");
-    return {
-      ...actual,
-      useRouter: vi.fn(() => ({
-        push: vi.fn(),
-      })),
-      useSearchParams: vi.fn(() => ({
-        get: vi.fn(),
-      })),
-      usePathname: vi.fn(),
-    };
-  });
-});
-
 describe("ComplianceSummary", () => {
   beforeEach(() => {
     (actionHandler as Mock).mockClear();
