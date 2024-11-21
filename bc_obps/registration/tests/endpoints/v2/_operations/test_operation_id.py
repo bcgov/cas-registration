@@ -1,4 +1,3 @@
-from registration.models.registration_purpose import RegistrationPurpose
 from model_bakery import baker
 from registration.models import (
     UserOperator,
@@ -80,15 +79,18 @@ class TestOperationIdEndpoint(CommonTestSetup):
 
     def test_operations_endpoint_get_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        baker.make(RegistrationPurpose, operation=operation, registration_purpose='Potential Reporting Operation')
+        operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose='Potential Reporting Operation',
+        )
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy("get_operation_v2", kwargs={"operation_id": operation.id})
         )
         assert response.status_code == 200
         response_data = response.json()
         assert response_data.get("id") == str(operation.id)
-        assert response_data.get("registration_purposes") == ['Potential Reporting Operation']
+        assert response_data.get("registration_purpose") == 'Potential Reporting Operation'
 
     def test_operations_with_documents_endpoint_get_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)

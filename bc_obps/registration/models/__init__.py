@@ -24,7 +24,6 @@ from .facility_designated_operation_timeline import FacilityDesignatedOperationT
 from .multiple_operator import MultipleOperator
 from .operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from .well_authorization_number import WellAuthorizationNumber
-from .registration_purpose import RegistrationPurpose
 from .event import ClosureEvent, TemporaryShutdownEvent, TransferEvent, RestartEvent
 from .bc_greenhouse_gas_id import BcGreenhouseGasId
 
@@ -57,7 +56,6 @@ __all__ = [
     "UserOperator",
     "User",
     "WellAuthorizationNumber",
-    "RegistrationPurpose",
     "OptedInOperationDetail",
     "BcGreenhouseGasId",
 ]

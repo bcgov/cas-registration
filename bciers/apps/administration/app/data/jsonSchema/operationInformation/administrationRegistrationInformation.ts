@@ -5,20 +5,19 @@ import { getRegulatedProducts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
 export const createAdministrationRegistrationInformationSchema = async (
-  registrationPurposesValue: string[],
-  optedIn: boolean,
+  registrationPurposeValue: string,
 ): Promise<RJSFSchema> => {
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
 
-  const isRegulatedProducts = registrationPurposesValue?.includes(
-    RegistrationPurposes.OBPS_REGULATED_OPERATION,
-  );
-
-  const isNewEntrant = registrationPurposesValue?.includes(
-    RegistrationPurposes.NEW_ENTRANT_OPERATION,
-  );
+  const isRegulatedProducts =
+    registrationPurposeValue ===
+    RegistrationPurposes.OBPS_REGULATED_OPERATION.valueOf();
+  const isNewEntrant =
+    registrationPurposeValue === RegistrationPurposes.NEW_ENTRANT_OPERATION;
+  const isOptIn =
+    registrationPurposeValue === RegistrationPurposes.OPTED_IN_OPERATION;
 
   // create the schema with the fetched values
   const registrationInformationSchema: RJSFSchema = {
@@ -26,10 +25,9 @@ export const createAdministrationRegistrationInformationSchema = async (
     type: "object",
     required: isRegulatedProducts ? ["regulated_products"] : [],
     properties: {
-      registration_purposes: {
-        type: "array",
+      registration_purpose: {
+        type: "string",
         title: "The purpose of this registration is to register as a:",
-        items: {},
       },
       ...(isRegulatedProducts && {
         regulated_operation_preface: {
@@ -49,7 +47,7 @@ export const createAdministrationRegistrationInformationSchema = async (
           },
         },
       }),
-      ...(optedIn && {
+      ...(isOptIn && {
         opted_in_preface: {
           // Not an actual field, just used to display a message
           type: "object",
@@ -108,7 +106,7 @@ export const createAdministrationRegistrationInformationSchema = async (
 
 export const registrationInformationUiSchema: UiSchema = {
   "ui:order": [
-    "registration_purposes",
+    "registration_purpose",
     "regulated_operation_preface",
     "regulated_products",
     "new_entrant_preface",

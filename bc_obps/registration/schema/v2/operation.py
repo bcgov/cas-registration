@@ -9,7 +9,6 @@ from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from registration.models.registration_purpose import RegistrationPurpose
 from pydantic import field_validator
 from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
@@ -18,15 +17,6 @@ from registration.models import Operator, User
 from ninja.types import DictStrAny
 
 #### Operation schemas
-
-
-class RegistrationPurposeIn(ModelSchema):
-    registration_purpose: RegistrationPurpose.Purposes
-    regulated_products: Optional[list] = None
-
-    class Meta:
-        model = RegistrationPurpose
-        fields = ["registration_purpose"]
 
 
 class OperationRepresentativeIn(ModelSchema):
@@ -50,9 +40,9 @@ class OperationRepresentativeRemove(ModelSchema):
 
 
 class OperationInformationIn(ModelSchema):
-    registration_purpose: Optional[RegistrationPurpose.Purposes] = None
-    regulated_products: Optional[list] = None
-    activities: list[int]
+    registration_purpose: Optional[Operation.Purposes] = None
+    regulated_products: Optional[List[int]] = None
+    activities: List[int]
     boundary_map: str
     process_flow_diagram: str
     naics_code_id: int
@@ -118,17 +108,13 @@ class OperationOutV2(ModelSchema):
     operator: Optional[OperatorForOperationOut] = None
     boundary_map: Optional[str] = None
     process_flow_diagram: Optional[str] = None
-    registration_purposes: Optional[list] = []
+    registration_purpose: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
     date_of_first_shipment: Optional[str] = None
     new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
-
-    @staticmethod
-    def resolve_registration_purposes(obj: Operation) -> List[str]:
-        return list(obj.registration_purposes.all().values_list('registration_purpose', flat=True))
 
     @staticmethod
     def resolve_multiple_operators_array(obj: Operation) -> List[MultipleOperator]:

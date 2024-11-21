@@ -8,11 +8,10 @@ export default async function AdditionalReportingData({
 }: {
   versionId: number;
 }) {
-  const registrationPurposes =
-    (await getRegistrationPurpose(versionId))?.registration_purposes || [];
-  const includeElectricityGenerated = registrationPurposes.includes(
-    "OBPS Regulated Operation",
-  );
+  const registrationPurpose = (await getRegistrationPurpose(versionId))
+    ?.registration_purpose;
+  const includeElectricityGenerated =
+    registrationPurpose === "OBPS Regulated Operation";
 
   return (
     <Suspense fallback={<Loading />}>

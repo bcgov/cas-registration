@@ -39,6 +39,29 @@ def list_operations_v2(
     return OperationServiceV2.list_operations(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
+REGISTRATION_PURPOSES_LITERALS = Literal[
+    Operation.Purposes.REPORTING_OPERATION,
+    Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+    Operation.Purposes.NEW_ENTRANT_OPERATION,
+    Operation.Purposes.OBPS_REGULATED_OPERATION,
+    Operation.Purposes.OPTED_IN_OPERATION,
+    Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+]
+
+
+@router.get(
+    "/v2/operations/registration-purposes",
+    response={200: List[REGISTRATION_PURPOSES_LITERALS], custom_codes_4xx: Message},
+    tags=V2,
+    description="""Retrieves a list of strings representing the valid options for an operation's registration purpose (aka registration category).""",
+    auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[REGISTRATION_PURPOSES_LITERALS]]:
+    purposes = [purpose for purpose in Operation.Purposes]
+    return 200, purposes
+
+
 ##### POST #####
 @router.post(
     "/v2/operations",

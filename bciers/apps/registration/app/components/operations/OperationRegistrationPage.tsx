@@ -29,14 +29,14 @@ const OperationRegistrationPage = async ({
   let steps = [...initialOperationRegistrationSteps];
   if (operation && isValidUUID(operation)) {
     operationData = await getOperationV2(operation);
-    const purposes = operationData?.registration_purposes;
+    const purpose = operationData?.registration_purpose;
     if (
       // Note: the purposes have slightly different names than the step names
-      purposes.includes(RegistrationPurposes.OPTED_IN_OPERATION)
+      purpose == RegistrationPurposes.OPTED_IN_OPERATION
     ) {
       steps.splice(2, 0, OperationRegistrationSteps.OPT_IN_APPLICATION);
     }
-    if (purposes.includes(RegistrationPurposes.NEW_ENTRANT_OPERATION))
+    if (purpose == RegistrationPurposes.NEW_ENTRANT_OPERATION)
       steps.splice(2, 0, OperationRegistrationSteps.NEW_ENTRANT_APPLICATION);
   } else {
     steps = [...initialOperationRegistrationSteps];

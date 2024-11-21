@@ -1,4 +1,4 @@
-from registration.models import Operation, RegistrationPurpose
+from registration.models import Operation
 from reporting.models import ReportVersion, Report, ReportAdditionalData
 from reporting.schema.report_additional_data import ReportAdditionalDataIn
 
@@ -17,13 +17,8 @@ class ReportAdditionalDataService:
             id=Report.objects.get(id=ReportVersion.objects.get(id=version_id).report_id).operation_id
         )
 
-        # Use list comprehension to collect registration purposes directly
-        purposes_list = list(
-            RegistrationPurpose.objects.filter(operation=operation).values_list('registration_purpose', flat=True)
-        )
-
-        # Always return the result as a dictionary with an array (empty or populated)
-        return {"registration_purposes": purposes_list}
+        # Always return the result as a dictionary (empty or populated)
+        return {"registration_purpose": operation.registration_purpose}
 
     @staticmethod
     def save_report_additional_data(version_id: int, data: ReportAdditionalDataIn) -> ReportAdditionalData:

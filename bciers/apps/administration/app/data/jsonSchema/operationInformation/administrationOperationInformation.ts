@@ -16,8 +16,7 @@ import { Apps, OperationStatus } from "@bciers/utils/src/enums";
 
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 export const createAdministrationOperationInformationSchema = async (
-  registrationPurposesValue: string[],
-  optedIn: boolean,
+  registrationPurposeValue: string,
   status: OperationStatus,
 ): Promise<RJSFSchema> => {
   const administrationOperationInformationSchema: RJSFSchema = {
@@ -27,8 +26,7 @@ export const createAdministrationOperationInformationSchema = async (
       section2: await createMultipleOperatorsInformationSchema(),
       ...(status === OperationStatus.REGISTERED && {
         section3: await createAdministrationRegistrationInformationSchema(
-          registrationPurposesValue,
-          optedIn,
+          registrationPurposeValue,
         ),
       }),
     },
@@ -47,7 +45,7 @@ export const administrationOperationInformationUiSchema: UiSchema = {
   section3: {
     ...registrationInformationUiSchema,
     "ui:order": [
-      "registration_purposes",
+      "registration_purpose",
       "regulated_operation_preface",
       "regulated_products",
       "opted_in_preface",
@@ -56,7 +54,7 @@ export const administrationOperationInformationUiSchema: UiSchema = {
       "date_of_first_shipment",
       "new_entrant_application",
     ],
-    registration_purposes: {
+    registration_purpose: {
       "ui:widget": "ReadOnlyWidget",
     },
     ...optedInOperationDetailsUiSchema,

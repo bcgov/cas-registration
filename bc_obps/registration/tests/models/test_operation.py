@@ -90,7 +90,7 @@ class OperationModelTest(BaseTestCase):
             ("facility_designated_operations", "facility designated operation timeline", None, None),
             ("designated_operators", "operation designated operator timeline", None, None),
             ("report", "report", None, None),
-            ("registration_purposes", "registration purpose", None, None),
+            ("registration_purpose", "registration purpose", 1000, None),
             ("opted_in_operation", "opted in operation", None, None),
             ("transfer_events", "transfer event", None, None),
             ("restart_events", "restart event", None, None),

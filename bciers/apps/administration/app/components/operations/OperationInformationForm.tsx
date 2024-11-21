@@ -82,8 +82,8 @@ const OperationInformationForm = ({
       formContext={{
         operationId,
         isInternalUser: isAuthorizedAdminUser,
-        isEio: formData.registration_purpose?.includes(
-          RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+        isEio: formData.registration_purpose?.match(
+          RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),
         ),
         status: formData.status,
       }}

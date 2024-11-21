@@ -29,7 +29,6 @@ class Command(BaseCommand):
             f'{fixture_base_dir}/transfer_event.json',
             f'{fixture_base_dir}/parent_operator.json',
             f'{fixture_base_dir}/partner_operator.json',
-            f'{fixture_base_dir}/registration_purpose.json',
         ]
 
         workflow_fixtures = {
