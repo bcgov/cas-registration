@@ -158,7 +158,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelTableComment(
             name='regulatedproduct',
-            table_comment='Table containing the names of regulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Some products are not regulated, but are included in this table for reference.',
+            table_comment='Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis.',
         ),
         migrations.AddField(
             model_name='historicalregulatedproduct',
