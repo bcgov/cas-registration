@@ -38,7 +38,11 @@ const AttachmentsForm: React.FC<Props> = ({
   };
 
   const handleSubmit = async () => {
+    // Nothing to submit
+    if (Object.keys(pendingUploadFiles).length === 0) return;
+
     const formData = new FormData();
+
     for (const [fileType, file] of Object.entries(pendingUploadFiles)) {
       formData.append("files", file);
       formData.append("file_types", fileType);
