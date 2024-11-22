@@ -1,3 +1,4 @@
+import React from "react";
 import { RJSFSchema, UiSchema, WidgetProps } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
@@ -9,11 +10,10 @@ import { DateWidget } from "@bciers/components/form/widgets";
 import checkboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 import { Typography } from "@mui/material";
 
-export const ProductionDataTitleWidget: React.FC<Partial<WidgetProps>> = ({
-  id,
-  value,
-  children,
-}) => (
+// Widget for rendering the product title with styling
+export const ProductionDataTitleWidget: React.FC<
+  Partial<WidgetProps> & { children?: React.ReactNode }
+> = ({ id, value, children }) => (
   <div id={id} className="w-full mt-8">
     <h2 className="inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 mb-12">
       <u>Product:</u> {value}
@@ -21,7 +21,7 @@ export const ProductionDataTitleWidget: React.FC<Partial<WidgetProps>> = ({
     {children}
   </div>
 );
-
+// Informational text for new entrant information
 export const newEntrantInfo = (
   <Typography variant="body2" color="primary" fontStyle="italic" fontSize={16}>
     This section applies to operations that fall under{" "}
@@ -29,6 +29,7 @@ export const newEntrantInfo = (
   </Typography>
 );
 
+// Define types for Product and Emission
 type Product = {
   id: number;
   name: string;
@@ -42,6 +43,7 @@ type Emission = {
   emission_amount: number | null;
 };
 
+// Utility function to categorize emissions by type
 const categorizeEmissions = (emissions: Emission[], type: string) =>
   emissions
     .filter((emission) => emission.category_type === type)
@@ -51,12 +53,12 @@ const categorizeEmissions = (emissions: Emission[], type: string) =>
         [emission.id]: {
           type: "number",
           title: emission.category_name,
-          default: emission.emission_amount ?? null,
         },
       }),
       {},
     );
 
+// Function to create the schema for the form
 export const createNewEntrantInformationSchema = (
   selectedProducts: Product[],
   emissions: Emission[],
@@ -65,15 +67,15 @@ export const createNewEntrantInformationSchema = (
   title: "New Entrant Information",
   properties: {
     purpose_note: { type: "object", readOnly: true },
-    date_of_authorization: {
+    authorization_date: {
       type: "string",
       title: "Date of authorization",
     },
-    date_of_first_shipment: {
+    first_shipment_date: {
       type: "string",
       title: "Date of first shipment",
     },
-    date_of_new_entrant_period_began: {
+    new_entrant_period_start: {
       type: "string",
       title: "Date new entrant period began",
     },
@@ -119,6 +121,7 @@ export const createNewEntrantInformationSchema = (
   },
 });
 
+// Function to create the UI schema for the form
 export const createNewEntrantInformationUiSchema = (
   selectedProducts: Product[],
 ): UiSchema => ({
@@ -138,34 +141,46 @@ export const createNewEntrantInformationUiSchema = (
     },
   },
 
-  date_of_authorization: {
+  authorization_date: {
     "ui:widget": DateWidget,
   },
 
-  date_of_first_shipment: {
+  first_shipment_date: {
     "ui:widget": DateWidget,
   },
 
-  date_of_new_entrant_period_began: {
+  new_entrant_period_start: {
     "ui:widget": DateWidget,
   },
 
   products: {
     "ui:options": { label: false },
-    "ui:FieldTemplate": ({ children }) => <>{children}</>,
-    ...selectedProducts.reduce((acc, product) => {
-      acc[product.id] = {
-        "ui:FieldTemplate": ({ id, children }) => (
-          <ProductionDataTitleWidget id={id} value={product.name}>
-            {children}
-          </ProductionDataTitleWidget>
-        ),
-        production_amount: {
-          "ui:FieldTemplate": InlineFieldTemplate,
-        },
-      };
-      return acc;
-    }, {}),
+    "ui:FieldTemplate": ({ children }: { children?: React.ReactNode }) => (
+      <>{children}</>
+    ),
+    ...selectedProducts.reduce(
+      (acc, product) => {
+        acc[String(product.id)] = {
+          // Convert `product.id` to a string
+          "ui:FieldTemplate": ({
+            id,
+            children,
+          }: {
+            id: string;
+            children?: React.ReactNode;
+          }) => (
+            <ProductionDataTitleWidget id={id} value={product.name}>
+              {children}
+            </ProductionDataTitleWidget>
+          ),
+          production_amount: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+        };
+        return acc;
+      },
+      {} as Record<string, unknown>,
+    ),
   },
 
   emission_after_new_entrant: {

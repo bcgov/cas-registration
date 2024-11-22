@@ -19,38 +19,43 @@ export default async function NewEntrantInformation({
   const initialFormData = newEntrantData.report_new_entrant_data;
   const regulatedProducts = newEntrantData.regulated_products;
   // Mapping over the products to transform data
-  const transformedProducts = regulatedProducts?.map((product: Product) => {
-    const selectedProduct = initialFormData.selected_products?.find(
-      (selectedProductObj: { [key: string]: any }) =>
-        selectedProductObj[product.id],
-    );
+  const transformedProducts = regulatedProducts.reduce(
+    (
+      acc: { [x: string]: { production_amount: any } },
+      product: { id: string | number },
+    ) => {
+      const selectedProduct = initialFormData.selected_products?.find(
+        (p: { product_id: string | number }) => p.product_id === product.id,
+      );
 
-    const productionAmount =
-      selectedProduct?.[product.id]?.production_amount || "";
+      acc[product.id] = {
+        production_amount: selectedProduct?.production_amount || "",
+      };
+      return acc;
+    },
+    {},
+  );
 
-    return {
-      id: product.id,
-      name: product.name,
-      production_amount: productionAmount,
-    };
-  });
-  const dateOfAuthorization = initialFormData?.authorization_date || "";
-  const dateOfFirstShipment = initialFormData?.first_shipment_date || "";
-  const dateOfNewEntrantPeriod =
-    initialFormData?.new_entrant_period_start || "";
+  const transformedEmissions = emissions.reduce(
+    (
+      acc: { [x: string]: any },
+      emission: { id: string | number; emission_amount: null },
+    ) => {
+      acc[emission.id] = emission.emission_amount || null;
+      return acc;
+    },
+    {},
+  );
 
   return (
     <Suspense fallback={<Loading />}>
       <NewEntrantInformationForm
         versionId={versionId}
-        products={
-          transformedProducts?.length ? transformedProducts : regulatedProducts
-        }
-        dateOfAuthorization={dateOfAuthorization}
-        dateOfFirstShipment={dateOfFirstShipment}
-        dateOfNewEntrantPeriod={dateOfNewEntrantPeriod}
+        products={regulatedProducts}
         initialFormData={{
           ...initialFormData,
+          products: transformedProducts,
+          emission_after_new_entrant: transformedEmissions,
         }}
         emissions={emissions}
       />
