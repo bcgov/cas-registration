@@ -7,13 +7,17 @@ from django.core.cache import cache
 
 class RegulatedProduct(BaseModel):
     name = models.CharField(max_length=1000, db_comment="The name of a regulated product")
+    unit = models.CharField(
+        max_length=1000, null=True, blank=True, db_comment="The unit of measure for a regulated product"
+    )
+    is_regulated = models.BooleanField(db_comment="Indicates if a product is regulated")
     history = HistoricalRecords(
         table_name='erc_history"."regulated_product_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
     class Meta:
-        db_table_comment = "Table containing the names of regulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015."
+        db_table_comment = 'Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis.'
         db_table = 'erc"."regulated_product'
 
     def __str__(self) -> str:

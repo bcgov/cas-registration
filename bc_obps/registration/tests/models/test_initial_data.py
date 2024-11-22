@@ -148,8 +148,8 @@ class TestInitialData(TestCase):
                 'Wood products: wood pellets',
                 'Forged steel balls: less than 3.5 inches diameter',
                 'Forged steel balls: greater than 4 inches diameter',
-                'Mining: critical mineral, other than copper',
-                'Smelting: critical mineral, other than aluminun and lead-zinc',
+                'Oil and gas non-processing, non-compression',
+                'Fat, oil and grease collection, refining and storage',
             ]
         )
         existing_products = sorted(list(RegulatedProduct.objects.values_list('name', flat=True)))

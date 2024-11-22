@@ -12,3 +12,4 @@ class TestRegulatedProductsEndpoint(CommonTestSetup):
         assert len(response.json()) == RegulatedProduct.objects.count()
         assert response.json()[0]["id"] is not None
         assert response.json()[0]["name"] is not None
+        assert response.json()[0]["is_regulated"] is not None
