@@ -9,8 +9,6 @@ def add_products(apps, schema_monitor):
         [
             Product(name='Forged steel balls: less than 3.5 inches diameter'),
             Product(name='Forged steel balls: greater than 4 inches diameter'),
-            Product(name='Mining: critical mineral, other than copper'),
-            Product(name='Smelting: critical mineral, other than aluminun and lead-zinc'),
         ]
     )
 
@@ -19,8 +17,6 @@ def reverse_add_products(apps, schema_monitor):
     Product = apps.get_model('registration', 'RegulatedProduct')
     Product.objects.get(name='Forged steel balls: less than 3.5 inches diameter').delete()
     Product.objects.get(name='Forged steel balls: greater than 4 inches diameter').delete()
-    Product.objects.get(name='Mining: critical mineral, other than copper').delete()
-    Product.objects.get(name='Smelting: critical mineral, other than aluminun and lead-zinc').delete()
 
 
 def add_activities(apps, schema_monitor):
