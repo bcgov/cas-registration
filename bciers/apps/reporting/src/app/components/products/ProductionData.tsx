@@ -43,6 +43,7 @@ const ProductionData: React.FC<Props> = async ({
     ActivePage.ProductionData,
   );
 
+  console.log("schema", schema);
   return (
     <Suspense fallback="Loading Production Data Form">
       <ProductionDataForm
