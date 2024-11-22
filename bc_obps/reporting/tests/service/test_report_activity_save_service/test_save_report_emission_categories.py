@@ -32,7 +32,7 @@ class TestSaveReportEmission(TestCase):
             json_data={"test_report_unit": True},
             report_unit=None,
             # Woody Biomass Fuel
-            fuel_type=FuelType.objects.get(pk=8),
+            fuel_type=FuelType.objects.get(pk=11),
         )
         make_recipe("reporting.tests.utils.gas_type", chemical_formula="GGIRCA")
 
@@ -87,7 +87,7 @@ class TestSaveReportEmission(TestCase):
             json_data={"test_report_unit": True},
             report_unit=None,
             # Woody Biomass Fuel
-            fuel_type=FuelType.objects.get(pk=8),
+            fuel_type=FuelType.objects.get(pk=11),
         )
         make_recipe("reporting.tests.utils.gas_type", chemical_formula="GGIRCA")
 
