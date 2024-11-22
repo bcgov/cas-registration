@@ -74,38 +74,6 @@ class OperationServiceV2:
         return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()
 
     @classmethod
-    def determine_applicable_registration_purposes(
-        cls, purpose_choice: RegistrationPurpose.Purposes
-    ) -> List[RegistrationPurpose.Purposes]:
-        """
-        Returns a list of the registration purposes that should be applied to an operation, based on the user-selected registration purpose
-        """
-        match purpose_choice:
-            case RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION:
-                return [purpose_choice]
-            case RegistrationPurpose.Purposes.REPORTING_OPERATION:
-                return [purpose_choice]
-            case RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION:
-                return [purpose_choice, RegistrationPurpose.Purposes.REPORTING_OPERATION]
-            case RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION:
-                return [purpose_choice, RegistrationPurpose.Purposes.REPORTING_OPERATION]
-            case RegistrationPurpose.Purposes.OPTED_IN_OPERATION:
-                return [
-                    purpose_choice,
-                    RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
-                    RegistrationPurpose.Purposes.REPORTING_OPERATION,
-                ]
-            case RegistrationPurpose.Purposes.NEW_ENTRANT_OPERATION:
-                return [
-                    purpose_choice,
-                    RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
-                    RegistrationPurpose.Purposes.REPORTING_OPERATION,
-                ]
-            case _:
-                return []
-
-    @classmethod
-    @transaction.atomic()
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
