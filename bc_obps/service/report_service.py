@@ -79,6 +79,7 @@ class ReportService:
         return ReportOperation.objects.get(report_version__id=report_version_id)
 
     @classmethod
+    @transaction.atomic
     def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperation:
         # Fetch the existing report operation
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
@@ -98,7 +99,14 @@ class ReportService:
 
         report_operation.activities.set(activities)
         report_operation.regulated_products.set(regulated_products)
-        # Save the updated report operation
         report_operation.save()
 
+        report_version = ReportVersion.objects.get(id=report_version_id)
+        report_version.report_type = data.operation_report_type
+        report_version.save()
+
         return report_operation
+
+    @staticmethod
+    def get_report_type_by_version_id(version_id: int) -> ReportVersion:
+        return ReportVersion.objects.get(id=version_id)

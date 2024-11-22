@@ -15,6 +15,11 @@ class ReportVersion(TimeStampedModel):
         db_comment="True if this version is the latest submitted one",
         default=False,
     )
+    report_type = models.CharField(
+        max_length=1000,
+        db_comment="Report type",
+        default="Annual Report",
+    )
 
     class ReportVersionStatus(models.TextChoices):
         Draft = 'draft'

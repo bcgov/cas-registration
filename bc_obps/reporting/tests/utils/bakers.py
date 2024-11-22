@@ -21,13 +21,20 @@ def report_baker(**props) -> Report:
     return baker.make(Report, **props)
 
 
-def report_version_baker(**props) -> ReportVersion:
+def report_version_baker(report_type="Annual Report", **props) -> ReportVersion:
+    # Ensure that a report is created if not provided
     if "report" not in props and "report_id" not in props:
         props["report"] = report_baker()
 
+    # Explicitly set report_type in props if not already provided
+    props.setdefault("report_type", report_type)
+
+    # Create the ReportVersion instance with given properties
     version = baker.make(ReportVersion, **props)
 
+    # Ensure that ReportOperation is created and linked to ReportVersion
     if "report_operation" not in props:
+        # You can set additional properties for ReportOperation here if needed
         baker.make(ReportOperation, report_version=version)
 
     return version

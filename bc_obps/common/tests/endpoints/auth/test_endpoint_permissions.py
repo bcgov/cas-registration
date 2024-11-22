@@ -15,6 +15,7 @@ def suppress_django_request_logs(caplog):
 class TestEndpointPermissions(TestCase):
     client = Client()
     mock_uuid = "e1300fd7-2dee-47d1-b655-2ad3fd10f052"
+    mock_version = '1'
     mock_int = 1
     endpoints_to_test = {
         "authorized_roles": [
@@ -146,6 +147,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "remove_operation_representative",
                 "kwargs": {"operation_id": mock_uuid},
             },
+            {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
         ],
         "all_roles": [
             {"method": "get", "endpoint_name": "get_reporting_year"},
