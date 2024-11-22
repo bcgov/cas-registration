@@ -1,5 +1,6 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import RegulatedProduct
+from django.test import TestCase
 
 
 class RegulatedProductModelTest(BaseTestCase):
@@ -18,3 +19,17 @@ class RegulatedProductModelTest(BaseTestCase):
             unit="test unit",
             is_regulated=True,
         )
+
+
+class TestAssociatedData(TestCase):
+    def test_unit_data(self):
+        has_units_count = RegulatedProduct.objects.exclude(unit=None).count()
+
+        self.assertEqual(has_units_count, 35)
+
+    def test_is_regulated_data(self):
+        regulated_products_count = RegulatedProduct.objects.filter(is_regulated=True).count()
+        not_regulated_products_count = RegulatedProduct.objects.filter(is_regulated=False).count()
+
+        self.assertEqual(regulated_products_count, 37)
+        self.assertEqual(not_regulated_products_count, 2)
