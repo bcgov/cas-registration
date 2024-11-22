@@ -248,7 +248,7 @@ def init_product_emission_intensity_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0056_remove_naics_code'),
+        ('registration', '0058_remove_naics_code'),
         ('reporting', '0032_naics_regulatory_value_with_data'),
     ]
 
