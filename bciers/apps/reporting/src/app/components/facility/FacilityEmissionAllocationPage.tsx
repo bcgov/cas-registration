@@ -1,7 +1,7 @@
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
-import { getFacilitiesInformationTaskList } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
-
+import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllocations";
 import Form from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
+import { getFacilitiesInformationTaskList } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 
 export default async function FacilityEmissionAllocationPage({
   version_id,
@@ -17,6 +17,9 @@ export default async function FacilityEmissionAllocationPage({
     orderedActivities,
     4,
   );
+  const response = await getEmissionAllocations(version_id, facility_id);
+  console.log("*****************************");
+  console.log(response);
   const formData = [
     {
       emission_category: "Category A",

@@ -65,4 +65,5 @@ __all__ = [
     "ReportRawActivityData",
     "ReportVerification",
     "ReportAttachment",
+    "ReportProductEmissionAllocation"
 ]

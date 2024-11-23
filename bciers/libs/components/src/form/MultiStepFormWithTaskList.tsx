@@ -23,6 +23,7 @@ interface Props {
   onChange?: (data: any) => void;
   submitButtonDisabled?: boolean;
   error?: any;
+  formContext?: { [key: string]: any };
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -38,6 +39,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   onChange,
   submitButtonDisabled,
   error,
+  formContext,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,7 +48,6 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
     await onSubmit(data);
     setIsSubmitting(false);
   };
-
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -64,6 +65,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
             onSubmit={handleFormSubmit}
             formData={formData}
             onChange={onChange}
+            formContext={formContext}
           >
             <Box display="flex" justifyContent="space-between" mt={3}>
               {cancelUrl && (
@@ -80,8 +82,8 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
                 {isSubmitting
                   ? "Saving..."
                   : buttonText
-                  ? buttonText
-                  : "Save and Continue"}
+                    ? buttonText
+                    : "Save and Continue"}
               </Button>
             </Box>
             <div className="min-h-[48px] box-border mt-4">
