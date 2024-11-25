@@ -9,51 +9,37 @@ from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
 class ReportNewEntrantService:
     @classmethod
     def get_new_entrant_data(cls, report_version_id: int) -> dict:
-        # Fetch the report_new_entrant instance based on the provided report_version_id
         report_new_entrant = ReportNewEntrant.objects.filter(report_version_id=report_version_id).first()
 
-        # Initialize result_data to an empty dictionary
-        result_data = {}
+        products = ReportNewEntrantProduction.objects.filter(
+            report_new_entrant_id__in=ReportNewEntrant.objects.filter(report_version_id=report_version_id).values_list(
+                'id', flat=True)
+        ).values()
 
-        # If report_new_entrant is not found, use empty lists for selected_products and emissions
+        result_data = {'selected_products': list(products)}
+
         if not report_new_entrant:
-            result_data['selected_products'] = []
             result_data['emissions'] = [
                 {
                     "id": category.id,
                     "category_name": category.category_name,
                     "category_type": category.category_type,
-                    "emission_amount": None,  # Emission amount will be None since there's no report_new_entrant
+                    "emission_amount": None,
                 }
                 for category in EmissionCategory.objects.all()
             ]
         else:
-            # If report_new_entrant is found, get the corresponding data
-            result_data = model_to_dict(report_new_entrant, exclude=['selected_products'])
-
-            # Populate selected_products
-            result_data['selected_products'] = [
-                {
-                    "product_name": production.product.name,
-                    "production_amount": production.production_amount,
-                    "product_id": production.product.id,
-                }
-                for production in report_new_entrant.productions.all()
-            ]
-
-            # Create a map for emissions based on report_new_entrant's emissions
             emissions_map = {
                 emission.emission_category.id: emission.emission
                 for emission in report_new_entrant.report_new_entrant_emissions.all()
             }
 
-            # Populate emissions with data from EmissionCategory, using emissions_map for emission_amount
             result_data['emissions'] = [
                 {
                     "id": category.id,
                     "category_name": category.category_name,
                     "category_type": category.category_type,
-                    "emission_amount": emissions_map.get(category.id),  # This will be None if no emission data
+                    "emission_amount": emissions_map.get(category.id),
                 }
                 for category in EmissionCategory.objects.all()
             ]

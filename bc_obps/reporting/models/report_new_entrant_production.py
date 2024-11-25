@@ -7,7 +7,7 @@ from reporting.models.report_new_entrant import ReportNewEntrant
 class ReportNewEntrantProduction(TimeStampedModel):
     product = models.ForeignKey(
         RegulatedProduct,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="new_entrant_productions",
         db_comment="The regulated product associated with this production record",
     )
@@ -28,3 +28,10 @@ class ReportNewEntrantProduction(TimeStampedModel):
         db_table = 'erc"."report_new_entrant_production'
         app_label = 'reporting'
         db_table_comment = "Table for storing production data related to new entrant emissions reporting"
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'report_new_entrant'],
+                name='unique_new_entrant_production',
+                violation_error_code="A production record with this product and new entrant report already exists."
+            )
+        ]
