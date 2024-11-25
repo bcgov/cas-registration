@@ -33,13 +33,6 @@ export const regulatedOperationPurposes: ReadonlyArray<RegistrationPurposes> = [
   RegistrationPurposes.OPTED_IN_OPERATION,
 ];
 
-export const nonRegulatedOperationPurposes: ReadonlyArray<RegistrationPurposes> =
-  [
-    RegistrationPurposes.REPORTING_OPERATION,
-    RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
-    RegistrationPurposes.POTENTIAL_REPORTING_OPERATION,
-  ];
-
 export const RegistrationPurposeHelpText: {
   [key in RegistrationPurposes]: string;
 } = {

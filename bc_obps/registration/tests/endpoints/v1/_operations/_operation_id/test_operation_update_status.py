@@ -31,7 +31,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         )
 
     def test_cas_admin_approves_operation(self):
-        operation = operation_baker()
+        operation = baker.make_recipe('utils.operation')
         assert operation.status == Operation.Statuses.NOT_STARTED
         url = custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id})
 
