@@ -71,7 +71,7 @@ describe("the OperationInformationForm component", () => {
     await waitFor(() => {
       // LastCalledWith because fetchFormEnums calls the actionHandler multiple times to populate the dropdown options in the form schema
       expect(actionHandler).toHaveBeenLastCalledWith(
-        "registration/v2/operations/uuid1",
+        "registration/v2/operations/uuid1/registration/operation",
         "GET",
         "",
       );

@@ -94,16 +94,16 @@ class TestGetOperationRegistrationInformationEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 200
-        assert list(response.json().keys()) == [
+        # keys don't include optional values (exclude_none=True is set in the endpoint) or attachments (GCS isn't set up in CI for testing)
+        assert set(response.json().keys()) == {
+            'registration_purpose',
             'operation',
             'naics_code_id',
-            'secondary_naics_code_id',
-            'tertiary_naics_code_id',
             'multiple_operators_array',
             'operation_has_multiple_operators',
-            'boundary_map',
-            'process_flow_diagram',
+            'activities',
             'name',
             'type',
-        ]
+            'regulated_products',
+        }
         assert len(response.json()['multiple_operators_array']) == 1

@@ -213,7 +213,7 @@ describe("OperationsDataGrid component", () => {
     );
   });
 
-  it("renders the correct url for the operation information link", async () => {
+  it("renders the correct url for the operation information link for internal users", async () => {
     render(
       <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
@@ -224,11 +224,44 @@ describe("OperationsDataGrid component", () => {
 
     expect(operationInfoLinks[0]).toHaveAttribute(
       "href",
-      "/operations/1?operations_title=Operation+1",
+      "../administration/operations/1?operations_title=Operation 1",
     );
     expect(operationInfoLinks[1]).toHaveAttribute(
       "href",
-      "/operations/2?operations_title=Operation+2",
+      "../administration/operations/2?operations_title=Operation 2",
+    );
+  });
+
+  it("renders the correct url for the operation information link for external users", async () => {
+    render(
+      <OperationDataGrid isInternalUser={false} initialData={mockResponse} />,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: /Start registration/i,
+      }),
+    ).toHaveAttribute("href", "../registration/register-an-operation");
+    expect(
+      screen.getByRole("link", {
+        name: /view operation/i,
+      }),
+    ).toHaveAttribute(
+      "href",
+      "../administration/operations/2?operations_title=Operation 2",
+    );
+
+    const continueRegistrationlinks = screen.getAllByRole("link", {
+      name: /continue registration/i,
+    });
+
+    expect(continueRegistrationlinks[0]).toHaveAttribute(
+      "href",
+      "../registration/register-an-operation/1/1",
+    );
+    expect(continueRegistrationlinks[1]).toHaveAttribute(
+      "href",
+      "../registration/register-an-operation/4/1",
     );
   });
 });

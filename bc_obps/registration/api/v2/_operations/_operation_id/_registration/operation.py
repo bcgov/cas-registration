@@ -21,6 +21,7 @@ from registration.schema.generic import Message
     description="""Gets the registration purpose, regulated products (if applicable), and select data of a specific operation by its ID.
     The endpoint ensures that only authorized industry users can access operations belonging to their operator. Unauthorized access attempts raise an error.""",
     auth=authorize('approved_industry_user'),
+    exclude_none=True,
 )
 @handle_http_errors()
 def register_get_operation_information(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
