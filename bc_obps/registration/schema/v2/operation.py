@@ -19,6 +19,43 @@ from ninja.types import DictStrAny
 #### Operation schemas
 
 
+class OperationRegistrationOut(ModelSchema):
+    operation: UUID = Field(..., alias="id")
+    naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
+    secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
+    tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
+    multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
+    operation_has_multiple_operators: Optional[bool] = False
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
+
+    @staticmethod
+    def resolve_boundary_map(obj: Operation) -> Optional[str]:
+        boundary_map = obj.get_boundary_map()
+        if boundary_map:
+            return file_to_data_url(boundary_map)
+        return None
+
+    @staticmethod
+    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
+        process_flow_diagram = obj.get_process_flow_diagram()
+        if process_flow_diagram:
+            return file_to_data_url(process_flow_diagram)
+        return None
+
+    @staticmethod
+    def resolve_multiple_operators_array(obj: Operation) -> Optional[List[MultipleOperator]]:
+        if obj.multiple_operators.exists():
+            return [
+                multiple_operator for multiple_operator in obj.multiple_operators.select_related("attorney_address")
+            ]
+        return None
+
+    class Meta:
+        model = Operation
+        fields = ["name", 'type', 'registration_purpose', 'regulated_products', 'activities']
+
+
 class OperationRepresentativeIn(ModelSchema):
     existing_contact_id: Optional[int] = None
     street_address: str
