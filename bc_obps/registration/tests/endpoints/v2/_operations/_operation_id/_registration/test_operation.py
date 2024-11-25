@@ -5,7 +5,7 @@ from model_bakery import baker
 import json
 
 
-class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
+class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
     mock_payload = {
         "registration_purpose": "Reporting Operation",
         "regulated_products": [1],
@@ -66,3 +66,44 @@ class TestOperationRegistrationInformationEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 422
+
+
+class TestGetOperationRegistrationInformationEndpoint(CommonTestSetup):
+    def test_users_cannot_get_other_users_operations(self):
+        # authorize current user
+        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe(
+            'utils.operation',
+        )
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("register_get_operation_information", kwargs={'operation_id': operation.id}),
+        )
+        assert response.status_code == 401
+
+    def test_register_get_operation_information_endpoint_success(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        baker.make_recipe('utils.multiple_operator', operation=operation)
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("register_get_operation_information", kwargs={'operation_id': operation.id}),
+        )
+
+        # Assert
+        assert response.status_code == 200
+        # keys don't include optional values (exclude_none=True is set in the endpoint) or attachments (GCS isn't set up in CI for testing)
+        assert set(response.json().keys()) == {
+            'registration_purpose',
+            'operation',
+            'naics_code_id',
+            'multiple_operators_array',
+            'operation_has_multiple_operators',
+            'activities',
+            'name',
+            'type',
+            'regulated_products',
+        }
+        assert len(response.json()['multiple_operators_array']) == 1

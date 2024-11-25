@@ -114,6 +114,11 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
             },
             {
+                "method": "get",
+                "endpoint_name": "register_get_operation_information",
+                "kwargs": {"operation_id": mock_uuid},
+            },
+            {
                 "method": "put",
                 "endpoint_name": "register_edit_operation_information",
                 "kwargs": {"operation_id": mock_uuid},

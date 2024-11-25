@@ -6,7 +6,7 @@ import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
-import { getOperationV2 } from "@bciers/actions/api";
+import { getOperationRegistration } from "@bciers/actions/api";
 import {
   createNestedFormData,
   createUnnestedFormData,
@@ -95,7 +95,7 @@ const OperationInformationForm = ({
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
     setSelectedOperation(operationId);
-    const operationData = await getOperationV2(operationId);
+    const operationData = await getOperationRegistration(operationId);
     if (operationData?.error) {
       setError("Failed to fetch operation data!" as any);
     }
