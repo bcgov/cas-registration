@@ -5,7 +5,7 @@
       "name": "Internal BCiers Dashboard",
       "data": {
         "dashboard": "bciers",
-        "access_roles": ["cas_admin", "cas_analyst"],
+        "access_roles": ["cas_admin", "cas_analyst", "cas_director"],
         "tiles": [
           {
             "title": "Administration",
