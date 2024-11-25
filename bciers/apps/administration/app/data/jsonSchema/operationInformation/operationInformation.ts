@@ -90,10 +90,12 @@ export const createOperationInformationSchema = async (
       process_flow_diagram: {
         type: "string",
         title: "Process Flow Diagram",
+        format: "data-url",
       },
       boundary_map: {
         type: "string",
         title: "Boundary Map",
+        format: "data-url",
       },
       ...(app === Apps.ADMINISTRATION
         ? {
@@ -140,15 +142,11 @@ export const operationInformationUISchema: UiSchema = {
   },
   process_flow_diagram: {
     "ui:widget": "FileWidget",
-    "ui:options": {
-      filePreview: true,
-    },
+    "ui:options": {},
   },
   boundary_map: {
     "ui:widget": "FileWidget",
-    "ui:options": {
-      filePreview: true,
-    },
+    "ui:options": {},
   },
   bc_obps_regulated_operation: {
     "ui:widget": "BoroIdWidget",

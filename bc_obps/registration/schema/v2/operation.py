@@ -30,6 +30,20 @@ class OperationRegistrationOut(ModelSchema):
     process_flow_diagram: Optional[str] = None
 
     @staticmethod
+    def resolve_boundary_map(obj: Operation) -> Optional[str]:
+        boundary_map = obj.get_boundary_map()
+        if boundary_map:
+            return file_to_data_url(boundary_map)
+        return None
+
+    @staticmethod
+    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
+        process_flow_diagram = obj.get_process_flow_diagram()
+        if process_flow_diagram:
+            return file_to_data_url(process_flow_diagram)
+        return None
+
+    @staticmethod
     def resolve_multiple_operators_array(obj: Operation) -> Optional[List[MultipleOperator]]:
         if obj.multiple_operators.exists():
             return [
@@ -39,7 +53,8 @@ class OperationRegistrationOut(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["name", 'type']
+        fields = ["name", 'type', 'registration_purpose', 'regulated_products', 'activities']
+
 
 class OperationRepresentativeIn(ModelSchema):
     existing_contact_id: Optional[int] = None
