@@ -42,7 +42,10 @@ class OperationModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = Operation.objects.filter(swrs_facility_id__isnull=False).first()
+        cls.test_object = baker.make_recipe(
+            'utils.operation', swrs_facility_id=6565, status=Operation.Statuses.REGISTERED
+        )
+        Operation.objects.filter(swrs_facility_id__isnull=False).first()
         cls.test_object.documents.set(
             [
                 Document.objects.get(id=1),
