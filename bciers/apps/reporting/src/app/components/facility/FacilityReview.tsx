@@ -2,12 +2,10 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import {
   Box,
-  Button,
   Alert,
   Checkbox,
   Typography,
   FormControlLabel,
-  CircularProgress,
 } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
@@ -21,8 +19,9 @@ import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import { IChangeEvent } from "@rjsf/core";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
+import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 
 interface Props {
   version_id: number;
@@ -47,7 +46,7 @@ const getAllActivities = async () => {
 };
 
 const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState<any>({});
@@ -57,7 +56,9 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     properties: {},
   });
   const [activityList, setActivityList] = useState<Activity[]>([]);
-  const router = useRouter();
+  const queryString = serializeSearchParams(useSearchParams());
+  const reportsTitle = useSearchParams().get('reports_title');
+  const backUrl = `/reports/${version_id}/person-responsible?reports_title=${reportsTitle}`;
 
   const customStepNames = [
     "Operation Information",
@@ -119,9 +120,8 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     setFormData(event.formData);
   };
 
-  const queryString = serializeSearchParams(useSearchParams());
   const handleSave = async () => {
-    setIsLoading(true); // Start loading when save is clicked
+    setIsSaving(true); // Start loading when save is clicked
     const updatedFacility = {
       ...formData,
       activities: Object.keys(activities).filter((id) => activities[+id]),
@@ -142,21 +142,12 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
       console.error("Error updating facility:", error);
       setErrorList([error.message || "An error occurred"]);
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
       setTimeout(() => {
         setIsSuccess(false);
       }, 3000);
-      router.push(`activities${queryString}`);
     }
   };
-
-  const buttonContent = isLoading ? (
-    <CircularProgress data-testid="progressbar" role="progress" size={24} />
-  ) : isSuccess ? (
-    "✅ Success"
-  ) : (
-    "Save & Continue"
-  );
 
   return (
     <Box sx={{ p: 3 }}>
@@ -218,17 +209,14 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
                 </Box>
               </div>
             )}
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="contained"
-                type="submit"
-                aria-disabled={isLoading}
-                disabled={isLoading}
-                onClick={handleSave}
-              >
-                {buttonContent}
-              </Button>
-            </div>
+            <ReportingStepButtons
+              allowBackNavigation={true}
+              backUrl={backUrl}
+              continueUrl={`activities${queryString}`}
+              isSaving={isSaving}
+              isSuccess={isSuccess}
+              saveButtonDisabled={false}
+            />
           </FormBase>
         </div>
       </div>
