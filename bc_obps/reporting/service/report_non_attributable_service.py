@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
 
-from reporting.models import ReportNonAttributableEmissions, EmissionCategory, ReportVersion, FacilityReport
+from reporting.models import ReportNonAttributableEmissions, EmissionCategory, ReportVersion, FacilityReport, GasType
 
 from reporting.schema.report_non_attributable_emissions import ReportNonAttributableIn
 
@@ -47,6 +47,9 @@ class ReportNonAttributableService:
                     "emission_category": emission_category,
                 },
             )
+            gas_types = GasType.objects.filter(chemical_formula__in=activity_data.gas_type)
+            report_non_attributable.gas_type.set(gas_types)
+            report_non_attributable.save()
 
             non_attributable_emissions.append(report_non_attributable)
 
