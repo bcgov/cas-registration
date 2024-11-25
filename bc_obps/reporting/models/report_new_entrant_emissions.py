@@ -13,7 +13,7 @@ class ReportNewEntrantEmissions(TimeStampedModel):
     )
     emission_category = models.ForeignKey(
         EmissionCategory,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="report_new_entrant_emissions",
         db_comment="The emission category",
     )
@@ -29,3 +29,10 @@ class ReportNewEntrantEmissions(TimeStampedModel):
         db_table = 'erc"."report_new_entrant_emissions'
         app_label = 'reporting'
         db_table_comment = 'Table for storing emission data related to new entrant'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['report_new_entrant', 'emission_category'],
+                name='unique_new_entrant_emissions',
+                violation_error_code='A report new entrant emission already exists',
+            )
+        ]
