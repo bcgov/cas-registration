@@ -25,11 +25,11 @@ const bcghgIdWidgetUiSchema = {
 
 const defaultOperationFormContext = {
   operationId: "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
-  isInternalUser: true,
+  isCasDirector: true,
 };
 const defaultFacilityFormContext = {
   facilityId: "ea4314ea-1974-465a-a851-278c8f9c8daa",
-  isInternalUser: true,
+  isCasDirector: true,
 };
 
 describe("RJSF bcghgIdWidget", () => {
@@ -40,7 +40,7 @@ describe("RJSF bcghgIdWidget", () => {
         uiSchema={bcghgIdWidgetUiSchema}
         formContext={{
           ...defaultOperationFormContext,
-          isInternalUser: false,
+          isCasDirector: false,
         }}
       />,
     );
@@ -60,7 +60,7 @@ describe("RJSF bcghgIdWidget", () => {
         formData={{ bcghgIdTestField: bcghgIdValue }}
         formContext={{
           ...defaultOperationFormContext,
-          isInternalUser: false,
+          isCasDirector: false,
         }}
       />,
     );
@@ -80,7 +80,7 @@ describe("RJSF bcghgIdWidget", () => {
         uiSchema={bcghgIdWidgetUiSchema}
         formContext={{
           ...defaultFacilityFormContext,
-          isInternalUser: false,
+          isCasDirector: false,
         }}
       />,
     );
@@ -100,7 +100,7 @@ describe("RJSF bcghgIdWidget", () => {
         formData={{ bcghgIdTestField: bcghgIdValue }}
         formContext={{
           ...defaultFacilityFormContext,
-          isInternalUser: false,
+          isCasDirector: false,
         }}
       />,
     );
