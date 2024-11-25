@@ -23,6 +23,7 @@ from model_bakery.recipe import Recipe, foreign_key, seq
 from reporting.models.source_type import SourceType
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.emission_category_mapping import EmissionCategoryMapping
+from reporting.models.report_non_attributable_emissions import ReportNonAttributableEmissions
 
 
 def json_seq(json_key="generated_json", json_value="test json value", seq_value: Any = 1, **seq_args):
@@ -117,7 +118,6 @@ report_emission = Recipe(
     report_version=foreign_key(report_version),
 )
 
-
 emission_category = Recipe(EmissionCategory)
 
 emission_category_mapping = Recipe(
@@ -131,4 +131,14 @@ report_product = Recipe(
     facility_report=foreign_key(facility_report),
     report_version=foreign_key(report_version),
     product=foreign_key(regulated_product),
+)
+
+report_non_attributable_emissions = Recipe(
+    ReportNonAttributableEmissions,
+    report_version=foreign_key(report_version),
+    facility_report=foreign_key(facility_report),
+    activity="Test Activity",
+    source_type="Test Source Type",
+    emission_category=foreign_key(emission_category),
+    gas_type=[foreign_key(gas_type)],
 )
