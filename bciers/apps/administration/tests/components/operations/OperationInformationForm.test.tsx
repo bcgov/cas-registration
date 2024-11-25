@@ -563,7 +563,7 @@ describe("the OperationInformationForm component", () => {
     useSession.mockReturnValue({
       data: {
         user: {
-          app_role: "cas_admin",
+          app_role: "cas_director",
         },
       },
     });
@@ -604,6 +604,49 @@ describe("the OperationInformationForm component", () => {
     expect(
       screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
     ).toBeVisible();
+  });
+
+  it("should not allow non-directors to issue BORO and BCGHG IDs", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_admin",
+        },
+      },
+    });
+
+    render(
+      <OperationInformationForm
+        formData={{ ...formData, status: OperationStatus.REGISTERED }}
+        schema={{
+          type: "object",
+          properties: {
+            section1: {
+              title: "Section 1",
+              type: "object",
+              properties: {
+                bc_obps_regulated_operation: {
+                  type: "string",
+                  title: "BORO ID",
+                },
+                bcghg_id: {
+                  type: "string",
+                  title: "BCGHGID",
+                },
+              },
+            },
+          },
+        }}
+        operationId={operationId}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: `＋ Issue BORO ID` }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: `＋ Issue BCGHG ID` }),
+    ).not.toBeInTheDocument();
   });
 
   it("should render the new entrant application information if purpose is new entrant", async () => {

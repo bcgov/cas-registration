@@ -6,7 +6,7 @@ import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListFo
 import { actionHandler } from "@bciers/actions";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 import { FacilityTypes } from "@bciers/utils/src/enums";
-import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
+import { FormMode } from "@bciers/utils/src/enums";
 import { useSession } from "next-auth/react";
 
 export interface FacilityFormData {
@@ -29,10 +29,6 @@ export default function FacilityForm({
   // To get the user's role from the session
   const { data: session } = useSession();
   const role = session?.user?.app_role ?? "";
-  const isAuthorizedAdminUser = [
-    FrontEndRoles.CAS_ADMIN,
-    FrontEndRoles.CAS_ANALYST,
-  ].includes(role as FrontEndRoles);
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
@@ -50,9 +46,9 @@ export default function FacilityForm({
       formData={formState}
       formContext={{
         facilityId: formData.id,
-        isInternalUser: isAuthorizedAdminUser,
+        isCasDirector: role === "cas_director",
       }}
-      allowEdit={!isAuthorizedAdminUser}
+      allowEdit={!role.includes("cas_")}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
         const updatedFormData = { ...formState, ...data.formData };

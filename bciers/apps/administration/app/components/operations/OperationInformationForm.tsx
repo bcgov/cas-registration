@@ -12,11 +12,13 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
-import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
+import { FormMode } from "@bciers/utils/src/enums";
 import {
   RegistrationPurposes,
   regulatedOperationPurposes,
 } from "apps/registration/app/components/operations/registration/enums";
+import { FormMode } from "@bciers/utils/src/enums";
+import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
 const OperationInformationForm = ({
   formData,
@@ -34,10 +36,6 @@ const OperationInformationForm = ({
   // To get the user's role from the session
   const { data: session } = useSession();
   const role = session?.user?.app_role ?? "";
-  const isAuthorizedAdminUser = [
-    FrontEndRoles.CAS_ADMIN,
-    FrontEndRoles.CAS_ANALYST,
-  ].includes(role as FrontEndRoles);
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -74,7 +72,7 @@ const OperationInformationForm = ({
 
   return (
     <SingleStepTaskListForm
-      allowEdit={role === FrontEndRoles.INDUSTRY_USER_ADMIN}
+      allowEdit={!role.includes("cas_")}
       mode={FormMode.READ_ONLY}
       error={error}
       schema={schema}
@@ -84,10 +82,11 @@ const OperationInformationForm = ({
       onCancel={() => router.push("/operations")}
       formContext={{
         operationId,
-        isInternalUser: isAuthorizedAdminUser,
         isRegulatedOperation: regulatedOperationPurposes.includes(
           formData.registration_purpose as RegistrationPurposes,
-        ),
+
+),
+isCasDirector: role === "cas_director",
         status: formData.status,
       }}
     />

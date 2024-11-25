@@ -43,7 +43,7 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, formContext }) => {
     );
   }
 
-  if (formContext?.isInternalUser && !boroId) {
+  if (formContext?.isCasDirector && !boroId) {
     return (
       <Button
         variant="outlined"

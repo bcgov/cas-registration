@@ -838,7 +838,43 @@ describe("FacilityForm component", () => {
     // Assert that router.push was called with the correct URL
     expect(mockReplace).toHaveBeenCalledWith(urlOperationFacilities);
   });
-  it("should use formContext to correctly render BCGHG ID widgets for internal users", async () => {
+
+  it("should use formContext to correctly render BCGHG ID widgets for cas directors", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_director",
+        },
+      },
+    });
+
+    render(
+      <FacilityForm
+        formData={sfoFormData}
+        schema={{
+          type: "object",
+          properties: {
+            section1: {
+              title: "Section 1",
+              type: "object",
+              properties: {
+                bcghg_id: {
+                  type: "string",
+                  title: "BCGHGID",
+                },
+              },
+            },
+          },
+        }}
+        uiSchema={facilitiesSfoUiSchema}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
+    ).toBeVisible();
+  });
+  it("should not show buttons for non-director users", async () => {
     useSession.mockReturnValue({
       data: {
         user: {
@@ -870,8 +906,8 @@ describe("FacilityForm component", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
-    ).toBeVisible();
+      screen.queryByRole("button", { name: `＋ Issue BCGHG ID` }),
+    ).not.toBeInTheDocument();
   });
   it("should not render the edit button for internal users", () => {
     useSession.mockReturnValue({

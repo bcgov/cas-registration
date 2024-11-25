@@ -26,7 +26,7 @@ const boroIdWidgetUiSchema = {
 
 const defaultFormContext = {
   operationId: "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
-  isInternalUser: true,
+  isCasDirector: true,
   status: OperationStatus.REGISTERED,
   isRegulatedOperation: true,
 };
@@ -78,7 +78,7 @@ describe("RJSF boroIdWidget", () => {
         uiSchema={boroIdWidgetUiSchema}
         formContext={{
           ...defaultFormContext,
-          isInternalUser: false,
+          isCasDirector: false,
           status: OperationStatus.REGISTERED,
         }}
       />,
@@ -99,7 +99,7 @@ describe("RJSF boroIdWidget", () => {
         formData={{ boroIdTestField: boroIdValue }}
         formContext={{
           ...defaultFormContext,
-          isInternalUser: false,
+          isCasDirector: false,
           status: OperationStatus.REGISTERED,
         }}
       />,
