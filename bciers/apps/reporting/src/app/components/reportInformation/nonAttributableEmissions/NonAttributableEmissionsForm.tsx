@@ -65,6 +65,7 @@ export default function NonAttributableEmissionsForm({
               emission_category: "",
             },
           ],
+          emissions_exceeded: false,
         },
   );
 
@@ -99,7 +100,7 @@ export default function NonAttributableEmissionsForm({
   const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
     const response = await actionHandler(endpoint, "POST", endpoint, {
-      body: JSON.stringify(formData.activities),
+      body: JSON.stringify(formData),
     });
     if (response) {
       router.push(SAVE_AND_CONTINUE_URL);

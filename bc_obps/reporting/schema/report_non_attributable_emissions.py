@@ -1,5 +1,5 @@
 from typing import List, Optional
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from reporting.models import ReportNonAttributableEmissions
 from pydantic import alias_generators
 from pydantic import Field
@@ -39,3 +39,12 @@ class ReportNonAttributableIn(ModelSchema):
         alias_generator = to_snake
         model = ReportNonAttributableEmissions
         fields = ['id', 'activity', 'source_type', 'emission_category', 'gas_type']
+
+
+class ReportNonAttributableSchema(Schema):
+    """
+    Schema for the payload of the "save report" operation.
+    """
+
+    emissions_exceeded: bool = Field(..., description="Indicates if emissions exceeded the threshold.")
+    activities: List[ReportNonAttributableIn] = Field(..., description="List of activities in the report.")

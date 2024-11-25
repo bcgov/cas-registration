@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, List
+from typing import Literal, List
 from uuid import UUID
 
 from django.http import HttpRequest
@@ -11,7 +11,10 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 from .router import router
 from ..models import ReportNonAttributableEmissions
-from ..schema.report_non_attributable_emissions import ReportNonAttributableOut, ReportNonAttributableIn
+from ..schema.report_non_attributable_emissions import (
+    ReportNonAttributableOut,
+    ReportNonAttributableSchema,
+)
 from ..service.report_non_attributable_service import ReportNonAttributableService
 
 
@@ -36,18 +39,23 @@ def get_report_non_attributable_by_version_id(
     "/report-version/{version_id}/facilities/{facility_id}/non-attributable",
     response={201: List[ReportNonAttributableOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
+    description="""Updates the given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def save_report(
-    request: HttpRequest, version_id: int, facility_id: UUID, payload: List[ReportNonAttributableIn]
-) -> Tuple[Literal[201], List[ReportNonAttributableOut]]:
+    request: HttpRequest, version_id: int, facility_id: UUID, payload: ReportNonAttributableSchema
+) -> tuple[Literal[201], list[ReportNonAttributableEmissions]]:
     saved_reports = []
-    for data in payload:
-        report_operation = ReportNonAttributableService.save_report_non_attributable_emissions(
-            version_id, facility_id, data
+
+    # If emissions_exceeded is false, delete existing data
+    if not payload.emissions_exceeded:
+        ReportNonAttributableService.delete_existing_reports(version_id, facility_id)
+
+    else:
+        saved_reports = ReportNonAttributableService.save_report_non_attributable_emissions(
+            version_id, facility_id, payload.activities
         )
-        saved_reports.append(report_operation)
-    return 201, saved_reports  # type: ignore
+
+    return 201, saved_reports
