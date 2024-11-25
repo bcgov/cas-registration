@@ -7,7 +7,7 @@ import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/R
 import { FormBase } from "@bciers/components/form/index";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert, Box, Button } from "@mui/material";
-import Link from "next/link";
+import ReportingStepButtons from "./components/ReportingStepButtons";
 
 interface Props {
   initialStep: number;
@@ -18,11 +18,13 @@ interface Props {
   formData: any;
   baseUrl?: string;
   cancelUrl?: string;
+  backUrl: string;
+  continueUrl: string;
   onSubmit: (data: any) => Promise<void>;
   buttonText?: string;
   onChange?: (data: any) => void;
-  submitButtonDisabled?: boolean;
   error?: any;
+  saveButtonDisabled?: boolean;
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -32,19 +34,25 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   schema,
   uiSchema,
   formData,
-  cancelUrl,
+  backUrl,
+  continueUrl,
   onSubmit,
-  buttonText,
   onChange,
-  submitButtonDisabled,
   error,
+  saveButtonDisabled,
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleFormSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    await onSubmit(data);
-    setIsSubmitting(false);
+  const handleFormSave = async (data: any) => {
+    setIsSaving(true);
+    try {
+      await onSubmit(data);
+      setIsSuccess(true);
+    } catch {
+      setIsSuccess(false);
+    }
+    setIsSaving(false);
   };
 
   return (
@@ -61,29 +69,18 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
           <FormBase
             schema={schema}
             uiSchema={uiSchema}
-            onSubmit={handleFormSubmit}
+            onSubmit={handleFormSave}
             formData={formData}
             onChange={onChange}
           >
-            <Box display="flex" justifyContent="space-between" mt={3}>
-              {cancelUrl && (
-                <Link href={cancelUrl} passHref>
-                  <Button variant="outlined">Cancel</Button>
-                </Link>
-              )}
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={isSubmitting || submitButtonDisabled}
-              >
-                {isSubmitting
-                  ? "Saving..."
-                  : buttonText
-                  ? buttonText
-                  : "Save and Continue"}
-              </Button>
-            </Box>
+            <ReportingStepButtons
+              allowBackNavigation={true}
+              backUrl={backUrl}
+              continueUrl={continueUrl}
+              isSaving={isSaving}
+              isSuccess={isSuccess}
+              saveButtonDisabled={saveButtonDisabled}
+            />
             <div className="min-h-[48px] box-border mt-4">
               {error && <Alert severity="error">{error}</Alert>}
             </div>

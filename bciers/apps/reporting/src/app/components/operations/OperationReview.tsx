@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
@@ -13,6 +13,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 interface Props {
   formData: any;
@@ -47,13 +48,13 @@ export default function OperationReview({
   registrationPurpose,
   facilityReport,
 }: Props) {
-  const router = useRouter();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
   const [facilityId, setFacilityId] = useState<number | null>(null);
   const [operationType, setOperationType] = useState("");
+  const queryString = serializeSearchParams(useSearchParams());
+  const continueUrl = `/reports/${version_id}/person-responsible${queryString}`;
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
@@ -152,7 +153,7 @@ export default function OperationReview({
     reportingWindowEnd,
   ]);
 
-  const submitHandler = async (
+  const saveHandler = async (
     data: { formData?: any },
     reportVersionId: number,
   ) => {
@@ -166,9 +167,7 @@ export default function OperationReview({
       body: JSON.stringify(preparedData),
     });
 
-    if (response) {
-      router.push(saveAndContinueUrl);
-    }
+    return response;
   };
 
   const onChangeHandler = (data: { formData: any }) => {
@@ -220,8 +219,10 @@ export default function OperationReview({
       formData={formDataState}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
-      onSubmit={(data: { formData?: any }) => submitHandler(data, version_id)}
+      onSubmit={(data: { formData?: any }) => saveHandler(data, version_id)}
       onChange={onChangeHandler}
+      backUrl={cancelUrl}
+      continueUrl={continueUrl}
     />
   );
 }
