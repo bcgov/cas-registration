@@ -39,8 +39,10 @@ def get_report_non_attributable_by_version_id(
     "/report-version/{version_id}/facilities/{facility_id}/non-attributable",
     response={201: List[ReportNonAttributableOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Updates the given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
-    Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
+    description="""Handles updating or deleting non-attributable emissions data for a specified facility and report
+    version. If `emissions_exceeded` is `false`, all existing non-attributable emissions data is deleted for the
+    specified version and facility. If `emissions_exceeded` is `true`, the provided non-attributable emissions data
+    is saved.""",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
