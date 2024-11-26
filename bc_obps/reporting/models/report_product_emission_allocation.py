@@ -1,5 +1,6 @@
 from django.db import models
-from bc_obps.reporting.models import report_version
+from reporting.models import report_version
+from reporting.models.facility_report import FacilityReport
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_product import ReportProduct
@@ -15,6 +16,12 @@ class ReportProductEmissionAllocation(TimeStampedModel):
         on_delete=models.PROTECT,
         related_name="%(class)s_records",
         db_comment="The report version this emission data is associated with",
+    )
+    facility_report = models.ForeignKey(
+        FacilityReport,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_records",
+        db_comment="The facility report this production information belongs to",
     )
     report_product = models.ForeignKey(
         ReportProduct,

@@ -15,9 +15,54 @@ from reporting.models.report_product import ReportProduct
 from reporting.schema.report_product import ProductionDataOut
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 
+from reporting.schema.report_product_emission_allocation import AllocationDataOut
+from reporting.models import FacilityReport
+from reporting.service.emission_category_service import EmissionCategoryService
 
 @router.get(
     "report-version/{report_version_id}/facilities/{facility_id}/allocate-emissions",
+    response={200: dict, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Retrieves the data for product emissions allocations that have been saved for a facility""",
+    exclude_none=True,
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def get_emission_allocations(
+    request: HttpRequest, report_version_id: int, facility_id: UUID
+) -> Tuple[Literal[200], dict]:
+   
+    # Step 1: Get the report facility emission production by category
+    facility_report_id = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id).pk
+    all_emmission_categories_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
+    print(f"Step 1: emmission categories total - {all_emmission_categories_totals}")
+    # Step 2: Get reporting products for this report version; facility
+    # Step 3: Get reporting products values for this report version; facility
+
+
+    # TEMP: Mock the response data
+    report_product_emission_allocations= [
+            {
+            "emission_category": "flaring",
+            "products": [
+                { "product_id": 1, "product_name": "Product A", "product_emission": 500 },
+                { "product_id": 2, "product_name": "Product B", "product_emission": 500 }
+            ],
+            "emission_total": 1000
+            },
+            {
+            "emission_category": "fugitive",
+            "products": [
+                { "product_id": 1, "product_name": "Product A", "product_emission": 0 },
+                { "product_id": 2, "product_name": "Product B", "product_emission": 0 }
+            ],
+            "emission_total": 300
+            }
+        ]
+    return 200, {"report_product_emission_allocations": report_product_emission_allocations}
+
+@router.get(
+    "Xreport-version/{report_version_id}/facilities/{facility_id}/allocate-emissions",
     response={200: ProductionDataOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for emissions allocations that have been saved for a facility""",
@@ -25,7 +70,7 @@ from reporting.models.report_product_emission_allocation import ReportProductEmi
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_emission_allocations(
+def Xget_emission_allocations(
     request: HttpRequest, report_version_id: int, facility_id: UUID
 ) -> Tuple[Literal[200], dict]:
 
