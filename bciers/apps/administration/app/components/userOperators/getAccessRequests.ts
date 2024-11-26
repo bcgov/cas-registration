@@ -5,7 +5,7 @@ export default async function getAccessRequests(): Promise<
   AccessRequest[] | { error: string }
 > {
   const response = await actionHandler(
-    `registration/user-operators/current/access-requests`,
+    `registration/v2/user-operators/current/access-requests`,
     "GET",
     "/dashboard/users",
   );

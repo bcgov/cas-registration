@@ -7,7 +7,7 @@ export default async function getOperator(
   pathToRevalidate: string = "",
 ) {
   const response = await actionHandler(
-    `registration/operators/${id}`,
+    `registration/v2/operators/${id}`,
     "GET",
     pathToRevalidate,
   );
