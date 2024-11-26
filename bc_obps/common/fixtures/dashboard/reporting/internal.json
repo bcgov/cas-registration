@@ -5,7 +5,12 @@
       "name": "Internal Reporting Dashboard",
       "data": {
         "dashboard": "reporting",
-        "access_roles": ["cas_admin", "cas_analyst", "cas_director"],
+        "access_roles": [
+          "cas_admin",
+          "cas_analyst",
+          "cas_director",
+          "cas_view_only"
+        ],
         "tiles": [
           {
             "title": "Annual Reports",
