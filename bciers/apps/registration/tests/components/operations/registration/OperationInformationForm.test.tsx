@@ -12,7 +12,7 @@ import { actionHandler } from "@bciers/testConfig/mocks";
 import { fetchFormEnums } from "../OperationRegistrationPage.test";
 import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { mockDataUri } from "./NewEntrantOperationForm.test";
-import { fillComboboxWidgetField } from "@bciers/testConfig/helpers";
+import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";
 
 const mockPush = vi.fn();
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });

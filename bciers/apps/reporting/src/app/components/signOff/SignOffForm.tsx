@@ -5,7 +5,7 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 import {
   signOffSchema,
   signOffUiSchema,
-} from "@reporting/src/data/jsonSchema/signOff";
+} from "@reporting/src/data/jsonSchema/signOff/signOff";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormData } from "@reporting/src/app/components/signOff/types";

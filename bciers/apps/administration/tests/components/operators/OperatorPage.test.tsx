@@ -5,7 +5,7 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
-import { mockUseSession } from "../helpers/mockUseSession";
+import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 import { getBusinessStructures, getCurrentOperator } from "./mocks";
 import OperatorPage from "apps/administration/app/components/operators/OperatorPage";
 

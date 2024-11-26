@@ -9,7 +9,7 @@ import {
 import ContactsDataGrid from "apps/administration/app/components/contacts/ContactsDataGrid";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import { QueryParams } from "@bciers/testConfig/types";
-import extractParams from "../helpers/extractParams";
+import extractParams from "@bciers/testConfig/helpers/extractParams";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 

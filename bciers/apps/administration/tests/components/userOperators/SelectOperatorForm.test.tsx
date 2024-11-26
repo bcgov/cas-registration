@@ -9,7 +9,7 @@ import { describe, expect, vi } from "vitest";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import SelectOperatorForm from "apps/administration/app/components/userOperators/SelectOperatorForm";
-import { expectLink } from "../helpers/expectLink";
+import { expectLink } from "@bciers/testConfig/helpers/expectLink";
 
 import { id, operatorLegalName } from "./constants";
 

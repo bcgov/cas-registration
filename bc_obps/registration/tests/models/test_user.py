@@ -134,6 +134,9 @@ class UserModelTest(BaseTestCase):
             ("reportproduct_created", "report product", None, None),
             ("reportproduct_updated", "report product", None, None),
             ("reportproduct_archived", "report product", None, None),
+            ("reportversion_created", "report version", None, None),
+            ("reportversion_updated", "report version", None, None),
+            ("reportversion_archived", "report version", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
