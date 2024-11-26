@@ -5,9 +5,9 @@ import postAttachments from "@reporting/src/app/utils/postAttachments";
 import AttachmentElement from "./AttachmentElement";
 import { useState } from "react";
 import { UploadedAttachment } from "./types";
-import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
+import { useRouter } from "next/navigation";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -21,12 +21,13 @@ const AttachmentsForm: React.FC<Props> = ({
   taskListElements,
   initialUploadedAttachments,
 }) => {
+  const router = useRouter();
+  const saveAndContinueUrl = `/reports/${version_id}/final-review`;
+
+  const [error, setError] = useState<string>();
   const [pendingUploadFiles, setPendingUploadFiles] = useState<{
     [fileType: string]: File;
   }>({});
-  const [uploadedAttachments, setUploadedAttachments] = useState(
-    initialUploadedAttachments,
-  );
 
   const handleChange = (fileType: string, file: File | undefined) => {
     if (file) {
@@ -49,10 +50,12 @@ const AttachmentsForm: React.FC<Props> = ({
     }
 
     const response = await postAttachments(version_id, formData);
-    const newUploadedAttachments = getDictFromAttachmentArray(response);
 
-    setUploadedAttachments(newUploadedAttachments);
-    setPendingUploadFiles({});
+    if (response.error) {
+      setError(response.error);
+    } else {
+      router.push(saveAndContinueUrl);
+    }
   };
 
   // Returns the id of the file if it has been saved,
@@ -60,14 +63,14 @@ const AttachmentsForm: React.FC<Props> = ({
   const getFileId = (fileType: string) => {
     return Object.keys(pendingUploadFiles).includes(fileType)
       ? undefined
-      : uploadedAttachments[fileType]?.id;
+      : initialUploadedAttachments[fileType]?.id;
   };
 
   // Returns the name of the file
   const getFileName = (fileType: string) => {
     return Object.keys(pendingUploadFiles).includes(fileType)
       ? pendingUploadFiles[fileType].name
-      : uploadedAttachments[fileType]?.attachment_name;
+      : initialUploadedAttachments[fileType]?.attachment_name;
   };
 
   const buildAttachmentElement = (title: string, fileType: string) => (
@@ -87,6 +90,8 @@ const AttachmentsForm: React.FC<Props> = ({
         taskListElements={taskListElements}
         onSubmit={handleSubmit}
         cancelUrl="#"
+        submittingButtonText="Uploading..."
+        error={error}
       >
         <p>
           Please upload any of the documents below that is applicable to your

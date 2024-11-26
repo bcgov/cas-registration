@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { Box, Button } from "@mui/material";
+import { Alert, Box, Button } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import Link from "next/link";
 
@@ -20,6 +20,8 @@ interface Props {
   children?: React.ReactNode;
   cancelUrl?: string;
   saveButtonText?: string;
+  submittingButtonText?: string;
+  error?: string;
 }
 
 const MultiStepWrapperWithTaskList: React.FC<Props> = ({
@@ -30,6 +32,8 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   children,
   cancelUrl,
   saveButtonText,
+  submittingButtonText,
+  error,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,6 +48,11 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
       <div className="container mx-auto p-4" data-testid="facility-review">
         <MultiStepHeader stepIndex={initialStep} steps={steps} />
       </div>
+      {error && (
+        <div className="min-h-6">
+          <Alert severity="error">{error}</Alert>
+        </div>
+      )}
       <div className="w-full flex">
         {/* Make the task list hidden on small screens and visible on medium and up */}
         <div className="hidden md:block">
@@ -65,7 +74,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
               onClick={handleSubmit}
             >
               {isSubmitting
-                ? "Saving..."
+                ? submittingButtonText ?? "Saving..."
                 : saveButtonText ?? "Save and Continue"}
             </Button>
           </Box>
