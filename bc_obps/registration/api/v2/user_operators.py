@@ -23,7 +23,7 @@ from ninja.pagination import paginate, PageNumberPagination
     description="""Retrieves a paginated list of user operators.
     The endpoint allows authorized IRC roles to view user operators, sorted by various fields such as creation date,
     user details, and operator legal name.""",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("v1_authorized_irc_user"),
 )
 @handle_http_errors()
 @paginate(PageNumberPagination)

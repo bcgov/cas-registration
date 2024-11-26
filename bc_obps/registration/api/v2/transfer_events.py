@@ -21,7 +21,7 @@ from django.db.models import QuerySet
     tags=TRANSFER_EVENT_TAGS,
     description="""Retrieves a paginated list of transfer events based on the provided filters.
     The endpoint allows authorized users to view and sort transfer events filtered by various criteria such as operation, facility, and status.""",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("v1_authorized_irc_user"),
 )
 @handle_http_errors()
 @paginate(CustomPagination)
