@@ -55,8 +55,8 @@ export default function FacilityForm({
 
         const method = isCreatingState ? "POST" : "PUT";
         const endpoint = isCreatingState
-          ? "registration/facilities"
-          : `registration/facilities/${formState.id}`;
+          ? "registration/v2/facilities"
+          : `registration/v2/facilities/${formState.id}`;
         const pathToRevalidate = isCreatingState
           ? `/operations/${params.operationId}/facilities`
           : `/operations/${params.operationId}/facilities/${formState.id}`;

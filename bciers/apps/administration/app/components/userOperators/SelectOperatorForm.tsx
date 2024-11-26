@@ -19,7 +19,7 @@ export default function SelectOperatorForm() {
     ]}`;
 
     const response = await actionHandler(
-      `registration/operators${queryParam}`,
+      `registration/v2/operators${queryParam}`,
       "GET",
       "/select-operator",
     );
