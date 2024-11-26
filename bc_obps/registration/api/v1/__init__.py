@@ -1,5 +1,7 @@
 # type: ignore
 # ruff: noqa: F401
+from ..v2._operations._operation_id import facilities
+from ..v2 import facilities
 from ._user_operators._user_operator_id import update_status
 from . import (
     business_structures,
@@ -11,12 +13,11 @@ from . import (
     user_operators,
     reporting_activities,
     users,
-    facilities,
     contacts,
     transfer_events,
 )
 from ._operations import operation_id
-from ._operations._operation_id import update_status, facilities, operation_representatives
+from ._operations._operation_id import update_status, operation_representatives
 
 from ._operators._operator_id import (
     request_access,

@@ -104,8 +104,8 @@ const FacilityInformationForm = ({
       const method = isCreating ? "POST" : "PUT";
 
       const endpoint = isCreating
-        ? "registration/facilities"
-        : `registration/facilities/${facilityId}`;
+        ? "registration/v2/facilities"
+        : `registration/v2/facilities/${facilityId}`;
 
       const sfoFormData = isOperationSfo && {
         ...createUnnestedFormData(e.formData, formSectionListLFo),

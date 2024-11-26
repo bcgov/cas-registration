@@ -20,7 +20,7 @@ from ninja import Query
 
 
 @router.get(
-    "/operations/{uuid:operation_id}/facilities",
+    "/v2/operations/{uuid:operation_id}/facilities",
     response={200: List[FacilityDesignatedOperationTimelineOut], custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Retrieves a paginated list of facilities based on the provided filters.
