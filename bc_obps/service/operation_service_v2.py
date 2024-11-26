@@ -415,11 +415,11 @@ class OperationServiceV2:
     @classmethod
     def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
-        is_eio = operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+
         if operation.bc_obps_regulated_operation:
             raise Exception('Operation already has a BORO ID.')
-        if is_eio:
-            raise Exception('EIOs cannot be issued BORO IDs.')
+        if not operation.is_regulated_operation:
+            raise Exception('Non-regulated operations cannot be issued BORO IDs.')
         if operation.status != Operation.Statuses.REGISTERED:
             raise Exception('Operations must be registered before they can be issued a BORO ID.')
 

@@ -27,6 +27,12 @@ export enum RegistrationPurposes {
   POTENTIAL_REPORTING_OPERATION = "Potential Reporting Operation",
 }
 
+export const regulatedOperationPurposes: ReadonlyArray<RegistrationPurposes> = [
+  RegistrationPurposes.OBPS_REGULATED_OPERATION,
+  RegistrationPurposes.NEW_ENTRANT_OPERATION,
+  RegistrationPurposes.OPTED_IN_OPERATION,
+];
+
 export const RegistrationPurposeHelpText: {
   [key in RegistrationPurposes]: string;
 } = {

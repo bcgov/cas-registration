@@ -28,17 +28,18 @@ const defaultFormContext = {
   operationId: "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
   isInternalUser: true,
   status: OperationStatus.REGISTERED,
+  isRegulatedOperation: true,
 };
 
 describe("RJSF boroIdWidget", () => {
-  it("should show Not Applicable when Operation is an EIO", () => {
+  it("should show Not Applicable when Operation is non-regulated", () => {
     const { container } = render(
       <FormBase
         schema={boroIdWidgetSchema}
         uiSchema={boroIdWidgetUiSchema}
         formContext={{
           ...defaultFormContext,
-          isEio: true,
+          isRegulatedOperation: false,
         }}
       />,
     );
