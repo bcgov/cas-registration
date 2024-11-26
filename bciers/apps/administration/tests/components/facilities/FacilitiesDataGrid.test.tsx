@@ -9,7 +9,7 @@ import {
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
-import extractParams from "../helpers/extractParams";
+import extractParams from "@bciers/testConfig/helpers/extractParams";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 

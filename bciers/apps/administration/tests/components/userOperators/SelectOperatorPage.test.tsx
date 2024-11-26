@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import SelectOperatorPage from "apps/administration/app/bceidbusiness/industry_user/select-operator/(request-access)/page";
 
-import { mockUseSession } from "../helpers/mockUseSession";
+import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 
 describe("Select Operator Page", () => {
   beforeEach(() => {

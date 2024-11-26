@@ -6,7 +6,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { FormBase } from "@bciers/components/form/index";
 import { RJSFSchema } from "@rjsf/utils";
-import { Box, Button } from "@mui/material";
+import { Alert, Box, Button } from "@mui/material";
 import Link from "next/link";
 
 interface Props {
@@ -22,6 +22,7 @@ interface Props {
   buttonText?: string;
   onChange?: (data: any) => void;
   submitButtonDisabled?: boolean;
+  error?: any;
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -36,6 +37,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   buttonText,
   onChange,
   submitButtonDisabled,
+  error,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -82,6 +84,9 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
                   : "Save and Continue"}
               </Button>
             </Box>
+            <div className="min-h-[48px] box-border mt-4">
+              {error && <Alert severity="error">{error}</Alert>}
+            </div>
           </FormBase>
         </div>
       </div>

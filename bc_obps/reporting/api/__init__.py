@@ -16,3 +16,5 @@ from .emission_category import get_emission_category
 from .production_data import save_production_data
 from .report_non_attributable_emissions import save_report
 from .report_activity import save_report_activity_data, load_report_activity_data
+from .report_facilities import get_report_facility_list_by_version_id
+from .report_verification import get_report_verification_by_version_id, save_report_verification

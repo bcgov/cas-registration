@@ -35,7 +35,7 @@
       "@bciers/styles": ["libs/styles/src/index.ts"],
       "@bciers/styles/*": ["libs/styles/src/*"],
       "@bciers/testConfig/*": ["libs/testConfig/src/*"],
-      "@bciers/testConfig/helpers": ["libs/testConfig/helpers"],
+      "@bciers/testConfig/helpers/*": ["libs/testConfig/src/helpers/*"],
       "@bciers/types/*": ["libs/types/src/*"],
       "@bciers/utils/*": ["libs/utils/*"],
       "@reporting/*": ["apps/reporting/*"]
