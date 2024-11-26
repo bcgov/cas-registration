@@ -1,4 +1,4 @@
 import AttachmentsPage from "@reporting/src/app/components/attachments/AttachmentsPage";
-import defaultPageFactory from "@reporting/src/app/utils/defaultPageFactory";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
 
 export default defaultPageFactory(AttachmentsPage);

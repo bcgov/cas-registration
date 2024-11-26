@@ -8,10 +8,10 @@ FOLDER_NAME = 'report_attachments/%Y/'
 
 class ReportAttachment(TimeStampedModel):
     class ReportAttachmentType(models.TextChoices):
-        verification_statement = "verification_statement"
-        wci_352_362 = "wci_352_362"
-        additional_reportable_information = "additional_reportable_information"
-        confidentiality_request = "confidentiality_request"
+        VERIFICATION_STATEMENT = "verification_statement"
+        WCI_352_362 = "wci_352_362"
+        ADDITIONAL_REPORTABLE_INFORMATION = "additional_reportable_information"
+        CONFIDENTIALITY_REQUEST = "confidentiality_request"
 
     report_version = ForeignKey(
         ReportVersion,
@@ -35,7 +35,7 @@ class ReportAttachment(TimeStampedModel):
         db_table = 'erc"."report_attachment'
         app_label = "reporting"
         constraints = [
-            # Check that only one attachment type is present, except if the attachment type is 'other'
+            # Check that only one attachment type is present per report version
             models.UniqueConstraint(
                 name="unique_attachment_type_per_report_version",
                 fields=['report_version', 'attachment_type'],

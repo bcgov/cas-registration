@@ -17,7 +17,7 @@ class ReportAttachmentService:
     ) -> None:
 
         if attachment_file.size and attachment_file.size > MAX_UPLOAD_SIZE:
-            raise ValidationError(f"File attachment size shall not exceed {MAX_UPLOAD_SIZE} bytes.")
+            raise ValidationError(f"File attachment cannot exceed {MAX_UPLOAD_SIZE} bytes.")
 
         report_attachment = ReportAttachment.objects.filter(
             report_version_id=report_version_id,

@@ -28,7 +28,7 @@ class TestReportAttachmentService:
         file = ContentFile(b"0" * 20 * 1024 * 1024 + b"1", "test_file.txt")
         uploadedFile = UploadedFile(file, size=file.size)
 
-        with pytest.raises(ValidationError, match='File attachment size shall not exceed 20971520 bytes.'):
+        with pytest.raises(ValidationError, match='File attachment cannot exceed 20971520 bytes.'):
             ReportAttachmentService.set_attachment(
                 self.report_version.id, self.user.user_guid, "verification_statement", uploadedFile
             )
