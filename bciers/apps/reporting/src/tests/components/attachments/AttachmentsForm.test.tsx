@@ -2,7 +2,8 @@ import AttachmentElement from "@reporting/src/app/components/attachments/Attachm
 import AttachmentsForm from "@reporting/src/app/components/attachments/AttachmentsForm";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
 
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { useRouter } from "next/navigation";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentElement", () => ({
   default: vi.fn(),
@@ -10,6 +11,12 @@ vi.mock("@reporting/src/app/components/attachments/AttachmentElement", () => ({
 
 vi.mock("@reporting/src/app/utils/postAttachments", () => ({
   default: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn().mockReturnValue({
+    push: vi.fn(),
+  }),
 }));
 
 const mockAttachmentElement = AttachmentElement as ReturnType<typeof vi.fn>;
@@ -102,7 +109,7 @@ describe("The attachments form", () => {
   });
 
   it("submits the changed files along with their type", async () => {
-    mockPostAttachments.mockReturnValue([]);
+    mockPostAttachments.mockReturnValue({});
 
     render(
       <AttachmentsForm
@@ -124,7 +131,7 @@ describe("The attachments form", () => {
     });
 
     await act(() => {
-      screen.getByText("Save and Continue").click();
+      fireEvent.click(screen.getByText("Save and Continue"));
     });
 
     expect(mockPostAttachments).toHaveBeenCalledOnce();
@@ -140,5 +147,7 @@ describe("The attachments form", () => {
     expect(sentVersionId).toEqual(1346);
     expect(sentFormDataKeys).toEqual(["files", "file_types"]);
     expect(sentFormDataValues).toEqual([file, "verification_statement"]);
+
+    expect(useRouter().push).toHaveBeenCalledWith("/reports/1346/final-review");
   });
 });
