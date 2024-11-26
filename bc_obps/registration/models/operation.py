@@ -293,3 +293,14 @@ class Operation(TimeStampedModel):
         Returns the current designated operator of the operation.
         """
         return self.designated_operators.get(end_date__isnull=True).operator
+
+    @property
+    def is_regulated_operation(self) -> bool:
+        """
+        Returns a boolean that describes whether the operation is regulated or not.
+        """
+        return self.registration_purpose in [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+        ]

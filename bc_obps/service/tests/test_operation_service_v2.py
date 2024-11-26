@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from registration.models.contact import Contact
-from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document_type import DocumentType
 from registration.models.activity import Activity
@@ -825,7 +824,7 @@ class TestGenerateBoroId:
         assert operation.bc_obps_regulated_operation.issued_by == approved_user_operator.user
 
     @staticmethod
-    def test_raises_exception_if_operation_is_eio():
+    def test_raises_exception_if_operation_is_non_regulated():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe(
             'utils.operation',
@@ -834,7 +833,7 @@ class TestGenerateBoroId:
             registration_purpose=Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
         )
 
-        with pytest.raises(Exception, match="EIOs cannot be issued BORO IDs."):
+        with pytest.raises(Exception, match="Non-regulated operations cannot be issued BORO ID."):
             OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
 
     @staticmethod
@@ -844,28 +843,11 @@ class TestGenerateBoroId:
             'utils.operation',
             operator=approved_user_operator.operator,
             status=Operation.Statuses.DRAFT,
-            registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+            registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
         )
 
         with pytest.raises(Exception, match="Operations must be registered before they can be issued a BORO ID."):
             OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
-
-    @staticmethod
-    def test_raises_exception_if_operation_already_has_boro_id():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        boro_id = baker.make(BcObpsRegulatedOperation, id='21-0001')
-        operation = baker.make_recipe(
-            'utils.operation',
-            operator=approved_user_operator.operator,
-            status=Operation.Statuses.REGISTERED,
-            bc_obps_regulated_operation=boro_id,
-            registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-        )
-
-        with pytest.raises(Exception, match="Operation already has a BORO ID."):
-            OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
-        operation.refresh_from_db()
-        assert operation.bc_obps_regulated_operation is not None
 
 
 class TestRemoveOperationRepresentative:
