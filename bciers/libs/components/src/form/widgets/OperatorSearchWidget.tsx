@@ -39,7 +39,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     }
 
     const response = await actionHandler(
-      `registration/operators?legal_name=${val}`,
+      `registration/v2/operators?legal_name=${val}`,
       "GET",
     );
 

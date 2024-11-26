@@ -2,7 +2,7 @@ import { actionHandler } from "@bciers/actions";
 
 async function getOperationRepresentatives(id: string) {
   return actionHandler(
-    `registration/operations/${id}/operation-representatives`,
+    `registration/v2/operations/${id}/operation-representatives`,
     "GET",
     "",
   );
