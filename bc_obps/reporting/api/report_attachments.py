@@ -38,7 +38,7 @@ def save_report_attachments(
         file = files[index]
         ReportAttachmentService.set_attachment(report_version_id, user_guid, file_type, file)
 
-    return load_report_attachments(request, report_version_id)
+    return get_report_attachments(request, report_version_id)
 
 
 @router.get(
@@ -48,7 +48,7 @@ def save_report_attachments(
     description="""Returns the list of file attachments for a report version.""",
     auth=authorize("approved_industry_user"),
 )
-def load_report_attachments(
+def get_report_attachments(
     request: HttpRequest,
     report_version_id: int,
 ) -> Tuple[Literal[200], List[ReportAttachmentOut]]:

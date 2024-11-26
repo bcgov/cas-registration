@@ -1,4 +1,4 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import ANY, call, patch, MagicMock
 from django.core.files.base import ContentFile
 from model_bakery.baker import make_recipe, prepare
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -13,8 +13,8 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
-    @patch("reporting.api.report_attachments.load_report_attachments")
-    @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment")
+    @patch("reporting.api.report_attachments.load_report_attachments", autospec=True)
+    @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment", autospec=True)
     def test_save_attachments_calls_the_attachments_service_and_returns_the_get_method(
         self, mock_set_attachments: MagicMock, mock_get_method: MagicMock
     ):
@@ -31,23 +31,22 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         TestUtils.save_app_role(self, "industry_user")
         response = TestUtils.client.post(self.endpoint_under_test, data=form, HTTP_AUTHORIZATION=self.auth_header_dumps)
 
-        assert len(mock_set_attachments.mock_calls) == 2
-        assert mock_set_attachments.mock_calls[0].args[0] == self.report_version.id
-        assert mock_set_attachments.mock_calls[0].args[1] == self.user.user_guid
-        assert mock_set_attachments.mock_calls[0].args[2] == "sometype"
-        assert mock_set_attachments.mock_calls[0].args[3].name == "testfile.pdf"
+        mock_set_attachments.assert_has_calls(
+            [
+                call(self.report_version.id, self.user.user_guid, "sometype", ANY),
+                call(self.report_version.id, self.user.user_guid, "someothertype", ANY),
+            ]
+        )
 
-        assert mock_set_attachments.mock_calls[1].args[0] == self.report_version.id
-        assert mock_set_attachments.mock_calls[1].args[1] == self.user.user_guid
-        assert mock_set_attachments.mock_calls[1].args[2] == "someothertype"
+        assert mock_set_attachments.mock_calls[0].args[3].name == "testfile.pdf"
         assert mock_set_attachments.mock_calls[1].args[3].name == "testfile2.txt"
 
         mock_get_method.assert_called_once()
         assert response.status_code == 200
         assert response.json() == [{'attachment_name': 'success', 'attachment_type': 'success', 'id': 123}]
 
-    @patch("reporting.api.report_attachments.load_report_attachments")
-    @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment")
+    @patch("reporting.api.report_attachments.load_report_attachments", autospec=True)
+    @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment", autospec=True)
     def test_save_attachments_error_if_bad_form_data(self, mock_set_attachments: MagicMock, mock_get_method: MagicMock):
         TestUtils.save_app_role(self, "industry_user")
 
@@ -65,7 +64,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         mock_set_attachments.assert_not_called()
         mock_get_method.assert_not_called()
 
-    @patch("reporting.service.report_attachment_service.ReportAttachmentService.get_attachments")
+    @patch("reporting.service.report_attachment_service.ReportAttachmentService.get_attachments", autospec=True)
     def test_get_attachments(self, mock_get_attachments: MagicMock):
 
         r = prepare(ReportAttachment, id=12, attachment_name="test1", attachment_type="something")
@@ -86,3 +85,5 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
                 'id': 1211,
             },
         ]
+
+        mock_get_attachments.assert_called_once_with(self.report_version.id)
