@@ -10,6 +10,9 @@ from ._operations import operation_id
 from . import operations
 from . import operators
 from . import user_operators
+from . import facilities
 from ._user_operators._current import operator
 from ._operations import current
-from ._operations._operation_id import boro_id, bcghg_id
+from ._operations._operation_id import boro_id, bcghg_id as operation_bcghg_id
+from ._facilities._facility_id import bcghg_id as facility_bcghg_id
+from ._facilities import facility_id

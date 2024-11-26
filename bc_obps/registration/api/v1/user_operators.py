@@ -22,7 +22,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     It excludes:
     - pending user operators for operators with approved admins
     - approved user operators verified by industry users.""",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("v1_authorized_irc_user"),
 )
 @handle_http_errors()
 def list_user_operators(
