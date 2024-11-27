@@ -14,14 +14,6 @@ type UiSchemaMap = {
   [key: string]: any;
 };
 
-type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
-type EmptyWithFuels = { fuels: [{ emissions: [{}] }] };
-type EmptyOnlyEmissions = { emissions: [{}] };
-
-type DefaultEmptySourceTypeMap = {
-  [key: string]: EmptyWithUnits | EmptyWithFuels | EmptyOnlyEmissions;
-};
-
 // Activity slug & matching uiSchema
 export const uiSchemaMap: UiSchemaMap = {
   gsc_excluding_line_tracing: gscUiSchema,
@@ -40,24 +32,4 @@ export const uiSchemaMap: UiSchemaMap = {
 
 export const getUiSchema = (slug: string) => {
   return uiSchemaMap[slug];
-};
-
-const withUnits: EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
-const withFuels: EmptyWithFuels = { fuels: [{ emissions: [{}] }] };
-const onlyEmissions: EmptyOnlyEmissions = { emissions: [{}] };
-
-// Activity slug & matching shape of an empty Source Type
-export const defaultEmtpySourceTypeMap: DefaultEmptySourceTypeMap = {
-  gsc_excluding_line_tracing: withUnits,
-  gsc_solely_for_line_tracing: withUnits,
-  gsc_other_than_non_compression: withUnits,
-  gsc_non_compression: withUnits,
-  fuel_combustion_by_mobile: withFuels,
-  hydrogen_production: onlyEmissions,
-  pulp_and_paper: onlyEmissions,
-  refinery_fuel_gas: withFuels,
-  carbonate_use: onlyEmissions,
-  open_pit_coal_mining: onlyEmissions,
-  storage_petro_products: onlyEmissions,
-  aluminum_production: onlyEmissions,
 };
