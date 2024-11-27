@@ -27,6 +27,7 @@ const ProductionDataForm: React.FC<Props> = ({
   taskListElements,
 }) => {
   const router = useRouter();
+
   const saveAndContinueUrl = `reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`;
 
   const initialFormData = {

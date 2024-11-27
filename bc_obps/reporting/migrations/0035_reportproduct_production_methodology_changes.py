@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0058_regulatedproduct_add_isregulated_and_unit'),
-        ('reporting', '0033_reportverification'),
+        ('reporting', '0034_reportattachment_and_more'),
     ]
 
     operations = [
