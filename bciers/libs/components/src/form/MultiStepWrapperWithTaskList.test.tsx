@@ -42,7 +42,7 @@ describe("MultiStepFormWithTaskList", () => {
     expect(screen.getByText("Review facilities")).toBeVisible();
 
     // Verify children are rendered
-    expect(screen.getByLabelText("Test Content")).toBeVisible();
+    expect(screen.getByText("Test Content")).toBeVisible();
 
     // Verify save button is present
     expect(

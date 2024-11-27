@@ -13,7 +13,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
-    @patch("reporting.api.report_attachments.load_report_attachments", autospec=True)
+    @patch("reporting.api.report_attachments.get_report_attachments", autospec=True)
     @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment", autospec=True)
     def test_save_attachments_calls_the_attachments_service_and_returns_the_get_method(
         self, mock_set_attachments: MagicMock, mock_get_method: MagicMock
@@ -45,7 +45,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         assert response.status_code == 200
         assert response.json() == [{'attachment_name': 'success', 'attachment_type': 'success', 'id': 123}]
 
-    @patch("reporting.api.report_attachments.load_report_attachments", autospec=True)
+    @patch("reporting.api.report_attachments.get_report_attachments", autospec=True)
     @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment", autospec=True)
     def test_save_attachments_error_if_bad_form_data(self, mock_set_attachments: MagicMock, mock_get_method: MagicMock):
         TestUtils.save_app_role(self, "industry_user")
