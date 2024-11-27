@@ -41,14 +41,13 @@ const PersonResponsible = ({ version_id }: Props) => {
   const [operationType, setOperationType] = useState(null);
 
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
-  const router = useRouter();
 
   const queryString = serializeSearchParams(useSearchParams());
   const continueUrl =
     operationType === "Linear Facility Operation"
       ? `/reports/${version_id}/facilities/lfo-facilities${queryString}`
       : `/reports/${version_id}/facilities/${facilityId}/review${queryString}&facilities_title=Facility`;
-  const backUrl = `/reports/${version_id}/review-operator-data${queryString}`
+  const backUrl = `/reports/${version_id}/review-operator-data${queryString}`;
 
   const taskListElements: TaskListElement[] = [
     {

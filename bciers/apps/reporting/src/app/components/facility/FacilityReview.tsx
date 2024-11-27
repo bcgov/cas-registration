@@ -57,7 +57,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   });
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const queryString = serializeSearchParams(useSearchParams());
-  const reportsTitle = useSearchParams().get('reports_title');
+  const reportsTitle = useSearchParams().get("reports_title");
   const backUrl = `/reports/${version_id}/person-responsible?reports_title=${reportsTitle}`;
 
   const customStepNames = [
