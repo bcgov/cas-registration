@@ -157,3 +157,6 @@ helm/**/charts
 # Vite(st) temporary config files
 vite.config.**s.timestamp-*
 vitest.config.**s.timestamp-*
+
+# Local file attachments
+bc_obps/test_media/*
