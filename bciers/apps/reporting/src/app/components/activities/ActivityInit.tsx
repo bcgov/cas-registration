@@ -60,12 +60,7 @@ export default async function ActivityInit({
     currentActivityTaskListElement.isActive = true;
 
   // Determine which source types (if any) are selected in the loaded formData & fetch the jsonSchema accordingly
-  const sourceTypeObject = {} as any;
   const sourceTypeIds = [];
-  Object.values(activityDataObject.sourceTypeMap).forEach(
-    (v) => (sourceTypeObject[`${v}`] = formData[`${v}`] ? true : false),
-  );
-
   let sourceTypeQueryString = "";
   for (const [k, v] of Object.entries(activityDataObject.sourceTypeMap)) {
     if (formData[`${v}`]) {
