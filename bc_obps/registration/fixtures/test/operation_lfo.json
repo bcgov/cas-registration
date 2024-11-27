@@ -16,7 +16,8 @@
       "status": "Registered",
       "bc_obps_regulated_operation": "21-0005",
       "created_at": "2024-1-31T15:27:00.000Z",
-      "activities": []
+      "activities": [],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   },
   {
@@ -36,7 +37,8 @@
       "status": "Registered",
       "bc_obps_regulated_operation": "21-0006",
       "created_at": "2024-1-31T15:27:00.000Z",
-      "activities": []
+      "activities": [],
+      "registration_purpose": "OBPS Regulated Operation"
     }
   }
 ]
