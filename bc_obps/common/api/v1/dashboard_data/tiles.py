@@ -36,7 +36,7 @@ def list_dashboard_data(
         'reporting',
         'coam',
         'operators',
-        'irc_director',
+        'cas_director',
     ],
 ) -> Tuple[Literal[200], QuerySet[DashboardData]]:
     role = ""

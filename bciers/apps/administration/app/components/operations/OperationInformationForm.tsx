@@ -12,13 +12,11 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
-import { FormMode } from "@bciers/utils/src/enums";
 import {
   RegistrationPurposes,
   regulatedOperationPurposes,
 } from "apps/registration/app/components/operations/registration/enums";
-import { FormMode } from "@bciers/utils/src/enums";
-import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
+import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 
 const OperationInformationForm = ({
   formData,
@@ -84,9 +82,11 @@ const OperationInformationForm = ({
         operationId,
         isRegulatedOperation: regulatedOperationPurposes.includes(
           formData.registration_purpose as RegistrationPurposes,
-
-),
-isCasDirector: role === "cas_director",
+        ),
+        isCasDirector: role === FrontEndRoles.CAS_DIRECTOR,
+        isEio: formData.registration_purpose?.match(
+          RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),
+        ),
         status: formData.status,
       }}
     />

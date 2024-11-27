@@ -5,7 +5,6 @@ import getCurrentOperator from "./getCurrentOperator";
 import getBusinessStructures from "./getBusinessStructures";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { auth } from "@/dashboard/auth";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
 import getOperator from "./getOperator";
 import { UUID } from "crypto";
 
@@ -94,16 +93,12 @@ export default async function OperatorPage({
   const session = await auth();
 
   const role = session?.user?.app_role;
-  const isAuthorizedAdminUser = [
-    FrontEndRoles.CAS_ADMIN,
-    FrontEndRoles.CAS_ANALYST,
-  ].includes(role as FrontEndRoles);
 
   let operatorFormData: { [key: string]: any } | { error: string } = {};
 
   if (!isCreating) {
     // operatorId is only passed in for internal users. External users only have access to their own operator
-    if (operatorId && isAuthorizedAdminUser) {
+    if (operatorId && role.includes("cas_")) {
       operatorFormData = await getOperator(operatorId);
     } else {
       operatorFormData = await getCurrentOperator();
@@ -123,7 +118,7 @@ export default async function OperatorPage({
       schema={createOperatorSchema(operatorSchema, businessStructures)}
       formData={operatorFormData}
       isCreating={isCreating}
-      isInternalUser={isAuthorizedAdminUser}
+      isInternalUser={role.includes("cas_")}
     />
   );
 }

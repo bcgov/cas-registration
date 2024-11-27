@@ -273,7 +273,7 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"user_operator_id": mock_uuid},
             },
         ],
-        "irc_director": [
+        "cas_director": [
             {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {"facility_id": mock_uuid}},
             {"method": "patch", "endpoint_name": "operation_boro_id", "kwargs": {"operation_id": mock_uuid}},
             {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {"operation_id": mock_uuid}},

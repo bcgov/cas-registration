@@ -43,7 +43,13 @@
               },
               {
                 "title": "Transfer an operation or facility",
-                "href": "/registration/transfer"
+                "href": "/registration/transfer",
+                "conditions": [
+                  {
+                    "allowedRoles": ["cas_analyst"],
+                    "value": true
+                  }
+                ]
               }
             ]
           },

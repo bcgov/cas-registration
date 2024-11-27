@@ -10,7 +10,7 @@ import {
   getReportingActivities,
 } from "./mocks";
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
-import { OperationStatus } from "@bciers/utils/src/enums";
+import { FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
@@ -563,7 +563,7 @@ describe("the OperationInformationForm component", () => {
     useSession.mockReturnValue({
       data: {
         user: {
-          app_role: "cas_director",
+          app_role: FrontEndRoles.CAS_DIRECTOR,
         },
       },
     });
