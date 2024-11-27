@@ -10,7 +10,6 @@ interface StepButtonProps {
   isSaving: boolean;
   isSuccess: boolean;
   saveButtonDisabled?: boolean;
-
 }
 
 const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
@@ -18,7 +17,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   continueUrl,
   isSaving,
   isSuccess,
-  saveButtonDisabled
+  saveButtonDisabled,
 }) => {
   const saveButtonContent = isSaving ? (
     <CircularProgress data-testid="progressbar" role="progress" size={24} />
@@ -41,16 +40,13 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
           color="primary"
           type="submit"
           disabled={isSaving || saveButtonDisabled}
-          sx={{mx: 3}}
+          sx={{ mx: 3 }}
         >
           {saveButtonContent}
         </Button>
       </div>
       <Link href={continueUrl} passHref>
-        <Button
-          variant="contained"
-          color="primary"
-        >
+        <Button variant="contained" color="primary" sx={{ px: 4 }}>
           Continue
         </Button>
       </Link>

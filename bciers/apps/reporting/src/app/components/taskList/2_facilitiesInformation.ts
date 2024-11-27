@@ -21,11 +21,11 @@ export const getFacilitiesInformationTaskList = (
       title: "Activities Information",
       isExpanded: true,
       elements: orderedActivities.map(
-        (activity: ActivityData) =>
+        (activity: ActivityData, index) =>
           ({
             type: "Page",
             title: activity.name,
-            link: `/reports/${versionId}/facilities/${facilityId}/activities?activity_id=${activity.id}`,
+            link: `/reports/${versionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
           }) as TaskListElement,
       ),
     },

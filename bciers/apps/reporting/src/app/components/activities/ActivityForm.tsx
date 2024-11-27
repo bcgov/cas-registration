@@ -13,6 +13,8 @@ import { withTheme } from "@rjsf/core";
 import formTheme from "@bciers/components/form/theme/defaultTheme";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
+import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
+import { useSearchParams } from "next/navigation";
 
 const Form = withTheme(formTheme);
 
@@ -45,6 +47,8 @@ export default function ActivityForm({
   initialJsonSchema,
   initialSelectedSourceTypeIds,
 }: Readonly<Props>) {
+  const searchParams = useSearchParams(); // is read-only
+  const step = Number(useSearchParams().get("step")) || 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
@@ -132,6 +136,24 @@ export default function ActivityForm({
     }
   };
 
+  const createUrl = (isContinue: boolean) => {
+    const taskListLength = taskListData.find((taskListElement) => {
+      return taskListElement.title === "Activities Information";
+    })?.elements?.length;
+
+    if (step === 0 && !isContinue)
+      return `/reports/${reportVersionId}/facilities/${facilityId}/review?facilities_title=Facility`; // Facility review page
+    if (taskListLength && step + 1 >= taskListLength && isContinue)
+      return "non-attributable"; // Activities done, go to Non-attributable emissions
+
+    const params = new URLSearchParams(searchParams.toString());
+    const addition = isContinue ? 1 : -1;
+    params.set("step", (step + addition).toString());
+    params.delete("activity_id");
+
+    return `activities?${params.toString()}`;
+  };
+
   return (
     <div className="w-full flex flex-row">
       <ReportingTaskList elements={taskListData} />
@@ -152,17 +174,14 @@ export default function ActivityForm({
                 {e?.stack ?? e.message}
               </Alert>
             ))}
-          <div className="flex justify-end gap-3">
-            {/* Disable the button when loading or when success state is true */}
-            <Button
-              variant="contained"
-              type="submit"
-              aria-disabled={isLoading}
-              disabled={isLoading}
-            >
-              {isSuccess ? "✅ Success" : "Submit"}
-            </Button>
-          </div>
+          <ReportingStepButtons
+            allowBackNavigation={true}
+            backUrl={createUrl(false)}
+            continueUrl={createUrl(true)}
+            isSaving={isLoading}
+            isSuccess={isSuccess}
+            saveButtonDisabled={isLoading}
+          />
         </Form>
       </div>
     </div>

@@ -20,13 +20,13 @@ describe("The ReportingStepButtons component", () => {
     render(<ReportingStepButtons {...defaultProps} />);
     expect(screen.getByRole("link", { name: "Back" })).not.toBeDisabled();
     expect(screen.getByRole("link", { name: "Continue" })).not.toBeDisabled();
-    expect(
-      screen.getByRole("button", { name: "Save" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
   });
 
   it("does not show the Back button when allowBackNavigation is false", () => {
-    render(<ReportingStepButtons {...defaultProps} allowBackNavigation={false} />);
+    render(
+      <ReportingStepButtons {...defaultProps} allowBackNavigation={false} />,
+    );
 
     expect(
       screen.queryByRole("link", { name: "Back" }),
@@ -52,13 +52,13 @@ describe("The ReportingStepButtons component", () => {
 
   it("Save button operates properly", () => {
     // Check Save button to be default
-    render(<ReportingStepButtons {...defaultProps}/>);
+    render(<ReportingStepButtons {...defaultProps} />);
     expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
     // Check spinner is visible when saving
-    render(<ReportingStepButtons {...defaultProps} isSaving={true}/>);
+    render(<ReportingStepButtons {...defaultProps} isSaving={true} />);
     expect(screen.getByRole("progress")).toBeVisible();
     //  Check success when saving is over
-    render(<ReportingStepButtons {...defaultProps} isSuccess={true}/>);
+    render(<ReportingStepButtons {...defaultProps} isSuccess={true} />);
     expect(screen.getByRole("button", { name: "✅ Success" })).toBeVisible();
   });
 });

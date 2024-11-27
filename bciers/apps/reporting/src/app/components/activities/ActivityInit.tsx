@@ -15,6 +15,7 @@ interface Props {
   versionId: number;
   facilityId: UUID;
   activityId?: number;
+  step: number; // Index from 0
 }
 
 // 🧩 Main component
@@ -22,10 +23,10 @@ export default async function ActivityInit({
   versionId,
   facilityId,
   activityId,
+  step,
 }: Readonly<Props>) {
   const orderedActivities = await getOrderedActivities(versionId, facilityId);
-
-  let currentActivity = orderedActivities[0];
+  let currentActivity = orderedActivities[step];
   if (activityId)
     currentActivity = orderedActivities.find((obj: ActivityData) => {
       return obj.id === activityId;
