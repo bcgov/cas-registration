@@ -205,7 +205,7 @@ describe("the NewOperationRepresentativeForm component", () => {
 
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
-      "registration/contacts/1",
+      "registration/v2/contacts/1",
       "GET",
       "",
     );

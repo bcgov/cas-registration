@@ -199,7 +199,7 @@ describe("the FacilityInformationForm component", () => {
     });
 
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/facilities",
+      "registration/v2/facilities",
       "POST",
       "",
       {
@@ -252,7 +252,7 @@ describe("the FacilityInformationForm component", () => {
     });
 
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/facilities",
+      "registration/v2/facilities",
       "POST",
       "",
       {
@@ -339,7 +339,7 @@ describe("the FacilityInformationForm component", () => {
       };
 
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/facilities",
+        "registration/v2/facilities",
         "POST",
         "",
         {
