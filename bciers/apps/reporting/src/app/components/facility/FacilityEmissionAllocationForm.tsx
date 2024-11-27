@@ -1,16 +1,16 @@
 "use client";
+import { useRouter, useSearchParams } from "next/navigation";
+import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
+import { actionHandler } from "@bciers/actions";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   emissionAllocationSchema,
   emissionAllocationUiSchema,
 } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
 import { IChangeEvent } from "@rjsf/core";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
-import { actionHandler } from "@bciers/actions";
-import { useRouter, useSearchParams } from "next/navigation";
-import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { getFacilitiesInformationTaskList } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 
 interface Props {
@@ -19,7 +19,46 @@ interface Props {
   orderedActivities: any;
   initialData: any;
 }
+interface Product {
+  product_emission: number;
+  product_id: number;
+  product_name: string;
+}
 
+interface FacilityEmissionData {
+  emission_category: string;
+  emission_total: number;
+  products: Product[];
+}
+
+interface FacilityEmissionAllocationFormData {
+  facility_emission_data: FacilityEmissionData[];
+}
+
+// 🛠️ Function to check if the emission allocations totals match the product sums
+const allEmmissionsAllocated = (
+  formData: FacilityEmissionAllocationFormData,
+): boolean => {
+  // Loop through each emission data for facilities
+  return formData.facility_emission_data.every((facility) => {
+    // Calculate the sum of product_emission values
+    const sum = facility.products.reduce((total: number, product: Product) => {
+      return total + (product.product_emission || 0);
+    }, 0);
+
+    // Ensure sum is rounded to 4 decimals
+    const formattedSum = parseFloat(sum.toFixed(4)); // Round to 4 decimals
+
+    // Ensure emission_total is treated as a number, and round it to 4 decimals
+    const formattedEmissionTotal = parseFloat(
+      Number(facility.emission_total).toFixed(4),
+    ); // Convert to number and round
+
+    // Compare the formatted values
+    const isMatch = formattedSum === formattedEmissionTotal;
+    return isMatch;
+  });
+};
 const FacilityEmissionAllocationForm: React.FC<Props> = ({
   version_id,
   facility_id,
@@ -35,9 +74,13 @@ const FacilityEmissionAllocationForm: React.FC<Props> = ({
           total + (product.product_emission || 0),
         0,
       );
+
+      // Format the sum to "0.0000" if the sum is 0, or round it to 4 decimal places
+      const formattedSum = sum === 0 ? "0.0000" : sum.toFixed(4);
+
       return {
         ...facility,
-        products_emission_sum: sum, // Set the sum
+        products_emission_sum: formattedSum, // Set the formatted sum
       };
     }
     return facility;
@@ -46,10 +89,18 @@ const FacilityEmissionAllocationForm: React.FC<Props> = ({
   const initialFormData = {
     facility_emission_data: processedInitialData,
   };
+
   // Manage the formData state
   const [formData, setFormData] = useState<any>(initialFormData);
   // Manage the API error state
   const [error, setError] = useState<string | undefined>(undefined);
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+  //Check on initial load when the form has data
+  useEffect(() => {
+    if (formData) {
+      setSubmitButtonDisabled(!allEmmissionsAllocated(formData));
+    }
+  }, []);
   // Structure the save and continue navigation
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
@@ -79,14 +130,17 @@ const FacilityEmissionAllocationForm: React.FC<Props> = ({
               0,
             );
 
+            // Round sum to 4 decimal places, ensure it's a string for display
+            const roundedSum = sum.toFixed(4); // Keep as a string with 4 decimals
+
             // Validation: Check if the sum exceeds emission_total
-            if (sum > parseFloat(facility.emission_total)) {
+            if (parseFloat(roundedSum) > parseFloat(facility.emission_total)) {
               errorMessage = `The sum of product emissions for ${facility.emission_category} exceeds the total emissions (${facility.emission_total}).`;
             }
 
             return {
               ...facility,
-              products_emission_sum: sum,
+              products_emission_sum: roundedSum, // Store as string
             };
           }
           return facility;
@@ -100,6 +154,8 @@ const FacilityEmissionAllocationForm: React.FC<Props> = ({
     }
 
     setFormData(updatedFormData); // Update the state
+
+    setSubmitButtonDisabled(!allEmmissionsAllocated(updatedFormData));
   };
 
   // 🛠️ Function to handle form submission
@@ -123,6 +179,7 @@ const FacilityEmissionAllocationForm: React.FC<Props> = ({
     }
 
     // Proceed with API submission
+    setSubmitButtonDisabled(true);
     const endpoint = `reporting/report-version/${version_id}/allocate-emissions`;
     const method = "POST";
     const pathToRevalidate = "reporting/reports";
@@ -149,6 +206,7 @@ const FacilityEmissionAllocationForm: React.FC<Props> = ({
       schema={emissionAllocationSchema}
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
+      submitButtonDisabled={submitButtonDisabled}
       baseUrl={"#"}
       cancelUrl={"#"}
       onChange={handleChange}

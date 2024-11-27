@@ -69,7 +69,7 @@ export const emissionAllocationSchema: RJSFSchema = {
         },
         emission_total: {
           title: "Total Emissions",
-          type: "string",
+          type: "number",
           readOnly: true, // Read-only field
         },
         products: {
@@ -89,7 +89,7 @@ export const emissionAllocationSchema: RJSFSchema = {
         },
         products_emission_sum: {
           title: "Sum of Product Emissions",
-          type: "number",
+          type: "string",
           readOnly: true,
         },
       },
@@ -105,9 +105,16 @@ const EmissionAllocationTitleWidget: React.FC<WidgetProps> = ({
   id,
   value,
 }) => {
+  const capitalizeEachWord = (str: string | undefined) =>
+    str
+      ? str
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ")
+      : "";
   return (
     <div id={id} className="w-full mt-8">
-      <u>{value}</u>
+      <u>{capitalizeEachWord(value)}</u>
     </div>
   );
 };
@@ -152,7 +159,6 @@ const DynamicLabelFieldTemplate: React.FC<FieldTemplateProps> = ({
   formContext,
 }) => {
   const productName = getAssociatedProductName(id, formContext);
-
   return (
     <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
       <div className="flex flex-col md:flex-row items-start md:items-center w-full">
@@ -161,11 +167,12 @@ const DynamicLabelFieldTemplate: React.FC<FieldTemplateProps> = ({
             {productName}
           </label>
         </div>
-        <div className="w-full md:w-9/12">{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );
 };
+
 /**
  * UI Schema for Emission Allocation Form
  * Specifies custom field templates, widgets, and layout for the form.
@@ -199,7 +206,6 @@ export const emissionAllocationUiSchema: UiSchema = {
       label: false,
     },
     items: {
-      "ui:classNames": "w-full",
       emission_category: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:widget": EmissionAllocationTitleWidget,
@@ -210,7 +216,6 @@ export const emissionAllocationUiSchema: UiSchema = {
       },
       emission_total: {
         "ui:widget": ReadOnlyWidget,
-        "ui:classNames": "w-full",
       },
       products: {
         "ui:options": {
@@ -218,21 +223,18 @@ export const emissionAllocationUiSchema: UiSchema = {
           addable: false,
           removable: false,
         },
-        "ui:classNames": "w-full",
+        "ui:FieldTemplate": FieldTemplate,
         items: {
-          "ui:classNames": "w-full",
           product_name: {
             "ui:widget": "hidden",
           },
           product_emission: {
             "ui:FieldTemplate": DynamicLabelFieldTemplate,
-            "ui:classNames": "w-full",
           },
         },
       },
       products_emission_sum: {
         "ui:widget": ReadOnlyWidget,
-        "ui:classNames": "w-full",
       },
     },
   },
