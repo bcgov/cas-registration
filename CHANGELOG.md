@@ -1,3 +1,13 @@
+# [1.15.0](https://github.com/bcgov/cas-registration/compare/v1.14.0...v1.15.0) (2024-11-27)
+
+### Features
+
+- add snackbar to external user access grid ([d2cab09](https://github.com/bcgov/cas-registration/commit/d2cab092db3aee6bac98648f62118421a7a32fa7))
+- attachments page with upload fields ([0cd5c45](https://github.com/bcgov/cas-registration/commit/0cd5c45261c46ad84571b16f1ffa778b33504b3c))
+- internal users can view access requests ([7e3514d](https://github.com/bcgov/cas-registration/commit/7e3514dbcea2a9148f820205743d4899b35e8084))
+- report verification ([b7314f3](https://github.com/bcgov/cas-registration/commit/b7314f3fca45700a46ed952650937e913383164d))
+- units displayed on production-data form ([c8364bb](https://github.com/bcgov/cas-registration/commit/c8364bbcaf1b950da365969d97b1fb1042ea2e34))
+
 # [1.14.0](https://github.com/bcgov/cas-registration/compare/v1.13.0...v1.14.0) (2024-11-15)
 
 ### Features
