@@ -5,23 +5,20 @@ import { actionHandler } from "@bciers/actions";
 import { Alert, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
 import { withTheme } from "@rjsf/core";
 import formTheme from "@bciers/components/form/theme/defaultTheme";
+import { RJSFSchema } from "@rjsf/utils";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 const Form = withTheme(formTheme);
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
 };
-
-type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
-type EmptyWithFuels = { fuels: [{ emissions: [{}] }] };
-type EmptyOnlyEmissions = { emissions: [{}] };
 
 interface Props {
   activityData: {
@@ -31,12 +28,10 @@ interface Props {
   activityFormData: object;
   currentActivity: { id: number; name: string; slug: string };
   taskListData: TaskListElement[];
-  defaultEmptySourceTypeState:
-    | EmptyWithUnits
-    | EmptyWithFuels
-    | EmptyOnlyEmissions;
   reportVersionId: number;
   facilityId: UUID;
+  initialJsonSchema: RJSFSchema;
+  initialSelectedSourceTypeIds: string[];
 }
 
 // 🧩 Main component
@@ -45,9 +40,10 @@ export default function ActivityForm({
   activityFormData,
   currentActivity,
   taskListData,
-  defaultEmptySourceTypeState,
   reportVersionId,
   facilityId,
+  initialJsonSchema,
+  initialSelectedSourceTypeIds,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
@@ -56,77 +52,45 @@ export default function ActivityForm({
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
   const [formState, setFormState] = useState(activityFormData as any);
-  const [jsonSchema, setJsonSchema] = useState({});
-  const [uiSchema, setUiSchema] = useState({});
-  const [previousActivityId, setPreviousActivityId] = useState<number>();
+  const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
+  const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
+    initialSelectedSourceTypeIds,
+  );
 
   const { activityId, sourceTypeMap } = activityData;
 
-  // Set useEffect dependency set from checked sourceTypes
-  const selectedSourceTypesArray = Object.values(sourceTypeMap).map(
-    (v) => formState?.[`${v}`] ?? false,
-  );
-  const numberOfSelectedSourceTypes = selectedSourceTypesArray.filter(
-    (x) => x === true,
-  ).length;
-  const dependencyArray = [numberOfSelectedSourceTypes, activityId];
-
   useEffect(() => {
-    let isFetching = true;
+    setJsonSchema(initialJsonSchema);
+    setFormState(activityFormData);
+    setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
+  }, [currentActivity.id]);
 
-    const fetchSchemaData = async (
-      selectedSourceTypes: string,
-      selectedKeys: number[],
-    ) => {
-      // fetch data from server
-      const schemaData = await actionHandler(
-        `reporting/build-form-schema?activity=${activityId}&report_version_id=${reportVersionId}${selectedSourceTypes}`,
-        "GET",
-        "",
-      );
-      setJsonSchema(safeJsonParse(schemaData).schema);
-      const sourceTypeFormData = (formState?.sourceTypes as any) || {};
-      // Add an empty sourceType object by default if there is only one sourceType
-      if (Object.entries(sourceTypeMap).length === 1) {
-        sourceTypeFormData[`${Object.values(sourceTypeMap)[0]}`] =
-          defaultEmptySourceTypeState;
-      } else {
-        // Add an empty sourceType for each selected Source Type (show first item by default)
-        selectedKeys.forEach((k: number) => {
-          if (!formState?.sourceTypes?.[`${sourceTypeMap[k]}`])
-            sourceTypeFormData[`${sourceTypeMap[k]}`] =
-              defaultEmptySourceTypeState;
-        });
-      }
-      if (isFetching)
-        setFormState({ ...formState, sourceTypes: sourceTypeFormData });
-      setPreviousActivityId(activityId);
-      setUiSchema(getUiSchema(currentActivity.slug));
-    };
+  const validator = customizeValidator({});
 
-    let selectedSourceTypes = "";
-    const selectedKeys = [];
-    for (const [key, value] of Object.entries(sourceTypeMap)) {
-      if (formState?.[`${value}`]) {
-        selectedSourceTypes = selectedSourceTypes + `&source_types[]=${key}`;
-        selectedKeys.push(Number(key));
-      }
-    }
-    if (previousActivityId !== activityId) setFormState(activityFormData);
-    fetchSchemaData(selectedSourceTypes, selectedKeys);
-    return () => {
-      isFetching = false;
-    };
-  }, dependencyArray);
-
-  const customFormats = {
-    // Add any needed custom formats here like the example below
-    // phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
+  const fetchSchemaData = async (sourceTypeIds: string[]) => {
+    let sourceTypeQueryString = "";
+    sourceTypeIds.map((id) => {
+      sourceTypeQueryString += `&source_types[]=${id}`;
+    });
+    const schema = await actionHandler(
+      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}${sourceTypeQueryString}`,
+      "GET",
+      "",
+    );
+    return schema;
   };
 
-  const validator = customizeValidator({ customFormats });
-
-  const handleFormChange = (c: any) => {
+  const handleFormChange = async (c: any) => {
+    const selectedSourceTypes = [];
+    // Checks for a change in source type selection & fetches the updated schema if they have changed.
+    for (const [k, v] of Object.entries(sourceTypeMap)) {
+      if (c.formData[`${v}`]) selectedSourceTypes.push(k);
+    }
+    if (selectedSourceTypes.length !== selectedSourceTypeIds.length) {
+      const schemaData = await fetchSchemaData(selectedSourceTypes);
+      setJsonSchema(safeJsonParse(schemaData).schema);
+      setSelectedSourceTypeIds(selectedSourceTypes);
+    }
     setFormState(c.formData);
   };
 
@@ -152,58 +116,45 @@ export default function ActivityForm({
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
-    // Apply new data to NextAuth JWT
-    console.log("SUBMITTED: ", JSON.stringify(data.formData, null, 2));
-    console.log("RESPONSE: ", response);
-
     if (response.error) {
       setErrorList([{ message: response.error }]);
       return;
     }
   };
 
-  const formIsLoading =
-    (Object.keys(jsonSchema).length === 0 &&
-      jsonSchema.constructor === Object) ||
-    previousActivityId !== activityId;
-
   return (
     <div className="w-full flex flex-row">
       <ReportingTaskList elements={taskListData} />
-      {formIsLoading ? (
-        "Loading Form..."
-      ) : (
-        <div className="w-full">
-          <Form
-            schema={jsonSchema}
-            fields={CUSTOM_FIELDS}
-            formData={formState}
-            uiSchema={uiSchema}
-            validator={validator}
-            onChange={handleFormChange}
-            onError={(e: any) => console.log("ERROR: ", e)}
-            onSubmit={submitHandler}
-          >
-            {errorList.length > 0 &&
-              errorList.map((e: any) => (
-                <Alert key={e.message} severity="error">
-                  {e?.stack ?? e.message}
-                </Alert>
-              ))}
-            <div className="flex justify-end gap-3">
-              {/* Disable the button when loading or when success state is true */}
-              <Button
-                variant="contained"
-                type="submit"
-                aria-disabled={isLoading}
-                disabled={isLoading}
-              >
-                {isSuccess ? "✅ Success" : "Submit"}
-              </Button>
-            </div>
-          </Form>
-        </div>
-      )}
+      <div className="w-full">
+        <Form
+          schema={jsonSchema}
+          fields={CUSTOM_FIELDS}
+          formData={formState}
+          uiSchema={getUiSchema(currentActivity.slug)}
+          validator={validator}
+          onChange={handleFormChange}
+          onError={(e: any) => console.log("ERROR: ", e)}
+          onSubmit={submitHandler}
+        >
+          {errorList.length > 0 &&
+            errorList.map((e: any) => (
+              <Alert key={e.message} severity="error">
+                {e?.stack ?? e.message}
+              </Alert>
+            ))}
+          <div className="flex justify-end gap-3">
+            {/* Disable the button when loading or when success state is true */}
+            <Button
+              variant="contained"
+              type="submit"
+              aria-disabled={isLoading}
+              disabled={isLoading}
+            >
+              {isSuccess ? "✅ Success" : "Submit"}
+            </Button>
+          </div>
+        </Form>
+      </div>
     </div>
   );
 }
