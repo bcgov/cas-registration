@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Above-ground storage tanks",
+  "default": { "emissions": [{}] },
   "properties": {
     "emissions": {
       "type": "array",

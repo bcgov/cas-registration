@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Field gas or process vent gas combustion at a linear facilities operation",
+  "default": { "units": [{ "fuels": [{ "emissions": [{}] }] }] },
   "properties": {
     "units": {
       "type": "array",

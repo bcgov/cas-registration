@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Coal when broken or exposed to the atmosphere during mining",
+  "default": { "emissions": [{}] },
   "properties": {
     "emissions": {
       "type": "array",

@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Fuel combustion by mobile equipment that is part of the facility",
+  "default": { "fuels": [{ "emissions": [{}] }] },
   "properties": {
     "fuels": {
       "title": "Fuel Data",

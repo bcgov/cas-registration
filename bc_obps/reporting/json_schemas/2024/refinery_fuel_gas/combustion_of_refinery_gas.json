@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Combustion of refinery fuel gas, still gas, flexigas or associated gas",
+  "default": { "fuels": [{ "emissions": [{}] }] },
   "properties": {
     "fuels": {
       "title": "Fuel Data",
