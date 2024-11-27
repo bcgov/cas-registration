@@ -1,4 +1,5 @@
 from typing import Literal, Tuple
+
 from django.http import HttpRequest
 
 from common.permissions import authorize
@@ -8,60 +9,44 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.report_service import ReportService
 from .router import router
 from ..models import ReportNewEntrantProduction, ReportNewEntrant, ReportNewEntrantEmissions, EmissionCategory
-from ..schema.report_new_entrant import ReportNewEntrantSchemaIn
-from ..service.emission_category_service import EmissionCategoryService
+from ..schema.report_new_entrant import ReportNewEntrantDataOut, ReportNewEntrantSchemaIn
 from ..service.report_new_entrant_service import ReportNewEntrantService
 
 
 @router.get(
     "report-version/{report_version_id}/new-entrant-data",
-    response={200: dict},
-    tags=["Emissions Report"],
-    description="Takes version_id (primary key of Report_Version model) and returns all new entrant data for that report version.",
-    # auth=authorize("approved_industry_user"),
+    response={200: ReportNewEntrantDataOut, custom_codes_4xx: Message},
+    description="""Retrieves the data for the new entrant data page, including selected products and emissions.""",
+    exclude_none=True,
 )
+@handle_http_errors()
 def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], dict]:
-    try:
-        # Retrieve new entrant data based on report_version_id
-        emissions = list(
-            ReportNewEntrantEmissions.objects.filter(
-                report_new_entrant__report_version=report_version_id
-            )
-            .select_related("emission_category", "report_new_entrant")
-            .order_by("emission_category_id")
-            .values("id", "emission_category_id", "report_new_entrant__id", "emission","emission_category__category_name", "emission_category__category_type")
-        )
-        regulated_products = ReportService.get_regulated_products_by_version_id(version_id=report_version_id) or {}
-        emission_category = EmissionCategory.objects.all().values()
-        selected_products = list(
-            ReportNewEntrantProduction.objects.filter(
-                report_new_entrant__report_version=report_version_id
-            )
-            .select_related("product", "report_new_entrant")
-            .order_by("product_id")
-            .values("id", "product__name", "report_new_entrant__id", "production_amount", "product_id")
-        )
+    # Fetch new entrant report details
+    report_new_entrant = ReportNewEntrant.objects.filter(report_version=report_version_id).first()
 
-        report_new_entrant = (
-            ReportNewEntrant.objects.filter(report_version=report_version_id)
-            .values()
-            .first()
-        )
+    # Fetch selected products
+    selected_products = ReportNewEntrantProduction.objects.filter(
+        report_new_entrant__report_version=report_version_id
+    ).select_related("product", "report_new_entrant")
 
-        response_data = {
-            "regulated_products": regulated_products,
-            "emissions": emissions,
-            "emission_category": list(emission_category),
-            "selected_products": selected_products,
-            "report_new_entrant": dict(report_new_entrant),
+    # Fetch allowed products
+    regulated_products = ReportService.get_regulated_products_by_version_id(version_id=report_version_id) or {}
 
-        }
+    # Fetch emissions
+    emissions = ReportNewEntrantEmissions.objects.filter(
+        report_new_entrant__report_version=report_version_id
+    ).select_related("emission_category")
 
-        return 200, response_data
+    # Fetch emission categories
+    emission_categories = EmissionCategory.objects.all()
 
-    except Exception as e:
-        # Log or print the error for debugging
-        print(f"An error occurred while retrieving new entrant data: {e}")
+    return 200, {
+        "report_new_entrant": report_new_entrant,
+        "selected_products": selected_products,
+        "allowed_products": regulated_products,
+        "emissions": emissions,
+        "emission_category": emission_categories,
+    }
 
 
 @router.post(
@@ -73,9 +58,9 @@ def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[
 )
 @handle_http_errors()
 def save_new_entrant_data(
-        request: HttpRequest,
-        report_version_id: int,
-        payload: ReportNewEntrantSchemaIn,
+    request: HttpRequest,
+    report_version_id: int,
+    payload: ReportNewEntrantSchemaIn,
 ) -> Literal[200]:
     ReportNewEntrantService.save_new_entrant_data(report_version_id, payload)
 
