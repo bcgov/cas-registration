@@ -68,8 +68,10 @@ export default async function ActivityInit({
 
   let sourceTypeQueryString = "";
   for (const [k, v] of Object.entries(activityDataObject.sourceTypeMap)) {
-    if (formData[`${v}`]) sourceTypeIds.push(k);
-    sourceTypeQueryString += `&source_types[]=${k}`;
+    if (formData[`${v}`]) {
+      sourceTypeIds.push(k);
+      sourceTypeQueryString += `&source_types[]=${k}`;
+    }
   }
 
   const fetchSchema = async () => {
