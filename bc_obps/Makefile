@@ -146,3 +146,8 @@ shell:
 mypy: ## run mypy static type checker with explicit package bases(useful in the absence of __init__.py files)
 mypy: ## We can use --show-traceback to show the full traceback in case of an error
 	$(POETRY_RUN) mypy . --explicit-package-bases $(ARGS)
+
+.PHONY: load_test_data
+load_test_data: ## Load test data into the database
+load_test_data:
+	$(POETRY_RUN) python $(MANAGE_PY) load_test_data

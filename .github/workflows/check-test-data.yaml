@@ -1,0 +1,22 @@
+# This file is used for tests that use the backend container
+# For tests that don't require containers to be built first, see test-code.yaml
+
+name: Check test data is valid
+
+on:
+  workflow_call:
+
+env:
+  PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+
+jobs:
+  pythontests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: Load test data
+        working-directory: ./bc_obps
+        run: make load_test_data
