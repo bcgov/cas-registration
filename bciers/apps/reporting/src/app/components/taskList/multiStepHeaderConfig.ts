@@ -1,6 +1,7 @@
 export const multiStepHeaderSteps = [
   "Operation Information",
-  "Facilities Information",
+  "Report Information",
+  "Additional Information",
   "Compliance Summary",
   "Sign-off & Submit",
 ];

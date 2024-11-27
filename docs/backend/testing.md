@@ -106,7 +106,20 @@ class MyModelTestCase(BaseTestCase):
 
 In this example, `MyModelTestCase` inherits from `BaseTestCase`, and the `field_data` list is defined with the expected field attributes. The `setUpTestData` method sets up the test data for the `test_object` model instance, allowing the tests to run using this data.
 
-## Endpoint Permission Testing
+## API Endpoint Tests
+
+Conventions:
+
+- API tests must be in the `tests/api` folder, and be named `<api_file_name>_api.py`
+- API endpoint tests must mock as much as possible, including service calls. We only want to test the code written in the endpoint files.
+
+API integration tests:
+
+- It can be useful to create "API integration" tests that test everything from the API endpoint to the database.
+- API integration tests are saved in the `tests/integration` folder.
+- Note: these tests are more expensive than unit tests, and are not meant to cover all edge cases.
+
+## API Endpoint Permission Testing
 
 Our endpoint permission testing framework automatically verifies access restrictions for each role on specified endpoints. By following a simple setup, we ensure new endpoints are correctly tested for role permissions, and the system will notify us if any endpoints lack coverage.
 
