@@ -13,6 +13,7 @@ import { withTheme } from "@rjsf/core";
 import formTheme from "@bciers/components/form/theme/defaultTheme";
 import { RJSFSchema } from "@rjsf/utils";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import debounce from "lodash.debounce";
 
 const Form = withTheme(formTheme);
 
@@ -132,7 +133,7 @@ export default function ActivityForm({
           formData={formState}
           uiSchema={getUiSchema(currentActivity.slug)}
           validator={validator}
-          onChange={handleFormChange}
+          onChange={debounce(handleFormChange, 200)}
           onError={(e: any) => console.log("ERROR: ", e)}
           onSubmit={submitHandler}
         >
