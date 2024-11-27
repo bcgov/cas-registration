@@ -27,6 +27,7 @@ class ReportProductModelTest(BaseTestCase):
             ("annual_production", "annual production", None, None),
             ("production_data_apr_dec", "production data apr dec", None, None),
             ("production_methodology", "production methodology", 10000, None),
+            ("production_methodology_description", "production methodology description", 10000, None),
             ("storage_quantity_start_of_period", "storage quantity start of period", None, None),
             ("storage_quantity_end_of_period", "storage quantity end of period", None, None),
             ("quantity_sold_during_period", "quantity sold during period", None, None),
@@ -53,3 +54,28 @@ class ReportProductModelTest(BaseTestCase):
                 facility_report=facility_report,
                 product=product,
             )
+
+    def test_allow_null_description_if_methodology_is_not_other(self):
+        facility_report = make_recipe("reporting.tests.utils.facility_report")
+        product = make_recipe("registration.tests.utils.regulated_product")
+
+        with pytest.raises(
+            ValidationError,
+            match="A value for production_methodology_description should be provided if the production_methodology is 'other'",
+        ):
+            make(
+                ReportProduct,
+                report_version=facility_report.report_version,
+                facility_report=facility_report,
+                product=product,
+                production_methodology=ReportProduct.ProductionMethodologyChoices.OTHER,
+            )
+
+        # This should not raise
+        make(
+            ReportProduct,
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            product=product,
+            production_methodology=ReportProduct.ProductionMethodologyChoices.OBPS_CALCULATOR,
+        )
