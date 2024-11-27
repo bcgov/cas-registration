@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock",
+  "default": { "emissions": [{}] },
   "properties": {
     "emissions": {
       "type": "array",

@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "General stationary combustion of waste without production of useful energy",
+  "default": { "units": [{ "fuels": [{ "emissions": [{}] }] }] },
   "properties": {
     "units": {
       "type": "array",
