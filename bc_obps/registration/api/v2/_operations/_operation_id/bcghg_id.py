@@ -18,7 +18,7 @@ from registration.schema.generic import Message
     response={200: OperationBoroIdOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Generates and returns a BCGHG ID for the operation if the operation doesn't already have a BCGHG ID.""",
-    auth=authorize('irc_director'),
+    auth=authorize('cas_director'),
 )
 @handle_http_errors()
 def operation_bcghg_id(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], BcGreenhouseGasId]:

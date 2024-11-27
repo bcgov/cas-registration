@@ -10,13 +10,9 @@ def irc_app_role_data(apps, schema_monitor):
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     AppRole = apps.get_model('registration', 'AppRole')
-    AppRole.objects.bulk_create(
-        [
-            AppRole(
-                role_name='cas_director',
-                role_description='Director user from the BC Government.',
-            )
-        ]
+    AppRole.objects.create(
+        role_name='cas_director',
+        role_description='Director user from the BC Government.',
     )
 
 
@@ -25,7 +21,7 @@ def reverse_irc_app_role_data(apps, schema_monitor):
     Remove data from erc.app_role
     '''
     AppRole = apps.get_model('registration', 'AppRole')
-    AppRole.objects.filter(role_name__in=['cas_director']).delete()
+    AppRole.objects.filter(role_name='cas_director').delete()
 
 
 class Migration(migrations.Migration):
