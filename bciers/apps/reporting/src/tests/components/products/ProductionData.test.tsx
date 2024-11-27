@@ -62,9 +62,9 @@ describe("The Production Data component", () => {
     expect(
       screen.getByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
     ).toHaveRole("spinbutton");
-    expect(screen.getByLabelText("Production Methodology*")).toHaveRole(
-      "textbox",
-    );
+    expect(
+      screen.getByLabelText("Production Quantification Methodology*"),
+    ).toHaveRole("textbox");
     expect(
       screen.getByLabelText(
         "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",
@@ -72,7 +72,7 @@ describe("The Production Data component", () => {
     ).toHaveRole("spinbutton");
     expect(
       screen.getByLabelText(
-        "Quantity in storage at the beginning of the compliance period [Dec 31], if applicable",
+        "Quantity in storage at the end of the compliance period [Dec 31], if applicable",
       ),
     ).toHaveRole("spinbutton");
     expect(
