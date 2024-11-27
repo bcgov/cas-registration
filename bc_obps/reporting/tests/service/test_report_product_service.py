@@ -27,7 +27,8 @@ class TestReportProductService:
                 "product_id": 29,  # Sugar
                 "annual_production": 1234,
                 "production_data_apr_dec": 56789,
-                "production_methodology": "test prod method",
+                "production_methodology": "other",
+                "production_methodology_description": "description",
                 "storage_quantity_start_of_period": 2345,
                 "storage_quantity_end_of_period": 9876,
                 "quantity_sold_during_period": 1234567890,
@@ -37,7 +38,7 @@ class TestReportProductService:
                 "product_id": 1,
                 "annual_production": 2,
                 "production_data_apr_dec": 3,
-                "production_methodology": "test prod method 2",
+                "production_methodology": "OBPS Calculator",
             },
         ]
 
@@ -57,7 +58,8 @@ class TestReportProductService:
         rp1 = ReportProduct.objects.get(facility_report=self.facility_report, product_id=1)
         assert rp1.annual_production == 2
         assert rp1.production_data_apr_dec == 3
-        assert rp1.production_methodology == "test prod method 2"
+        assert rp1.production_methodology == "OBPS Calculator"
+        assert rp1.production_methodology_description is None
         assert rp1.storage_quantity_start_of_period is None
         assert rp1.storage_quantity_end_of_period is None
         assert rp1.quantity_sold_during_period is None
@@ -66,7 +68,8 @@ class TestReportProductService:
         rp2 = ReportProduct.objects.get(facility_report=self.facility_report, product_id=29)
         assert rp2.annual_production == 1234
         assert rp2.production_data_apr_dec == 56789
-        assert rp2.production_methodology == "test prod method"
+        assert rp2.production_methodology == "other"
+        assert rp2.production_methodology_description == "description"
         assert rp2.storage_quantity_start_of_period == 2345
         assert rp2.storage_quantity_end_of_period == 9876
         assert rp2.quantity_sold_during_period == 1234567890
@@ -95,7 +98,7 @@ class TestReportProductService:
             "product_id": 10,
             "annual_production": 0,
             "production_data_apr_dec": 0,
-            "production_methodology": " ",
+            "production_methodology": "OBPS Calculator",
             "storage_quantity_start_of_period": 0,
             "storage_quantity_end_of_period": 0,
             "quantity_sold_during_period": 0,
@@ -116,7 +119,7 @@ class TestReportProductService:
             "product_id": 1,
             "annual_production": 0,
             "production_data_apr_dec": 0,
-            "production_methodology": " ",
+            "production_methodology": "OBPS Calculator",
             "storage_quantity_start_of_period": 0,
             "storage_quantity_end_of_period": 0,
             "quantity_sold_during_period": 0,
@@ -129,7 +132,7 @@ class TestReportProductService:
         rp1 = ReportProduct.objects.get(facility_report=self.facility_report, product_id=1)
         assert rp1.annual_production == 0
         assert rp1.production_data_apr_dec == 0
-        assert rp1.production_methodology == " "
+        assert rp1.production_methodology == "OBPS Calculator"
         assert rp1.storage_quantity_start_of_period == 0
         assert rp1.storage_quantity_end_of_period == 0
         assert rp1.quantity_sold_during_period == 0
@@ -153,7 +156,7 @@ class TestReportProductService:
             {
                 "annual_production": 1234,
                 "production_data_apr_dec": 56789,
-                "production_methodology": "test prod method",
+                "production_methodology": "OBPS Calculator",
             }
         ]
 
@@ -184,7 +187,8 @@ class TestReportProductService:
                     "product_id": 1,
                     "annual_production": 4,
                     "production_data_apr_dec": 4,
-                    "production_methodology": "test updated!",
+                    "production_methodology": "other",
+                    "production_methodology_description": "desc",
                 }
             ],
             another_user_guid,
@@ -204,19 +208,19 @@ class TestReportProductService:
                 "product_id": products[2].id,
                 "annual_production": 2,
                 "production_data_apr_dec": 3,
-                "production_methodology": "test prod method",
+                "production_methodology": "OBPS Calculator",
             },
             {
                 "product_id": products[0].id,
                 "annual_production": 2,
                 "production_data_apr_dec": 3,
-                "production_methodology": "test prod method",
+                "production_methodology": "OBPS Calculator",
             },
             {
                 "product_id": products[1].id,
                 "annual_production": 2,
                 "production_data_apr_dec": 3,
-                "production_methodology": "test prod method",
+                "production_methodology": "OBPS Calculator",
             },
         ]
         self.report_operation.regulated_products.set(products)

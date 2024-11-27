@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from registration.models.regulated_product import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
@@ -10,6 +11,10 @@ class ReportProduct(TimeStampedModel):
     A model storing production information for a single product.
     It belongs to a facility report.
     """
+
+    class ProductionMethodologyChoices(models.TextChoices):
+        OBPS_CALCULATOR = ("OBPS Calculator",)
+        OTHER = "other"
 
     report_version = models.ForeignKey(
         ReportVersion,
@@ -38,7 +43,16 @@ class ReportProduct(TimeStampedModel):
         db_comment="The total production amount for April to December period, expressed in the unit of this same model."
     )
     production_methodology = models.CharField(
-        max_length=10000, db_comment="The production methodlogy used to make this product"
+        max_length=10000,
+        choices=ProductionMethodologyChoices.choices,
+        default=ProductionMethodologyChoices.OBPS_CALCULATOR,
+        db_comment="The production methodoogy used to make this product",
+    )
+    production_methodology_description = models.CharField(
+        max_length=10000,
+        db_comment="In case the production methodology is 'other', industrial reporters are required to enter details about the methodology used.",
+        blank=True,
+        null=True,
     )
     storage_quantity_start_of_period = models.FloatField(
         db_comment="The quantity of product in storage at the beginning of the compliance period, if applicable",
@@ -70,5 +84,10 @@ class ReportProduct(TimeStampedModel):
                 fields=['facility_report', 'product'],
                 name="unique_report_product_per_product_and_facility_report",
                 violation_error_message="A FacilityReport can only have one ReportProduct per product",
+            ),
+            models.CheckConstraint(
+                name="other_methodology_must_have_description",
+                check=~Q(production_methodology="other", production_methodology_description__isnull=True),
+                violation_error_message="A value for production_methodology_description should be provided if the production_methodology is 'other'",
             ),
         ]
