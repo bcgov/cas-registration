@@ -22,7 +22,12 @@ export const getSignOffAndSubmitSteps: (
           link: `/reports/${versionId}/attachments`,
           isActive: activeIndex === 1,
         },
-        { type: "Page", title: "Final review", isActive: activeIndex === 3 },
+        {
+          type: "Page",
+          title: "Final review",
+          link: `/reports/${versionId}/final-review`,
+          isActive: activeIndex === 3,
+        },
         { type: "Page", title: "Sign-off", isActive: activeIndex === 4 },
       ],
     },
