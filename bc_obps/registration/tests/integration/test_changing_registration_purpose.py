@@ -172,7 +172,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
 
     ### Tests for Original Purpose = Reporting
 
-    def assert_reporting_to_potential_reporting(self):
+    def _test_reporting_to_potential_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to Potential Reporting.
         No data should be changed.
@@ -185,7 +185,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
         assert self.operation.activities == self.original_operation_record.activities
 
-    def assert_reporting_to_eio(self):
+    def _test_reporting_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to Electricity Import Operation.
         Expect the following to be removed: NAICS codes, reporting activities, process flow diagram, boundary map.
@@ -200,7 +200,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.documents.count() == 0
         assert self.operation.facilities.count() == 1
 
-    def assert_reporting_to_new_entrant(self):
+    def _test_reporting_to_new_entrant(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to New Entrant.
         No data should be removed; new data should be added specific to new entrants.
@@ -212,7 +212,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is not None
         )
 
-    def assert_reporting_to_opted_in(self):
+    def _test_reporting_to_opted_in(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to Opted-in Operation.
         No data should be removed; new data should be created specific to opted-ins.
@@ -229,7 +229,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
         assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
 
-    def assert_reporting_to_obps_regulated(self):
+    def _test_reporting_to_obps_regulated(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to OBPS Regulated.
         Should have at least one regulated product for OBPS Regulated - no products were required for Reporting..
@@ -243,7 +243,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
 
     ### Tests for Original Purpose = OBPS Regulated
 
-    def assert_regulated_to_reporting(self):
+    def _test_regulated_to_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from OBPS Regulated to Reporting.
         Regulated products should be removed; everything else should remain the same.
@@ -255,7 +255,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.secondary_naics_code == self.original_operation_record.secondary_naics_code
         assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
 
-    def assert_regulated_to_potential_reporting(self):
+    def _test_regulated_to_potential_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from OBPS Regulated to Potential Reporting.
         Regulated products should be removed; everything else should remain the same.
@@ -267,18 +267,41 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.secondary_naics_code == self.original_operation_record.secondary_naics_code
         assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
 
-    def assert_regulated_to_new_entrant(self):
+    def _test_regulated_to_new_entrant(self):
         """
         Tests operation registration data for situation where registration_purpose changes from OBPS Regulated to New Entrant.
+        No data should be removed; new data should be added specific to New Entrant information.
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
+        assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
+        assert (
+            self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is not None
+        )
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
+        assert self.operation.naics_code is not None
+        assert self.operation.naics_code == self.original_operation_record.naics_code
+        assert self.operation.secondary_naics_code == self.original_operation_record.secondary_naics_code
+        assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
+        assert self.operation.activities.count() > 0
+        assert self.operation.regulated_products.count() > 0
+        assert self.operation.activities == self.original_operation_record.activities
+        assert self.operation.regulated_products == self.original_operation_record.regulated_products
 
-    def assert_regulated_to_opted_in(self):
+    def _test_regulated_to_opted_in(self):
         """
         Tests operation registration data for situation where registration_purpose changes from OBPS Regulated to Opted-in Operation.
         No data should be removed; new data to add specific to opted-in operations.
         """
         assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+        assert self.operation.naics_code is not None
+        assert self.operation.naics_code == self.original_operation_record.naics_code
+        assert self.operation.secondary_naics_code == self.original_operation_record.secondary_naics_code
+        assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
+        assert self.operation.activities.count() > 0
+        assert self.operation.regulated_products.count() > 0
+        assert self.operation.activities == self.original_operation_record.activities
+        assert self.operation.regulated_products == self.original_operation_record.regulated_products
         assert self.operation.opt_in is True
         assert self.operation.opted_in_operation is not None
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
@@ -290,26 +313,227 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
         assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
 
-    def assert_regulated_to_eio(self):
+    def _test_regulated_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from OBPS Regulated to Electricity Import Operation.
+        Fields to be removed: NAICS codes, process flow diagram, boundary map, reporting activities.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-        assert self.operation.naics_code == self.original_operation_record.naics_code
-        assert self.operation.secondary_naics_code == self.original_operation_record.secondary_naics_code
-        assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
+        assert self.operation.naics_code is None
         assert self.operation.activities.count() == 0
         assert self.operation.documents.count() == 0
 
     ### Tests for Original Purpose = Opted-in
 
+    def _test_opted_in_to_reporting(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to Reporting Operation.
+        Should delete opted_in_operation_detail and regulated_products, and set opt_in to False.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert self.operation.opt_in is False
+        assert self.operation.opted_in_operation is None
+
+    def _test_opted_in_to_potential_reporting(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to Potential Reporting Operation.
+        Should delete opted_in_operation_detail and regulated_products, and set opt_in to False.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
+        assert self.operation.opt_in is False
+        assert self.operation.opted_in_operation is None
+
+    def _test_opted_in_to_regulated(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to OBPS Regulated.
+        Should delete opted_in_operation_detail and set opt_in to False.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
+        assert self.operation.opt_in is False
+        assert self.operation.opted_in_operation is None
+
+    def _test_opted_in_to_eio(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to Electricity Import Operation.
+        Should delete opted_in_operation_detail, NAICS codes, regulated_products, and set opt_in to False.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        assert self.operation.opt_in is False
+        assert self.operation.opted_in_operation is None
+        assert self.operation.naics_code is None
+        assert self.operation.secondary_naics_code is None
+        assert self.operation.tertiary_naics_code is None
+        assert self.operation.regulated_products.count() == 0
+
+    def _test_opted_in_to_new_entrant(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to New Entrant.
+        Should delete opted_in_operation_detail, set opt_in to False, and add data for date_of_first_shipment and document upload for new_entrant_application.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
+        assert self.operation.opt_in is False
+        assert self.operation.opted_in_operation is None
+        assert self.operation.date_of_first_shipment is not None
+        assert self.operation.documents.filter(type=DocumentType.get(name='new_entrant_application')) is not None
+
     ### Tests for Original Purpose = New Entrant
+
+    def _test_new_entrant_to_reporting(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from New Entrant to Reporting Operation.
+        Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.date_of_first_shipment is None
+        assert self.operation.activities is not None
+        assert self.operation.activities == self.original_operation_record.activities
+
+    def _test_new_entrant_to_potential_reporting(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from New Entrant to Potential Reporting Operation.
+        Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.date_of_first_shipment is None
+        assert self.operation.activities is not None
+        assert self.operation.activities == self.original_operation_record.activities
+
+    def _test_new_entrant_to_eio(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from New Entrant to Electricity Import Operation.
+        Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
+        In addition, data for NAICS codes, process flow diagram, boundary map, regulated products, and reporting activities should be removed.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        assert self.operation.documents.count() == 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.date_of_first_shipment is None
+        assert self.operation.activities.count() == 0
+        assert self.operation.naics_code is None
+        assert self.operation.secondary_naics_code is None
+        assert self.operation.tertiary_naics_code is None
+        assert self.operation.regulated_products.count() == 0
+
+    def _test_new_entrant_to_regulated(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from New Entrant to OBPS Regulated.
+        Data to be removed: date_of_first_shipment, new_entrant_application document. No data expected to be added.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
+        assert self.operation.date_of_first_shipment is None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.regulated_products.count() > 0
+        assert self.operation.activities.count() > 0
+        assert self.operation.naics_code is not None
+        assert self.operation.naics_code == self.original_operation_record.naics_code
+        assert self.operation.secondary_naics_code == self.original_operation_record.secondary_naics_code
+        assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
+
+    def _test_new_entrant_to_opted_in(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from New Entrant to Opted-in Operation.
+        Data to be removed: date_of_first_shipment, new_entrant_application document. Expect opted_in_operation_detail data to be added.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+        assert self.operation.date_of_first_shipment is None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.opt_in is True
+        assert self.operation.opted_in_operation is not None
+        assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
+        assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
+        assert self.operation.opted_in_operation.meets_entire_operation_requirements is False
+        assert self.operation.opted_in_operation.meets_section_6_emissions_requirements is True
+        assert self.operation.opted_in_operation.meets_naics_code_11_22_562_classification_requirements is False
+        assert self.operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product is True
+        assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
+        assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
 
     ### Tests for Original Purpose = EIO
 
+    def _test_eio_to_reporting(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to Reporting.
+        No data should be removed; must add data for NAICS codes, reporting activities, process flow diagram, and boundary map.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert self.operation.activities.count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.naics_code is not None
+
+    def _test_eio_to_regulated(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to OBPS Regulated.
+        No data should be removed; must add data for NAICS codes, regulated products, reporting activities, process flow diagram, and boundary map.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
+        assert self.operation.activities.count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.naics_code is not None
+        assert self.operation.regulated_products.count() > 0
+
+    def _test_eio_to_potential_reporting(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to Potential Reporting.
+        No data should be removed; must add data for NAICS codes, reporting activities, process flow diagram, and boundary map.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
+        assert self.operation.activities.count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.naics_code is not None
+
+    def _test_eio_to_new_entrant(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to New Entrant.
+        No data should be removed; must add data for NAICS codes, reporting activities, process flow diagram, boundary map, new entrant application doc, and date of first shipment.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
+        assert self.operation.naics_code is not None
+        assert self.operation.activities.count() > 0
+        assert self.operation.regulated_products.count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name='process_flow_diagram')) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')) is not None
+        assert (
+            self.operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')) is not None
+        )
+        assert self.operation.date_of_first_shipment is not None
+
+    def _test_eio_to_opted_in(self):
+        """
+        Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to Opted-in Operation.
+        No data should be removed; must add data for NAICS codes, reporting activities, process flow diagram, boundary map, and opted_in_operation_detail.
+        """
+        assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+        assert self.operation.naics_code is not None
+        assert self.operation.activities.count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name='process_flow_diagram')) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')) is not None
+        assert self.operation.opted_in is True
+        assert self.operation.opted_in_operation is not None
+        assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
+        assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
+        assert self.operation.opted_in_operation.meets_entire_operation_requirements is False
+        assert self.operation.opted_in_operation.meets_section_6_emissions_requirements is True
+        assert self.operation.opted_in_operation.meets_naics_code_11_22_562_classification_requirements is False
+        assert self.operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product is True
+        assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
+        assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
+
     ### Tests for Original Purpose = Potential Reporting
 
-    def assert_potential_reporting_to_reporting(self):
+    def _test_potential_reporting_to_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Potential Reporting to Reporting.
         No data should be removed.
@@ -320,7 +544,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
         assert self.operation.activities == self.original_operation_record.activities
 
-    def assert_potential_reporting_to_regulated(self):
+    def _test_potential_reporting_to_regulated(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Potential Reporting to OBPS Regulated.
         No data should be removed; regulated products should be added.
@@ -332,7 +556,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
         assert self.operation.activities == self.original_operation_record.activities
 
-    def assert_potential_reporting_to_new_entrant(self):
+    def _test_potential_reporting_to_new_entrant(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Potential Reporting to New Entrant.
         No data should be removed; additional information should be added specific to New Entrant information.
@@ -344,7 +568,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is not None
         )
 
-    def assert_potential_reporting_to_opted_in(self):
+    def _test_potential_reporting_to_opted_in(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Potential Reporting to Opted-in Operation.
         No data should be removed; additional information should be added specific to Opted-in information.
@@ -361,7 +585,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
         assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
 
-    def assert_potential_reporting_to_eio(self):
+    def _test_potential_reporting_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Potential Reporting to Electricity Import Operation.
         Fields that should be removed: NAICS codes, reporting activities, process flow diagram, boundary map.
@@ -374,14 +598,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.secondary_naics_code is None
         assert self.operation.tertiary_naics_code is None
 
-    @pytest.mark.parametrize(
-        "original_purpose",
-        [
-            Operation.Purposes.REPORTING_OPERATION,
-            Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-            Operation.Purposes.OBPS_REGULATED_OPERATION,
-        ],
-    )
+    @pytest.mark.parametrize("original_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("new_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("operation_type", [OperationTypes.SFO.value, OperationTypes.LFO.value])
     @pytest.mark.parametrize("was_submitted", ["Submitted", "Not Submitted"])
@@ -425,44 +642,98 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             case Operation.Purposes.REPORTING_OPERATION:
                 match new_purpose:
                     case Operation.Purposes.POTENTIAL_REPORTING_OPERATION:
-                        return self.assert_reporting_to_potential_reporting()
+                        return self._test_reporting_to_potential_reporting()
                     case Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-                        return self.assert_reporting_to_eio()
+                        return self._test_reporting_to_eio()
                     case Operation.Purposes.NEW_ENTRANT_OPERATION:
-                        return self.assert_reporting_to_new_entrant()
+                        return self._test_reporting_to_new_entrant()
                     case Operation.Purposes.OPTED_IN_OPERATION:
-                        return self.assert_reporting_to_opted_in()
+                        return self._test_reporting_to_opted_in()
                     case Operation.Purposes.OBPS_REGULATED_OPERATION:
-                        return self.assert_reporting_to_obps_regulated()
+                        return self._test_reporting_to_obps_regulated()
                     case _:
-                        return f"New Registration Purpose {new_purpose} not found"
+                        return (
+                            f"New Registration Purpose {new_purpose} not found for original purpose {original_purpose}"
+                        )
             case Operation.Purposes.OBPS_REGULATED_OPERATION:
                 match new_purpose:
                     case Operation.Purposes.REPORTING_OPERATION:
-                        return self.assert_regulated_to_reporting()
+                        return self._test_regulated_to_reporting()
                     case Operation.Purposes.POTENTIAL_REPORTING_OPERATION:
-                        return self.assert_regulated_to_potential_reporting()
+                        return self._test_regulated_to_potential_reporting()
                     case Operation.Purposes.NEW_ENTRANT_OPERATION:
-                        return self.assert_regulated_to_new_entrant()
+                        return self._test_regulated_to_new_entrant()
                     case Operation.Purposes.OPTED_IN_OPERATION:
-                        return self.assert_regulated_to_opted_in()
+                        return self._test_regulated_to_opted_in()
                     case Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-                        return self.assert_regulated_to_eio()
+                        return self._test_regulated_to_eio()
                     case _:
-                        return f"New Registration Purpose {new_purpose} not found"
+                        return (
+                            f"New Registration Purpose {new_purpose} not found for original purpose {original_purpose}"
+                        )
             case Operation.Purposes.POTENTIAL_REPORTING_OPERATION:
                 match new_purpose:
                     case Operation.Purposes.REPORTING_OPERATION:
-                        return self.assert_potential_reporting_to_reporting()
+                        return self._test_potential_reporting_to_reporting()
                     case Operation.Purposes.OBPS_REGULATED_OPERATION:
-                        return self.assert_potential_reporting_to_regulated()
+                        return self._test_potential_reporting_to_regulated()
                     case Operation.Purposes.NEW_ENTRANT_OPERATION:
-                        return self.assert_potential_reporting_to_new_entrant()
+                        return self._test_potential_reporting_to_new_entrant()
                     case Operation.Purposes.OPTED_IN_OPERATION:
-                        return self.assert_potential_reporting_to_opted_in()
+                        return self._test_potential_reporting_to_opted_in()
                     case Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-                        return self.assert_potential_reporting_to_eio()
+                        return self._test_potential_reporting_to_eio()
                     case _:
-                        return f"New Registration Purpose {new_purpose} not found"
+                        return (
+                            f"New Registration Purpose {new_purpose} not found for original purpose {original_purpose}"
+                        )
+            case Operation.Purposes.NEW_ENTRANT_OPERATION:
+                match new_purpose:
+                    case Operation.Purposes.REPORTING_OPERATION:
+                        return self._test_new_entrant_to_reporting()
+                    case Operation.Purposes.OBPS_REGULATED_OPERATION:
+                        return self._test_new_entrant_to_regulated()
+                    case Operation.Purposes.POTENTIAL_REPORTING_OPERATION:
+                        return self._test_new_entrant_to_potential_reporting()
+                    case Operation.Purposes.OPTED_IN_OPERATION:
+                        return self._test_new_entrant_to_opted_in()
+                    case Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+                        return self._test_new_entrant_to_eio()
+                    case _:
+                        return (
+                            f"New Registration Purpose {new_purpose} not found for original purpose {original_purpose}"
+                        )
+            case Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+                match new_purpose:
+                    case Operation.Purposes.REPORTING_OPERATION:
+                        return self._test_eio_to_reporting()
+                    case Operation.Purposes.OBPS_REGULATED_OPERATION:
+                        return self._test_eio_to_regulated()
+                    case Operation.Purposes.POTENTIAL_REPORTING_OPERATION:
+                        return self._test_eio_to_potential_reporting()
+                    case Operation.Purposes.NEW_ENTRANT_OPERATION:
+                        return self._test_eio_to_new_entrant()
+                    case Operation.Purposes.OPTED_IN_OPERATION:
+                        return self._test_eio_to_opted_in()
+                    case _:
+                        return (
+                            f"New Registration Purpose {new_purpose} not found for original purpose {original_purpose}"
+                        )
+            case Operation.Purposes.OPTED_IN_OPERATION:
+                match new_purpose:
+                    case Operation.Purposes.REPORTING_OPERATION:
+                        return self._test_opted_in_to_reporting()
+                    case Operation.Purposes.POTENTIAL_REPORTING_OPERATION:
+                        return self._test_opted_in_to_potential_reporting()
+                    case Operation.Purposes.OBPS_REGULATED_OPERATION:
+                        return self._test_opted_in_to_regulated()
+                    case Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+                        return self._test_opted_in_to_eio()
+                    case Operation.Purposes.NEW_ENTRANT_OPERATION:
+                        return self._test_opted_in_to_new_entrant()
+                    case _:
+                        return (
+                            f"New Registration Purpose {new_purpose} not found for original purpose {original_purpose}"
+                        )
             case _:
-                return "Original Registration Purpose not found"
+                return f"Original Registration Purpose {original_purpose} not found"
