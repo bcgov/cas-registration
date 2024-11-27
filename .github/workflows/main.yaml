@@ -58,10 +58,6 @@ jobs:
     needs: [build-backend, check-nx-affected]
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
-  check-test-data:
-    needs: [build-backend, check-nx-affected]
-    uses: ./.github/workflows/check-test-data.yaml
-    secrets: inherit
   test-administration-e2e:
     needs:
       [

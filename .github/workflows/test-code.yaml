@@ -74,3 +74,12 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: poetry run python manage.py makemigrations --check --dry-run
         working-directory: ./bc_obps
+
+  check-test-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: make load_test_data
+        working-directory: ./bc_obps
