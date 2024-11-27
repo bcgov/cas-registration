@@ -6,12 +6,11 @@ import { Alert, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { FuelFields } from "./customFields/FuelFieldComponent";
-import { FieldProps } from "@rjsf/utils";
+import { FieldProps, RJSFSchema } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
 import { withTheme } from "@rjsf/core";
 import formTheme from "@bciers/components/form/theme/defaultTheme";
-import { RJSFSchema } from "@rjsf/utils";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
 
@@ -70,7 +69,7 @@ export default function ActivityForm({
 
   const fetchSchemaData = async (sourceTypeIds: string[]) => {
     let sourceTypeQueryString = "";
-    sourceTypeIds.map((id) => {
+    sourceTypeIds.forEach((id) => {
       sourceTypeQueryString += `&source_types[]=${id}`;
     });
     const schema = await actionHandler(
