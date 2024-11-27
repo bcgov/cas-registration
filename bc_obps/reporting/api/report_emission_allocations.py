@@ -15,9 +15,9 @@ from reporting.models.report_product import ReportProduct
 from reporting.schema.report_product import ProductionDataOut
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 
-from reporting.schema.report_product_emission_allocation import AllocationDataOut
 from reporting.models import FacilityReport
 from reporting.service.emission_category_service import EmissionCategoryService
+
 
 @router.get(
     "report-version/{report_version_id}/facilities/{facility_id}/allocate-emissions",
@@ -31,35 +31,75 @@ from reporting.service.emission_category_service import EmissionCategoryService
 def get_emission_allocations(
     request: HttpRequest, report_version_id: int, facility_id: UUID
 ) -> Tuple[Literal[200], dict]:
-   
+
     # Step 1: Get the report facility emission production by category
     facility_report_id = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id).pk
     all_emmission_categories_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
-    print(f"Step 1: emmission categories total - {all_emmission_categories_totals}")
+    print(f"Step 1: emmission categories total - {all_emmission_categories_totals.items()}")
     # Step 2: Get reporting products for this report version; facility
-    # Step 3: Get reporting products values for this report version; facility
+    report_products = ReportProduct.objects.filter(
+        report_version_id=report_version_id, facility_report__facility_id=facility_id
+    )
+    # Step 3: Get existing allocations for this report version; facility
+    report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
+        report_version_id=report_version_id, report_product__facility_report__facility_id=facility_id
+    )
+    # Step 4: Construct the response data
+    report_product_emission_allocations_data = []
+    for category, total in all_emmission_categories_totals.items():
+        if (
+            category in ["lfo_excluded", "attributable_for_reporting", "attributable_for_threshold", "reporting_only"]
+            or total == 0
+        ):
+            continue  # Skip these special categories AND categories with no emissions
 
+        products = []
+        for rp in report_products:
+            try:
+                product_emission = report_product_emission_allocations.get(
+                    report_product=rp, emission_category__name=category
+                )
+            except ReportProductEmissionAllocation.DoesNotExist:
+                product_emission = None
+            products.append(
+                {
+                    "product_id": rp.product_id,
+                    "product_name": rp.product.name,
+                    "product_emission": product_emission.allocated_quantity if product_emission else 0,
+                }
+            )
+        report_product_emission_allocations_data.append(
+            {
+                "emission_category": category,
+                "products": products,
+                "emission_total": total,
+            }
+        )
 
     # TEMP: Mock the response data
-    report_product_emission_allocations= [
-            {
-            "emission_category": "flaring",
-            "products": [
-                { "product_id": 1, "product_name": "Product A", "product_emission": 500 },
-                { "product_id": 2, "product_name": "Product B", "product_emission": 500 }
-            ],
-            "emission_total": 1000
-            },
-            {
-            "emission_category": "fugitive",
-            "products": [
-                { "product_id": 1, "product_name": "Product A", "product_emission": 0 },
-                { "product_id": 2, "product_name": "Product B", "product_emission": 0 }
-            ],
-            "emission_total": 300
-            }
-        ]
-    return 200, {"report_product_emission_allocations": report_product_emission_allocations}
+    # temp_response = [
+    #     {
+    #         "emission_category": "flaring",
+    #         "products": [
+    #             {"product_id": 1, "product_name": "Product A", "product_emission": 500},
+    #             {"product_id": 2, "product_name": "Product B", "product_emission": 500},
+    #         ],
+    #         "emission_total": 1000,
+    #     },
+    #     {
+    #         "emission_category": "fugitive",
+    #         "products": [
+    #             {"product_id": 1, "product_name": "Product A", "product_emission": 0},
+    #             {"product_id": 2, "product_name": "Product B", "product_emission": 0},
+    #         ],
+    #         "emission_total": 300,
+    #     },
+    # ]
+    return 200, {
+        "report_product_emission_allocations": report_product_emission_allocations_data,
+        "facility_total_emissions": all_emmission_categories_totals["attributable_for_reporting"],
+    }
+
 
 @router.get(
     "Xreport-version/{report_version_id}/facilities/{facility_id}/allocate-emissions",
