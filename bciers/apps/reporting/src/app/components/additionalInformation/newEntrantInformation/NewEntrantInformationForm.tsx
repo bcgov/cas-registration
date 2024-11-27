@@ -7,11 +7,10 @@ import { useRouter } from "next/navigation";
 
 import { actionHandler } from "@bciers/actions";
 import {
-  createNewEntrantInformationSchema,
+  buildNewEntrantSchema,
   createNewEntrantInformationUiSchema,
 } from "@reporting/src/data/jsonSchema/newEntrantInformation";
 import { IChangeEvent } from "@rjsf/core";
-import { data } from "autoprefixer";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
@@ -34,8 +33,7 @@ export default function NewEntrantInformationForm({
 
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${versionId}/compliance-summary`;
-
-  const schema = createNewEntrantInformationSchema(products, emissions);
+  const schema = buildNewEntrantSchema(products, emissions);
   const uiSchema = createNewEntrantInformationUiSchema(products);
   const taskListElements: TaskListElement[] = [
     {
@@ -68,10 +66,9 @@ export default function NewEntrantInformationForm({
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
     });
-    console.log("data", data);
-    // if (response) {
-    //   router.push(saveAndContinueUrl);
-    // }
+    if (response) {
+      router.push(saveAndContinueUrl);
+    }
   };
 
   return (

@@ -1,8 +1,7 @@
 from django.db import transaction
-from django.forms import model_to_dict
 
 from registration.models import RegulatedProduct
-from reporting.models import ReportVersion, ReportNewEntrant, ReportNewEntrantProduction, EmissionCategory
+from reporting.models import ReportVersion, ReportNewEntrant, ReportNewEntrantProduction
 from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
 
 
@@ -11,40 +10,7 @@ class ReportNewEntrantService:
     def get_new_entrant_data(cls, report_version_id: int) -> dict:
         report_new_entrant = ReportNewEntrant.objects.filter(report_version_id=report_version_id).first()
 
-        products = ReportNewEntrantProduction.objects.filter(
-            report_new_entrant_id__in=ReportNewEntrant.objects.filter(report_version_id=report_version_id).values_list(
-                'id', flat=True)
-        ).values()
-
-        result_data = {'selected_products': list(products)}
-
-        if not report_new_entrant:
-            result_data['emissions'] = [
-                {
-                    "id": category.id,
-                    "category_name": category.category_name,
-                    "category_type": category.category_type,
-                    "emission_amount": None,
-                }
-                for category in EmissionCategory.objects.all()
-            ]
-        else:
-            emissions_map = {
-                emission.emission_category.id: emission.emission
-                for emission in report_new_entrant.report_new_entrant_emissions.all()
-            }
-
-            result_data['emissions'] = [
-                {
-                    "id": category.id,
-                    "category_name": category.category_name,
-                    "category_type": category.category_type,
-                    "emission_amount": emissions_map.get(category.id),
-                }
-                for category in EmissionCategory.objects.all()
-            ]
-
-        return result_data
+        return report_new_entrant
 
     @classmethod
     @transaction.atomic
