@@ -68,8 +68,8 @@ export default function ContactForm({
           ? "registration/v2/contacts"
           : `registration/v2/contacts/${formState.id}`;
         const pathToRevalidate = isCreatingState
-          ? "/v2/contacts"
-          : `/v2/contacts/${formState.id}`;
+          ? "/contacts"
+          : `/contacts/${formState.id}`;
         const body = {
           ...data.formData,
         };
