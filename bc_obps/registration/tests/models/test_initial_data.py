@@ -12,7 +12,7 @@ from registration.models import (
 
 class TestInitialData(TestCase):
     def test_app_role_initial_data(self):
-        expected_roles = sorted(['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user'])
+        expected_roles = sorted(['cas_admin', 'cas_analyst', 'cas_pending', 'cas_director', 'industry_user'])
         existing_roles = sorted(list(AppRole.objects.values_list('role_name', flat=True)))
 
         self.assertEqual(len(existing_roles), len(expected_roles))

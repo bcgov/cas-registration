@@ -2,17 +2,14 @@ import Tiles from "@bciers/components/navigation/Tiles";
 import Note from "@bciers/components/layout/Note";
 import { fetchDashboardData } from "@bciers/actions";
 import { ContentItem } from "@bciers/types/tiles";
-import { auth } from "@/dashboard/auth";
-
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import evalDashboardRules from "@bciers/utils/src/evalDashboardRules";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 export default async function Page() {
-  const session = await auth();
-
-  const role = session?.user?.app_role || "";
+  const role = await getSessionRole();
   const isIndustryUser = role.includes("industry");
 
   let data: ContentItem[] = [];
