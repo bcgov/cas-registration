@@ -2,7 +2,7 @@ from typing import Literal
 from uuid import UUID
 from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationSchemaIn
 from registration.decorators import handle_http_errors
-from service.error_service import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from common.permissions import authorize
 from django.http import HttpRequest
 from reporting.schema.generic import Message
@@ -35,29 +35,27 @@ def get_emission_allocations(
     # Step 1: Get the report facility emission production by category
     facility_report_id = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id).pk
     all_emmission_categories_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
-    print(f"Step 1: emmission categories total - {all_emmission_categories_totals.items()}")
+
     # Step 2: Get reporting products for this report version; facility
     report_products = ReportProduct.objects.filter(
         report_version_id=report_version_id, facility_report__facility_id=facility_id
     )
+
     # Step 3: Get existing allocations for this report version; facility
     report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
         report_version_id=report_version_id, report_product__facility_report__facility_id=facility_id
     )
+
     # Step 4: Construct the response data
     report_product_emission_allocations_data = []
     for category, total in all_emmission_categories_totals.items():
-        if (
-            category in ["lfo_excluded", "attributable_for_reporting", "attributable_for_threshold", "reporting_only"]
-            or total == 0
-        ):
-            continue  # Skip these special categories AND categories with no emissions
-
+        if category in ["lfo_excluded", "attributable_for_reporting", "attributable_for_threshold", "reporting_only"]:
+            continue  # Skip these special categories
         products = []
         for rp in report_products:
             try:
                 product_emission = report_product_emission_allocations.get(
-                    report_product=rp, emission_category__name=category
+                    report_product=rp, emission_category__category_name=category
                 )
             except ReportProductEmissionAllocation.DoesNotExist:
                 product_emission = None
