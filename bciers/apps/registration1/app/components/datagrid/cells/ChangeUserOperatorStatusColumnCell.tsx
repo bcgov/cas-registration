@@ -22,7 +22,7 @@ const handleUpdateStatus = async (
   roleUpdate: UserOperatorRoles,
 ) => {
   return actionHandler(
-    `registration/v2/user-operators/${userOperatorId}/update-status`,
+    `registration/user-operators/${userOperatorId}/update-status`,
     "PUT",
     "",
     {
@@ -99,5 +99,4 @@ const ChangeUserOperatorStatusColumnCell = (
     </Stack>
   );
 };
-
 export default ChangeUserOperatorStatusColumnCell;
