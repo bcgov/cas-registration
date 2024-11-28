@@ -10,7 +10,10 @@ export const tasklistData: TaskListElement[] = [
         type: "Subsection",
         title: "Activities information",
         isExpanded: true,
-        elements: [{ type: "Page", title: "Mobile combustion" }],
+        elements: [
+          { type: "Page", title: "Mobile combustion" },
+          { type: "Page", title: "Alumina combustion" },
+        ],
       },
       { type: "Page", title: "Non-attributable emissions" },
       { type: "Page", title: "Emissions Summary" },

@@ -574,6 +574,10 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Emissions Factor Methodology'),
             Methodology(name='WCI.203(f)(1)'),
             Methodology(name='WCI.203(f)(2)'),
+            Methodology(name='Anode Consumption - Prebaked'),
+            Methodology(name='Anode Consumption - Soderberg'),
+            Methodology(name='Anode/Cathode Baking'),
+            Methodology(name='Green Coke Calcination'),
         ]
     )
 
@@ -608,6 +612,10 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Emissions Factor Methodology',
             'WCI.203(f)(1)',
             'WCI.203(f)(2)',
+            'Anode Consumption - Prebaked',
+            'Anode Consumption - Soderberg',
+            'Anode/Cathode Baking',
+            'Green Coke Calcination',
         ]
     ).delete()
 
@@ -689,6 +697,50 @@ def init_reporting_field_data(apps, schema_monitor):
                 field_name='Annual Weighted Average Molecular Weight', field_type='number', field_units=None
             ),
             ReportingField(field_name='Molar Volume Conversion Factor', field_type='number', field_units=None),
+            ReportingField(field_name='Sulphur Content in Baked Anodes', field_type='number', field_units=None),
+            ReportingField(field_name='Ash Content in Baked Anodes', field_type='number', field_units=None),
+            ReportingField(field_name='Emissions of benzene-soluble matter', field_type='number', field_units=None),
+            ReportingField(field_name='Average binder (pitch) content in paste', field_type='number', field_units=None),
+            ReportingField(field_name='Sulphur content in pitch', field_type='number', field_units=None),
+            ReportingField(field_name='Ash content in pitch', field_type='number', field_units=None),
+            ReportingField(field_name='Hydrogen content in pitch', field_type='number', field_units=None),
+            ReportingField(field_name='Sulphur content in calcinated coke', field_type='number', field_units=None),
+            ReportingField(field_name='Ash content in calcinated coke', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Carbon in skimmed dust from Søderberg cells', field_type='number', field_units=None
+            ),
+            ReportingField(
+                field_name='Packing coke consumption per tonne of baked anode', field_type='number', field_units=None
+            ),
+            ReportingField(field_name='Baked anode production', field_type='number', field_units=None),
+            ReportingField(field_name='Ash content in packing coke', field_type='number', field_units=None),
+            ReportingField(field_name='Sulphur content in packing coke', field_type='number', field_units=None),
+            ReportingField(field_name='Green anode consumption', field_type='number', field_units=None),
+            ReportingField(field_name='Pitch content in green anode', field_type='number', field_units=None),
+            ReportingField(field_name='Recovered tar', field_type='number', field_units=None),
+            ReportingField(field_name='Green coke feed', field_type='number', field_units=None),
+            ReportingField(field_name='Humidity in green coke feed', field_type='number', field_units=None),
+            ReportingField(field_name='Volatiles in green coke feed', field_type='number', field_units=None),
+            ReportingField(field_name='Sulphur content in green coke feed', field_type='number', field_units=None),
+            ReportingField(field_name='Calcinated coke produced', field_type='number', field_units=None),
+            ReportingField(field_name='Under-calcinated coke produced', field_type='number', field_units=None),
+            ReportingField(field_name='Coke dust emissions', field_type='number', field_units=None),
+            ReportingField(field_name='Anode Effect minutes per cell-day', field_type='number', field_units=None),
+            ReportingField(field_name='Anode Effect Frequency', field_type='number', field_units=None),
+            ReportingField(field_name='Anode Effect Duration', field_type='number', field_units=None),
+            ReportingField(field_name='Frequency and Duration Methodology', field_type='string', field_units=None),
+            ReportingField(field_name='Slope Coefficient', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Last Date of Slope Coefficients Measurement', field_type='string', field_units=None
+            ),
+            ReportingField(field_name='Anode Effect Overvoltage Factor', field_type='number', field_units=None),
+            ReportingField(field_name='Potline Overvoltage', field_type='number', field_units=None),
+            ReportingField(field_name='Current Efficiency', field_type='number', field_units=None),
+            ReportingField(field_name='Overvoltage Methodology', field_type='string', field_units=None),
+            ReportingField(field_name='Overvoltage Emission Factor', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Last Date of Overvoltage Emission Factor Measurement', field_type='string', field_units=None
+            ),
         ]
     )
 
@@ -717,6 +769,42 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
             'Annual Weighted Average Carbon Content',
             'Annual Weighted Average Molecular Weight',
             'Molar Volume Conversion Factor',
+            'Sulphur Content in Baked Anodes',
+            'Ash Content in Baked Anodes',
+            'Emissions of benzene-soluble matter',
+            'Average binder (pitch) content in paste',
+            'Sulphur content in pitch',
+            'Ash content in pitch',
+            'Hydrogen content in pitch',
+            'Sulphur content in calcinated coke',
+            'Ash content in calcinated coke',
+            'Carbon in skimmed dust from Søderberg cells',
+            'Packing coke consumption per tonne of baked anode',
+            'Baked anode production',
+            'Ash content in packing coke',
+            'Sulphur content in packing coke',
+            'Green anode consumption',
+            'Pitch content in green anode',
+            'Recovered tar',
+            'Green coke feed',
+            'Humidity in green coke feed',
+            'Volatiles in green coke feed',
+            'Sulphur content in green coke feed',
+            'Calcinated coke produced',
+            'Under-calcinated coke produced',
+            'Coke dust emissions',
+            'Anode Effect minutes per cell-day',
+            'Anode Effect Frequency',
+            'Anode Effect Duration',
+            'Frequency and Duration Methodology',
+            'Slope Coefficient',
+            'Last Date of Slope Coefficients Measurement',
+            'Anode Effect Overvoltage Factor',
+            'Potline Overvoltage',
+            'Current Efficiency',
+            'Overvoltage Methodology',
+            'Overvoltage Emission Factor',
+            'Last Date of Overvoltage Emission Factor Measurement',
         ]
     ).delete()
 
