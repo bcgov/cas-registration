@@ -5,7 +5,7 @@
       "name": "Internal BCiers Dashboard",
       "data": {
         "dashboard": "bciers",
-        "access_roles": ["cas_admin", "cas_analyst"],
+        "access_roles": ["cas_admin", "cas_analyst", "cas_director"],
         "tiles": [
           {
             "title": "Administration",
@@ -43,7 +43,13 @@
               },
               {
                 "title": "Transfer an operation or facility",
-                "href": "/registration/transfer"
+                "href": "/registration/transfer",
+                "conditions": [
+                  {
+                    "allowedRoles": ["cas_analyst"],
+                    "value": true
+                  }
+                ]
               }
             ]
           },

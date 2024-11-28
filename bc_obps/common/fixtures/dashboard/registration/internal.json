@@ -5,7 +5,7 @@
       "name": "Internal Analyst Registration Dashboard",
       "data": {
         "dashboard": "registration",
-        "access_roles": ["cas_analyst"],
+        "access_roles": ["cas_analyst", "cas_director"],
         "tiles": [
           {
             "title": "Transfers",

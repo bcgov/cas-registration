@@ -201,11 +201,6 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "update_operation_status",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {"facility_id": mock_uuid}},
-            {"method": "patch", "endpoint_name": "operation_boro_id", "kwargs": {"operation_id": mock_uuid}},
-            {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {"operation_id": mock_uuid}},
-            {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {'facility_id': mock_uuid}},
-            {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {'operation_id': mock_uuid}},
             {"method": "get", "endpoint_name": "list_transfer_events"},
         ],
         "approved_authorized_roles": [
@@ -278,6 +273,11 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"user_operator_id": mock_uuid},
             },
         ],
+        "cas_director": [
+            {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {"facility_id": mock_uuid}},
+            {"method": "patch", "endpoint_name": "operation_boro_id", "kwargs": {"operation_id": mock_uuid}},
+            {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {"operation_id": mock_uuid}},
+        ],
     }
 
     @classmethod
@@ -328,7 +328,6 @@ class TestEndpointPermissions(TestCase):
         ]
         all_url_patterns = get_resolver().url_patterns[1].url_patterns  # index 1 is the API route
         valid_urls = [pattern.name for pattern in all_url_patterns if pattern.name not in exclusion_list]
-
         # Flatten endpoints_to_test to extract all endpoint names that are permission-tested
         tested_endpoints = {
             item["endpoint_name"] for role, configs in cls.endpoints_to_test.items() for item in configs

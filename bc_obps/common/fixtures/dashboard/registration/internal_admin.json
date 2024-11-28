@@ -5,7 +5,7 @@
       "name": "Internal Admin Registration Dashboard",
       "data": {
         "dashboard": "registration",
-        "access_roles": ["cas_admin"],
+        "access_roles": ["cas_admin", "cas_director"],
         "tiles": [
           {
             "title": "Transfers",

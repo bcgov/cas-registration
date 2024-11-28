@@ -62,7 +62,11 @@ const evaluateCondition = async (condition: any): Promise<boolean> => {
     const apiEndpoint = condition.api;
     const data = await actionHandler(apiEndpoint, "GET");
     const fieldValue = data[condition.field];
-
+    if (condition.allowedRoles) {
+      return (
+        Array.isArray(condition.value) && condition.value.includes(fieldValue)
+      );
+    }
     switch (condition.operator) {
       case "equals":
         return fieldValue === condition.value;

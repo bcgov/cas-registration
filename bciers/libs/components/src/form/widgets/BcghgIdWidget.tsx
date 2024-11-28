@@ -33,7 +33,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({ id, value, formContext }) => {
     );
   }
 
-  if (formContext?.isInternalUser && !bcghgId) {
+  if (formContext?.isCasDirector && !bcghgId) {
     return (
       <Button
         variant="outlined"

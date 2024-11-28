@@ -33,7 +33,9 @@ class AppRole(BaseModel):
         """
         try:
             return list(
-                AppRole.objects.filter(role_name__in=["cas_admin", "cas_analyst"]).values_list("role_name", flat=True)
+                AppRole.objects.filter(role_name__in=["cas_admin", "cas_analyst", "cas_director"]).values_list(
+                    "role_name", flat=True
+                )
             )
         except Exception:
             return []

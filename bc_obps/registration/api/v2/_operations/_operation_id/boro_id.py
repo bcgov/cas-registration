@@ -18,7 +18,7 @@ from registration.schema.generic import Message
     response={200: OperationBoroIdOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Generates and returns a BORO ID for the operation if the operation is of an appropriate type and status and doesn't already have a BORO ID.""",
-    auth=authorize('authorized_irc_user'),
+    auth=authorize('cas_director'),
 )
 @handle_http_errors()
 def operation_boro_id(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], BcObpsRegulatedOperation | None]:

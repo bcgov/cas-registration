@@ -38,6 +38,9 @@ describe("Operator component", () => {
     }).rejects.toThrow("Failed to retrieve operator information");
   });
   it("renders the appropriate error component when getBusinessStructures fails", async () => {
+    auth.mockReturnValueOnce({
+      user: { app_role: "industry_user_admin" },
+    });
     getCurrentOperator.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
     });
@@ -49,6 +52,10 @@ describe("Operator component", () => {
     }).rejects.toThrow("Failed to retrieve business structure information");
   });
   it("renders the operator form with form data", async () => {
+    // Mock auth (which is different from session data)
+    auth.mockReturnValueOnce({
+      user: { app_role: "industry_user_admin" },
+    });
     // Mock the session data
     mockUseSession();
     getCurrentOperator.mockReturnValueOnce({
@@ -108,6 +115,9 @@ describe("Operator component", () => {
     expect(screen.getByText(/BC Corporation/i)).toBeVisible();
   });
   it("renders the operator form for adding a new operator", async () => {
+    auth.mockReturnValueOnce({
+      user: { app_role: "industry_user_admin" },
+    });
     // Mock the session data
     mockUseSession();
     // Mock getBusinessStructures for create mode

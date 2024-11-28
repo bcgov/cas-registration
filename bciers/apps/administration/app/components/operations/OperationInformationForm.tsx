@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+
 import { UUID } from "crypto";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
@@ -12,11 +12,12 @@ import {
   OperationInformationPartialFormData,
 } from "./types";
 import { actionHandler } from "@bciers/actions";
-import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 import {
   RegistrationPurposes,
   regulatedOperationPurposes,
 } from "apps/registration/app/components/operations/registration/enums";
+import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 const OperationInformationForm = ({
   formData,
@@ -32,12 +33,7 @@ const OperationInformationForm = ({
   const router = useRouter();
 
   // To get the user's role from the session
-  const { data: session } = useSession();
-  const role = session?.user?.app_role ?? "";
-  const isAuthorizedAdminUser = [
-    FrontEndRoles.CAS_ADMIN,
-    FrontEndRoles.CAS_ANALYST,
-  ].includes(role as FrontEndRoles);
+  const role = useSessionRole();
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -74,7 +70,7 @@ const OperationInformationForm = ({
 
   return (
     <SingleStepTaskListForm
-      allowEdit={role === FrontEndRoles.INDUSTRY_USER_ADMIN}
+      allowEdit={!role.includes("cas_")}
       mode={FormMode.READ_ONLY}
       error={error}
       schema={schema}
@@ -84,9 +80,12 @@ const OperationInformationForm = ({
       onCancel={() => router.push("/operations")}
       formContext={{
         operationId,
-        isInternalUser: isAuthorizedAdminUser,
         isRegulatedOperation: regulatedOperationPurposes.includes(
           formData.registration_purpose as RegistrationPurposes,
+        ),
+        isCasDirector: role === FrontEndRoles.CAS_DIRECTOR,
+        isEio: formData.registration_purpose?.match(
+          RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),
         ),
         status: formData.status,
       }}
