@@ -7,7 +7,7 @@ import { actionHandler } from "@bciers/actions";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 import { FacilityTypes, FrontEndRoles } from "@bciers/utils/src/enums";
 import { FormMode } from "@bciers/utils/src/enums";
-import { useSession } from "next-auth/react";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 export interface FacilityFormData {
   [key: string]: any;
@@ -27,8 +27,7 @@ export default function FacilityForm({
   isCreating,
 }: Readonly<Props>) {
   // To get the user's role from the session
-  const { data: session } = useSession();
-  const role = session?.user?.app_role ?? "";
+  const role = useSessionRole();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);

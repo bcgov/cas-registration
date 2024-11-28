@@ -4,9 +4,10 @@ import { RJSFSchema } from "@rjsf/utils";
 import getCurrentOperator from "./getCurrentOperator";
 import getBusinessStructures from "./getBusinessStructures";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
-import { auth } from "@/dashboard/auth";
+
 import getOperator from "./getOperator";
 import { UUID } from "crypto";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 export const createOperatorSchema = (
   schema: RJSFSchema,
@@ -90,9 +91,7 @@ export default async function OperatorPage({
   isCreating = false,
   operatorId,
 }: { isCreating?: boolean; operatorId?: UUID } = {}) {
-  const session = await auth();
-
-  const role = session?.user?.app_role;
+  const role = await getSessionRole();
 
   let operatorFormData: { [key: string]: any } | { error: string } = {};
 
