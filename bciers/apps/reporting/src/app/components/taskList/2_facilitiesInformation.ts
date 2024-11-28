@@ -2,10 +2,18 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 
 export type ActivityData = { id: number; name: string; slug: string };
 
+export enum ActivePage {
+  "NonAttributableEmission" = 1,
+  "EmissionSummary",
+  "ProductionData",
+  "AllocationOfEmissions",
+}
+
 export const getFacilitiesInformationTaskList = (
   versionId: number,
   facilityId: string,
   orderedActivities: any[],
+  activeIndex?: ActivePage | number,
 ) => {
   const taskListData: TaskListElement[] = [
     {
@@ -21,14 +29,27 @@ export const getFacilitiesInformationTaskList = (
           }) as TaskListElement,
       ),
     },
-    { type: "Page", title: "Non-attributable Emissions" },
-    { type: "Page", title: "Emissions Summary" },
+    {
+      type: "Page",
+      title: "Non-attributable Emissions",
+      isActive: activeIndex === ActivePage.NonAttributableEmission,
+    },
+    {
+      type: "Page",
+      title: "Emissions Summary",
+      isActive: activeIndex === ActivePage.EmissionSummary,
+    },
     {
       type: "Page",
       title: "Production Data",
       link: `/reports/${versionId}/facilities/${facilityId}/production-data`,
+      isActive: activeIndex === ActivePage.ProductionData,
     },
-    { type: "Page", title: "Allocation of Emissions" },
+    {
+      type: "Page",
+      title: "Allocation of Emissions",
+      isActive: activeIndex === ActivePage.AllocationOfEmissions,
+    },
   ];
 
   return taskListData;

@@ -7,6 +7,7 @@ import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productio
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+import { useRouter } from "next/navigation";
 
 interface Props {
   report_version_id: number;
@@ -25,6 +26,10 @@ const ProductionDataForm: React.FC<Props> = ({
   initialData,
   taskListElements,
 }) => {
+  const router = useRouter();
+
+  const saveAndContinueUrl = `reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`;
+
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
     production_data: initialData,
@@ -55,6 +60,8 @@ const ProductionDataForm: React.FC<Props> = ({
       facility_id,
       data.production_data,
     );
+
+    router.push(saveAndContinueUrl);
   };
 
   return (

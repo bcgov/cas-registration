@@ -1,8 +1,12 @@
+import { useRouter } from "next/navigation";
 import { postProductionData } from "@bciers/actions/api";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { act, render } from "@testing-library/react";
 
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+}));
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
   default: vi.fn(),
 }));
@@ -14,6 +18,7 @@ const mockMultiStepFormWithTaskList = MultiStepFormWithTaskList as ReturnType<
   typeof vi.fn
 >;
 const mockPostProductionData = postProductionData as ReturnType<typeof vi.fn>;
+const mockRouter = useRouter as ReturnType<typeof vi.fn>;
 
 describe("The ProductionDataForm component", () => {
   beforeEach(() => {
@@ -21,6 +26,9 @@ describe("The ProductionDataForm component", () => {
   });
 
   it("calls the postProductionData method on submit", async () => {
+    const mockPush = vi.fn();
+    mockRouter.mockReturnValue({ push: mockPush });
+
     render(
       <ProductionDataForm
         allowedProducts={[]}
@@ -35,6 +43,9 @@ describe("The ProductionDataForm component", () => {
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
     await calledProps.onSubmit({ formData: { production_data: "test" } });
     expect(mockPostProductionData).toHaveBeenCalledWith(1000, "abcd", "test");
+    expect(mockPush).toHaveBeenCalledWith(
+      "reports/1000/facilities/abcd/allocation-of-emissions",
+    );
   });
 
   it("on change, adds an item to the form data when a checkbox is checked", async () => {
