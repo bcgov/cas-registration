@@ -179,7 +179,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilitiesLink).toHaveAttribute(
       "href",
-      "operations/2/facilities?operations_title=Operation+2",
+      "/operations/2/facilities?operations_title=Operation+2",
     );
   });
 
@@ -194,7 +194,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLink).toHaveAttribute(
       "href",
-      "operations/4/facilities/facility-test-id?operations_title=Operation+4&facilities_title=Facility+Test+Name",
+      "/operations/4/facilities/facility-test-id?operations_title=Operation+4&facilities_title=Facility+Test+Name",
     );
   });
 
@@ -209,7 +209,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLinks[0]).toHaveAttribute(
       "href",
-      "operations/1/facilities/add-facility?operations_title=Operation+1",
+      "/operations/1/facilities/add-facility?operations_title=Operation+1",
     );
   });
 
@@ -224,11 +224,11 @@ describe("OperationsDataGrid component", () => {
 
     expect(operationInfoLinks[0]).toHaveAttribute(
       "href",
-      "../administration/operations/1?operations_title=Operation 1",
+      "/operations/1?operations_title=Operation 1",
     );
     expect(operationInfoLinks[1]).toHaveAttribute(
       "href",
-      "../administration/operations/2?operations_title=Operation 2",
+      "/operations/2?operations_title=Operation 2",
     );
   });
 
@@ -246,10 +246,7 @@ describe("OperationsDataGrid component", () => {
       screen.getByRole("link", {
         name: /view operation/i,
       }),
-    ).toHaveAttribute(
-      "href",
-      "../administration/operations/2?operations_title=Operation 2",
-    );
+    ).toHaveAttribute("href", "/operations/2?operations_title=Operation 2");
 
     const continueRegistrationlinks = screen.getAllByRole("link", {
       name: /continue registration/i,

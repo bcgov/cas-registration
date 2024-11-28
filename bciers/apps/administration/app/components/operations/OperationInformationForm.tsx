@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+
 import { UUID } from "crypto";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
@@ -17,6 +17,7 @@ import {
   regulatedOperationPurposes,
 } from "apps/registration/app/components/operations/registration/enums";
 import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 const OperationInformationForm = ({
   formData,
@@ -32,8 +33,7 @@ const OperationInformationForm = ({
   const router = useRouter();
 
   // To get the user's role from the session
-  const { data: session } = useSession();
-  const role = session?.user?.app_role ?? "";
+  const role = useSessionRole();
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;

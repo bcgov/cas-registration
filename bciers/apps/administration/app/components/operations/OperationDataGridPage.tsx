@@ -3,7 +3,7 @@ import { OperationRow, OperationsSearchParams } from "./types";
 import fetchOperationsPageData from "./fetchOperationsPageData";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import { auth } from "@/dashboard/auth";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 // 🧩 Main component
 export default async function OperationDataGridPage({
@@ -11,9 +11,7 @@ export default async function OperationDataGridPage({
 }: {
   searchParams: OperationsSearchParams;
 }) {
-  const session = await auth();
-
-  const role = session?.user?.app_role;
+  const role = await getSessionRole();
   // Fetch operations data
   const operations: {
     rows: OperationRow[];
