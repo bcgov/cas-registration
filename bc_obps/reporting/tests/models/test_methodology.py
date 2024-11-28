@@ -36,6 +36,10 @@ class TestInitialData(TestCase):
                 'Make-up Chemical Use Methodology',
                 'WCI.203(f)(1)',
                 'WCI.203(f)(2)',
+                'Anode Consumption - Prebaked',
+                'Anode Consumption - Soderberg',
+                'Anode/Cathode Baking',
+                'Green Coke Calcination',
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list('name', flat=True)))
