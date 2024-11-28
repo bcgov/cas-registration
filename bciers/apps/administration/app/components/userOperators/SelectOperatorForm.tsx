@@ -45,6 +45,7 @@ export default function SelectOperatorForm() {
   return (
     <section className="text-center text-2xl flex flex-col">
       <Form
+        formContext={{ endpoint: "registration/v2/operators/search" }}
         schema={selectOperatorSchema}
         onSubmit={handleSubmit}
         uiSchema={selectOperatorUiSchema}
