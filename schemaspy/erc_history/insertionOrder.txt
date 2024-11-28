@@ -19,7 +19,6 @@ operator_history
 opted_in_operation_detail_history
 parent_operator_history
 partner_operator_history
-registration_purpose_history
 regulated_product_history
 restart_event_history
 temporary_shutdown_event_history

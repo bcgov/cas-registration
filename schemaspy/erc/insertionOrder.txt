@@ -62,11 +62,12 @@ temporary_shutdown_event_facilities
 transfer_event_facilities
 user_documents
 emission_category_mapping
-registration_purpose
 report_additional_data
 facility_designated_operation_timeline
 operation_designated_operator_timeline
+report_attachment
 report_raw_activity_data
+report_verification
 report_methodology
 report_person_responsible
 report_product

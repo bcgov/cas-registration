@@ -558,6 +558,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="secondary_naics_code_id" nullable="true" remarks="This column refers to an operation's secondary NAICS code." size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="28" name="tertiary_naics_code_id" nullable="true" remarks="This column refers to an operation's tertiary NAICS code." size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="29" name="date_of_first_shipment" nullable="true" remarks="The date of the operation's first shipment (determines which application and statutory declaration template should be used)" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="30" name="registration_purpose" nullable="true" remarks="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered)." size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="operation_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -833,44 +834,6 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
-      <table name="registration_purpose_history" remarks="" schema="erc_history" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="registration_purpose" nullable="false" remarks="Registration purpose" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="true" defaultValue="null" digits="0" id="6" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="operation_id" nullable="true" remarks="The operator that has the purpose" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <primaryKey column="history_id" sequenceNumberInPK="1"/>
-         <index name="registration_purpose_history_pkey" unique="true">
-            <column ascending="true" name="history_id"/>
-         </index>
-         <index name="registration_purpose_history_archived_by_id_1b2ed3a5" unique="false">
-            <column ascending="true" name="archived_by_id"/>
-         </index>
-         <index name="registration_purpose_history_created_by_id_26af3468" unique="false">
-            <column ascending="true" name="created_by_id"/>
-         </index>
-         <index name="registration_purpose_history_history_date_b3564197" unique="false">
-            <column ascending="true" name="history_date"/>
-         </index>
-         <index name="registration_purpose_history_id_10875b38" unique="false">
-            <column ascending="true" name="id"/>
-         </index>
-         <index name="registration_purpose_history_operation_id_e4910637" unique="false">
-            <column ascending="true" name="operation_id"/>
-         </index>
-         <index name="registration_purpose_history_updated_by_id_23daf6e7" unique="false">
-            <column ascending="true" name="updated_by_id"/>
-         </index>
-      </table>
       <table name="regulated_product_history" remarks="" schema="erc_history" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="The name of a regulated product" size="1000" type="varchar" typeCode="12"/>
@@ -879,6 +842,8 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="is_regulated" nullable="false" remarks="Indicates if a product is regulated" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="unit" nullable="true" remarks="The unit of measure for a regulated product" size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="regulated_product_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -976,19 +941,18 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="id" nullable="false" remarks="Primary key to identify the event" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="effective_date" nullable="false" remarks="The effective date of the event" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="description" nullable="false" remarks="Description of the transfer or change in designated operator." size="2147483647" type="text" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="future_designated_operator" nullable="false" remarks="The designated operator of the entit(y)/(ies) associated with the transfer, who will be responsible for matters related to GGERR." size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="true" defaultValue="null" digits="0" id="9" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="other_operator_id" nullable="true" remarks="The second operator who is involved in the transfer but is not reporting the event." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="other_operator_contact_id" nullable="true" remarks="Contact information for the other operator." size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="8" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="other_operator_id" nullable="true" remarks="The second operator who is involved in the transfer but is not reporting the event." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="other_operator_contact_id" nullable="true" remarks="Contact information for the other operator." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="transfer_event_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>

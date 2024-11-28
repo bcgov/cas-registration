@@ -78,7 +78,7 @@
                         <div class="col-md-12">
                             <div class="callout callout-info">
                                 <h4>SchemaSpy Analysis of default.erc</h4>
-                                <p>Generated on Fri Nov 15 23:08 GMT 2024</p>
+                                <p>Generated on Thu Nov 28 00:36 GMT 2024</p>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                                 <span class="info-box-icon bg-aqua"><i class="fa fa-table"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">TABLES</span>
-                                    <span class="info-box-number">76</span>
+                                    <span class="info-box-number">77</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -118,7 +118,7 @@
                                 <span class="info-box-icon bg-green"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">COLUMNS</span>
-                                    <span class="info-box-number">589</span>
+                                    <span class="info-box-number">610</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -130,7 +130,7 @@
                                 <span class="info-box-icon bg-yellow"><i class="ion ion-key"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Constraints</span>
-                                    <span class="info-box-number">242</span>
+                                    <span class="info-box-number">246</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -142,7 +142,7 @@
                                 <span class="info-box-icon bg-red-active"><i class="fa fa-question" aria-hidden="true"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Anomalies</span>
-                                    <span class="info-box-number">31</span>
+                                    <span class="info-box-number">33</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -224,22 +224,13 @@
                                         <td class="comment detail" style="display: table-cell;"><p>A table to store non-attributable emissions data.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/registration_purpose.html">registration_purpose</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">4</td>
-                                        <td class="detail" align="right">9</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"><p>Table that contains operations and their registration purposes.</p></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/regulated_product.html">regulated_product</a></td>
                                         <td class="detail" align="right">3</td>
                                         <td class="detail" align="right">1</td>
-                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"><p>Table containing the names of regulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: <a href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015">https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015</a>.</p></td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: <a href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015">https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015</a>. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/facility_well_authorization_numbers.html">facility_well_authorization_numbers</a></td>
@@ -288,9 +279,9 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_version.html">report_version</a></td>
-                                        <td class="detail" align="right">12</td>
+                                        <td class="detail" align="right">14</td>
                                         <td class="detail" align="right">4</td>
-                                        <td class="detail" align="right">10</td>
+                                        <td class="detail" align="right">11</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"><p>A table representing the multiple versions that a single report can have.</p></td>
@@ -321,6 +312,15 @@
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"><p>Custom methodology schema used to define additional fields for reporting</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/report_verification.html">report_verification</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">16</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Table to store verification information associated with a report version</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/operator_documents.html">operator_documents</a></td>
@@ -434,7 +434,7 @@
                                         <td class="detail"><a href="tables/transfer_event.html">transfer_event</a></td>
                                         <td class="detail" align="right">1</td>
                                         <td class="detail" align="right">6</td>
-                                        <td class="detail" align="right">14</td>
+                                        <td class="detail" align="right">13</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"><p>Transfer events for operations and/or facilities.</p></td>
@@ -474,6 +474,15 @@
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/report_attachment.html">report_attachment</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">11</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>Table containing the file information for the report attachments</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/methodology.html">methodology</a></td>
@@ -747,7 +756,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/business_structure.html">business_structure</a></td>
-                                        <td class="detail" align="right">34</td>
+                                        <td class="detail" align="right">36</td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">1</td>
                                         <td class="detail" align="right">-1</td>
@@ -765,7 +774,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/user.html">user</a></td>
-                                        <td class="detail" align="right">106</td>
+                                        <td class="detail" align="right">109</td>
                                         <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">9</td>
                                         <td class="detail" align="right">-1</td>
@@ -819,9 +828,9 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/operation.html">operation</a></td>
+                                        <td class="detail" align="right">12</td>
                                         <td class="detail" align="right">13</td>
-                                        <td class="detail" align="right">13</td>
-                                        <td class="detail" align="right">25</td>
+                                        <td class="detail" align="right">26</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"><p>Table containing information about operations. &lsquo;Industrial operation&rsquo; means one or more facilities, or a prescribed activity, to which greenhouse gas emissions are attributable, subject to subsection (3)of the Greenhouse Gas Industrial Reporting and Control Act: <a href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1">https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1</a>.</p></td>

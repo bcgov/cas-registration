@@ -5,11 +5,12 @@ user_operator
 report_product
 report_person_responsible
 report_methodology
+report_verification
 report_raw_activity_data
+report_attachment
 operation_designated_operator_timeline
 facility_designated_operation_timeline
 report_additional_data
-registration_purpose
 emission_category_mapping
 user_documents
 transfer_event_facilities
