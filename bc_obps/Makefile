@@ -132,6 +132,10 @@ clear_db: ## Clear all data in the datbase
 clear_db:
 	$(POETRY_RUN) python $(MANAGE_PY) truncate_dev_data_tables
 
+.PHONY: reset_reg_data
+reset_reg_data: ## Clear all data in the database and load registration fixtures
+reset_reg_data: clear_db loadfixtures
+
 .PHONY: shell
 shell: ## run the Django shell plus
 shell:
