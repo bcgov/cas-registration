@@ -18,6 +18,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   value,
   readonly,
   uiSchema,
+  formContext,
 }) => {
   const [options, setOptions] = useState([] as string[]);
   const [isSearchAttempted, setIsSearchAttempted] = useState(false);
@@ -37,9 +38,8 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       setOptions([]);
       return;
     }
-
     const response = await actionHandler(
-      `registration/v2/operators?legal_name=${val}`,
+      `${formContext.endpoint}?legal_name=${val}`,
       "GET",
     );
 
