@@ -4,11 +4,10 @@ import { Box, Button, CircularProgress } from "@mui/material";
 import Link from "next/link";
 
 interface StepButtonProps {
-  allowBackNavigation: boolean;
   backUrl?: string;
   continueUrl: string;
-  isSaving: boolean;
-  isSuccess: boolean;
+  isSaving?: boolean;
+  isSuccess?: boolean;
   saveButtonDisabled?: boolean;
 }
 
