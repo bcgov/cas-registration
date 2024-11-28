@@ -33,11 +33,13 @@ export const getFacilitiesInformationTaskList = (
       type: "Page",
       title: "Non-attributable Emissions",
       isActive: activeIndex === ActivePage.NonAttributableEmission,
+      link: `/reports/${versionId}/facilities/${facilityId}/non-attributable`,
     },
     {
       type: "Page",
       title: "Emissions Summary",
       isActive: activeIndex === ActivePage.EmissionSummary,
+      link: `/reports/${versionId}/facilities/${facilityId}/emission-summary`,
     },
     {
       type: "Page",

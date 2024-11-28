@@ -11,6 +11,7 @@ import {
 } from "@reporting/src/data/jsonSchema/facilityEmissionSummary";
 import { UUID } from "crypto";
 import Link from "next/link";
+import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 
 interface Props {
   versionId: number;
@@ -58,7 +59,7 @@ const FacilityEmissionSummary: React.FC<Props> = ({
   ];
 
   const backRef = `/reports/${versionId}/facilities/${facilityId}/non-attributable`;
-  const continueRef = `/reports/${versionId}/facilities/${facilityId}/production`;
+  const continueRef = `/reports/${versionId}/facilities/${facilityId}/production-data`;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -76,16 +77,11 @@ const FacilityEmissionSummary: React.FC<Props> = ({
             uiSchema={facilityEmissionSummaryUiSchema}
             formData={summaryFormData}
           >
-            <Box display="flex" justifyContent="space-between" mt={3}>
-              <Link href={backRef} passHref>
-                <Button variant="outlined">Back</Button>
-              </Link>
-              <Link href={continueRef} passHref>
-                <Button variant="contained" color="primary">
-                  Continue
-                </Button>
-              </Link>
-            </Box>
+            <ReportingStepButtons
+              backUrl={backRef}
+              continueUrl={continueRef}
+              saveButtonDisabled={true}
+            />
           </FormBase>
         </div>
       </div>

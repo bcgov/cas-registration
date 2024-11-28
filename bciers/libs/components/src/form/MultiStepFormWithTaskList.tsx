@@ -74,7 +74,6 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
             onChange={onChange}
           >
             <ReportingStepButtons
-              allowBackNavigation={true}
               backUrl={backUrl}
               continueUrl={continueUrl}
               isSaving={isSaving}

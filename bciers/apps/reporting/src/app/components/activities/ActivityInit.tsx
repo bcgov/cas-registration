@@ -26,6 +26,7 @@ export default async function ActivityInit({
   step,
 }: Readonly<Props>) {
   const orderedActivities = await getOrderedActivities(versionId, facilityId);
+  if (step === -1) step = orderedActivities.length - 1; // handle last step from non-attributable emissions page
   let currentActivity = orderedActivities[step];
   if (activityId)
     currentActivity = orderedActivities.find((obj: ActivityData) => {

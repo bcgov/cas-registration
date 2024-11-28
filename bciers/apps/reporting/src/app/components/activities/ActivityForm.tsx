@@ -48,7 +48,7 @@ export default function ActivityForm({
   initialSelectedSourceTypeIds,
 }: Readonly<Props>) {
   const searchParams = useSearchParams(); // is read-only
-  const step = Number(useSearchParams().get("step")) || 0;
+  let step = Number(useSearchParams().get("step")) || 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
@@ -140,6 +140,7 @@ export default function ActivityForm({
     const taskListLength = taskListData.find((taskListElement) => {
       return taskListElement.title === "Activities Information";
     })?.elements?.length;
+    if (taskListLength && step === -1) step = taskListLength - 1;
 
     if (step === 0 && !isContinue)
       return `/reports/${reportVersionId}/facilities/${facilityId}/review?facilities_title=Facility`; // Facility review page
@@ -175,7 +176,6 @@ export default function ActivityForm({
               </Alert>
             ))}
           <ReportingStepButtons
-            allowBackNavigation={true}
             backUrl={createUrl(false)}
             continueUrl={createUrl(true)}
             isSaving={isLoading}
