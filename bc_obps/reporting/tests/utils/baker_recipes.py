@@ -19,6 +19,8 @@ from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_verification import ReportVerification
+from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+
 
 from registration.tests.utils.baker_recipes import operation, operator, facility, regulated_product
 from model_bakery.recipe import Recipe, foreign_key, seq
@@ -133,6 +135,14 @@ report_product = Recipe(
     facility_report=foreign_key(facility_report),
     report_version=foreign_key(report_version),
     product=foreign_key(regulated_product),
+)
+
+report_product_emission_allocation = Recipe(
+    ReportProductEmissionAllocation,
+    report_version=foreign_key(report_version),
+    facility_report=foreign_key(facility_report),
+    report_product=foreign_key(report_product),
+    emission_category=foreign_key(emission_category),
 )
 
 report_non_attributable_emissions = Recipe(
