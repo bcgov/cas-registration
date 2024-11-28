@@ -73,15 +73,17 @@ export const buildProductionDataSchema = (
             type: "number",
           },
           production_methodology: {
-            title: "Production Methodology",
+            title: "Production Quantification Methodology",
             type: "string",
+            enum: ["OBPS Calculator", "other"],
+            default: "OBPS Calculator",
           },
           storage_quantity_start_of_period: {
             title: `Quantity in storage at the beginning of the compliance period [${compliance_period_start}], if applicable`,
             type: "number",
           },
           storage_quantity_end_of_period: {
-            title: `Quantity in storage at the beginning of the compliance period [${compliance_period_end}], if applicable`,
+            title: `Quantity in storage at the end of the compliance period [${compliance_period_end}], if applicable`,
             type: "number",
           },
           quantity_sold_during_period: {
@@ -93,6 +95,20 @@ export const buildProductionDataSchema = (
             type: "number",
           },
         },
+        allOf: [
+          {
+            if: { properties: { production_methodology: { const: "other" } } },
+            then: {
+              properties: {
+                production_methodology_description: {
+                  title: "Methodology description",
+                  type: "string",
+                },
+              },
+              required: ["production_methodology_description"],
+            },
+          },
+        ],
       },
     },
   }) as RJSFSchema;
@@ -119,6 +135,16 @@ export const productionDataUiSchema: UiSchema = {
       label: false,
     },
     items: {
+      "ui:order": [
+        "product_id",
+        "product_name",
+        "unit",
+        "annual_production",
+        "production_data_apr_dec",
+        "production_methodology",
+        "production_methodology_description",
+        "*",
+      ],
       product_id: {
         "ui:widget": "hidden",
       },

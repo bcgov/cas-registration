@@ -2,7 +2,10 @@ import ProductionDataForm from "./ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { getProductionData } from "@bciers/actions/api";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
-import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformation";
+import {
+  ActivePage,
+  getFacilitiesInformationTaskList,
+} from "../taskList/2_facilitiesInformation";
 import { Suspense } from "react";
 
 interface Props {
@@ -37,6 +40,7 @@ const ProductionData: React.FC<Props> = async ({
     report_version_id,
     facility_id,
     orderedActivities,
+    ActivePage.ProductionData,
   );
 
   return (

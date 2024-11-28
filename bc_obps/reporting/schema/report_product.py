@@ -11,6 +11,7 @@ class ReportProductSchema(ModelSchema):
             "annual_production",
             "production_data_apr_dec",
             "production_methodology",
+            "production_methodology_description",
             "storage_quantity_start_of_period",
             "storage_quantity_end_of_period",
             "quantity_sold_during_period",

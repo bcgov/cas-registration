@@ -118,6 +118,7 @@ class TestReportProductEndpoints(CommonTestSetup):
                     "annual_production": 1111.0,
                     "production_data_apr_dec": 2222.0,
                     "production_methodology": "method",
+                    "production_methodology_description": None,
                     "quantity_sold_during_period": None,
                     "quantity_throughput_during_period": None,
                     "storage_quantity_end_of_period": None,
