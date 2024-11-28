@@ -43,6 +43,7 @@ test.describe("Test select operator paths with beforeAll", () => {
   test("Select operator link from dashboard", async ({ page }) => {
     // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
+    debugger;
     await dashboardPage.route();
     // 🔍 Assert current URL
     await dashboardPage.urlIsCorrect();
