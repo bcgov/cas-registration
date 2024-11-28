@@ -72,6 +72,8 @@ export default function NonAttributableEmissionsForm({
   const router = useRouter();
 
   const SAVE_AND_CONTINUE_URL = `${BASE_URL}/${versionId}/facilities/${facilityId}/emissions-summary`;
+  const CONTINUE_URL = `emission-summary`;
+  const BACK_URL = `activities?step=-1`;
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
   const taskListElements: TaskListElement[] = [
@@ -125,8 +127,8 @@ export default function NonAttributableEmissionsForm({
       cancelUrl={CANCEL_URL}
       onChange={(data) => setFormData(data.formData)}
       onSubmit={() => handleSubmit()}
-      backUrl={""}
-      continueUrl={SAVE_AND_CONTINUE_URL}
+      backUrl={BACK_URL}
+      continueUrl={CONTINUE_URL}
     />
   );
 }
