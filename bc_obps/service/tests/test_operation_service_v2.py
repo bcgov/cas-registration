@@ -126,6 +126,41 @@ class TestOperationServiceV2:
         assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
 
     @staticmethod
+    def test_remove_opted_in_operation_detail():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+        )
+        payload = OperationInformationIn(
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+            name="string",
+            type="SFO",
+            naics_code_id=1,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+        )
+        OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
+        operation.refresh_from_db()
+        assert operation.opt_in is True
+        breakpoint()
+        assert operation.opted_in_operation is not None
+
+        opted_in_operation_detail_id = operation.opted_in_operation.id
+
+        OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
+        operation.refresh_from_db()
+        opted_in_operation_detail = OptedInOperationDetail.objects.filter(id=opted_in_operation_detail_id).first()
+
+        assert operation.opt_in is False
+        breakpoint()
+        assert opted_in_operation_detail.exists()
+        assert opted_in_operation_detail.archived_by == approved_user_operator.user.user_guid
+        assert opted_in_operation_detail.archived_at is not None
+
+    @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe(

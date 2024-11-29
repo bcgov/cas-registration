@@ -32,6 +32,7 @@ from registration.schema.v2.operation import (
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
+    OperationNewEntrantApplicationRemove,
 )
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
@@ -177,6 +178,16 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
+    def remove_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
+        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation.opt_in = False
+        operation.opted_in_operation.set_archive(user_guid)
+        operation.save(update_fields=['opt_in'])
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
     def create_or_update_operation_v2(
         cls,
         user_guid: UUID,
@@ -184,6 +195,7 @@ class OperationServiceV2:
         operation_id: UUID | None = None,
     ) -> Operation:
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
+        # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
         operation_data = payload.dict(
             include={
@@ -199,6 +211,9 @@ class OperationServiceV2:
         operation_data['operator_id'] = user_operator.operator_id
         if operation_id:
             operation_data['pk'] = operation_id
+            original_operation = Operation.objects.get(id=operation_id)
+            if operation_data.get('registration_purpose') != original_operation.registration_purpose:
+                print('New RP detected!!!')
 
         operation: Operation
         operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
@@ -241,9 +256,6 @@ class OperationServiceV2:
         ]
         operation.documents.add(*operation_documents)
 
-        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            operation = cls.create_opted_in_operation_detail(user_guid, operation)
-
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
@@ -271,6 +283,7 @@ class OperationServiceV2:
             # TODO in ticket 2169 - replace this with create_or_update_-----
             operation = cls.create_opted_in_operation_detail(user_guid, operation)
 
+        # TODO should status reset to DRAFT if editing registration info?
         cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
         operation.set_create_or_update(user_guid)
 
@@ -369,6 +382,18 @@ class OperationServiceV2:
         return all(getattr(opted_in_operation, field) is not None for field in required_fields)
 
     @classmethod
+    def is_operation_new_entrant_information_complete(cls, operation: Operation) -> bool:
+        """
+        This function checks whether the expected data for new-entrant operations has been saved.
+        """
+        if (
+            operation.date_of_first_shipment is None
+            or not operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).exists()
+        ):
+            return False
+        return True
+
+    @classmethod
     def raise_exception_if_operation_missing_registration_information(cls, operation: Operation) -> None:
         """
         This function checks if the given operation instance has all necessary registration information.
@@ -404,9 +429,7 @@ class OperationServiceV2:
             yield (
                 lambda: not (
                     operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
-                    and not operation.documents.filter(
-                        type=DocumentType.objects.get(name='new_entrant_application')
-                    ).exists()
+                    and not cls.is_operation_new_entrant_information_complete(operation)
                 ),
                 "Operation must have a signed statutory declaration if it is a new entrant.",
             )
