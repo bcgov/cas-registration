@@ -20,7 +20,7 @@ from registration.schema.v1 import UserOperatorOut
 
 # GET
 @router.get(
-    "/v2/user-operators/{uuid:user_operator_id}",
+    "/user-operators/{uuid:user_operator_id}",
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about a specific user-operator by its ID.

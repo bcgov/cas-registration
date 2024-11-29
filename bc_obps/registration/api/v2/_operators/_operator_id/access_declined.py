@@ -12,7 +12,7 @@ from common.api.utils import get_current_user_guid
 
 
 @router.get(
-    "/v2/operators/{operator_id}/access-declined",
+    "/operators/{operator_id}/access-declined",
     response={200: bool, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Checks if the current user's access to a specific operator has been declined.

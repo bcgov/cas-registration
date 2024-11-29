@@ -24,7 +24,7 @@ export default function RequestAccessButton({
     ? "Request Administrator Access"
     : "Request Access";
 
-  const endpointUrl = `registration/v2/operators/${operatorId}/${
+  const endpointUrl = `registration/operators/${operatorId}/${
     isAdminRequest ? "request-admin-access" : "request-access"
   }`;
 

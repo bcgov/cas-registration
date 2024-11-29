@@ -16,7 +16,7 @@ async function removeOperationRepresentative(
   representative_id: number | string,
 ) {
   const response = await actionHandler(
-    `registration/v2/operations/${operation_id}/registration/operation-representative`,
+    `registration/operations/${operation_id}/registration/operation-representative`,
     "PUT",
     `registration/administration/operations/${operation_id}`,
     {

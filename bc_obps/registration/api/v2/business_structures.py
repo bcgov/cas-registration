@@ -11,7 +11,7 @@ from registration.schema.v1 import BusinessStructureOut
 
 ##### GET #####
 @router.get(
-    "/v2/business_structures",
+    "/business_structures",
     response=List[BusinessStructureOut],
     tags=BUSINESS_STRUCTURE_TAGS,
     description="""Retrieves a list of business structures.

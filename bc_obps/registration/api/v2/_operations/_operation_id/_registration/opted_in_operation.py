@@ -17,7 +17,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/v2/operations/{uuid:operation_id}/registration/opted-in-operation-detail",
+    "/operations/{uuid:operation_id}/registration/opted-in-operation-detail",
     response={200: OptedInOperationDetailOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Get the opted-in operation details of a specific operation by its ID.
@@ -32,7 +32,7 @@ def operation_registration_get_opted_in_operation_detail(
 
 
 @router.put(
-    "/v2/operations/{uuid:operation_id}/registration/opted-in-operation-detail",
+    "/operations/{uuid:operation_id}/registration/opted-in-operation-detail",
     response={200: OptedInOperationDetailOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Updates the opted-in operation details of a specific operation by its ID.

@@ -39,7 +39,7 @@ const OperationInformationForm = ({
     formData?: OperationInformationFormData;
   }) => {
     const response = await actionHandler(
-      `registration/v2/operations/${operationId}`,
+      `registration/operations/${operationId}`,
       "PUT",
       "",
       {
@@ -54,7 +54,7 @@ const OperationInformationForm = ({
 
     if (!data.formData?.opted_in_operation) return;
     const response2 = await actionHandler(
-      `registration/v2/operations/${operationId}/registration/opted-in-operation-detail`,
+      `registration/operations/${operationId}/registration/opted-in-operation-detail`,
       "PUT",
       "",
       {

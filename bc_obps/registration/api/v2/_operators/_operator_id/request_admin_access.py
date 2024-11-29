@@ -13,7 +13,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.post(
-    "/v2/operators/{operator_id}/request-admin-access",
+    "/operators/{operator_id}/request-admin-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Allows an industry user to request admin access to a specific operator.

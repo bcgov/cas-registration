@@ -15,7 +15,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/v2/operators/{operator_id}",
+    "/operators/{operator_id}",
     response={200: ConfirmSelectedOperatorOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Retrieves information about a specific operator by its ID.

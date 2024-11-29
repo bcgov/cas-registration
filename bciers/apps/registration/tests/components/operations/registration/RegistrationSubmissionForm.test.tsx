@@ -108,7 +108,7 @@ describe("the RegistrationSubmissionForm component", () => {
     await checkAllCheckboxesAndSubmit();
 
     expect(actionHandler).toHaveBeenCalledWith(
-      `registration/v2/operations/${defaultProps.operation}/registration/submission`,
+      `registration/operations/${defaultProps.operation}/registration/submission`,
       "PATCH",
       "",
       {

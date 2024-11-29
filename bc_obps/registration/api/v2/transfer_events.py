@@ -16,7 +16,7 @@ from django.db.models import QuerySet
 
 
 @router.get(
-    "/v2/transfer-events",
+    "/transfer-events",
     response={200: List[TransferEventListOut], custom_codes_4xx: Message},
     tags=TRANSFER_EVENT_TAGS,
     description="""Retrieves a paginated list of transfer events based on the provided filters.

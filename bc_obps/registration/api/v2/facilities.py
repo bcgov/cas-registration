@@ -16,7 +16,7 @@ from registration.schema.generic import Message
 
 
 @router.post(
-    "/v2/facilities",
+    "/facilities",
     response={201: List[FacilityOut], custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Creates 1 or more new facilities from an array for the current user.""",

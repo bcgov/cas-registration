@@ -145,7 +145,7 @@ describe("actionHandler function", () => {
     );
 
     const result = await actionHandler(
-      "registration/v2/user/user-app-role/ba2ba62a121842e0942aab9e92ce8822",
+      "registration/user/user-app-role/ba2ba62a121842e0942aab9e92ce8822",
       "GET",
     );
 

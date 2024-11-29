@@ -43,7 +43,7 @@ const OptedInOperationForm = ({
   const handleSubmit = async (e: IChangeEvent) => {
     setSubmitButtonDisabled(true);
     const response = await actionHandler(
-      `registration/v2/operations/${operation}/registration/opted-in-operation-detail`,
+      `registration/operations/${operation}/registration/opted-in-operation-detail`,
       "PUT",
       `/register-an-operation/${operation}`, // Removing this line will cause the form to show the existing data(not consistent)
       {

@@ -15,7 +15,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 @router.get(
-    "/v2/user-operators/current/operator-users",
+    "/user-operators/current/operator-users",
     response={200: List[UserOperatorUsersOut], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves the list of users associated with the operator of the current user. The current user is an industry user admin.

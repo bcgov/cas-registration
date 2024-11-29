@@ -7,7 +7,7 @@ const fetchContactsPageData = async (searchParams: ContactsSearchParams) => {
   try {
     const queryParams = buildQueryParams(searchParams);
     const pageData = await actionHandler(
-      `registration/v2/contacts${queryParams}`,
+      `registration/contacts${queryParams}`,
       "GET",
       "",
     );

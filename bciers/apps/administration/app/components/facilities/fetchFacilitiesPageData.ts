@@ -10,7 +10,7 @@ const fetchFacilitiesPageData = async (
   try {
     const queryParams = buildQueryParams(searchParams);
     const pageData = await actionHandler(
-      `registration/v2/operations/${operationId}/facilities${queryParams}`,
+      `registration/operations/${operationId}/facilities${queryParams}`,
       "GET",
       "",
     );

@@ -64,8 +64,8 @@ const OperationInformationForm = ({
 
   const handleSubmit = async (data: { formData?: any }) => {
     const isCreating = !data.formData?.section1?.operation;
-    const postEndpoint = `registration/v2/operations`;
-    const putEndpoint = `registration/v2/operations/${data.formData?.section1?.operation}/registration/operation`;
+    const postEndpoint = `registration/operations`;
+    const putEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
     const body = JSON.stringify(
       createUnnestedFormData(data.formData, [
         "section1",

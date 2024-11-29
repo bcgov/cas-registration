@@ -17,7 +17,7 @@ from registration.api.router import router
 
 
 @router.put(
-    "/v2/user-operators/{user_operator_id}/update-status",
+    "/user-operators/{user_operator_id}/update-status",
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Updates the status of a user operator by its ID.

@@ -186,7 +186,7 @@ describe("the NewEntrantOperationForm component", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
 
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/new-entrant-application",
+      "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/new-entrant-application",
       "PUT",
       "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
       {

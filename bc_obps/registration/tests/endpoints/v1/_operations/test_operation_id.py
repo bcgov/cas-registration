@@ -45,7 +45,9 @@ class TestOperationIdEndpoint(CommonTestSetup):
         users_operation = operation_baker(user_operator.operator.id)  # operation that belongs to the user's operator
 
         # operations
-        response_1 = TestUtils.mock_get_with_auth_role(self, "industry_user")
+        response_1 = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", custom_reverse_lazy("v1_get_operation", kwargs={"operation_id": users_operation.id})
+        )
         response_json = response_1.json()
         assert len(response_json.get('data')) == 1
         assert response_json.get('row_count') == 1

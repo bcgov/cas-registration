@@ -17,7 +17,7 @@ from ninja.pagination import paginate, PageNumberPagination
 
 ## GET
 @router.get(
-    "/v2/user-operators",
+    "/user-operators",
     response={200: List[UserOperatorListOut], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS_V2,
     description="""Retrieves a paginated list of user operators.
@@ -27,7 +27,7 @@ from ninja.pagination import paginate, PageNumberPagination
 )
 @handle_http_errors()
 @paginate(PageNumberPagination)
-def list_user_operators_v2(
+def list_user_operators(
     request: HttpRequest,
     filters: UserOperatorFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
@@ -40,7 +40,7 @@ def list_user_operators_v2(
 
 ## POST
 @router.post(
-    "/v2/user-operators",
+    "/user-operators",
     response={200: UserOperatorOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS_V2,
     description="""Creates a new operator and a new user-operator for the current user.
@@ -49,7 +49,7 @@ def list_user_operators_v2(
     auth=authorize("industry_user"),
 )
 @handle_http_errors()
-def create_operator_and_user_operator_v2(
+def create_operator_and_user_operator(
     request: HttpRequest, payload: OperatorIn
 ) -> Tuple[Literal[200], UserOperatorOperatorOut]:
     user_operator_data = UserOperatorServiceV2.create_operator_and_user_operator(

@@ -43,7 +43,7 @@ describe("RequestAccessButton", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operators/1/request-access",
+        "registration/operators/1/request-access",
         "POST",
         "",
       );
@@ -58,7 +58,7 @@ describe("RequestAccessButton", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/operators/1/request-access",
+        "registration/operators/1/request-access",
         "POST",
         "",
       );

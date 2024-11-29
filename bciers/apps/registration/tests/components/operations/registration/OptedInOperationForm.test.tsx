@@ -223,7 +223,7 @@ describe("the OptedInOperationForm component", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
 
     expect(actionHandler).toHaveBeenCalledWith(
-      `registration/v2/operations/${defaultProps.operation}/registration/opted-in-operation-detail`,
+      `registration/operations/${defaultProps.operation}/registration/opted-in-operation-detail`,
       "PUT",
       `/register-an-operation/${defaultProps.operation}`,
       {

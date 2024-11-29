@@ -145,7 +145,7 @@ describe("RJSF boroIdWidget", () => {
     });
     await userEvent.click(issueButton);
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/v2/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/boro-id",
+      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/boro-id",
       "PATCH",
       "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
     );
@@ -175,7 +175,7 @@ describe("RJSF boroIdWidget", () => {
     });
     await userEvent.click(issueButton);
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/v2/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/boro-id",
+      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/boro-id",
       "PATCH",
       "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
     );

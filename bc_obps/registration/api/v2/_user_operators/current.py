@@ -18,7 +18,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 # this endpoint retrieves data about both the user-operator and the operator
 @router.get(
-    "/v2/user-operators/current",
+    "/user-operators/current",
     response={200: OperatorFromUserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about the current user-operator and their associated operator.

@@ -163,7 +163,7 @@ describe("RJSF bcghgIdWidget", () => {
     });
     await userEvent.click(issueButton);
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/v2/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
+      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
       "PATCH",
       "",
     );
@@ -217,7 +217,7 @@ describe("RJSF bcghgIdWidget", () => {
     });
     await userEvent.click(issueButton);
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/v2/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
+      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
       "PATCH",
       "",
     );
