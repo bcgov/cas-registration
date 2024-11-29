@@ -289,6 +289,14 @@ class OperationNewEntrantApplicationOut(ModelSchema):
         fields = ['date_of_first_shipment']
 
 
+class OperationNewEntrantApplicationRemove(ModelSchema):
+    id: int
+
+    class Meta:
+        model = Operation
+        fields = ['id']
+
+
 class OperationRepresentativeOut(ModelSchema):
     class Meta:
         model = Contact
