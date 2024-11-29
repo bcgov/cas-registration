@@ -12,7 +12,7 @@ class TestPendingUserOperatorEndpoint(CommonTestSetup):
         user_operator.user_id = self.user.user_guid
         user_operator.save(update_fields=['user_id'])
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', custom_reverse_lazy('get_pending_operator_and_user_operator')
+            self, 'industry_user', custom_reverse_lazy('v1_get_pending_operator_and_user_operator')
         )
         assert response.status_code == 200
         assert response.json()['status'] == user_operator.status
@@ -25,6 +25,6 @@ class TestPendingUserOperatorEndpoint(CommonTestSetup):
         user_operator.status = UserOperator.Statuses.DECLINED
         user_operator.save(update_fields=["user_id", "status"])
         response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_pending_operator_and_user_operator")
+            self, "industry_user", custom_reverse_lazy("v1_get_pending_operator_and_user_operator")
         )
         assert response.status_code == 404

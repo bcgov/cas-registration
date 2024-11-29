@@ -33,7 +33,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
     def test_cas_admin_approves_operation(self):
         operation = baker.make_recipe('utils.operation')
         assert operation.status == Operation.Statuses.NOT_STARTED
-        url = custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id})
+        url = custom_reverse_lazy("v1_update_operation_status", kwargs={"operation_id": operation.id})
 
         now = datetime.now(ZoneInfo("UTC"))
         put_response_1 = TestUtils.mock_put_with_auth_role(
@@ -67,7 +67,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         )
 
         get_response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
+            self, "cas_admin", custom_reverse_lazy("v1_get_operation", kwargs={"operation_id": operation.id})
         )
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
@@ -102,7 +102,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "Declined"},
-            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("v1_update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -126,7 +126,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         )
 
         get_response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
+            self, "cas_admin", custom_reverse_lazy("v1_get_operation", kwargs={"operation_id": operation.id})
         )
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
@@ -140,7 +140,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "Changes Requested"},
-            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("v1_update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -164,7 +164,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         )
 
         get_response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
+            self, "cas_admin", custom_reverse_lazy("v1_get_operation", kwargs={"operation_id": operation.id})
         )
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
@@ -179,7 +179,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "Not Started"},
-            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("v1_update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -190,7 +190,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         assert operation_after_put.bc_obps_regulated_operation is None
 
         get_response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
+            self, "cas_admin", custom_reverse_lazy("v1_get_operation", kwargs={"operation_id": operation.id})
         )
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
@@ -206,7 +206,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "nonsense"},
-            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("v1_update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert response.status_code == 400
         assert response.json().get('message') == "'nonsense' is not a valid Operation.Statuses"

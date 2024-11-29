@@ -6,7 +6,7 @@ from registration.utils import custom_reverse_lazy
 class TestActivitiesEndpoint(CommonTestSetup):
     def test_users_can_get_activities(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("list_reporting_activities")
+            self, "industry_user", custom_reverse_lazy("v1_list_reporting_activities")
         )
         assert response.status_code == 200
         assert len(response.json()) == Activity.objects.count()

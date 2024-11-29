@@ -75,7 +75,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             self.content_type,
             mock_payload,
             custom_reverse_lazy(
-                "update_operator_and_user_operator",
+                "v1_update_operator_and_user_operator",
                 kwargs={"user_operator_id": user_operator.id},
             ),
         )
@@ -171,7 +171,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             self.content_type,
             TestUtils.create_mock_operator_payload(BusinessStructure.objects.first()),
             custom_reverse_lazy(
-                "update_operator_and_user_operator",
+                "v1_update_operator_and_user_operator",
                 kwargs={"user_operator_id": user_operator.id},
             ),
         )
@@ -200,7 +200,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             self.content_type,
             mock_payload,
             custom_reverse_lazy(
-                "update_operator_and_user_operator",
+                "v1_update_operator_and_user_operator",
                 kwargs={"user_operator_id": user_operator.id},
             ),
         )
@@ -271,7 +271,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             self.content_type,
             mock_payload,
             custom_reverse_lazy(
-                "update_operator_and_user_operator",
+                "v1_update_operator_and_user_operator",
                 kwargs={"user_operator_id": user_operator.id},
             ),
         )
@@ -289,7 +289,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             self.content_type,
             {"junk_data": "junk"},
             custom_reverse_lazy(
-                "update_operator_and_user_operator",
+                "v1_update_operator_and_user_operator",
                 kwargs={"user_operator_id": operator.id},
             ),
         )
@@ -327,7 +327,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             self.content_type,
             payload_with_duplicate_legal_name,
             custom_reverse_lazy(
-                "update_operator_and_user_operator",
+                "v1_update_operator_and_user_operator",
                 kwargs={"user_operator_id": user_operator.id},
             ),
         )
@@ -344,7 +344,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_user_operator_by_id', kwargs={'user_operator_id': random_user_operator.id}),
+            custom_reverse_lazy('v1_get_user_operator_by_id', kwargs={'user_operator_id': random_user_operator.id}),
         )
         # returns 401 because the user_operator does not belong to the current user
         assert response.status_code == 403
@@ -356,7 +356,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'cas_admin',
-            custom_reverse_lazy('get_user_operator_by_id', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy('v1_get_user_operator_by_id', kwargs={'user_operator_id': user_operator.id}),
         )
         assert response.status_code == 200
         assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID

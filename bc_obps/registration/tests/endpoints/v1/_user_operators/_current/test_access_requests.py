@@ -35,7 +35,7 @@ class TestAccessRequestsEndpoint(CommonTestSetup):
                 role=UserOperator.Roles.ADMIN,
                 status=UserOperator.Statuses.PENDING,
             )
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('list_user_operators'))
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('v1_list_user_operators'))
         assert response.status_code == 200
         response_data = response.json().get('data')
         # save the id of the first paginated response item
@@ -45,7 +45,7 @@ class TestAccessRequestsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('list_user_operators') + "?page=2&sort_field=created_at&sort_order=desc",
+            custom_reverse_lazy('v1_list_user_operators') + "?page=2&sort_field=created_at&sort_order=desc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -59,7 +59,7 @@ class TestAccessRequestsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('list_user_operators') + "?page=2&sort_field=created_at&sort_order=asc",
+            custom_reverse_lazy('v1_list_user_operators') + "?page=2&sort_field=created_at&sort_order=asc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -99,7 +99,7 @@ class TestAccessRequestsEndpoint(CommonTestSetup):
             UserOperator, operator=operator, role=UserOperator.Roles.REPORTER, status=UserOperator.Statuses.PENDING
         )
 
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('list_user_operators'))
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('v1_list_user_operators'))
         assert response.status_code == 200
         response_data = response.json().get('data')
 
@@ -117,7 +117,7 @@ class TestAccessRequestsEndpoint(CommonTestSetup):
             UserOperator, operator=operator, role=UserOperator.Roles.PENDING, status=UserOperator.Statuses.PENDING
         )
 
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('list_user_operators'))
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('v1_list_user_operators'))
         assert response.status_code == 200
         response_data = response.json().get('data')
 

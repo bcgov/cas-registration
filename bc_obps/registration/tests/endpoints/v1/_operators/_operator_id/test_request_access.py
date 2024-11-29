@@ -28,7 +28,7 @@ class TestOperatorRequestAccess(CommonTestSetup):
             "industry_user",
             self.content_type,
             {},
-            custom_reverse_lazy("request_access", kwargs={"operator_id": operator.id}),
+            custom_reverse_lazy("v1_request_access", kwargs={"operator_id": operator.id}),
         )
         response_json = response.json()
 

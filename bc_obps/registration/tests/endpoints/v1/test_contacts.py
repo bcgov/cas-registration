@@ -13,7 +13,7 @@ class TestContactsEndpoint(CommonTestSetup):
     # GET
     def test_contacts_endpoint_unpaginated(self):
         contact_baker(_quantity=45)
-        contacts_url = custom_reverse_lazy('list_contacts')
+        contacts_url = custom_reverse_lazy('v1_list_contacts')
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", contacts_url + "?paginate_result=False")
         assert response.status_code == 200
         assert len(response.json().get('items')) == 45
@@ -21,7 +21,7 @@ class TestContactsEndpoint(CommonTestSetup):
 
     def test_contacts_endpoint_list_contacts_paginated(self):
         contact_baker(_quantity=45)
-        contacts_url = custom_reverse_lazy('list_contacts')
+        contacts_url = custom_reverse_lazy('v1_list_contacts')
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", contacts_url)
         assert response.status_code == 200
@@ -67,7 +67,7 @@ class TestContactsEndpoint(CommonTestSetup):
         assert page_2_first_contact.created_at > page_2_first_contact_reverse.created_at
 
     def test_contacts_endpoint_list_contacts_with_filter(self):
-        contacts_url = custom_reverse_lazy('list_contacts')
+        contacts_url = custom_reverse_lazy('v1_list_contacts')
         contact_baker(
             _quantity=30,
             first_name=cycle(["John", "Jane"]),
@@ -113,7 +113,7 @@ class TestContactsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {"garbage": "i am bad data"},
-            custom_reverse_lazy("create_contact"),
+            custom_reverse_lazy("v1_create_contact"),
         )
         assert response.status_code == 422
 
@@ -133,7 +133,7 @@ class TestContactsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_contact,
-            custom_reverse_lazy("create_contact"),
+            custom_reverse_lazy("v1_create_contact"),
         )
         assert post_response.status_code == 201
         response_json = post_response.json()
