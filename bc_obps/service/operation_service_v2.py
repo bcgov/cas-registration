@@ -181,8 +181,11 @@ class OperationServiceV2:
     def remove_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
         operation.opt_in = False
-        operation.opted_in_operation.set_archive(user_guid)
-        operation.save(update_fields=['opt_in'])
+        opted_in_detail: OptedInOperationDetail = operation.opted_in_operation
+        # TODO - determine whether this should be archived or deleted??
+        opted_in_detail.set_archive(user_guid)
+        operation.opted_in_operation = None
+        operation.save(update_fields=['opt_in', 'opted_in_operation'])
 
         return operation
 
@@ -255,6 +258,9 @@ class OperationServiceV2:
             if created
         ]
         operation.documents.add(*operation_documents)
+
+        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            operation = cls.create_opted_in_operation_detail(user_guid, operation)
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array

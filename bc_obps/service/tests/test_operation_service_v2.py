@@ -17,6 +17,7 @@ from registration.schema.v2.operation import (
     OperationRepresentativeIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeRemove,
+    OptedInOperationDetailIn,
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.operation_service_v2 import OperationServiceV2
@@ -145,19 +146,33 @@ class TestOperationServiceV2:
         OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
         operation.refresh_from_db()
         assert operation.opt_in is True
-        breakpoint()
         assert operation.opted_in_operation is not None
 
         opted_in_operation_detail_id = operation.opted_in_operation.id
 
+        opted_in_payload = OptedInOperationDetailIn(
+            meets_section_3_emissions_requirements=False,
+            meets_electricity_import_operation_criteria=False,
+            meets_entire_operation_requirements=True,
+            meets_section_6_emissions_requirements=True,
+            meets_naics_code_11_22_562_classification_requirements=False,
+            meets_producing_gger_schedule_a1_regulated_product=False,
+            meets_reporting_and_regulated_obligations=True,
+            meets_notification_to_director_on_criteria_change=True,
+        )
+        opted_in_operation_detail = OperationServiceV2.update_opted_in_operation_detail(
+            approved_user_operator.user.user_guid, operation.id, opted_in_payload
+        )
+
         OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
+        opted_in_operation_detail.refresh_from_db()
         operation.refresh_from_db()
-        opted_in_operation_detail = OptedInOperationDetail.objects.filter(id=opted_in_operation_detail_id).first()
 
         assert operation.opt_in is False
-        breakpoint()
-        assert opted_in_operation_detail.exists()
-        assert opted_in_operation_detail.archived_by == approved_user_operator.user.user_guid
+        assert operation.opted_in_operation is None
+        # assert OptedInOperationDetail.objects.get(pk=opted_in_operation_detail_id).exists()
+        assert opted_in_operation_detail is not None
+        assert opted_in_operation_detail.archived_by == approved_user_operator.user
         assert opted_in_operation_detail.archived_at is not None
 
     @staticmethod
