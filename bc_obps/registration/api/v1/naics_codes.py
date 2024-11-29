@@ -12,12 +12,12 @@ from registration.schema.v1 import NaicsCodeSchema
 
 
 @router.get(
-    "/naics_codes",
+    "/v1/naics_codes",
     response=List[NaicsCodeSchema],
     tags=NAICS_CODE_TAGS,
     description="""Retrieves a list of NAICS codes.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
     auth=authorize("authorized_roles"),
 )
-def list_naics_codes(request: HttpRequest) -> Tuple[Literal[200], QuerySet[NaicsCode]]:
+def v1_list_naics_codes(request: HttpRequest) -> Tuple[Literal[200], QuerySet[NaicsCode]]:
     return 200, NaicsCodeDataAccessService.get_naics_codes()

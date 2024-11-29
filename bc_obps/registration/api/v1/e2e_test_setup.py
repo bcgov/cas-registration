@@ -9,12 +9,12 @@ from django.core.cache import cache
 
 # testing endpoint
 @router.get(
-    "/test-setup",
+    "/v1/test-setup",
     tags=MISC_TAGS,
     description="""Sets up the test environment by either truncating data tables or loading fixtures based on the specified workflow.
     This endpoint is only available in the development environment.""",
 )
-def setup(
+def v1_setup(
     request: HttpRequest, workflow: Optional[str] = None, truncate_only: bool = False, load_only: bool = False
 ) -> HttpResponse:
     if settings.ENVIRONMENT == "dev":

@@ -17,7 +17,7 @@ from registration.schema.generic import Message
 
 
 @router.put(
-    "/operations/{operation_id}/update-status",
+    "/v1/operations/{operation_id}/update-status",
     response={200: OperationUpdateStatusOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Updates the status of an operation.
@@ -27,7 +27,7 @@ from registration.schema.generic import Message
     auth=authorize("v1_authorized_irc_user"),
 )
 @handle_http_errors()
-def update_operation_status(
+def v1_update_operation_status(
     request: HttpRequest, operation_id: UUID, payload: OperationUpdateStatusIn
 ) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.update_status(get_current_user_guid(request), operation_id, payload.status)  # type: ignore[attr-defined]

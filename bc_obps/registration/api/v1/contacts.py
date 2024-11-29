@@ -17,7 +17,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/contacts",
+    "/v1/contacts",
     response={200: List[ContactListOut], custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves a paginated list of contacts based on the provided filters.
@@ -26,7 +26,7 @@ from registration.schema.generic import Message
 )
 @handle_http_errors()
 @paginate(CustomPagination)
-def list_contacts(
+def v1_list_contacts(
     request: HttpRequest,
     filters: ContactFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
@@ -39,12 +39,12 @@ def list_contacts(
 
 #### POST #####
 @router.post(
-    "/contacts",
+    "/v1/contacts",
     response={201: ContactOut, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Creates a new contact for the current user and associate it to the operator the user is associated with.""",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:
+def v1_create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:
     return 201, ContactService.create_contact(get_current_user_guid(request), payload)

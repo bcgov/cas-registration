@@ -15,7 +15,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 @router.get(
-    "/user-operators/current/access-requests",
+    "/v1/user-operators/current/access-requests",
     response={200: List[ExternalDashboardUsersTileData], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves the list of access requests to the current user's operator. The current user is an industry user admin.
@@ -24,7 +24,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("approved_industry_admin_user"),
 )
 @handle_http_errors()
-def get_current_user_operator_access_requests(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
+def v1_get_current_user_operator_access_requests(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
     return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(
         get_current_user_guid(request)
     ).order_by("-status", "-user_friendly_id")
