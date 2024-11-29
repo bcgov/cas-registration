@@ -42,7 +42,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "operation_registration_get_opted_in_operation_detail",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_current_operator_and_user_operator_v2"},
+            {"method": "get", "endpoint_name": "get_current_operator_and_user_operator"},
             {"method": "get", "endpoint_name": "list_current_users_operations"},
             {
                 "method": "get",
@@ -158,7 +158,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "create_or_replace_new_entrant_application",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "put", "endpoint_name": "update_operation_v2", "kwargs": {"operation_id": mock_uuid}},
+            {"method": "put", "endpoint_name": "update_operation", "kwargs": {"operation_id": mock_uuid}},
             {
                 "method": "patch",
                 "endpoint_name": "operation_registration_submission",
@@ -187,14 +187,14 @@ class TestEndpointPermissions(TestCase):
             {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
             {"method": "post", "endpoint_name": "request_access", "kwargs": {"operator_id": mock_uuid}},
             {"method": "post", "endpoint_name": "request_admin_access", "kwargs": {"operator_id": mock_uuid}},
-            {"method": "post", "endpoint_name": "create_operator_and_user_operator_v2"},
+            {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
         ],
         "approved_industry_admin_user": [
             {"method": "get", "endpoint_name": "get_current_user_operator_access_requests"},
         ],
         "v1_authorized_irc_user": [
             {"method": "get", "endpoint_name": "list_user_operators"},
-            {"method": "get", "endpoint_name": "list_user_operators_v2"},
+            {"method": "get", "endpoint_name": "list_user_operators"},
             {"method": "put", "endpoint_name": "update_operator_status", "kwargs": {"operator_id": mock_uuid}},
             {
                 "method": "put",
@@ -230,14 +230,14 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_operation_new_entrant_application",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_operation_v2", "kwargs": {"operation_id": mock_uuid}},
+            {"method": "get", "endpoint_name": "get_operation", "kwargs": {"operation_id": mock_uuid}},
             {
                 "method": "get",
                 "endpoint_name": "get_operation_with_documents",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "list_operations_v2"},
-            {"method": "get", "endpoint_name": "list_operators_v2"},
+            {"method": "get", "endpoint_name": "list_operations"},
+            {"method": "get", "endpoint_name": "list_operators"},
             {
                 "method": "get",
                 "endpoint_name": "get_report_operation_by_version_id",
