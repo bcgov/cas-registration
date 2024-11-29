@@ -16,7 +16,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # This endpoint retrieves data about both the user-operator and the operator.
 @router.get(
-    "/v2/user-operators/pending",
+    "/user-operators/pending",
     response={200: PendingUserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about the pending user-operator and their associated operator.

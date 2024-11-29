@@ -12,7 +12,7 @@ from django.db.models import QuerySet
 
 
 @router.get(
-    "/v2/regulated_products",
+    "/regulated_products",
     response=List[RegulatedProductSchema],
     tags=REGULATED_PRODUCT_TAGS,
     description="""Retrieves a list of regulated products.

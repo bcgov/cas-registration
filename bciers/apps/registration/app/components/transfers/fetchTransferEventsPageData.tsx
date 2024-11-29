@@ -33,7 +33,7 @@ export default async function fetchTransferEventsPageData(
     const queryParams = buildQueryParams(searchParams);
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/v2/transfer-events${queryParams}`,
+      `registration/transfer-events${queryParams}`,
       "GET",
       "",
     );

@@ -22,7 +22,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/v2/facilities/{uuid:facility_id}",
+    "/facilities/{uuid:facility_id}",
     response={200: FacilityOut, custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Retrieves the details of a specific facility by its ID. The endpoint checks if the current user is authorized to access the facility.
@@ -36,7 +36,7 @@ def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200],
 
 
 @router.put(
-    "/v2/facilities/{uuid:facility_id}",
+    "/facilities/{uuid:facility_id}",
     response={200: FacilityOut, custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""

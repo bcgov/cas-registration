@@ -65,8 +65,8 @@ export default function ContactForm({
 
         const method = isCreatingState ? "POST" : "PUT";
         const endpoint = isCreatingState
-          ? "registration/v2/contacts"
-          : `registration/v2/contacts/${formState.id}`;
+          ? "registration/contacts"
+          : `registration/contacts/${formState.id}`;
         const pathToRevalidate = isCreatingState
           ? "/contacts"
           : `/contacts/${formState.id}`;

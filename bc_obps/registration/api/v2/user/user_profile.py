@@ -15,7 +15,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # endpoint to return user data if user exists in user table
 @router.get(
-    "/v2/user/user-profile",
+    "/user/user-profile",
     response={200: UserOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the profile data of the current user.

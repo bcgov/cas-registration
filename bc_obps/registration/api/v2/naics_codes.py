@@ -12,7 +12,7 @@ from registration.schema.v1 import NaicsCodeSchema
 
 
 @router.get(
-    "/v2/naics_codes",
+    "/naics_codes",
     response=List[NaicsCodeSchema],
     tags=NAICS_CODE_TAGS,
     description="""Retrieves a list of NAICS codes.

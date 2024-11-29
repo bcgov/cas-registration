@@ -21,14 +21,14 @@ from registration.utils import CustomPagination
 
 
 @router.get(
-    "/v2/operations",
+    "/operations",
     response={200: List[OperationListOut], custom_codes_4xx: Message},
     tags=V2,
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 @paginate(CustomPagination)
-def list_operations_v2(
+def list_operations(
     request: HttpRequest,
     filters: OperationFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
@@ -50,7 +50,7 @@ REGISTRATION_PURPOSES_LITERALS = Literal[
 
 
 @router.get(
-    "/v2/operations/registration-purposes",
+    "/operations/registration-purposes",
     response={200: List[REGISTRATION_PURPOSES_LITERALS], custom_codes_4xx: Message},
     tags=V2,
     description="""Retrieves a list of strings representing the valid options for an operation's registration purpose (aka registration category).""",
@@ -64,7 +64,7 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 
 ##### POST #####
 @router.post(
-    "/v2/operations",
+    "/operations",
     response={200: OperationCreateOut, custom_codes_4xx: Message},
     tags=["V2"],
     description="""Creates a new operation for the current user and starts the registration process.

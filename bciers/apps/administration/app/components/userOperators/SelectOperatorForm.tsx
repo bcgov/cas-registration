@@ -17,9 +17,9 @@ export default function SelectOperatorForm() {
     const queryParam = `?${data.formData?.search_type}=${data.formData?.[
       data.formData?.search_type as keyof SelectOperatorFormData
     ]}`;
-// brianna
+    // brianna
     const response = await actionHandler(
-      `registration/v2/operators/search${queryParam}`,
+      `registration/operators/search${queryParam}`,
       "GET",
       "/select-operator",
     );
@@ -45,7 +45,7 @@ export default function SelectOperatorForm() {
   return (
     <section className="text-center text-2xl flex flex-col">
       <Form
-        formContext={{ endpoint: "registration/v2/operators/search" }}
+        formContext={{ endpoint: "registration/operators/search" }}
         schema={selectOperatorSchema}
         onSubmit={handleSubmit}
         uiSchema={selectOperatorUiSchema}

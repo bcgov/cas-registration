@@ -15,7 +15,7 @@ from registration.schema.generic import Message
 
 
 @router.patch(
-    "/v2/operations/{uuid:operation_id}/registration/submission",
+    "/operations/{uuid:operation_id}/registration/submission",
     response={200: OperationUpdateStatusOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Updates the status of an operation to 'Registered' when the registration is submitted.

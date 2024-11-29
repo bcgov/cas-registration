@@ -17,7 +17,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/v2/contacts",
+    "/contacts",
     response={200: List[ContactListOut], custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves a paginated list of contacts based on the provided filters.
@@ -39,7 +39,7 @@ def list_contacts(
 
 #### POST #####
 @router.post(
-    "/v2/contacts",
+    "/contacts",
     response={201: ContactOut, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Creates a new contact for the current user and associate it to the operator the user is associated with.""",

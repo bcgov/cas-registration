@@ -12,7 +12,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/v2/operators/{operator_id}/has-admin",
+    "/operators/{operator_id}/has-admin",
     response={200: bool, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Checks if a specific operator has any approved admin users. The endpoint verifies whether there are any users with the 'ADMIN' role and 'APPROVED' status for the given operator ID.

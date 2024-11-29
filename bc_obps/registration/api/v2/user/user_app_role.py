@@ -13,7 +13,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/v2/user/user-app-role",
+    "/user/user-app-role",
     response={200: UserAppRoleOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the application role of the current user.

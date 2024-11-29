@@ -13,7 +13,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/v2/user-operators/current/has_registered_operation",
+    "/user-operators/current/has_registered_operation",
     response={200: Dict[str, bool], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""

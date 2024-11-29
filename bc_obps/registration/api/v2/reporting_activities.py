@@ -14,7 +14,7 @@ from django.db.models import QuerySet
 
 
 @router.get(
-    "/v2/reporting_activities",
+    "/reporting_activities",
     response=List[ActivitySchema],
     tags=ACTIVITY_TAGS,
     description="""Retrieves a list of reporting activities.

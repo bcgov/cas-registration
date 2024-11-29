@@ -7,7 +7,7 @@ export default async function handleAccessRequestStatus(
   roleUpdate: UserOperatorRoles,
 ) {
   const response = await actionHandler(
-    `registration/v2/user-operators/${userOperatorId}/update-status`,
+    `registration/user-operators/${userOperatorId}/update-status`,
     "PUT",
     "",
     {

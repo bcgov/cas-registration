@@ -18,6 +18,7 @@ from . import (
     reporting_activities,
     users,
     contacts,
+    facilities,
 )
 from ._user_operators._current import operator
 from ._operations import current

@@ -236,7 +236,7 @@ describe("ContactForm component", () => {
       await waitFor(() => {
         expect(actionHandler).toHaveBeenNthCalledWith(
           1,
-          "registration/v2/contacts",
+          "registration/contacts",
           "POST",
           "/contacts",
           {
@@ -319,7 +319,7 @@ describe("ContactForm component", () => {
       // assert first invocation: POST
       expect(actionHandler).toHaveBeenNthCalledWith(
         1,
-        "registration/v2/contacts",
+        "registration/contacts",
         "POST",
         "/contacts",
         {
@@ -360,7 +360,7 @@ describe("ContactForm component", () => {
       // assert second invocation: PUT
       expect(actionHandler).toHaveBeenNthCalledWith(
         2,
-        "registration/v2/contacts/123",
+        "registration/contacts/123",
         "PUT",
         "/contacts/123",
         {
@@ -415,7 +415,7 @@ describe("ContactForm component", () => {
 
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
-      "registration/v2/contacts/123",
+      "registration/contacts/123",
       "PUT",
       "/contacts/123",
       {

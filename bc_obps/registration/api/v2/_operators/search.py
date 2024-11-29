@@ -15,7 +15,7 @@ from registration.api.router import router
 
 
 @router.get(
-    "/v2/operators/search",
+    "/operators/search",
     response={200: Union[List[OperatorSearchOut], OperatorSearchOut], custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Retrieves operator(s) based on the provided CRA business number or legal name.

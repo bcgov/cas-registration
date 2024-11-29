@@ -17,14 +17,14 @@ from registration.utils import CustomPagination
 
 
 @router.get(
-    "/v2/operators",
+    "/operators",
     response={200: List[OperatorListOut], custom_codes_4xx: Message},
     tags=["V2"],
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 @paginate(CustomPagination)
-def list_operators_v2(
+def list_operators(
     request: HttpRequest,
     filters: OperatorFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",

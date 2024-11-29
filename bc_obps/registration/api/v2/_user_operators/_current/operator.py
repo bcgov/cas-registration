@@ -18,7 +18,7 @@ from registration.api.router import router
 
 ## GET
 @router.get(
-    "/v2/user-operators/current/operator",
+    "/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Retrieves data about the current user-operator and their associated operator.
@@ -27,14 +27,14 @@ from registration.api.router import router
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_current_operator_and_user_operator_v2(request: HttpRequest) -> Tuple[Literal[200], Operator]:
+def get_current_operator_and_user_operator(request: HttpRequest) -> Tuple[Literal[200], Operator]:
     operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
     return 200, operator
 
 
 ## PUT
 @router.put(
-    "/v2/user-operators/current/operator",
+    "/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},
     tags=["V2"],
     description="""Updates the current user's operator.

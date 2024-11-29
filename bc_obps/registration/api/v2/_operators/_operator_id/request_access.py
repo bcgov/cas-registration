@@ -13,7 +13,7 @@ from service.application_access_service import ApplicationAccessService
 
 
 @router.post(
-    "/v2/operators/{operator_id}/request-access",
+    "/operators/{operator_id}/request-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Allows an industry user to request access to a specific operator.

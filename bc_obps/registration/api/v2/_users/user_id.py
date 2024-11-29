@@ -14,7 +14,7 @@ from service.user_service import UserService
 
 
 @router.get(
-    "/v2/users/{user_id}",
+    "/users/{user_id}",
     response={200: UserContactPageOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the details of a specific user by its ID.

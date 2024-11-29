@@ -16,7 +16,7 @@ from service.user_profile_service import UserProfileService
 
 # Endpoint to create a new user
 @router.post(
-    "/v2/users",
+    "/users",
     response={200: UserOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Creates a new user.

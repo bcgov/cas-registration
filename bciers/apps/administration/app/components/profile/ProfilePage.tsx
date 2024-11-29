@@ -11,7 +11,7 @@ import UserForm from "@/administration/app/components/profile/ProfileForm";
 async function getUserFormData(): Promise<
   UserProfileFormData | { error: string }
 > {
-  return actionHandler(`registration/v2/user/user-profile`, "GET", "");
+  return actionHandler(`registration/user/user-profile`, "GET", "");
 }
 
 // 🏗️ Async server component: dashboard\profile

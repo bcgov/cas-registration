@@ -103,7 +103,7 @@ export default {
         if (!token.full_name) {
           // 🚀 API call: Get user name from user table
           const response = await actionHandler(
-            `registration/v2/user/user-profile/${token.user_guid}`,
+            `registration/user/user-profile/${token.user_guid}`,
             "GET",
           );
           const { first_name: firstName, last_name: lastName } = response || {};
@@ -119,7 +119,7 @@ export default {
           // 🚀 API call: Get user app_role by user_guid from user table
 
           const responseRole = await actionHandler(
-            `registration/v2/user/user-app-role/${token.user_guid}`,
+            `registration/user/user-app-role/${token.user_guid}`,
             "GET",
           );
           if (responseRole?.role_name) {

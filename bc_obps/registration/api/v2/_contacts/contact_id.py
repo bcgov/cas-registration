@@ -13,7 +13,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/v2/contacts/{contact_id}",
+    "/contacts/{contact_id}",
     response={200: ContactOut, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves the details of a specific contact by its ID. The endpoint checks if the current user is authorized to access the contact.

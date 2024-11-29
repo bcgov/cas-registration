@@ -5,9 +5,5 @@ export default async function getContact(
   id: string,
   pathToRevalidate: string = "",
 ) {
-  return actionHandler(
-    `registration/v2/contacts/${id}`,
-    "GET",
-    pathToRevalidate,
-  );
+  return actionHandler(`registration/contacts/${id}`, "GET", pathToRevalidate);
 }

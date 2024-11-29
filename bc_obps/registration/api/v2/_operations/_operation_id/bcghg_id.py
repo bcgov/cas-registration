@@ -14,7 +14,7 @@ from registration.schema.generic import Message
 
 
 @router.patch(
-    "/v2/operations/{uuid:operation_id}/bcghg-id",
+    "/operations/{uuid:operation_id}/bcghg-id",
     response={200: OperationBoroIdOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Generates and returns a BCGHG ID for the operation if the operation doesn't already have a BCGHG ID.""",
