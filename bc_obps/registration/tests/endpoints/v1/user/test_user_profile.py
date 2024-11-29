@@ -11,7 +11,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
     # GET USER PROFILE
     def test_get_user_profile(self):
         # Act
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('get_user_profile'))
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('v1_get_user_profile'))
         content = response.json()
 
         # Assert
@@ -48,7 +48,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
         # Act
         # Construct the endpoint URL for identity_provider "bceidbusiness"
         response = TestUtils.client.post(
-            custom_reverse_lazy('create_user_profile'),
+            custom_reverse_lazy('v1_create_user_profile'),
             content_type=self.content_type,
             data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
@@ -96,7 +96,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
         # Act
         # Construct the endpoint URL for identity_provider "idir"
         response = TestUtils.client.post(
-            custom_reverse_lazy('create_user_profile'),
+            custom_reverse_lazy('v1_create_user_profile'),
             content_type=self.content_type,
             data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
@@ -143,7 +143,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
             'industry_user',
             self.content_type,
             mock_payload.model_dump_json(),
-            custom_reverse_lazy('update_user_profile'),
+            custom_reverse_lazy('v1_update_user_profile'),
         )
         content = response.json()
 
@@ -184,7 +184,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
             'industry_user',
             self.content_type,
             mock_payload.model_dump_json(),
-            custom_reverse_lazy('update_user_profile'),
+            custom_reverse_lazy('v1_update_user_profile'),
         )
         content = response.json()
 

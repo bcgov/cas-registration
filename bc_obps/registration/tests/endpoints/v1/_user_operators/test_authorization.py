@@ -23,7 +23,7 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
             self.content_type,
             {"role": UserOperator.Roles.REPORTER, "status": UserOperator.Statuses.APPROVED},
             custom_reverse_lazy(
-                'update_user_operator_status', kwargs={"user_operator_id": subsequent_user_operator.id}
+                'v1_update_user_operator_status', kwargs={"user_operator_id": subsequent_user_operator.id}
             ),
         )
         assert response.status_code == 401

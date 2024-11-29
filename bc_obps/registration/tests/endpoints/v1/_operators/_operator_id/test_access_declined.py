@@ -18,7 +18,9 @@ class TestOperatorIsDeclinedEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_user_operator_access_declined', kwargs={'operator_id': user_operator.operator_id}),
+            custom_reverse_lazy(
+                'v1_get_user_operator_access_declined', kwargs={'operator_id': user_operator.operator_id}
+            ),
         )
         response_json = response.json()
         assert response.status_code == 200

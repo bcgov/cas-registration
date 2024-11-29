@@ -17,7 +17,7 @@ class TestOperatorRequestAdminAccessEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {},
-            custom_reverse_lazy("request_admin_access", kwargs={"operator_id": operator.id}),
+            custom_reverse_lazy("v1_request_admin_access", kwargs={"operator_id": operator.id}),
         )
 
         # Assert that the email notification was sent
@@ -51,7 +51,7 @@ class TestOperatorRequestAdminAccessEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {},
-            custom_reverse_lazy("request_admin_access", kwargs={"operator_id": 99999}),
+            custom_reverse_lazy("v1_request_admin_access", kwargs={"operator_id": 99999}),
         )
         assert response.status_code == 422
         assert (

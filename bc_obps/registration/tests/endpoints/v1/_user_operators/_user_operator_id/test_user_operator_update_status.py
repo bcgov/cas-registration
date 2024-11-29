@@ -35,7 +35,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
                 "status": UserOperator.Statuses.APPROVED,
             },
             custom_reverse_lazy(
-                "update_user_operator_status",
+                "v1_update_user_operator_status",
                 kwargs={
                     "user_operator_id": user_operator.id,
                 },
@@ -62,7 +62,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
                 "status": UserOperator.Statuses.APPROVED,
             },
             custom_reverse_lazy(
-                "update_user_operator_status",
+                "v1_update_user_operator_status",
                 kwargs={
                     "user_operator_id": subsequent_user_operator.id,
                 },
@@ -94,7 +94,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
                 "status": UserOperator.Statuses.APPROVED,
             },
             custom_reverse_lazy(
-                "update_user_operator_status",
+                "v1_update_user_operator_status",
                 kwargs={
                     "user_operator_id": other_user_operator.id,
                 },
@@ -117,7 +117,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
                 "status": UserOperator.Statuses.APPROVED,
             },
             custom_reverse_lazy(
-                "update_user_operator_status",
+                "v1_update_user_operator_status",
                 kwargs={
                     "user_operator_id": user_operator.id,
                 },
@@ -154,7 +154,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
                 "status": UserOperator.Statuses.APPROVED,
             },
             custom_reverse_lazy(
-                'update_user_operator_status',
+                'v1_update_user_operator_status',
                 kwargs={
                     "user_operator_id": user_operator.id,
                 },
@@ -204,7 +204,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
                 "status": UserOperator.Statuses.DECLINED,
             },
             custom_reverse_lazy(
-                "update_user_operator_status",
+                "v1_update_user_operator_status",
                 kwargs={
                     "user_operator_id": user_operator.id,
                 },

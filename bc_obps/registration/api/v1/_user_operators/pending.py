@@ -16,7 +16,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # This endpoint retrieves data about both the user-operator and the operator.
 @router.get(
-    "/user-operators/pending",
+    "/v1/user-operators/pending",
     response={200: PendingUserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about the pending user-operator and their associated operator.
@@ -24,5 +24,5 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("industry_user"),
 )
 @handle_http_errors()
-def get_pending_operator_and_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
+def v1_get_pending_operator_and_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
     return 200, UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))

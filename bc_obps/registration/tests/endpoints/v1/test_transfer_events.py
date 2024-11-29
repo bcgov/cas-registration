@@ -8,7 +8,7 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestTransferEventEndpoint(CommonTestSetup):
-    url = custom_reverse_lazy('list_transfer_events')
+    url = custom_reverse_lazy('v1_list_transfer_events')
     # GET
     def test_list_transfer_events_unpaginated(self):
         # transfer of an operation
@@ -40,7 +40,7 @@ class TestTransferEventEndpoint(CommonTestSetup):
         # transfer of 50 facilities
         baker.make_recipe('utils.transfer_event', facilities=baker.make_recipe('utils.facility', _quantity=50))
         # Get the default page 1 response
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("list_transfer_events"))
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("v1_list_transfer_events"))
         assert response.status_code == 200
 
         response_items_1 = response.json().get('items')
