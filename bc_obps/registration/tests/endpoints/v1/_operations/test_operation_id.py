@@ -22,7 +22,7 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationIdEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "operations"
+    endpoint = CommonTestSetup.base_endpoint + "v1/operations"
 
     @pytest.fixture(autouse=True)
     def setup_mocks(self, mocker):
@@ -65,7 +65,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
 
         # /operations/{operation_id}
         response_2 = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("v1_get_operation", kwargs={"operation_id": random_operation.id})
+            self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": random_operation.id})
         )
         assert response_2.status_code == 401
 
