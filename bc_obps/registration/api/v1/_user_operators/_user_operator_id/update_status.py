@@ -17,7 +17,7 @@ from registration.api.router import router
 
 
 @router.put(
-    "/user-operators/{user_operator_id}/update-status",
+    "/v1/user-operators/{user_operator_id}/update-status",
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Updates the status of a user operator by its ID.
@@ -26,7 +26,7 @@ from registration.api.router import router
     auth=authorize("v1_authorized_irc_user_and_industry_admin_user"),
 )
 @handle_http_errors()
-def update_user_operator_status(
+def v1_update_user_operator_status(
     request: HttpRequest, user_operator_id: UUID, payload: UserOperatorStatusUpdate
 ) -> Tuple[Literal[200], UserOperator]:
     return 200, UserOperatorService.update_status(user_operator_id, payload, get_current_user_guid(request))

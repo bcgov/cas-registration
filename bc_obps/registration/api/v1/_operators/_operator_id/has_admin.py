@@ -12,7 +12,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/operators/{operator_id}/has-admin",
+    "/v1/operators/{operator_id}/has-admin",
     response={200: bool, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Checks if a specific operator has any approved admin users. The endpoint verifies whether there are any users with the 'ADMIN' role and 'APPROVED' status for the given operator ID.
@@ -20,5 +20,5 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("authorized_roles"),
 )
 @handle_http_errors()
-def get_user_operator_has_admin(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], bool]:
+def v1_get_user_operator_has_admin(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], bool]:
     return 200, UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.APPROVED).exists()

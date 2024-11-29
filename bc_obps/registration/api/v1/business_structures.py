@@ -11,12 +11,12 @@ from registration.schema.v1 import BusinessStructureOut
 
 ##### GET #####
 @router.get(
-    "/business_structures",
+    "/v1/business_structures",
     response=List[BusinessStructureOut],
     tags=BUSINESS_STRUCTURE_TAGS,
     description="""Retrieves a list of business structures.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
     auth=authorize("authorized_roles"),
 )
-def list_business_structures(request: HttpRequest) -> Tuple[Literal[200], QuerySet[BusinessStructure]]:
+def v1_list_business_structures(request: HttpRequest) -> Tuple[Literal[200], QuerySet[BusinessStructure]]:
     return 200, BusinessStructureDataAccessService.get_business_structures()

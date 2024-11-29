@@ -20,7 +20,7 @@ from registration.schema.v1 import UserOperatorOut
 
 # GET
 @router.get(
-    "/user-operators/{uuid:user_operator_id}",
+    "/v1/user-operators/{uuid:user_operator_id}",
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about a specific user-operator by its ID.
@@ -29,7 +29,7 @@ from registration.schema.v1 import UserOperatorOut
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tuple[Literal[200], UserOperator]:
+def v1_get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tuple[Literal[200], UserOperator]:
     UserOperatorService.check_if_user_eligible_to_access_user_operator(
         get_current_user_guid(request), user_operator_id
     )  # industry users can only access their own user_operators
@@ -38,7 +38,7 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
 
 ## PUT
 @router.put(
-    "/user-operators/{uuid:user_operator_id}",
+    "/v1/user-operators/{uuid:user_operator_id}",
     response={200: RequestAccessOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Updates both the operator and the user-operator by their ID.
@@ -49,7 +49,7 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def update_operator_and_user_operator(
+def v1_update_operator_and_user_operator(
     request: HttpRequest, payload: UserOperatorOperatorIn, user_operator_id: UUID
 ) -> Tuple[Literal[200], Dict[str, UUID]]:
     UserOperatorService.check_if_user_eligible_to_access_user_operator(
