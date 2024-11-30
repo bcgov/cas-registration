@@ -7,7 +7,67 @@ from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 
 
+from reporting.models import FacilityReport
+from reporting.service.emission_category_service import EmissionCategoryService
+
+
+
 class ReportEmissionAllocationService:
+    @staticmethod
+    @transaction.atomic()
+    def get_emission_allocation_data(report_version_id: int, facility_id: UUID) -> dict:
+        # Step 1: Get the facility report ID
+        facility_report_id = FacilityReport.objects.get(
+            report_version_id=report_version_id, facility_id=facility_id
+        ).pk
+        
+        # Step 2: Fetch all emission category totals
+        all_emmission_categories_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
+        
+        # Step 3: Fetch report products for the given report version and facility
+        report_products = ReportProduct.objects.filter(
+            report_version_id=report_version_id, facility_report__facility_id=facility_id
+        )
+        
+        # Step 4: Fetch existing emission allocations for the given report version and facility
+        report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
+            report_version_id=report_version_id, report_product__facility_report__facility_id=facility_id
+        )
+        
+        # Step 5: Construct the response data
+        report_product_emission_allocations_data = []
+        for category, total in all_emmission_categories_totals.items():
+            if category in ["lfo_excluded", "attributable_for_reporting", "attributable_for_threshold", "reporting_only"]:
+                continue  # Skip special categories
+            
+            # Build product data
+            products = []
+            for rp in report_products:
+                product_emission = report_product_emission_allocations.filter(
+                    report_product=rp, emission_category__category_name=category
+                ).first()
+                products.append(
+                    {
+                        "product_id": rp.product_id,
+                        "product_name": rp.product.name,
+                        "product_emission": product_emission.allocated_quantity if product_emission else 0,
+                    }
+                )
+            
+            # Add to the final response data
+            report_product_emission_allocations_data.append(
+                {
+                    "emission_category": category,
+                    "products": products,
+                    "emission_total": total,
+                }
+            )
+        
+        return {
+            "report_product_emission_allocations": report_product_emission_allocations_data,
+            "facility_total_emissions": all_emmission_categories_totals["attributable_for_reporting"],
+        }
+
     @classmethod
     @transaction.atomic()
     def save_emission_allocation_data(

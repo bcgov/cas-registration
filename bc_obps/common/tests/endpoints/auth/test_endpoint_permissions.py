@@ -106,6 +106,11 @@ class TestEndpointPermissions(TestCase):
             },
             {
                 "method": "get",
+                "endpoint_name": "get_emission_allocations",
+                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
+            },
+            {
+                "method": "get",
                 "endpoint_name": "get_report_non_attributable_by_version_id",
                 "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
             },
@@ -149,6 +154,11 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "post",
                 "endpoint_name": "save_production_data",
+                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
+            },
+            {
+                "method": "post",
+                "endpoint_name": "save_emission_allocation_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
             },
             {"method": "get", "endpoint_name": "save_report_attachments", "kwargs": {"report_version_id": mock_int}},

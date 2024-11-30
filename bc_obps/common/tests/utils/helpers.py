@@ -45,6 +45,8 @@ class BaseTestCase(TestCase):
 
     def test_field_data_length(self):
         if hasattr(self, "test_object") and hasattr(self, "field_data"):
+            print(f"test_object: {self.test_object._meta.get_fields()}")
+            print(f"field_data: {self.field_data}")
             # check that the number of fields in the model is the same as the number of fields in the field_data list
             self.assertEqual(
                 len(self.field_data),

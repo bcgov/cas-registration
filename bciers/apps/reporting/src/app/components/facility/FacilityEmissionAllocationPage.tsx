@@ -13,7 +13,7 @@ export default async function FacilityEmissionAllocationPage({
 
   const response = await getEmissionAllocations(version_id, facility_id);
   const initialData = response["report_product_emission_allocations"];
-
+  console.log(response);
   return (
     <Form
       version_id={version_id}

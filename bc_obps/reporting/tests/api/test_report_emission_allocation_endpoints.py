@@ -1,14 +1,8 @@
-import random
-from reporting.models import report
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
-from reporting.models import report_product
-from reporting.api import emission_category
-from reporting.models.emission_category import EmissionCategory
-from model_bakery.baker import make_recipe, make
-from model_bakery.recipe import Recipe, seq
+from model_bakery.baker import make_recipe
 
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 

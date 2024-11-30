@@ -32,6 +32,7 @@ from .report_non_attributable_emissions import ReportNonAttributableEmissions
 from .report_product import ReportProduct
 from .report_verification import ReportVerification
 from .report_attachment import ReportAttachment
+from .report_product_emission_allocation import ReportProductEmissionAllocation
 
 __all__ = [
     "ReportDataBaseModel",
