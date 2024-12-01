@@ -1,12 +1,11 @@
 from typing import List
 from uuid import UUID
 from django.db import transaction
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from registration.models.regulated_product import RegulatedProduct
+from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationsSchemaOut
+from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
-
-
 from reporting.models import FacilityReport
 from reporting.service.emission_category_service import EmissionCategoryService
 
@@ -15,7 +14,7 @@ from reporting.service.emission_category_service import EmissionCategoryService
 class ReportEmissionAllocationService:
     @staticmethod
     @transaction.atomic()
-    def get_emission_allocation_data(report_version_id: int, facility_id: UUID) -> dict:
+    def get_emission_allocation_data(report_version_id: int, facility_id: UUID) -> ReportProductEmissionAllocationsSchemaOut:
         # Step 1: Get the facility report ID
         facility_report_id = FacilityReport.objects.get(
             report_version_id=report_version_id, facility_id=facility_id
@@ -66,7 +65,7 @@ class ReportEmissionAllocationService:
         return {
             "report_product_emission_allocations": report_product_emission_allocations_data,
             "facility_total_emissions": all_emmission_categories_totals["attributable_for_reporting"],
-        }
+          }
 
     @classmethod
     @transaction.atomic()

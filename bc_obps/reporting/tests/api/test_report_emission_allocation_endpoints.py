@@ -85,7 +85,6 @@ class TestReportEmissionAllocationEndpoints(CommonTestSetup):
                     "emission_total": 0
                 }
             ],
-            "facility_total_emissions": 0
         }
 
     def test_get_returns_the_right_data_when_not_empty(self):
@@ -301,5 +300,4 @@ class TestReportEmissionAllocationEndpoints(CommonTestSetup):
                     "emission_total":0
                 }
             ],
-            "facility_total_emissions":0
             }

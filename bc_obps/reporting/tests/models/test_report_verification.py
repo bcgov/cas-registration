@@ -1,6 +1,6 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from model_bakery.baker import make_recipe
+from reporting.tests.utils.bakers import report_verification_baker
 
 
 class ReportVerificationTest(BaseTestCase):
@@ -11,7 +11,7 @@ class ReportVerificationTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         # Create a test instance of ReportVerification using the baker
-        cls.test_object = make_recipe('reporting.tests.utils.report_verification')
+        cls.test_object = report_verification_baker()
         # Define the field data to validate in tests
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,

@@ -23,5 +23,6 @@ class ReportProductEmissionAllocationSchemaOut(ReportProductEmissionAllocationSc
     allocated_quantity: float
 
 
-class AllocationDataOut(Schema):
+class ReportProductEmissionAllocationsSchemaOut(Schema):
     report_product_emission_allocations: List[ReportProductEmissionAllocationSchemaOut]
+    facility_total_emissions: float

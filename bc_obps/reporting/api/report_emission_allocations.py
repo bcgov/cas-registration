@@ -1,6 +1,6 @@
 from typing import Literal
 from uuid import UUID
-from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationSchemaIn
+from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationSchemaIn, ReportProductEmissionAllocationsSchemaOut
 from registration.decorators import handle_http_errors
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from common.permissions import authorize
@@ -23,7 +23,7 @@ from reporting.service.report_emission_allocation_service import ReportEmissionA
 @handle_http_errors()
 def get_emission_allocations(
     request: HttpRequest, report_version_id: int, facility_id: UUID
-) -> Tuple[Literal[200], dict]:
+) -> Tuple[Literal[200], ReportProductEmissionAllocationsSchemaOut]:
     # Delegate the responsibility to the service
     response_data = ReportEmissionAllocationService.get_emission_allocation_data(report_version_id, facility_id)
     return 200, response_data
