@@ -3,8 +3,8 @@ import { useRouter } from "@bciers/testConfig/mocks";
 import {
   verificationSchema,
   verificationUiSchema,
-} from "@reporting/src/data/jsonSchema/signOff/verification/verification";
-import VerificationForm from "@reporting/src/app/components/signOff/verification/VerificationForm";
+} from "@reporting/src/data/verification/verification";
+import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
 import { fillMandatoryFields } from "@bciers/testConfig/helpers/fillMandatoryFields";

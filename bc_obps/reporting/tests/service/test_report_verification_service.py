@@ -1,14 +1,16 @@
 from django.test import TestCase
+from model_bakery.baker import make_recipe
 from reporting.service.report_verification_service import ReportVerificationService
 from reporting.schema.report_verification import ReportVerificationIn
-from reporting.tests.utils.bakers import report_verification_baker, report_version_baker
 
 
 class TestReportVerificationService(TestCase):
     def setUp(self):
         # Arrange: Create a report version
-        self.report_version = report_version_baker()
-        self.report_verification = report_verification_baker(report_version=self.report_version)
+        self.report_version = make_recipe('reporting.tests.utils.report_version')
+        self.report_verification = make_recipe(
+            'reporting.tests.utils.report_verification', report_version=self.report_version
+        )
 
     def test_get_report_verification_by_version_id_returns_correct_instance(self):
         """

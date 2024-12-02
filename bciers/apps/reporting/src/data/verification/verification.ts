@@ -36,7 +36,7 @@ export const verificationSchema: RJSFSchema = {
     visit_name: {
       title: "Sites visited",
       type: "string",
-      enum: ["Other", "None"], // modified in components/signOff/verification/createVerificationSchema.ts
+      enum: ["Other", "None"], // modified in components/verification/createVerificationSchema.ts
     },
     verification_note: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
