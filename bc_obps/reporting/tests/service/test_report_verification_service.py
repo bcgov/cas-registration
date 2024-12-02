@@ -8,7 +8,9 @@ class TestReportVerificationService(TestCase):
     def setUp(self):
         # Arrange: Create a report version
         self.report_version = make_recipe('reporting.tests.utils.report_version')
-        self.report_verification = make_recipe('reporting.tests.utils.report_verification', report_version=self.report_version)
+        self.report_verification = make_recipe(
+            'reporting.tests.utils.report_verification', report_version=self.report_version
+        )
 
     def test_get_report_verification_by_version_id_returns_correct_instance(self):
         """
