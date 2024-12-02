@@ -1,5 +1,5 @@
 from registration.tests.utils.bakers import operation_baker, operator_baker
-from reporting.models import configuration_element, ReportPersonResponsible, ReportAdditionalData, ReportVerification
+from reporting.models import configuration_element, ReportPersonResponsible, ReportAdditionalData
 from reporting.models.gas_type import GasType
 from registration.models import Activity
 from reporting.models.report_operation import ReportOperation

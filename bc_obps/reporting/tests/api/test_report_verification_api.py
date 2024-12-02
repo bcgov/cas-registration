@@ -10,11 +10,10 @@ class TestSaveReportVerificationApi(CommonTestSetup):
     def setup_method(self):
         self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
         self.report_verification = baker.make_recipe('reporting.tests.utils.report_verification')
-      
-      
+
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
-      
+
     """Tests for the get_report_verification_by_version_id endpoint."""
 
     @patch(
