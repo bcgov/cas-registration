@@ -64,8 +64,8 @@ export default function VerificationForm({
 
   return (
     <MultiStepFormWithTaskList
-      initialStep={3}
       steps={multiStepHeaderSteps}
+      initialStep={4}
       taskListElements={taskListElements}
       schema={verificationSchema}
       uiSchema={verificationUiSchema}

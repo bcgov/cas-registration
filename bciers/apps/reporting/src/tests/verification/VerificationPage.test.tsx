@@ -1,12 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import VerificationPage from "@reporting/src/app/components/signOff/verification/VerificationPage";
-import { verificationSchema } from "@reporting/src/data/jsonSchema/signOff/verification/verification";
-import { createVerificationSchema } from "@reporting/src/app/components/signOff/verification/createVerificationSchema";
+import VerificationPage from "@reporting/src/app/components/verification/VerificationPage";
+import { verificationSchema } from "@reporting/src/data/verification/verification";
+import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 
 // ✨ Mocks
 vi.mock(
-  "@reporting/src/app/components/signOff/verification/createVerificationSchema",
+  "@reporting/src/app/components/verification/createVerificationSchema",
   () => ({
     createVerificationSchema: vi.fn(),
   }),
