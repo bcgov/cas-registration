@@ -29,7 +29,7 @@ export async function getExternalDashboardUsersTileData(): Promise<
 > {
   try {
     return await actionHandler(
-      `registration/user-operators/current/access-requests`,
+      `registration/v1/user-operators/current/access-requests`,
       "GET",
       "/dashboard/users",
     );

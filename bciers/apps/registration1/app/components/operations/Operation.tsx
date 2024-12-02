@@ -25,7 +25,7 @@ import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 async function getUserFormData(): Promise<
   UserProfileFormData | { error: string }
 > {
-  return actionHandler(`registration/user/user-profile`, "GET", "");
+  return actionHandler(`registration/v1/user/user-profile`, "GET", "");
 }
 
 // 🛠️ Function to fetch NAICS codes
@@ -82,7 +82,7 @@ async function getBusinessStructures() {
 async function getOperation(id: string) {
   try {
     return await actionHandler(
-      `registration/operations/${id}`,
+      `registration/v1/operations/${id}`,
       "GET",
       `/operations/${id}`,
     );

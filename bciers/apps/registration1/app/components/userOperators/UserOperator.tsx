@@ -24,7 +24,7 @@ async function getBusinessStructures() {
 export async function getUserOperatorFormData(id: string) {
   if (!id || !isValidUUID(id)) return {};
   return actionHandler(
-    `registration/user-operators/${id}`,
+    `registration/v1/user-operators/${id}`,
     "GET",
     `/user-operator/${id}`,
   );

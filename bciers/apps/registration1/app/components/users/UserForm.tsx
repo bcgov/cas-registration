@@ -56,7 +56,7 @@ export default function UserForm({ formData, isCreate }: Props) {
     setIsSuccess(false);
     // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
-      isCreate ? `registration/users` : `registration/user/user-profile`,
+      isCreate ? `registration/v1/users` : `registration/v1/user/user-profile`,
       isCreate ? "POST" : "PUT",
       "/dashboard/profile",
       {

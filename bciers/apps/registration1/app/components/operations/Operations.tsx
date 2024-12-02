@@ -31,7 +31,6 @@ const formatTimestamp = (timestamp: string) => {
   // in the DataGrid cell using whiteSpace: "pre-line" CSS
   return `${date}\n${timeWithTimeZone}`;
 };
-
 export const formatOperationRows = (rows: GridRowsProp) => {
   return rows.map(
     ({
@@ -65,7 +64,7 @@ export const fetchOperationsPageData = async (
 
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations${queryParams}`,
+      `registration/v1/operations${queryParams}`,
       "GET",
       "",
     );
