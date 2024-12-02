@@ -82,7 +82,6 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
             'authorized_user_operator_roles': all_industry_user_operator_roles,
             'industry_user_must_be_approved': False,
         },
-        # brianna
         "approved_authorized_roles": {
             'authorized_app_roles': all_authorized_app_roles,
             'authorized_user_operator_roles': all_industry_user_operator_roles,

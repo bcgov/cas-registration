@@ -26,6 +26,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_current_operator_and_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
+def get_current_operator_from_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
     user_operator = UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))
     return 200, user_operator

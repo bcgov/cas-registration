@@ -52,7 +52,6 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "v1_update_operator_and_user_operator",
                 "kwargs": {"user_operator_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "v1_get_current_operator_and_user_operator"},
             {"method": "get", "endpoint_name": "v1_is_current_user_approved_admin"},
             {"method": "get", "endpoint_name": "v1_get_operator_users"},
             {"method": "put", "endpoint_name": "v1_update_contact", "kwargs": {"contact_id": mock_uuid}},
@@ -66,7 +65,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "operation_registration_get_opted_in_operation_detail",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_current_operator_and_user_operator"},
+            {"method": "get", "endpoint_name": "v1_get_current_operator_from_user_operator"},
             {"method": "get", "endpoint_name": "list_current_users_operations"},
             {
                 "method": "get",
@@ -193,6 +192,7 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"operation_id": mock_uuid},
             },
             {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
+            {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
         ],
         "all_roles": [
             {"method": "put", "endpoint_name": "v1_update_user_profile"},

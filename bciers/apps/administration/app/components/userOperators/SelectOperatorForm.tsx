@@ -17,7 +17,6 @@ export default function SelectOperatorForm() {
     const queryParam = `?${data.formData?.search_type}=${data.formData?.[
       data.formData?.search_type as keyof SelectOperatorFormData
     ]}`;
-    // brianna
     const response = await actionHandler(
       `registration/operators/search${queryParam}`,
       "GET",

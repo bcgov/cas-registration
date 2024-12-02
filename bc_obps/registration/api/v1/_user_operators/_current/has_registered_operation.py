@@ -28,7 +28,6 @@ def v1_get_current_user_operator_has_registered_operation(request: HttpRequest) 
         # Retrieve the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
         # Use the service to check if the operator has a registered operation
-        # brianna why v2 here
         has_registered_operation = OperationDataAccessServiceV2.check_current_users_registered_operation(operator.id)
         return 200, {"has_registered_operation": has_registered_operation}
     except ObjectDoesNotExist:

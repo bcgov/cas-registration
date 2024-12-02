@@ -41,7 +41,7 @@ def list_operators(
 
 
 @router.put(
-    "/operators/{operator_id}",
+    "/operators/{uuid:operator_id}",
     response={200: OperatorOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Updates the status of a specific operator by its ID.

@@ -12,7 +12,6 @@
       "type": "Linear Facility Operation",
       "naics_code": 19,
       "swrs_facility_id": 1001,
-      "bcghg_id": "23219990005",
       "regulated_products": [],
       "status": "Not Started",
       "created_at": "2024-2-01T15:27:00.000Z",
