@@ -42,7 +42,7 @@ export default function UserOperatorForm({
       ...data.formData,
     } as UserOperatorFormData;
 
-    const endpoint = `registration/user-operators${
+    const endpoint = `registration/v1/user-operators${
       !isCreate ? `/${userOperatorId}` : ""
     }`;
     const response = await actionHandler(

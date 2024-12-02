@@ -22,7 +22,7 @@ export default function RequestAccessButton({
     ? "Request Administrator Access"
     : "Request Access";
 
-  const endpointUrl = `registration/operators/${operatorId}/${
+  const endpointUrl = `registration/v1/operators/${operatorId}/${
     isAdminRequest ? "request-admin-access" : "request-access"
   }`;
 
@@ -54,7 +54,10 @@ export default function RequestAccessButton({
         aria-label={label ?? "Request Access"}
         color="primary"
         variant="contained"
-        onClick={async () => handleRequestAccess()}
+        onClick={async () => {
+          console.log("dd");
+          handleRequestAccess();
+        }}
       >
         {label}
       </Button>

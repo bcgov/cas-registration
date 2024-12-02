@@ -40,7 +40,7 @@ export const fetchUserOperatorPageData = async (
     const queryParams = buildQueryParams(params);
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/user-operators${queryParams}`,
+      `registration/v1/user-operators${queryParams}`,
       "GET",
       "",
     );
