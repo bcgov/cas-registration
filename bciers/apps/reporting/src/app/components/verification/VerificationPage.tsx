@@ -1,8 +1,8 @@
 import { getReportVerification } from "@reporting/src/app/utils/getReportVerification";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
-import { createVerificationSchema } from "@reporting/src/app/components/signOff/verification/createVerificationSchema";
-import { verificationUiSchema } from "@reporting/src/data/jsonSchema/signOff/verification/verification";
-import VerificationForm from "@reporting/src/app/components/signOff/verification/VerificationForm";
+import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
+import { verificationUiSchema } from "@reporting/src/data/verification/verification";
+import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
 
 export default async function VerificationPage({
