@@ -1,5 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
-import { verificationSchema } from "@reporting/src/data/jsonSchema/signOff/verification/verification";
+import { verificationSchema } from "@reporting/src/data/verification/verification";
 
 export const createVerificationSchema = (facilities: string[]): RJSFSchema => {
   // Retrieve a local copy of the base verification schema based
