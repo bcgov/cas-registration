@@ -12,8 +12,14 @@ def to_snake(string: str) -> str:
 
 class ReportAdditionalDataOut(ModelSchema):
     """
-    Schema for the get report operation endpoint request output
+    Schema for the get report additional data endpoint request output
     """
+
+    capture_emissions: Optional[bool] = False  # Default values
+    emissions_on_site_use: Optional[int] = None
+    emissions_on_site_sequestration: Optional[int] = None
+    emissions_off_site_transfer: Optional[int] = None
+    electricity_generated: Optional[int] = None
 
     class Meta:
         # alias_generator = to_snake
@@ -25,13 +31,12 @@ class ReportAdditionalDataOut(ModelSchema):
             'emissions_on_site_sequestration',
             'emissions_off_site_transfer',
             'electricity_generated',
-            'report_version',
         ]
 
 
 class ReportAdditionalDataIn(ModelSchema):
     """
-    Schema for the save report contact endpoint request input.
+    Schema for the save report additional data endpoint request input.
     """
 
     report_version: int

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   additionalReportingDataSchema,
   additionalReportingDataUiSchema,
@@ -15,6 +15,8 @@ import { actionHandler } from "@bciers/actions";
 interface AdditionalReportingDataProps {
   versionId: number;
   includeElectricityGenerated: boolean;
+  initialFormData: any;
+  isNewEntrant: boolean;
 }
 
 interface FormData {
@@ -34,17 +36,15 @@ interface FormData {
 export default function AdditionalReportingDataForm({
   versionId,
   includeElectricityGenerated,
+  initialFormData,
+  isNewEntrant,
 }: AdditionalReportingDataProps) {
-  const [formData, setFormData] = useState<FormData>({
-    captured_emissions_section: {
-      capture_emissions: false,
-    },
-  });
-  // 🛸 Set up routing urls
-  const searchParams = useSearchParams();
-  const facilityId = searchParams.get("facility_id");
-  const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
-  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+
+  const router = useRouter();
+  const saveAndContinueUrl = isNewEntrant
+    ? `/reports/${versionId}/new-entrant-information`
+    : `reports/${versionId}/compliance-summary`;
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
