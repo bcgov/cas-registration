@@ -23,5 +23,6 @@ class EmissionCategoryModelTest(BaseTestCase):
             ("category_name", "category name", 1000, None),
             ("category_type", "category type", 1000, None),
             ("emission_category_mappings", "emission category mapping", None, 0),
+            ("report_new_entrant_emissions", "report new entrant emissions", None, 0),
             ("report_non_attributable_emissions", "report non attributable emissions", None, 0),
         ]

@@ -14,14 +14,8 @@ vi.mock("@bciers/actions", () => ({
 
 describe("NewEntrantInformationForm Component", () => {
   const versionId = 1;
-  const products = [
-    { id: 1, name: "Product A" },
-    { id: 2, name: "Product B" },
-  ];
-  const initialFormData = { assertion_statement: true };
-  const dateOfAuthorization = "2024-01-01";
-  const dateOfFirstShipment = "2024-06-01";
-  const dateOfNewEntrantPeriod = "2024-12-01";
+  let initialFormData = { assertion_statement: true };
+
   const mockPush = vi.fn();
 
   beforeEach(() => {
@@ -45,11 +39,7 @@ describe("NewEntrantInformationForm Component", () => {
     render(
       <NewEntrantInformationForm
         versionId={versionId}
-        products={products}
         initialFormData={initialFormData}
-        dateOfAuthorization={dateOfAuthorization}
-        dateOfFirstShipment={dateOfFirstShipment}
-        dateOfNewEntrantPeriod={dateOfNewEntrantPeriod}
       />,
     );
 
@@ -58,14 +48,11 @@ describe("NewEntrantInformationForm Component", () => {
   });
 
   it("disables submit button initially if assertion statement is false", async () => {
+    initialFormData = { assertion_statement: false };
     render(
       <NewEntrantInformationForm
         versionId={versionId}
-        products={products}
-        initialFormData={{ assertion_statement: false }}
-        dateOfAuthorization={dateOfAuthorization}
-        dateOfFirstShipment={dateOfFirstShipment}
-        dateOfNewEntrantPeriod={dateOfNewEntrantPeriod}
+        initialFormData={initialFormData}
       />,
     );
 
@@ -76,14 +63,11 @@ describe("NewEntrantInformationForm Component", () => {
   });
 
   it("enables submit button when assertion statement is true", async () => {
+    initialFormData = { assertion_statement: true };
     render(
       <NewEntrantInformationForm
         versionId={versionId}
-        products={products}
-        initialFormData={{ assertion_statement: true }}
-        dateOfAuthorization={dateOfAuthorization}
-        dateOfFirstShipment={dateOfFirstShipment}
-        dateOfNewEntrantPeriod={dateOfNewEntrantPeriod}
+        initialFormData={initialFormData}
       />,
     );
 
@@ -94,14 +78,11 @@ describe("NewEntrantInformationForm Component", () => {
   });
 
   it("submits form data and redirects on success", async () => {
+    initialFormData = { assertion_statement: true };
     render(
       <NewEntrantInformationForm
         versionId={versionId}
-        products={products}
         initialFormData={initialFormData}
-        dateOfAuthorization={dateOfAuthorization}
-        dateOfFirstShipment={dateOfFirstShipment}
-        dateOfNewEntrantPeriod={dateOfNewEntrantPeriod}
       />,
     );
 
