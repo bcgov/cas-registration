@@ -1,6 +1,7 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Any
 from registration.models.activity import Activity
+from reporting.models import ReportNewEntrant
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
@@ -145,6 +146,17 @@ report_non_attributable_emissions = Recipe(
     emission_category=foreign_key(emission_category),
     gas_type=[foreign_key(gas_type)],
 )
+
+
+report_new_entrant = Recipe(
+    ReportNewEntrant,
+    report_version=foreign_key(report_version),
+    authorization_date=(datetime.now() - timedelta(days=10)).isoformat(),
+    first_shipment_date=(datetime.now() - timedelta(days=5)).isoformat(),
+    new_entrant_period_start=(datetime.now() - timedelta(days=20)).isoformat(),
+    assertion_statement=True,  # Example: Boolean field
+)
+
 report_verification = Recipe(
     ReportVerification,
     report_version=foreign_key(report_version),

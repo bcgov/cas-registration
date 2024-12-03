@@ -126,7 +126,9 @@ class ReportService:
         regulated_products = report_operation.regulated_products.all()
 
         # Map to the output schema (assuming RegulatedProductOut has a 'name' field)
-        return [RegulatedProductOut(id=product.id, name=product.name) for product in regulated_products]
+        return [
+            RegulatedProductOut(id=product.id, name=product.name, unit=product.unit) for product in regulated_products
+        ]
 
     @staticmethod
     def get_report_type_by_version_id(version_id: int) -> ReportVersion:

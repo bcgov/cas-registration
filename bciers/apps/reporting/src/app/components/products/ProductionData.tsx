@@ -36,14 +36,13 @@ const ProductionData: React.FC<Props> = async ({
     report_version_id,
     facility_id,
   );
-  const taskListElements = getFacilitiesInformationTaskList(
+  const taskListElements = await getFacilitiesInformationTaskList(
     report_version_id,
     facility_id,
     orderedActivities,
     ActivePage.ProductionData,
   );
 
-  console.log("schema", schema);
   return (
     <Suspense fallback="Loading Production Data Form">
       <ProductionDataForm
