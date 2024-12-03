@@ -249,11 +249,6 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "v1_get_operation", "kwargs": {"operation_id": mock_uuid}},
             {
                 "method": "get",
-                "endpoint_name": "v1_list_operation_representatives",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
                 "endpoint_name": "v1_get_user_operator_by_id",
                 "kwargs": {"user_operator_id": mock_uuid},
             },

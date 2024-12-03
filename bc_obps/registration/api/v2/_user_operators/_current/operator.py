@@ -12,7 +12,6 @@ from registration.api.router import router
 from service.data_access_service.user_service import UserDataAccessService
 
 ## GET
-# brianna
 @router.get(
     "/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},

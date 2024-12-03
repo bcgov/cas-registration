@@ -5,7 +5,7 @@ import DataGrid from "apps/registration1/app/components/datagrid/DataGrid";
 import AccessTypeColumnCell from "@bciers/components/datagrid/cells/AccessTypeColumnCell";
 import StatusStyleColumnCell from "@bciers/components/datagrid/cells/StatusStyleColumnCell";
 import { UserOperatorDataGridRow } from "apps/registration1/app/utils/users/adminUserOperators";
-import ChangeUserOperatorStatusColumnCell from "../datagrid/cells/ChangeUserOperatorStatusColumnCell";
+import ChangeUserOperatorStatusColumnCell from "@/app/components/datagrid/cells/ChangeUserOperatorStatusColumnCell";
 
 const columns: GridColDef[] = [
   {

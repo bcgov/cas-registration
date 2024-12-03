@@ -49,7 +49,6 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
           return next(request, _next);
         } else {
           // 🛸 Redirect to profile
-          console.log("did make it here");
           return NextResponse.redirect(
             new URL(`/administration/${paths.profile}`, request.url),
           );
