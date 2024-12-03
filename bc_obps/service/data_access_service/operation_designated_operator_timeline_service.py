@@ -43,6 +43,7 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         ]
         queryset = (
             OperationDesignatedOperatorTimeline.objects.filter(operator_id=user_operator.operator_id)
+            .exclude(status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED)
             .annotate(
                 sfo_facility_id=Subquery(sfo_facility_id_subquery, output_field=UUIDField()),
                 sfo_facility_name=Subquery(sfo_facility_name_subquery, output_field=CharField()),
