@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Tuple, Optional
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
@@ -20,7 +20,6 @@ from ..schema.report_additional_data import ReportAdditionalDataOut, ReportAddit
 )
 @handle_http_errors()
 def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
-    # Delegate to the service function
     response_data = ReportAdditionalDataService.get_registration_purpose_by_version_id(version_id)
 
     return 200, response_data
@@ -37,7 +36,6 @@ def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int
 def save_report_additional_data(
     request: HttpRequest, version_id: int, payload: ReportAdditionalDataIn
 ) -> tuple[Literal[201], ReportAdditionalData]:
-    # Ensure the correct parameters are passed to the service function
     report_contact = ReportAdditionalDataService.save_report_additional_data(version_id, payload)
     return 201, report_contact
 
@@ -52,8 +50,6 @@ def save_report_additional_data(
 @handle_http_errors()
 def get_report_additional_data_by_version_id(
     request: HttpRequest, report_version_id: int
-) -> Tuple[Literal[200], ReportAdditionalDataOut]:
-    report_person_responsible = ReportAdditionalDataService.get_report_person_responsible_by_version_id(
-        report_version_id
-    )
-    return 200, report_person_responsible  # type: ignore
+) -> Tuple[Literal[200], Optional[ReportAdditionalDataOut]]:
+    report_additional_data = ReportAdditionalDataService.get_report_report_additional_data(report_version_id)
+    return 200, report_additional_data  # type: ignore

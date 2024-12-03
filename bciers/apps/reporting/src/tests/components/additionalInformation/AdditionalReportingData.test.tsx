@@ -25,7 +25,6 @@ describe("AdditionalReportingData Component", () => {
 
   beforeEach(() => {
     // Use vi's type-safe mock instead of jest.Mock
-    // Mock useRouter
     (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
@@ -33,15 +32,9 @@ describe("AdditionalReportingData Component", () => {
       back: vi.fn(),
     });
 
-    // Mock actionHandler
     (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: true,
     });
-
-    // Mock useSearchParams to return `?facility_id=abc`
-    (useSearchParams as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      new URLSearchParams("?facility_id=abc"),
-    );
   });
 
   afterEach(() => {
@@ -53,6 +46,8 @@ describe("AdditionalReportingData Component", () => {
       <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={false}
+        initialFormData={{}}
+        isNewEntrant={true}
       />,
     );
     const capturedEmissionsText = await screen.findByText(
@@ -66,6 +61,8 @@ describe("AdditionalReportingData Component", () => {
       <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={false}
+        initialFormData={{}}
+        isNewEntrant={true}
       />,
     );
 
@@ -86,6 +83,8 @@ describe("AdditionalReportingData Component", () => {
       <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={true}
+        initialFormData={{}}
+        isNewEntrant={false}
       />,
     );
 
@@ -93,6 +92,15 @@ describe("AdditionalReportingData Component", () => {
     expect(element).toBeInTheDocument();
   });
 
+  it("submits form data and redirects on success", async () => {
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+        initialFormData={{}}
+        isNewEntrant={true}
+      />,
+    );
   it(
     "submits form data and redirects on success",
     {
