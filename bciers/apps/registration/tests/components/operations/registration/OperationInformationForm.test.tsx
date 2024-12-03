@@ -113,10 +113,7 @@ describe("the OperationInformationForm component", () => {
       const purposeInput = screen.getByRole("combobox", {
         name: /The purpose of this registration+/i,
       });
-      await fillComboboxWidgetField(
-        purposeInput,
-        "Potential Reporting Operation",
-      );
+      await fillComboboxWidgetField(purposeInput, "Reporting Operation");
 
       expect(
         screen.queryByPlaceholderText(/select regulated product/i),
@@ -162,7 +159,7 @@ describe("the OperationInformationForm component", () => {
           "",
           {
             body: JSON.stringify({
-              registration_purpose: "Potential Reporting Operation",
+              registration_purpose: "Reporting Operation",
               operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
               name: "Existing Operation edited",
               type: "Single Facility Operation",

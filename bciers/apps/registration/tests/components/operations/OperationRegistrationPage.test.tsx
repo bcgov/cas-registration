@@ -5,6 +5,7 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
+import { regulatedOperationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 export const fetchFormEnums = () => {
   // Regulated products
@@ -23,9 +24,10 @@ export const fetchFormEnums = () => {
   ]);
   // Purposes
   actionHandler.mockResolvedValueOnce([
-    "New Entrant Application",
+    ...regulatedOperationPurposes,
+    "Reporting Operation",
     "Potential Reporting Operation",
-    "OBPS Regulated Operation",
+    "Electricity Import Operation",
   ]);
   // Naics codes
   actionHandler.mockResolvedValueOnce([
