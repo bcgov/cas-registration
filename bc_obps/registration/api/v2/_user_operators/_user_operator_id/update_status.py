@@ -23,7 +23,7 @@ from registration.api.router import router
     description="""Updates the status of a user operator by its ID.
     If the status is updated to 'APPROVED' or 'DECLINED', the user operator is verified with the current timestamp and the admin who performed the action.
     An email notification is sent based on the updated status.""",
-    auth=authorize("v1_authorized_irc_user_and_industry_admin_user"),
+    auth=authorize("authorized_irc_user_and_industry_admin_user"),
 )
 @handle_http_errors()
 def update_user_operator_status(

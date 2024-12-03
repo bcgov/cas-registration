@@ -227,7 +227,7 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "v1_get_current_user_operator_access_requests"},
             {"method": "get", "endpoint_name": "get_current_user_operator_access_requests"},
         ],
-        "v1_authorized_irc_user": [
+        "authorized_irc_user": [
             {"method": "put", "endpoint_name": "v1_update_operator_status", "kwargs": {"operator_id": mock_uuid}},
             {"method": "get", "endpoint_name": "v1_list_user_operators"},
             {
@@ -316,7 +316,7 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
             },
         ],
-        "v1_authorized_irc_user_and_industry_admin_user": [
+        "authorized_irc_user_and_industry_admin_user": [
             {
                 "method": "put",
                 "endpoint_name": "v1_update_user_operator_status",
