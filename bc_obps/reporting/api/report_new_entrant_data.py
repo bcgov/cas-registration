@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal
 
 from django.http import HttpRequest
 
@@ -16,12 +16,19 @@ from ..service.report_new_entrant_service import ReportNewEntrantService
     response={200: ReportNewEntrantDataOut, custom_codes_4xx: Message},
     description="""Retrieves the data for the new entrant data page, including selected products and emissions.""",
     exclude_none=True,
-    auth=authorize("approved_industry_user"),
+    # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], dict]:
+def get_new_entrant_data(request: HttpRequest, report_version_id: int):
     report_new_entrant = ReportNewEntrantService.get_new_entrant_data(report_version_id=report_version_id)
-    return 200, report_new_entrant
+
+    try:
+        validated_data = ReportNewEntrantDataOut(**report_new_entrant)
+    except Exception as e:
+        print("Validation error:", e)
+        return 400, {"message": "Invalid data structure"}
+
+    return 200, validated_data.dict()
 
 
 @router.post(
