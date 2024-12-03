@@ -18,6 +18,8 @@ const cancelUrl = "/reports";
 interface AdditionalReportingDataProps {
   versionId: number;
   includeElectricityGenerated: boolean;
+  initialFormData: any;
+  isNewEntrant: boolean;
 }
 
 interface FormData {
@@ -37,15 +39,15 @@ interface FormData {
 export default function AdditionalReportingDataForm({
   versionId,
   includeElectricityGenerated,
+  initialFormData,
+  isNewEntrant,
 }: AdditionalReportingDataProps) {
-  const [formData, setFormData] = useState<FormData>({
-    captured_emissions_section: {
-      capture_emissions: false,
-    },
-  });
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+  const saveAndContinueUrl = isNewEntrant
+    ? `/reports/${versionId}/new-entrant-information`
+    : `reports/${versionId}/compliance-summary`;
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
