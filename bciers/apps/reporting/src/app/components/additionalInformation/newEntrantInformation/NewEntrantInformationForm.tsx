@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 
 import { actionHandler } from "@bciers/actions";
 import {
-  buildNewEntrantSchema,
-  createNewEntrantInformationUiSchema,
+  NewEntrantSchema,
+  NewEntrantUiSchema,
 } from "@reporting/src/data/jsonSchema/newEntrantInformation";
 import { IChangeEvent } from "@rjsf/core";
 
@@ -17,24 +17,20 @@ const cancelUrl = "/reports";
 
 interface AdditionalReportingDataProps {
   versionId: number;
-  products: [];
-  initialFormData: {};
-  emissions: [];
+  initialFormData: { assertion_statement?: boolean };
 }
 
 export default function NewEntrantInformationForm({
   versionId,
-  products,
   initialFormData,
-  emissions,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState(initialFormData || {});
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
+    !initialFormData.assertion_statement,
+  );
 
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${versionId}/compliance-summary`;
-  const schema = buildNewEntrantSchema(products, emissions);
-  const uiSchema = createNewEntrantInformationUiSchema(products);
   const taskListElements: TaskListElement[] = [
     {
       type: "Page",
@@ -62,7 +58,6 @@ export default function NewEntrantInformationForm({
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/new-entrant-data`;
     const method = "POST";
-
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
     });
@@ -70,7 +65,6 @@ export default function NewEntrantInformationForm({
       router.push(saveAndContinueUrl);
     }
   };
-
   return (
     <MultiStepFormWithTaskList
       initialStep={2}
@@ -82,14 +76,15 @@ export default function NewEntrantInformationForm({
         "Sign-off & Submit",
       ]}
       taskListElements={taskListElements}
-      schema={schema}
-      uiSchema={uiSchema}
+      schema={NewEntrantSchema}
+      uiSchema={NewEntrantUiSchema}
       formData={formData}
       baseUrl={baseUrl}
       cancelUrl={cancelUrl}
       onChange={handleChange}
       onSubmit={(data) => handleSubmit(data.formData)}
       submitButtonDisabled={submitButtonDisabled}
+      formContext={formData}
     />
   );
 }

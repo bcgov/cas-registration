@@ -10,17 +10,19 @@ export default async function NewEntrantInformation({
 }) {
   const newEntrantData = await getNewEntrantData(versionId);
 
-  const emissions = newEntrantData.emission_category;
-  const initialFormData = newEntrantData.report_new_entrant_data;
-  const regulatedProducts = newEntrantData.allowed_products;
+  const { new_entrant_data: initialFormData } = newEntrantData;
+
+  const formData = {
+    ...initialFormData,
+    products: newEntrantData.products,
+    emissions: newEntrantData.emissions,
+  };
 
   return (
     <Suspense fallback={<Loading />}>
       <NewEntrantInformationForm
         versionId={versionId}
-        products={regulatedProducts}
-        initialFormData={initialFormData}
-        emissions={emissions}
+        initialFormData={formData}
       />
     </Suspense>
   );

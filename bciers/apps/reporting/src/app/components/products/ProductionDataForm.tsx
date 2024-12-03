@@ -30,8 +30,6 @@ const ProductionDataForm: React.FC<Props> = ({
     production_data: initialData,
   };
 
-  console.log("schema is", schema);
-
   const [formData, setFormData] = useState<any>(initialFormData);
 
   const onChange = (newFormData: {

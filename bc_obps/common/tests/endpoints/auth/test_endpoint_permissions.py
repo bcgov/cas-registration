@@ -94,7 +94,17 @@ class TestEndpointPermissions(TestCase):
             },
             {
                 "method": "get",
+                "endpoint_name": "get_report_additional_data_by_version_id",
+                "kwargs": {"version_id": mock_int},
+            },
+            {
+                "method": "get",
                 "endpoint_name": "get_report_verification_by_version_id",
+                "kwargs": {"version_id": mock_int},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_regulated_products_by_version_id",
                 "kwargs": {"version_id": mock_int},
             },
             {"method": "get", "endpoint_name": "get_gas_type"},
@@ -113,6 +123,16 @@ class TestEndpointPermissions(TestCase):
                 "method": "get",
                 "endpoint_name": "load_report_activity_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_new_entrant_data",
+                "kwargs": {"report_version_id": mock_int},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_report_additional_data_by_version_id",
+                "kwargs": {"report_version_id": mock_int},
             },
             {
                 "method": "get",
@@ -138,6 +158,11 @@ class TestEndpointPermissions(TestCase):
                 "method": "post",
                 "endpoint_name": "create_operation_representative",
                 "kwargs": {"operation_id": mock_uuid},
+            },
+            {
+                "method": "post",
+                "endpoint_name": "save_new_entrant_data",
+                "kwargs": {"report_version_id": mock_int},
             },
             {"method": "post", "endpoint_name": "register_create_operation_information"},
             {"method": "post", "endpoint_name": "start_report"},
