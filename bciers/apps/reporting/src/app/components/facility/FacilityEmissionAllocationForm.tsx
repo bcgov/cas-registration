@@ -24,7 +24,6 @@ interface Product {
   product_id: number;
   product_name: string;
 }
-
 interface FacilityEmissionData {
   emission_category: string;
   emission_total: number;
@@ -59,35 +58,49 @@ const allEmmissionsAllocated = (
     return isMatch;
   });
 };
-const FacilityEmissionAllocationForm: React.FC<Props> = ({
+
+export default function FacilityEmissionAllocationForm({
   version_id,
   facility_id,
   orderedActivities,
   initialData,
-}) => {
+}: Props) {
   // Process initial data to calculate products_emission_sum
-  const processedInitialData = initialData.map((facility: any) => {
-    if (facility.products) {
-      // Calculate the sum of product_emission values
-      const sum = facility.products.reduce(
-        (total: number, product: any) =>
-          total + (product.product_emission || 0),
-        0,
-      );
+  const processedInitialData =
+    initialData.report_product_emission_allocations.map((facility: any) => {
+      if (facility.products) {
+        // Calculate the sum of product_emission values
+        const sum = facility.products.reduce(
+          (total: number, product: any) =>
+            total + (product.product_emission || 0),
+          0,
+        );
 
-      // Format the sum to "0.0000" if the sum is 0, or round it to 4 decimal places
-      const formattedSum = sum === 0 ? "0.0000" : sum.toFixed(4);
+        // Format the sum to "0.0000" if the sum is 0, or round it to 4 decimal places
+        const formattedSum = sum === 0 ? "0.0000" : sum.toFixed(4);
 
-      return {
-        ...facility,
-        products_emission_sum: formattedSum, // Set the formatted sum
-      };
-    }
-    return facility;
-  });
-  // Initialize form data with processed initial data
+        return {
+          ...facility,
+          products_emission_sum: formattedSum, // Set the formatted sum
+        };
+      }
+      return facility;
+    });
+  // Filter for basic emissions
+  const basic_emission_data = processedInitialData.filter(
+    (facility: any) => facility.category_type === "basic",
+  );
+  // Filter for fuel_exclude emissions
+  const fuel_excluded_emission_data = processedInitialData.filter(
+    (facility: any) => facility.category_type === "fuel_excluded",
+  );
+  // Initialize form data with initial data from server
   const initialFormData = {
+    methodology: initialData.methodology,
+    other_methodology_description: initialData.other_methodology_description,
     facility_emission_data: processedInitialData,
+    basic_emission_data: basic_emission_data,
+    fuel_excluded_emission_data: fuel_excluded_emission_data,
   };
 
   // Manage the formData state
@@ -217,6 +230,4 @@ const FacilityEmissionAllocationForm: React.FC<Props> = ({
       }}
     />
   );
-};
-
-export default FacilityEmissionAllocationForm;
+}

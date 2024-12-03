@@ -1,3 +1,4 @@
+from tokenize import String
 from typing import List
 from ninja import ModelSchema, Schema
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
@@ -13,7 +14,7 @@ class ReportProductEmissionAllocationSchema(ModelSchema):
 class ReportProductEmissionAllocationSchemaIn(ReportProductEmissionAllocationSchema):
     report_version_id: int
     report_product_id: int
-    emission_category_id: int
+    emission_category_name: str
 
 
 class ReportProductEmissionAllocationSchemaOut(ReportProductEmissionAllocationSchema):

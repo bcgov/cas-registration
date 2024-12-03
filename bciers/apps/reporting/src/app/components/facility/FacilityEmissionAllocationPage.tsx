@@ -12,140 +12,158 @@ export default async function FacilityEmissionAllocationPage({
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const response = await getEmissionAllocations(version_id, facility_id);
   const initialDataTODO = response["report_product_emission_allocations"];
-  const initialData = [
-    {
-      emission_category: "flaring",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 0,
-    },
-    {
-      emission_category: "fugitive",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 10,
-        },
-      ],
-      emission_total: 10,
-    },
-    {
-      emission_category: "industrial_process",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 20,
-        },
-      ],
-      emission_total: 200,
-    },
-    {
-      emission_category: "onsite",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 400,
-    },
-    {
-      emission_category: "stationary",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 500,
-    },
-    {
-      emission_category: "venting_useful",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 600,
-    },
-    {
-      emission_category: "venting_non_useful",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 700,
-    },
-    {
-      emission_category: "waste",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 800,
-    },
-    {
-      emission_category: "wastewater",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 900,
-    },
-    {
-      emission_category: "woody_biomass",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 100,
-        },
-      ],
-      emission_total: 1000,
-    },
-    {
-      emission_category: "excluded_biomass",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 20,
-    },
-    {
-      emission_category: "excluded_non_biomass",
-      products: [
-        {
-          product_id: 1,
-          product_name: "BC-specific refinery complexity throughput",
-          product_emission: 0,
-        },
-      ],
-      emission_total: 50,
-    },
-  ];
+
+  const initialData = {
+    methodology: "Other",
+    other_methodology_description: "A test",
+    facility_total_emissions: 1000,
+    report_product_emission_allocations: [
+      {
+        emission_category: "flaring",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 0,
+      },
+      {
+        emission_category: "fugitive",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 10,
+          },
+        ],
+        emission_total: 10,
+      },
+      {
+        emission_category: "industrial_process",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 20,
+          },
+        ],
+        emission_total: 200,
+      },
+      {
+        emission_category: "onsite",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 400,
+      },
+      {
+        emission_category: "stationary",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 500,
+      },
+      {
+        emission_category: "venting_useful",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 600,
+      },
+      {
+        emission_category: "venting_non_useful",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 700,
+      },
+      {
+        emission_category: "waste",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 800,
+      },
+      {
+        emission_category: "wastewater",
+        category_type: "basic",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 900,
+      },
+      {
+        emission_category: "woody_biomass",
+        category_type: "fuel_excluded",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 100,
+          },
+        ],
+        emission_total: 1000,
+      },
+      {
+        emission_category: "excluded_biomass",
+        category_type: "fuel_excluded",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 20,
+      },
+      {
+        emission_category: "excluded_non_biomass",
+        category_type: "fuel_excluded",
+        products: [
+          {
+            product_id: 1,
+            product_name: "BC-specific refinery complexity throughput",
+            product_emission: 0,
+          },
+        ],
+        emission_total: 50,
+      },
+    ],
+  };
 
   return (
     <Form

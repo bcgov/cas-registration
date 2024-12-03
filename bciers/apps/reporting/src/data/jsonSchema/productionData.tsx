@@ -41,6 +41,11 @@ export const buildProductionDataSchema = (
           $ref: "#/definitions/productionDataItem",
         },
       },
+
+      product_selection_title2: {
+        title: "Products that apply to this facility",
+        type: "string",
+      },
     },
 
     definitions: {
@@ -160,5 +165,9 @@ export const productionDataUiSchema: UiSchema = {
         "ui:widget": ReadOnlyWidget,
       },
     },
+  },
+  product_selection_title2: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
 };

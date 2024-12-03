@@ -1,8 +1,9 @@
 from typing import List
 from uuid import UUID
 from django.db import transaction
+from reporting.models.emission_category import EmissionCategory
 from registration.models.regulated_product import RegulatedProduct
-from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationsSchemaOut
+from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationSchemaIn, ReportProductEmissionAllocationsSchemaOut
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
@@ -40,10 +41,11 @@ class ReportEmissionAllocationService:
                 continue  # Skip special categories
             
             # Build product data
+            #  TODO: resolve how to get the category_id instead of report_product=rp, emission_category__category_name=category
             products = []
             for rp in report_products:
                 product_emission = report_product_emission_allocations.filter(
-                    report_product=rp, emission_category__category_name=category
+                    report_product=rp, emission_category__category_name="Flaring emissions" #category
                 ).first()
                 products.append(
                     {
@@ -70,9 +72,9 @@ class ReportEmissionAllocationService:
     @classmethod
     @transaction.atomic()
     def save_emission_allocation_data(
-        cls, report_version_id: int, facility_id: UUID, report_emission_allocations: List[dict], user_guid: UUID
+        cls, report_version_id: int, facility_id: UUID, report_emission_allocations: ReportProductEmissionAllocationSchemaIn, user_guid: UUID
     ) -> None:
-        # incoming [{report_product_id: int, emission_category_id: int, allocated_quantity: Decimal}]
+        # incoming [{report_product_id: int, emission_category_name: str, allocated_quantity: Decimal}]
         # report_product_id or just product_id??
 
         # Delete previous allocations that are no longer in the data
@@ -93,6 +95,8 @@ class ReportEmissionAllocationService:
             report_product_id__in=report_product_ids_from_data
         ).delete()
 
+        emission_categories = EmissionCategoryService.get_all_emission_categories()
+
         # Update or create the emission allocations from the data
         for allocation in report_emission_allocations:
             report_product_id = ReportProduct.objects.get(
@@ -100,7 +104,7 @@ class ReportEmissionAllocationService:
                 facility_report__facility_id=facility_id,
                 product_id=allocation["product_id"],
             ).id
-            emission_category_id = allocation["emission_category_id"]
+            emission_category_id = EmissionCategory.object.filter(category_name=allocation["emission_category_name"]).id
             allocated_quantity = allocation["allocated_quantity"]
 
             report_emission_allocation_record, _ = ReportProductEmissionAllocation.objects.update_or_create(
