@@ -34,6 +34,11 @@ class NewEntrantDataSchema(ModelSchema):
     Schema for the FuelType model
     """
 
+    authorization_date: Optional[str] = None
+    first_shipment_date: Optional[str] = None
+    new_entrant_period_start: Optional[str] = None
+    assertion_statement: Optional[bool] = None
+
     class Meta:
         model = ReportNewEntrant
         fields = ["id", "authorization_date", "first_shipment_date", "new_entrant_period_start", "assertion_statement"]
@@ -53,4 +58,4 @@ class EmissionCategorydataSchema(BaseModel):
 class ReportNewEntrantDataOut(BaseModel):
     products: list[ProductDataSchema]
     emissions: list
-    new_entrant_data: NewEntrantDataSchema
+    new_entrant_data: Optional[NewEntrantDataSchema]
