@@ -5,9 +5,9 @@ from reporting.models.report_product import ReportProduct
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.service.report_product_service import ReportProductService
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
-from registration.tests.utils.helpers import TestUtils
 from registration.models.regulated_product import RegulatedProduct
 from model_bakery.baker import make_recipe
+
 
 class TestReportEmissionAllocationService(TestCase):
     def setUp(self):
@@ -33,7 +33,173 @@ class TestReportEmissionAllocationService(TestCase):
                 "production_data_apr_dec": 20,
             },
         ]
-        self.mock_get_response = {'report_product_emission_allocations': [{'emission_category': 'flaring', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'fugitive', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'industrial_process', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'onsite', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'stationary', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'venting_useful', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'venting_non_useful', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'waste', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'wastewater', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'woody_biomass', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'excluded_biomass', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}, {'emission_category': 'excluded_non_biomass', 'products': [{'product_id': 1, 'product_name': 'BC-specific refinery complexity throughput', 'product_emission': Decimal('200.0000')}, {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')}], 'emission_total': 0}], 'facility_total_emissions': 0}
+        self.mock_get_response = {
+            'report_product_emission_allocations': [
+                {
+                    'emission_category': 'Flaring emissions',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': Decimal('200.0000'),
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': Decimal('100.0000')},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'Fugitive emissions',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'Industrial process emissions',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'On-site transportation emissions',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'Stationary fuel combustion emissions',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'Venting emissions — useful',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'Venting emissions — non-useful',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'Emissions from waste',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'Emissions from wastewater',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'basic',
+                },
+                {
+                    'emission_category': 'CO2 emissions from excluded woody biomass',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'fuel_excluded',
+                },
+                {
+                    'emission_category': 'Other emissions from excluded biomass',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'fuel_excluded',
+                },
+                {
+                    'emission_category': 'Emissions from excluded non-biomass',
+                    'products': [
+                        {
+                            'product_id': 1,
+                            'product_name': 'BC-specific refinery complexity throughput',
+                            'product_emission': 0,
+                        },
+                        {'product_id': 29, 'product_name': 'Sugar: solid', 'product_emission': 0},
+                    ],
+                    'emission_total': 0,
+                    'category_type': 'fuel_excluded',
+                },
+            ],
+            'facility_total_emissions': 0,
+            'report_product_emission_totals': [
+                {'product_name': 'BC-specific refinery complexity throughput', 'total_emission': Decimal('200.0000')},
+                {'product_name': 'Sugar: solid', 'total_emission': Decimal('100.0000')},
+            ],
+            'methodology': '',
+            'other_methodology_description': '',
+        }
 
     def test_get_report_emission_allocation(self):
 
@@ -51,6 +217,7 @@ class TestReportEmissionAllocationService(TestCase):
 
         # Assert: Report products were created
         report_products = ReportProduct.objects.filter(facility_report=self.facility_report).order_by('product_id')
+        print("************ Report Products: ", report_products.values())
         assert report_products.count() == 2, "Expected two report products to be created"
 
         # Arrange: Create product emission allocations for report facility products
@@ -70,9 +237,14 @@ class TestReportEmissionAllocationService(TestCase):
             )
 
         # Assert: Report product emission allocations were created
-        report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(facility_report=self.facility_report)
-        assert report_product_emission_allocations.count() == 2, "Expected two product emission allocations to be created"
-       
+        report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
+            facility_report=self.facility_report
+        )
+        print("************ Report Product Emission Allocations: ", report_product_emission_allocations.values())
+        assert (
+            report_product_emission_allocations.count() == 2
+        ), "Expected two product emission allocations to be created"
+
         # Assert: Validate each field of the created product emission allocation records
         expected_data = [
             {
@@ -89,42 +261,55 @@ class TestReportEmissionAllocationService(TestCase):
                 "emission_category_id": flaring_category.id,
                 "allocated_quantity": sorted_report_product_data[1]["annual_production"],
             },
-        ]        
+        ]
 
         # Iterate through allocations and expected data for field-wise validation
-        for allocation, expected in zip(report_product_emission_allocations.order_by('report_product__product_id'), expected_data):
-            self.assertEqual(allocation.report_version_id, expected["report_version_id"], "Mismatched report version ID")
-            self.assertEqual(allocation.facility_report_id, expected["facility_report_id"], "Mismatched facility report ID")
-            self.assertEqual(allocation.report_product_id, expected["report_product_id"], "Mismatched report product ID")
-            self.assertEqual(allocation.emission_category_id, expected["emission_category_id"], "Mismatched emission category ID")
-            self.assertEqual(float(allocation.allocated_quantity), float(expected["allocated_quantity"]), 
-                            "Mismatched allocated quantity")
+        for allocation, expected in zip(
+            report_product_emission_allocations.order_by('report_product__product_id'), expected_data
+        ):
+            self.assertEqual(
+                allocation.report_version_id, expected["report_version_id"], "Mismatched report version ID"
+            )
+            self.assertEqual(
+                allocation.facility_report_id, expected["facility_report_id"], "Mismatched facility report ID"
+            )
+            self.assertEqual(
+                allocation.report_product_id, expected["report_product_id"], "Mismatched report product ID"
+            )
+            self.assertEqual(
+                allocation.emission_category_id, expected["emission_category_id"], "Mismatched emission category ID"
+            )
+            self.assertEqual(
+                float(allocation.allocated_quantity),
+                float(expected["allocated_quantity"]),
+                "Mismatched allocated quantity",
+            )
 
-    
-        # Act: Get the report product emission allocation data from the service           
+        # Act: Get the report product emission allocation data from the service
         retrieved_emission_allocations_data = ReportEmissionAllocationService.get_emission_allocation_data(
-            self.report_version_id,
-            self.facility_uuid
+            self.report_version_id, self.facility_uuid
         )
-     
+        print("************ Retrieved Emission Allocations: ", retrieved_emission_allocations_data)
         # Assert: Verify the retrieved instance is not None
         self.assertIsNotNone(retrieved_emission_allocations_data)
 
-        # Assert: Verify the retrieved structure and values match the expected data       
+        # Assert: Verify the retrieved structure and values match the expected data
         self.assertIn('report_product_emission_allocations', retrieved_emission_allocations_data)
         self.assertEqual(
             len(retrieved_emission_allocations_data['report_product_emission_allocations']),
-            len(self.mock_get_response['report_product_emission_allocations'])
+            len(self.mock_get_response['report_product_emission_allocations']),
         )
         for expected_category, retrieved_category in zip(
             self.mock_get_response['report_product_emission_allocations'],
-            retrieved_emission_allocations_data['report_product_emission_allocations']
+            retrieved_emission_allocations_data['report_product_emission_allocations'],
         ):
             self.assertEqual(expected_category['emission_category'], retrieved_category['emission_category'])
             self.assertEqual(expected_category['emission_total'], retrieved_category['emission_total'])
             self.assertEqual(len(expected_category['products']), len(retrieved_category['products']))
-            
-            for expected_product, retrieved_product in zip(expected_category['products'], retrieved_category['products']):
+
+            for expected_product, retrieved_product in zip(
+                expected_category['products'], retrieved_category['products']
+            ):
                 self.assertEqual(expected_product['product_id'], retrieved_product['product_id'])
                 self.assertEqual(expected_product['product_name'], retrieved_product['product_name'])
                 self.assertEqual(expected_product['product_emission'], retrieved_product['product_emission'])

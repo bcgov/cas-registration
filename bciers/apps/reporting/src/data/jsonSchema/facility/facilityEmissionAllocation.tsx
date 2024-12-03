@@ -46,26 +46,58 @@ const EmissionAllocationTitleWidget: React.FC<WidgetProps> = ({
 };
 
 /**
- * Utility function to fetch the associated product name dynamically
+ * Function to fetch the associated product name dynamically
  * based on the field ID and the form context.
  * @param {string} fieldId - ID of the field
- * @param {any} formContext - Context of the form, containing all data
+ * @param {any} context - Context of the form, containing all data
  * @returns {string | null} - Returns the product name or null
  */
-const getAssociatedProductName = (fieldId: string, formContext: any) => {
+const getAssociatedProductName = (
+  fieldId: string,
+  context: any,
+): string | null => {
   try {
-    // Extract facility and product indices from the field ID
-    const match = fieldId.match(/_(\d+)_products_(\d+)_product_emission/);
-    if (!match) {
+    // Match for array-based context (getAssociatedProductName1)
+    const arrayContextMatch = fieldId.match(
+      /_(\d+)_products_(\d+)_product_emission/,
+    );
+    if (arrayContextMatch) {
+      const [, contextIndex, productIndex] = arrayContextMatch.map(Number);
+
+      // Ensure valid indices and data structure
+      const contextData = context[contextIndex];
+      if (contextData?.products) {
+        const productData = contextData.products[productIndex];
+        return productData?.product_name || null;
+      }
       return null;
     }
-    const [_, facilityIndex, productIndex] = match.map(Number);
 
-    // Access the product name from the form context
-    const facilityData = formContext.facility_emission_data?.[facilityIndex];
-    const productData = facilityData?.products?.[productIndex];
+    // Match for object-based context (getAssociatedProductName2)
+    const objectContextMatch = fieldId.match(
+      /root_(\w+)_products_(\d+)_product_emission/,
+    );
+    if (objectContextMatch) {
+      const [, contextKey, productIndex] = objectContextMatch;
 
-    return productData?.product_name || null;
+      // Handle array-based object context
+      if (Array.isArray(context)) {
+        const matchedCategory = context.find(
+          (item: any) =>
+            item.emission_category?.toLowerCase().replace(/\s+/g, "_") ===
+            contextKey,
+        );
+        const productData = matchedCategory?.products?.[Number(productIndex)];
+        return productData?.product_name || null;
+      }
+
+      // Handle single object context
+      const productData = context.products?.[Number(productIndex)];
+      return productData?.product_name || null;
+    }
+
+    // If no match found
+    return null;
   } catch (error) {
     return null;
   }
@@ -76,13 +108,36 @@ const getAssociatedProductName = (fieldId: string, formContext: any) => {
  * @param {FieldTemplateProps} props - Props including id, classNames, children, and formContext
  * @returns {JSX.Element} - Rendered label and input field
  */
-const DynamicLabelFieldTemplate: React.FC<FieldTemplateProps> = ({
+const DynamicLabelProductEmission: React.FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
   formContext,
 }) => {
-  const productName = getAssociatedProductName(id, formContext);
+  const productName = getAssociatedProductName(
+    id,
+    formContext.facility_emission_data,
+  );
+  return (
+    <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
+      <div className="flex flex-col md:flex-row items-start md:items-center w-full">
+        <div className="w-full md:w-3/12 mb-2 md:mb-0">
+          <label htmlFor={id} className="font-bold">
+            {productName}
+          </label>
+        </div>
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+};
+const DynamicLabelTotalProductEmission: React.FC<FieldTemplateProps> = ({
+  id,
+  classNames,
+  children,
+  formContext,
+}) => {
+  const productName = getAssociatedProductName(id, formContext.total_emissions);
   return (
     <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
       <div className="flex flex-col md:flex-row items-start md:items-center w-full">
@@ -130,6 +185,31 @@ export const emissionAllocationSchema: RJSFSchema = {
       type: "array",
       items: {
         $ref: "#/definitions/emissionCategoryAllocationItem",
+      },
+    },
+    total_emissions: {
+      type: "object",
+      title: "Totals in CO2",
+      properties: {
+        facility_total_emissions: {
+          type: "number",
+          title: "Total emissions attributable for reporting",
+        },
+        products: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              product_name: {
+                title: "Product Name",
+                type: "string",
+              },
+              product_emission: {
+                type: "number",
+              },
+            },
+          },
+        },
       },
     },
   },
@@ -210,6 +290,7 @@ export const emissionAllocationUiSchema: UiSchema = {
     "basic_emission_data",
     "fuel_excluded_emission_data_title",
     "fuel_excluded_emission_data",
+    "total_emissions",
   ],
   methodology: {
     "ui:widget": "SelectWidget",
@@ -255,7 +336,7 @@ export const emissionAllocationUiSchema: UiSchema = {
             "ui:widget": "hidden",
           },
           product_emission: {
-            "ui:FieldTemplate": DynamicLabelFieldTemplate,
+            "ui:FieldTemplate": DynamicLabelProductEmission,
           },
         },
       },
@@ -268,7 +349,6 @@ export const emissionAllocationUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
-
   fuel_excluded_emission_data: {
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
     "ui:FieldTemplate": FieldTemplate,
@@ -301,12 +381,33 @@ export const emissionAllocationUiSchema: UiSchema = {
             "ui:widget": "hidden",
           },
           product_emission: {
-            "ui:FieldTemplate": DynamicLabelFieldTemplate,
+            "ui:FieldTemplate": DynamicLabelProductEmission,
           },
         },
       },
       products_emission_sum: {
         "ui:widget": ReadOnlyWidget,
+      },
+    },
+  },
+  total_emissions: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:classNames": "section-heading-label",
+    "ui:disabled": true,
+    products: {
+      "ui:options": {
+        label: false,
+        addable: false,
+        removable: false,
+      },
+      "ui:FieldTemplate": FieldTemplate,
+      items: {
+        product_name: {
+          "ui:widget": "hidden",
+        },
+        product_emission: {
+          "ui:FieldTemplate": DynamicLabelTotalProductEmission,
+        },
       },
     },
   },
