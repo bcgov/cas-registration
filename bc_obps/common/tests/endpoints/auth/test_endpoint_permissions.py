@@ -33,6 +33,7 @@ class TestEndpointPermissions(TestCase):
             },
         ],
         "approved_industry_user": [
+            {"method": "get", "endpoint_name": "list_operations_timeline"},
             {"method": "get", "endpoint_name": "get_current_operator_and_user_operator"},
             {"method": "get", "endpoint_name": "is_current_user_approved_admin"},
             {"method": "get", "endpoint_name": "get_operator_users"},

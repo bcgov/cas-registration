@@ -27,6 +27,7 @@ from registration.tests.utils.bakers import (
 )
 from registration.models.operator import Operator
 from model_bakery.recipe import Recipe, foreign_key, seq
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 naics_code = Recipe(NaicsCode, naics_code='486210')
 address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
@@ -83,6 +84,7 @@ irc_user = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
 
 operation = Recipe(
     Operation,
+    name=seq('Operation 0'),
     naics_code=foreign_key(naics_code),
     operator=foreign_key(operator_for_operation),
     created_by=foreign_key(industry_operator_user),
@@ -153,5 +155,12 @@ facility_designated_operation_timeline = Recipe(
     end_date=datetime.now(ZoneInfo("UTC")),
 )
 
+operation_designated_operator_timeline = Recipe(
+    OperationDesignatedOperatorTimeline,
+    operation=foreign_key(operation),
+    operator=foreign_key(operator),
+    status=cycle([status for status in OperationDesignatedOperatorTimeline.Statuses]),
+    end_date=datetime.now(ZoneInfo("UTC")),
+)
 
 regulated_product = Recipe(RegulatedProduct)
