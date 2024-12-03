@@ -5,7 +5,10 @@ import {
   getRegistrationPurposes,
   getRegulatedProducts,
 } from "@bciers/actions/api";
-import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import {
+  RegistrationPurposes,
+  regulatedOperationPurposes,
+} from "@/registration/app/components/operations/registration/enums";
 import { UUID } from "crypto";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import {
@@ -62,10 +65,9 @@ export const createRegistrationPurposeSchema = async () => {
 
     dependencies: {
       registration_purpose: {
-        oneOf: registrationPurposes.map((purpose: string) => {
+        oneOf: registrationPurposes.map((purpose: RegistrationPurposes) => {
           const isRegulatedProducts =
-            purpose !== RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION &&
-            purpose !== RegistrationPurposes.POTENTIAL_REPORTING_OPERATION;
+            regulatedOperationPurposes.includes(purpose);
           return {
             ...(isRegulatedProducts && { required: ["regulated_products"] }),
             properties: {
