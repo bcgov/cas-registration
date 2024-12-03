@@ -19,16 +19,12 @@ class ReportNewEntrantService:
     @classmethod
     def get_new_entrant_data(cls, report_version_id: int) -> Dict[str, Any]:
         """Returns a dictionary containing products, emissions, and new entrant data."""
-        # Fetch the ReportNewEntrant object
-        report_new_entrant = ReportNewEntrant.objects.get(report_version=report_version_id)
+        report_new_entrant = ReportNewEntrant.objects.filter(report_version=report_version_id).first()
 
-        # Fetch regulated products using ReportService
         regulated_products = ReportService.get_regulated_products_by_version_id(version_id=report_version_id)
 
-        # Fetch emission categories
         categories = list(EmissionCategory.objects.all())
 
-        # Initialize and return result data
         return cls._initialize_result_data(regulated_products, categories, report_new_entrant)
 
     @staticmethod
@@ -40,7 +36,9 @@ class ReportNewEntrantService:
         """Helper to initialize the result data"""
         products_data = ReportNewEntrantService._get_products_data(regulated_products, report_new_entrant)
         emissions_data = ReportNewEntrantService._get_emissions_data(categories, report_new_entrant)
-        result_data = model_to_dict(report_new_entrant, exclude=['selected_products'])
+        result_data = (
+            model_to_dict(report_new_entrant, exclude=["selected_products"]) if report_new_entrant is not None else {}
+        )
         return {"products": products_data, "emissions": emissions_data, "new_entrant_data": result_data}
 
     @staticmethod
