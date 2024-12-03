@@ -9,7 +9,6 @@ import operationColumns from "../datagrid/models/operations/operationColumns";
 import operationGroupColumns from "../datagrid/models/operations/operationGroupColumns";
 import { OperationRow } from "./types";
 import fetchOperationsPageData from "./fetchOperationsPageData";
-import fetchOperationsTimelinePageData from "./fetchOperationsTimelinePageData";
 
 const OperationDataGrid = ({
   initialData,
@@ -47,11 +46,7 @@ const OperationDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={
-        isInternalUser
-          ? fetchOperationsPageData
-          : fetchOperationsTimelinePageData
-      }
+      fetchPageData={fetchOperationsPageData}
       paginationMode="server"
       initialData={initialData}
     />

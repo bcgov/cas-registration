@@ -4,7 +4,6 @@ import fetchOperationsPageData from "./fetchOperationsPageData";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
-import fetchOperationsTimelinePageData from "./fetchOperationsTimelinePageData";
 
 // 🧩 Main component
 export default async function OperationDataGridPage({
@@ -13,19 +12,13 @@ export default async function OperationDataGridPage({
   searchParams: OperationsSearchParams;
 }) {
   const role = await getSessionRole();
-  const isInternalUser = role.includes("cas_");
   // Fetch operations data
-  console.log("isInternalUser", isInternalUser);
   const operations: {
     rows: OperationRow[];
     row_count: number;
-  } = isInternalUser
-    ? await fetchOperationsPageData(searchParams)
-    : await fetchOperationsTimelinePageData(searchParams);
+  } = await fetchOperationsPageData(searchParams);
   if (!operations || "error" in operations)
     throw new Error("Failed to retrieve operations");
-
-  console.log("operations", operations);
 
   // Render the DataGrid component
   return (
@@ -33,7 +26,7 @@ export default async function OperationDataGridPage({
       <div className="mt-5">
         <OperationDataGrid
           initialData={operations}
-          isInternalUser={isInternalUser}
+          isInternalUser={role.includes("cas_")}
         />
       </div>
     </Suspense>

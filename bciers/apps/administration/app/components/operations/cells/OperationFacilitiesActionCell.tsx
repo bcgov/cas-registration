@@ -17,6 +17,7 @@ const OperationFacilitiesActionCell = (isInternalUser: boolean) => {
     }
 
     // LFO sees the datagrid, SFO goes straight to the facility since there is only one
+    // brianna
     const baseUrl = `/operations/${params.row.id}/facilities`;
     const sfoUrl = `${baseUrl}/${sfoFacilityId ?? "add-facility"}`;
 
