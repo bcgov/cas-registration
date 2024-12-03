@@ -33,7 +33,6 @@ export default function SelectOperatorForm({
           "GET",
           "/dashboard/select-operator",
         );
-        console.log("response", response);
         if (response.error) {
           setErrorList([{ message: response.error }]);
           return;

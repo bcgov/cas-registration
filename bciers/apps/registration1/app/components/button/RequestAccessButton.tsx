@@ -55,7 +55,6 @@ export default function RequestAccessButton({
         color="primary"
         variant="contained"
         onClick={async () => {
-          console.log("dd");
           handleRequestAccess();
         }}
       >
