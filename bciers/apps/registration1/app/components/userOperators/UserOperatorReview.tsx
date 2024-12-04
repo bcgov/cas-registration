@@ -35,7 +35,7 @@ export default function UserOperatorReview({
   const changeOperatorStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
-        `registration/operators/${id}`,
+        `registration/v1/operators/${id}`,
         "PUT",
         "",
         {
@@ -56,7 +56,7 @@ export default function UserOperatorReview({
   const changePrimeAdminStatus = async (status: Status) => {
     try {
       const response = await actionHandler(
-        `registration/user-operators/${userOperatorId}/update-status`,
+        `registration/v1/user-operators/${userOperatorId}/update-status`,
         "PUT",
         "",
         {

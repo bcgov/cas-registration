@@ -71,7 +71,7 @@ describe("the OperationInformationForm component", () => {
     await waitFor(() => {
       // LastCalledWith because fetchFormEnums calls the actionHandler multiple times to populate the dropdown options in the form schema
       expect(actionHandler).toHaveBeenLastCalledWith(
-        "registration/v2/operations/uuid1/registration/operation",
+        "registration/operations/uuid1/registration/operation",
         "GET",
         "",
       );
@@ -154,7 +154,7 @@ describe("the OperationInformationForm component", () => {
       await waitFor(() => {
         // LastCalledWith because we mock the actionHandler multiple times to populate the dropdown options and operation info
         expect(actionHandler).toHaveBeenLastCalledWith(
-          "registration/v2/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
+          "registration/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
           "PUT",
           "",
           {
@@ -307,7 +307,7 @@ describe("the OperationInformationForm component", () => {
       );
       await waitFor(() => {
         expect(actionHandler).toHaveBeenLastCalledWith(
-          "registration/v2/operations",
+          "registration/operations",
           "POST",
           "",
           {

@@ -18,7 +18,7 @@ from django.db.models import QuerySet
 
 
 @router.get(
-    "/operators",
+    "/v1/operators",
     response={200: Union[List[OperatorSearchOut], OperatorSearchOut], custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Retrieves operator(s) based on the provided CRA business number or legal name.
@@ -27,7 +27,7 @@ from django.db.models import QuerySet
     auth=authorize("authorized_roles"),
 )
 @handle_http_errors()
-def get_operators_by_cra_number_or_legal_name(
+def v1_get_operators_by_cra_number_or_legal_name(
     request: HttpRequest, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
 ) -> Tuple[Literal[200], Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]]:
     return 200, OperatorService.get_operators_by_cra_number_or_legal_name(cra_business_number, legal_name)
@@ -35,7 +35,7 @@ def get_operators_by_cra_number_or_legal_name(
 
 # We have to let unapproved users to reach this endpoint otherwise they can't see operator info when they select it
 @router.get(
-    "/operators/{operator_id}",
+    "/v1/operators/{operator_id}",
     response={200: ConfirmSelectedOperatorOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Retrieves information about a specific operator by its ID.
@@ -43,7 +43,7 @@ def get_operators_by_cra_number_or_legal_name(
     auth=authorize("authorized_roles"),
 )
 @handle_http_errors()
-def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], Operator]:
+def v1_get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], Operator]:
     return 200, OperatorDataAccessService.get_operator_by_id(operator_id)
 
 
@@ -51,7 +51,7 @@ def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200],
 
 
 @router.put(
-    "/operators/{operator_id}",
+    "/v1/operators/{operator_id}",
     response={200: OperatorOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Updates the status of a specific operator by its ID.
@@ -60,7 +60,7 @@ def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200],
     auth=authorize("authorized_irc_user"),
 )
 @handle_http_errors()
-def update_operator_status(
+def v1_update_operator_status(
     request: HttpRequest, operator_id: UUID, payload: OperatorIn
 ) -> Tuple[Literal[200], Operator]:
     return 200, OperatorService.update_operator_status(get_current_user_guid(request), operator_id, payload)

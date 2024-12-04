@@ -18,7 +18,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.post(
-    "/v2/operations/{uuid:operation_id}/registration/operation-representative",
+    "/operations/{uuid:operation_id}/registration/operation-representative",
     response={200: OperationRepresentativeOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Updates an operation with operation representative(s). User may create new contact to use as representatives if desired or use existing contacts.
@@ -35,7 +35,7 @@ def create_operation_representative(
 
 
 @router.put(
-    "/v2/operations/{uuid:operation_id}/registration/operation-representative",
+    "/operations/{uuid:operation_id}/registration/operation-representative",
     response={200: OperationRepresentativeOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Removes operation representative from an operation.

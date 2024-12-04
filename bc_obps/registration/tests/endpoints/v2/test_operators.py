@@ -5,7 +5,7 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestOperatorsEndpoint(CommonTestSetup):
-    endpoint = custom_reverse_lazy("list_operators_v2")
+    endpoint = custom_reverse_lazy("list_operators")
 
     def test_operators_endpoint_list_operators_v2_paginated(self):
         # Create 60 operators with unique corp numbers

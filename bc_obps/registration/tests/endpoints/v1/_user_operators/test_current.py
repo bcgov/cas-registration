@@ -12,7 +12,7 @@ class TestCurrentUserOperatorEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_current_operator_and_user_operator")
+            self, "industry_user", custom_reverse_lazy("v1_get_current_operator_from_user_operator")
         )
 
         response_json = response.json()
@@ -28,7 +28,7 @@ class TestCurrentUserOperatorEndpoint(CommonTestSetup):
     def test_get_current_operator_and_user_operator_with_invalid_user(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_current_operator_and_user_operator")
+            self, "industry_user", custom_reverse_lazy("v1_get_current_operator_from_user_operator")
         )
         # User_operator must be approved to see their operator info
         assert response.status_code == 401

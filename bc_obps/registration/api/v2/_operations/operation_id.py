@@ -18,7 +18,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/v2/operations/{uuid:operation_id}",
+    "/operations/{uuid:operation_id}",
     response={200: OperationOutV2, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the details of a specific operation by its ID. Unlike the v1 endpoint, this endpoint does not
@@ -28,12 +28,12 @@ from registration.schema.generic import Message
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def get_operation_v2(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
+def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
 
 @router.get(
-    "/v2/operations/{uuid:operation_id}/with-documents",
+    "/operations/{uuid:operation_id}/with-documents",
     response={200: OperationOutWithDocuments, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the details of a specific operation by its ID along with it's documents""",
@@ -49,14 +49,14 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 
 
 @router.put(
-    "/v2/operations/{uuid:operation_id}",
+    "/operations/{uuid:operation_id}",
     response={200: OperationOutV2, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Updates the details of a specific operation by its ID.",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def update_operation_v2(
+def update_operation(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:
     return 200, OperationServiceV2.update_operation(get_current_user_guid(request), payload, operation_id)

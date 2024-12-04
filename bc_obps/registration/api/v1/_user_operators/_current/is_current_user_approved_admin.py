@@ -13,7 +13,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 @router.get(
-    "/user-operators/current/is-current-user-approved-admin",
+    "/v1/user-operators/current/is-current-user-approved-admin",
     response={200: IsApprovedUserOperator, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Checks if the current user is an approved admin for their operator.
@@ -22,6 +22,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def is_current_user_approved_admin(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
+def v1_is_current_user_approved_admin(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
     user_guid = get_current_user_guid(request)
     return 200, UserDataAccessService.is_user_an_approved_admin_user_operator(user_guid)

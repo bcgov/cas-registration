@@ -22,7 +22,7 @@ const NewEntrantOperationForm = ({
 }: NewEntrantOperationFormProps) => {
   const baseUrl = `/register-an-operation/${operation}`;
   const handleSubmit = async (e: IChangeEvent) => {
-    const endpoint = `registration/v2/operations/${operation}/registration/new-entrant-application`;
+    const endpoint = `registration/operations/${operation}/registration/new-entrant-application`;
     // errors are handled in MultiStepBase
     const response = await actionHandler(endpoint, "PUT", `${baseUrl}`, {
       body: JSON.stringify({

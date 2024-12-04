@@ -23,7 +23,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/v2/operations/{uuid:operation_id}/registration/new-entrant-application",
+    "/operations/{uuid:operation_id}/registration/new-entrant-application",
     response={200: OperationNewEntrantApplicationOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the new entrant application document of a specific operation by its ID. The endpoint checks if the current user is authorized to access the operation.
@@ -37,7 +37,7 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
 
 
 @router.put(
-    "/v2/operations/{uuid:operation_id}/registration/new-entrant-application",
+    "/operations/{uuid:operation_id}/registration/new-entrant-application",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Creates or replaces a new entrant application document for an Operation",

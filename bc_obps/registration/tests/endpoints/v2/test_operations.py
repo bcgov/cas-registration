@@ -17,7 +17,7 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    endpoint = custom_reverse_lazy("list_operations_v2")
+    endpoint = custom_reverse_lazy("list_operations")
 
     def test_operations_endpoint_list_operations_v2_paginated(self):
         operator1 = operator_baker()

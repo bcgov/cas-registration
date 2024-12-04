@@ -14,7 +14,7 @@ from service.user_service import UserService
 
 
 @router.get(
-    "/users/{user_id}",
+    "/v1/users/{user_id}",
     response={200: UserContactPageOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the details of a specific user by its ID.
@@ -22,5 +22,5 @@ from service.user_service import UserService
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_user(request: HttpRequest, user_id: UUID) -> Tuple[Literal[200], User]:
+def v1_get_user(request: HttpRequest, user_id: UUID) -> Tuple[Literal[200], User]:
     return 200, UserService.get_if_authorized(get_current_user_guid(request), user_id)

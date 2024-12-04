@@ -45,8 +45,8 @@ export default function OperatorForm({
         setFormState(updatedFormData);
         const method = isCreatingState ? "POST" : "PUT";
         const endpoint = isCreatingState
-          ? "registration/v2/user-operators"
-          : "registration/v2/user-operators/current/operator";
+          ? "registration/user-operators"
+          : "registration/user-operators/current/operator";
         const pathToRevalidate = "administration/operators";
         const response = await actionHandler(
           endpoint,

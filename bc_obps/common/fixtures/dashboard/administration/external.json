@@ -14,7 +14,7 @@
             "href": "/administration/select-operator",
             "conditions": [
               {
-                "api": "registration/v2/user-operators/current/operator",
+                "api": "registration/user-operators/current/operator",
                 "field": "error",
                 "operator": "exists",
                 "value": true
@@ -28,7 +28,7 @@
             "href": "/administration/my-operator",
             "conditions": [
               {
-                "api": "registration/v2/user-operators/current/operator",
+                "api": "registration/user-operators/current/operator",
                 "field": "error",
                 "operator": "notExists",
                 "value": true
@@ -48,7 +48,7 @@
             "href": "/administration/my-operator",
             "conditions": [
               {
-                "api": "registration/v2/user-operators/current/operator",
+                "api": "registration/user-operators/current/operator",
                 "field": "error",
                 "operator": "notExists",
                 "value": true
@@ -68,7 +68,7 @@
             "href": "/administration/operations",
             "conditions": [
               {
-                "api": "registration/v2/user-operators/current/operator",
+                "api": "registration/user-operators/current/operator",
                 "field": "error",
                 "operator": "notExists",
                 "value": true
@@ -82,7 +82,7 @@
             "href": "/administration/contacts",
             "conditions": [
               {
-                "api": "registration/v2/user-operators/current/operator",
+                "api": "registration/user-operators/current/operator",
                 "field": "error",
                 "operator": "notExists",
                 "value": true

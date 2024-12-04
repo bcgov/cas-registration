@@ -39,13 +39,13 @@ class TestOperationIdEndpoint(CommonTestSetup):
         users_operation = operation_baker(user_operator.operator.id)
 
         response_1 = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_operation_v2", kwargs={"operation_id": users_operation.id})
+            self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
         )
 
         assert response_1.status_code == 200
 
         response_2 = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_operation_v2", kwargs={"operation_id": random_operation.id})
+            self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": random_operation.id})
         )
         assert response_2.status_code == 401
 
@@ -85,7 +85,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             registration_purpose='Potential Reporting Operation',
         )
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy("get_operation_v2", kwargs={"operation_id": operation.id})
+            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
         )
         assert response.status_code == 200
         response_data = response.json()
@@ -112,7 +112,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             json.dumps(self.test_payload),
-            custom_reverse_lazy("update_operation_v2", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id}),
         )
         assert response.status_code == 200
         response_data = response.json()

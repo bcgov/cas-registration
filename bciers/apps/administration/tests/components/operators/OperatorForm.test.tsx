@@ -375,7 +375,7 @@ describe("OperatorForm component", () => {
     // Ensure actionHandler is called with the correct arguments
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
-      "registration/v2/user-operators",
+      "registration/user-operators",
       "POST",
       "administration/operators",
       {
@@ -419,7 +419,7 @@ describe("OperatorForm component", () => {
 
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
-      "registration/v2/user-operators",
+      "registration/user-operators",
       "POST",
       "administration/operators",
       {
@@ -541,7 +541,7 @@ describe("OperatorForm component", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/user-operators/current/operator",
+        "registration/user-operators/current/operator",
         "PUT",
         "administration/operators",
         {

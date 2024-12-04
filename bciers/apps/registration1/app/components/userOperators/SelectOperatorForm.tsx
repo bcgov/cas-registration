@@ -21,6 +21,7 @@ export default function SelectOperatorForm({
 
   return (
     <Form
+      formContext={{ endpoint: "registration/v1/operators" }}
       schema={schema}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
         const queryParam = `?${data.formData?.search_type}=${data.formData?.[
@@ -28,11 +29,10 @@ export default function SelectOperatorForm({
         ]}`;
 
         const response = await actionHandler(
-          `registration/operators${queryParam}`,
+          `registration/v1/operators${queryParam}`,
           "GET",
           "/dashboard/select-operator",
         );
-
         if (response.error) {
           setErrorList([{ message: response.error }]);
           return;

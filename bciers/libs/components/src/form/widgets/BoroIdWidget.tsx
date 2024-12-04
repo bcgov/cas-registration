@@ -9,7 +9,7 @@ import { OperationStatus } from "@bciers/utils/src/enums";
 
 async function generateBoroId(id: string) {
   const response = await actionHandler(
-    `registration/v2/operations/${id}/boro-id`,
+    `registration/operations/${id}/boro-id`,
     "PATCH",
     `registration/administration/operations/${id}`,
   );

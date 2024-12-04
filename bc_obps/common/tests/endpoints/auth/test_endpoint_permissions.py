@@ -19,6 +19,17 @@ class TestEndpointPermissions(TestCase):
     mock_int = 1
     endpoints_to_test = {
         "authorized_roles": [
+            {"method": "get", "endpoint_name": "v1_list_business_structures"},
+            {"method": "get", "endpoint_name": "v1_list_naics_codes"},
+            {"method": "get", "endpoint_name": "v1_list_regulated_products"},
+            {"method": "get", "endpoint_name": "v1_list_reporting_activities"},
+            {"method": "get", "endpoint_name": "v1_get_operators_by_cra_number_or_legal_name"},
+            {"method": "get", "endpoint_name": "v1_get_operator", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_user_operator_has_admin",
+                "kwargs": {"operator_id": mock_uuid},
+            },
             {"method": "get", "endpoint_name": "list_dashboard_data"},
             {"method": "get", "endpoint_name": "list_business_structures"},
             {"method": "get", "endpoint_name": "list_naics_codes"},
@@ -33,6 +44,18 @@ class TestEndpointPermissions(TestCase):
             },
         ],
         "approved_industry_user": [
+            {"method": "post", "endpoint_name": "v1_create_operation"},
+            {"method": "post", "endpoint_name": "v1_create_contact"},
+            {"method": "put", "endpoint_name": "v1_update_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_operator_and_user_operator",
+                "kwargs": {"user_operator_id": mock_uuid},
+            },
+            {"method": "get", "endpoint_name": "v1_is_current_user_approved_admin"},
+            {"method": "get", "endpoint_name": "v1_get_operator_users"},
+            {"method": "put", "endpoint_name": "v1_update_contact", "kwargs": {"contact_id": mock_uuid}},
+            {"method": "get", "endpoint_name": "v1_get_user", "kwargs": {"user_id": mock_uuid}},
             {"method": "get", "endpoint_name": "get_current_operator_and_user_operator"},
             {"method": "get", "endpoint_name": "is_current_user_approved_admin"},
             {"method": "get", "endpoint_name": "get_operator_users"},
@@ -42,7 +65,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "operation_registration_get_opted_in_operation_detail",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_current_operator_and_user_operator_v2"},
+            {"method": "get", "endpoint_name": "v1_get_current_operator_from_user_operator"},
             {"method": "get", "endpoint_name": "list_current_users_operations"},
             {
                 "method": "get",
@@ -92,7 +115,6 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
             },
             {"method": "get", "endpoint_name": "get_report_attachments", "kwargs": {"report_version_id": mock_int}},
-            {"method": "post", "endpoint_name": "create_operation"},
             {"method": "post", "endpoint_name": "create_facilities"},
             {"method": "post", "endpoint_name": "create_contact"},
             {
@@ -158,7 +180,7 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "create_or_replace_new_entrant_application",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "put", "endpoint_name": "update_operation_v2", "kwargs": {"operation_id": mock_uuid}},
+            {"method": "put", "endpoint_name": "update_operation", "kwargs": {"operation_id": mock_uuid}},
             {
                 "method": "patch",
                 "endpoint_name": "operation_registration_submission",
@@ -170,12 +192,25 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"operation_id": mock_uuid},
             },
             {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
+            {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
         ],
         "all_roles": [
+            {"method": "put", "endpoint_name": "v1_update_user_profile"},
             {"method": "get", "endpoint_name": "get_reporting_year"},
             {"method": "put", "endpoint_name": "update_user_profile"},
         ],
         "industry_user": [
+            {"method": "post", "endpoint_name": "v1_create_operator_and_user_operator"},
+            {"method": "post", "endpoint_name": "v1_request_access", "kwargs": {"operator_id": mock_uuid}},
+            {"method": "post", "endpoint_name": "v1_request_admin_access", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_user_operator_access_declined",
+                "kwargs": {"operator_id": mock_uuid},
+            },
+            {"method": "get", "endpoint_name": "v1_get_pending_operator_and_user_operator"},
+            {"method": "get", "endpoint_name": "v1_get_current_user_operator_has_registered_operation"},
+            {"method": "get", "endpoint_name": "v1_get_current_user_operator_has_required_fields"},
             {
                 "method": "get",
                 "endpoint_name": "get_user_operator_access_declined",
@@ -184,17 +219,23 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "get_pending_operator_and_user_operator"},
             {"method": "get", "endpoint_name": "get_current_user_operator_has_registered_operation"},
             {"method": "get", "endpoint_name": "get_current_user_operator_has_required_fields"},
-            {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
             {"method": "post", "endpoint_name": "request_access", "kwargs": {"operator_id": mock_uuid}},
             {"method": "post", "endpoint_name": "request_admin_access", "kwargs": {"operator_id": mock_uuid}},
-            {"method": "post", "endpoint_name": "create_operator_and_user_operator_v2"},
+            {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
         ],
         "approved_industry_admin_user": [
+            {"method": "get", "endpoint_name": "v1_get_current_user_operator_access_requests"},
             {"method": "get", "endpoint_name": "get_current_user_operator_access_requests"},
         ],
         "authorized_irc_user": [
+            {"method": "put", "endpoint_name": "v1_update_operator_status", "kwargs": {"operator_id": mock_uuid}},
+            {"method": "get", "endpoint_name": "v1_list_user_operators"},
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_operation_status",
+                "kwargs": {"operation_id": mock_uuid},
+            },
             {"method": "get", "endpoint_name": "list_user_operators"},
-            {"method": "get", "endpoint_name": "list_user_operators_v2"},
             {"method": "put", "endpoint_name": "update_operator_status", "kwargs": {"operator_id": mock_uuid}},
             {
                 "method": "put",
@@ -204,6 +245,15 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "list_transfer_events"},
         ],
         "approved_authorized_roles": [
+            {"method": "get", "endpoint_name": "v1_list_operations"},
+            {"method": "get", "endpoint_name": "v1_get_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_user_operator_by_id",
+                "kwargs": {"user_operator_id": mock_uuid},
+            },
+            {"method": "get", "endpoint_name": "v1_get_contact", "kwargs": {"contact_id": mock_uuid}},
+            {"method": "get", "endpoint_name": "v1_list_contacts"},
             {"method": "get", "endpoint_name": "list_operations"},
             {"method": "get", "endpoint_name": "list_contacts"},
             {"method": "get", "endpoint_name": "get_operation", "kwargs": {"operation_id": mock_uuid}},
@@ -230,14 +280,14 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_operation_new_entrant_application",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_operation_v2", "kwargs": {"operation_id": mock_uuid}},
+            {"method": "get", "endpoint_name": "get_operation", "kwargs": {"operation_id": mock_uuid}},
             {
                 "method": "get",
                 "endpoint_name": "get_operation_with_documents",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "list_operations_v2"},
-            {"method": "get", "endpoint_name": "list_operators_v2"},
+            {"method": "get", "endpoint_name": "list_operations"},
+            {"method": "get", "endpoint_name": "list_operators"},
             {
                 "method": "get",
                 "endpoint_name": "get_report_operation_by_version_id",
@@ -267,6 +317,11 @@ class TestEndpointPermissions(TestCase):
             },
         ],
         "authorized_irc_user_and_industry_admin_user": [
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_user_operator_status",
+                "kwargs": {"user_operator_id": mock_uuid},
+            },
             {
                 "method": "put",
                 "endpoint_name": "update_user_operator_status",
@@ -318,10 +373,14 @@ class TestEndpointPermissions(TestCase):
             "openapi-json",
             "openapi-view",
             "setup",
+            "v1_setup",
             # Below are endpoints that are accessible to all users so new users can be created
             "create_user_profile",
+            "v1_create_user_profile",
             "get_user_profile",
+            "v1_get_user_profile",
             "get_user_role",
+            "v1_get_user_role",
             # TODO: Pending on the answer from Reporting Team
             "get_activities",
             "get_fuel_data",

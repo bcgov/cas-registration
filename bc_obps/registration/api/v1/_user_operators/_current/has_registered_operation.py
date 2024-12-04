@@ -13,7 +13,7 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/user-operators/current/has_registered_operation",
+    "/v1/user-operators/current/has_registered_operation",
     response={200: Dict[str, bool], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""
@@ -23,7 +23,7 @@ from registration.schema.generic import Message
     auth=authorize("industry_user"),
 )
 @handle_http_errors()
-def get_current_user_operator_has_registered_operation(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
+def v1_get_current_user_operator_has_registered_operation(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
     try:
         # Retrieve the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))

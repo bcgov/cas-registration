@@ -7,7 +7,7 @@ import ConfirmSelectedOperatorForm from "./ConfirmSelectedOperatorForm";
 
 export async function getOperator(id: string) {
   return actionHandler(
-    `registration/operators/${id}`,
+    `registration/v1/operators/${id}`,
     "GET",
     `dashboard/select-operator/confirm/${id}`,
   );
@@ -15,7 +15,7 @@ export async function getOperator(id: string) {
 
 export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
-    `registration/operators/${id}/has-admin`,
+    `registration/v1/operators/${id}/has-admin`,
     "GET",
     `dashboard/select-operator/confirm/${id}`,
   );
@@ -23,7 +23,7 @@ export async function getOperatorHasAdmin(id: string) {
 
 export async function getOperatorAccessDeclined(id: string) {
   return actionHandler(
-    `registration/operators/${id}/access-declined`,
+    `registration/v1/operators/${id}/access-declined`,
     "GET",
     `dashboard/select-operator/confirm/${id}`,
   );

@@ -15,7 +15,7 @@ from registration.schema.generic import Message
 
 ##### GET #####
 @router.get(
-    "/v2/operations/{uuid:operation_id}/registration/operation",
+    "/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationRegistrationOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Gets the registration purpose, regulated products (if applicable), and select data of a specific operation by its ID.
@@ -32,7 +32,7 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 
 
 @router.put(
-    "/v2/operations/{uuid:operation_id}/registration/operation",
+    "/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Updates the registration purpose and regulated products (if applicable) of a specific operation by its ID.
