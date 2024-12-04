@@ -32,7 +32,6 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
 ) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-
     // Check if the path is in the unauthenticated allow list
     if (isInAllowedPath(pathname, unauthAllowedPaths)) {
       // 🛸 Route to next middleware

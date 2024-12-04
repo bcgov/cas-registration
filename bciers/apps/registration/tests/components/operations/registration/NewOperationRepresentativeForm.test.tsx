@@ -276,7 +276,7 @@ describe("the NewOperationRepresentativeForm component", () => {
 
       expect(actionHandler).toHaveBeenNthCalledWith(
         1,
-        `registration/v2/operations/${operationId}/registration/operation-representative`,
+        `registration/operations/${operationId}/registration/operation-representative`,
         "POST",
         `/register-an-operation/${operationId}/5`,
         {
@@ -335,7 +335,7 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
     await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/v2/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
+      "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/operation-representative",
       "PUT",
       "registration/administration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d",
       {

@@ -12,9 +12,15 @@ describe("getUUIDFromEndpoint", () => {
       expect(result).toBe("ba2ba62a121842e0942aab9e92ce8822");
     },
   );
-  it("should return an empty string if the endpoint contains a malformed UUID", () => {
+  it("should return an empty string if the v1 endpoint contains a malformed UUID", () => {
     const endpoint =
       "registration/user/user-app-role/ba2ba62a121842e0942aab9e92ce882";
+    const result = getUUIDFromEndpoint(endpoint);
+    expect(result).toBe(null);
+  });
+  it("should return an empty string if the v1 endpoint contains a malformed UUID", () => {
+    const endpoint =
+      "registration/v1/user/user-app-role/ba2ba62a121842e0942aab9e92ce882";
     const result = getUUIDFromEndpoint(endpoint);
     expect(result).toBe(null);
   });

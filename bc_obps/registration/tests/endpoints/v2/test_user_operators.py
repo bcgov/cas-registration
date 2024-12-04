@@ -10,7 +10,7 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestCreateUserOperator(CommonTestSetup):
-    endpoint = custom_reverse_lazy("create_operator_and_user_operator_v2")
+    endpoint = custom_reverse_lazy("create_operator_and_user_operator")
 
     payload = {
         "legal_name": "Legal Name",
@@ -269,7 +269,7 @@ class TestCreateUserOperator(CommonTestSetup):
 
 
 class TestListUserOperators(CommonTestSetup):
-    url = custom_reverse_lazy("list_user_operators_v2")
+    url = custom_reverse_lazy("list_user_operators")
 
     def test_list_user_operators_v2_paginated(self):
         for _ in range(50):

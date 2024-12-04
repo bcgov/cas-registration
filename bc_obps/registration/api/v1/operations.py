@@ -21,7 +21,7 @@ from ninja.types import DictStrAny
 
 
 @router.get(
-    "/operations",
+    "/v1/operations",
     response={200: OperationPaginatedOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves a paginated list of operations based on the provided filters.
@@ -29,7 +29,7 @@ from ninja.types import DictStrAny
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def list_operations(
+def v1_list_operations(
     request: HttpRequest, filters: OperationFilterSchema = Query(...)
 ) -> Tuple[Literal[200], DictStrAny]:
     return 200, OperationService.list_operations(get_current_user_guid(request), filters)
@@ -39,7 +39,7 @@ def list_operations(
 
 
 @router.post(
-    "/operations",
+    "/v1/operations",
     response={201: OperationCreateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Creates a new operation for the current user.
@@ -47,5 +47,5 @@ def list_operations(
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def create_operation(request: HttpRequest, payload: OperationCreateIn) -> Tuple[Literal[201], DictStrAny]:
+def v1_create_operation(request: HttpRequest, payload: OperationCreateIn) -> Tuple[Literal[201], DictStrAny]:
     return 201, OperationService.create_operation(get_current_user_guid(request), payload)

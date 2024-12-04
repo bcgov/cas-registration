@@ -117,6 +117,7 @@ export default {
         if (!token.app_role || trigger === "update") {
           // Augment the keycloak token with the user app_role
           // 🚀 API call: Get user app_role by user_guid from user table
+
           const responseRole = await actionHandler(
             `registration/user/user-app-role/${token.user_guid}`,
             "GET",

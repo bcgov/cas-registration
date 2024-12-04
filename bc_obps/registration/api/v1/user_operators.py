@@ -14,7 +14,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/user-operators",
+    "/v1/user-operators",
     response={200: UserOperatorPaginatedOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves a paginated list of user operators.
@@ -25,7 +25,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("authorized_irc_user"),
 )
 @handle_http_errors()
-def list_user_operators(
+def v1_list_user_operators(
     request: HttpRequest, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"
 ) -> Tuple[Literal[200], UserOperatorPaginatedOut]:
     return 200, UserOperatorService.list_user_operators(page, sort_field, sort_order)
@@ -33,7 +33,7 @@ def list_user_operators(
 
 ## POST
 @router.post(
-    "/user-operators",
+    "/v1/user-operators",
     response={200: RequestAccessOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Creates a new operator and a user-operator for the current user.
@@ -43,7 +43,7 @@ def list_user_operators(
     auth=authorize("industry_user"),
 )
 @handle_http_errors()
-def create_operator_and_user_operator(
+def v1_create_operator_and_user_operator(
     request: HttpRequest, payload: UserOperatorOperatorIn
 ) -> Tuple[Literal[200], Dict[str, UUID]]:
     return 200, UserOperatorService.create_operator_and_user_operator(payload, get_current_user_guid(request))

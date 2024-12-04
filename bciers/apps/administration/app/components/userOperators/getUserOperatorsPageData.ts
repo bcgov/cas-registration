@@ -8,7 +8,7 @@ export default async function getUserOperatorsPageData(
   try {
     const queryParams = buildQueryParams(searchParams);
     const pageData = await actionHandler(
-      `registration/v2/user-operators${queryParams}`,
+      `registration/user-operators${queryParams}`,
       "GET",
       "",
     );

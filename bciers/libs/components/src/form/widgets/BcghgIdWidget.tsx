@@ -14,7 +14,7 @@ export enum EntityWithBcghgType {
 function generateBcghgId(entityId: string, entityType: EntityWithBcghgType) {
   const endpoint =
     entityType === EntityWithBcghgType.OPERATION
-      ? `registration/v2/operations/${entityId}/bcghg-id`
+      ? `registration/operations/${entityId}/bcghg-id`
       : `registration/facilities/${entityId}/bcghg-id`;
 
   return actionHandler(endpoint, "PATCH", "");

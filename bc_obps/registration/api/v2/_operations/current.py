@@ -18,7 +18,7 @@ from django.db.models import QuerySet
 
 
 @router.get(
-    "/v2/operations/current",
+    "/operations/current",
     response={200: List[OperationCurrentOut], custom_codes_4xx: Message},
     tags=["V2"],
     auth=authorize('approved_industry_user'),

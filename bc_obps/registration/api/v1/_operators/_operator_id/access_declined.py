@@ -12,7 +12,7 @@ from common.api.utils import get_current_user_guid
 
 
 @router.get(
-    "/operators/{operator_id}/access-declined",
+    "/v1/operators/{operator_id}/access-declined",
     response={200: bool, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Checks if the current user's access to a specific operator has been declined.
@@ -21,5 +21,5 @@ from common.api.utils import get_current_user_guid
     auth=authorize("industry_user"),
 )
 @handle_http_errors()
-def get_user_operator_access_declined(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], bool]:
+def v1_get_user_operator_access_declined(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], bool]:
     return 200, UserDataAccessService.is_users_user_operator_declined(get_current_user_guid(request), operator_id)

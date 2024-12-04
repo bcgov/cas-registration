@@ -16,7 +16,7 @@ from service.user_profile_service import UserProfileService
 
 # Endpoint to create a new user
 @router.post(
-    "/users",
+    "/v1/users",
     response={200: UserOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Creates a new user.
@@ -24,6 +24,6 @@ from service.user_profile_service import UserProfileService
     The user's GUID is obtained from the authorization header.""",
 )
 @handle_http_errors()
-def create_user_profile(request: HttpRequest, payload: UserIn) -> Tuple[Literal[200], User]:
+def v1_create_user_profile(request: HttpRequest, payload: UserIn) -> Tuple[Literal[200], User]:
     # Determine the role based on the identity provider
     return 200, UserProfileService.create_user_profile(json.loads(request.headers.get('Authorization')).get('user_guid'), payload)  # type: ignore[arg-type]

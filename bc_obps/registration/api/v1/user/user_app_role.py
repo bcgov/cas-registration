@@ -13,13 +13,13 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "user/user-app-role",
+    "/v1/user/user-app-role",
     response={200: UserAppRoleOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the application role of the current user.
     The endpoint uses the user's GUID to look up and return their associated application role.""",
 )
 @handle_http_errors()
-def get_user_role(request: HttpRequest) -> Tuple[Literal[200], AppRole]:
+def v1_get_user_role(request: HttpRequest) -> Tuple[Literal[200], AppRole]:
     user_guid: UUID = get_current_user_guid(request)
     return 200, UserDataAccessService.get_app_role(user_guid)

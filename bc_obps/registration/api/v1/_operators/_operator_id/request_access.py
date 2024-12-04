@@ -13,7 +13,7 @@ from service.application_access_service import ApplicationAccessService
 
 
 @router.post(
-    "/operators/{operator_id}/request-access",
+    "/v1/operators/{operator_id}/request-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Allows an industry user to request access to a specific operator.
@@ -22,6 +22,6 @@ from service.application_access_service import ApplicationAccessService
     auth=authorize("industry_user"),
 )
 @handle_http_errors()
-def request_access(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[201], Dict[str, UUID]]:
+def v1_request_access(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[201], Dict[str, UUID]]:
 
     return 201, ApplicationAccessService.request_access(operator_id, get_current_user_guid(request))

@@ -23,24 +23,32 @@ class AppRoleModelTest(BaseTestCase):
         self.assertEqual(existing_roles, expected_roles)
 
     def test_static_methods(self):
-        self.assertEqual(AppRole.get_authorized_irc_roles(), ['cas_admin', 'cas_analyst', 'cas_director'])
         self.assertEqual(
-            AppRole.get_all_authorized_app_roles(),
-            [
-                'cas_admin',
-                'cas_analyst',
-                'industry_user',
-                'cas_director',
-            ],
+            sorted(AppRole.get_authorized_irc_roles()), sorted(['cas_admin', 'cas_analyst', 'cas_director'])
         )
         self.assertEqual(
-            AppRole.get_all_app_roles(),
-            [
-                'cas_admin',
-                'cas_analyst',
-                'cas_pending',
-                'industry_user',
-                'cas_director',
-            ],
+            sorted(AppRole.get_all_authorized_app_roles()),
+            sorted(
+                [
+                    'cas_admin',
+                    'cas_analyst',
+                    'industry_user',
+                    'cas_director',
+                ]
+            ),
         )
-        self.assertEqual(UserOperator.get_all_industry_user_operator_roles(), ['admin', 'reporter', 'pending'])
+        self.assertEqual(
+            sorted(AppRole.get_all_app_roles()),
+            sorted(
+                [
+                    'cas_admin',
+                    'cas_analyst',
+                    'cas_pending',
+                    'industry_user',
+                    'cas_director',
+                ]
+            ),
+        )
+        self.assertEqual(
+            sorted(UserOperator.get_all_industry_user_operator_roles()), sorted(['admin', 'reporter', 'pending'])
+        )

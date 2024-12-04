@@ -34,7 +34,7 @@ const RegistrationSubmissionForm = ({
   const handleSubmit = async (e: IChangeEvent) => {
     setSubmitButtonDisabled(true);
     const response = await actionHandler(
-      `registration/v2/operations/${operation}/registration/submission`,
+      `registration/operations/${operation}/registration/submission`,
       "PATCH",
       "",
       {

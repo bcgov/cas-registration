@@ -86,10 +86,6 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
             'authorized_app_roles': all_authorized_app_roles,
             'authorized_user_operator_roles': all_industry_user_operator_roles,
         },
-        "authorized_irc_user_and_industry_admin_user": {
-            'authorized_app_roles': all_authorized_app_roles,
-            'authorized_user_operator_roles': ["admin"],
-        },
         "industry_user": {
             'authorized_app_roles': ["industry_user"],
             'authorized_user_operator_roles': all_industry_user_operator_roles,
@@ -101,6 +97,10 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
         },
         "approved_industry_admin_user": {
             'authorized_app_roles': ["industry_user"],
+            'authorized_user_operator_roles': ["admin"],
+        },
+        "authorized_irc_user_and_industry_admin_user": {
+            'authorized_app_roles': all_authorized_app_roles,
             'authorized_user_operator_roles': ["admin"],
         },
         "authorized_irc_user": {
@@ -137,8 +137,8 @@ def authorize(
         "approved_industry_admin_user",
         "authorized_irc_user",
         "approved_authorized_roles",
-        "authorized_irc_user_and_industry_admin_user",
         "cas_director",
+        "authorized_irc_user_and_industry_admin_user",
     ]
 ) -> Callable[[HttpRequest], bool]:
     """

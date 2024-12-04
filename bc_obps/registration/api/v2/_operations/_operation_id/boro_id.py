@@ -14,7 +14,7 @@ from registration.schema.generic import Message
 
 
 @router.patch(
-    "/v2/operations/{uuid:operation_id}/boro-id",
+    "/operations/{uuid:operation_id}/boro-id",
     response={200: OperationBoroIdOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Generates and returns a BORO ID for the operation if the operation is of an appropriate type and status and doesn't already have a BORO ID.""",

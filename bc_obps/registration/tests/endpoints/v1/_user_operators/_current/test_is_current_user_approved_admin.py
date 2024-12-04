@@ -28,7 +28,7 @@ class TestIsCurrentUserApprovedAdminEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("is_current_user_approved_admin"),
+            custom_reverse_lazy("v1_is_current_user_approved_admin"),
         )
         assert response.status_code == 200
         assert response.json() == {"approved": True}
@@ -45,7 +45,7 @@ class TestIsCurrentUserApprovedAdminEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("is_current_user_approved_admin"),
+            custom_reverse_lazy("v1_is_current_user_approved_admin"),
         )
         assert response.status_code == 200
         assert response.json() == {"approved": False}

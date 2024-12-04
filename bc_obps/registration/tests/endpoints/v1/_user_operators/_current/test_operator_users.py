@@ -21,7 +21,7 @@ class TestOperatorUsersEndpoint(CommonTestSetup):
 
         response = TestUtils.mock_get_with_auth_role(
             self,
-            endpoint=custom_reverse_lazy("get_operator_users"),
+            endpoint=custom_reverse_lazy("v1_get_operator_users"),
             role_name="industry_user",
         )
         assert response.status_code == 200
@@ -42,7 +42,7 @@ class TestOperatorUsersEndpoint(CommonTestSetup):
             baker.make(UserOperator, user=user, operator=random_operator)
         response = TestUtils.mock_get_with_auth_role(
             self,
-            endpoint=custom_reverse_lazy("get_operator_users"),
+            endpoint=custom_reverse_lazy("v1_get_operator_users"),
             role_name="industry_user",
         )
         assert response.status_code == 200

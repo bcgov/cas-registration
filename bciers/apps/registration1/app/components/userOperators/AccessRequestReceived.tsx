@@ -5,7 +5,7 @@ import { getOperator } from "./ConfirmSelectedOperator";
 
 export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
-    `registration/operators/${id}/has-admin`,
+    `registration/v1/operators/${id}/has-admin`,
     "GET",
     `dashboard/select-operator/confirm/${id}`,
   );

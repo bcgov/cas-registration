@@ -15,14 +15,14 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # endpoint to return user data if user exists in user table
 @router.get(
-    "/user/user-profile",
+    "/v1/user/user-profile",
     response={200: UserOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the profile data of the current user.
     The endpoint uses the user GUID from the authorization header to look up and return the user's profile information, including their application role.""",
 )
 @handle_http_errors()
-def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], User]:
+def v1_get_user_profile(request: HttpRequest) -> Tuple[Literal[200], User]:
     return 200, UserDataAccessService.get_user_profile(json.loads(request.headers.get('Authorization')).get('user_guid'))  # type: ignore[arg-type]
 
 
@@ -31,7 +31,7 @@ def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], User]:
 
 # Endpoint to update a user
 @router.put(
-    "/user/user-profile",
+    "/v1/user/user-profile",
     response={200: UserOut, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Updates the profile data of the current user.
@@ -39,5 +39,5 @@ def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], User]:
     auth=authorize("all_roles"),
 )
 @handle_http_errors()
-def update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Literal[200], User]:
+def v1_update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Literal[200], User]:
     return 200, UserDataAccessService.update_user(get_current_user_guid(request), payload)

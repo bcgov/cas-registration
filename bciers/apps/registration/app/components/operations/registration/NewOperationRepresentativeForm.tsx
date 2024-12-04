@@ -118,7 +118,7 @@ const NewOperationRepresentativeForm: FC<
   };
 
   const submitHandler = async ({ formData: newFormData }: IChangeEvent) => {
-    const endpoint = `registration/v2/operations/${operation}/registration/operation-representative`;
+    const endpoint = `registration/operations/${operation}/registration/operation-representative`;
     const response = await actionHandler(
       endpoint,
       "POST",

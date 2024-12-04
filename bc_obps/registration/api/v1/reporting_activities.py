@@ -14,12 +14,12 @@ from django.db.models import QuerySet
 
 
 @router.get(
-    "/reporting_activities",
+    "/v1/reporting_activities",
     response=List[ActivitySchema],
     tags=ACTIVITY_TAGS,
     description="""Retrieves a list of reporting activities.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
     auth=authorize("authorized_roles"),
 )
-def list_reporting_activities(request: HttpRequest) -> Tuple[Literal[200], QuerySet[Activity]]:
+def v1_list_reporting_activities(request: HttpRequest) -> Tuple[Literal[200], QuerySet[Activity]]:
     return 200, ActivityDataAccessService.get_activities()

@@ -19,7 +19,7 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    endpoint = custom_reverse_lazy("list_operations")
+    endpoint = custom_reverse_lazy("v1_list_operations")
 
     # GET
     def test_get_all_operations_endpoint_based_on_role(self):
@@ -153,7 +153,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert len(response_data) == PAGE_SIZE
         # Get the page 2 response
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations') + "?page=2&sort_field=created_at&sort_order=desc"
+            self,
+            "cas_admin",
+            custom_reverse_lazy('v1_list_operations') + "?page=2&sort_field=created_at&sort_order=desc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -165,7 +167,9 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # Get the page 2 response but with a different sort order
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations') + "?page=2&sort_field=created_at&sort_order=asc"
+            self,
+            "cas_admin",
+            custom_reverse_lazy('v1_list_operations') + "?page=2&sort_field=created_at&sort_order=asc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -207,7 +211,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations') + "?status=approved"
+            self, "cas_admin", custom_reverse_lazy('v1_list_operations') + "?status=approved"
         )
 
         assert response.status_code == 200
@@ -218,7 +222,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # Test with a status filter that doesn't exist
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations') + "?status=abc"
+            self, "cas_admin", custom_reverse_lazy('v1_list_operations') + "?status=abc"
         )
 
         assert response.status_code == 200
@@ -227,7 +231,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # Test with a name filter
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations') + "?name=kwik-e-mart"
+            self, "cas_admin", custom_reverse_lazy('v1_list_operations') + "?name=kwik-e-mart"
         )
 
         assert response.status_code == 200
@@ -236,7 +240,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # Test with a name filter that doesn't exist
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy('list_operations') + "?name=abc"
+            self, "cas_admin", custom_reverse_lazy('v1_list_operations') + "?name=abc"
         )
 
         assert response.status_code == 200
@@ -247,7 +251,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('list_operations')
+            custom_reverse_lazy('v1_list_operations')
             + "?name=kwik&status=dec&bcghg_id=23219990023&bc_obps_regulated_operation=0001",
         )
 
@@ -265,7 +269,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_operation,
-            custom_reverse_lazy("create_operation"),
+            custom_reverse_lazy("v1_create_operation"),
         )
 
         assert post_response.status_code == 201
@@ -318,7 +322,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_operation2,
-            custom_reverse_lazy("create_operation"),
+            custom_reverse_lazy("v1_create_operation"),
         )
 
         assert post_response.status_code == 400
@@ -337,7 +341,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, new_operation_payload, custom_reverse_lazy("create_operation")
+            self, "industry_user", self.content_type, new_operation_payload, custom_reverse_lazy("v1_create_operation")
         )
         assert post_response.status_code == 201
         assert Operation.objects.count() == 1
@@ -360,7 +364,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_create_operation,
-            custom_reverse_lazy("create_operation"),
+            custom_reverse_lazy("v1_create_operation"),
         )
         assert post_response_1.status_code == 401
 
@@ -372,7 +376,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_create_operation,
-            custom_reverse_lazy("create_operation"),
+            custom_reverse_lazy("v1_create_operation"),
         )
         assert post_response_2.status_code == 401
 
@@ -384,7 +388,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_create_operation,
-            custom_reverse_lazy("create_operation"),
+            custom_reverse_lazy("v1_create_operation"),
         )
         assert post_response_3.status_code == 201
 
@@ -397,7 +401,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_operation,
-            custom_reverse_lazy("create_operation"),
+            custom_reverse_lazy("v1_create_operation"),
         )
 
         operation_id = post_response.json().get('id')
@@ -417,7 +421,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             self.content_type,
             updated_mock_operation,
-            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            custom_reverse_lazy("v1_update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
 

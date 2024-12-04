@@ -38,7 +38,7 @@ class TestCreateUserOperator(CommonTestSetup):
             "industry_user",
             self.content_type,
             payload_with_duplicate_cra_business_number,
-            custom_reverse_lazy("create_operator_and_user_operator"),
+            custom_reverse_lazy("v1_create_operator_and_user_operator"),
         )
         assert post_response_duplicate_cra_business_number.status_code == 400
         assert post_response_duplicate_cra_business_number.json() == {
@@ -63,7 +63,7 @@ class TestCreateUserOperator(CommonTestSetup):
             "industry_user",
             self.content_type,
             payload_with_duplicate_legal_name,
-            custom_reverse_lazy("create_operator_and_user_operator"),
+            custom_reverse_lazy("v1_create_operator_and_user_operator"),
         )
         assert post_response_duplicate_legal_name.status_code == 422
         assert post_response_duplicate_legal_name.json() == {
@@ -87,7 +87,7 @@ class TestCreateUserOperator(CommonTestSetup):
             "industry_user",
             self.content_type,
             payload_with_duplicate_bc_corporate_registry_number,
-            custom_reverse_lazy("create_operator_and_user_operator"),
+            custom_reverse_lazy("v1_create_operator_and_user_operator"),
         )
         assert post_response_duplicate_bc_corporate_registry_number.status_code == 422
         assert post_response_duplicate_bc_corporate_registry_number.json() == {
@@ -154,7 +154,7 @@ class TestCreateUserOperator(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_payload_2,
-            custom_reverse_lazy("create_operator_and_user_operator"),
+            custom_reverse_lazy("v1_create_operator_and_user_operator"),
         )
         assert post_response.status_code == 200
 
@@ -308,7 +308,7 @@ class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
         )
 
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', custom_reverse_lazy('get_current_user_operator_access_requests')
+            self, 'industry_user', custom_reverse_lazy('v1_get_current_user_operator_access_requests')
         )
         assert response.status_code == 200
         response_json = response.json()

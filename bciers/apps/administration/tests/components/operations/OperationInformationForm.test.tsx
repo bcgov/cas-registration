@@ -332,7 +332,7 @@ describe("the OperationInformationForm component", () => {
 
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler).toHaveBeenCalledWith(
-      `registration/v2/operations/${operationId}`,
+      `registration/operations/${operationId}`,
       "PUT",
       "",
       {
@@ -383,7 +383,7 @@ describe("the OperationInformationForm component", () => {
 
     expect(actionHandler).toHaveBeenCalledTimes(2);
     expect(actionHandler).toHaveBeenCalledWith(
-      `registration/v2/operations/${operationId}/registration/opted-in-operation-detail`,
+      `registration/operations/${operationId}/registration/opted-in-operation-detail`,
       "PUT",
       "",
       {
@@ -784,7 +784,7 @@ describe("the OperationInformationForm component", () => {
     await userEvent.click(submitButton);
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler).toHaveBeenCalledWith(
-      `registration/v2/operations/${operationId}`,
+      `registration/operations/${operationId}`,
       "PUT",
       "",
       {

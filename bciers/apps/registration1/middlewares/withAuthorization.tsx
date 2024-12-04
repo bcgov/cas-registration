@@ -116,7 +116,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
                 }),
               };
               const response = await fetch(
-                `${process.env.API_URL}registration/user-operators/current`,
+                `${process.env.API_URL}registration/v1/user-operators/current`,
                 options,
               );
               const operator = await response.json();
