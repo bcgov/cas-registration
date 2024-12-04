@@ -37,7 +37,7 @@ interface Props {
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
-export default function OperationReview({
+export default function OperationReviewForm({
   formData,
   version_id,
   reportType,

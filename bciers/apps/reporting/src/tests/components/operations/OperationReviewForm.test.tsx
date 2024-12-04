@@ -2,7 +2,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
-import OperationReview from "@reporting/src/app/components/operations/OperationReview";
+import OperationReviewForm from "@reporting/src/app/components/operations/OperationReviewForm";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -17,7 +17,7 @@ const mockActionHandler = actionHandler as vi.MockedFunction<
   typeof actionHandler
 >;
 
-describe("OperationReview Component", () => {
+describe("OperationReviewForm Component", () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({ push: vi.fn() });
     mockActionHandler.mockResolvedValue(true); // Mock the action handler to always resolve successfully
@@ -25,7 +25,7 @@ describe("OperationReview Component", () => {
 
   it("renders the form correctly after loading", async () => {
     render(
-      <OperationReview
+      <OperationReviewForm
         formData={{
           activities: [1],
           regulated_products: [1],
@@ -63,7 +63,7 @@ describe("OperationReview Component", () => {
     const { push } = useRouter();
 
     render(
-      <OperationReview
+      <OperationReviewForm
         formData={{
           activities: [1],
           regulated_products: [1],
@@ -107,7 +107,7 @@ describe("OperationReview Component", () => {
 
   it("shows helper text for Simple Report", async () => {
     render(
-      <OperationReview
+      <OperationReviewForm
         formData={{
           activities: [1],
           regulated_products: [1],

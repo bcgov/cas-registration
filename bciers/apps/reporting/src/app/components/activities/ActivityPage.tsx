@@ -19,7 +19,7 @@ interface Props {
 }
 
 // 🧩 Main component
-export default async function ActivityInit({
+export default async function ActivityPage({
   versionId,
   facilityId,
   activityId,

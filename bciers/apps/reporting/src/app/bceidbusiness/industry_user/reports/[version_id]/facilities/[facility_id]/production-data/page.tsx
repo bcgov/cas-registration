@@ -1,18 +1,4 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
-import ProductionData from "@reporting/src/app/components/products/ProductionData";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import ProductionDataPage from "@reporting/src/app/components/products/ProductionDataPage";
 
-export default async function Page({
-  params,
-}: {
-  params: { version_id: number; facility_id: string };
-}) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ProductionData
-        report_version_id={params.version_id}
-        facility_id={params.facility_id}
-      />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(ProductionDataPage);

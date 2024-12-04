@@ -1,16 +1,26 @@
 "use client";
 
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { useRouter } from "next/navigation";
+import {
+  ActivePage,
+  getSignOffAndSubmitSteps,
+} from "@reporting/src/app/components/taskList/5_signOffSubmit";
 
-interface Props extends HasReportVersion {
-  taskListElements: TaskListElement[];
+interface Props {
+  version_id: number;
 }
 
-const FinalReviewForm: React.FC<Props> = ({ version_id, taskListElements }) => {
+const FinalReviewForm: React.FC<Props> = ({
+  version_id,
+}: {
+  version_id: number;
+}) => {
+  const taskListElements = getSignOffAndSubmitSteps(
+    version_id,
+    ActivePage.FinalReview,
+  );
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/sign-off`;
 

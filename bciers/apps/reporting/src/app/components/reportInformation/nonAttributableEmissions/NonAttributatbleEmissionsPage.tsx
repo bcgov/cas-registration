@@ -11,7 +11,7 @@ interface NonAttributableEmissionsProps {
   facilityId: UUID;
 }
 
-export default async function NonAttributableEmissions({
+export default async function NonAttributableEmissionsPage({
   versionId,
   facilityId,
 }: NonAttributableEmissionsProps) {
