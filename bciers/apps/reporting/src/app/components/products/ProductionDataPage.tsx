@@ -1,7 +1,7 @@
-import ProductionDataForm from "./ProductionDataForm";
+import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { getProductionData } from "@bciers/actions/api";
-import { getOrderedActivities } from "../../utils/getOrderedActivities";
+import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import {
   ActivePage,
   getFacilitiesInformationTaskList,
@@ -13,7 +13,7 @@ interface Props {
   facility_id: string; // UUID
 }
 
-const ProductionData: React.FC<Props> = async ({
+const ProductionDataPage: React.FC<Props> = async ({
   report_version_id,
   facility_id,
 }) => {
@@ -57,4 +57,4 @@ const ProductionData: React.FC<Props> = async ({
   );
 };
 
-export default ProductionData;
+export default ProductionDataPage;

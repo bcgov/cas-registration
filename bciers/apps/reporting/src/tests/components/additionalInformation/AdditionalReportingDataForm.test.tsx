@@ -18,7 +18,7 @@ vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
   getRegistrationPurpose: vi.fn(),
 }));
 
-describe("AdditionalReportingData Component", () => {
+describe("AdditionalReportingDataForm Component", () => {
   const versionId = 1;
   const mockPush = vi.fn();
 

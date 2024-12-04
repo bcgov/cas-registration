@@ -46,7 +46,7 @@ const getAllActivities = async () => {
   return actionHandler(`reporting/activities`, "GET", `reporting/activities`);
 };
 
-const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
+const FacilityReviewForm: React.FC<Props> = ({ version_id, facility_id }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -236,4 +236,4 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   );
 };
 
-export default FacilityReview;
+export default FacilityReviewForm;

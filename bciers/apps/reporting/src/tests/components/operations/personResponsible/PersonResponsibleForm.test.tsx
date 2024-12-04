@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi, Mock, it, expect } from "vitest";
 import { actionHandler } from "@bciers/actions";
-import PersonResponsible from "@reporting/src/app/components/operations/personResponsible/PersonResponsible";
+import PersonResponsibleForm from "@reporting/src/app/components/operations/personResponsible/PersonResponsibleForm";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -20,12 +20,12 @@ const mockContactsData = {
   count: 2,
 };
 
-describe("PersonResponsible", () => {
+describe("PersonResponsibleForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
   it("renders the form correctly after loading", async () => {
-    render(<PersonResponsible version_id={1} />);
+    render(<PersonResponsibleForm version_id={1} />);
     await waitFor(() => {
       expect(screen.getByText("Person Responsible")).toBeInTheDocument();
     });
@@ -43,7 +43,7 @@ describe("PersonResponsible", () => {
       .mockResolvedValueOnce(mockContactsWithNoMatch)
       .mockResolvedValueOnce(mockPersonResponsibleData);
 
-    render(<PersonResponsible version_id={1} />);
+    render(<PersonResponsibleForm version_id={1} />);
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledTimes(2);
@@ -65,7 +65,7 @@ describe("PersonResponsible", () => {
       .mockResolvedValueOnce(mockPersonResponsibleData)
       .mockResolvedValueOnce({});
 
-    render(<PersonResponsible version_id={1} />);
+    render(<PersonResponsibleForm version_id={1} />);
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledTimes(3);

@@ -1,5 +1,5 @@
 import { getProductionData } from "@bciers/actions/api";
-import ProductionData from "@reporting/src/app/components/products/ProductionData";
+import ProductionDataPage from "@reporting/src/app/components/products/ProductionDataPage";
 import { render, screen } from "@testing-library/react";
 
 vi.mock("@bciers/actions/api", () => ({
@@ -11,7 +11,7 @@ vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
 
 const getProductionDataMock = getProductionData as ReturnType<typeof vi.fn>;
 
-describe("The Production Data component", () => {
+describe("ProductionDataPage component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -22,7 +22,9 @@ describe("The Production Data component", () => {
       report_products: [],
     });
 
-    render(await ProductionData({ facility_id: "abc", report_version_id: 1 }));
+    render(
+      await ProductionDataPage({ facility_id: "abc", report_version_id: 1 }),
+    );
     expect(getProductionData).toHaveBeenCalledWith(1, "abc");
   });
 
@@ -34,7 +36,9 @@ describe("The Production Data component", () => {
       ],
       report_products: [],
     });
-    render(await ProductionData({ facility_id: "abc", report_version_id: 1 }));
+    render(
+      await ProductionDataPage({ facility_id: "abc", report_version_id: 1 }),
+    );
 
     expect(screen.getAllByText(/production data/i)).toHaveLength(2); // One for the page, one for the tasklist
     expect(
@@ -55,7 +59,9 @@ describe("The Production Data component", () => {
       ],
     });
 
-    render(await ProductionData({ facility_id: "abc", report_version_id: 1 }));
+    render(
+      await ProductionDataPage({ facility_id: "abc", report_version_id: 1 }),
+    );
     expect(screen.getByText("testProduct")).toBeInTheDocument();
     expect(screen.getByText("Unit")).toBeInTheDocument();
     expect(screen.getByText("tonnes of tests")).toBeInTheDocument();

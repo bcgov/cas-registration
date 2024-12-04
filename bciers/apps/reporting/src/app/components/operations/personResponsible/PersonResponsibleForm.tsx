@@ -25,7 +25,7 @@ interface Props {
   version_id: number;
 }
 
-const PersonResponsible = ({ version_id }: Props) => {
+const PersonResponsibleForm = ({ version_id }: Props) => {
   const [contacts, setContacts] = useState<{
     items: ContactRow[];
     count: number;
@@ -235,4 +235,4 @@ const PersonResponsible = ({ version_id }: Props) => {
   );
 };
 
-export default PersonResponsible;
+export default PersonResponsibleForm;

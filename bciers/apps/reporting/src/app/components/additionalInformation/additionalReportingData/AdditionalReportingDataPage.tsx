@@ -3,7 +3,7 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 
-export default async function AdditionalReportingData({
+export default async function AdditionalReportingDataPage({
   versionId,
 }: {
   versionId: number;

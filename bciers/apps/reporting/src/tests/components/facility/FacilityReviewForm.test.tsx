@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import FacilityReview from "@reporting/src/app/components/facility/FacilityReview";
+import FacilityReviewForm from "@reporting/src/app/components/facility/FacilityReviewForm";
 import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
@@ -41,7 +41,7 @@ beforeEach(() => {
   });
 });
 
-describe("FacilityReview", () => {
+describe("FacilityReviewForm", () => {
   beforeEach(() => {
     (actionHandler as Mock).mockClear();
   });
@@ -52,7 +52,7 @@ describe("FacilityReview", () => {
       .mockResolvedValueOnce(mockActivitiesData); // Mock activities data
 
     render(
-      <FacilityReview
+      <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
       />,
@@ -75,7 +75,7 @@ describe("FacilityReview", () => {
     );
 
     render(
-      <FacilityReview
+      <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
       />,
@@ -95,7 +95,7 @@ describe("FacilityReview", () => {
       .mockResolvedValueOnce({}); // Mock successful save
 
     render(
-      <FacilityReview
+      <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
       />,
@@ -129,7 +129,7 @@ describe("FacilityReview", () => {
       .mockRejectedValueOnce(new Error("Failed to save")); // Mock save error
 
     render(
-      <FacilityReview
+      <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
       />,
@@ -158,7 +158,7 @@ describe("FacilityReview", () => {
       .mockResolvedValueOnce([]); // Mock no activities data
 
     render(
-      <FacilityReview
+      <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
       />,
@@ -179,7 +179,7 @@ describe("FacilityReview", () => {
       .mockRejectedValueOnce(new Error("Failed to fetch activities data")); // Simulate error fetching activities data
 
     render(
-      <FacilityReview
+      <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
       />,

@@ -1,15 +1,5 @@
-import PersonResponsible from "@reporting/src/app/components/operations/personResponsible/PersonResponsible";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import PersonResponsibleForm from "@reporting/src/app/components/operations/personResponsible/PersonResponsibleForm";
 
-export default async function Page({
-  params,
-}: {
-  params: { version_id: number };
-}) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <PersonResponsible version_id={params.version_id} />
-    </Suspense>
-  );
+export default function Page({ params }: { params: { version_id: number } }) {
+  return <PersonResponsibleForm version_id={params.version_id} />;
 }

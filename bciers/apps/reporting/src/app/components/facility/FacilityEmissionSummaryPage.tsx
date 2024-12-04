@@ -1,7 +1,7 @@
 import React from "react";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
-import FacilityEmissionSummary from "./FacilityEmissionSummary";
+import FacilityEmissionSummaryForm from "./FacilityEmissionSummaryForm";
 import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformation";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
@@ -18,7 +18,7 @@ const getsummaryData = async (versionId: number, facilityId: UUID) => {
   );
 };
 
-const FacilityEmissionSummaryData = async ({
+const FacilityEmissionSummaryPage = async ({
   versionId,
   facilityId,
 }: Props) => {
@@ -64,7 +64,7 @@ const FacilityEmissionSummaryData = async ({
   };
 
   return (
-    <FacilityEmissionSummary
+    <FacilityEmissionSummaryForm
       versionId={versionId}
       facilityId={facilityId}
       summaryFormData={formData}
@@ -73,4 +73,4 @@ const FacilityEmissionSummaryData = async ({
   );
 };
 
-export default FacilityEmissionSummaryData;
+export default FacilityEmissionSummaryPage;

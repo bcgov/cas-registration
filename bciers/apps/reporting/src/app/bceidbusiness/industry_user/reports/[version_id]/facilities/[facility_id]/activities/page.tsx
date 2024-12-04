@@ -1,17 +1,4 @@
-import { Suspense } from "react";
-import ActivityInit from "apps/reporting/src/app/components/activities/ActivityInit";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import ActivityPage from "@reporting/src/app/components/activities/ActivityPage";
 
-export default async function Page(router: any) {
-  return (
-    <>
-      <Suspense fallback={<Loading />}>
-        <ActivityInit
-          versionId={parseInt(router.params?.version_id)}
-          facilityId={router.params?.facility_id}
-          activityId={parseInt(router.searchParams?.activity_id)}
-        />
-      </Suspense>
-    </>
-  );
-}
+export default defaultPageFactory(ActivityPage);
