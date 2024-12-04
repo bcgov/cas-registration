@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   Box,
   Alert,
@@ -18,10 +18,11 @@ import {
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
-import { IChangeEvent } from "@rjsf/core";
+import FormContext, { IChangeEvent } from "@rjsf/core";
 import { useSearchParams } from "next/navigation";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
+import { useRouter } from "next/navigation";
 
 interface Props {
   version_id: number;
@@ -49,6 +50,8 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [canContinue, setCanContinue] = useState(false);
   const [formData, setFormData] = useState<any>({});
   const [activities, setActivities] = useState<Record<number, boolean>>({});
   const [facilityReviewSchema, setFacilityReviewSchema] = useState<RJSFSchema>({
@@ -59,6 +62,9 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   const queryString = serializeSearchParams(useSearchParams());
   const reportsTitle = useSearchParams().get("reports_title");
   const backUrl = `/reports/${version_id}/person-responsible?reports_title=${reportsTitle}`;
+  const continueURL = `activities${queryString}`;
+  const router = useRouter();
+  const formRef = useRef<FormContext>(null);
 
   const customStepNames = [
     "Operation Information",
@@ -137,7 +143,15 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
         body: JSON.stringify(formDataObject),
       });
 
-      setIsSuccess(true);
+      if (canContinue) {
+        setIsRedirecting(true);
+        router.push(continueURL);
+      } else {
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 3000);
+      }
     } catch (error: any) {
       console.error("Error updating facility:", error);
       setErrorList([error.message || "An error occurred"]);
@@ -149,6 +163,15 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
     }
   };
 
+  const submitExternallyToContinue = () => {
+    setCanContinue(true);
+  }; // Only submit after canContinue is set so the submitHandler can read the boolean
+  useEffect(() => {
+    if (formRef.current && canContinue) {
+      formRef.current.submit();
+    }
+  }, [canContinue]);
+
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -158,6 +181,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
         <ReportingTaskList elements={tasklistData} />
         <div className="w-full md:max-w-[60%]">
           <FormBase
+            formRef={formRef}
             schema={facilityReviewSchema}
             uiSchema={facilityReviewUiSchema}
             formData={formData}
@@ -210,12 +234,13 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
               </div>
             )}
             <ReportingStepButtons
-              allowBackNavigation={true}
               backUrl={backUrl}
-              continueUrl={`activities${queryString}`}
+              continueUrl={continueURL}
               isSaving={isSaving}
               isSuccess={isSuccess}
+              isRedirecting={isRedirecting}
               saveButtonDisabled={false}
+              saveAndContinue={submitExternallyToContinue}
             />
           </FormBase>
         </div>
