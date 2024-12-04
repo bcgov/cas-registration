@@ -24,7 +24,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -36,7 +36,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 10,
+            allocated_quantity: 10,
           },
         ],
         emission_total: 10,
@@ -48,7 +48,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 20,
+            allocated_quantity: 20,
           },
         ],
         emission_total: 200,
@@ -60,7 +60,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 400,
@@ -72,7 +72,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 500,
@@ -84,7 +84,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 600,
@@ -96,7 +96,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 700,
@@ -108,7 +108,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 800,
@@ -120,7 +120,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 900,
@@ -132,7 +132,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 100,
+            allocated_quantity: 100,
           },
         ],
         emission_total: 1000,
@@ -144,7 +144,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 20,
@@ -156,7 +156,7 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 50,
@@ -171,12 +171,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 200.0,
+            allocated_quantity: 200.0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 100.0,
+            allocated_quantity: 100.0,
           },
         ],
         emission_total: 300,
@@ -188,15 +188,15 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 20,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 10,
           },
         ],
-        emission_total: 0,
+        emission_total: 30,
         category_type: "basic",
       },
       {
@@ -205,15 +205,15 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 2,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 1,
           },
         ],
-        emission_total: 0,
+        emission_total: 3,
         category_type: "basic",
       },
       {
@@ -222,15 +222,15 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
-        emission_total: 0,
+        emission_total: 50,
         category_type: "basic",
       },
       {
@@ -239,12 +239,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -256,12 +256,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -273,12 +273,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -290,12 +290,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -307,12 +307,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -324,12 +324,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -341,12 +341,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -358,12 +358,12 @@ export default async function FacilityEmissionAllocationPage({
           {
             product_id: 1,
             product_name: "BC-specific refinery complexity throughput",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
           {
             product_id: 29,
             product_name: "Sugar: solid",
-            product_emission: 0,
+            allocated_quantity: 0,
           },
         ],
         emission_total: 0,
@@ -371,16 +371,16 @@ export default async function FacilityEmissionAllocationPage({
       },
     ],
     facility_total_emissions: 300.0,
-    report_product_emission_totals: [
+    report_product_emission_allocation_totals: [
       {
         product_id: 1,
         product_name: "BC-specific refinery complexity throughput",
-        product_emission: 200.0,
+        allocated_quantity: 200.0,
       },
       {
         product_id: 29,
         product_name: "Sugar: solid",
-        product_emission: 100.0,
+        allocated_quantity: 100.0,
       },
     ],
     methodology: "Other",

@@ -1,38 +1,90 @@
 from decimal import Decimal
 from django.test import TestCase
+from reporting.models.report_operation import ReportOperation
+from reporting.models.report_emission import ReportEmission
+from reporting.models.report_fuel import ReportFuel
+from reporting.models.report_source_type import ReportSourceType
+from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
-from reporting.service.report_product_service import ReportProductService
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
-from registration.models.regulated_product import RegulatedProduct
-from model_bakery.baker import make_recipe
+from model_bakery.baker import make_recipe, make
 
 
 class TestReportEmissionAllocationService(TestCase):
     def setUp(self):
-        self.report_version = make_recipe('reporting.tests.utils.report_version')
-        make_recipe(
-            "reporting.tests.utils.report_operation",
-            report_version=self.report_version,
-            regulated_products=RegulatedProduct.objects.filter(id__in=[29, 1]),
+        self.test_infrastructure = TestInfrastructure.build()
+
+        operation = make(ReportOperation, report_version=self.test_infrastructure.report_version, make_m2m=True)
+        # make_recipe("reporting.tests.utils.report_operation", report_version=self.test_infrastructure.report_version)
+        act_st_1 = self.test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeWithUnitAndFuel",
+            has_unit=True,
+            has_fuel=True,
         )
-        self.facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=self.report_version)
-        self.test_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
-        self.report_version_id = self.facility_report.report_version.id
-        self.facility_uuid = self.facility_report.facility.id
-        self.report_product_data = [
-            {
-                "product_id": 29,
-                "annual_production": 100,
-                "production_data_apr_dec": 10,
-            },
-            {
-                "product_id": 1,
-                "annual_production": 200,
-                "production_data_apr_dec": 20,
-            },
-        ]
+
+        report_activity = self.test_infrastructure.make_report_activity()
+        report_source_type = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st_1,
+            source_type=act_st_1.source_type,
+            report_activity=report_activity,
+            report_version=self.test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+        report_fuel = make(
+            ReportFuel,
+            report_source_type=report_source_type,
+            report_version=self.test_infrastructure.report_version,
+            json_data={"test_report_unit": True},
+            report_unit=None,
+        )
+
+        report_emission = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=self.test_infrastructure.report_version,
+            json_data={"equivalentEmission": 101},
+        )
+
+        report_emission_2 = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=self.test_infrastructure.report_version,
+            json_data={"equivalentEmission": 199.4151},
+        )
+        print("3")
+        # id 1 = Flaring
+        report_emission.emission_categories.set([1])
+        report_emission_2.emission_categories.set([1])
+        make(
+            ReportProduct,
+            report_version=self.test_infrastructure.report_version,
+            facility_report=self.test_infrastructure.facility_report,
+            product_id=1,
+        )
+        make(
+            ReportProduct,
+            report_version=self.test_infrastructure.report_version,
+            facility_report=self.test_infrastructure.facility_report,
+            product_id=29,
+        )
+        operation.regulated_products.add(1, 29)
+        # self.report_product_data = [
+        #     {
+        #         "product_id": 29,
+        #         "annual_production": 100,
+        #         "production_data_apr_dec": 10,
+        #     },
+        #     {
+        #         "product_id": 1,
+        #         "annual_production": 200,
+        #         "production_data_apr_dec": 20,
+        #     },
+        # ]
         self.mock_get_response = {
             'report_product_emission_allocations': [
                 {
@@ -192,8 +244,8 @@ class TestReportEmissionAllocationService(TestCase):
                     'category_type': 'fuel_excluded',
                 },
             ],
-            'facility_total_emissions': 0,
-            'report_product_emission_totals': [
+            'facility_total_emissions': '300.4151',
+            'report_product_emission_allocation_totals': [
                 {'product_name': 'BC-specific refinery complexity throughput', 'total_emission': Decimal('200.0000')},
                 {'product_name': 'Sugar: solid', 'total_emission': Decimal('100.0000')},
             ],
@@ -202,35 +254,36 @@ class TestReportEmissionAllocationService(TestCase):
         }
 
     def test_get_report_emission_allocation(self):
-
+        print("4")
         # Arrange: Create products and associate them with the report facility
         # Sort the report product data by product_id to ensure correct order
-        sorted_report_product_data = sorted(self.report_product_data, key=lambda x: x["product_id"])
-
+        ## sorted_report_product_data = sorted(self.report_product_data, key=lambda x: x["product_id"])
         # Call save_production_data with the sorted report_product_data
-        ReportProductService.save_production_data(
-            self.report_version_id,
-            self.facility_report.facility.id,
-            sorted_report_product_data,
-            self.test_user_guid,
-        )
+        # ReportProductService.save_production_data(
+        #     self.test_infrastructure.report_version,
+        #     self.test_infrastructure.facility_report.facility.id,
+        #     sorted_report_product_data,
+        #     self.test_infrastructure.user.user_guid,
+        # )
 
         # Assert: Report products were created
-        report_products = ReportProduct.objects.filter(facility_report=self.facility_report).order_by('product_id')
+        report_products = ReportProduct.objects.filter(
+            facility_report=self.test_infrastructure.facility_report
+        ).order_by('product_id')
         print("************ Report Products: ", report_products.values())
         assert report_products.count() == 2, "Expected two report products to be created"
 
         # Arrange: Create product emission allocations for report facility products
         flaring_category = EmissionCategory.objects.get(id=1)
         emission_data = [
-            {"category": flaring_category, "quantity": sorted_report_product_data[0]["annual_production"]},
-            {"category": flaring_category, "quantity": sorted_report_product_data[1]["annual_production"]},
+            {"category": flaring_category, "quantity": 100},  # sorted_report_product_data[0]["annual_production"]},
+            {"category": flaring_category, "quantity": 200},  # sorted_report_product_data[1]["annual_production"]},
         ]
         for product, data in zip(report_products, emission_data):
             make_recipe(
                 "reporting.tests.utils.report_product_emission_allocation",
-                report_version=self.report_version,
-                facility_report=self.facility_report,
+                report_version=self.test_infrastructure.report_version,
+                facility_report=self.test_infrastructure.facility_report,
                 report_product=product,
                 emission_category=data["category"],
                 allocated_quantity=data["quantity"],
@@ -238,7 +291,7 @@ class TestReportEmissionAllocationService(TestCase):
 
         # Assert: Report product emission allocations were created
         report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
-            facility_report=self.facility_report
+            facility_report=self.test_infrastructure.facility_report
         )
         print("************ Report Product Emission Allocations: ", report_product_emission_allocations.values())
         assert (
@@ -248,18 +301,18 @@ class TestReportEmissionAllocationService(TestCase):
         # Assert: Validate each field of the created product emission allocation records
         expected_data = [
             {
-                "report_version_id": self.report_version.id,
-                "facility_report_id": self.facility_report.id,
+                "report_version_id": self.test_infrastructure.report_version.id,
+                "facility_report_id": self.test_infrastructure.facility_report.id,
                 "report_product_id": report_products[0].id,
                 "emission_category_id": flaring_category.id,
-                "allocated_quantity": sorted_report_product_data[0]["annual_production"],
+                "allocated_quantity": 100,  # sorted_report_product_data[0]["annual_production"],
             },
             {
-                "report_version_id": self.report_version.id,
-                "facility_report_id": self.facility_report.id,
+                "report_version_id": self.test_infrastructure.report_version.id,
+                "facility_report_id": self.test_infrastructure.facility_report.id,
                 "report_product_id": report_products[1].id,
                 "emission_category_id": flaring_category.id,
-                "allocated_quantity": sorted_report_product_data[1]["annual_production"],
+                "allocated_quantity": 200,  # sorted_report_product_data[1]["annual_production"],
             },
         ]
 
@@ -287,7 +340,7 @@ class TestReportEmissionAllocationService(TestCase):
 
         # Act: Get the report product emission allocation data from the service
         retrieved_emission_allocations_data = ReportEmissionAllocationService.get_emission_allocation_data(
-            self.report_version_id, self.facility_uuid
+            self.test_infrastructure.report_version, self.test_infrastructure.facility_report.facility_id
         )
         print("************ Retrieved Emission Allocations: ", retrieved_emission_allocations_data)
         # Assert: Verify the retrieved instance is not None

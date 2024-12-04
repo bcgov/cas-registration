@@ -26,14 +26,15 @@ class ReportProductEmissionAllocationSchemaOut(ReportProductEmissionAllocationSc
     allocated_quantity: float
 
 
-class ReportProductEmissionTotalSchemaOut(ReportProductEmissionAllocationSchema):
+class ReportProductEmissionAllocationTotalSchemaOut(ReportProductEmissionAllocationSchema):
+    product_id: int
     product_name: str
-    product_total_emissions: float
+    allocated_quantity: float
 
 
 class ReportProductEmissionAllocationsSchemaOut(Schema):
     report_product_emission_allocations: List[ReportProductEmissionAllocationSchemaOut]
     facility_total_emissions: float
-    report_product_emission_totals: List[ReportProductEmissionTotalSchemaOut]
+    report_product_emission_allocation_totals: List[ReportProductEmissionAllocationTotalSchemaOut]
     methodology: str
     other_methodology_description: str

@@ -81,7 +81,7 @@ class ReportEmissionAllocationService:
         return {
             "report_product_emission_allocations": report_product_emission_allocations_data,
             "facility_total_emissions": total_reportable_emissions,
-            "report_product_emission_totals": ReportEmissionAllocationService.get_emission_totals_by_report_product(
+            "report_product_emission_allocation_totals": ReportEmissionAllocationService.get_emission_totals_by_report_product(
                 facility_report_id
             ),
             "methodology": "",  # TODO - figure out where this should come from
@@ -168,7 +168,7 @@ class ReportEmissionAllocationService:
             faciltiy_report_id (int): The ID of the facility report version.
 
         Returns:
-            dict: emission_category_name -> {id, total_emissions, emission_category_type}
+            dict: emission_category_name -> {id, total_emission_allocations, emission_category_type}
         """
         emission_categories = EmissionCategory.objects.all()
         emission_categories_totals = {}
@@ -196,15 +196,15 @@ class ReportEmissionAllocationService:
            List [dict: {product_name, total_emission}]
         """
         report_products = ReportProduct.objects.filter(facility_report_id=facility_report_id)
-        report_product_emission_totals = []
+        report_product_emission_allocation_totals = []
         for rp in report_products:
             total_emission = ReportProductEmissionAllocation.objects.filter(report_product_id=rp.id).aggregate(
                 total_emission=Sum("allocated_quantity")
             )["total_emission"]
-            report_product_emission_totals.append(
+            report_product_emission_allocation_totals.append(
                 {
                     "product_name": rp.product.name,
                     "total_emission": total_emission or 0,
                 }
             )
-        return report_product_emission_totals
+        return report_product_emission_allocation_totals

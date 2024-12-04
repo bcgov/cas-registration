@@ -1,4 +1,3 @@
-// Import necessary components, types, and utilities for rendering the form
 import {
   ArrayFieldTemplate,
   FieldTemplate,
@@ -46,10 +45,10 @@ const EmissionAllocationTitleWidget: React.FC<WidgetProps> = ({
 };
 
 /**
- * Function to fetch the associated product name dynamically
+ * Function to fetch a fields associated product name within the form context
  * based on the field ID and the form context.
  * @param {string} fieldId - ID of the field
- * @param {any} context - Context of the form, containing all data
+ * @param {any} context - Context of the form, containing the field data
  * @returns {string | null} - Returns the product name or null
  */
 const getAssociatedProductName = (
@@ -57,9 +56,9 @@ const getAssociatedProductName = (
   context: any,
 ): string | null => {
   try {
-    // Match for array-based context (getAssociatedProductName1)
+    // Match for array-based context
     const arrayContextMatch = fieldId.match(
-      /_(\d+)_products_(\d+)_product_emission/,
+      /_(\d+)_products_(\d+)_allocated_quantity/,
     );
     if (arrayContextMatch) {
       const [, contextIndex, productIndex] = arrayContextMatch.map(Number);
@@ -73,9 +72,9 @@ const getAssociatedProductName = (
       return null;
     }
 
-    // Match for object-based context (getAssociatedProductName2)
+    // Match for object-based context
     const objectContextMatch = fieldId.match(
-      /root_(\w+)_products_(\d+)_product_emission/,
+      /root_(\w+)_products_(\d+)_allocated_quantity/,
     );
     if (objectContextMatch) {
       const [, contextKey, productIndex] = objectContextMatch;
@@ -108,7 +107,7 @@ const getAssociatedProductName = (
  * @param {FieldTemplateProps} props - Props including id, classNames, children, and formContext
  * @returns {JSX.Element} - Rendered label and input field
  */
-const DynamicLabelProductEmission: React.FC<FieldTemplateProps> = ({
+const DynamicLabelProductAllocation: React.FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
@@ -131,13 +130,16 @@ const DynamicLabelProductEmission: React.FC<FieldTemplateProps> = ({
     </div>
   );
 };
-const DynamicLabelTotalProductEmission: React.FC<FieldTemplateProps> = ({
+const DynamicLabelTotalProductAllocation: React.FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
   formContext,
 }) => {
-  const productName = getAssociatedProductName(id, formContext.total_emissions);
+  const productName = getAssociatedProductName(
+    id,
+    formContext.total_emission_allocations,
+  );
   return (
     <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
       <div className="flex flex-col md:flex-row items-start md:items-center w-full">
@@ -165,31 +167,31 @@ export const emissionAllocationSchema: RJSFSchema = {
       title: "Methodology",
       enum: ["Calculator", "Other"],
     },
-    fuel_excluded_emission_data_title: {
+    basic_emission_allocation_data_title: {
+      title:
+        "Allocate the facility's total emissions, by emission category, among its regulated products in tCO2e:",
+      type: "string",
+    },
+    basic_emission_allocation_data: {
+      type: "array",
+      items: {
+        $ref: "#/definitions/emissionCategoryAllocationItem",
+      },
+    },
+    fuel_excluded_emission_allocation_data_title: {
       title:
         "Allocate the facility's total emissions, by emissions excluded by fuel type:",
       type: "string",
     },
-    basic_emission_data_title: {
-      title:
-        "Allocate the facility's total emissions by emission category, among its regulated products in tCO2e:",
-      type: "string",
-    },
-    basic_emission_data: {
+    fuel_excluded_emission_allocation_data: {
       type: "array",
       items: {
         $ref: "#/definitions/emissionCategoryAllocationItem",
       },
     },
-    fuel_excluded_emission_data: {
-      type: "array",
-      items: {
-        $ref: "#/definitions/emissionCategoryAllocationItem",
-      },
-    },
-    total_emissions: {
+    total_emission_allocations: {
       type: "object",
-      title: "Totals in CO2",
+      title: "Totals in tCO2e",
       properties: {
         facility_total_emissions: {
           type: "number",
@@ -204,7 +206,7 @@ export const emissionAllocationSchema: RJSFSchema = {
                 title: "Product Name",
                 type: "string",
               },
-              product_emission: {
+              allocated_quantity: {
                 type: "number",
               },
             },
@@ -260,13 +262,13 @@ export const emissionAllocationSchema: RJSFSchema = {
                 title: "Product Name",
                 type: "string",
               },
-              product_emission: {
+              allocated_quantity: {
                 type: "number",
               },
             },
           },
         },
-        products_emission_sum: {
+        products_emission_allocation_sum: {
           title: "Total Allocated",
           type: "string",
           readOnly: true,
@@ -286,11 +288,11 @@ export const emissionAllocationUiSchema: UiSchema = {
   "ui:order": [
     "methodology",
     "other_methodology_description",
-    "basic_emission_data_title",
-    "basic_emission_data",
-    "fuel_excluded_emission_data_title",
-    "fuel_excluded_emission_data",
-    "total_emissions",
+    "basic_emission_allocation_data_title",
+    "basic_emission_allocation_data",
+    "fuel_excluded_emission_allocation_data_title",
+    "fuel_excluded_emission_allocation_data",
+    "total_emission_allocations",
   ],
   methodology: {
     "ui:widget": "SelectWidget",
@@ -299,11 +301,11 @@ export const emissionAllocationUiSchema: UiSchema = {
   other_methodology_description: {
     "ui:widget": "textarea",
   },
-  basic_emission_data_title: {
+  basic_emission_allocation_data_title: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:classNames": "mt-1 mb-1 emission-array-header",
   },
-  basic_emission_data: {
+  basic_emission_allocation_data: {
     "ui:classNames": "mt-0 mb-2 p-0",
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
     "ui:FieldTemplate": FieldTemplate,
@@ -335,21 +337,21 @@ export const emissionAllocationUiSchema: UiSchema = {
           product_name: {
             "ui:widget": "hidden",
           },
-          product_emission: {
-            "ui:FieldTemplate": DynamicLabelProductEmission,
+          allocated_quantity: {
+            "ui:FieldTemplate": DynamicLabelProductAllocation,
           },
         },
       },
-      products_emission_sum: {
+      products_emission_allocation_sum: {
         "ui:widget": ReadOnlyWidget,
       },
     },
   },
-  fuel_excluded_emission_data_title: {
+  fuel_excluded_emission_allocation_data_title: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
-  fuel_excluded_emission_data: {
+  fuel_excluded_emission_allocation_data: {
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
@@ -380,17 +382,17 @@ export const emissionAllocationUiSchema: UiSchema = {
           product_name: {
             "ui:widget": "hidden",
           },
-          product_emission: {
-            "ui:FieldTemplate": DynamicLabelProductEmission,
+          allocated_quantity: {
+            "ui:FieldTemplate": DynamicLabelProductAllocation,
           },
         },
       },
-      products_emission_sum: {
+      products_emission_allocation_sum: {
         "ui:widget": ReadOnlyWidget,
       },
     },
   },
-  total_emissions: {
+  total_emission_allocations: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
@@ -405,8 +407,8 @@ export const emissionAllocationUiSchema: UiSchema = {
         product_name: {
           "ui:widget": "hidden",
         },
-        product_emission: {
-          "ui:FieldTemplate": DynamicLabelTotalProductEmission,
+        allocated_quantity: {
+          "ui:FieldTemplate": DynamicLabelTotalProductAllocation,
         },
       },
     },
