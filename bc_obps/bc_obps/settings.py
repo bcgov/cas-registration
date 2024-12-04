@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     "registration.apps.RegistrationConfig",
     "reporting.apps.ReportingConfig",
     "common.apps.CommonConfig",
+    "rls.apps.RlsConfig",
 ]
 
 
