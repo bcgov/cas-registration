@@ -1,20 +1,20 @@
 "use client";
 import { customizeValidator } from "@rjsf/validator-ajv8";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { actionHandler } from "@bciers/actions";
-import { Alert, Button } from "@mui/material";
+import { Alert } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps, RJSFSchema } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
-import { withTheme } from "@rjsf/core";
+import FormContext, { withTheme } from "@rjsf/core";
 import formTheme from "@bciers/components/form/theme/defaultTheme";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Form = withTheme(formTheme);
 
@@ -53,15 +53,19 @@ export default function ActivityForm({
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
-  // ✅ Success state for for the Submit button
+  // ✅ Success state for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [formState, setFormState] = useState(activityFormData as any);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
   );
+  const [canContinue, setCanContinue] = useState<boolean>(false);
+  const router = useRouter();
 
   const { activityId, sourceTypeMap } = activityData;
+  const formRef = useRef<FormContext>(null);
 
   const arrayEquals = (x: string[], y: string[]) => {
     x = x.sort((a, b) => a.localeCompare(b));
@@ -134,7 +138,27 @@ export default function ActivityForm({
       setErrorList([{ message: response.error }]);
       return;
     }
+    if (response) {
+      if (canContinue) {
+        setIsRedirecting(true);
+        router.push(createUrl(true));
+      } else {
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 3000);
+      }
+    }
   };
+
+  const submitExternallyToContinue = () => {
+    setCanContinue(true);
+  }; // Only submit after canContinue is set so the submitHandler can read the boolean
+  useEffect(() => {
+    if (formRef.current && canContinue) {
+      formRef.current.submit();
+    }
+  }, [canContinue]);
 
   const createUrl = (isContinue: boolean) => {
     const taskListLength = taskListData.find((taskListElement) => {
@@ -160,6 +184,7 @@ export default function ActivityForm({
       <ReportingTaskList elements={taskListData} />
       <div className="w-full">
         <Form
+          ref={formRef}
           schema={jsonSchema}
           fields={CUSTOM_FIELDS}
           formData={formState}
@@ -181,6 +206,8 @@ export default function ActivityForm({
             isSaving={isLoading}
             isSuccess={isSuccess}
             saveButtonDisabled={isLoading}
+            isRedirecting={isRedirecting}
+            saveAndContinue={submitExternallyToContinue}
           />
         </Form>
       </div>

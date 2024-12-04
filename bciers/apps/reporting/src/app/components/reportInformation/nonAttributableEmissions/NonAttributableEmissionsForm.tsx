@@ -11,7 +11,7 @@ import {
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
 
-const BASE_URL = "/reports";
+const BASE_URL = "/reporting/reports";
 const CANCEL_URL = "/reports";
 
 interface ActivityData {
@@ -71,8 +71,7 @@ export default function NonAttributableEmissionsForm({
 
   const router = useRouter();
 
-  const SAVE_AND_CONTINUE_URL = `${BASE_URL}/${versionId}/facilities/${facilityId}/emissions-summary`;
-  const CONTINUE_URL = `emission-summary`;
+  const SAVE_AND_CONTINUE_URL = `${BASE_URL}/${versionId}/facilities/${facilityId}/emission-summary`;
   const BACK_URL = `activities?step=-1`;
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
@@ -128,7 +127,7 @@ export default function NonAttributableEmissionsForm({
       onChange={(data) => setFormData(data.formData)}
       onSubmit={() => handleSubmit()}
       backUrl={BACK_URL}
-      continueUrl={CONTINUE_URL}
+      continueUrl={SAVE_AND_CONTINUE_URL}
     />
   );
 }

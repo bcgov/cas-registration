@@ -54,7 +54,7 @@ export default function OperationReview({
   const [facilityId, setFacilityId] = useState<number | null>(null);
   const [operationType, setOperationType] = useState("");
   const queryString = serializeSearchParams(useSearchParams());
-  const continueUrl = `/reports/${version_id}/person-responsible${queryString}`;
+  const continueUrl = `/reporting/reports/${version_id}/person-responsible${queryString}`;
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,

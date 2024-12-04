@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MultiStepHeader from "./components/MultiStepHeader";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { FormBase } from "@bciers/components/form/index";
 import { RJSFSchema } from "@rjsf/utils";
-import { Alert, Box, Button } from "@mui/material";
+import FormContext from "@rjsf/core";
+import { Alert, Box } from "@mui/material";
 import ReportingStepButtons from "./components/ReportingStepButtons";
 
 interface Props {
@@ -43,17 +44,38 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [canContinue, setCanContinue] = useState(false);
+  const formRef = useRef<FormContext>(null);
 
   const handleFormSave = async (data: any) => {
     setIsSaving(true);
     try {
       await onSubmit(data);
-      setIsSuccess(true);
+      if (canContinue) {
+        setIsRedirecting(true);
+        window.location.href = continueUrl;
+      } else {
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 3000);
+      }
     } catch {
       setIsSuccess(false);
+      setIsRedirecting(false);
     }
     setIsSaving(false);
   };
+
+  const submitExternallyToContinue = () => {
+    setCanContinue(true);
+  }; // Only submit after canContinue is set so the submitHandler can read the boolean
+  useEffect(() => {
+    if (formRef.current && canContinue) {
+      formRef.current.submit();
+    }
+  }, [canContinue]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -67,6 +89,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
         </div>
         <div className="w-full">
           <FormBase
+            formRef={formRef}
             schema={schema}
             uiSchema={uiSchema}
             onSubmit={handleFormSave}
@@ -78,7 +101,9 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
               continueUrl={continueUrl}
               isSaving={isSaving}
               isSuccess={isSuccess}
+              isRedirecting={isRedirecting}
               saveButtonDisabled={saveButtonDisabled}
+              saveAndContinue={submitExternallyToContinue}
             />
             <div className="min-h-[48px] box-border mt-4">
               {error && <Alert severity="error">{error}</Alert>}
