@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 
 from registration.models.contact import Contact
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document_type import DocumentType
 from registration.models.activity import Activity
@@ -25,6 +27,7 @@ from registration.schema.v2.operation import (
 )
 from registration.tests.constants import MOCK_DATA_URL
 from model_bakery import baker
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 pytestmark = pytest.mark.django_db
 
@@ -883,3 +886,91 @@ class TestRemoveOperationRepresentative:
         assert operation.updated_by == approved_user_operator.user
         # confirm the contact was only removed from the operation, not removed from the db
         assert Contact.objects.filter(id=2).exists()
+
+
+class TestListOperationTimeline:
+    @staticmethod
+    def test_raise_exception_if_user_unapproved():
+        user = baker.make_recipe('utils.industry_operator_user')
+        with pytest.raises(Exception, match="Unauthorized."):
+            OperationServiceV2.list_operations_timeline(
+                user.user_guid,
+                sort_field="created_at",
+                sort_order="desc",
+            )
+
+    @staticmethod
+    def test_gets_unfiltered_sorted_list():
+
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            status=OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN,
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
+        )
+
+        timeline = OperationServiceV2.list_operations_timeline(
+            approved_user_operator.user.user_guid,
+            sort_field="created_at",
+            sort_order="desc",
+            filters=OperationTimelineFilterSchema(),
+        )
+
+        assert timeline.count() == 2  # transferred statuses are excluded in the data access service
+        assert timeline[0].status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
+        assert timeline[1].status == OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN
+
+    @staticmethod
+    def test_gets_filtered_sorted_list():
+        filters = OperationTimelineFilterSchema(
+            bcghg_id='1',
+        )
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='11111111111'))),
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='15555555555'))),
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='29999999999'))),
+        )
+
+        timeline = OperationServiceV2.list_operations_timeline(
+            approved_user_operator.user.user_guid, sort_field="created_at", sort_order="desc", filters=filters
+        )
+        assert timeline.count() == 2
+
+    # @staticmethod
+    # def test_gets_filtered_sorted_list():
+    #     filters = OperationTimelineFilterSchema(
+    #             bc_obps_regulated_operation='0001',
+    #         )
+    #     approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+
+    #     baker.make_recipe('utils.operation_designated_operator_timeline',operator=approved_user_operator.operator, operation=baker.make_recipe('utils.operation',bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id='23-0001')))
+    #     baker.make_recipe('utils.operation_designated_operator_timeline',operator=approved_user_operator.operator,operation=baker.make_recipe('utils.operation',bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id='24-0001')))
+    #     baker.make_recipe('utils.operation_designated_operator_timeline',operator=approved_user_operator.operator,operation=baker.make_recipe('utils.operation',bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id='99-9999')))
+
+    #     timeline = OperationServiceV2.list_operations_timeline(approved_user_operator.user.user_guid,sort_field='bc_obps_regulated_operation', sort_order='desc', filters=filters)
+    #     assert timeline.count() == 2
+    #     assert timeline[0].bc_obps_regulated_operation  == '24-0001'
+    #     assert timeline[1].bc_obps_regulated_operation  == '23-0001'
