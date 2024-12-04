@@ -2,7 +2,6 @@ from typing import Literal
 
 from django.http import HttpRequest
 
-from common.permissions import authorize
 from registration.decorators import handle_http_errors
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -21,14 +20,7 @@ from ..service.report_new_entrant_service import ReportNewEntrantService
 @handle_http_errors()
 def get_new_entrant_data(request: HttpRequest, report_version_id: int):
     report_new_entrant = ReportNewEntrantService.get_new_entrant_data(report_version_id=report_version_id)
-
-    try:
-        validated_data = ReportNewEntrantDataOut(**report_new_entrant)
-    except Exception as e:
-        print("Validation error:", e)
-        return 400, {"message": "Invalid data structure"}
-
-    return 200, validated_data.dict()
+    return 200, report_new_entrant
 
 
 @router.post(
@@ -36,7 +28,7 @@ def get_new_entrant_data(request: HttpRequest, report_version_id: int):
     response={200: int, custom_codes_4xx: Message},
     tags=["Emissions Report"],
     description="Saves the data for the new entrant report",
-    auth=authorize("approved_industry_user"),
+    # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def save_new_entrant_data(

@@ -16,7 +16,7 @@ interface FieldTemplateProps {
   id: string;
   classNames: string;
   children: React.ReactNode;
-  formContext: any; // Adjust `any` to a specific type if possible for better type safety
+  formContext: any;
 }
 export const ProductionDataTitleWidget: React.FC<WidgetProps> = ({
   id,
@@ -42,21 +42,24 @@ const getAssociatedEmissionName = (
   formContext: any,
 ): string | null => {
   try {
-    const match = fieldId.match(/root_emissions_(\d+)_items_(\d+)_emission/);
+    const match = fieldId.match(
+      /root_emissions_(\d+)_emissionData_(\d+)_emission/,
+    );
     if (!match) {
       return null;
     }
 
     const emissionCategoryIndex = Number(match[1]);
-    const itemIndex = Number(match[2]);
+    const emissionDataIndex = Number(match[2]);
 
     const emissionCategory = formContext.emissions?.[emissionCategoryIndex];
 
     if (!emissionCategory) {
       return null;
     }
-    const emissionItem = emissionCategory.items?.[itemIndex];
-    return emissionItem?.name || null;
+
+    const emissionData = emissionCategory.emissionData?.[emissionDataIndex];
+    return emissionData?.name || null;
   } catch (error) {
     return null;
   }
@@ -79,7 +82,7 @@ const DynamicEmissionLabelFieldTemplate: React.FC<FieldTemplateProps> = ({
       <div className="flex flex-col md:flex-row items-start md:items-center w-full">
         <div className="w-full md:w-3/12 mb-2 md:mb-0">
           <label htmlFor={id} className="font-bold">
-            {emissionName}
+            {emissionName || "Emission"}
           </label>
         </div>
         <div className="w-full md:w-4/12">{children}</div>
@@ -114,9 +117,6 @@ export const NewEntrantUiSchema: UiSchema = {
   purpose_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": newEntrantInfo,
-  },
-  id: {
-    "ui:widget": "hidden",
   },
   assertion_statement: {
     "ui:widget": checkboxWidget,
@@ -181,7 +181,7 @@ export const NewEntrantUiSchema: UiSchema = {
           label: false,
         },
       },
-      items: {
+      emissionData: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:ArrayFieldTemplate": ArrayFieldTemplate,
         "ui:options": {
@@ -198,6 +198,9 @@ export const NewEntrantUiSchema: UiSchema = {
           },
           emission: {
             "ui:FieldTemplate": DynamicEmissionLabelFieldTemplate,
+            "ui:options": {
+              label: "Emission Value",
+            },
           },
         },
       },
@@ -208,14 +211,15 @@ export const NewEntrantUiSchema: UiSchema = {
 export const NewEntrantSchema: RJSFSchema = {
   type: "object",
   title: "New Entrant Information",
+  required: [
+    "authorization_date",
+    "first_shipment_date",
+    "new_entrant_period_start",
+  ],
   properties: {
     purpose_note: {
       type: "object",
       readOnly: true,
-    },
-    id: {
-      type: "integer",
-      title: "New entrant Id",
     },
     authorization_date: {
       type: "string",
@@ -243,7 +247,7 @@ export const NewEntrantSchema: RJSFSchema = {
     emissions: {
       type: "array",
       items: {
-        $ref: "#/definitions/emissionData",
+        $ref: "#/definitions/emissionCategoryType",
       },
     },
   },
@@ -268,26 +272,29 @@ export const NewEntrantSchema: RJSFSchema = {
         },
       },
     },
-    emissionData: {
+    emissionCategoryType: {
       properties: {
         title: {
           type: "string",
         },
-        items: {
+        emissionData: {
           type: "array",
           items: {
-            properties: {
-              id: {
-                type: "number",
-              },
-              name: {
-                type: "string",
-              },
-              emission: {
-                type: "number",
-              },
-            },
+            $ref: "#/definitions/emissionData",
           },
+        },
+      },
+    },
+    emissionData: {
+      properties: {
+        id: {
+          type: "number",
+        },
+        name: {
+          type: "string",
+        },
+        emission: {
+          type: "number",
         },
       },
     },

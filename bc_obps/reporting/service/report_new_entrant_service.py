@@ -2,7 +2,6 @@ from typing import List, Dict, Optional, Any
 from django.db import transaction
 from django.forms import model_to_dict
 
-from registration.models import RegulatedProduct
 from reporting.models import (
     ReportVersion,
     ReportNewEntrant,
@@ -84,27 +83,28 @@ class ReportNewEntrantService:
 
         for category in categories:
             category_data = {
-                "id": str(category.id),
+                "id": category.id,
                 "name": category.category_name,
-                "emission": emissions_map.get(category.id),
             }
+            if category.id in emissions_map:
+                category_data["emission"] = emissions_map[category.id]
             emissions_by_type[category.category_type].append(category_data)
 
         return [
             {
                 "name": "basic",
                 "title": "Emission categories after new entrant period began",
-                "items": emissions_by_type["basic"],
+                "emissionData": emissions_by_type["basic"],
             },
             {
                 "name": "fuel_excluded",
                 "title": "Emissions excluded by fuel type",
-                "items": emissions_by_type["fuel_excluded"],
+                "emissionData": emissions_by_type["fuel_excluded"],
             },
             {
                 "name": "other_excluded",
                 "title": "Other excluded emissions",
-                "items": emissions_by_type["other_excluded"],
+                "emissionData": emissions_by_type["other_excluded"],
             },
         ]
 
@@ -115,49 +115,52 @@ class ReportNewEntrantService:
         report_version_id: int,
         data: ReportNewEntrantSchemaIn,
     ) -> None:
-        """Saves new entrant data and updates the corresponding records"""
+        """Saves new entrant data and updates the corresponding records."""
         report_version = ReportVersion.objects.get(pk=report_version_id)
-
-        entrant_data = {
-            "authorization_date": data.authorization_date,
-            "first_shipment_date": data.first_shipment_date,
-            "new_entrant_period_start": data.new_entrant_period_start,
-            "assertion_statement": data.assertion_statement,
-        }
 
         report_new_entrant, _ = ReportNewEntrant.objects.update_or_create(
             report_version=report_version,
-            defaults=entrant_data,
+            defaults={
+                "authorization_date": data.authorization_date,
+                "first_shipment_date": data.first_shipment_date,
+                "new_entrant_period_start": data.new_entrant_period_start,
+                "assertion_statement": data.assertion_statement,
+            },
         )
 
-        for category in data.emissions:
-            for emission_item in category["items"]:
-                emission_category = EmissionCategory.objects.get(category_name=emission_item["name"])
-
-                ReportNewEntrantEmissions.objects.update_or_create(
-                    report_new_entrant=report_new_entrant,
-                    emission_category=emission_category,
-                    defaults={"emission": emission_item["emission"]},
-                )
-
-        production_data = [
-            {"product_id": product["id"], "production_amount": product["production_amount"]}
-            for product in data.products
+        valid_emission_data = [
+            emission_item
+            for category in data.emissions
+            for emission_item in category["emissionData"]
+            if emission_item.get("emission") is not None
         ]
 
-        product_ids = [entry["product_id"] for entry in production_data]
-        allowed_products = RegulatedProduct.objects.filter(id__in=product_ids).values_list("id", flat=True)
+        for emission_item in valid_emission_data:
+            ReportNewEntrantEmissions.objects.update_or_create(
+                report_new_entrant=report_new_entrant,
+                emission_category_id=emission_item["id"],
+                defaults={"emission": emission_item["emission"]},
+            )
 
-        if not all(prod_id in allowed_products for prod_id in product_ids):
-            raise ValueError("Invalid product IDs provided.")
-
-        ReportNewEntrantProduction.objects.filter(report_new_entrant=report_new_entrant).exclude(
-            product_id__in=product_ids
+        emission_ids_with_data = [item["id"] for item in valid_emission_data]
+        ReportNewEntrantEmissions.objects.filter(report_new_entrant=report_new_entrant).exclude(
+            emission_category_id__in=emission_ids_with_data
         ).delete()
 
-        for prod_data in production_data:
-            ReportNewEntrantProduction.objects.update_or_create(
+        valid_productions = [
+            ReportNewEntrantProduction(
                 report_new_entrant=report_new_entrant,
-                product_id=prod_data["product_id"],
-                defaults={"production_amount": prod_data["production_amount"]},
+                product_id=product["id"],
+                production_amount=product["production_amount"],
             )
+            for product in data.products
+            if product.get("production_amount") is not None
+        ]
+
+        valid_product_ids = [prod.product_id for prod in valid_productions]
+
+        ReportNewEntrantProduction.objects.filter(report_new_entrant=report_new_entrant).exclude(
+            product_id__in=valid_product_ids
+        ).delete()
+
+        ReportNewEntrantProduction.objects.bulk_create(valid_productions, ignore_conflicts=True)

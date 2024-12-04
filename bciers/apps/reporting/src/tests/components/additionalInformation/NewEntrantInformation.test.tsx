@@ -14,7 +14,13 @@ vi.mock("@bciers/actions", () => ({
 
 describe("NewEntrantInformationForm Component", () => {
   const versionId = 1;
-  let initialFormData = { assertion_statement: true };
+  let initialFormData = {
+    authorization_date: "2024-12-10T09:00:00Z",
+    first_shipment_date: "2024-12-25T09:00:00Z",
+    new_entrant_period_start: "2024-12-18T09:00:00Z",
+    assertion_statement: true,
+    id: 1,
+  };
 
   const mockPush = vi.fn();
 
@@ -78,7 +84,14 @@ describe("NewEntrantInformationForm Component", () => {
   });
 
   it("submits form data and redirects on success", async () => {
-    initialFormData = { assertion_statement: true };
+    initialFormData = {
+      authorization_date: "2024-12-10T09:00:00Z",
+      first_shipment_date: "2024-12-25T09:00:00Z",
+      new_entrant_period_start: "2024-12-18T09:00:00Z",
+      assertion_statement: true,
+      id: 1,
+    };
+
     render(
       <NewEntrantInformationForm
         versionId={versionId}

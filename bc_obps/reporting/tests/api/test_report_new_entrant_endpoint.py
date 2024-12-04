@@ -16,7 +16,6 @@ class TestReportNewEntrantEndpoints(CommonTestSetup):
     def test_get_new_entrant_data(self, mock_get_new_entrant_data: MagicMock):
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
-        # Prepare mock data
         mock_new_entrant_data = {
             "products": [
                 {"id": 2, "name": "Cement equivalent", "unit": "Tonne cement equivalent", "production_amount": 10}
@@ -58,7 +57,6 @@ class TestReportNewEntrantEndpoints(CommonTestSetup):
 
         mock_get_new_entrant_data.return_value = mock_new_entrant_data
 
-        # Make the GET request
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_get)
 
         assert response.status_code == 200
@@ -69,7 +67,6 @@ class TestReportNewEntrantEndpoints(CommonTestSetup):
         report_version_mock = make_recipe("reporting.tests.utils.report_version")
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version_mock.report.operator)
 
-        # Prepare the payload for the POST request
         payload = ReportNewEntrantSchemaIn(
             products=[],
             emissions=[],
@@ -79,11 +76,9 @@ class TestReportNewEntrantEndpoints(CommonTestSetup):
             assertion_statement=True,
         )
 
-        # Make the POST request
         response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", endpoint=self.endpoint_post, content_type=self.content_type, data=payload.dict()
         )
 
-        # Check that the status code is 200 and mock method is called
         assert response.status_code == 200
         mock_save_new_entrant_data.assert_called_once_with(self.report_version.id, payload)
