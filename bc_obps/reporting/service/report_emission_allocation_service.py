@@ -6,7 +6,7 @@ from django.db.models import Sum
 from reporting.models.emission_category import EmissionCategory
 from registration.models.regulated_product import RegulatedProduct
 from reporting.schema.report_product_emission_allocation import (
-    ReportProductEmissionAllocationSchemaIn,
+    ReportProductEmissionAllocationsSchemaIn,
     ReportProductEmissionAllocationsSchemaOut,
 )
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
@@ -41,6 +41,14 @@ class ReportEmissionAllocationService:
         )
 
         # Step 5: Construct the response data
+        existing_allocation = report_product_emission_allocations.first()
+        methodology = ""
+        other_methodology_description = ""
+        if existing_allocation is not None:
+            methodology = existing_allocation.methodology
+            if existing_allocation.other_methodology_description is not None:
+                other_methodology_description = existing_allocation.other_methodology_description
+
         report_product_emission_allocations_data = []
         total_reportable_emissions = 0
         for category, data in all_emmission_categories_totals.items():
@@ -64,7 +72,7 @@ class ReportEmissionAllocationService:
                     {
                         "product_id": rp.product_id,
                         "product_name": rp.product.name,
-                        "product_emission": product_emission.allocated_quantity if product_emission else 0,
+                        "allocated_quantity": product_emission.allocated_quantity if product_emission else 0,
                     }
                 )
 
@@ -84,8 +92,8 @@ class ReportEmissionAllocationService:
             "report_product_emission_allocation_totals": ReportEmissionAllocationService.get_emission_totals_by_report_product(
                 facility_report_id
             ),
-            "methodology": "",  # TODO - figure out where this should come from
-            "other_methodology_description": "",
+            "methodology": methodology,
+            "other_methodology_description": other_methodology_description,
         }
 
     @classmethod
@@ -94,7 +102,7 @@ class ReportEmissionAllocationService:
         cls,
         report_version_id: int,
         facility_id: UUID,
-        report_emission_allocations: ReportProductEmissionAllocationSchemaIn,
+        report_emission_allocations: ReportProductEmissionAllocationsSchemaIn,
         user_guid: UUID,
     ) -> None:
         # incoming [{report_product_id: int, emission_category_name: str, allocated_quantity: Decimal}]
@@ -198,13 +206,14 @@ class ReportEmissionAllocationService:
         report_products = ReportProduct.objects.filter(facility_report_id=facility_report_id)
         report_product_emission_allocation_totals = []
         for rp in report_products:
-            total_emission = ReportProductEmissionAllocation.objects.filter(report_product_id=rp.id).aggregate(
-                total_emission=Sum("allocated_quantity")
-            )["total_emission"]
+            allocated_quantity = ReportProductEmissionAllocation.objects.filter(report_product_id=rp.id).aggregate(
+                allocated_quantity=Sum("allocated_quantity")
+            )["allocated_quantity"]
             report_product_emission_allocation_totals.append(
                 {
+                    "product_id": rp.product.id,
                     "product_name": rp.product.name,
-                    "total_emission": total_emission or 0,
+                    "allocated_quantity": allocated_quantity or 0,
                 }
             )
         return report_product_emission_allocation_totals

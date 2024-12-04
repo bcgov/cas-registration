@@ -40,7 +40,22 @@ class ReportProductEmissionAllocation(TimeStampedModel):
         decimal_places=4,
         db_comment="The quantity of emissions allocated to this product in tonnes of CO2 equivalent(tCO2e)",
     )
+    methodology = models.CharField(
+        max_length=255,
+        db_comment="The methodology used to calculate the allocated emissions",
+    )
+    other_methodology_description = models.TextField(
+        blank=True,
+        null=True,
+        db_comment="A description of the methodology used if 'Other' is selected",
+    )
 
     class Meta:
         db_table = 'erc"."report_product_emission_allocation'
         db_table_comment = "A table to store the allocated amount of emissions for a given product"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["report_version", "facility_report", "report_product", "emission_category"],
+                name="unique_report_product_emission_allocation",
+            ),
+        ]
