@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from ninja import ModelSchema
 from pydantic import BaseModel
 from typing import Optional, List
@@ -9,18 +8,18 @@ from reporting.models import ReportNewEntrant
 
 class ReportNewEntrantSchemaIn(BaseModel):
     assertion_statement: bool
-    authorization_date: Optional[str]
-    first_shipment_date: Optional[str]
-    new_entrant_period_start: Optional[str]
-    products: list
-    emissions: list
+    authorization_date: Optional[datetime]  # Change str to datetime
+    first_shipment_date: Optional[datetime]  # Change str to datetime
+    new_entrant_period_start: Optional[datetime]  # Change str to datetime
+    products: List[dict]  # Define products as a list of dictionaries
+    emissions: List[dict]  # Define emissions as a list of dictionaries
 
 
 class ReportNewEntrantSchema(BaseModel):
     id: int
-    authorization_date: Optional[str]
-    first_shipment_date: Optional[str]
-    new_entrant_period_start: Optional[str]
+    authorization_date: Optional[datetime]  # Change str to datetime
+    first_shipment_date: Optional[datetime]  # Change str to datetime
+    new_entrant_period_start: Optional[datetime]  # Change str to datetime
     assertion_statement: bool
 
 
@@ -54,10 +53,10 @@ class EmissionSchema(BaseModel):
 
 class EmissionCategorydataSchema(BaseModel):
     category_type: str
-    emissions: List[EmissionSchema]
+    emissions: List[EmissionSchema]  # List of EmissionSchema
 
 
 class ReportNewEntrantDataOut(BaseModel):
-    products: list[ProductDataSchema]
-    emissions: list
+    products: List[ProductDataSchema]  # List of ProductDataSchema
+    emissions: List[dict]  # Specify the type of emissions if necessary, or use List[EmissionSchema] instead
     new_entrant_data: Optional[NewEntrantDataSchema]
