@@ -30,7 +30,7 @@ class ReportNewEntrantService:
     def _initialize_result_data(
         regulated_products: List[RegulatedProductOut],
         categories: List[EmissionCategory],
-        report_new_entrant: ReportNewEntrant,
+        report_new_entrant: Optional[ReportNewEntrant],  # Change here
     ) -> Dict[str, Any]:
         """Helper to initialize the result data"""
         products_data = ReportNewEntrantService._get_products_data(regulated_products, report_new_entrant)
@@ -42,7 +42,7 @@ class ReportNewEntrantService:
 
     @staticmethod
     def _get_products_data(
-        regulated_products: List[RegulatedProductOut], report_new_entrant: ReportNewEntrant
+        regulated_products: List[RegulatedProductOut], report_new_entrant: Optional[ReportNewEntrant]  # Change here
     ) -> List[Dict[str, Optional[str]]]:
         """Helper to fetch product data"""
         productions_map = (
@@ -62,9 +62,7 @@ class ReportNewEntrantService:
         ]
 
     @staticmethod
-    def _get_emissions_data(
-        categories: List[EmissionCategory], report_new_entrant: ReportNewEntrant
-    ) -> List[Dict[str, Optional[str]]]:
+    def _get_emissions_data(categories: List[EmissionCategory], report_new_entrant: Optional[ReportNewEntrant]) -> list:
         """Helper to fetch emissions data, categorized by type"""
         emissions_map = (
             {
@@ -75,7 +73,7 @@ class ReportNewEntrantService:
             else {}
         )
 
-        emissions_by_type: Dict[str, List[Dict[str, Optional[str]]]] = {
+        emissions_by_type: dict = {
             "basic": [],
             "fuel_excluded": [],
             "other_excluded": [],
@@ -86,8 +84,11 @@ class ReportNewEntrantService:
                 "id": category.id,
                 "name": category.category_name,
             }
+            # Ensure "emission" is either None or a string
             if category.id in emissions_map:
-                category_data["emission"] = emissions_map[category.id]
+                category_data["emission"] = str(emissions_map[category.id]) if emissions_map[category.id] else None
+            else:
+                category_data["emission"] = None
             emissions_by_type[category.category_type].append(category_data)
 
         return [

@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Tuple
 
 from django.http import HttpRequest
 
@@ -18,7 +18,7 @@ from ..service.report_new_entrant_service import ReportNewEntrantService
     # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_new_entrant_data(request: HttpRequest, report_version_id: int):
+def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[int, dict]:
     report_new_entrant = ReportNewEntrantService.get_new_entrant_data(report_version_id=report_version_id)
     return 200, report_new_entrant
 
