@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema, OperationTimelineListOut
 from registration.constants import V2
 from service.operation_service_v2 import OperationServiceV2
@@ -32,6 +32,11 @@ def list_operations_timeline(
     sort_field: Optional[str] = "created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
-) -> QuerySet[OperationDesignatedOperatorTimeline]:
+) -> Tuple[Literal[200], QuerySet[OperationDesignatedOperatorTimeline]]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return OperationServiceV2.list_operations_timeline(get_current_user_guid(request), sort_field, sort_order, filters)
+    breakpoint()
+    return 200, OperationServiceV2.list_operations_timeline(
+        get_current_user_guid(request), sort_field, sort_order, filters
+    )
+
+    # to get ctl space clik import, figure out where poetry virtual env is

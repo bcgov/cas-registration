@@ -1,12 +1,12 @@
 from unittest.mock import patch, MagicMock
-from model_bakery.baker import make_recipe
+from model_bakery.baker import make_recipe, prepare_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from unittest.mock import AsyncMock
 
 
 class TestOperationsTimelineEndpoint(CommonTestSetup):
-    @patch("service.operation_service_v2.OperationServiceV2.list_operations_timeline")
+    @patch("service.operation_service_v2.OperationServiceV2.list_operations_timeline", autospec=True)
     def test_returns_data_as_provided_by_the_service(
         self,
         mock_list_operations_timeline: MagicMock | AsyncMock,
@@ -16,26 +16,29 @@ class TestOperationsTimelineEndpoint(CommonTestSetup):
         """
 
         # Arrange: Mock facilities returned by the service
+        timeline = make_recipe('utils.operation_designated_operator_timeline', _quantity=2)
         mock_list_operations_timeline.return_value = {
-            "items": [
-                {
-                    "operation": {
-                        "name": "Alpha Operations",
-                        "type": "Processing",
-                        "bcghg_id": {"id": "BCGHG67890"},
-                        "id": "4f7f236e-4c44-4b52-81d1-b550efc00781",
-                    },
-                    "sfo_facility_id": "7330c3c4-fb4e-4e4b-8a2b-10e6a85e3224",
-                    "sfo_facility_name": "SFO Facility X",
-                },
-                {
-                    "operation": {
-                        "name": "Beta Industries",
-                        "type": "Distribution",
-                        "id": "6c2dc444-1c93-4e18-8029-a15ad5c733d5",
-                    },
-                },
-            ]
+            "items": timeline,
+            # "items": [
+            #     {
+            #         "operation": {
+            #             "name": "Alpha Operations",
+            #             "type": "Processing",
+            #             "bcghg_id": {"id": "BCGHG67890"},
+            #             "id": "4f7f236e-4c44-4b52-81d1-b550efc00781",
+            #         },
+            #         "sfo_facility_id": "7330c3c4-fb4e-4e4b-8a2b-10e6a85e3224",
+            #         "sfo_facility_name": "SFO Facility X",
+            #     },
+            #     {
+            #         "operation": {
+            #             "name": "Beta Industries",
+            #             "type": "Distribution",
+            #             "id": "6c2dc444-1c93-4e18-8029-a15ad5c733d5",
+            #         },
+            #     },
+            # ],
+            "count": 2,
         }
 
         # Act: Mock the authorization and perform the request
