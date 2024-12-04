@@ -15,13 +15,13 @@ The backend code is organized into the following sub-folders:
 - `tests/v1/`
 - `tests/v2/`
 
-Each version folder contains the relevant code for that version. New features and updates will be implemented in the `v2` folders while the `v1` folders will maintain the existing codebase.
+Each version folder contains the relevant code for that version. New features and updates will be implemented in the `v2` folders while the `v1` folders will maintain the existing codebase. `v1` endpoints all start with `/v1/`.
 
 ## API Endpoints
 
 ### New API Endpoints
 
-1. **For Updated Endpoints**: If an existing API endpoint is being updated or enhanced, place the new version of the endpoint in the `api/v2` folder. The endpoint **MUST** start with `/v2/...`.
+1. **For Existing Endpoints**: If a `v1` API endpoint can be used as-is, create a copy of the `v1` endpoint in the `v2` folder. (This will make it easier for us to retire `v1`).
 
    Example:
 
@@ -35,11 +35,13 @@ Each version folder contains the relevant code for that version. New features an
    "/v2/business_structures"
    ```
 
-2. **For Completely New Endpoints**: If a new endpoint is being introduced, it can be placed in the `api/v1` folder if it doesn't conflict with existing endpoints. Otherwise, use the `api/v2` folder.
+Add correct versioning tags to the endpoints.
+
+2. **For New Endpoints**: Create the new endpoint in the `v2` folder.
 
 ## Services
 
-When adding new functions to existing services (Classes), name the new functions with the `_v2` suffix if they have the same name as existing functions.
+Like API endpoints, everything that `v1` uses should be in the `v1` folder with a `v1` prefix, and if it needs to be reused in `v2`, a copy of the service should be created in the `v2` folder (no prefix)
 
 ### Example
 
@@ -47,12 +49,12 @@ Suppose you have a service class in `user_service.py`:
 
 ```python
 # user_service.py (v1)
-class UserDataAccessService:
-    def get_user_operator_by_user(user_guid: UUID):
+class UserDataAccessServiceV1:
+    def v1_get_user_operator_by_user(user_guid: UUID):
         # Existing implementation
 ```
 
-If you need to add a new function with the same name, use the `_v2` suffix:
+In `v2`:
 
 ```python
 # user_service.py (v2)
@@ -61,8 +63,6 @@ class UserDataAccessService:
         # New implementation
 ```
 
-If significant changes are made to the service layers, consider creating `v1` and `v2` sub-folders for the service layers as well.
-
 ## Tests
 
-The existing testing commands run both `v1` and `v2` tests. See [test.md](../backend/test.md) for more details.
+The existing testing commands run both `v1` and `v2` tests. See [test.md](../backend/test.md) for more details. If tests in `v1` and `v2` have the same name, create an empty `__init__.py` in the folder that contains the test with the same name. Otherwise, pytest will complain.
