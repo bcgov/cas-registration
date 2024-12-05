@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from reporting.models import report_version
 from reporting.models.facility_report import FacilityReport
 from registration.models.time_stamped_model import TimeStampedModel
@@ -57,5 +58,10 @@ class ReportProductEmissionAllocation(TimeStampedModel):
             models.UniqueConstraint(
                 fields=["report_version", "facility_report", "report_product", "emission_category"],
                 name="unique_report_product_emission_allocation",
+            ),
+            models.CheckConstraint(
+                name="other_allocation_methodology_must_have_description",
+                check=~Q(methodology="other", other_methodology_description__isnull=True),
+                violation_error_message="A value for production_methodology_description should be provided if the production_methodology is 'other'",
             ),
         ]
