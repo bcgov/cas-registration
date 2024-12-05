@@ -59,19 +59,28 @@ export default function ActivityForm({
 
   const { activityId, sourceTypeMap } = activityData;
 
+  const arrayEquals = (a: string[], b: string[]) => {
+    a = a.sort();
+    b = b.sort();
+    return (
+      Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((val, index) => val === b[index])
+    );
+  };
+
   useEffect(() => {
     setJsonSchema(initialJsonSchema);
     setFormState(activityFormData);
     setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
-  }, [currentActivity.id]);
+  }, [currentActivity]);
 
   const validator = customizeValidator({});
 
   const fetchSchemaData = async (sourceTypeIds: string[]) => {
     let sourceTypeQueryString = "";
-    sourceTypeIds.forEach((id) => {
-      sourceTypeQueryString += `&source_types[]=${id}`;
-    });
+    sourceTypeIds.map((id) => `&source_types[]=${id}`).join();
     const schema = await actionHandler(
       `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}${sourceTypeQueryString}`,
       "GET",
@@ -86,7 +95,7 @@ export default function ActivityForm({
     for (const [k, v] of Object.entries(sourceTypeMap)) {
       if (c.formData[`${v}`]) selectedSourceTypes.push(k);
     }
-    if (selectedSourceTypes.length !== selectedSourceTypeIds.length) {
+    if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
       setJsonSchema(safeJsonParse(schemaData).schema);
       setSelectedSourceTypeIds(selectedSourceTypes);
