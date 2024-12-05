@@ -108,6 +108,7 @@ export default function AdditionalReportingDataForm({
         setFormData(data.formData);
       }}
       onSubmit={(data: any) => handleSubmit(data.formData)}
+      continueUrl={""}
     />
   );
 }
