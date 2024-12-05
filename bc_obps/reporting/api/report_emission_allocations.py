@@ -12,6 +12,7 @@ from typing import List, Tuple
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
 
+# MOCKING THE GET API
 @router.get(
     "report-version/{report_version_id}/facilities/{facility_id}/allocate-emissions",
     response={200: dict, custom_codes_4xx: Message},
@@ -22,6 +23,60 @@ from reporting.service.report_emission_allocation_service import ReportEmissionA
 )
 @handle_http_errors()
 def get_emission_allocations(
+    request: HttpRequest, report_version_id: int, facility_id: UUID
+) -> Tuple[Literal[200], dict]:
+    # TEMP: Mock the response data
+    temp_response = {
+        "report_product_emission_allocations": [
+            {
+                "emission_category": "Flaring emissions",
+                "products": [
+                    {
+                        "product_id": 1,
+                        "product_name": "BC-specific refinery complexity throughput",
+                        "allocated_quantity": 200.0,
+                    },
+                    {
+                        "product_id": 29,
+                        "product_name": "Sugar: solid",
+                        "allocated_quantity": 100.0,
+                    },
+                ],
+                "emission_total": 300,
+                "category_type": "basic",
+            },
+            # Additional categories go here...
+        ],
+        "facility_total_emissions": 300.0,
+        "report_product_emission_allocation_totals": [
+            {
+                "product_id": 1,
+                "product_name": "BC-specific refinery complexity throughput",
+                "allocated_quantity": 200.0,
+            },
+            {
+                "product_id": 29,
+                "product_name": "Sugar: solid",
+                "allocated_quantity": 100.0,
+            },
+        ],
+        "methodology": "Other",
+        "other_methodology_description": "test",
+    }
+    return 200, temp_response
+
+
+# TODO: FIX GET API
+@router.get(
+    "Xreport-version/{report_version_id}/facilities/{facility_id}/allocate-emissions",
+    response={200: dict, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Retrieves the data for product emissions allocations that have been saved for a facility""",
+    exclude_none=True,
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def Xget_emission_allocations(
     request: HttpRequest, report_version_id: int, facility_id: UUID
 ) -> Tuple[Literal[200], ReportProductEmissionAllocationsSchemaOut]:
     # Delegate the responsibility to the service
