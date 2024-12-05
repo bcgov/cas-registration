@@ -130,67 +130,89 @@ export default function FacilityEmissionAllocationForm({
     setSubmitButtonDisabled(!validateEmissions(formData));
   }, [formData]);
 
-  // 🛠️ Handle form data changes
-  const handleChange = useCallback((e: IChangeEvent) => {
-    // Extract the updated form data from the event
-    const updatedFormData = e.formData;
+  /**
+   * Sums the allocated quantities for each product_id from two product arrays and updates the `report_product_emission_allocations/products` array.
+   *
+   * @param {EmissionAllocationData[]} basicProducts - The products from basic_emission_allocation_data.
+   * @param {EmissionAllocationData[]} fuelExcludedProducts - The products from fuel_excluded_emission_allocation_data.
+   */
+  const sumAllocatedQuantitiesAndUpdateReport = (
+    basicProducts: EmissionAllocationData[],
+    fuelExcludedProducts: EmissionAllocationData[],
+  ) => {
+    const productTotals: Record<string, number> = {}; // Object to store the total allocated quantity for each product_id
 
-    // List of keys representing the emission allocation categories that need to be processed
+    // Sum the allocated quantities for each product_id in basicProducts
+    basicProducts.forEach((item) => {
+      item.products.forEach((product) => {
+        const allocatedQuantity =
+          parseFloat(product.allocated_quantity as any) || 0;
+        const productId = product.product_id;
+
+        if (productTotals[productId]) {
+          productTotals[productId] += allocatedQuantity;
+        } else {
+          productTotals[productId] = allocatedQuantity;
+        }
+      });
+    });
+
+    // Sum the allocated quantities for each product_id in fuelExcludedProducts
+    fuelExcludedProducts.forEach((item) => {
+      item.products.forEach((product) => {
+        const allocatedQuantity =
+          parseFloat(product.allocated_quantity as any) || 0;
+        const productId = product.product_id;
+
+        if (productTotals[productId]) {
+          productTotals[productId] += allocatedQuantity;
+        } else {
+          productTotals[productId] = allocatedQuantity;
+        }
+      });
+    });
+
+    // Update the reportProducts array with the total allocated quantity for each product_id
+  };
+
+  /**
+   * Handles changes to the form data, validates emissions, and updates the error state and submit button state.
+   *
+   * @param {IChangeEvent} e - The form change event containing the updated form data.
+   */
+  const handleChange = useCallback((e: IChangeEvent) => {
+    const updatedFormData = e.formData;
     const updatedDataKeys = [
       "basic_emission_allocation_data",
       "fuel_excluded_emission_allocation_data",
     ];
-
     let errorMessage;
 
-    // Initialize a map to store total allocated quantities by product_id
-    const productAllocations: Record<string, number> = {};
-
-    // Iterate over each emission allocation category to process the data
+    // Iterate through each category and recalculate emissions data for the category
     updatedDataKeys.forEach((key) => {
       updatedFormData[key] = updatedFormData[key].map(
         (item: EmissionAllocationData) => ({
           ...item,
-          // Ensure each product's allocated quantity is numeric
-          products: item.products.map((product) => {
-            const allocatedQuantity =
-              parseFloat(product.allocated_quantity as any) || 0;
-
-            // Accumulate the allocated quantity for this product_id
-            productAllocations[product.product_id] =
-              (productAllocations[product.product_id] || 0) + allocatedQuantity;
-
-            return {
-              ...product,
-              allocated_quantity: allocatedQuantity, // Update allocated_quantity to a numeric value
-            };
-          }),
+          emission_total: parseFloat(item.emission_total as any) || 0,
+          products: item.products.map((product) => ({
+            ...product,
+            allocated_quantity:
+              parseFloat(product.allocated_quantity as any) || 0,
+          })),
         }),
       );
+      updatedFormData[key] = updatedFormData[key].map(calculateEmissionData);
     });
 
-    // Update only the corresponding product_id in total_emission_allocations.products
-    if (updatedFormData.total_emission_allocations?.products) {
-      updatedFormData.total_emission_allocations.products =
-        updatedFormData.total_emission_allocations.products.map((product) => ({
-          ...product,
-          // Use the accumulated quantity only for the matching product_id
-          allocated_quantity: productAllocations[product.product_id] || 0,
-        }));
-    }
-
-    // Validate the emissions to check for any discrepancies
+    // Validate the updated form data and set an error message if validation fails
     if (!validateEmissions(updatedFormData)) {
-      errorMessage = errorMismatch; // Set the error message if validation fails
+      errorMessage = "Mismatch in allocated emissions.";
     }
 
-    // Update the form data in the state
+    // Update the form data state
     setFormData(updatedFormData);
 
-    // Update the error message in the state (if any)
     setError(errorMessage);
-
-    // Enable or disable the submit button based on whether there is an error
     setSubmitButtonDisabled(!!errorMessage);
   }, []);
 
