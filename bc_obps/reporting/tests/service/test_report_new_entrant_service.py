@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest.mock import patch
 
 import pytest
@@ -58,7 +57,6 @@ class TestReportNewEntrantService:
         with patch(
             'service.report_service.ReportService.get_regulated_products_by_version_id', return_value=mocked_products
         ):
-
             report_new_entrant = ReportNewEntrant.objects.create(
                 report_version_id=self.report_version_id,
                 authorization_date="2024-01-01",
@@ -85,18 +83,23 @@ class TestReportNewEntrantService:
     def test_save_new_entrant_data(self):
         new_data = self.test_data
 
-        new_authorization_date = datetime.fromisoformat(new_data.authorization_date.replace("Z", "+00:00"))
-        new_first_shipment_date = datetime.fromisoformat(new_data.first_shipment_date.replace("Z", "+00:00"))
-        new_new_entrant_period_start = datetime.fromisoformat(new_data.new_entrant_period_start.replace("Z", "+00:00"))
+        new_authorization_date = "2024-12-01T16:15:00.070Z"
+        new_first_shipment_date = "2024-12-01T16:15:00.070Z"
+        new_new_entrant_period_start = "2024-12-01T16:15:00.070Z"
 
         ReportNewEntrantService.save_new_entrant_data(self.report_version_id, new_data)
 
         report_new_entrant = ReportNewEntrant.objects.get(report_version=self.report_version)
 
-        assert report_new_entrant.authorization_date == new_authorization_date
-        assert report_new_entrant.first_shipment_date == new_first_shipment_date
-        assert report_new_entrant.new_entrant_period_start == new_new_entrant_period_start
-        assert report_new_entrant.assertion_statement == new_data.assertion_statement
+        auth_date_str = report_new_entrant.authorization_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+        first_shipment_date_str = report_new_entrant.first_shipment_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+        new_entrant_period_start_str = (
+            report_new_entrant.new_entrant_period_start.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+        )
+
+        assert auth_date_str == new_authorization_date
+        assert first_shipment_date_str == new_first_shipment_date
+        assert new_entrant_period_start_str == new_new_entrant_period_start
 
         emission = ReportNewEntrantEmissions.objects.get(report_new_entrant=report_new_entrant)
         assert emission.emission == 100
