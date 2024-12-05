@@ -13,7 +13,7 @@ class RegulatedProductModelTest(BaseTestCase):
             ("is_regulated", "is regulated", None, None),
             ("operations", "operation", None, None),
             ("report_products", "report product", None, 0),
-            ("productemissionintensity_records", "product emission intensity", None, 0),
+            ("productemissionintensity", "product emission intensity", None, 0),
         ]
         cls.test_object = RegulatedProduct.objects.create(
             name="test product",
