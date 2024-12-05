@@ -1,0 +1,99 @@
+import { actionHandler } from "@bciers/actions";
+import { RJSFSchema } from "@rjsf/utils";
+import { auth } from "@/dashboard/auth";
+import { validate as isValidUUID } from "uuid";
+import { BusinessStructure, UserOperatorFormData } from "./types";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import UserOperatorReviewForm from "./UserOperatorReviewForm";
+import { userOperatorInternalUserSchema } from "@/administration/app/data/jsonSchema/userOperator";
+import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
+console.log("in adminisration UserOperator component");
+async function getBusinessStructures() {
+  return actionHandler(
+    `registration/business_structures`,
+    "GET",
+    `/dashboard/select-operator/user-operator`,
+  );
+}
+
+export async function getUserOperatorFormData(id: string) {
+  if (!id || !isValidUUID(id)) return {};
+  return actionHandler(
+    // brianna
+    `registration/v1/user-operators/${id}`,
+    "GET",
+    `/user-operator/${id}`,
+  );
+}
+
+// To populate the options for the business structure select field
+// const createUserOperatorSchema = (
+//   schema: RJSFSchema,
+//   businessStructureList: { id: string; label: string }[],
+// ): RJSFSchema => {
+//   const localSchema = safeJsonParse(JSON.stringify(schema));
+
+//   const businessStructureOptions = businessStructureList?.map(
+//     (businessStructure) => ({
+//       type: "string",
+//       title: businessStructure.label,
+//       enum: [businessStructure.id],
+//       value: businessStructure.id,
+//     }),
+//   );
+
+//   // for operator
+//   localSchema.properties.userOperatorPage1.properties.business_structure = {
+//     ...localSchema.properties.userOperatorPage1.properties.business_structure,
+//     anyOf: businessStructureOptions,
+//   };
+
+//   // for parent company
+//   localSchema.properties.userOperatorPage1.allOf[0].then.properties.parent_operators_array.items.properties.po_business_structure.anyOf =
+//     businessStructureOptions;
+
+//   return localSchema;
+// };
+
+export default async function UserOperator({
+  params,
+}: Readonly<{
+  params?: { id?: string; readonly?: boolean };
+}>) {
+  const session = await auth();
+  const isCasInternal =
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
+  console.log("iscasinternal", isCasInternal);
+  const serverError = <div>Server Error. Please try again later.</div>;
+  const userOperatorId = params?.id;
+  const businessStructures: BusinessStructure[] | { error: string } =
+    await getBusinessStructures();
+
+  const userOperatorData: UserOperatorFormData | { error: string } =
+    await getUserOperatorFormData(userOperatorId as string);
+
+  if ("error" in businessStructures || "error" in userOperatorData)
+    return serverError;
+
+  const businessStructuresList = businessStructures?.map(
+    (businessStructure: BusinessStructure) => ({
+      id: businessStructure.name,
+      label: businessStructure.name,
+    }),
+  );
+
+  const formData = {
+    ...userOperatorData,
+  };
+
+  return (
+    <>
+      im in UserOperator component
+      <UserOperatorReviewForm
+        schema={userOperatorInternalUserSchema}
+        formData={formData}
+      />
+    </>
+  );
+}
