@@ -10,7 +10,8 @@ const defaultProps = {
   isSuccess: false,
   isRedirecting: false,
   saveButtonDisabled: false,
-  saveAndContinue: () => {}
+  saveAndContinue: () => {},
+  isSignOffPage: false,
 };
 
 describe("The ReportingStepButtons component", () => {
@@ -33,6 +34,16 @@ describe("The ReportingStepButtons component", () => {
     expect(
       screen.queryByRole("link", { name: "Back" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows Submit Report button on Sign Off Page", () => {
+    render(
+      <ReportingStepButtons {...defaultProps} isSignOffPage={true} />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Submit Report" }),
+    ).toBeInTheDocument();
   });
 
   it("Save button operates properly", () => {
