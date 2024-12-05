@@ -23,13 +23,13 @@ describe("The ReportingStepButtons component", () => {
     render(<ReportingStepButtons {...defaultProps} />);
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Save" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Save & Continue" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Save & Continue" }),
+    ).toBeInTheDocument();
   });
 
   it("does not show the Back button when allowBackNavigation is false", () => {
-    render(
-      <ReportingStepButtons {...defaultProps} />,
-    );
+    render(<ReportingStepButtons {...defaultProps} />);
 
     expect(
       screen.queryByRole("link", { name: "Back" }),
@@ -38,7 +38,7 @@ describe("The ReportingStepButtons component", () => {
 
   it("shows Submit Report button on Sign Off Page", () => {
     render(
-      <ReportingStepButtons {...defaultProps} isSignOffPage={true} />,
+      <ReportingStepButtons {...defaultProps} buttonText="Submit Report" />,
     );
 
     expect(
@@ -61,12 +61,16 @@ describe("The ReportingStepButtons component", () => {
   it("Save & Continue button operates properly", () => {
     // Check Save button to be default
     render(<ReportingStepButtons {...defaultProps} />);
-    expect(screen.getByRole("button", { name: "Save & Continue" })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Save & Continue" }),
+    ).toBeVisible();
     // Check spinner is visible when saving
     render(<ReportingStepButtons {...defaultProps} isSaving={true} />);
     expect(screen.getByRole("progressContinuing")).toBeVisible();
     //  Check redirecting when saving is over
     render(<ReportingStepButtons {...defaultProps} isRedirecting={true} />);
-    expect(screen.getByRole("button", { name: "✅ Redirecting..." })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "✅ Redirecting..." }),
+    ).toBeVisible();
   });
 });

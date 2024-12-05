@@ -27,7 +27,7 @@ interface Props {
   onChange?: (data: any) => void;
   error?: any;
   saveButtonDisabled?: boolean;
-  isSignOffPage?: boolean;
+  submitButtonDisabled?: boolean;
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -43,7 +43,8 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   onChange,
   error,
   saveButtonDisabled,
-  isSignOffPage,
+  submitButtonDisabled,
+  buttonText,
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -56,7 +57,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
     setIsSaving(true);
     try {
       await onSubmit(data);
-      if (canContinue && !isSignOffPage) {
+      if (canContinue) {
         setIsRedirecting(true);
         router.push(continueUrl);
       } else {
@@ -107,8 +108,9 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
               isSuccess={isSuccess}
               isRedirecting={isRedirecting}
               saveButtonDisabled={saveButtonDisabled}
+              submitButtonDisabled={submitButtonDisabled}
               saveAndContinue={submitExternallyToContinue}
-              isSignOffPage={isSignOffPage}
+              buttonText={buttonText}
             />
             <div className="min-h-[48px] box-border mt-4">
               {error && <Alert severity="error">{error}</Alert>}

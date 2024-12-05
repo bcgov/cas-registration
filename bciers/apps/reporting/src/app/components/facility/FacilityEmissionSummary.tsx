@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
@@ -10,7 +10,6 @@ import {
   facilityEmissionSummarySchema,
 } from "@reporting/src/data/jsonSchema/facilityEmissionSummary";
 import { UUID } from "crypto";
-import Link from "next/link";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 
 interface Props {
@@ -81,6 +80,7 @@ const FacilityEmissionSummary: React.FC<Props> = ({
               backUrl={backRef}
               continueUrl={continueRef}
               saveButtonDisabled={true}
+              submitButtonDisabled={false}
             />
           </FormBase>
         </div>

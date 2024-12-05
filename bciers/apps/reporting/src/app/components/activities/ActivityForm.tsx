@@ -48,7 +48,7 @@ export default function ActivityForm({
   initialSelectedSourceTypeIds,
 }: Readonly<Props>) {
   const searchParams = useSearchParams(); // is read-only
-  let step = useSearchParams() ? Number(useSearchParams().get("step")) : 0;
+  let step = searchParams ? Number(searchParams.get("step")) : 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
@@ -112,6 +112,27 @@ export default function ActivityForm({
     setFormState(c.formData);
   };
 
+  const createUrl = (isContinue: boolean) => {
+    const taskListLength = taskListData.find((taskListElement) => {
+      return taskListElement.title === "Activities Information";
+    })?.elements?.length;
+    if (taskListLength && step === -1) step = taskListLength - 1;
+
+    if (step === 0 && !isContinue)
+      return `/reports/${reportVersionId}/facilities/${facilityId}/review?facilities_title=Facility`; // Facility review page
+    if (taskListLength && step + 1 >= taskListLength && isContinue)
+      return "non-attributable"; // Activities done, go to Non-attributable emissions
+
+    const params = new URLSearchParams(
+      searchParams ? searchParams.toString() : "",
+    );
+    const addition = isContinue ? 1 : -1;
+    params.set("step", (step + addition).toString());
+    params.delete("activity_id");
+
+    return `activities?${params.toString()}`;
+  };
+
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: any }) => {
     //Set states
@@ -135,12 +156,17 @@ export default function ActivityForm({
     setIsLoading(false);
 
     if (response.error) {
+      setCanContinue(false);
       setErrorList([{ message: response.error }]);
       return;
     }
     if (response) {
       if (canContinue) {
         setIsRedirecting(true);
+        setTimeout(() => {
+          setCanContinue(false);
+          setIsRedirecting(false);
+        }, 3000);
         router.push(createUrl(true));
       } else {
         setIsSuccess(true);
@@ -159,25 +185,6 @@ export default function ActivityForm({
       formRef.current.submit();
     }
   }, [canContinue]);
-
-  const createUrl = (isContinue: boolean) => {
-    const taskListLength = taskListData.find((taskListElement) => {
-      return taskListElement.title === "Activities Information";
-    })?.elements?.length;
-    if (taskListLength && step === -1) step = taskListLength - 1;
-
-    if (step === 0 && !isContinue)
-      return `/reports/${reportVersionId}/facilities/${facilityId}/review?facilities_title=Facility`; // Facility review page
-    if (taskListLength && step + 1 >= taskListLength && isContinue)
-      return "non-attributable"; // Activities done, go to Non-attributable emissions
-
-    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
-    const addition = isContinue ? 1 : -1;
-    params.set("step", (step + addition).toString());
-    params.delete("activity_id");
-
-    return `activities?${params.toString()}`;
-  };
 
   return (
     <div className="w-full flex flex-row">

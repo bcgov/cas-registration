@@ -22,7 +22,7 @@ const config = {
     saveAndContinue: "Save & Continue",
   },
   mockVersionId: 3,
-  mockRouteSubmit: `/reports/3/attachments`,
+  mockRouteSubmit: `/reports/3/attachments?`,
 };
 
 // 🏷 Common Fields
