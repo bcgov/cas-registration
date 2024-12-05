@@ -14,6 +14,8 @@ export const infoNote = (
         it here in{" "}
         <Link
           href="/administration/contacts"
+          target="_blank"
+          rel="noopener noreferrer"
           sx={{ color: "inherit", textDecoration: "none" }}
         >
           Contacts.
