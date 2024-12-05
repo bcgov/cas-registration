@@ -94,11 +94,6 @@ class TestEndpointPermissions(TestCase):
             },
             {
                 "method": "get",
-                "endpoint_name": "get_report_additional_data_by_version_id",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "get",
                 "endpoint_name": "get_report_verification_by_version_id",
                 "kwargs": {"version_id": mock_int},
             },
@@ -127,11 +122,6 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "get",
                 "endpoint_name": "get_new_entrant_data",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_additional_data_by_version_id",
                 "kwargs": {"report_version_id": mock_int},
             },
             {

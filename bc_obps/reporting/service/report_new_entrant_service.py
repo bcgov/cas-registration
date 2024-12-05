@@ -11,30 +11,34 @@ from reporting.models import (
 )
 from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
 from reporting.schema.report_regulated_products import RegulatedProductOut
+from reporting.service.naics_code import NaicsCodeService
 from service.report_service import ReportService
 
 
 class ReportNewEntrantService:
     @classmethod
-    def get_new_entrant_data(cls, report_version_id: int) -> Dict[str, Any]:
+    def get_new_entrant_data(cls, report_version_id: int) -> dict:
         """Returns a dictionary containing products, emissions, and new entrant data."""
         report_new_entrant = ReportNewEntrant.objects.filter(report_version=report_version_id).first()
+
+        naics_code = NaicsCodeService.get_naics_code_by_version_id(version_id=report_version_id)
 
         regulated_products = ReportService.get_regulated_products_by_version_id(version_id=report_version_id)
 
         categories = list(EmissionCategory.objects.all())
 
-        return cls._initialize_result_data(regulated_products, categories, report_new_entrant)
+        return cls._initialize_result_data(regulated_products, categories, report_new_entrant, naics_code)
 
     @staticmethod
     def _initialize_result_data(
         regulated_products: List[RegulatedProductOut],
         categories: List[EmissionCategory],
-        report_new_entrant: Optional[ReportNewEntrant],  # Change here
+        report_new_entrant: Optional[ReportNewEntrant],
+        naics_code: Optional[str],
     ) -> Dict[str, Any]:
         """Helper to initialize the result data"""
         products_data = ReportNewEntrantService._get_products_data(regulated_products, report_new_entrant)
-        emissions_data = ReportNewEntrantService._get_emissions_data(categories, report_new_entrant)
+        emissions_data = ReportNewEntrantService._get_emissions_data(categories, report_new_entrant, naics_code)
         result_data = (
             model_to_dict(report_new_entrant, exclude=["selected_products"]) if report_new_entrant is not None else {}
         )
@@ -62,7 +66,9 @@ class ReportNewEntrantService:
         ]
 
     @staticmethod
-    def _get_emissions_data(categories: List[EmissionCategory], report_new_entrant: Optional[ReportNewEntrant]) -> list:
+    def _get_emissions_data(
+        categories: List[EmissionCategory], report_new_entrant: Optional[ReportNewEntrant], naics_code: Optional[str]
+    ) -> list:
         """Helper to fetch emissions data, categorized by type"""
         emissions_map = (
             {
@@ -80,18 +86,22 @@ class ReportNewEntrantService:
         }
 
         for category in categories:
-            category_data = {
-                "id": category.id,
-                "name": category.category_name,
-            }
-            # Ensure "emission" is either None or a string
-            if category.id in emissions_map:
-                category_data["emission"] = str(emissions_map[category.id]) if emissions_map[category.id] else None
-            else:
-                category_data["emission"] = None
-            emissions_by_type[category.category_type].append(category_data)
+            if (
+                naics_code == "324110"
+                and category.category_type == "other_excluded"
+                and "fat, oil and grease" in category.category_name.lower()
+            ):
+                continue
 
-        return [
+            emissions_by_type[category.category_type].append(
+                {
+                    "id": category.id,
+                    "name": category.category_name,
+                    "emission": str(emissions_map.get(category.id)) if emissions_map.get(category.id) else None,
+                }
+            )
+
+        result = [
             {
                 "name": "basic",
                 "title": "Emission categories after new entrant period began",
@@ -102,12 +112,17 @@ class ReportNewEntrantService:
                 "title": "Emissions excluded by fuel type",
                 "emissionData": emissions_by_type["fuel_excluded"],
             },
-            {
-                "name": "other_excluded",
-                "title": "Other excluded emissions",
-                "emissionData": emissions_by_type["other_excluded"],
-            },
         ]
+        if naics_code == "324110" and emissions_by_type["other_excluded"]:
+            result.append(
+                {
+                    "name": "other_excluded",
+                    "title": "Other excluded emissions",
+                    "emissionData": emissions_by_type["other_excluded"],
+                }
+            )
+
+        return result
 
     @classmethod
     @transaction.atomic
