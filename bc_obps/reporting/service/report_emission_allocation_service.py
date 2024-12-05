@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import Any, List
 from uuid import UUID
 from django.db import transaction
@@ -50,7 +49,7 @@ class ReportEmissionAllocationService:
             if existing_allocation.other_methodology_description is not None:
                 other_methodology_description = existing_allocation.other_methodology_description
 
-        report_product_emission_allocations_data = List[ReportFacilityEmissionsSchemaOut]
+        report_product_emission_allocations_data = []
         total_reportable_emissions = 0
         for category, data in all_emmission_categories_totals.items():
             if (
@@ -61,28 +60,27 @@ class ReportEmissionAllocationService:
                 data["type"] == "basic"
             ):  # only these categories are reportable, so we sum them up to get the total reportable emissions
                 total_reportable_emissions += data["total"]
+                # Build product data
+                products = []
+                for rp in report_products:
+                    product_emission = report_product_emission_allocations.filter(
+                        report_product_id=rp.id, emission_category__category_name=category
+                    ).first()
+                    product = ReportProductEmissionAllocationSchemaOut(
+                        product_id=rp.product_id,
+                        product_name=rp.product.name,
+                        allocated_quantity=product_emission.allocated_quantity if product_emission else 0,
+                    )
+                    products.append(product)
 
-            # Build product data
-            products = List[ReportProductEmissionAllocationsSchemaOut]
-            for rp in report_products:
-                product_emission = report_product_emission_allocations.filter(
-                    report_product_id=rp.id, emission_category__category_name=category
-                ).first()
-                product = ReportProductEmissionAllocationsSchemaOut(
-                    product_id=rp.product_id,
-                    product_name=rp.product.name,
-                    allocated_quantity=product_emission.allocated_quantity if product_emission else 0,
+                # Add to the final response
+                emissions_total = ReportFacilityEmissionsSchemaOut(
+                    emission_category=category,
+                    products=products,
+                    emission_total=data["total"],
+                    category_type=data["type"],
                 )
-                products.append(product)
-
-            # Add to the final response
-            emissions_total = ReportFacilityEmissionsSchemaOut(
-                emission_category=category,
-                products=products,
-                emission_total=data["total"],
-                category_type=data["type"],
-            )
-            report_product_emission_allocations_data.append(emissions_total)
+                report_product_emission_allocations_data.append(emissions_total)
 
         return ReportProductEmissionAllocationsSchemaOut(
             report_product_emission_allocations=report_product_emission_allocations_data,
@@ -168,7 +166,7 @@ class ReportEmissionAllocationService:
         return not RegulatedProduct.objects.filter(id__in=product_ids).exclude(id__in=allowed_product_ids).exists()
 
     @staticmethod
-    def get_emission_category_totals_with_ids(facility_report_id: int) -> dict[int, Decimal | int, str]:
+    def get_emission_category_totals_with_ids(facility_report_id: int) -> dict:
         """
         Gets the total emissions for each emission category for the given facility report and includes the category type and id.
 
@@ -195,7 +193,7 @@ class ReportEmissionAllocationService:
     @staticmethod
     def get_emission_totals_by_report_product(
         facility_report_id: int,
-    ) -> List[ReportProductEmissionAllocationSchemaOut]:
+    ) -> list:
         """
         Gets the total emissions that have been allocated to a product for a given facility.
 
