@@ -24,7 +24,7 @@ from registration.schema.generic import Message
     When an operation is approved or declined, it is marked as verified with the current timestamp and the user who performed the action.
     If the operation is approved, a unique BORO ID is generated, and the associated operator is approved if not already.
     An email notification is sent to the relevant external user based on the new status of the operation.""",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("v1_authorized_irc_user_write"),
 )
 @handle_http_errors()
 def v1_update_operation_status(

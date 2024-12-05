@@ -228,20 +228,9 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "get_current_user_operator_access_requests"},
         ],
         "authorized_irc_user": [
-            {"method": "put", "endpoint_name": "v1_update_operator_status", "kwargs": {"operator_id": mock_uuid}},
             {"method": "get", "endpoint_name": "v1_list_user_operators"},
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_operation_status",
-                "kwargs": {"operation_id": mock_uuid},
-            },
             {"method": "get", "endpoint_name": "list_user_operators"},
-            {"method": "put", "endpoint_name": "update_operator_status", "kwargs": {"operator_id": mock_uuid}},
-            {
-                "method": "put",
-                "endpoint_name": "update_operation_status",
-                "kwargs": {"operation_id": mock_uuid},
-            },
+            {"method": "get", "endpoint_name": "list_user_operators"},
             {"method": "get", "endpoint_name": "list_transfer_events"},
         ],
         "approved_authorized_roles": [
@@ -316,22 +305,33 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
             },
         ],
-        "authorized_irc_user_and_industry_admin_user": [
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_user_operator_status",
-                "kwargs": {"user_operator_id": mock_uuid},
-            },
+        "authorized_irc_user_and_industry_admin_user": [],
+        "cas_director": [
+            {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {"facility_id": mock_uuid}},
+            {"method": "patch", "endpoint_name": "operation_boro_id", "kwargs": {"operation_id": mock_uuid}},
+            {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {"operation_id": mock_uuid}},
+        ],
+        "cas_director_analyst_and_industry_admin_user": [
             {
                 "method": "put",
                 "endpoint_name": "update_user_operator_status",
                 "kwargs": {"user_operator_id": mock_uuid},
             },
         ],
-        "cas_director": [
-            {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {"facility_id": mock_uuid}},
-            {"method": "patch", "endpoint_name": "operation_boro_id", "kwargs": {"operation_id": mock_uuid}},
-            {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {"operation_id": mock_uuid}},
+        "v1_authorized_irc_user_write": [
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_operation_status",
+                "kwargs": {"operation_id": mock_uuid},
+            },
+            {"method": "put", "endpoint_name": "v1_update_operator_status", "kwargs": {"operator_id": mock_uuid}},
+        ],
+        "v1_authorized_irc_user_and_industry_admin_user_write": [
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_user_operator_status",
+                "kwargs": {"user_operator_id": mock_uuid},
+            },
         ],
     }
 

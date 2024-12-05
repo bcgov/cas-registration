@@ -57,7 +57,7 @@ def v1_get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[20
     description="""Updates the status of a specific operator by its ID.
     The endpoint allows authorized users to update the operator's status and perform additional actions based on the new status.
     If the operator is new and declined, all associated user operators are also declined, and notifications are sent accordingly.""",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("v1_authorized_irc_user_write"),
 )
 @handle_http_errors()
 def v1_update_operator_status(
