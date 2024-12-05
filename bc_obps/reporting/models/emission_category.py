@@ -25,3 +25,24 @@ class EmissionCategory(BaseModel):
             "This table contains the set of emission categories that greenhouse gas emissions can be counted under."
         )
         db_table = 'erc"."emission_category'
+
+
+class EmissionCategoryRls(EmissionCategory):
+    """RLS Proxy Model"""
+
+    class Meta:
+        proxy = True
+
+    class Rls:
+        enable_rls = True
+        intersection_models = False
+
+        class IndustryUser:
+            role = "industry_user"
+            grants = ["select", "update"]
+
+            class Policies:
+                class Select:
+                    name = "emission_cat_industry_select"
+                    using_statement = "(id < 4)"
+                    check_statement = False
