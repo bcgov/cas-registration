@@ -5,7 +5,7 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   baseUrlReports,
   cancelUrlReports,

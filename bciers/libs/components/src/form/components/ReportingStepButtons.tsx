@@ -1,7 +1,6 @@
 "use client";
 
 import { Box, Button, CircularProgress } from "@mui/material";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface StepButtonProps {
@@ -11,8 +10,9 @@ interface StepButtonProps {
   isSuccess?: boolean;
   isRedirecting?: boolean;
   saveButtonDisabled?: boolean;
+  submitButtonDisabled?: boolean;
   saveAndContinue?: () => void;
-  isSignOffPage?: boolean;
+  buttonText?: string;
 }
 
 const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
@@ -22,8 +22,9 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   isSuccess,
   isRedirecting,
   saveButtonDisabled,
+  submitButtonDisabled,
   saveAndContinue,
-  isSignOffPage,
+  buttonText,
 }) => {
   const router = useRouter();
   const saveButtonContent = isSaving ? (
@@ -35,11 +36,15 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   );
 
   const saveAndContinueButtonContent = isSaving ? (
-    <CircularProgress data-testid="progressbar" role="progressContinuing" size={24} />
+    <CircularProgress
+      data-testid="progressbar"
+      role="progressContinuing"
+      size={24}
+    />
   ) : isRedirecting ? (
     "✅ Redirecting..."
-  ) : isSignOffPage ? (
-    "Submit Report"
+  ) : buttonText ? (
+    buttonText
   ) : !saveButtonDisabled ? (
     "Save & Continue"
   ) : (
@@ -50,9 +55,14 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
     <Box display="flex" justifyContent="space-between" mt={3}>
       <div>
         {backUrl && (
-          <Button variant="outlined" onClick={() => {
-            router.push(backUrl);
-          }}>Back</Button>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              router.push(backUrl);
+            }}
+          >
+            Back
+          </Button>
         )}
         <Button
           variant="contained"
@@ -67,7 +77,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
       <Button
         variant="contained"
         color="primary"
-        disabled={isSaving || saveButtonDisabled}
+        disabled={isSaving || submitButtonDisabled}
         sx={{ px: 4 }}
         onClick={() => {
           if (saveAndContinue !== undefined) saveAndContinue();

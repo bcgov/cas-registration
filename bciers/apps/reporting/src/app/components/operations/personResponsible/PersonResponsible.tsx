@@ -14,7 +14,7 @@ import {
   Contact,
   ContactRow,
 } from "@reporting/src/app/components/operations/types";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
@@ -179,7 +179,7 @@ const PersonResponsible = ({ version_id }: Props) => {
       ...contactFormData,
     };
 
-    const response = await actionHandler(endpoint, method, endpoint, {
+    await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
   };
