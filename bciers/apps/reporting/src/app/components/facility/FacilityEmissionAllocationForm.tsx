@@ -88,6 +88,7 @@ export default function FacilityEmissionAllocationForm({
   orderedActivities,
   initialData,
 }: Props) {
+  // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
     methodology: initialData.methodology,
     other_methodology_description: initialData.other_methodology_description,
@@ -104,6 +105,7 @@ export default function FacilityEmissionAllocationForm({
       products: initialData.report_product_emission_allocation_totals,
     },
   }));
+
   // 🛑 State for submit button disable
   const errorMismatch = "Mismatch in allocated emissions.";
   const [error, setError] = useState<string | undefined>();
@@ -196,8 +198,48 @@ export default function FacilityEmissionAllocationForm({
   // 🛠️ Handle form submit
   const handleSubmit = async () => {
     setSubmitButtonDisabled(true);
-    const payload = safeJsonParse(JSON.stringify(formData));
+    const mockPayload = {
+      methodology: "Other",
+      other_methodology_description: "test",
+      report_product_emission_allocations: [
+        {
+          emission_total: 300,
+          emission_category: "Flaring emissions",
+          category_type: "basic",
+          products: [
+            {
+              product_id: 1,
+              product_name: "BC-specific refinery complexity throughput",
+              allocated_quantity: 200.0,
+            },
+            {
+              product_id: 29,
+              product_name: "Sugar: solid",
+              allocated_quantity: 100.0,
+            },
+          ],
+        },
+        {
+          emission_total: 400,
+          emission_category: "Emissions from excluded non-biomass",
+          category_type: "fuel_excluded",
+          products: [
+            {
+              product_id: 1,
+              product_name: "BC-specific refinery complexity throughput",
+              allocated_quantity: 300,
+            },
+            {
+              product_id: 29,
+              product_name: "Sugar: solid",
+              allocated_quantity: 100,
+            },
+          ],
+        },
+      ],
+    };
 
+    const payload = safeJsonParse(JSON.stringify(mockPayload));
     const response = await actionHandler(
       `reporting/report-version/${version_id}/allocate-emissions`,
       "POST",

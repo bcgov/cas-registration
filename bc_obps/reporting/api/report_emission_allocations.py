@@ -45,9 +45,26 @@ def get_emission_allocations(
                 "emission_total": 300,
                 "category_type": "basic",
             },
+              {
+                "emission_category": "Emissions from excluded non-biomass",
+                "products": [
+                    {
+                        "product_id": 1,
+                        "product_name": "BC-specific refinery complexity throughput",
+                        "allocated_quantity": 300,
+                    },
+                    {
+                        "product_id": 29,
+                        "product_name": "Sugar: solid",
+                        "allocated_quantity": 0,
+                    },
+                ],
+                "emission_total": 400,
+                "category_type": "fuel_excluded",
+            },
             # Additional categories go here...
         ],
-        "facility_total_emissions": 300.0,
+        "facility_total_emissions": 700.0,
         "report_product_emission_allocation_totals": [
             {
                 "product_id": 1,
