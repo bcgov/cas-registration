@@ -1,6 +1,17 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import NaicsCode
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import (
+    DateTimeRangeField,
+    RangeBoundary,
+    RangeOperators,
+)
+
+
+class TsTzRange(models.Func):
+    function = "DATERANGE"
+    output_field = DateTimeRangeField()
 
 
 class NaicsRegulatoryValue(BaseModel):
@@ -9,7 +20,7 @@ class NaicsRegulatoryValue(BaseModel):
     naics_code = models.ForeignKey(
         NaicsCode,
         on_delete=models.DO_NOTHING,
-        related_name="%(class)s_records",
+        related_name="regulatory_values",
         db_comment="Foreign key to the naics_code record that is associated with the regulatory values in this record",
     )
     reduction_factor = models.DecimalField(
@@ -32,3 +43,12 @@ class NaicsRegulatoryValue(BaseModel):
     class Meta:
         db_table_comment = "This table contains the regulatory values that apply to a naics code within a set timeframe from where the values are valid and when the values are no longer valid."
         db_table = 'erc"."naics_regulatory_values'
+        constraints = [
+            ExclusionConstraint(
+                name="exclude_overlapping_naics_regulatory_values_records_by_date_range",
+                expressions=[
+                    (TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS),
+                    ("naics_code", RangeOperators.EQUAL),
+                ],
+            ),
+        ]

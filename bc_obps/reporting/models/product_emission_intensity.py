@@ -1,6 +1,17 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import RegulatedProduct
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import (
+    DateTimeRangeField,
+    RangeBoundary,
+    RangeOperators,
+)
+
+
+class TsTzRange(models.Func):
+    function = "DATERANGE"
+    output_field = DateTimeRangeField()
 
 
 class ProductEmissionIntensity(BaseModel):
@@ -9,7 +20,7 @@ class ProductEmissionIntensity(BaseModel):
     product = models.ForeignKey(
         RegulatedProduct,
         on_delete=models.DO_NOTHING,
-        related_name="%(class)s_records",
+        related_name="%(class)s",
         db_comment="Foreign key to the product record that the emission intensity values in this record relate to",
     )
     product_weighted_average_emission_intensity = models.DecimalField(
@@ -27,3 +38,12 @@ class ProductEmissionIntensity(BaseModel):
     class Meta:
         db_table_comment = "This table contains the emission intensity value of a product and the from/to date values that the emission intesity is valid for that product."
         db_table = 'erc"."product_emission_intensity'
+        constraints = [
+            ExclusionConstraint(
+                name="exclude_overlapping_emission_intensity_records_by_date_range",
+                expressions=[
+                    (TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS),
+                    ("product", RangeOperators.EQUAL),
+                ],
+            ),
+        ]
