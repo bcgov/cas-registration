@@ -9,6 +9,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import FormContext from "@rjsf/core";
 import { Alert, Box } from "@mui/material";
 import ReportingStepButtons from "./components/ReportingStepButtons";
+import { useRouter } from "next/navigation";
 
 interface Props {
   initialStep: number;
@@ -19,13 +20,14 @@ interface Props {
   formData: any;
   baseUrl?: string;
   cancelUrl?: string;
-  backUrl: string;
+  backUrl?: string;
   continueUrl: string;
   onSubmit: (data: any) => Promise<void>;
   buttonText?: string;
   onChange?: (data: any) => void;
   error?: any;
   saveButtonDisabled?: boolean;
+  isSignOffPage?: boolean;
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -41,20 +43,22 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   onChange,
   error,
   saveButtonDisabled,
+  isSignOffPage,
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [canContinue, setCanContinue] = useState(false);
   const formRef = useRef<FormContext>(null);
+  const router = useRouter();
 
   const handleFormSave = async (data: any) => {
     setIsSaving(true);
     try {
       await onSubmit(data);
-      if (canContinue) {
+      if (canContinue && !isSignOffPage) {
         setIsRedirecting(true);
-        window.location.href = continueUrl;
+        router.push(continueUrl);
       } else {
         setIsSuccess(true);
         setTimeout(() => {
@@ -104,6 +108,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
               isRedirecting={isRedirecting}
               saveButtonDisabled={saveButtonDisabled}
               saveAndContinue={submitExternallyToContinue}
+              isSignOffPage={isSignOffPage}
             />
             <div className="min-h-[48px] box-border mt-4">
               {error && <Alert severity="error">{error}</Alert>}
