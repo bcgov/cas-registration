@@ -5,12 +5,18 @@ from ninja import Field, FilterSchema, ModelSchema
 
 
 class OperationTimelineListOut(ModelSchema):
+    bloop: Optional[str] = None
     name: str = Field(..., alias="operation.name")
     type: str = Field(..., alias="operation.type")
     sfo_facility_id: Optional[UUID] = Field(None, alias="sfo_facility_id")  # this is an annotated field in the query
     sfo_facility_name: Optional[str] = Field(None, alias="sfo_facility_name")  # this is an annotated field in the query
     bcghg_id: Optional[str] = Field(None, alias="operation.bcghg_id.id")
     id: UUID = Field(..., alias="operation.id")
+
+    @staticmethod
+    def resolve_bloop(obj) -> Optional[str]:
+        breakpoint()
+        return obj
 
     class Meta:
         model = OperationDesignatedOperatorTimeline

@@ -172,6 +172,7 @@ class CustomPagination(PageNumberPagination):
         pagination: PageNumberPagination.Input,
         **params: Any,
     ) -> Any:
+        breakpoint()
         paginate_result = params.get('paginate_result')
         page_size = self.page_size if paginate_result else queryset.count()
         offset = (pagination.page - 1) * page_size
