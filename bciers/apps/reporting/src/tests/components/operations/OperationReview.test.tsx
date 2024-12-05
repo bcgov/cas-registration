@@ -14,7 +14,9 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
-const mockUseSearchParams = useSearchParams as vi.MockedFunction<typeof useSearchParams>;
+const mockUseSearchParams = useSearchParams as vi.MockedFunction<
+  typeof useSearchParams
+>;
 const mockActionHandler = actionHandler as vi.MockedFunction<
   typeof actionHandler
 >;
@@ -22,7 +24,9 @@ const mockActionHandler = actionHandler as vi.MockedFunction<
 describe("OperationReview Component", () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({ push: vi.fn() });
-    mockUseSearchParams.mockReturnValue('reports_title=Operation+3&facilities_title=Facility')
+    mockUseSearchParams.mockReturnValue(
+      "reports_title=Operation+3&facilities_title=Facility",
+    );
     mockActionHandler.mockResolvedValue(true); // Mock the action handler to always resolve successfully
   });
 
@@ -104,7 +108,9 @@ describe("OperationReview Component", () => {
           body: expect.any(String),
         }),
       );
-      expect(push).toHaveBeenCalledWith("/reporting/reports/1/person-responsible");
+      expect(push).toHaveBeenCalledWith(
+        "/reporting/reports/1/person-responsible?",
+      );
     });
   });
 
