@@ -48,7 +48,7 @@ export default function ActivityForm({
   initialSelectedSourceTypeIds,
 }: Readonly<Props>) {
   const searchParams = useSearchParams(); // is read-only
-  let step = Number(useSearchParams().get("step")) || 0;
+  let step = useSearchParams() ? Number(useSearchParams().get("step")) : 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
@@ -171,7 +171,7 @@ export default function ActivityForm({
     if (taskListLength && step + 1 >= taskListLength && isContinue)
       return "non-attributable"; // Activities done, go to Non-attributable emissions
 
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
     const addition = isContinue ? 1 : -1;
     params.set("step", (step + addition).toString());
     params.delete("activity_id");

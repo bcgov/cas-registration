@@ -92,7 +92,7 @@ describe("MultiStepFormWithTaskList", () => {
     // This will depend on how you show the loading state in your component
   });
 
-  it("renders cancel button if cancelUrl is provided", () => {
+  it("renders back button if backUrl is provided", () => {
     render(
       <MultiStepFormWithTaskList
         initialStep={0}
@@ -103,15 +103,12 @@ describe("MultiStepFormWithTaskList", () => {
         formData={formData}
         onSubmit={mockOnSubmit}
         cancelUrl="http://example.com"
+        backUrl="http://example.com"
         continueUrl="www.test.com/continue"
       />,
     );
 
-    // Check if the back button is present and has the correct href
-    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: "Back" }).closest("a"),
-    ).toHaveAttribute("href", "http://example.com");
+    expect(screen.queryByRole("button", { name: "Back" })).toBeVisible();
   });
 
   it("does not render back button if cancelUrl is not provided", () => {

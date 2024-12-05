@@ -18,8 +18,8 @@ useRouter.mockReturnValue({
 // 🏷 Constants
 const config = {
   buttons: {
-    cancel: "Cancel",
-    saveAndContinue: "Save and Continue",
+    cancel: "Back",
+    saveAndContinue: "Save & Continue",
   },
   mockVersionId: 3,
   mockRouteSubmit: `/reports/3/attachments`,

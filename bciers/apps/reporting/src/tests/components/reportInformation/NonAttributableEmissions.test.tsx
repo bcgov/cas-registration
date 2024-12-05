@@ -92,7 +92,7 @@ describe("NonAttributableEmissionsForm Component", () => {
     );
 
     const submitButton = await screen.findByRole("button", {
-      name: /Save And Continue/i,
+      name: /Save & Continue/i,
     });
     expect(submitButton).toBeInTheDocument();
 
@@ -100,7 +100,7 @@ describe("NonAttributableEmissionsForm Component", () => {
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
     expect(mockPush).toHaveBeenCalledWith(
-      `/reports/${versionId}/facilities/${facilityId}/emissions-summary`,
+      `/reporting/reports/${versionId}/facilities/${facilityId}/emission-summary`,
     );
   });
 
@@ -122,7 +122,7 @@ describe("NonAttributableEmissionsForm Component", () => {
     );
 
     const submitButton = await screen.findByRole("button", {
-      name: /Save And Continue/i,
+      name: /Save & Continue/i,
     });
     fireEvent.click(submitButton);
 

@@ -1,6 +1,6 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import OperationReview from "@reporting/src/app/components/operations/OperationReview";
 
@@ -10,9 +10,11 @@ vi.mock("@bciers/actions", () => ({
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
 const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
+const mockUseSearchParams = useSearchParams as vi.MockedFunction<typeof useSearchParams>;
 const mockActionHandler = actionHandler as vi.MockedFunction<
   typeof actionHandler
 >;
@@ -20,6 +22,7 @@ const mockActionHandler = actionHandler as vi.MockedFunction<
 describe("OperationReview Component", () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({ push: vi.fn() });
+    mockUseSearchParams.mockReturnValue('reports_title=Operation+3&facilities_title=Facility')
     mockActionHandler.mockResolvedValue(true); // Mock the action handler to always resolve successfully
   });
 
@@ -55,8 +58,8 @@ describe("OperationReview Component", () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Cancel/i)).toBeInTheDocument();
-    expect(screen.getByText(/Save And Continue/i)).toBeInTheDocument();
+    expect(screen.getByText(/Back/i)).toBeInTheDocument();
+    expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
   });
 
   it("submits the form and navigates to the next page", async () => {
@@ -90,7 +93,7 @@ describe("OperationReview Component", () => {
     );
 
     // Simulate form submission
-    fireEvent.click(screen.getByText(/Save And Continue/i));
+    fireEvent.click(screen.getByText(/Save & Continue/i));
 
     await waitFor(() => {
       expect(mockActionHandler).toHaveBeenCalledWith(
@@ -101,7 +104,7 @@ describe("OperationReview Component", () => {
           body: expect.any(String),
         }),
       );
-      expect(push).toHaveBeenCalledWith("/reports/1/person-responsible");
+      expect(push).toHaveBeenCalledWith("/reporting/reports/1/person-responsible");
     });
   });
 

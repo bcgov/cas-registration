@@ -12,6 +12,7 @@ interface StepButtonProps {
   isRedirecting?: boolean;
   saveButtonDisabled?: boolean;
   saveAndContinue?: () => void;
+  isSignOffPage?: boolean;
 }
 
 const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
@@ -22,10 +23,11 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   isRedirecting,
   saveButtonDisabled,
   saveAndContinue,
+  isSignOffPage,
 }) => {
   const router = useRouter();
   const saveButtonContent = isSaving ? (
-    <CircularProgress data-testid="progressbar" role="progress" size={24} />
+    <CircularProgress data-testid="progressbarsave" role="progress" size={24} />
   ) : isSuccess ? (
     "✅ Success"
   ) : (
@@ -33,9 +35,11 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   );
 
   const saveAndContinueButtonContent = isSaving ? (
-    <CircularProgress data-testid="progressbar" role="progress" size={24} />
+    <CircularProgress data-testid="progressbar" role="progressContinuing" size={24} />
   ) : isRedirecting ? (
     "✅ Redirecting..."
+  ) : isSignOffPage ? (
+    "Submit Report"
   ) : !saveButtonDisabled ? (
     "Save & Continue"
   ) : (
@@ -46,9 +50,9 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
     <Box display="flex" justifyContent="space-between" mt={3}>
       <div>
         {backUrl && (
-          <Link href={backUrl} passHref>
-            <Button variant="outlined">Back</Button>
-          </Link>
+          <Button variant="outlined" onClick={() => {
+            router.push(backUrl);
+          }}>Back</Button>
         )}
         <Button
           variant="contained"
@@ -63,7 +67,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
       <Button
         variant="contained"
         color="primary"
-        disabled={isSaving}
+        disabled={isSaving || saveButtonDisabled}
         sx={{ px: 4 }}
         onClick={() => {
           if (saveAndContinue !== undefined) saveAndContinue();
