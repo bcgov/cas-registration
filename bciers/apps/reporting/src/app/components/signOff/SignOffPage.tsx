@@ -61,24 +61,26 @@ export default function SignOffPage() {
         <ReportSubmission />
       ) : (
         <MultiStepFormWithTaskList
-          initialStep={3}
-          steps={[
-            "Operation Information",
-            "Facilities Information",
-            "Compliance Summary",
-            "Sign-off & Submit",
-          ]}
-          taskListElements={taskListElements}
-          schema={signOffSchema}
-          uiSchema={signOffUiSchema}
-          formData={formState}
-          baseUrl={baseUrl}
-          cancelUrl={cancelUrl}
-          onSubmit={handleSubmit}
-          buttonText={"Submit Report"}
-          onChange={handleChange}
-          submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
-        />
+            initialStep={3}
+            steps={[
+              "Operation Information",
+              "Facilities Information",
+              "Compliance Summary",
+              "Sign-off & Submit",
+            ]}
+            taskListElements={taskListElements}
+            schema={signOffSchema}
+            uiSchema={signOffUiSchema}
+            formData={formState}
+            baseUrl={baseUrl}
+            cancelUrl={cancelUrl}
+            onSubmit={handleSubmit}
+            buttonText={"Submit Report"}
+            onChange={handleChange}
+            saveButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
+            isSignOffPage={true}
+            continueUrl={""}
+          />
       )}
     </>
   );

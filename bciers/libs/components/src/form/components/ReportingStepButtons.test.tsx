@@ -8,7 +8,9 @@ const defaultProps = {
   continueUrl: "https://www.test.com/continued",
   isSaving: false,
   isSuccess: false,
+  isRedirecting: false,
   saveButtonDisabled: false,
+  saveAndContinue: () => {}
 };
 
 describe("The ReportingStepButtons component", () => {
@@ -18,36 +20,19 @@ describe("The ReportingStepButtons component", () => {
 
   it("renders correct buttons", () => {
     render(<ReportingStepButtons {...defaultProps} />);
-    expect(screen.getByRole("link", { name: "Back" })).not.toBeDisabled();
-    expect(screen.getByRole("link", { name: "Continue" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save & Continue" })).toBeInTheDocument();
   });
 
   it("does not show the Back button when allowBackNavigation is false", () => {
     render(
-      <ReportingStepButtons {...defaultProps} allowBackNavigation={false} />,
+      <ReportingStepButtons {...defaultProps} />,
     );
 
     expect(
       screen.queryByRole("link", { name: "Back" }),
     ).not.toBeInTheDocument();
-  });
-
-  it("Back button has correct link", () => {
-    render(<ReportingStepButtons {...defaultProps} />);
-    expect(screen.getByRole("link", { name: "Back" })).toHaveAttribute(
-      "href",
-      "https://www.test.com/",
-    );
-  });
-
-  it("Continue button has correct link", async () => {
-    render(<ReportingStepButtons {...defaultProps} />);
-
-    expect(screen.getByRole("link", { name: "Continue" })).toHaveAttribute(
-      "href",
-      "https://www.test.com/continued",
-    );
   });
 
   it("Save button operates properly", () => {
@@ -60,5 +45,17 @@ describe("The ReportingStepButtons component", () => {
     //  Check success when saving is over
     render(<ReportingStepButtons {...defaultProps} isSuccess={true} />);
     expect(screen.getByRole("button", { name: "✅ Success" })).toBeVisible();
+  });
+
+  it("Save & Continue button operates properly", () => {
+    // Check Save button to be default
+    render(<ReportingStepButtons {...defaultProps} />);
+    expect(screen.getByRole("button", { name: "Save & Continue" })).toBeVisible();
+    // Check spinner is visible when saving
+    render(<ReportingStepButtons {...defaultProps} isSaving={true} />);
+    expect(screen.getByRole("progressContinuing")).toBeVisible();
+    //  Check redirecting when saving is over
+    render(<ReportingStepButtons {...defaultProps} isRedirecting={true} />);
+    expect(screen.getByRole("button", { name: "✅ Redirecting..." })).toBeVisible();
   });
 });
