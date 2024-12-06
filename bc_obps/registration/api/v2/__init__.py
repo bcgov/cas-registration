@@ -37,10 +37,10 @@ from ._user_operators._current import (
     is_current_user_approved_admin,
     operator_users,
 )
-from ._user_operators._user_operator_id import update_status as user_operator_update_status
+from ._user_operators._user_operator_id import update_status
 
 from .user import user_profile, user_app_role
 from ._user_operators import user_operator_id, pending, current
 from ._contacts import contact_id
 from ._users import user_id
-from ._operations._operation_id import operation_representatives, update_status as operation_update_status
+from ._operations._operation_id import operation_representatives
