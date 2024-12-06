@@ -120,3 +120,6 @@ class Operator(TimeStampedModel):
         ]
         db_table_comment = "Table containing operator information. An operator is the person who owns and/or controls and directs industrial operations. An operator can own multiple operations. For more information see definitions in the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1"
         db_table = 'erc"."operator'
+
+    def __str__(self) -> str:
+        return f"{self.legal_name} ({self.id})"
