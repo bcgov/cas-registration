@@ -45,7 +45,7 @@ def save_emission_allocation_data(
     request: HttpRequest,
     report_version_id: int,
     facility_id: UUID,
-    payload: List[ReportProductEmissionAllocationSchemaIn],
+    payload: ReportProductEmissionAllocationsSchemaIn,
 ) -> Literal[200]:
 
     emission_allocation_data_dicts = [item.dict() for item in payload]

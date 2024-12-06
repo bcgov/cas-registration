@@ -15,13 +15,13 @@ class ReportProductEmissionAllocationSchema(ModelSchema):
         ]
 
 
-class ReportProductEmissionAllocationSchemaIn(ReportProductEmissionAllocationSchema):
+class ReportProductEmissionAllocationSchemaIn(Schema):
     report_product_id: int
     emission_category_name: str
     allocated_quantity: Decimal
 
 
-class ReportProductEmissionAllocationsSchemaIn(ReportProductEmissionAllocationSchema):
+class ReportProductEmissionAllocationsSchemaIn(Schema):
     """
     Schema for the save report product emission allocations endpoint request input
     """
@@ -34,7 +34,7 @@ class ReportProductEmissionAllocationsSchemaIn(ReportProductEmissionAllocationSc
 class ReportProductEmissionAllocationSchemaOut(Schema):
     product_id: int
     product_name: str
-    allocated_quantity: Decimal
+    allocated_quantity: Decimal | int
 
 
 class ReportProductEmissionAllocationSchemaaout:
@@ -56,7 +56,7 @@ class ReportProductEmissionAllocationsSchemaOut(Schema):
     """
 
     report_product_emission_allocations: List[ReportFacilityEmissionsSchemaOut]
-    facility_total_emissions: Decimal
+    facility_total_emissions: Decimal | int
     report_product_emission_allocation_totals: List[ReportProductEmissionAllocationSchemaOut]
     methodology: str
     other_methodology_description: str
