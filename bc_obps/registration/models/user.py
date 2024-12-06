@@ -52,6 +52,12 @@ class User(UserAndContactCommonInfo):
         """
         return self.app_role.role_name == "industry_user"
 
+    def is_cas_analyst(self) -> bool:
+        """
+        Return whether the user is a CAS analyst.
+        """
+        return self.app_role.role_name == "cas_analyst"
+
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:
         """
@@ -60,3 +66,6 @@ class User(UserAndContactCommonInfo):
         cache_key = f"{USER_CACHE_PREFIX}{self.user_guid}"
         cache.delete(cache_key)
         super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f"{self.user_guid} - {self.email} - {self.app_role.role_name}"
