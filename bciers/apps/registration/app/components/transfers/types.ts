@@ -13,3 +13,20 @@ export interface TransfersSearchParams {
   facilities?: string;
   status?: string;
 }
+
+export interface TransferFormData {
+  [key: string]: string | number | undefined | string[];
+  from_operator: string;
+  to_operator: string;
+  transfer_entity: string;
+  operation?: string;
+  from_operation?: string;
+  facilities?: string[];
+  to_operation?: string;
+  effective_date: string;
+}
+
+export interface Operation {
+  id: string;
+  name: string;
+}
