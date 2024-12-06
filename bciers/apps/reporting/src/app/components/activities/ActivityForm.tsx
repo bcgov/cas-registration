@@ -163,10 +163,6 @@ export default function ActivityForm({
     if (response) {
       if (canContinue) {
         setIsRedirecting(true);
-        setTimeout(() => {
-          setCanContinue(false);
-          setIsRedirecting(false);
-        }, 3000);
         router.push(createUrl(true));
       } else {
         setIsSuccess(true);
