@@ -48,17 +48,18 @@ interface FormData {
 // 🛠️ Function to calculate category products allocation sum and set total sum in products_emission_allocation_sum
 const calculateEmissionData = (category: EmissionAllocationData) => {
   const sum = category.products.reduce(
-    (total, product) => total + (product.allocated_quantity || 0),
+    (total, product) =>
+      total + (parseFloat(product.allocated_quantity.toString()) || 0),
     0,
   );
 
-  // Convert emission_total to a number and ensure it's valid
   const emissionTotal = Number(category.emission_total) || 1;
-
   const percentage = (sum / emissionTotal) * 100;
+
   return {
     ...category,
     products_emission_allocation_sum: `${percentage.toFixed(2)}%`,
+    emission_total: category.emission_total.toString(),
   };
 };
 
@@ -160,7 +161,7 @@ export default function FacilityEmissionAllocationForm({
 
             return {
               ...product,
-              allocated_quantity: parseFloat(allocatedQuantity.toFixed(4)),
+              allocated_quantity: String(allocatedQuantity),
             };
           }),
         }))
@@ -173,8 +174,10 @@ export default function FacilityEmissionAllocationForm({
         updatedFormData.total_emission_allocations.products.map(
           (product: { product_id: number }) => ({
             ...product,
-            allocated_quantity: parseFloat(
-              (productAllocations[product.product_id] || 0).toFixed(4),
+            allocated_quantity: String(
+              parseFloat(
+                (productAllocations[product.product_id] || 0).toFixed(4),
+              ),
             ),
           }),
         );
@@ -182,7 +185,7 @@ export default function FacilityEmissionAllocationForm({
 
     // Validate the updated form data and set an error message if validation fails
     if (!validateEmissions(updatedFormData)) {
-      errorMessage = "Mismatch in allocated emissions.";
+      errorMessage = errorMismatch;
     }
 
     // Update the form data state
