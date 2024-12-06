@@ -607,46 +607,48 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should not allow non-directors to issue BORO and BCGHG IDs", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
+    for (const appRole of ["cas_admin", "cas_analyst", "cas_view_only"]) {
+      useSession.mockReturnValue({
+        data: {
+          user: {
+            app_role: appRole,
+          },
         },
-      },
-    });
+      });
 
-    render(
-      <OperationInformationForm
-        formData={{ ...formData, status: OperationStatus.REGISTERED }}
-        schema={{
-          type: "object",
-          properties: {
-            section1: {
-              title: "Section 1",
-              type: "object",
-              properties: {
-                bc_obps_regulated_operation: {
-                  type: "string",
-                  title: "BORO ID",
-                },
-                bcghg_id: {
-                  type: "string",
-                  title: "BCGHGID",
+      render(
+        <OperationInformationForm
+          formData={{ ...formData, status: OperationStatus.REGISTERED }}
+          schema={{
+            type: "object",
+            properties: {
+              section1: {
+                title: "Section 1",
+                type: "object",
+                properties: {
+                  bc_obps_regulated_operation: {
+                    type: "string",
+                    title: "BORO ID",
+                  },
+                  bcghg_id: {
+                    type: "string",
+                    title: "BCGHGID",
+                  },
                 },
               },
             },
-          },
-        }}
-        operationId={operationId}
-      />,
-    );
+          }}
+          operationId={operationId}
+        />,
+      );
 
-    expect(
-      screen.queryByRole("button", { name: `＋ Issue BORO ID` }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: `＋ Issue BCGHG ID` }),
-    ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: `＋ Issue BORO ID` }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: `＋ Issue BCGHG ID` }),
+      ).not.toBeInTheDocument();
+    }
   });
 
   it("should render the new entrant application information if purpose is new entrant", async () => {
