@@ -113,15 +113,14 @@ class TestEndpointPermissions(TestCase):
                 "method": "get",
                 "endpoint_name": "load_report_activity_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
-            },            
+            },
             {
                 "method": "get",
                 "endpoint_name": "register_get_operation_information",
                 "kwargs": {"operation_id": mock_uuid},
-            },    
+            },
             {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
             {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
-     
             {"method": "get", "endpoint_name": "get_report_attachments", "kwargs": {"report_version_id": mock_int}},
             {
                 "method": "get",
