@@ -5,10 +5,10 @@ import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { TransferRow } from "./types";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
-import fetchTransfersPageData from "./fetchTransferEventsPageData";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import transferColumns from "@/registration/app/components/datagrid/models/transfers/transferColumns";
 import transferGroupColumns from "@/registration/app/components/datagrid/models/transfers/transferGroupColumns";
+import fetchTransferEventsPageData from "@/registration/app/components/transfers/fetchTransferEventsPageData";
 
 const TransfersActionCell = ActionCellFactory({
   generateHref: (params: GridRenderCellParams) => {
@@ -45,7 +45,7 @@ const TransfersDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchTransfersPageData}
+      fetchPageData={fetchTransferEventsPageData}
       paginationMode="server"
       initialData={initialData}
     />
