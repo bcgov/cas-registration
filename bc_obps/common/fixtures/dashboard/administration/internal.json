@@ -2,7 +2,7 @@
   {
     "model": "common.dashboarddata",
     "fields": {
-      "name": "Internal Analyst Administration Dashboard",
+      "name": "Internal Administration Dashboard",
       "data": {
         "dashboard": "administration",
         "access_roles": [
