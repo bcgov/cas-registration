@@ -47,3 +47,12 @@ class RlsPolicy:
         if self.check_statement:
             execute_string += f' with check {self.check_statement}'
         cursor.execute(execute_string)
+
+
+class M2mRls:
+    def __init__(self, enable_rls, table, grants, policies, schema="erc"):  # type: ignore
+        self.enable_rls = enable_rls
+        self.table = table
+        self.grants = grants
+        self.policies = policies
+        self.schema = schema
