@@ -37,12 +37,6 @@ class ReportProductEmissionAllocationSchemaOut(Schema):
     allocated_quantity: Decimal
 
 
-class ReportProductEmissionAllocationSchemaaout:
-    product_id: int
-    product_name: str
-    allocated_quantity: Decimal
-
-
 class ReportFacilityEmissionsSchemaOut(Schema):
     emission_category: str
     category_type: str
