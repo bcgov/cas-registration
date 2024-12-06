@@ -8,6 +8,12 @@ from simple_history.models import HistoricalRecords
 
 
 class OperationDesignatedOperatorTimeline(TimeStampedModel):
+    class Statuses(models.TextChoices):
+        ACTIVE = "Active"
+        TRANSFERRED = "Transferred"
+        CLOSED = "Closed"
+        TEMPORARILY_SHUTDOWN = "Temporarily Shutdown"
+
     operation = models.ForeignKey(Operation, on_delete=models.PROTECT, related_name="designated_operators")
     operator = models.ForeignKey(Operator, on_delete=models.PROTECT, related_name="operation_designated_operators")
     start_date = models.DateTimeField(
@@ -17,6 +23,12 @@ class OperationDesignatedOperatorTimeline(TimeStampedModel):
     )
     end_date = models.DateTimeField(
         blank=True, null=True, db_comment="The date the operator ended being the designated operator of the operation"
+    )
+    status = models.CharField(
+        max_length=1000,
+        choices=Statuses.choices,
+        default=Statuses.ACTIVE,
+        db_comment="The status of an operation in relation to a specific operator (e.g. if an operation has transferred ownership, it may have a status of Transferred with its old operator and Active with its new one)",
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_designated_operator_timeline_history',
