@@ -2,12 +2,19 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import MultiStepAccordion from "@bciers/components/form/MultiStepAccordion";
+import ComponentAccordion from "@bciers/components/form/ComponentAccordion";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/src/enums";
 import UserOperatorReview from "./UserOperatorReview";
-import { userOperatorInternalUserUiSchema } from "../../data/jsonSchema/userOperator";
+import {
+  userOperatorInternalUserSchema,
+  userOperatorInternalUserUiSchema,
+  userOperatorUserInformationPage2,
+} from "../../data/jsonSchema/userOperator";
+import OperatorForm from "../operators/OperatorForm";
+import { operatorSchema } from "../../data/jsonSchema/operator";
+import FormBase from "@bciers/components/form/FormBase";
 
 interface Props {
   formData: UserOperatorFormData;
@@ -27,25 +34,45 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
   const [isOperatorDeclined, setIsOperatorDeclined] = useState(
     isOperatorStatusDeclined,
   );
-  console.log("schema", schema);
   return (
-    <MultiStepAccordion
-      schema={schema}
-      uiSchema={userOperatorInternalUserUiSchema}
-      formData={formData}
-      // Add Review components to the beforeForm prop
-      beforeForm={{
-        "Admin Information": !isOperatorDeclined && (
-          <UserOperatorReview
-            key={rerenderKey}
-            userOperator={formData as UserOperatorFormData}
-            userOperatorId={userOperatorId as string}
-            operatorId={formData?.operator_id}
-            showRequestChanges={false}
-          />
-        ),
-      }}
-      // If the operator is new, the first section should be expanded
+    <ComponentAccordion
+      content={[
+        {
+          title: "Operation Information",
+          component: (
+            <OperatorForm
+              showTasklist={false}
+              schema={operatorSchema}
+              formData={formData}
+              isCreating={false}
+              isInternalUser={true}
+            />
+          ),
+        },
+        {
+          title: "Admin Information",
+          component: (
+            <>
+              <UserOperatorReview
+                key={rerenderKey}
+                userOperator={formData as UserOperatorFormData}
+                userOperatorId={userOperatorId as string}
+                operatorId={formData?.operator_id}
+                showRequestChanges={false}
+              />
+              <FormBase
+                schema={userOperatorUserInformationPage2}
+                uiSchema={userOperatorInternalUserUiSchema}
+                formData={formData}
+                disabled
+                // Pass children as prop so RJSF doesn't render submit button
+                // eslint-disable-next-line react/no-children-prop
+                children
+              />
+            </>
+          ),
+        },
+      ]} // If the operator is new, the first section should be expanded
       // If the user is pending, the second section should be expanded
       expandedSteps={{
         "Operator Information": isNewOperator,
