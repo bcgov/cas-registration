@@ -14,6 +14,10 @@ def irc_app_role_data(apps, schema_monitor):
         role_name='cas_director',
         role_description='Director user from the BC Government.',
     )
+    AppRole.objects.create(
+        role_name='cas_view_only',
+        role_description='User from the BC Government that only had readonly access to the app.',
+    )
 
 
 def reverse_irc_app_role_data(apps, schema_monitor):
@@ -22,6 +26,7 @@ def reverse_irc_app_role_data(apps, schema_monitor):
     '''
     AppRole = apps.get_model('registration', 'AppRole')
     AppRole.objects.filter(role_name='cas_director').delete()
+    AppRole.objects.filter(role_name='cas_view_only').delete()
 
 
 class Migration(migrations.Migration):
