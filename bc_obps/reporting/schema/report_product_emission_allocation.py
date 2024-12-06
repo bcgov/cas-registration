@@ -15,32 +15,38 @@ class ReportProductEmissionAllocationSchema(ModelSchema):
         ]
 
 
-class ReportProductEmissionAllocationSchemaIn(ReportProductEmissionAllocationSchema):
+class ReportProductEmissionAllocationSchemaIn(Schema):
     report_product_id: int
-    emission_category_name: str
+    product_name: str
     allocated_quantity: Decimal
 
 
-class ReportProductEmissionAllocationsSchemaIn(ReportProductEmissionAllocationSchema):
+class EmissionCategoryAllocationsSchemaIn(Schema):
+    emission_category_name: str
+    emission_total: Decimal  # should probably be removed. only need it for validation, and should get that value from the backend
+    products: List[ReportProductEmissionAllocationSchemaIn]
+
+
+class ReportProductEmissionAllocationsSchemaIn(Schema):
     """
     Schema for the save report product emission allocations endpoint request input
     """
 
-    report_product_emission_allocations: List[ReportProductEmissionAllocationSchemaIn]
+    report_product_emission_allocations: list[EmissionCategoryAllocationsSchemaIn]
     allocation_methodology: str
     allocation_other_methodology_description: str
 
 
 class ReportProductEmissionAllocationSchemaOut(Schema):
-    product_id: int
+    report_product_id: int
     product_name: str
-    allocated_quantity: Decimal
+    allocated_quantity: Decimal | int
 
 
 class ReportFacilityEmissionsSchemaOut(Schema):
     emission_category: str
     category_type: str
-    emission_total: Decimal
+    emission_total: Decimal | int
     products: List[ReportProductEmissionAllocationSchemaOut]
 
 
@@ -50,7 +56,7 @@ class ReportProductEmissionAllocationsSchemaOut(Schema):
     """
 
     report_product_emission_allocations: List[ReportFacilityEmissionsSchemaOut]
-    facility_total_emissions: Decimal
+    facility_total_emissions: Decimal | int
     report_product_emission_allocation_totals: List[ReportProductEmissionAllocationSchemaOut]
     allocation_methodology: str
     allocation_other_methodology_description: str
