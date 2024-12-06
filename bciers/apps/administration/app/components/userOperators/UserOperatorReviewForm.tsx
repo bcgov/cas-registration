@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { userOperatorInternalUserUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import MultiStepAccordion from "@bciers/components/form/MultiStepAccordion";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/src/enums";
 import UserOperatorReview from "./UserOperatorReview";
+import { userOperatorInternalUserUiSchema } from "../../data/jsonSchema/userOperator";
 
 interface Props {
   formData: UserOperatorFormData;
@@ -31,11 +31,11 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
   return (
     <MultiStepAccordion
       schema={schema}
-      // uiSchema={userOperatorInternalUserUiSchema}
+      uiSchema={userOperatorInternalUserUiSchema}
       formData={formData}
       // Add Review components to the beforeForm prop
       beforeForm={{
-        "User Information": !isOperatorDeclined && (
+        "Admin Information": !isOperatorDeclined && (
           <UserOperatorReview
             key={rerenderKey}
             userOperator={formData as UserOperatorFormData}
@@ -49,7 +49,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
       // If the user is pending, the second section should be expanded
       expandedSteps={{
         "Operator Information": isNewOperator,
-        "User Information": isUserOperatorPending && !isOperatorDeclined,
+        "Admin Information": isUserOperatorPending && !isOperatorDeclined,
       }}
     />
   );

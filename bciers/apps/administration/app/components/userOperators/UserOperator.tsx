@@ -89,7 +89,6 @@ export default async function UserOperator({
 
   return (
     <>
-      im in UserOperator component
       <UserOperatorReviewForm
         schema={userOperatorInternalUserSchema}
         formData={formData}
