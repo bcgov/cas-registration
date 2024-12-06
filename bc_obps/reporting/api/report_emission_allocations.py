@@ -1,17 +1,16 @@
 from typing import Literal
 from uuid import UUID
+from common.api.utils.current_user_utils import get_current_user_guid
+from common.permissions import authorize
 from reporting.schema.report_product_emission_allocation import (
-    ReportProductEmissionAllocationSchemaIn,
+    ReportProductEmissionAllocationsSchemaIn,
     ReportProductEmissionAllocationsSchemaOut,
 )
 from registration.decorators import handle_http_errors
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from common.permissions import authorize
 from django.http import HttpRequest
 from reporting.schema.generic import Message
-from common.api.utils.current_user_utils import get_current_user_guid
 from .router import router
-from typing import List
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
 
@@ -45,13 +44,14 @@ def save_emission_allocation_data(
     request: HttpRequest,
     report_version_id: int,
     facility_id: UUID,
-    payload: List[ReportProductEmissionAllocationSchemaIn],
+    payload: ReportProductEmissionAllocationsSchemaIn,
 ) -> Literal[200]:
 
-    emission_allocation_data_dicts = [item.dict() for item in payload]
-
     ReportEmissionAllocationService.save_emission_allocation_data(
-        report_version_id, facility_id, emission_allocation_data_dicts, get_current_user_guid(request)
+        report_version_id,
+        facility_id,
+        payload,
+        get_current_user_guid(request),
     )
 
     return 200
