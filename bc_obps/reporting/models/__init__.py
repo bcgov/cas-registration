@@ -70,5 +70,5 @@ __all__ = [
     "ReportAttachment",
     "NaicsRegulatoryValue",
     "ProductEmissionIntensity",
-    "ReportProductEmissionAllocation"
+    "ReportProductEmissionAllocation",
 ]

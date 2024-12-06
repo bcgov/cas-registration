@@ -20,4 +20,3 @@ from .report_facilities import get_report_facility_list_by_version_id
 from .report_verification import get_report_verification_by_version_id, save_report_verification
 from .report_attachments import save_report_attachments, get_report_attachments
 from .report_emission_allocations import get_emission_allocations, save_emission_allocation_data
-
