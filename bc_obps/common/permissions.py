@@ -123,6 +123,9 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
         "v1_authorized_irc_user_and_industry_admin_user_write": {
             'authorized_app_roles': ["cas_admin", "cas_analyst", "industry_user"],
             'authorized_user_operator_roles': ["admin"],
+        "cas_analyst": {
+            'authorized_app_roles': ["cas_analyst"],
+        },
         },
     }
     cache.set(PERMISSION_CONFIGS_CACHE_KEY, permission_configs, timeout=3600)  # 1 hour
@@ -155,6 +158,7 @@ def authorize(
         "authorized_irc_user_and_industry_admin_user",
         "v1_authorized_irc_user_write",
         "v1_authorized_irc_user_and_industry_admin_user_write",
+        "cas_analyst",
     ]
 ) -> Callable[[HttpRequest], bool]:
     """
