@@ -59,14 +59,14 @@ export default function ActivityForm({
 
   const { activityId, sourceTypeMap } = activityData;
 
-  const arrayEquals = (a: string[], b: string[]) => {
-    a = a.sort();
-    b = b.sort();
+  const arrayEquals = (x: string[], y: string[]) => {
+    x = x.sort((a, b) => a.localeCompare(b));
+    y = y.sort((a, b) => a.localeCompare(b));
     return (
-      Array.isArray(a) &&
-      Array.isArray(b) &&
-      a.length === b.length &&
-      a.every((val, index) => val === b[index])
+      Array.isArray(x) &&
+      Array.isArray(y) &&
+      x.length === y.length &&
+      x.every((val, index) => val === y[index])
     );
   };
 
@@ -79,8 +79,9 @@ export default function ActivityForm({
   const validator = customizeValidator({});
 
   const fetchSchemaData = async (sourceTypeIds: string[]) => {
-    let sourceTypeQueryString = "";
-    sourceTypeIds.map((id) => `&source_types[]=${id}`).join();
+    const sourceTypeQueryString = sourceTypeIds
+      .map((id) => `&source_types[]=${id}`)
+      .join();
     const schema = await actionHandler(
       `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}${sourceTypeQueryString}`,
       "GET",
