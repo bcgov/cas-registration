@@ -5,6 +5,7 @@ class RlsRoles:
     CAS_ANALYST = "cas_analyst"
     CAS_PENDING = "cas_pending"
     CAS_VIEW_ONLY = "cas_view_only"
+    ALL_ROLES = 'industry_user, cas_director, cas_admin, cas_analyst, cas_pending, cas_view_only'
 
 
 class RlsOperations:

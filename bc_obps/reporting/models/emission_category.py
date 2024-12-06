@@ -28,6 +28,8 @@ class EmissionCategory(BaseModel):
         db_table = 'erc"."emission_category'
 
     class Rls:
+        schema = 'erc'
+        table = 'emission_category'
         enable_rls = True
         has_m2m = False
         grants = [

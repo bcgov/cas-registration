@@ -3,6 +3,8 @@ import re
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.apps import apps
+from django.db import connection
+from rls.utils import RlsRoles
 
 
 class Command(BaseCommand):
@@ -99,3 +101,20 @@ class Command(BaseCommand):
         """
         migration_files.sort(key=lambda x: tuple(map(int, re.findall(r'\d+', x))))
         return migration_files[-1]
+
+    def revoke_all_privileges(self):
+        with connection.cursor() as cursor:
+            cursor.execute(f'drop owned by {RlsRoles.ALL_ROLES}')
+            cursor.execute(f'grant usage on schema erc to {RlsRoles.ALL_ROLES}')
+
+    def apply_rls(self):
+        for key in apps.all_models['reporting']:
+            if key == 'emissioncategory':
+                rls = apps.all_models['reporting'][key].Rls
+                with connection.cursor() as cursor:
+                    for grant in rls.grants:
+                        grant.apply_grant(cursor)
+                    if rls.enable_rls:
+                        cursor.execute(f'alter table {rls.schema}.{rls.table} enable row level security')
+                        for policy in rls.policies:
+                            policy.apply_policy(cursor)
