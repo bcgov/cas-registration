@@ -1,7 +1,6 @@
 import { actionHandler } from "@bciers/actions";
 import { Suspense } from "react";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
-import { defaultEmtpySourceTypeMap } from "./uiSchemas/schemaMaps";
 import ActivityForm from "./ActivityForm";
 import { UUID } from "crypto";
 import Loading from "@bciers/components/loading/SkeletonForm";
@@ -48,9 +47,6 @@ export default async function ActivityInit({
     currentActivity.id,
   );
 
-  const defaultEmptySourceTypeState =
-    defaultEmtpySourceTypeMap[currentActivity.slug];
-
   const taskListData = getFacilitiesInformationTaskList(
     versionId,
     facilityId,
@@ -63,6 +59,27 @@ export default async function ActivityInit({
   if (currentActivityTaskListElement)
     currentActivityTaskListElement.isActive = true;
 
+  // Determine which source types (if any) are selected in the loaded formData & fetch the jsonSchema accordingly
+  const sourceTypeIds = [];
+  let sourceTypeQueryString = "";
+  for (const [k, v] of Object.entries(activityDataObject.sourceTypeMap)) {
+    if (formData[`${v}`]) {
+      sourceTypeIds.push(k);
+      sourceTypeQueryString += `&source_types[]=${k}`;
+    }
+  }
+
+  const fetchSchema = async () => {
+    const schema = await actionHandler(
+      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}${sourceTypeQueryString}`,
+      "GET",
+      "",
+    );
+    return schema;
+  };
+
+  const jsonSchema = await fetchSchema();
+
   return (
     <Suspense fallback={<Loading />}>
       <ActivityForm
@@ -70,9 +87,10 @@ export default async function ActivityInit({
         activityFormData={formData}
         currentActivity={currentActivity}
         taskListData={taskListData}
-        defaultEmptySourceTypeState={defaultEmptySourceTypeState}
         reportVersionId={versionId}
         facilityId={facilityId}
+        initialJsonSchema={safeJsonParse(jsonSchema).schema}
+        initialSelectedSourceTypeIds={sourceTypeIds}
       />
     </Suspense>
   );

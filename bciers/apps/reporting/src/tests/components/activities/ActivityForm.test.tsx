@@ -1,9 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
-import { actionHandler } from "@bciers/testConfig/mocks";
 
-type EmptyWithUnits = { units: [{ fuels: [{ emissions: [{}] }] }] };
 // Mock data
 const mockActivityData = {
   activityId: 1,
@@ -13,12 +11,9 @@ const mockActivityData = {
   },
 };
 
-const mockReportDate = "2024-01-01";
 const mockUUID = " 00000000-0000-0000-0000-000000000001";
 
-const mockdefaultSourceType = { units: [{ fuels: [{ emissions: [{}] }] }] };
-
-const response = {
+const activitySchema = {
   schema: {
     type: "object",
     title: "General stationary combustion excluding line tracing",
@@ -43,7 +38,6 @@ describe("ActivityForm component", () => {
   });
 
   it("renders the activity schema", async () => {
-    actionHandler.mockReturnValueOnce(JSON.stringify(response));
     render(
       <ActivityForm
         activityData={mockActivityData}
@@ -53,10 +47,11 @@ describe("ActivityForm component", () => {
           slug: "gsc_excluding_line_tracing",
         }}
         taskListData={[]}
-        reportDate={mockReportDate}
-        defaultEmptySourceTypeState={mockdefaultSourceType as EmptyWithUnits}
+        activityFormData={{}}
+        initialJsonSchema={activitySchema}
         reportVersionId={1}
         facilityId={mockUUID}
+        initialSelectedSourceTypeIds={[]}
       />,
     );
     await act(async () => {
@@ -64,11 +59,11 @@ describe("ActivityForm component", () => {
     });
 
     // Check if the source type booleans are rendered
-    expect(screen.getAllByText(/First Test Source Type Title/i).length).toBe(2);
-    expect(screen.getAllByText(/Second Title/i).length).toBe(2);
+    expect(screen.getAllByText(/First Test Source Type Title/i).length).toBe(1);
+    expect(screen.getAllByText(/Second Title/i).length).toBe(1);
   });
   it("renders the sourceType schema", async () => {
-    const response2 = {
+    const sourceTypeSchema = {
       schema: {
         type: "object",
         title: "General stationary combustion excluding line tracing",
@@ -102,7 +97,6 @@ describe("ActivityForm component", () => {
         },
       },
     };
-    actionHandler.mockReturnValueOnce(JSON.stringify(response2));
     render(
       <ActivityForm
         activityData={mockActivityData}
@@ -112,10 +106,11 @@ describe("ActivityForm component", () => {
           slug: "gsc_excluding_line_tracing",
         }}
         taskListData={[]}
-        reportDate={mockReportDate}
-        defaultEmptySourceTypeState={mockdefaultSourceType as EmptyWithUnits}
+        activityFormData={{}}
+        initialJsonSchema={sourceTypeSchema}
         reportVersionId={1}
         facilityId={mockUUID}
+        initialSelectedSourceTypeIds={[]}
       />,
     );
     await act(async () => {
@@ -123,7 +118,7 @@ describe("ActivityForm component", () => {
     });
 
     // Check if the units array within the source type schema is rendered
-    expect(screen.getAllByText(/Unit/i).length).toBe(1);
+    expect(screen.getAllByText(/test field/i).length).toBe(1);
   });
 
   // Will need additional tests once we're passing formData into this component & saving formData out of it

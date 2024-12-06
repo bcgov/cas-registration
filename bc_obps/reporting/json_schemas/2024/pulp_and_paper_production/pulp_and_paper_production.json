@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Emissions",
+  "default": { "emissions": [{}] },
   "properties": {
     "emissions": {
       "type": "array",
