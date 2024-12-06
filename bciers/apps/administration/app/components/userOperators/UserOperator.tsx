@@ -20,7 +20,7 @@ export async function getUserOperatorFormData(id: string) {
   if (!id || !isValidUUID(id)) return {};
   return actionHandler(
     // brianna
-    `registration/v1/user-operators/${id}`,
+    `registration/user-operators/${id}`,
     "GET",
     `/user-operator/${id}`,
   );
