@@ -63,6 +63,7 @@ class UserOperatorServiceV2:
             business_structure=payload.business_structure,  # type: ignore[misc] # we use field validator which returns a BusinessStructure object
             # set as approved
             status=Operator.Statuses.APPROVED,
+            is_new=False,
         )
         operator: Operator = cls.save_operator(payload, operator_instance, user_guid)
 
