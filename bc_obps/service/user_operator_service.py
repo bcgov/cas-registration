@@ -231,7 +231,6 @@ class UserOperatorService:
 
         # We can't update the status of a user_operator if the operator has been declined or is awaiting review, or if the operator is new
         if operator.status == Operator.Statuses.DECLINED or operator.is_new:
-            # brianna approval is going to be automatic in reg2
             raise Exception("Operator must be approved before approving or declining users.")
 
         user_operator.status = updated_data.status  # type: ignore[attr-defined]

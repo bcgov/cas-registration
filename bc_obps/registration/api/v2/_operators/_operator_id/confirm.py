@@ -3,7 +3,6 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
-from registration.schema.v2.operator import OperatorOut
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.decorators import handle_http_errors
 from registration.api.router import router
@@ -16,8 +15,8 @@ from registration.schema.generic import Message
 
 
 @router.get(
-    "/operators/{uuid:operator_id}",
-    response={200: OperatorOut, custom_codes_4xx: Message},
+    "/operators/{uuid:operator_id}/confirm",
+    response={200: ConfirmSelectedOperatorOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
     description="""Retrieves information about a specific operator by its ID.
     This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.""",

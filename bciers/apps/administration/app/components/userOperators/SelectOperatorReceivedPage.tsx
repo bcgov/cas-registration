@@ -11,10 +11,8 @@ export default async function SelectOperatorReceivedPage({
   id,
 }: Readonly<{ step: string; id?: UUID }>) {
   if (id) {
-    const operator: Operator | { error: string } = await getOperator(
-      id,
-      `/select-operator/confirm/${id}`,
-    );
+    const operator: Operator | { error: string } =
+      await getOperatorConfirmationInfo(id, `/select-operator/confirm/${id}`);
     const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(id);
 
     if (
