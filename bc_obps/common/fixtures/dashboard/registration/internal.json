@@ -2,7 +2,7 @@
   {
     "model": "common.dashboarddata",
     "fields": {
-      "name": "Internal Analyst Registration Dashboard",
+      "name": "Internal Registration Dashboard",
       "data": {
         "dashboard": "registration",
         "access_roles": [
