@@ -34,7 +34,6 @@ admin.site.register(Address)
 admin.site.register(BcObpsRegulatedOperation)
 admin.site.register(ClosureEvent)
 admin.site.register(TemporaryShutdownEvent)
-admin.site.register(TransferEvent)
 admin.site.register(RestartEvent)
 
 
@@ -87,6 +86,7 @@ class FacilityDesignatedOperationTimelineAdmin(admin.ModelAdmin):
 class OperationDesignatedOperatorTimelineAdmin(admin.ModelAdmin):
     list_display = (
         'id',
+        'status',
         'operation',
         'operator',
         'start_date',
@@ -125,3 +125,37 @@ class UserOperatorAdmin(admin.ModelAdmin):
     @staticmethod
     def operator_legal_name(obj: UserOperator) -> str:
         return obj.operator.legal_name
+
+
+@admin.register(TransferEvent)
+class TransferEventAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'status',
+        'from_operator_name',
+        'to_operation_name',
+        'operation_name',
+        'from_operation_name',
+        'to_operator_name',
+        'effective_date',
+    )
+
+    @staticmethod
+    def to_operator_name(obj: TransferEvent) -> str:
+        return obj.to_operator.legal_name
+
+    @staticmethod
+    def from_operator_name(obj: TransferEvent) -> str:
+        return obj.from_operator.legal_name
+
+    @staticmethod
+    def operation_name(obj: TransferEvent) -> str:
+        return obj.operation.name if obj.operation else 'N/A'
+
+    @staticmethod
+    def from_operation_name(obj: TransferEvent) -> str:
+        return obj.from_operation.name if obj.from_operation else 'N/A'
+
+    @staticmethod
+    def to_operation_name(obj: TransferEvent) -> str:
+        return obj.to_operation.name if obj.to_operation else 'N/A'
