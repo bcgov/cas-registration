@@ -2,7 +2,7 @@
 // eg: buildQueryParams({ page: "1", search: "search" }) => "?page=1&search=search"
 
 const buildQueryParams = (params: {
-  [key: string]: string | number | undefined;
+  [key: string]: string | number | undefined | boolean;
 }) => {
   if (!params) return "";
   const query = Object.entries(params)
