@@ -21,6 +21,7 @@ from registration.models import (
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from rls.utils import RlsRoles, RlsOperations, RlsGrant, RlsPolicy, M2mRls
 
 
 class Operation(TimeStampedModel):
@@ -303,4 +304,65 @@ class Operation(TimeStampedModel):
             Operation.Purposes.OBPS_REGULATED_OPERATION,
             Operation.Purposes.NEW_ENTRANT_OPERATION,
             Operation.Purposes.OPTED_IN_OPERATION,
+        ]
+
+    class Rls:
+        schema = 'erc'
+        table = 'operation'
+        enable_rls = True
+        has_m2m = True
+        grants = [
+            RlsGrant(role=RlsRoles.INDUSTRY_USER, grants=[RlsOperations.SELECT], table="operation"),
+            RlsGrant(role=RlsRoles.CAS_ADMIN, grants=[RlsOperations.SELECT, RlsOperations.INSERT], table="operation"),
+        ]
+        policies = [
+            RlsPolicy(
+                role=RlsRoles.INDUSTRY_USER,
+                policy_name="operation_industry_select",
+                operation=RlsOperations.SELECT,
+                using_statement="""(
+                    operator_id in (
+                      select o.id from erc.operator o
+                      join erc.user_operator uo
+                      on o.id = uo.operator_id
+                      and uo.user_id = current_setting('my.guid', true)::uuid
+                      and uo.status = 'Approved'
+                      and uo.role = 'admin'
+                    )
+                )""",
+                check_statement=False,
+                table="operation",
+            )
+        ]
+        m2m_rls = [
+            M2mRls(
+                table='operation_regulated_products',
+                enable_rls=True,
+                grants=[
+                    RlsGrant(
+                        role=RlsRoles.INDUSTRY_USER, grants=[RlsOperations.SELECT], table='operation_regulated_products'
+                    )
+                ],
+                policies=[
+                    RlsPolicy(
+                        role=RlsRoles.INDUSTRY_USER,
+                        policy_name="operation_regulated_products",
+                        operation=RlsOperations.SELECT,
+                        using_statement="""(
+                        operation_id in (
+                          select op.id from erc.operation op
+                          join erc.operator o
+                          on op.operator_id = o.id
+                          join erc.user_operator uo
+                          on o.id = uo.operator_id
+                          and uo.user_id = current_setting('my.guid', true)::uuid
+                          and uo.status = 'Approved'
+                          and uo.role = 'admin'
+                        )
+                      )""",
+                        check_statement=False,
+                        table="operation_regulated_products",
+                    )
+                ],
+            )
         ]
