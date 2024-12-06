@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from rls.utils import RlsRoles, RlsOperations, RlsGrant, RlsPolicy
 
 
 class EmissionCategory(BaseModel):
@@ -25,3 +26,23 @@ class EmissionCategory(BaseModel):
             "This table contains the set of emission categories that greenhouse gas emissions can be counted under."
         )
         db_table = 'erc"."emission_category'
+
+    class Rls:
+        enable_rls = True
+        has_m2m = False
+        grants = [
+            RlsGrant(role=RlsRoles.INDUSTRY_USER, grants=[RlsOperations.SELECT], table="emission_category"),
+            RlsGrant(
+                role=RlsRoles.CAS_ADMIN, grants=[RlsOperations.SELECT, RlsOperations.INSERT], table="emission_category"
+            ),
+        ]
+        policies = [
+            RlsPolicy(
+                role=RlsRoles.INDUSTRY_USER,
+                policy_name="emission_category_industry_select",
+                operation=RlsOperations.SELECT,
+                using_statement="(id < 4)",
+                check_statement=False,
+                table="emission_category",
+            )
+        ]
