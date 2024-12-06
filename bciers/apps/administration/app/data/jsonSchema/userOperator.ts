@@ -26,11 +26,6 @@ export const userOperatorPage1: RJSFSchema = {
     ...operatorSchema.properties.section2.properties,
     ...operatorSchema.properties.section3.properties
   },
-  dependencies: {
-    ...operatorSchema.properties.section1.dependencies,
-    ...operatorSchema.properties.section2.dependencies,
-    ...operatorSchema.properties.section3.dependencies,
-  }
   
 };
 
