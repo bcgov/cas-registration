@@ -35,7 +35,7 @@ interface EmissionAllocationData {
   products: Product[];
 }
 
-interface FacilityEmissionAllocationFormData {
+interface FormData {
   report_product_emission_allocations: EmissionAllocationData[];
   basic_emission_allocation_data: EmissionAllocationData[];
   fuel_excluded_emission_allocation_data: EmissionAllocationData[];
@@ -52,8 +52,8 @@ const calculateEmissionData = (category: EmissionAllocationData) => {
     0,
   );
 
-  // Ensure emission_total is not zero
-  const emissionTotal = category.emission_total || 1; // Default to 1 to avoid division by zero
+  // Avoid division by zero
+  const emissionTotal = category.emission_total || 1;
 
   const percentage = (sum / emissionTotal) * 100;
   return {
@@ -62,23 +62,23 @@ const calculateEmissionData = (category: EmissionAllocationData) => {
   };
 };
 
-//🛠️ Function to  validate emissions
-const validateEmissions = (
-  formData: FacilityEmissionAllocationFormData,
-): boolean => {
+// 🛠️ Function to validate that emissions totals equal emissions allocations
+const validateEmissions = (formData: FormData): boolean => {
   const combinedEmissionAllocationData = [
     ...formData.basic_emission_allocation_data,
     ...formData.fuel_excluded_emission_allocation_data,
   ];
-  return combinedEmissionAllocationData.every((facility) => {
-    const sum = facility.products.reduce(
-      (total, product) => total + (product.allocated_quantity || 0),
+
+  return combinedEmissionAllocationData.every((allocation) => {
+    const sum = allocation.products.reduce(
+      (total, product) =>
+        total + (parseFloat(product.allocated_quantity.toString()) || 0),
       0,
     );
-    return (
-      parseFloat(sum.toFixed(4)) ===
-      parseFloat(facility.emission_total.toFixed(4))
-    );
+
+    const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
+
+    return parseFloat(sum.toFixed(4)) === parseFloat(emissionTotal.toFixed(4));
   });
 };
 
@@ -107,7 +107,8 @@ export default function FacilityEmissionAllocationForm({
   }));
 
   // 🛑 State for submit button disable
-  const errorMismatch = "Mismatch in allocated emissions.";
+  const errorMismatch =
+    "Please allocated emissions to match allocation totals.";
   const [error, setError] = useState<string | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
