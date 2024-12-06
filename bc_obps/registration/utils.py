@@ -71,6 +71,8 @@ def generate_useful_error(error: ValidationError) -> Optional[str]:
     NOTE: this only returns the first error message until we can figure out a better way to handle multiple errors in the client side.
     """
     for key, value in error.message_dict.items():
+        if key == '__all__':  # ignore adding formatted key for general error message like constraints
+            return value[0]  # Return the general error message directly
         formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
         return f"{formatted_key}: {value[0]}"
     return None
