@@ -161,8 +161,9 @@ const DynamicLabelTotalProductAllocation: React.FC<FieldTemplateProps> = ({
 export const emissionAllocationSchema: RJSFSchema = {
   type: "object",
   title: "Allocation of Emissions",
+  required: ["allocation_methodology"],
   properties: {
-    methodology: {
+    allocation_methodology: {
       type: "string",
       title: "Methodology",
       enum: ["Calculator", "Other"],
@@ -194,7 +195,7 @@ export const emissionAllocationSchema: RJSFSchema = {
       title: "Totals in tCO2e",
       properties: {
         facility_total_emissions: {
-          type: "number",
+          type: "string",
           title: "Total emissions attributable for reporting",
         },
         products: {
@@ -207,7 +208,7 @@ export const emissionAllocationSchema: RJSFSchema = {
                 type: "string",
               },
               allocated_quantity: {
-                type: "number",
+                type: "string",
               },
             },
           },
@@ -216,23 +217,23 @@ export const emissionAllocationSchema: RJSFSchema = {
     },
   },
   dependencies: {
-    methodology: {
+    allocation_methodology: {
       oneOf: [
         {
           properties: {
-            methodology: {
+            allocation_methodology: {
               enum: ["Other"],
             },
-            other_methodology_description: {
+            allocation_other_methodology_description: {
               type: "string",
-              title: "Details about the methodology",
+              title: "Details about the allocation methodology",
             },
           },
-          required: ["other_methodology_description"], // Required if 'Other' is selected
+          required: ["allocation_other_methodology_description"], // Required if 'Other' is selected
         },
         {
           properties: {
-            methodology: {
+            allocation_methodology: {
               enum: ["Calculator"],
             },
           },
@@ -250,7 +251,7 @@ export const emissionAllocationSchema: RJSFSchema = {
         },
         emission_total: {
           title: "Total Emissions",
-          type: "number",
+          type: "string",
           readOnly: true,
         },
         products: {
@@ -259,11 +260,10 @@ export const emissionAllocationSchema: RJSFSchema = {
             type: "object",
             properties: {
               product_name: {
-                title: "Product Name",
                 type: "string",
               },
               allocated_quantity: {
-                type: "number",
+                type: "string",
               },
             },
           },
@@ -286,19 +286,19 @@ export const emissionAllocationUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
-    "methodology",
-    "other_methodology_description",
+    "allocation_methodology",
+    "allocation_other_methodology_description",
     "basic_emission_allocation_data_title",
     "basic_emission_allocation_data",
     "fuel_excluded_emission_allocation_data_title",
     "fuel_excluded_emission_allocation_data",
     "total_emission_allocations",
   ],
-  methodology: {
+  allocation_methodology: {
     "ui:widget": "SelectWidget",
-    "ui:placeholder": "Select the methodology",
+    "ui:placeholder": "Select the allocation_methodology",
   },
-  other_methodology_description: {
+  allocation_other_methodology_description: {
     "ui:widget": "textarea",
   },
   basic_emission_allocation_data_title: {
