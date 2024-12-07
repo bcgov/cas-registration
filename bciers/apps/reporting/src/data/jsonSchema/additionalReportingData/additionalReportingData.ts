@@ -25,12 +25,12 @@ export const additionalReportingDataSchema: RJSFSchema = {
           oneOf: [
             {
               properties: {
-                capture_emissions: { enum: [false] },
+                capture_emissions: { const: false },
               },
             },
             {
               properties: {
-                capture_emissions: { enum: [true] },
+                capture_emissions: { const: true },
                 capture_type: {
                   type: "array",
                   title: "Capture type",
