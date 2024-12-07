@@ -8,10 +8,11 @@ import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFacto
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import userOperatorGroupColumns from "@/administration/app/components/datagrid/models/userOperators/userOperatorGroupColumns";
 import getUserOperatorsPageData from "@/administration/app/components/userOperators/getUserOperatorsPageData";
+import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const UserOperatorsActionCell = ActionCellFactory({
-  generateHref: () => {
-    return "TBD"; // Will be implemented in a future ticket by using `params: GridRenderCellParams`
+  generateHref: (params: GridRenderCellParams) => {
+    return `/operator-administrators-and-access-requests/${params.row.id}?title=Request ID: ${params.row.user_friendly_id}`;
   },
   cellText: "View Details",
 });

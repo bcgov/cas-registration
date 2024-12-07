@@ -40,6 +40,7 @@ const SingleStepTaskListForm = ({
   mode = FormMode.CREATE,
   allowEdit = true,
   formContext,
+  showTasklist = true,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -92,11 +93,13 @@ const SingleStepTaskListForm = ({
         message={FrontendMessages.SUBMIT_CONFIRMATION}
         setIsSnackbarOpen={setIsSnackbarOpen}
       />
-      <TaskList
-        // Hide the task list on mobile
-        className="hidden sm:block"
-        taskListItems={taskListItems}
-      />
+      {showTasklist && (
+        <TaskList
+          // Hide the task list on mobile
+          className="hidden sm:block"
+          taskListItems={taskListItems}
+        />
+      )}
       <div className="w-full">
         <FormBase
           formContext={formContext}
