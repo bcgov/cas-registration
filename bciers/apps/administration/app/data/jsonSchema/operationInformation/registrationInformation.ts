@@ -28,7 +28,6 @@ export const createRegistrationInformationSchema =
           })),
         },
       },
-
       dependencies: {
         registration_purpose: {
           oneOf: registrationPurposes.map((purpose: string) => {
@@ -72,6 +71,9 @@ export const registrationInformationUiSchema: UiSchema = {
     "regulated_products",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
+  registration_purpose: {
+    "ui:widget": "MultiSelectWidget",
+  },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",
