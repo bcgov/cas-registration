@@ -52,4 +52,4 @@ def get_report_additional_data_by_version_id(
     request: HttpRequest, report_version_id: int
 ) -> Tuple[Literal[200], Optional[ReportAdditionalDataOut]]:
     report_additional_data = ReportAdditionalDataService.get_report_report_additional_data(report_version_id)
-    return 200, report_additional_data  # type: ignore
+    return 200, report_additional_data
