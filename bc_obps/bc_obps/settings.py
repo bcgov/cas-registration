@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     "registration.apps.RegistrationConfig",
     "reporting.apps.ReportingConfig",
     "common.apps.CommonConfig",
+    "rls.apps.RlsConfig",
 ]
 
 
@@ -91,6 +92,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "registration.middleware.current_user_middleware.CurrentUserMiddleware",
+    "common.middleware.rls_current_user.RlsMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
