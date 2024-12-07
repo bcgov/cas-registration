@@ -114,7 +114,19 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "load_report_activity_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
             },
+            {
+                "method": "get",
+                "endpoint_name": "register_get_operation_information",
+                "kwargs": {"operation_id": mock_uuid},
+            },
+            {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
+            {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
             {"method": "get", "endpoint_name": "get_report_attachments", "kwargs": {"report_version_id": mock_int}},
+            {
+                "method": "get",
+                "endpoint_name": "get_emission_allocations",
+                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
+            },
             {"method": "post", "endpoint_name": "create_facilities"},
             {"method": "post", "endpoint_name": "create_contact"},
             {
@@ -151,12 +163,12 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "save_production_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "save_report_attachments", "kwargs": {"report_version_id": mock_int}},
             {
-                "method": "get",
-                "endpoint_name": "register_get_operation_information",
-                "kwargs": {"operation_id": mock_uuid},
+                "method": "post",
+                "endpoint_name": "save_emission_allocation_data",
+                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
             },
+            {"method": "post", "endpoint_name": "save_report_attachments", "kwargs": {"report_version_id": mock_int}},
             {
                 "method": "put",
                 "endpoint_name": "register_edit_operation_information",
@@ -191,8 +203,6 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "remove_operation_representative",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
-            {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
         ],
         "all_roles": [
             {"method": "put", "endpoint_name": "v1_update_user_profile"},
