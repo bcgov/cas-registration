@@ -15,6 +15,7 @@ import {
 import OperatorForm from "../operators/OperatorForm";
 import { operatorSchema } from "../../data/jsonSchema/operator";
 import FormBase from "@bciers/components/form/FormBase";
+import { createOperatorSchema } from "../operators/OperatorPage";
 
 interface Props {
   formData: UserOperatorFormData;
@@ -42,7 +43,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
           component: (
             <OperatorForm
               showTasklist={false}
-              schema={operatorSchema}
+              schema={createOperatorSchema(operatorSchema, businessStructures)}
               formData={formData}
               isCreating={false}
               isInternalUser={true}
