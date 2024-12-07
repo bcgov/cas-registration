@@ -45,6 +45,7 @@ describe("MultiStepFormWithTaskList", () => {
         uiSchema={uiSchema}
         formData={formData}
         onSubmit={mockOnSubmit}
+        continueUrl="www.test.com/continue"
       />,
     );
 
@@ -57,10 +58,8 @@ describe("MultiStepFormWithTaskList", () => {
     expect(screen.getByLabelText("Name")).toBeVisible();
     expect(screen.getByLabelText("Age")).toBeVisible();
 
-    // Verify save button is present
-    expect(
-      screen.getByRole("button", { name: "Save and Continue" }),
-    ).toBeVisible();
+    // Verify save button from reportingStepButton component is present
+    expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
   });
 
   it("handles form submission", async () => {
@@ -73,6 +72,7 @@ describe("MultiStepFormWithTaskList", () => {
         uiSchema={uiSchema}
         formData={formData}
         onSubmit={mockOnSubmit}
+        continueUrl="www.test.com/continue"
       />,
     );
 
@@ -83,7 +83,7 @@ describe("MultiStepFormWithTaskList", () => {
     fireEvent.change(screen.getByLabelText("Age"), { target: { value: 35 } });
 
     // Simulate form submission
-    fireEvent.click(screen.getByRole("button", { name: "Save and Continue" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     // Assert that the submission function was called with correct data
     await waitFor(() => expect(mockOnSubmit).toHaveBeenCalled());
@@ -92,7 +92,7 @@ describe("MultiStepFormWithTaskList", () => {
     // This will depend on how you show the loading state in your component
   });
 
-  it("renders cancel button if cancelUrl is provided", () => {
+  it("renders back button if backUrl is provided", () => {
     render(
       <MultiStepFormWithTaskList
         initialStep={0}
@@ -103,17 +103,15 @@ describe("MultiStepFormWithTaskList", () => {
         formData={formData}
         onSubmit={mockOnSubmit}
         cancelUrl="http://example.com"
+        backUrl="http://example.com"
+        continueUrl="www.test.com/continue"
       />,
     );
 
-    // Check if the cancel button is present and has the correct href
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: "Cancel" }).closest("a"),
-    ).toHaveAttribute("href", "http://example.com");
+    expect(screen.queryByRole("button", { name: "Back" })).toBeVisible();
   });
 
-  it("does not render cancel button if cancelUrl is not provided", () => {
+  it("does not render back button if cancelUrl is not provided", () => {
     render(
       <MultiStepFormWithTaskList
         initialStep={0}
@@ -123,9 +121,10 @@ describe("MultiStepFormWithTaskList", () => {
         uiSchema={uiSchema}
         formData={formData}
         onSubmit={mockOnSubmit}
+        continueUrl="www.test.com/continue"
       />,
     );
 
-    expect(screen.queryByRole("button", { name: "Cancel" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Back" })).toBeNull();
   });
 });

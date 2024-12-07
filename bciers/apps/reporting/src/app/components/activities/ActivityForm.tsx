@@ -1,18 +1,20 @@
 "use client";
 import { customizeValidator } from "@rjsf/validator-ajv8";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { actionHandler } from "@bciers/actions";
-import { Alert, Button } from "@mui/material";
+import { Alert } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps, RJSFSchema } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
-import { withTheme } from "@rjsf/core";
+import FormContext, { withTheme } from "@rjsf/core";
 import formTheme from "@bciers/components/form/theme/defaultTheme";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
+import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Form = withTheme(formTheme);
 
@@ -45,19 +47,25 @@ export default function ActivityForm({
   initialJsonSchema,
   initialSelectedSourceTypeIds,
 }: Readonly<Props>) {
+  const searchParams = useSearchParams(); // is read-only
+  let step = searchParams ? Number(searchParams.get("step")) : 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
-  // ✅ Success state for for the Submit button
+  // ✅ Success state for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [formState, setFormState] = useState(activityFormData as any);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
   );
+  const [canContinue, setCanContinue] = useState<boolean>(false);
+  const router = useRouter();
 
   const { activityId, sourceTypeMap } = activityData;
+  const formRef = useRef<FormContext>(null);
 
   const arrayEquals = (x: string[], y: string[]) => {
     x = x.sort((a, b) => a.localeCompare(b));
@@ -104,6 +112,27 @@ export default function ActivityForm({
     setFormState(c.formData);
   };
 
+  const createUrl = (isContinue: boolean) => {
+    const taskListLength = taskListData.find((taskListElement) => {
+      return taskListElement.title === "Activities Information";
+    })?.elements?.length;
+    if (taskListLength && step === -1) step = taskListLength - 1;
+
+    if (step === 0 && !isContinue)
+      return `/reports/${reportVersionId}/facilities/${facilityId}/review?facilities_title=Facility`; // Facility review page
+    if (taskListLength && step + 1 >= taskListLength && isContinue)
+      return "non-attributable"; // Activities done, go to Non-attributable emissions
+
+    const params = new URLSearchParams(
+      searchParams ? searchParams.toString() : "",
+    );
+    const addition = isContinue ? 1 : -1;
+    params.set("step", (step + addition).toString());
+    params.delete("activity_id");
+
+    return `activities?${params.toString()}`;
+  };
+
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: any }) => {
     //Set states
@@ -127,16 +156,38 @@ export default function ActivityForm({
     setIsLoading(false);
 
     if (response.error) {
+      setCanContinue(false);
       setErrorList([{ message: response.error }]);
       return;
     }
+    if (response) {
+      if (canContinue) {
+        setIsRedirecting(true);
+        router.push(createUrl(true));
+      } else {
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 3000);
+      }
+    }
   };
+
+  const submitExternallyToContinue = () => {
+    setCanContinue(true);
+  }; // Only submit after canContinue is set so the submitHandler can read the boolean
+  useEffect(() => {
+    if (formRef.current && canContinue) {
+      formRef.current.submit();
+    }
+  }, [canContinue]);
 
   return (
     <div className="w-full flex flex-row">
       <ReportingTaskList elements={taskListData} />
       <div className="w-full">
         <Form
+          ref={formRef}
           schema={jsonSchema}
           fields={CUSTOM_FIELDS}
           formData={formState}
@@ -152,17 +203,15 @@ export default function ActivityForm({
                 {e?.stack ?? e.message}
               </Alert>
             ))}
-          <div className="flex justify-end gap-3">
-            {/* Disable the button when loading or when success state is true */}
-            <Button
-              variant="contained"
-              type="submit"
-              aria-disabled={isLoading}
-              disabled={isLoading}
-            >
-              {isSuccess ? "✅ Success" : "Submit"}
-            </Button>
-          </div>
+          <ReportingStepButtons
+            backUrl={createUrl(false)}
+            continueUrl={createUrl(true)}
+            isSaving={isLoading}
+            isSuccess={isSuccess}
+            saveButtonDisabled={isLoading}
+            isRedirecting={isRedirecting}
+            saveAndContinue={submitExternallyToContinue}
+          />
         </Form>
       </div>
     </div>

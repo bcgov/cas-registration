@@ -21,11 +21,11 @@ export const getFacilitiesInformationTaskList = (
       title: "Activities Information",
       isExpanded: true,
       elements: orderedActivities.map(
-        (activity: ActivityData) =>
+        (activity: ActivityData, index) =>
           ({
             type: "Page",
             title: activity.name,
-            link: `/reports/${versionId}/facilities/${facilityId}/activities?activity_id=${activity.id}`,
+            link: `/reports/${versionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
           }) as TaskListElement,
       ),
     },
@@ -33,11 +33,13 @@ export const getFacilitiesInformationTaskList = (
       type: "Page",
       title: "Non-attributable Emissions",
       isActive: activeIndex === ActivePage.NonAttributableEmission,
+      link: `/reports/${versionId}/facilities/${facilityId}/non-attributable`,
     },
     {
       type: "Page",
       title: "Emissions Summary",
       isActive: activeIndex === ActivePage.EmissionSummary,
+      link: `/reports/${versionId}/facilities/${facilityId}/emission-summary`,
     },
     {
       type: "Page",
