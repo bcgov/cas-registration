@@ -23,7 +23,7 @@ import { actionHandler } from "@bciers/actions";
 import TransferSuccess from "@/registration/app/components/transfers/TransferSuccess";
 
 interface TransferFormProps {
-  formData: TransferFormData | {};
+  formData: TransferFormData;
   operators: OperatorRow[];
 }
 
