@@ -446,5 +446,19 @@
       "phone_number": "+16044015432",
       "app_role": "cas_admin"
     }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000028",
+      "business_guid": "00000000-0000-0000-0000-000000000000",
+      "bceid_business_name": "BCGOV",
+      "first_name": "CAS",
+      "last_name": "ANALYST",
+      "position_title": "Analyst",
+      "email": "test2@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "cas_analyst"
+    }
   }
 ]
