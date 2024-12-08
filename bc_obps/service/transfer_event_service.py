@@ -8,9 +8,8 @@ from django.db.models import QuerySet
 from registration.models import FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline
 from registration.models.event.transfer_event import TransferEvent
 from typing import Optional
-from registration.schema.v1.transfer_event import TransferEventFilterSchema
 from ninja import Query
-from registration.schema.v2.transfer_event import TransferEventCreateIn
+from registration.schema.v2.transfer_event import TransferEventCreateIn, TransferEventFilterSchema
 from service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
@@ -105,6 +104,9 @@ class TransferEventService:
 
         transfer_event = None
         if payload.transfer_entity == "Operation":
+            if not payload.operation:
+                raise Exception("Operation is required for operation transfer events.")
+
             prepared_payload.update(
                 {
                     "operation_id": payload.operation,
@@ -113,6 +115,9 @@ class TransferEventService:
             transfer_event = TransferEventDataAccessService.create_transfer_event(user_guid, prepared_payload)
 
         elif payload.transfer_entity == "Facility":
+            if not payload.facilities:
+                raise Exception("Facility is required for facility transfer events.")
+
             prepared_payload.update(
                 {
                     "from_operation_id": payload.from_operation,
