@@ -1,4 +1,4 @@
-from registration.schema.v1.transfer_event import TransferEventFilterSchema
+from registration.schema.v2.transfer_event import TransferEventFilterSchema
 from service.transfer_event_service import TransferEventService
 import pytest
 from model_bakery import baker
