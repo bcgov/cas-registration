@@ -15,7 +15,7 @@ from service.operation_designated_operator_timeline_service import OperationDesi
 
 ##### GET #####
 @router.get(
-    "/v2/operators/{uuid:operator_id}/operations",
+    "/operators/{uuid:operator_id}/operations",
     response={200: List[OperationDesignatedOperatorTimelineOut], custom_codes_4xx: Message},
     tags=OPERATOR_TAGS_V2,
     description="""Retrieves a list of operations associated with the specified operator.
