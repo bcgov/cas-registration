@@ -1,4 +1,6 @@
-from registration.models import TransferEvent
+from model_bakery import baker
+
+from registration.models import TransferEvent, Operator, Operation
 from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
     ADDRESS_FIXTURE,
@@ -12,7 +14,6 @@ from registration.tests.constants import (
     TRANSFER_EVENT_FIXTURE,
 )
 from registration.tests.models.event.event_base_model_mixin import EventBaseModelMixin
-from registration.tests.utils.bakers import contact_baker, operator_baker
 
 
 class TransferEventModelTest(EventBaseModelMixin):
@@ -37,30 +38,43 @@ class TransferEventModelTest(EventBaseModelMixin):
             ("id", "id", None, None),
             ("effective_date", "effective date", None, None),
             ("status", "status", 100, None),
-            ("description", "description", None, None),
             ("operation", "operation", None, None),
             ("facilities", "facilities", None, None),
-            ("other_operator", "other operator", None, None),
-            ("other_operator_contact", "other operator contact", None, None),
+            ("from_operator", "from operator", None, None),
+            ("to_operator", "to operator", None, None),
+            ("from_operation", "from operation", None, None),
+            ("to_operation", "to operation", None, None),
         ]
+        cls.from_operator: Operator = baker.make_recipe('utils.operator')
+        cls.to_operator: Operator = baker.make_recipe('utils.operator')
+        cls.from_operation: Operation = baker.make_recipe('utils.operation')
+        cls.to_operation: Operation = baker.make_recipe('utils.operation')
         super().setUpTestData()
 
     def test_event_with_operation_only(self):
         self.create_event_with_operation_only(
-            description="Why the transfer is happening",
-            other_operator=operator_baker(),
-            other_operator_contact=contact_baker(),
+            from_operator=self.from_operator,
+            to_operator=self.to_operator,
         )
 
     def test_event_with_facilities_only(self):
         self.create_event_with_facilities_only(
-            description="Why the transfer is happening returns",
-            other_operator=operator_baker(),
-            other_operator_contact=contact_baker(),
+            from_operator=self.from_operator,
+            to_operator=self.to_operator,
+            from_operation=self.from_operation,
+            to_operation=self.to_operation,
         )
 
     def test_event_with_operation_and_adding_facilities_raises_error(self):
-        self.create_event_with_operation_and_adding_facilities_raises_error()
+        self.create_event_with_operation_and_adding_facilities_raises_error(
+            from_operator=self.from_operator,
+            to_operator=self.to_operator,
+        )
 
     def test_event_with_facilities_and_adding_operation_raises_error(self):
-        self.create_event_with_facilities_and_adding_operation_raises_error()
+        self.create_event_with_facilities_and_adding_operation_raises_error(
+            from_operator=self.from_operator,
+            to_operator=self.to_operator,
+            from_operation=self.from_operation,
+            to_operation=self.to_operation,
+        )
