@@ -15,7 +15,7 @@ export default async function Operators({
     rows: OperatorRow[];
     row_count: number;
   } = await fetchOperatorsPageData(searchParams);
-  if (!operators || "error" in operators)
+  if (!operators || "error" in operators || !operators.rows)
     throw new Error("Failed to retrieve operators");
 
   // Render the DataGrid component

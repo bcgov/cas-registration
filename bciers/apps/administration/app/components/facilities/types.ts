@@ -5,6 +5,8 @@ export interface FacilityRow {
   facility__type: string;
   facility__id: number;
   status: string;
+  facility__latitude_of_largest_emissions: string;
+  facility__longitude_of_largest_emissions: string;
 }
 
 export interface FacilityInitialData {
@@ -13,7 +15,7 @@ export interface FacilityInitialData {
 }
 
 export interface FacilitiesSearchParams {
-  [key: string]: string | number | undefined;
+  [key: string]: string | number | undefined | boolean;
   operations_title?: string;
   bcghg_id?: string;
   type?: string;
@@ -22,4 +24,6 @@ export interface FacilitiesSearchParams {
   page?: number;
   sort_field?: string;
   sort_order?: string;
+  paginate_results?: boolean;
+  end_date?: boolean;
 }

@@ -1,7 +1,7 @@
+from model_bakery import baker
 from common.tests.utils.helpers import BaseTestCase
 from django.core.exceptions import ValidationError
 from registration.models import Operation, Facility
-from registration.tests.utils.bakers import facility_baker, operation_baker
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -9,9 +9,9 @@ from zoneinfo import ZoneInfo
 class EventBaseModelMixin(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.operation: Operation = operation_baker()
-        cls.facility1: Facility = facility_baker()
-        cls.facility2: Facility = facility_baker()
+        cls.operation: Operation = baker.make_recipe('utils.operation')
+        cls.facility1: Facility = baker.make_recipe('utils.facility')
+        cls.facility2: Facility = baker.make_recipe('utils.facility')
 
     def create_event_with_operation_only(self, *args, **kwargs):
         event = self.model.objects.create(
@@ -29,7 +29,7 @@ class EventBaseModelMixin(BaseTestCase):
             ValidationError, msg="An event must have either an operation or facilities, but not both."
         ):
             event = self.model.objects.create(
-                operation=self.operation, effective_date=datetime.now(ZoneInfo("UTC")), *args, **kwargs
+                effective_date=datetime.now(ZoneInfo("UTC")), operation=self.operation, *args, **kwargs
             )
             event.facilities.set([self.facility1])
 
