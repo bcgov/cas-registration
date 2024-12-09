@@ -18,12 +18,11 @@ class ReportProductEmissionAllocationSchema(ModelSchema):
 
 class ReportProductEmissionAllocationSchemaIn(Schema):
     report_product_id: int
-    product_name: str
     allocated_quantity: Decimal
 
 
 class EmissionCategoryAllocationsSchemaIn(Schema):
-    emission_category_name: str
+    emission_category_id: int
     emission_total: Decimal
     products: List[ReportProductEmissionAllocationSchemaIn]
 
@@ -45,7 +44,8 @@ class ReportProductEmissionAllocationSchemaOut(Schema):
 
 
 class ReportFacilityEmissionsSchemaOut(Schema):
-    emission_category: str
+    emission_category_name: str
+    emission_category_id: int
     category_type: str
     emission_total: Decimal | int
     products: List[ReportProductEmissionAllocationSchemaOut]
