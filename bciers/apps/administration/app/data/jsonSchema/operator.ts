@@ -3,41 +3,61 @@ import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTem
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
+import { getBusinessStructures } from "@bciers/actions/api";
 
-export const section1: RJSFSchema = {
-  type: "object",
-  title: "Operator Information",
-  required: [
-    "legal_name",
-    "cra_business_number",
-    "bc_corporate_registry_number",
-    "business_structure",
-  ],
-  properties: {
-    legal_name: { type: "string", title: "Legal Name" },
-    trade_name: { type: "string", title: "Trade Name" },
-    business_structure: {
+
+const createSection1Schema = async () =>{
+
+  const businessStructures: { name: string }[] | { error: string } = await getBusinessStructures();
+if ("error" in businessStructures) {
+  throw new Error("Failed to retrieve business structure information");
+}
+
+  const businessStructureOptions = businessStructures?.map(
+    (businessStructure) => ({
       type: "string",
-      title: "Business Structure",
+      title: businessStructure.name,
+      enum: [businessStructure.name],
+      value: businessStructure.name,
+    }),
+  );
+
+  return {
+    type: "object",
+    title: "Operator Information",
+    required: [
+      "legal_name",
+      "cra_business_number",
+      "bc_corporate_registry_number",
+      "business_structure",
+    ],
+    properties: {
+      legal_name: { type: "string", title: "Legal Name" },
+      trade_name: { type: "string", title: "Trade Name" },
+      business_structure: {
+        type: "string",
+        title: "Business Structure",
+      },
+      cra_business_number: {
+        type: "number",
+        title: "CRA Business Number",
+        minimum: 100000000,
+        maximum: 999999999,
+      },
+      bc_corporate_registry_number: {
+        type: "string",
+        title: "BC Corporate Registry Number",
+        format: "bc_corporate_registry_number",
+      },
     },
-    cra_business_number: {
-      type: "number",
-      title: "CRA Business Number",
-      minimum: 100000000,
-      maximum: 999999999,
+    dependencies: {
+      business_structure: {
+        anyOf: businessStructureOptions,
+      },
     },
-    bc_corporate_registry_number: {
-      type: "string",
-      title: "BC Corporate Registry Number",
-      format: "bc_corporate_registry_number",
-    },
-  },
-  dependencies: {
-    business_structure: {
-      oneOf: [],
-    },
-  },
-};
+  } 
+}
+
 
 const section2: RJSFSchema = {
   type: "object",
@@ -182,15 +202,19 @@ const section3: RJSFSchema = {
   },
 };
 
-export const operatorSchema: RJSFSchema = {
-  type: "object",
-  required: ["section1", "section2", "section3"],
-  properties: {
-    section1,
-    section2,
-    section3,
-  },
-};
+export const createOperatorSchema = async()=>{
+  return {
+    type: "object",
+    required: ["section1", "section2", "section3"],
+    properties: {
+      section1: await createSection1Schema(),
+      section2,
+      section3,
+    },
+  } as RJSFSchema
+}
+
+;
 
 export const operatorUiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,

@@ -5,7 +5,10 @@ import { validate as isValidUUID } from "uuid";
 import { BusinessStructure, UserOperatorFormData } from "./types";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import UserOperatorReviewForm from "./UserOperatorReviewForm";
-import { userOperatorInternalUserSchema } from "@/administration/app/data/jsonSchema/userOperator";
+import {
+  createUserOperatorInternalUserSchema,
+  userOperatorInternalUserSchema,
+} from "@/administration/app/data/jsonSchema/userOperator";
 import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 console.log("in adminisration UserOperator component");
 async function getBusinessStructures() {
@@ -90,7 +93,7 @@ export default async function UserOperator({
   return (
     <>
       <UserOperatorReviewForm
-        schema={userOperatorInternalUserSchema}
+        schema={await createUserOperatorInternalUserSchema()}
         formData={formData}
       />
     </>

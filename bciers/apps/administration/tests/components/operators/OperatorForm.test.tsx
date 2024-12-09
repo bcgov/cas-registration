@@ -2,9 +2,7 @@ import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { actionHandler, useSession, useRouter } from "@bciers/testConfig/mocks";
 
-import { operatorSchema } from "apps/administration/app/data/jsonSchema/operator";
 import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
-import { createOperatorSchema } from "apps/administration/app/components/operators/OperatorPage";
 
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
@@ -12,6 +10,7 @@ import expectHeader from "@bciers/testConfig/helpers/expectHeader";
 import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 
 import { FrontendMessages } from "@bciers/utils/src/enums";
+import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
 
 useSession.mockReturnValue({
   get: vi.fn(),
@@ -79,16 +78,6 @@ const operatorFormData = {
   bc_corporate_registry_number: "def1234567",
   mailing_address: 5,
 };
-
-const testSchema = createOperatorSchema(operatorSchema, [
-  { name: "General Partnership" },
-  { name: "BC Corporation" },
-  { name: "Extra Provincially Registered Company" },
-  { name: "Sole Proprietorship" },
-  { name: "Limited Liability Partnership" },
-  { name: "BC Incorporated Society" },
-  { name: "Extraprovincial Non-Share Corporation" },
-]);
 
 const formHeaders: string[] = [
   "Operator Information",
@@ -310,7 +299,7 @@ describe("OperatorForm component", () => {
   it("renders the empty operator form when creating a new operator", async () => {
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={{}}
         isCreating={true}
         isInternalUser={false}
@@ -331,7 +320,7 @@ describe("OperatorForm component", () => {
   it("does not allow new operator form submission if there are validation errors", async () => {
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={{}}
         isCreating={true}
         isInternalUser={false}
@@ -353,7 +342,7 @@ describe("OperatorForm component", () => {
 
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={{}}
         isCreating={true}
         isInternalUser={false}
@@ -398,7 +387,7 @@ describe("OperatorForm component", () => {
   it("fills the partner and parent form fields, creates new operator, and redirects on success", async () => {
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={{}}
         isCreating={true}
         isInternalUser={false}
@@ -431,7 +420,7 @@ describe("OperatorForm component", () => {
     actionHandler.mockReturnValue({ error: null });
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={operatorFormData}
         isInternalUser={false}
       />,
@@ -596,7 +585,7 @@ describe("OperatorForm component", () => {
   it("loads existing readonly Operator form data for an internal user", async () => {
     const { container } = render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={operatorFormData}
         isInternalUser={true}
       />,
@@ -722,7 +711,7 @@ describe("OperatorForm component", () => {
   it("calls the router.back function if is creating", async () => {
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={operatorFormData}
         isCreating={true}
         isInternalUser={false}
@@ -734,7 +723,7 @@ describe("OperatorForm component", () => {
   it("calls the router.back function if user is internal", async () => {
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={operatorFormData}
         isInternalUser={true}
       />,
@@ -745,7 +734,7 @@ describe("OperatorForm component", () => {
   it("calls the router.push function if user is not internal and is not creating", async () => {
     render(
       <OperatorForm
-        schema={testSchema}
+        schema={await createOperatorSchema()}
         formData={operatorFormData}
         isCreating={false}
         isInternalUser={false}

@@ -13,15 +13,15 @@ import {
   userOperatorUserInformationPage2,
 } from "../../data/jsonSchema/userOperator";
 import OperatorForm from "../operators/OperatorForm";
-import { operatorSchema } from "../../data/jsonSchema/operator";
 import FormBase from "@bciers/components/form/FormBase";
+import { createOperatorSchema } from "../../data/jsonSchema/operator";
 
 interface Props {
   formData: UserOperatorFormData;
   schema: RJSFSchema;
 }
 
-const UserOperatorReviewForm = ({ formData, schema }: Props) => {
+const UserOperatorReviewForm = async ({ formData, schema }: Props) => {
   const params = useParams();
   const userOperatorId = params.id;
   const isNewOperator = formData.is_new;
@@ -34,6 +34,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
   const [isOperatorDeclined, setIsOperatorDeclined] = useState(
     isOperatorStatusDeclined,
   );
+  // in admin/operators partner is not showing
   return (
     <ComponentAccordion
       content={[
@@ -42,7 +43,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
           component: (
             <OperatorForm
               showTasklist={false}
-              schema={operatorSchema}
+              schema={await createOperatorSchema()}
               formData={formData}
               isCreating={false}
               isInternalUser={true}

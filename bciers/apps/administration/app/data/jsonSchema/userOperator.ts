@@ -10,24 +10,37 @@ import {
   SeniorOfficerTitle,
 } from "@/app/components/form/titles/userOperatorTitles";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
-import { operatorSchema } from "./operator";
+import { createOperatorSchema } from "./operator";
+// import { operatorSchema } from "./operator";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
   "ui:FieldTemplate": TitleOnlyFieldTemplate,
 };
 
-export const userOperatorPage1: RJSFSchema = {
-  type: "object",
-  title: "Operator Information",
-  
-  properties: {
-    ...operatorSchema.properties.section1.properties,
-    ...operatorSchema.properties.section2.properties,
-    ...operatorSchema.properties.section3.properties
-  },
-  
-};
+export const createUserOperatorPage1 = async ()=>{
+const operatorSchema = await createOperatorSchema()
+if ("error" in operatorSchema) {
+  throw new Error("Failed to retrieve business structure information");
+}
+
+  return {
+    type: "object",
+    title: "Operator Information",
+    
+
+    properties: {
+      // @ts-ignore
+      ...operatorSchema.properties.section1.properties,
+       // @ts-ignore
+      ...operatorSchema.properties.section2.properties,
+       // @ts-ignore
+      ...operatorSchema.properties.section3.properties
+    },
+    
+  };
+}
+
 
 export const userOperatorUserInformationPage2: RJSFSchema = {
   type: "object",
@@ -64,14 +77,19 @@ export const userOperatorUserInformationPage2: RJSFSchema = {
   },
 };
 
-export const userOperatorInternalUserSchema: RJSFSchema = {
-  type: "object",
-  properties: {
-   
-    userOperatorPage1,
-    userOperatorUserInformationPage2,
-  },
-};
+export const createUserOperatorInternalUserSchema = async ()=>{
+
+  return {
+    type: "object",
+    properties: {
+     
+      userOperatorPage1: await createUserOperatorPage1(),
+      userOperatorUserInformationPage2,
+    },
+  } as RJSFSchema;
+}
+
+
 
 export const userOperatorUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
