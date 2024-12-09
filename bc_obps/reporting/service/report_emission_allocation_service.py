@@ -104,11 +104,10 @@ class ReportEmissionAllocationService:
         data: ReportProductEmissionAllocationsSchemaIn,
         user_guid: UUID,
     ) -> None:
-        # incoming allocations = [{report_product_id: int, emission_category_name: str, allocated_quantity: Decimal}]
 
-        # WIP**:
-        # Assumption: data is only entered when allocated_quantity is not 0
         facility_report_id = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id).pk
+
+        # Assumption: data is only entered when allocated_quantity is not 0
         report_emission_allocations = data.report_product_emission_allocations
         allocation_methodology = data.allocation_methodology
         allocation_other_methodology_description = data.allocation_other_methodology_description
@@ -116,7 +115,7 @@ class ReportEmissionAllocationService:
         # Update or create the emission allocations from the data
         for allocations in report_emission_allocations:
             emission_category_id = EmissionCategory.objects.get(category_name=allocations.emission_category_name).pk
-            # emission_total = allocations.emission_total - makes sense to validate on this, but should get this value from the backend
+            # emission_total = allocations.emission_total # TODO: validation should be done with this value to make sure we are not under- or over-allocating
             products_with_allocations = []
             for product in allocations.products:
 

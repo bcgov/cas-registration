@@ -1,6 +1,7 @@
 from decimal import Decimal
-from typing import List
+from typing import List, Optional
 
+from pydantic import Field
 from ninja import ModelSchema, Schema
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 
@@ -23,7 +24,7 @@ class ReportProductEmissionAllocationSchemaIn(Schema):
 
 class EmissionCategoryAllocationsSchemaIn(Schema):
     emission_category_name: str
-    emission_total: Decimal  # should probably be removed. only need it for validation, and should get that value from the backend
+    emission_total: Decimal
     products: List[ReportProductEmissionAllocationSchemaIn]
 
 
@@ -34,7 +35,7 @@ class ReportProductEmissionAllocationsSchemaIn(Schema):
 
     report_product_emission_allocations: list[EmissionCategoryAllocationsSchemaIn]
     allocation_methodology: str
-    allocation_other_methodology_description: str
+    allocation_other_methodology_description: Optional[str] = Field(None)
 
 
 class ReportProductEmissionAllocationSchemaOut(Schema):
