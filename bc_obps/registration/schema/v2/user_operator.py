@@ -56,7 +56,6 @@ class UserOperatorOutV2(ModelSchema):
     Custom schema for the user operator form
     """
 
-    # operator_status: str = Field(..., alias="operator.status")
     legal_name: str = Field(..., alias="operator.legal_name")
     trade_name: Optional[str] = Field("", alias="operator.trade_name")
     cra_business_number: Optional[int] = Field(None, alias="operator.cra_business_number")

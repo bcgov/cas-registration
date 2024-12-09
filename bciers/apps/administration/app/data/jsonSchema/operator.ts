@@ -7,20 +7,71 @@ import { getBusinessStructures } from "@bciers/actions/api";
 
 
 const createSection1Schema = async () =>{
-
+// business structures
   const businessStructures: { name: string }[] | { error: string } = await getBusinessStructures();
 if ("error" in businessStructures) {
   throw new Error("Failed to retrieve business structure information");
 }
 
-  const businessStructureOptions = businessStructures?.map(
-    (businessStructure) => ({
-      type: "string",
-      title: businessStructure.name,
-      enum: [businessStructure.name],
-      value: businessStructure.name,
-    }),
-  );
+const businessStructureOptions = businessStructures?.map(	
+  (businessStructure) => ({	
+    type: "string",	
+    title: businessStructure.name,	
+    enum: [businessStructure.name],	
+    value: businessStructure.name,	
+  }),	
+);	
+
+// add business structure options for partner operators	
+const partnerOperatorsArray = {	
+  type: "array",	
+  default: [{}],	
+  items: {	
+    type: "object",	
+    required: [	
+      "partner_legal_name",	
+      "partner_business_structure",	
+      "partner_cra_business_number",	
+      "partner_bc_corporate_registry_number",	
+    ],	
+    properties: {	
+      partner_legal_name: { type: "string", title: "Legal Name" },	
+      partner_trade_name: { type: "string", title: "Trade Name" },	
+      partner_business_structure: {	
+        type: "string",	
+        title: "Business Structure",	
+        anyOf: businessStructureOptions,	
+      },	
+      partner_cra_business_number: {	
+        type: "number",	
+        title: "CRA Business Number",	
+        minimum: 100000000,	
+        maximum: 999999999,	
+      },	
+      partner_bc_corporate_registry_number: {	
+        type: "string",	
+        title: "BC Corporate Registry Number",	
+        format: "bc_corporate_registry_number",	
+      },	
+    },	
+  },	
+};	
+
+// create dependencies for business structure	
+const oneOfOptions = [];	
+for (const el of businessStructures) {	
+  const obj = {	
+    properties: {	
+      business_structure: {	
+        const: el.name,	
+      },	
+      ...(el.name.includes("Partnership") && {	
+        partner_operators_array: partnerOperatorsArray,	
+      }),	
+    },	
+  };	
+  oneOfOptions.push(obj);	
+}	
 
   return {
     type: "object",
@@ -37,6 +88,7 @@ if ("error" in businessStructures) {
       business_structure: {
         type: "string",
         title: "Business Structure",
+        anyOf: businessStructureOptions,
       },
       cra_business_number: {
         type: "number",
@@ -52,7 +104,7 @@ if ("error" in businessStructures) {
     },
     dependencies: {
       business_structure: {
-        anyOf: businessStructureOptions,
+        oneOf: oneOfOptions,
       },
     },
   } 

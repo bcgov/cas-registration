@@ -12,8 +12,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.v1 import ConfirmSelectedOperatorOut
 from registration.schema.generic import Message
 
-# We have to let unapproved users to reach this endpoint otherwise they can't see operator info when they select it
-
 
 @router.get(
     "/operators/{uuid:operator_id}",
@@ -21,7 +19,7 @@ from registration.schema.generic import Message
     tags=OPERATOR_TAGS,
     description="""Retrieves information about a specific operator by its ID.
     This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.""",
-    auth=authorize("authorized_roles"),
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], Operator]:

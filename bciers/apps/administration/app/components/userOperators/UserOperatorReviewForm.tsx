@@ -8,7 +8,6 @@ import { RJSFSchema } from "@rjsf/utils";
 import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/src/enums";
 import UserOperatorReview from "./UserOperatorReview";
 import {
-  userOperatorInternalUserSchema,
   userOperatorInternalUserUiSchema,
   userOperatorUserInformationPage2,
 } from "../../data/jsonSchema/userOperator";
@@ -24,17 +23,12 @@ interface Props {
 const UserOperatorReviewForm = async ({ formData, schema }: Props) => {
   const params = useParams();
   const userOperatorId = params.id;
-  const isNewOperator = formData.is_new;
-  const isUserOperatorPending = formData.status === UserOperatorStatus.PENDING;
   const isOperatorStatusDeclined =
     formData.operator_status === OperatorStatus.DECLINED;
   const [rerenderKey, setRerenderKey] = useState(
     crypto.getRandomValues(new Uint32Array(1))[0],
   );
-  const [isOperatorDeclined, setIsOperatorDeclined] = useState(
-    isOperatorStatusDeclined,
-  );
-  // in admin/operators partner is not showing
+
   return (
     <ComponentAccordion
       content={[
@@ -73,12 +67,7 @@ const UserOperatorReviewForm = async ({ formData, schema }: Props) => {
             </>
           ),
         },
-      ]} // If the operator is new, the first section should be expanded
-      // If the user is pending, the second section should be expanded
-      expandedSteps={{
-        "Operator Information": isNewOperator,
-        "Admin Information": isUserOperatorPending && !isOperatorDeclined,
-      }}
+      ]}
     />
   );
 };

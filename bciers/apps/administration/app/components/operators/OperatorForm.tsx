@@ -18,6 +18,7 @@ interface Props {
   formData: OperatorFormData;
   isCreating?: boolean;
   isInternalUser: boolean;
+  showTasklist: boolean;
 }
 export default function OperatorForm({
   formData,

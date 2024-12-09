@@ -22,41 +22,11 @@ async function getBusinessStructures() {
 export async function getUserOperatorFormData(id: string) {
   if (!id || !isValidUUID(id)) return {};
   return actionHandler(
-    // brianna
     `registration/user-operators/${id}`,
     "GET",
     `/user-operator/${id}`,
   );
 }
-
-// To populate the options for the business structure select field
-// const createUserOperatorSchema = (
-//   schema: RJSFSchema,
-//   businessStructureList: { id: string; label: string }[],
-// ): RJSFSchema => {
-//   const localSchema = safeJsonParse(JSON.stringify(schema));
-
-//   const businessStructureOptions = businessStructureList?.map(
-//     (businessStructure) => ({
-//       type: "string",
-//       title: businessStructure.label,
-//       enum: [businessStructure.id],
-//       value: businessStructure.id,
-//     }),
-//   );
-
-//   // for operator
-//   localSchema.properties.userOperatorPage1.properties.business_structure = {
-//     ...localSchema.properties.userOperatorPage1.properties.business_structure,
-//     anyOf: businessStructureOptions,
-//   };
-
-//   // for parent company
-//   localSchema.properties.userOperatorPage1.allOf[0].then.properties.parent_operators_array.items.properties.po_business_structure.anyOf =
-//     businessStructureOptions;
-
-//   return localSchema;
-// };
 
 export default async function UserOperator({
   params,
@@ -67,7 +37,7 @@ export default async function UserOperator({
   const isCasInternal =
     session?.user?.app_role?.includes("cas") &&
     !session?.user?.app_role?.includes("pending");
-  console.log("iscasinternal", isCasInternal);
+
   const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =

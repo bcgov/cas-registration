@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Accordion from "@bciers/components/accordion/Accordion";
-import FormBase from "@bciers/components/form/FormBase";
-import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
 interface Content {
   title: string;
@@ -11,13 +9,11 @@ interface Content {
 }
 
 interface Props {
-  // Optional prop to render a section before the form
-  expandedSteps?: { [key: string]: boolean };
   content: Content[];
 }
 
-const ComponentAccordion = ({ expandedSteps, content }: Props) => {
-  const [expandAll, setExpandAll] = useState({ isExpandAll: false });
+const ComponentAccordion = ({ content }: Props) => {
+  const [expandAll, setExpandAll] = useState({ isExpandAll: true });
 
   // spread previous state so it's saved in a new memory location to trigger a re-render
   // This was needed because the buttons wouldn't work correctly when the same value was passed
@@ -46,12 +42,10 @@ const ComponentAccordion = ({ expandedSteps, content }: Props) => {
         </div>
       </div>
       {content.map((component: Content, index: number) => {
-        const isExpanded = expandedSteps ? true : false;
-
         return (
           <Accordion
             key={index}
-            expanded={isExpanded}
+            expanded={true}
             expandedOptions={expandAll}
             title={component.title}
           >
