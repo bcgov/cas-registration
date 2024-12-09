@@ -9,7 +9,6 @@ from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.models import Operator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.v1 import ConfirmSelectedOperatorOut
 from registration.schema.generic import Message
 
 

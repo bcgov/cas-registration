@@ -10,14 +10,10 @@ export interface Operator {
   cra_business_number: string;
   bc_corporate_registry_number: string;
   business_structure: string;
-  physical_street_address: string;
-  physical_municipality: string;
-  physical_province: string;
-  physical_postal_code: string;
-  mailing_street_address: string;
-  mailing_municipality: string;
-  mailing_province: string;
-  mailing_postal_code: string;
+  street_address: string;
+  municipality: string;
+  province: string;
+  postal_code: string;
   website: string;
   contacts: Array<number>;
 }

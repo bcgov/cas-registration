@@ -413,6 +413,13 @@ export const userOperatorUserInformationPage2: RJSFSchema = {
   },
 };
 
+export const userOperatorSchema: RJSFSchema = {
+  type: "object",
+  properties: {
+    userOperatorPage1,
+  },
+};
+
 export const userOperatorInternalUserSchema: RJSFSchema = {
   type: "object",
   properties: {

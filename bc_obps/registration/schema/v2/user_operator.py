@@ -4,12 +4,12 @@ from ninja import Schema, FilterSchema, Field, ModelSchema
 from uuid import UUID
 from registration.models import UserOperator
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX
-from typing import List, Optional
+from typing import List
 from registration.models.operator import Operator
 from registration.models.partner_operator import PartnerOperator
-from registration.schema.v2.partner_operator import PartnerOperatorIn, PartnerOperatorOut
+from registration.schema.v2.partner_operator import PartnerOperatorOut
 from registration.models.parent_operator import ParentOperator
-from registration.schema.v2.parent_operator import ParentOperatorIn, ParentOperatorOut
+from registration.schema.v2.parent_operator import ParentOperatorOut
 
 
 class UserOperatorOperatorOut(Schema):
