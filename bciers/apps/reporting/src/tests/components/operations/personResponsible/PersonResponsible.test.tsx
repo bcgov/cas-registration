@@ -29,8 +29,8 @@ describe("PersonResponsible", () => {
     await waitFor(() => {
       expect(screen.getByText("Person Responsible")).toBeInTheDocument();
     });
-    expect(screen.getByText(/Cancel/i)).toBeInTheDocument();
-    expect(screen.getByText(/Save And Continue/i)).toBeInTheDocument();
+    expect(screen.getByText(/Back/i)).toBeInTheDocument();
+    expect(screen.getByText(/Continue/i)).toBeInTheDocument();
   });
 
   it("should handle case where no matching contact is found", async () => {

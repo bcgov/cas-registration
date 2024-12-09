@@ -95,13 +95,13 @@ describe("AdditionalReportingData Component", () => {
 
     await waitFor(() => {
       const submitButton = screen.getByRole("button", {
-        name: /Save And Continue/i,
+        name: /Save & Continue/i,
       });
       expect(submitButton).toBeInTheDocument(); // Confirm it's in the document
     });
 
     const submitButton = screen.getByRole("button", {
-      name: /Save And Continue/i,
+      name: /Save & Continue/i,
     });
     fireEvent.click(submitButton);
 

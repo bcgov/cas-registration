@@ -64,6 +64,9 @@ const ProductionDataForm: React.FC<Props> = ({
     router.push(saveAndContinueUrl);
   };
 
+  const backURL = `/reports/${report_version_id}/facilities/${facility_id}/emission-summary`;
+  const continueURL = `/reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`; // Update when page complete
+
   return (
     <MultiStepFormWithTaskList
       initialStep={1}
@@ -76,6 +79,8 @@ const ProductionDataForm: React.FC<Props> = ({
       cancelUrl={"#"}
       onSubmit={(data) => onSubmit(data.formData)}
       onChange={(data) => onChange(data.formData)}
+      backUrl={backURL}
+      continueUrl={continueURL}
     />
   );
 };

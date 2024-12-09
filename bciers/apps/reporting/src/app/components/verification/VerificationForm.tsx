@@ -5,7 +5,7 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   baseUrlReports,
   cancelUrlReports,
@@ -34,7 +34,6 @@ export default function VerificationForm({
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
 
-  const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/attachments${queryString}`;
 
   const handleChange = (e: IChangeEvent) => {
@@ -58,8 +57,6 @@ export default function VerificationForm({
     } else {
       setError(undefined);
     }
-
-    router.push(saveAndContinueUrl);
   };
 
   return (
@@ -72,9 +69,11 @@ export default function VerificationForm({
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}
+      backUrl={cancelUrlReports}
       onChange={handleChange}
       onSubmit={handleSubmit}
       error={error}
+      continueUrl={saveAndContinueUrl}
     />
   );
 }

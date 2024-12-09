@@ -3,14 +3,14 @@ const serializeSearchParams = (
   params: URLSearchParams | null | undefined,
 ): string => {
   if (!(params instanceof URLSearchParams)) {
-    return "";
+    return "?";
   }
 
   try {
     const queryString = params.toString();
-    return queryString ? `?${queryString}` : "";
+    return queryString ? `?${queryString}` : "?";
   } catch (error) {
-    return "";
+    return "?";
   }
 };
 
