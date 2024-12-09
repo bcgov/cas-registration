@@ -1,5 +1,4 @@
 import pytest
-import datetime
 from registration.enums.enums import OperationTypes
 from model_bakery import baker
 from copy import deepcopy
