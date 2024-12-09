@@ -28,6 +28,7 @@ interface Props {
   error?: any;
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
+  formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({
@@ -45,6 +46,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   saveButtonDisabled,
   submitButtonDisabled,
   buttonText,
+  formContext,
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -100,6 +102,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
             onSubmit={handleFormSave}
             formData={formData}
             onChange={onChange}
+            formContext={formContext}
           >
             <ReportingStepButtons
               backUrl={backUrl}
