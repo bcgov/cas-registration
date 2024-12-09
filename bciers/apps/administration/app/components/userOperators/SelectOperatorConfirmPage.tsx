@@ -8,6 +8,7 @@ import getOperator from "../operators/getOperator";
 import getOperatorHasAdmin from "../operators/getOperatorHasAdmin";
 import getOperatorAccessDeclined from "../operators/getOperatorAccessDeclined";
 import { UUID } from "crypto";
+import getOperatorConfirmationInfo from "../operators/getOperatorConfirmationInfo";
 // 🧩 Main component
 export default async function SelectOperatorConfirmPage({
   id,
