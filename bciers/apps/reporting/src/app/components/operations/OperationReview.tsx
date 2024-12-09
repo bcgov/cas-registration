@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
+import Modal from "@bciers/components/modal/Modal";
 import { RJSFSchema } from "@rjsf/utils";
 import {
   operationReviewSchema,
@@ -13,6 +14,7 @@ import { formatDate } from "@reporting/src/app/utils/formatDate";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { getOperationInformationTaskList } from "../taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+import { Button, DialogActions, DialogContentText } from "@mui/material";
 
 interface Props {
   formData: any;
@@ -44,6 +46,8 @@ export default function OperationReview({
   registrationPurpose,
   facilityReport,
 }: Props) {
+  const [reportTypeConfirmationOpen, setReportTypeConfirmationOpen] =
+    useState(true);
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
@@ -175,18 +179,40 @@ export default function OperationReview({
   }
 
   return (
-    <MultiStepFormWithTaskList
-      initialStep={0}
-      steps={multiStepHeaderSteps}
-      taskListElements={taskListElements}
-      schema={schema}
-      uiSchema={uiSchema}
-      formData={formDataState}
-      cancelUrl="#"
-      onSubmit={(data: { formData?: any }) => saveHandler(data, version_id)}
-      onChange={onChangeHandler}
-      backUrl={backUrl}
-      continueUrl={saveAndContinueUrl}
-    />
+
+    <>
+      <Modal
+        title="Confirm changing report type"
+        onClose={false}
+        open={reportTypeConfirmationOpen}
+      >
+        <DialogContentText>
+          <p>
+            Are you sure you want to change your report type? If you proceed,
+            all of the form data you have entered will be lost.
+          </p>
+        </DialogContentText>
+        <DialogActions>
+          <Button variant="outlined" color="primary">
+            Cancel
+          </Button>
+          <Button variant="contained" color="primary">
+            Change report type
+          </Button>
+        </DialogActions>
+      </Modal>
+      <MultiStepFormWithTaskList
+        initialStep={0}
+        steps={multiStepHeaderSteps}
+        taskListElements={taskListElements}
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={formDataState}
+        onSubmit={(data: { formData?: any }) => saveHandler(data, version_id)}
+        onChange={onChangeHandler}
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+      />
+    </>
   );
 }
