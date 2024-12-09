@@ -74,7 +74,7 @@ export default function ActivityForm({
   const fetchSchemaData = async (sourceTypeIds: string[]) => {
     const sourceTypeQueryString = sourceTypeIds
       .map((id) => `&source_types[]=${id}`)
-      .join("");
+      .join("&");
     const schema = await actionHandler(
       `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}${sourceTypeQueryString}`,
       "GET",
