@@ -41,8 +41,8 @@ interface FormData {
   fuel_excluded_emission_allocation_data: EmissionAllocationData[];
   report_product_emission_allocation_totals: Product[];
   facility_total_emissions: number;
-  methodology: string;
-  other_methodology_description: string;
+  allocation_methodology: string;
+  allocation_other_methodology_description: string;
 }
 
 // 🛠️ Function to calculate category products allocation sum and set total sum in products_emission_allocation_sum
@@ -91,8 +91,9 @@ export default function FacilityEmissionAllocationForm({
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
-    methodology: initialData.methodology,
-    other_methodology_description: initialData.other_methodology_description,
+    allocation_methodology: initialData.allocation_methodology,
+    allocation_other_methodology_description:
+      initialData.allocation_other_methodology_description,
     basic_emission_allocation_data:
       initialData.report_product_emission_allocations
         .filter((category: any) => category.category_type === "basic")
@@ -109,7 +110,7 @@ export default function FacilityEmissionAllocationForm({
 
   // State for submit button disable
   const errorMismatch =
-    "Please allocated emissions to match allocation totals.";
+    "All emissions must be allocated to 100% before saving and continuing";
   const [error, setError] = useState<string | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
@@ -168,7 +169,7 @@ export default function FacilityEmissionAllocationForm({
         .map(calculateEmissionData); // Recalculate emissions data
     });
 
-    // Update the corresponding product_id in total_emission_allocations.products
+    // Recompute total allocations for each product
     if (updatedFormData.total_emission_allocations?.products) {
       updatedFormData.total_emission_allocations.products =
         updatedFormData.total_emission_allocations.products.map(
@@ -198,55 +199,41 @@ export default function FacilityEmissionAllocationForm({
   // 🛠️ Handle form submit
   const handleSubmit = async () => {
     setSubmitButtonDisabled(true);
-    const mockPayload = {
-      methodology: "Other",
-      other_methodology_description: "test",
+    // Transform formData to match the schema in structure
+    const transformedPayload = {
+      allocation_methodology: formData.allocation_methodology,
+      allocation_other_methodology_description:
+        formData.allocation_other_methodology_description,
       report_product_emission_allocations: [
-        {
-          emission_total: 300,
-          emission_category: "Flaring emissions",
-          category_type: "basic",
-          products: [
-            {
-              product_id: 1,
-              product_name: "BC-specific refinery complexity throughput",
-              allocated_quantity: 200.0,
-            },
-            {
-              product_id: 29,
-              product_name: "Sugar: solid",
-              allocated_quantity: 100.0,
-            },
-          ],
-        },
-        {
-          emission_total: 400,
-          emission_category: "Emissions from excluded non-biomass",
-          category_type: "fuel_excluded",
-          products: [
-            {
-              product_id: 1,
-              product_name: "BC-specific refinery complexity throughput",
-              allocated_quantity: 300,
-            },
-            {
-              product_id: 29,
-              product_name: "Sugar: solid",
-              allocated_quantity: 100,
-            },
-          ],
-        },
+        ...formData.basic_emission_allocation_data.map((item: any) => ({
+          emission_total: item.emission_total,
+          emission_category_name: item.emission_category,
+          products: item.products.map((product: any) => ({
+            report_product_id: product.report_product_id,
+            product_name: product.product_name,
+            allocated_quantity: parseFloat(product.allocated_quantity),
+          })),
+        })),
+        ...formData.fuel_excluded_emission_allocation_data.map((item: any) => ({
+          emission_total: item.emission_total,
+          emission_category_name: item.emission_category,
+          products: item.products.map((product: any) => ({
+            report_product_id: product.report_product_id,
+            product_name: product.product_name,
+            allocated_quantity: parseFloat(product.allocated_quantity),
+          })),
+        })),
       ],
     };
+    const method = "POST";
+    const endpoint = `reporting/report-version/${version_id}/facilities/${facility_id}/allocate-emissions`;
+    const pathToRevalidate = "reporting/reports";
+    const payload = safeJsonParse(JSON.stringify(transformedPayload));
+    const response = await actionHandler(endpoint, method, pathToRevalidate, {
+      body: JSON.stringify(payload),
+    });
 
-    const payload = safeJsonParse(JSON.stringify(mockPayload));
-    const response = await actionHandler(
-      `reporting/report-version/${version_id}/allocate-emissions`,
-      "POST",
-      "reporting/reports",
-      { body: JSON.stringify(payload) },
-    );
-
+    setSubmitButtonDisabled(false);
     if (response?.error) {
       setError(response.error);
     } else {
@@ -268,6 +255,7 @@ export default function FacilityEmissionAllocationForm({
       onChange={handleChange}
       onSubmit={handleSubmit}
       error={error}
+      continueUrl={saveAndContinueUrl}
       formContext={{
         facility_emission_data: formData.basic_emission_allocation_data.concat(
           formData.fuel_excluded_emission_allocation_data,

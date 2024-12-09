@@ -28,7 +28,7 @@ interface Props {
   error?: any;
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
-  formContext?: { [key: string]: any };
+  formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
 }
 
 const MultiStepFormWithTaskList: React.FC<Props> = ({

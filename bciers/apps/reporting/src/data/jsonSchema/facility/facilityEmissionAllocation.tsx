@@ -4,9 +4,12 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import { RJSFSchema, UiSchema, WidgetProps } from "@rjsf/utils";
-
-import { FieldTemplateProps } from "@rjsf/utils";
+import {
+  RJSFSchema,
+  UiSchema,
+  WidgetProps,
+  FieldTemplateProps,
+} from "@rjsf/utils";
 
 /**
  * Widget to display the title of an emission allocation category
@@ -203,8 +206,10 @@ export const emissionAllocationSchema: RJSFSchema = {
           items: {
             type: "object",
             properties: {
+              report_product_id: {
+                type: "number",
+              },
               product_name: {
-                title: "Product Name",
                 type: "string",
               },
               allocated_quantity: {
@@ -259,6 +264,9 @@ export const emissionAllocationSchema: RJSFSchema = {
           items: {
             type: "object",
             properties: {
+              report_product_id: {
+                type: "number",
+              },
               product_name: {
                 type: "string",
               },
@@ -300,6 +308,7 @@ export const emissionAllocationUiSchema: UiSchema = {
   },
   allocation_other_methodology_description: {
     "ui:widget": "textarea",
+    "ui:rows": 5,
   },
   basic_emission_allocation_data_title: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
@@ -334,6 +343,9 @@ export const emissionAllocationUiSchema: UiSchema = {
         },
         "ui:FieldTemplate": FieldTemplate,
         items: {
+          report_product_id: {
+            "ui:widget": "hidden",
+          },
           product_name: {
             "ui:widget": "hidden",
           },
@@ -379,6 +391,9 @@ export const emissionAllocationUiSchema: UiSchema = {
         },
         "ui:FieldTemplate": FieldTemplate,
         items: {
+          report_product_id: {
+            "ui:widget": "hidden",
+          },
           product_name: {
             "ui:widget": "hidden",
           },
@@ -404,6 +419,9 @@ export const emissionAllocationUiSchema: UiSchema = {
       },
       "ui:FieldTemplate": FieldTemplate,
       items: {
+        report_product_id: {
+          "ui:widget": "hidden",
+        },
         product_name: {
           "ui:widget": "hidden",
         },
