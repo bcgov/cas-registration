@@ -32,7 +32,6 @@ from registration.schema.v2.operation import (
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
-    OperationNewEntrantApplicationRemove,
 )
 from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
