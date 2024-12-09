@@ -12,6 +12,8 @@ import {
 import OperatorForm from "../operators/OperatorForm";
 import FormBase from "@bciers/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 interface Props {
   formData: { [key: string]: any };
@@ -20,6 +22,9 @@ interface Props {
 
 const UserOperatorReviewForm = ({ operatorSchema, formData }: Props) => {
   const params = useParams();
+  const role = useSessionRole();
+  const allowApprove =
+    role === FrontEndRoles.CAS_ANALYST || role === FrontEndRoles.CAS_DIRECTOR;
   const userOperatorId = params.id;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [rerenderKey, setRerenderKey] = useState(
@@ -45,13 +50,15 @@ const UserOperatorReviewForm = ({ operatorSchema, formData }: Props) => {
           title: "Admin Information",
           component: (
             <>
-              <UserOperatorReview
-                key={rerenderKey}
-                userOperator={formData as UserOperatorFormData}
-                userOperatorId={userOperatorId as string}
-                operatorId={formData?.operator_id}
-                showRequestChanges={false}
-              />
+              {allowApprove && (
+                <UserOperatorReview
+                  key={rerenderKey}
+                  userOperator={formData as UserOperatorFormData}
+                  userOperatorId={userOperatorId as string}
+                  operatorId={formData?.operator_id}
+                  showRequestChanges={false}
+                />
+              )}
               <FormBase
                 schema={userOperatorAdministrationSchema}
                 uiSchema={userOperatorAdministrationUiSchema}

@@ -9,7 +9,6 @@ export default async function Page({
 }) {
   return (
     <Suspense fallback={<Loading />}>
-      am i her
       <UserOperator params={params} />
     </Suspense>
   );
