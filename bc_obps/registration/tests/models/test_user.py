@@ -140,6 +140,9 @@ class UserModelTest(BaseTestCase):
             ("reportattachment_created", "report attachment", None, None),
             ("reportattachment_updated", "report attachment", None, None),
             ("reportattachment_archived", "report attachment", None, None),
+            ("reportproductemissionallocation_created", "report product emission allocation", None, None),
+            ("reportproductemissionallocation_updated", "report product emission allocation", None, None),
+            ("reportproductemissionallocation_archived", "report product emission allocation", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):

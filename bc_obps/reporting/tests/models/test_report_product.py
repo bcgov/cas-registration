@@ -32,6 +32,7 @@ class ReportProductModelTest(BaseTestCase):
             ("storage_quantity_end_of_period", "storage quantity end of period", None, None),
             ("quantity_sold_during_period", "quantity sold during period", None, None),
             ("quantity_throughput_during_period", "quantity throughput during period", None, None),
+            ("reportproductemissionallocation_records", "report product emission allocation", None, 0),
         ]
 
     def test_unique_report_product_per_product_and_facility_report(self):
