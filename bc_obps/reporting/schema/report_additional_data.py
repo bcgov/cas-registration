@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from pydantic import alias_generators
 
 from reporting.models import ReportAdditionalData
@@ -10,28 +10,34 @@ def to_snake(string: str) -> str:
     return alias_generators.to_snake(string)
 
 
-class ReportAdditionalDataOut(ModelSchema):
+class CaptureEmissionSchema(Schema):
     """
-    Schema for the get report operation endpoint request output
+    Schema for the captured emissions section.
     """
 
-    class Meta:
-        # alias_generator = to_snake
-        model = ReportAdditionalData
-        populate_by_name = True
-        fields = [
-            'capture_emissions',
-            'emissions_on_site_use',
-            'emissions_on_site_sequestration',
-            'emissions_off_site_transfer',
-            'electricity_generated',
-            'report_version',
-        ]
+    capture_type: Optional[List[str]] = None
+    capture_emissions: Optional[bool] = False
+    emissions_on_site_use: Optional[int] = None
+    emissions_on_site_sequestration: Optional[int] = None
+    emissions_off_site_transfer: Optional[int] = None
+
+
+class AdditionalDataSectionSchema(Schema):
+    """
+    Schema for additional data section
+    """
+
+    electricity_generated: Optional[int] = None
+
+
+class ReportAdditionalDataOut(Schema):
+    captured_emissions_section: Optional[CaptureEmissionSchema] = None
+    additional_emissions_section: Optional[AdditionalDataSectionSchema] = None
 
 
 class ReportAdditionalDataIn(ModelSchema):
     """
-    Schema for the save report contact endpoint request input.
+    Schema for the save report additional data endpoint request input.
     """
 
     report_version: int
