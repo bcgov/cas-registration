@@ -14,7 +14,7 @@ import {
   Contact,
   ContactRow,
 } from "@reporting/src/app/components/operations/types";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
@@ -41,13 +41,13 @@ const PersonResponsible = ({ version_id }: Props) => {
   const [operationType, setOperationType] = useState(null);
 
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
-  const router = useRouter();
 
   const queryString = serializeSearchParams(useSearchParams());
-  const saveAndContinueUrl =
+  const continueUrl =
     operationType === "Linear Facility Operation"
-      ? `/reports/${version_id}/facilities/lfo-facilities${queryString}`
-      : `/reports/${version_id}/facilities/${facilityId}/review${queryString}&facilities_title=Facility`;
+      ? `/reporting/reports/${version_id}/facilities/lfo-facilities${queryString}`
+      : `/reporting/reports/${version_id}/facilities/${facilityId}/review${queryString}&facilities_title=Facility`;
+  const backUrl = `/reports/${version_id}/review-operator-data${queryString}`;
 
   const taskListElements: TaskListElement[] = [
     {
@@ -70,7 +70,7 @@ const PersonResponsible = ({ version_id }: Props) => {
         {
           type: "Page",
           title: "Review facilities",
-          link: saveAndContinueUrl,
+          link: continueUrl,
         },
       ],
     },
@@ -171,7 +171,7 @@ const PersonResponsible = ({ version_id }: Props) => {
     }
   }, 300);
 
-  const handleSubmit = async () => {
+  const handleSave = async () => {
     const endpoint = `reporting/report-version/${version_id}/report-contact`;
     const method = "POST";
     const payload = {
@@ -179,13 +179,9 @@ const PersonResponsible = ({ version_id }: Props) => {
       ...contactFormData,
     };
 
-    const response = await actionHandler(endpoint, method, endpoint, {
+    await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
-
-    if (response) {
-      router.push(`${saveAndContinueUrl}`);
-    }
   };
 
   const handleSync = async () => {
@@ -215,6 +211,8 @@ const PersonResponsible = ({ version_id }: Props) => {
           "Sign-off & Submit",
         ]}
         cancelUrl={"/reports"}
+        backUrl={backUrl}
+        continueUrl={continueUrl}
         taskListElements={taskListElements}
         schema={schema}
         uiSchema={{
@@ -228,8 +226,8 @@ const PersonResponsible = ({ version_id }: Props) => {
         }}
         formData={formData}
         onChange={handleContactSelect}
-        onSubmit={handleSubmit}
-        submitButtonDisabled={!selectedContactId}
+        onSubmit={handleSave}
+        saveButtonDisabled={!selectedContactId}
       />
     </>
   );

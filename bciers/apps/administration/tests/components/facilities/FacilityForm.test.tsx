@@ -27,7 +27,7 @@ import { expect } from "vitest";
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
 const facilityName = "bloop";
-const urlOperationFacilities = `/operations/${operationId}/facilities`;
+const urlOperationFacilities = `/operations/${operationId}/facilities?`;
 const endPoint = "registration/facilities";
 const revalidatePathPost = `/operations/${operationId}/facilities`;
 

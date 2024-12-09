@@ -78,6 +78,7 @@ export default function SignOffPage() {
           buttonText={"Submit Report"}
           onChange={handleChange}
           submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
+          continueUrl={""}
         />
       )}
     </>
