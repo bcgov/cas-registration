@@ -4,27 +4,24 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import ComponentAccordion from "@bciers/components/form/ComponentAccordion";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-import { RJSFSchema } from "@rjsf/utils";
-import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/src/enums";
 import UserOperatorReview from "./UserOperatorReview";
 import {
-  userOperatorInternalUserUiSchema,
-  userOperatorUserInformationPage2,
+  userOperatorAdministrationSchema,
+  userOperatorAdministrationUiSchema,
 } from "../../data/jsonSchema/userOperator";
 import OperatorForm from "../operators/OperatorForm";
 import FormBase from "@bciers/components/form/FormBase";
-import { createOperatorSchema } from "../../data/jsonSchema/operator";
+import { RJSFSchema } from "@rjsf/utils";
 
 interface Props {
-  formData: UserOperatorFormData;
-  schema: RJSFSchema;
+  formData: { [key: string]: any };
+  operatorSchema: RJSFSchema;
 }
 
-const UserOperatorReviewForm = async ({ formData, schema }: Props) => {
+const UserOperatorReviewForm = ({ operatorSchema, formData }: Props) => {
   const params = useParams();
   const userOperatorId = params.id;
-  const isOperatorStatusDeclined =
-    formData.operator_status === OperatorStatus.DECLINED;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [rerenderKey, setRerenderKey] = useState(
     crypto.getRandomValues(new Uint32Array(1))[0],
   );
@@ -37,7 +34,7 @@ const UserOperatorReviewForm = async ({ formData, schema }: Props) => {
           component: (
             <OperatorForm
               showTasklist={false}
-              schema={await createOperatorSchema()}
+              schema={operatorSchema}
               formData={formData}
               isCreating={false}
               isInternalUser={true}
@@ -56,8 +53,8 @@ const UserOperatorReviewForm = async ({ formData, schema }: Props) => {
                 showRequestChanges={false}
               />
               <FormBase
-                schema={userOperatorUserInformationPage2}
-                uiSchema={userOperatorInternalUserUiSchema}
+                schema={userOperatorAdministrationSchema}
+                uiSchema={userOperatorAdministrationUiSchema}
                 formData={formData}
                 disabled
                 // Pass children as prop so RJSF doesn't render submit button

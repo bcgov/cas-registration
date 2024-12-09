@@ -1,48 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
-import provinceOptions from "@bciers/data/provinces.json";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
-import {
-  OperatorMailingAddressTitle,
-  OperatorPhysicalAddressTitle,
-  ParentCompanyMailingAddressTitle,
-  ParentCompanyPhysicalAddressTitle,
-  SeniorOfficerTitle,
-} from "@/app/components/form/titles/userOperatorTitles";
-import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
-import { createOperatorSchema } from "./operator";
-// import { operatorSchema } from "./operator";
 
-const subheading = {
-  "ui:classNames": "text-bc-bg-blue text-start text-lg",
-  "ui:FieldTemplate": TitleOnlyFieldTemplate,
-};
-
-export const createUserOperatorPage1 = async ()=>{
-const operatorSchema = await createOperatorSchema()
-if ("error" in operatorSchema) {
-  throw new Error("Failed to retrieve business structure information");
-}
-
-  return {
-    type: "object",
-    title: "Operator Information",
-    
-
-    properties: {
-      // @ts-ignore
-      ...operatorSchema.properties.section1.properties,
-       // @ts-ignore
-      ...operatorSchema.properties.section2.properties,
-       // @ts-ignore
-      ...operatorSchema.properties.section3.properties
-    },
-    
-  };
-}
-
-
-export const userOperatorUserInformationPage2: RJSFSchema = {
+export const userOperatorAdministrationSchema: RJSFSchema = {
   type: "object",
   title: "Admin Information",
   properties: {
@@ -77,24 +36,9 @@ export const userOperatorUserInformationPage2: RJSFSchema = {
   },
 };
 
-export const createUserOperatorInternalUserSchema = async ()=>{
-
-  return {
-    type: "object",
-    properties: {
-     
-      userOperatorPage1: await createUserOperatorPage1(),
-      userOperatorUserInformationPage2,
-    },
-  } as RJSFSchema;
-}
-
-
-
-export const userOperatorUiSchema = {
+export const userOperatorAdministrationUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  // CONTACT INFO SECTION
   email: {
     "ui:widget": "EmailWidget",
   },
@@ -102,114 +46,6 @@ export const userOperatorUiSchema = {
     "ui:widget": "ComboBox",
     "ui:placeholder": "Select a province",
   },
-  is_senior_officer: {
-    "ui:widget": "CheckboxWidget",
-    "ui:options": {
-      label: false,
-    },
-  },
-  senior_officer_section: {
-    ...subheading,
-    "ui:title": SeniorOfficerTitle,
-  },
-  so_email: {
-    "ui:widget": "EmailWidget",
-  },
-  phone_number: {
-    "ui:widget": "PhoneWidget",
-  },
-  so_phone_number: {
-    "ui:widget": "PhoneWidget",
-  },
-  postal_code: {
-    "ui:widget": "PostalCodeWidget",
-  },
-  // OPERATOR INFO SECTION
-  mailing_address_section: {
-    ...subheading,
-    "ui:title": OperatorMailingAddressTitle,
-  },
-  physical_address_section: {
-    ...subheading,
-    "ui:title": OperatorPhysicalAddressTitle,
-  },
-  mailing_address_same_as_physical: {
-    "ui:widget": "RadioWidget",
-  },
-  website: {
-    "ui:widget": "URLWidget",
-  },
-  physical_province: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select a province",
-  },
-  mailing_province: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select a province",
-  },
-  business_structure: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select a business structure",
-  },
-  physical_postal_code: {
-    "ui:widget": "PostalCodeWidget",
-  },
-  mailing_postal_code: {
-    "ui:widget": "PostalCodeWidget",
-  },
-  // PARENT OPERATORS SECTION
-  parent_operators_section: {
-    ...subheading,
-  },
-  operator_has_parent_operators: {
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:widget": "RadioWidget",
-  },
-  parent_operators_array: {
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
-    "ui:options": {
-      label: false,
-      arrayAddLabel: "Add another parent company",
-      title: "Parent Company Information - Parent Company",
-    },
-    items: {
-      po_physical_address_section: {
-        ...subheading,
-        "ui:title": ParentCompanyPhysicalAddressTitle,
-      },
-      po_mailing_address_same_as_physical: {
-        "ui:widget": "RadioWidget",
-      },
-      po_business_structure: {
-        "ui:widget": "ComboBox",
-        "ui:placeholder": "Select a business structure",
-      },
-      po_physical_province: {
-        "ui:widget": "ComboBox",
-        "ui:placeholder": "Select a province",
-      },
-      po_mailing_province: {
-        "ui:widget": "ComboBox",
-        "ui:placeholder": "Select a province",
-      },
-      po_mailing_address_section: {
-        ...subheading,
-        "ui:title": ParentCompanyMailingAddressTitle,
-      },
-      po_physical_postal_code: {
-        "ui:widget": "PostalCodeWidget",
-      },
-      po_mailing_postal_code: {
-        "ui:widget": "PostalCodeWidget",
-      },
-      operator_index: { "ui:widget": "hidden" },
-    },
-  },
-};
-
-export const userOperatorInternalUserUiSchema = {
-  ...userOperatorUiSchema,
   // Remove headings since titles are displayed in Accordion header
   "ui:options": {
     label: false,
