@@ -25,6 +25,7 @@ interface SingleStepTaskListFormProps {
   mode?: FormMode;
   allowEdit?: boolean;
   formContext?: { [key: string]: any };
+  showTasklist?: boolean;
 }
 
 const SingleStepTaskListForm = ({
