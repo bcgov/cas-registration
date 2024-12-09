@@ -21,6 +21,7 @@ const Modal: React.FC<Props> = ({ children, id, onClose, open, title }) => {
       aria-labelledby={title}
       maxWidth="xl"
       data-testid="modal"
+      PaperProps={{ sx: { borderRadius: "2px" } }}
     >
       <DialogTitle
         sx={{
