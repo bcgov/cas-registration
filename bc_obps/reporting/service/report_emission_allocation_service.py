@@ -56,18 +56,18 @@ class ReportEmissionAllocationService:
         total_reportable_emissions = 0
         for category, data in all_emission_categories_totals.items():
             if (
-                data["type"] == "other_excluded"
+                data["emission_category_type"] == "other_excluded"
             ):  # these categories cannot currently be allocated to products, so we skip them
                 continue
             if (
-                data["type"] == "basic"
+                data["emission_category_type"] == "basic"
             ):  # only these categories are reportable, so we sum them up to get the total reportable emissions
-                total_reportable_emissions += data["total"]
+                total_reportable_emissions += data["total_category_allocations"]
             # Build product data
             products = []
             for rp in report_products:
                 product_emission = report_product_emission_allocations.filter(
-                    report_product_id=rp.id, emission_category__category_name=category
+                    report_product_id=rp.id, emission_category__category_name=data["category_name"]
                 ).first()
                 product = ReportProductEmissionAllocationSchemaOut(
                     report_product_id=rp.pk,
@@ -78,10 +78,11 @@ class ReportEmissionAllocationService:
 
             # Add to the final response
             emissions_total = ReportFacilityEmissionsSchemaOut(
-                emission_category=category,
+                emission_category_name=data["category_name"],
+                emission_category_id=category,
                 products=products,
-                emission_total=data["total"],
-                category_type=data["type"],
+                emission_total=data["total_category_allocations"],
+                category_type=data["emission_category_type"],
             )
             report_product_emission_allocations_data.append(emissions_total)
 
@@ -114,7 +115,6 @@ class ReportEmissionAllocationService:
 
         # Update or create the emission allocations from the data
         for allocations in report_emission_allocations:
-            emission_category_id = EmissionCategory.objects.get(category_name=allocations.emission_category_name).pk
             # emission_total = allocations.emission_total # TODO: validation should be done with this value to make sure we are not under- or over-allocating
             products_with_allocations = []
             for product in allocations.products:
@@ -123,7 +123,7 @@ class ReportEmissionAllocationService:
                     report_version_id=report_version_id,
                     facility_report_id=facility_report_id,
                     report_product_id=product.report_product_id,
-                    emission_category_id=emission_category_id,
+                    emission_category_id=allocations.emission_category_id,
                     defaults={
                         "allocated_quantity": product.allocated_quantity,
                         "allocation_methodology": allocation_methodology,
@@ -137,7 +137,7 @@ class ReportEmissionAllocationService:
             ReportProductEmissionAllocation.objects.filter(
                 report_version_id=report_version_id,
                 facility_report_id=facility_report_id,
-                emission_category_id=emission_category_id,
+                emission_category_id=allocations.emission_category_id,
             ).exclude(report_product_id__in=products_with_allocations).delete()
 
     @staticmethod
@@ -169,18 +169,18 @@ class ReportEmissionAllocationService:
             facility_report_id (int): The ID of the facility report version.
 
         Returns:
-            dict: emission_category_name -> {id, total_emission_allocations, emission_category_type}
+            dict: emission_category_id -> {category_name, total_category_allocations, emission_category_type}
         """
         emission_categories = EmissionCategory.objects.all()
         emission_categories_totals = {}
         for category in emission_categories:
             emission_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-                facility_report_id, category.id
+                facility_report_id, category.pk
             )
-            emission_categories_totals[category.category_name] = {
-                "id": category.id,
-                "total": emission_total,
-                "type": category.category_type,
+            emission_categories_totals[category.pk] = {
+                "category_name": category.category_name,
+                "total_category_allocations": emission_total,
+                "emission_category_type": category.category_type,
             }
 
         return emission_categories_totals
