@@ -60,7 +60,7 @@ export default function OperationReview({
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [facilityId, setFacilityId] = useState<string | null>(null);
   const queryString = serializeSearchParams(useSearchParams());
-  const continueUrl = `/reporting/reports/${version_id}/person-responsible${queryString}`;
+  const continueUrl = `/reports/${version_id}/person-responsible${queryString}`;
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
@@ -214,8 +214,10 @@ export default function OperationReview({
         onConfirm={confirmReportTypeChange}
         confirmText="Change report type"
       >
-        Are you sure you want to change your report type? If you proceed, all of
-        the form data you have entered will be lost upon saving.
+        <p>
+          Are you sure you want to change your report type? If you proceed, all
+          of the form data you have entered will be lost upon saving.
+        </p>
       </SimpleModal>
       <MultiStepFormWithTaskList
         initialStep={0}
