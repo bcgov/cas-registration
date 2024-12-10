@@ -11,6 +11,7 @@ import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
+import { getBusinessStructures } from "../operations/mocks";
 
 useSession.mockReturnValue({
   get: vi.fn(),
@@ -295,6 +296,11 @@ const fillPartnerParentFields = async () => {
 describe("OperatorForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    getBusinessStructures.mockResolvedValue([
+      { name: "General Partnership" },
+      { name: "BC Corporation" },
+      { name: "Limited Liability Partnership" },
+    ]);
   });
   it("renders the empty operator form when creating a new operator", async () => {
     render(

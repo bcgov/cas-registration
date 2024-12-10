@@ -6,8 +6,9 @@ import {
   useSession,
 } from "@bciers/testConfig/mocks";
 import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
-import { getBusinessStructures, getCurrentOperator } from "./mocks";
+import { getCurrentOperator } from "./mocks";
 import OperatorPage from "apps/administration/app/components/operators/OperatorPage";
+import { getBusinessStructures } from "../operations/mocks";
 
 useRouter.mockReturnValue({
   query: {},
@@ -101,7 +102,7 @@ describe("Operator component", () => {
       bc_corporate_registry_number: "def1234567",
       mailing_address: 5,
     });
-    getBusinessStructures.mockReturnValueOnce([
+    getBusinessStructures.mockReturnValue([
       { name: "General Partnership" },
       { name: "BC Corporation" },
       { name: "Extra Provincially Registered Company" },
@@ -121,12 +122,15 @@ describe("Operator component", () => {
     // Mock the session data
     mockUseSession();
     // Mock getBusinessStructures for create mode
-    getBusinessStructures.mockReturnValueOnce([
+    getBusinessStructures.mockReturnValue([
       { name: "General Partnership" },
       { name: "BC Corporation" },
       { name: "Extra Provincially Registered Company" },
+      { name: "Sole Proprietorship" },
+      { name: "Limited Liability Partnership" },
+      { name: "BC Incorporated Society" },
+      { name: "Extraprovincial Non-Share Corporation" },
     ]);
-
     // Render the page with isCreating set to true
     render(await OperatorPage({ isCreating: true }));
 

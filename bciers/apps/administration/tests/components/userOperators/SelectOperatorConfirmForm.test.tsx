@@ -12,16 +12,12 @@ const operatorJSON = {
   legal_name: "Operator 1 Legal Name",
   trade_name: "Operator 1 Trade Name",
   cra_business_number: "123456789",
-  physical_street_address: "123 Main St",
   bc_corporate_registry_number: "abc1234567",
   business_structure: "Sole Proprietorship",
-  physical_municipality: "Victoria",
-  physical_province: "BC",
-  physical_postal_code: "V1V 1V1",
-  mailing_street_address: "test mailing street address",
-  mailing_municipality: "test mailing municipality",
-  mailing_province: "BC",
-  mailing_postal_code: "V0V0V0",
+  street_address: "123 Main St",
+  municipality: "Victoria",
+  province: "BC",
+  postal_code: "V1V 1V1",
   website: "https://www.example2.com",
   contacts: [101, 102, 103],
 };
@@ -51,10 +47,8 @@ describe("Select Operator Confirm Form", () => {
       screen.getByText(operatorJSON.cra_business_number),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("Physical Address")).toBeInTheDocument();
-    expect(
-      screen.getByText(operatorJSON.physical_street_address),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Street Address")).toBeInTheDocument();
+    expect(screen.getByText(operatorJSON.street_address)).toBeInTheDocument();
 
     expectButton("Yes this is my operator");
     expect(screen.getByText(/This is not my operator./)).toBeInTheDocument();

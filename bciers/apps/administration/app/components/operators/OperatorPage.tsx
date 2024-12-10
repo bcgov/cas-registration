@@ -1,13 +1,11 @@
 import OperatorForm from "./OperatorForm";
-import { RJSFSchema } from "@rjsf/utils";
 import getCurrentOperator from "./getCurrentOperator";
-import getBusinessStructures from "./getBusinessStructures";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 import getOperator from "./getOperator";
 import { UUID } from "crypto";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import { createOperatorSchema } from "../../data/jsonSchema/operator";
+import { getBusinessStructures } from "@bciers/actions/api";
 
 // 🧩 Main component
 export default async function OperatorPage({

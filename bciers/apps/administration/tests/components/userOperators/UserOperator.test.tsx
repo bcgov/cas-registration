@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { auth } from "@bciers/testConfig/mocks";
-import { getUserOperatorFormData, getBusinessStructures } from "./mocks";
+import { auth, useSession } from "@bciers/testConfig/mocks";
+import { getUserOperatorFormData } from "./mocks";
 import UserOperator from "apps/administration/app/components/userOperators/UserOperator";
+import { getBusinessStructures } from "../operations/mocks";
 
 describe("UserOperator component", () => {
   beforeEach(async () => {
