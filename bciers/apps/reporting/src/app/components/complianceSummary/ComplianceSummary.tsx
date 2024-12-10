@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
@@ -9,7 +9,7 @@ import {
   complianceSummaryUiSchema,
   complianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
-import Link from "next/link";
+import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 
 interface Props {
   versionId: number;
@@ -51,7 +51,7 @@ const ComplianceSummary: React.FC<Props> = ({
   ];
 
   const backRef = `/reports/${versionId}/additional-reporting-data`;
-  const continueRef = `/reports/${versionId}/sign-off`;
+  const continueRef = `/reports/${versionId}/verification`;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -66,16 +66,11 @@ const ComplianceSummary: React.FC<Props> = ({
             uiSchema={complianceSummaryUiSchema}
             formData={summaryFormData}
           >
-            <Box display="flex" justifyContent="space-between" mt={3}>
-              <Link href={backRef} passHref>
-                <Button variant="outlined">Back</Button>
-              </Link>
-              <Link href={continueRef} passHref>
-                <Button variant="contained" color="primary">
-                  Continue
-                </Button>
-              </Link>
-            </Box>
+            <ReportingStepButtons
+              backUrl={backRef}
+              continueUrl={continueRef}
+              saveButtonDisabled={true}
+            />
           </FormBase>
         </div>
       </div>

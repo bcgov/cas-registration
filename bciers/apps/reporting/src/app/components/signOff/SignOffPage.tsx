@@ -11,6 +11,7 @@ import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormData } from "@reporting/src/app/components/signOff/types";
 import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
+import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
@@ -29,10 +30,12 @@ const taskListElements: TaskListElement[] = [
   },
 ];
 
-export default function SignOffPage() {
+const SignOffPage: React.FC<HasReportVersion> = ({ version_id }) => {
   const [formState, setFormState] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+
+  const backURL = `/reports/${version_id}/final-review`;
 
   const allChecked = (formData: SignOffFormData) => {
     return Object.values(formData).every((value) => value);
@@ -80,8 +83,11 @@ export default function SignOffPage() {
           saveButtonDisabled={true}
           submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
           continueUrl={""}
+          backUrl={backURL}
         />
       )}
     </>
   );
-}
+};
+
+export default SignOffPage;

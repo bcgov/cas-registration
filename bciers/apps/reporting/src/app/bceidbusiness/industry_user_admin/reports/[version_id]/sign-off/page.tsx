@@ -1,5 +1,4 @@
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
 import SignOffPage from "@reporting/src/app/components/signOff/SignOffPage";
 
-export default async function Page() {
-  return <SignOffPage />;
-}
+export default defaultPageFactory(SignOffPage);

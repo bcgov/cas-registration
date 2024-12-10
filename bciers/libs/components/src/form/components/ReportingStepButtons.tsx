@@ -13,6 +13,7 @@ interface StepButtonProps {
   submitButtonDisabled?: boolean;
   saveAndContinue?: () => void;
   buttonText?: string;
+  noFormSave?: () => void;
 }
 
 const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
@@ -25,6 +26,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   submitButtonDisabled,
   saveAndContinue,
   buttonText,
+  noFormSave,
 }) => {
   const router = useRouter();
   const saveButtonContent = isSaving ? (
@@ -70,6 +72,9 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
           disabled={isSaving || saveButtonDisabled}
           sx={{ mx: 3 }}
           type="submit"
+          onClick={() => {
+            if (noFormSave) noFormSave();
+          }}
         >
           {saveButtonContent}
         </Button>
@@ -80,8 +85,9 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
         disabled={isSaving || submitButtonDisabled}
         sx={{ px: 4 }}
         onClick={() => {
-          if (saveAndContinue !== undefined) saveAndContinue();
-          else {
+          if (saveAndContinue !== undefined) {
+            saveAndContinue();
+          } else {
             isRedirecting = true;
             router.push(continueUrl);
           }

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { Alert, Box, Button } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
-import Link from "next/link";
+import ReportingStepButtons from "./components/ReportingStepButtons";
 
 /**
  * Similar to the MultiStepFormWithTaskList,
@@ -16,12 +16,17 @@ interface Props {
   initialStep: number;
   steps: string[];
   taskListElements: TaskListElement[];
-  onSubmit: () => Promise<void>;
+  onSubmit: () => void;
   children?: React.ReactNode;
   cancelUrl?: string;
+  backUrl?: string;
+  continueUrl: string;
   saveButtonText?: string;
   submittingButtonText?: string;
   error?: string;
+  isSaving?: boolean;
+  isRedirecting?: boolean;
+  noFormSave?: () => void;
 }
 
 const MultiStepWrapperWithTaskList: React.FC<Props> = ({
@@ -30,19 +35,14 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   taskListElements,
   onSubmit,
   children,
-  cancelUrl,
-  saveButtonText,
+  backUrl,
+  continueUrl,
   submittingButtonText,
   error,
+  isSaving,
+  isRedirecting,
+  noFormSave,
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    await onSubmit();
-    setIsSubmitting(false);
-  };
-
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -60,24 +60,15 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
         </div>
         <div className="w-full">
           {children}
-          <Box display="flex" justifyContent="space-between" mt={3}>
-            {cancelUrl && (
-              <Link href={cancelUrl} passHref>
-                <Button variant="outlined">Cancel</Button>
-              </Link>
-            )}
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={isSubmitting}
-              onClick={handleSubmit}
-            >
-              {isSubmitting
-                ? submittingButtonText ?? "Saving..."
-                : saveButtonText ?? "Save and Continue"}
-            </Button>
-          </Box>
+          <ReportingStepButtons
+            backUrl={backUrl}
+            continueUrl={continueUrl}
+            buttonText={submittingButtonText}
+            saveAndContinue={onSubmit}
+            isRedirecting={isRedirecting}
+            isSaving={isSaving}
+            noFormSave={noFormSave}
+          />
         </div>
       </div>
     </Box>
