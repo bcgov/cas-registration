@@ -1,32 +1,25 @@
-import { actionHandler } from "@bciers/actions";
-import { validate as isValidUUID } from "uuid";
 import { UserOperatorFormData } from "./types";
 import UserOperatorReviewForm from "./UserOperatorReviewForm";
 import { createOperatorSchema } from "../../data/jsonSchema/operator";
-
-export async function getUserOperatorFormData(id: string) {
-  if (!id || !isValidUUID(id)) return {};
-  return actionHandler(
-    `registration/user-operators/${id}`,
-    "GET",
-    `/user-operator/${id}`,
-  );
-}
+import getUserOperatorFormData from "./getUserOperatorFormData";
 
 export default async function UserOperator({
   params,
 }: Readonly<{
-  params?: { id?: string; readonly?: boolean };
+  params?: { userOperatorId?: string; readonly?: boolean };
 }>) {
-  const userOperatorId = params?.id;
+  const userOperatorId = params?.userOperatorId;
 
   const userOperatorData: UserOperatorFormData | { error: string } =
     await getUserOperatorFormData(userOperatorId as string);
-
+  if (!userOperatorData || userOperatorData?.error) {
+    throw new Error("Failed to retrieve operator and admin information");
+  }
   return (
     <UserOperatorReviewForm
       operatorSchema={await createOperatorSchema()}
       formData={userOperatorData}
+      userOperatorId={params.userOperatorId}
     />
   );
 }
