@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 interface Props {
   children: React.ReactNode;
   id?: string;
-  onClose: any;
+  onClose?: () => void;
   open: boolean;
   title?: string;
 }

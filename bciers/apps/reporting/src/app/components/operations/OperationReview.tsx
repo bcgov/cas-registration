@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import Modal from "@bciers/components/modal/Modal";
+import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
 import {
   operationReviewSchema,
@@ -14,7 +14,6 @@ import { formatDate } from "@reporting/src/app/utils/formatDate";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { getOperationInformationTaskList } from "../taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
-import { Button, DialogActions, DialogContentText } from "@mui/material";
 
 interface Props {
   formData: any;
@@ -46,8 +45,8 @@ export default function OperationReview({
   registrationPurpose,
   facilityReport,
 }: Props) {
-  const [reportTypeConfirmationOpen, setReportTypeConfirmationOpen] =
-    useState(true);
+  const [pendingChangeReportType, setPendingChangeReportType] =
+    useState<string>();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
@@ -147,6 +146,16 @@ export default function OperationReview({
   const onChangeHandler = (data: { formData: any }) => {
     const updatedFormData = data.formData;
 
+    if (
+      formDataState.operation_report_type !== undefined &&
+      formDataState.operation_report_type !==
+        updatedFormData.operation_report_type
+    ) {
+      setPendingChangeReportType(updatedFormData.operation_report_type);
+      updatedFormData.operation_report_type =
+        formDataState.operation_report_type;
+    }
+
     const helperText =
       updatedFormData.operation_report_type === "Simple Report" ? (
         <small>
@@ -178,29 +187,30 @@ export default function OperationReview({
     return <div>No version ID found (TBD)</div>;
   }
 
+  const confirmReportTypeChange = () => {
+    setFormDataState({
+      ...formDataState,
+      operation_report_type: pendingChangeReportType,
+    });
+    setPendingChangeReportType(undefined);
+  };
+  const cancelReportTypeChange = () => {
+    setPendingChangeReportType(undefined);
+  };
+
   return (
 
     <>
-      <Modal
-        title="Confirm changing report type"
-        onClose={false}
-        open={reportTypeConfirmationOpen}
+      <SimpleModal
+        title="Confirmation"
+        open={pendingChangeReportType !== undefined}
+        onCancel={cancelReportTypeChange}
+        onConfirm={confirmReportTypeChange}
+        confirmText="Change report type"
       >
-        <DialogContentText>
-          <p>
-            Are you sure you want to change your report type? If you proceed,
-            all of the form data you have entered will be lost.
-          </p>
-        </DialogContentText>
-        <DialogActions>
-          <Button variant="outlined" color="primary">
-            Cancel
-          </Button>
-          <Button variant="contained" color="primary">
-            Change report type
-          </Button>
-        </DialogActions>
-      </Modal>
+        Are you sure you want to change your report type? If you proceed, all of
+        the form data you have entered will be lost upon saving.
+      </SimpleModal>
       <MultiStepFormWithTaskList
         initialStep={0}
         steps={multiStepHeaderSteps}
