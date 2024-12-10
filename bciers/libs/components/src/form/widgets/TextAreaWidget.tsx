@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { TextareaAutosize } from "@mui/base/TextareaAutosize";
+import { TextareaAutosize } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils";
 import {
   DARK_GREY_BG_COLOR,
