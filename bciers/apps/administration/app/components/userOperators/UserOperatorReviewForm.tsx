@@ -58,8 +58,6 @@ const UserOperatorReviewForm = ({
                   key={rerenderKey}
                   userOperator={formData as UserOperatorFormData}
                   userOperatorId={userOperatorId as string}
-                  operatorId={formData?.operator_id}
-                  showRequestChanges={false}
                 />
               )}
               <FormBase

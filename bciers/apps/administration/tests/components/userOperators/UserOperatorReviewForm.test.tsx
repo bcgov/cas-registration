@@ -46,10 +46,10 @@ describe("UserOperatorReview component", () => {
     );
     expect(
       screen.getByRole("button", { name: "Operation Information" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Admin Information" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     // testing a couple fields as a sample to ensure form data came through
     expect(screen.getByText(/Test Operator Name/i)).toBeInTheDocument();
     expect(screen.getByText(/Test User First Name/i)).toBeInTheDocument();

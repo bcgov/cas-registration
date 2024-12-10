@@ -1,78 +1,98 @@
-import { render, screen } from "@testing-library/react";
-import { auth } from "@bciers/testConfig/mocks";
-import { getBusinessStructures } from "./mocks";
-import UserOperatorReview from "apps/administration/app/components/userOperatorReviews/UserOperatorReview";
+import { render, screen, waitFor } from "@testing-library/react";
+import UserOperatorReview from "@/administration/app/components/userOperators/UserOperatorReview";
+import userEvent from "@testing-library/user-event";
+import { UserOperatorStatus } from "@bciers/utils/src/enums";
+import { actionHandler } from "@bciers/testConfig/mocks";
 
 describe("UserOperatorReview component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
   });
-  it("renders the appropriate error component when getUserOperatorReviewFormData fails", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_analyst" },
-    });
-    getUserOperatorReviewFormData.mockReturnValueOnce({
-      error: "bad things",
-    });
+  it("renders the component", () => {
+    render(
+      <UserOperatorReview
+        // @ts-ignore
+        userOperator={{ status: UserOperatorStatus.PENDING }}
+        userOperatorId="1b06e328-715d-4642-b403-3392256d7344"
+      />,
+    );
 
-    await expect(async () => {
-      render(
-        await UserOperatorReview({
-          params: {
-            userOperatorReviewId: "1b06e328-715d-4642-b403-3392256d7344",
-          },
-        }),
-      );
-    }).rejects.toThrow("Failed to retrieve operator and admin information");
+    // note: the button text is different from its role
+    expect(
+      screen.getByRole("button", { name: "Approve application" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Reject application" }),
+    ).toBeVisible();
   });
 
-  it("renders the user operator form with form data", async () => {
-    // Mock auth (server components)
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_analyst" },
-    });
-    // Mock session (used in the child client component)
-    useSession.mockReturnValue({
-      get: vi.fn(),
-      data: { user: { app_role: "cas_analyst" } },
-    });
-    // mock business structures for form dropdown
-    getBusinessStructures.mockReturnValueOnce([
-      { name: "General Partnership" },
-      { name: "BC Corporation" },
-      { name: "Extra Provincially Registered Company" },
-    ]);
-    //   mock form data
-    getUserOperatorReviewFormData.mockReturnValueOnce({
-      legal_name: "Test Operator Name",
-      cra_business_number: 987654326,
-      bc_corporate_registry_number: "stu1234567",
-      business_structure: "BC Corporation",
-      street_address: "789 Oak St",
-      municipality: "Village",
-      province: "BC",
-      postal_code: "M2N 3P4",
-      operator_has_parent_operators: false,
-      parent_operators_array: [],
-      operator_has_partner_operators: false,
-      partner_operators_array: [],
-      first_name: "Test User First Name",
-      last_name: "3",
-      email: "test1@email.com",
-      phone_number: "+16044015432",
-      position_title: "Code Monkey",
-      bceid_business_name: "Example Business",
-      role: "pending",
-      status: "Pending",
-    });
+  it("approves the prime admin when the user clicks approve", async () => {
+    actionHandler.mockResolvedValueOnce({});
+
     render(
-      await UserOperatorReview({
-        params: {
-          userOperatorReviewId: "1b06e328-715d-4642-b403-3392256d7344",
-        },
-      }),
+      <UserOperatorReview
+        userOperatorId="1b06e328-715d-4642-b403-3392256d7344"
+        // @ts-ignore
+        userOperator={{ status: UserOperatorStatus.PENDING }}
+      />,
     );
-    expect(screen.getByText(/Test Operator Name/i)).toBeVisible();
-    expect(screen.getByText(/Test User First Name/i)).toBeVisible();
+
+    userEvent.click(screen.getByText(/Approve/i));
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Are you sure you want to approve the prime admin request?/,
+        ),
+      ).toBeVisible();
+    });
+    userEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/update-status",
+        "PUT",
+        "",
+        {
+          body: JSON.stringify({ role: "admin", status: "Approved" }),
+        },
+      );
+      expect(
+        screen.getByText(/You have approved the prime admin request./i),
+      ).toBeVisible();
+    });
+  });
+
+  it("declines the prime admin when the user clicks decline", async () => {
+    actionHandler.mockResolvedValueOnce({});
+
+    render(
+      <UserOperatorReview
+        userOperatorId="1b06e328-715d-4642-b403-3392256d7344"
+        // @ts-ignore
+        userOperator={{ status: UserOperatorStatus.PENDING }}
+      />,
+    );
+
+    userEvent.click(screen.getByText(/Decline/i));
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Are you sure you want to decline the prime admin request?/,
+        ),
+      ).toBeVisible();
+    });
+    userEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/update-status",
+        "PUT",
+        "",
+        {
+          body: JSON.stringify({ role: "admin", status: "Declined" }),
+        },
+      );
+      expect(
+        screen.getByText(/You have declined the prime admin request./i),
+      ).toBeVisible();
+    });
   });
 });
