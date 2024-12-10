@@ -151,7 +151,7 @@ export default function FacilityEmissionAllocationForm({
     ];
     let errorMessage;
 
-    // Initialize a map to store total allocated quantities by product_id
+    // Initialize a map to store total allocated quantities by report_product_id
     const productAllocations: Record<string, number> = {};
 
     // Iterate through each category and recalculate allocated emissions data for the category
@@ -163,9 +163,10 @@ export default function FacilityEmissionAllocationForm({
             const allocatedQuantity =
               parseFloat(product.allocated_quantity as any) || 0;
 
-            // Accumulate the allocated quantity for this product_id
-            productAllocations[product.product_id] =
-              (productAllocations[product.product_id] || 0) + allocatedQuantity;
+            // Accumulate the allocated quantity for this report_product_id
+            productAllocations[product.report_product_id] =
+              (productAllocations[product.report_product_id] || 0) +
+              allocatedQuantity;
 
             return {
               ...product,
@@ -180,11 +181,11 @@ export default function FacilityEmissionAllocationForm({
     if (updatedFormData.total_emission_allocations?.products) {
       updatedFormData.total_emission_allocations.products =
         updatedFormData.total_emission_allocations.products.map(
-          (product: { product_id: number }) => ({
+          (product: { report_product_id: number }) => ({
             ...product,
             allocated_quantity: String(
               parseFloat(
-                (productAllocations[product.product_id] || 0).toFixed(4),
+                (productAllocations[product.report_product_id] || 0).toFixed(4),
               ),
             ),
           }),
