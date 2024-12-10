@@ -4,6 +4,7 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
+import { TextAreaWidget } from "@bciers/components/form/widgets";
 import {
   RJSFSchema,
   UiSchema,
@@ -307,8 +308,8 @@ export const emissionAllocationUiSchema: UiSchema = {
     "ui:placeholder": "Select the allocation_methodology",
   },
   allocation_other_methodology_description: {
-    "ui:widget": "textarea",
-    "ui:rows": 5,
+    "ui:widget": "TextAreaWidget",
+    "ui:placeholder": "Methodology Description",
   },
   basic_emission_allocation_data_title: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
@@ -411,6 +412,10 @@ export const emissionAllocationUiSchema: UiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
+
+    facility_total_emissions: {
+      "ui:widget": ReadOnlyWidget,
+    },
     products: {
       "ui:options": {
         label: false,
