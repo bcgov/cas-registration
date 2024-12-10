@@ -18,10 +18,11 @@ class ReportNewEntrantEmissions(TimeStampedModel):
         db_comment="The emission category",
     )
 
-    emission = models.IntegerField(
+    emission = models.DecimalField(
         blank=True,
         null=True,
-        default=0,
+        decimal_places=4,
+        max_digits=20,
         db_comment="The amount of production associated with this report",
     )
 
