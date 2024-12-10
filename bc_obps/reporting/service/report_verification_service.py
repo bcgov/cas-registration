@@ -70,18 +70,18 @@ class ReportVerificationService:
             Operation.Purposes.OPTED_IN_OPERATION,
             Operation.Purposes.NEW_ENTRANT_OPERATION,
         }
-        ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal("25000000")
+        ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal("25000")  # 25,000 TCo₂e
 
         # Fetch registration purpose
         registration_purpose = ReportAdditionalDataService.get_registration_purpose_by_version_id(version_id)
+        registration_purpose_value = registration_purpose.get("registration_purpose", {})
 
-        # Compare the enum value
-        if isinstance(registration_purpose, Operation.Purposes):
-            if registration_purpose in REGULATED_OPERATION_PURPOSES:
-                return True
+        # Check the REGULATED_OPERATION_PURPOSES
+        if registration_purpose_value in REGULATED_OPERATION_PURPOSES:
+            return True
 
         # Emission threshold: verification data is required if the registration purpose is Reporting Operation, and total TCo₂e >= 25,000
-        if registration_purpose == Operation.Purposes.REPORTING_OPERATION:
+        if registration_purpose_value == Operation.Purposes.REPORTING_OPERATION:
             attributable_emissions = ComplianceService.get_emissions_attributable_for_reporting(version_id)
             return attributable_emissions >= ATTRIBUTABLE_EMISSION_THRESHOLD
 
