@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
@@ -114,10 +114,10 @@ export default function FacilityEmissionAllocationForm({
   const [error, setError] = useState<string | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
-  const router = useRouter();
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
-  const saveAndContinueUrl = `/reports/${version_id}/facilities/${facility_id}/additional-reporting-data${queryString}`;
+  const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data${queryString}`;
+  const backURL = `/reports/${version_id}/facilities/${facility_id}/production-data${queryString}`;
 
   // 📋 Get the task list elements for the form
   const taskListElements = getFacilitiesInformationTaskList(
@@ -236,8 +236,6 @@ export default function FacilityEmissionAllocationForm({
     setSubmitButtonDisabled(false);
     if (response?.error) {
       setError(response.error);
-    } else {
-      router.push(saveAndContinueUrl);
     }
   };
 
@@ -252,6 +250,7 @@ export default function FacilityEmissionAllocationForm({
       submitButtonDisabled={submitButtonDisabled}
       baseUrl="#"
       cancelUrl="#"
+      backUrl={backURL}
       onChange={handleChange}
       onSubmit={handleSubmit}
       error={error}
