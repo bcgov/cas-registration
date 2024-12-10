@@ -87,7 +87,7 @@ const getAssociatedProductName = (
       if (Array.isArray(context)) {
         const matchedCategory = context.find(
           (item: any) =>
-            item.emission_category?.toLowerCase().replace(/\s+/g, "_") ===
+            item.emission_category_name?.toLowerCase().replace(/\s+/g, "_") ===
             contextKey,
         );
         const productData = matchedCategory?.products?.[Number(productIndex)];
@@ -251,7 +251,7 @@ export const emissionAllocationSchema: RJSFSchema = {
     emissionCategoryAllocationItem: {
       type: "object",
       properties: {
-        emission_category: {
+        emission_category_name: {
           title: "Name",
           type: "string",
         },
@@ -325,7 +325,7 @@ export const emissionAllocationUiSchema: UiSchema = {
       label: false,
     },
     items: {
-      emission_category: {
+      emission_category_name: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:widget": EmissionAllocationTitleWidget,
         "ui:classNames": "emission-array-header w-full",
@@ -373,7 +373,7 @@ export const emissionAllocationUiSchema: UiSchema = {
       label: false,
     },
     items: {
-      emission_category: {
+      emission_category_name: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:widget": EmissionAllocationTitleWidget,
         "ui:classNames": "emission-array-header w-full",
