@@ -12,7 +12,10 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
-import { getOperationInformationTaskList } from "../taskList/1_operationInformation";
+import {
+  ActivePage,
+  getOperationInformationTaskList,
+} from "../taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 
 interface Props {
@@ -65,6 +68,7 @@ export default function OperationReview({
   const taskListElements = getOperationInformationTaskList(
     version_id,
     facilityId,
+    ActivePage.ReviewOperatorInfo,
   );
 
   const prepareFormData = (formDataObject: any) => {
