@@ -29,9 +29,9 @@ class ReportNewEntrantService:
         ).annotate(
             production_amount=Subquery(
                 ReportNewEntrantProduction.objects.filter(
-                    product=OuterRef('pk'),  # Referring to RegulatedProduct's pk
-                    report_new_entrant__report_version_id=version_id  # Filter by version_id
-                ).values('production_amount')[:1],  # Ensure we get only one production_amount
+                    product=OuterRef('pk'),
+                    report_new_entrant__report_version_id=version_id
+                ).values('production_amount')[:1],
                 output_field=DecimalField(),
             )
         )
