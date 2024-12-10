@@ -131,7 +131,7 @@ describe("The attachments form", () => {
     });
 
     await act(() => {
-      fireEvent.click(screen.getByText("Save and Continue"));
+      fireEvent.click(screen.getByText("Save & Continue"));
     });
 
     expect(mockPostAttachments).toHaveBeenCalledOnce();
