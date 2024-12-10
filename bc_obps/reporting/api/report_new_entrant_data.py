@@ -33,9 +33,9 @@ def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[
 
     naics_code = NaicsCodeService.get_naics_code_by_version_id(version_id=report_version_id)
     return 200, {
-        "new_entrant_data": NewEntrantDataSchema.from_orm(report_new_entrant),
-        "emissions": [ReportNewEntrantEmissionSchema.from_orm(emission) for emission in emission_category_data],
-        "products": [ReportNewEntrantProductionSchema.from_orm(product) for product in production_data],
+        "new_entrant_data": report_new_entrant,
+        "emissions": emission_category_data,
+        "products": production_data,
         "naics_code": naics_code,
     }
 
