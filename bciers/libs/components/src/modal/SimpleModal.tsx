@@ -21,9 +21,7 @@ const SimpleModal: React.FC<Props> = ({
 }) => {
   return (
     <Modal open={open} title={title}>
-      <DialogContentText>
-        <p>{children}</p>
-      </DialogContentText>
+      <DialogContentText>{children}</DialogContentText>
       <DialogActions>
         <Button variant="outlined" color="primary" onClick={onCancel}>
           {cancelText}
