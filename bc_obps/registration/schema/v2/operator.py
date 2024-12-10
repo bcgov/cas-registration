@@ -33,6 +33,7 @@ class OperatorOut(ModelSchema):
     municipality: str = Field('', alias="mailing_address.municipality")
     province: str = Field('', alias="mailing_address.province")
     postal_code: str = Field('', alias="mailing_address.postal_code")
+    operator_has_parent_operators: bool
     parent_operators_array: Optional[List[ParentOperatorOut]] = None
     partner_operators_array: Optional[List[PartnerOperatorOut]] = None
 

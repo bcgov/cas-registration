@@ -25,6 +25,7 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
         assert "municipality" in response_json
         assert "province" in response_json
         assert "postal_code" in response_json
+        # brianna
         assert "operator_has_parent_operators" in response_json
 
     # GET USER OPERATOR OPERATOR ID 401
