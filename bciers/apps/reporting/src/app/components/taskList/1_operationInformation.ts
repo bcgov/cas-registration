@@ -26,13 +26,13 @@ export const getOperationInformationTaskList: (
         {
           type: "Page",
           title: "Review Operation information",
-          link: `/reporting/reports/${versionId}/review-operator-data`,
+          link: `/reports/${versionId}/review-operator-data`,
           isActive: activeIndex === ActivePage.ReviewOperatorInfo,
         },
         {
           type: "Page",
           title: "Person responsible",
-          link: `/reporting/reports/${versionId}/person-responsible`,
+          link: `/reports/${versionId}/person-responsible`,
           isActive: activeIndex === ActivePage.PersonResponsible,
         },
         {
