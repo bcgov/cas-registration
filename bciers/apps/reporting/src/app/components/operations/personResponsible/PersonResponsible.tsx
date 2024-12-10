@@ -227,7 +227,6 @@ const PersonResponsible = ({ version_id }: Props) => {
         formData={formData}
         onChange={handleContactSelect}
         onSubmit={handleSave}
-        saveButtonDisabled={!selectedContactId}
       />
     </>
   );
