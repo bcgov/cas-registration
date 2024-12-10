@@ -1,5 +1,11 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
+export enum ActivePage {
+  "ReviewOperatorInfo" = 0,
+  "PersonResponsible",
+  "ReviewFacilities",
+}
+
 /**
  *
  * @param versionId Int. The version ID
@@ -8,8 +14,9 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
  */
 export const getOperationInformationTaskList: (
   versionId: number,
-  facilityId: string | null,
-) => TaskListElement[] = (versionId, facilityId = null) => {
+  facilityId?: string | null,
+  activeIndex?: ActivePage | number,
+) => TaskListElement[] = (versionId, facilityId, activeIndex) => {
   return [
     {
       type: "Section",
@@ -20,11 +27,13 @@ export const getOperationInformationTaskList: (
           type: "Page",
           title: "Review Operation information",
           link: `/reporting/reports/${versionId}/review-operator-data`,
+          isActive: activeIndex === ActivePage.ReviewOperatorInfo,
         },
         {
           type: "Page",
           title: "Person responsible",
           link: `/reporting/reports/${versionId}/person-responsible`,
+          isActive: activeIndex === ActivePage.PersonResponsible,
         },
         {
           type: "Page",
@@ -32,6 +41,7 @@ export const getOperationInformationTaskList: (
           link: facilityId
             ? `/reports/${versionId}/facilities/${facilityId}/review`
             : `/reports/${versionId}/facilities/lfo-facilities`,
+          isActive: activeIndex === ActivePage.ReviewFacilities,
         },
       ],
     },
