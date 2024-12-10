@@ -17,10 +17,11 @@ class ReportNewEntrantProduction(TimeStampedModel):
         related_name="productions",
         db_comment="The new entrant report to which this production record belongs",
     )
-    production_amount = models.IntegerField(
+    production_amount = models.DecimalField(
         blank=True,
         null=True,
-        default=0,
+        decimal_places=4,
+        max_digits=20,
         db_comment="The amount of production associated with this report",
     )
 
@@ -32,6 +33,6 @@ class ReportNewEntrantProduction(TimeStampedModel):
             models.UniqueConstraint(
                 fields=['product', 'report_new_entrant'],
                 name='unique_new_entrant_production',
-                violation_error_code="A production record with this product and new entrant report already exists."
+                violation_error_code="A production record with this product and new entrant report already exists.",
             )
         ]

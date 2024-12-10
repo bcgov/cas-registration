@@ -8,7 +8,7 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   return (
     <Suspense fallback={<Loading />}>
-      <NewEntrantInformation versionId={params.version_id} />
+      <NewEntrantInformation version_id={params.version_id} />
     </Suspense>
   );
 }

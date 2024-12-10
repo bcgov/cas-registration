@@ -1,25 +1,55 @@
 from datetime import datetime
 from ninja import ModelSchema
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
+from decimal import Decimal
 
+from registration.schema.v1 import RegulatedProductSchema
 from reporting.models import ReportNewEntrant
+from reporting.schema.emission_category import EmissionCategorySchema
+
+
+class ReportNewEntrantProductionSchema(RegulatedProductSchema):
+    production_amount: Optional[Decimal] = Field(None, alias='production_amount')
+
+
+class ReportNewEntrantEmissionSchema(EmissionCategorySchema):
+    emission: Optional[Decimal] = Field(None, alias='emission')
+
+
+class NewEntrantDataSchema(ModelSchema):
+    class Meta:
+        model = ReportNewEntrant
+        fields = ["id", "authorization_date", "first_shipment_date", "new_entrant_period_start", "assertion_statement"]
+
+    id: Optional[int] = None
+    authorization_date: Optional[datetime] = None
+    first_shipment_date: Optional[datetime] = None
+    new_entrant_period_start: Optional[datetime] = None
+    assertion_statement: Optional[bool] = None
+
+
+class ReportNewEntrantDataOut(BaseModel):
+    products: List[ReportNewEntrantProductionSchema]
+    emissions: List[ReportNewEntrantEmissionSchema]
+    new_entrant_data: Optional[NewEntrantDataSchema]
+    naics_code: Optional[str] = Field(None, alias='naics_code')
 
 
 class ReportNewEntrantSchemaIn(BaseModel):
     assertion_statement: bool
-    authorization_date: Optional[datetime]  # Change str to datetime
-    first_shipment_date: Optional[datetime]  # Change str to datetime
-    new_entrant_period_start: Optional[datetime]  # Change str to datetime
-    products: List[dict]  # Define products as a list of dictionaries
-    emissions: List[dict]  # Define emissions as a list of dictionaries
+    authorization_date: Optional[datetime]
+    first_shipment_date: Optional[datetime]
+    new_entrant_period_start: Optional[datetime]
+    products: List[dict]
+    emissions: List[dict]
 
 
 class ReportNewEntrantSchema(BaseModel):
     id: int
-    authorization_date: Optional[datetime]  # Change str to datetime
-    first_shipment_date: Optional[datetime]  # Change str to datetime
-    new_entrant_period_start: Optional[datetime]  # Change str to datetime
+    authorization_date: Optional[datetime]
+    first_shipment_date: Optional[datetime]
+    new_entrant_period_start: Optional[datetime]
     assertion_statement: bool
 
 
@@ -30,21 +60,6 @@ class ProductDataSchema(BaseModel):
     production_amount: Optional[int]
 
 
-class NewEntrantDataSchema(ModelSchema):
-    """
-    Schema for the FuelType model
-    """
-
-    authorization_date: Optional[datetime] = None
-    first_shipment_date: Optional[datetime] = None
-    new_entrant_period_start: Optional[datetime] = None
-    assertion_statement: Optional[bool] = None
-
-    class Meta:
-        model = ReportNewEntrant
-        fields = ["id", "authorization_date", "first_shipment_date", "new_entrant_period_start", "assertion_statement"]
-
-
 class EmissionSchema(BaseModel):
     id: int
     name: str
@@ -53,10 +68,4 @@ class EmissionSchema(BaseModel):
 
 class EmissionCategorydataSchema(BaseModel):
     category_type: str
-    emissions: List[EmissionSchema]  # List of EmissionSchema
-
-
-class ReportNewEntrantDataOut(BaseModel):
-    products: List[ProductDataSchema]  # List of ProductDataSchema
-    emissions: List[dict]  # Specify the type of emissions if necessary, or use List[EmissionSchema] instead
-    new_entrant_data: Optional[NewEntrantDataSchema]
+    emissions: List[EmissionSchema]

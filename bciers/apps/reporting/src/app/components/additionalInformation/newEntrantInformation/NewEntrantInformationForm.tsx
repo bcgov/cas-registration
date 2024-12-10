@@ -11,18 +11,21 @@ import {
   NewEntrantUiSchema,
 } from "@reporting/src/data/jsonSchema/newEntrantInformation";
 import { IChangeEvent } from "@rjsf/core";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
 interface AdditionalReportingDataProps {
-  versionId: number;
+  version_id: number;
   initialFormData: { assertion_statement?: boolean };
+  taskListElements: TaskListElement[];
 }
 
 export default function NewEntrantInformationForm({
-  versionId,
+  version_id,
   initialFormData,
+  taskListElements,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState(initialFormData || {});
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
@@ -30,21 +33,7 @@ export default function NewEntrantInformationForm({
   );
 
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${versionId}/compliance-summary`;
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Page",
-      title: "Additional reporting data",
-      isChecked: true,
-      link: `/reports/${versionId}/additional-reporting-data`,
-    },
-    {
-      type: "Page",
-      title: "New entrant information",
-      isActive: true,
-      link: `/reports/${versionId}/new-entrant-information`,
-    },
-  ];
+  const saveAndContinueUrl = `/reports/${version_id}/compliance-summary`;
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
@@ -56,7 +45,7 @@ export default function NewEntrantInformationForm({
     }
   };
   const handleSubmit = async (data: any) => {
-    const endpoint = `reporting/report-version/${versionId}/new-entrant-data`;
+    const endpoint = `reporting/report-version/${version_id}/new-entrant-data`;
     const method = "POST";
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
@@ -68,13 +57,7 @@ export default function NewEntrantInformationForm({
   return (
     <MultiStepFormWithTaskList
       initialStep={2}
-      steps={[
-        "Operation Information",
-        "Report Information",
-        "Additional Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
+      steps={multiStepHeaderSteps}
       taskListElements={taskListElements}
       schema={NewEntrantSchema}
       uiSchema={NewEntrantUiSchema}
@@ -85,6 +68,7 @@ export default function NewEntrantInformationForm({
       onSubmit={(data) => handleSubmit(data.formData)}
       submitButtonDisabled={submitButtonDisabled}
       formContext={formData}
+      continueUrl={saveAndContinueUrl}
     />
   );
 }

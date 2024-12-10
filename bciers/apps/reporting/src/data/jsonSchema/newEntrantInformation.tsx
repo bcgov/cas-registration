@@ -6,11 +6,12 @@ import {
   FieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
-import checkboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
+import CheckboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 import { DateWidget } from "@bciers/components/form/widgets";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import React from "react";
 import ObjectFieldTemplate from "@rjsf/core/lib/components/templates/ObjectFieldTemplate";
+import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/common";
 
 interface FieldTemplateProps {
   id: string;
@@ -18,18 +19,7 @@ interface FieldTemplateProps {
   children: React.ReactNode;
   formContext: any;
 }
-export const ProductionDataTitleWidget: React.FC<WidgetProps> = ({
-  id,
-  value,
-}) => {
-  return (
-    <div id={id} className="w-full mt-8">
-      <h2 className="inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 mb-12">
-        <u>Product:</u> {value}
-      </h2>
-    </div>
-  );
-};
+
 /**
  * Utility function to fetch the associated emission name dynamically
  * based on the field ID and the form context.
@@ -119,7 +109,7 @@ export const NewEntrantUiSchema: UiSchema = {
     "ui:title": newEntrantInfo,
   },
   assertion_statement: {
-    "ui:widget": checkboxWidget,
+    "ui:widget": CheckboxWidget,
     "ui:options": {
       label:
         "I certify that this operation was a reporting operation on the date that the application for designation as a new entrant was submitted to the Director under GGIRCA.",
@@ -267,7 +257,7 @@ export const NewEntrantSchema: RJSFSchema = {
           title: "Unit",
         },
         production_amount: {
-          type: "number",
+          type: "string",
           title: "Production after new entrant period began",
         },
       },
@@ -294,7 +284,7 @@ export const NewEntrantSchema: RJSFSchema = {
           type: "string",
         },
         emission: {
-          type: "number",
+          type: "string",
         },
       },
     },

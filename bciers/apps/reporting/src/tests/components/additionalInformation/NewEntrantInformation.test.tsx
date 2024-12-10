@@ -21,7 +21,6 @@ describe("NewEntrantInformationForm Component", () => {
     assertion_statement: true,
     id: 1,
   };
-
   const mockPush = vi.fn();
 
   beforeEach(() => {
@@ -44,41 +43,56 @@ describe("NewEntrantInformationForm Component", () => {
   it("renders form with initial data", async () => {
     render(
       <NewEntrantInformationForm
-        versionId={versionId}
+        version_id={versionId}
         initialFormData={initialFormData}
+        taskListElements={[]}
       />,
     );
 
-    const formTitle = await screen.findByText("New entrant information");
+    const formTitle = await screen.findByText("New Entrant Information");
     expect(formTitle).toBeInTheDocument();
   });
 
   it("disables submit button initially if assertion statement is false", async () => {
-    initialFormData = { assertion_statement: false };
+    initialFormData = {
+      authorization_date: "2024-12-10T09:00:00Z",
+      first_shipment_date: "2024-12-25T09:00:00Z",
+      new_entrant_period_start: "2024-12-18T09:00:00Z",
+      assertion_statement: false,
+      id: 1,
+    };
     render(
       <NewEntrantInformationForm
-        versionId={versionId}
+        version_id={versionId}
         initialFormData={initialFormData}
+        taskListElements={[]}
       />,
     );
 
     const submitButton = screen.getByRole("button", {
-      name: /Save And Continue/i,
+      name: /Save & Continue/i,
     });
     expect(submitButton).toBeDisabled();
   });
 
   it("enables submit button when assertion statement is true", async () => {
-    initialFormData = { assertion_statement: true };
+    initialFormData = {
+      authorization_date: "2024-12-10T09:00:00Z",
+      first_shipment_date: "2024-12-25T09:00:00Z",
+      new_entrant_period_start: "2024-12-18T09:00:00Z",
+      assertion_statement: true,
+      id: 1,
+    };
     render(
       <NewEntrantInformationForm
-        versionId={versionId}
+        version_id={versionId}
         initialFormData={initialFormData}
+        taskListElements={[]}
       />,
     );
 
     const submitButton = screen.getByRole("button", {
-      name: /Save And Continue/i,
+      name: /Save & Continue/i,
     });
     expect(submitButton).toBeEnabled();
   });
@@ -94,13 +108,14 @@ describe("NewEntrantInformationForm Component", () => {
 
     render(
       <NewEntrantInformationForm
-        versionId={versionId}
+        version_id={versionId}
         initialFormData={initialFormData}
+        taskListElements={[]}
       />,
     );
 
     const submitButton = screen.getByRole("button", {
-      name: /Save And Continue/i,
+      name: /Save & Continue/i,
     });
     fireEvent.click(submitButton);
 

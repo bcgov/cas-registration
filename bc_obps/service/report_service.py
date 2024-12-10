@@ -119,16 +119,11 @@ class ReportService:
 
     @classmethod
     def get_regulated_products_by_version_id(cls, version_id: int) -> List[RegulatedProductOut]:
-        # Fetch the ReportOperation by version ID
         report_operation = ReportOperation.objects.get(report_version_id=version_id)
 
-        # Retrieve associated regulated products
         regulated_products = report_operation.regulated_products.all()
 
-        # Map to the output schema (assuming RegulatedProductOut has a 'name' field)
-        return [
-            RegulatedProductOut(id=product.id, name=product.name, unit=product.unit) for product in regulated_products
-        ]
+        return regulated_products
 
     @staticmethod
     def get_report_type_by_version_id(version_id: int) -> ReportVersion:
