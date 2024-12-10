@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import MultiStepWrapperWithTaskList from "./MultiStepWrapperWithTaskList";
+import { useRouter } from "next/navigation";
 
 // Mock data for taskListElements
 const taskListElements: TaskListElement[] = [
@@ -18,7 +19,23 @@ const taskListElements: TaskListElement[] = [
 
 const mockOnSubmit = vi.fn(async () => {});
 
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+}));
+
 describe("MultiStepFormWithTaskList", () => {
+  const mockPush = vi.fn();
+
+  beforeEach(() => {
+    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+      push: mockPush,
+    });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders children with task list and submit button", () => {
     render(
       <MultiStepWrapperWithTaskList
@@ -26,6 +43,7 @@ describe("MultiStepFormWithTaskList", () => {
         steps={["Step 1", "Step 2", "Step 3"]}
         taskListElements={taskListElements}
         onSubmit={mockOnSubmit}
+        continueUrl={""}
       >
         Test Content
       </MultiStepWrapperWithTaskList>,
@@ -46,7 +64,7 @@ describe("MultiStepFormWithTaskList", () => {
 
     // Verify save button is present
     expect(
-      screen.getByRole("button", { name: "Save and Continue" }),
+      screen.getByRole("button", { name: "Save & Continue" }),
     ).toBeVisible();
   });
 
@@ -57,13 +75,14 @@ describe("MultiStepFormWithTaskList", () => {
         steps={["Step 1", "Step 2", "Step 3"]}
         taskListElements={taskListElements}
         onSubmit={mockOnSubmit}
+        continueUrl={""}
       >
         Test
       </MultiStepWrapperWithTaskList>,
     );
 
     // Simulate click submit
-    fireEvent.click(screen.getByRole("button", { name: "Save and Continue" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save & Continue" }));
   });
 
   it("renders cancel button if cancelUrl is provided", () => {
@@ -73,15 +92,21 @@ describe("MultiStepFormWithTaskList", () => {
         steps={["Step 1", "Step 2", "Step 3"]}
         taskListElements={taskListElements}
         onSubmit={mockOnSubmit}
-        cancelUrl="http://example.com"
+        backUrl="http://example.com"
+        continueUrl={""}
       />,
     );
 
     // Check if the cancel button is present and has the correct href
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: "Cancel" }).closest("a"),
-    ).toHaveAttribute("href", "http://example.com");
+    const button = screen.getByRole("button", {
+      name: /Back/i,
+    });
+
+    expect(button).toBeVisible();
+
+    fireEvent.click(button);
+
+    expect(mockPush).toHaveBeenCalledWith(`http://example.com`);
   });
 
   it("does not render cancel button if cancelUrl is not provided", () => {
@@ -91,10 +116,11 @@ describe("MultiStepFormWithTaskList", () => {
         steps={["Step 1", "Step 2", "Step 3"]}
         taskListElements={taskListElements}
         onSubmit={mockOnSubmit}
+        continueUrl={""}
       />,
     );
 
-    expect(screen.queryByRole("button", { name: "Cancel" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Back" })).toBeNull();
   });
 
   it("renders an alternave text for the save button if provided", () => {
@@ -104,7 +130,8 @@ describe("MultiStepFormWithTaskList", () => {
         steps={["Step 1", "Step 2", "Step 3"]}
         taskListElements={taskListElements}
         onSubmit={mockOnSubmit}
-        saveButtonText="Custom Save Text"
+        submittingButtonText="Custom Save Text"
+        continueUrl={""}
       />,
     );
 

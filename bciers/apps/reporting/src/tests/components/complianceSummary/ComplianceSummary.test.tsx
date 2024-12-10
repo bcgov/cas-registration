@@ -1,12 +1,17 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import ComplianceSummary from "@reporting/src/app/components/complianceSummary/ComplianceSummary";
 import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
+import { useRouter } from "next/navigation";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
 }));
 
 const mockSummaryData = {
@@ -34,8 +39,17 @@ const mockSummaryData = {
 };
 
 describe("ComplianceSummary", () => {
+  const mockPush = vi.fn();
+
   beforeEach(() => {
+    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+      push: mockPush,
+    });
     (actionHandler as Mock).mockClear();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it("should render the calculation summary data", async () => {
@@ -105,11 +119,15 @@ describe("ComplianceSummary", () => {
       />,
     );
 
-    expect(
-      screen.getByRole("link", {
-        name: /back/i,
-      }),
-    ).toHaveAttribute("href", "/reports/1/additional-reporting-data");
+    const button = screen.getByRole("button", { name: /back/i });
+
+    expect(button).toBeVisible();
+
+    fireEvent.click(button);
+
+    expect(mockPush).toHaveBeenCalledWith(
+      `/reports/1/additional-reporting-data`,
+    );
   });
 
   it("should render a continue button that navigates to the signoff page", async () => {
@@ -121,10 +139,14 @@ describe("ComplianceSummary", () => {
       />,
     );
 
-    expect(
-      screen.getByRole("link", {
-        name: /continue/i,
-      }),
-    ).toHaveAttribute("href", "/reports/1/sign-off");
+    const button = screen.getByRole("button", {
+      name: /Continue/i,
+    });
+
+    expect(button).toBeVisible();
+
+    fireEvent.click(button);
+
+    expect(mockPush).toHaveBeenCalledWith(`/reports/1/verification`);
   });
 });
