@@ -18,8 +18,8 @@ class TestDataAccessContactService:
     @staticmethod
     def test_list_contacts_for_irc_user():
         contact_baker(_quantity=10)
-        irc_user = user_baker({'app_role': AppRole.objects.get(role_name='cas_admin')})
-        assert ContactDataAccessService.get_all_contacts_for_user(irc_user).count() == 10
+        cas_admin = user_baker({'app_role': AppRole.objects.get(role_name='cas_admin')})
+        assert ContactDataAccessService.get_all_contacts_for_user(cas_admin).count() == 10
 
     @staticmethod
     def test_list_contacts_for_industry_user():

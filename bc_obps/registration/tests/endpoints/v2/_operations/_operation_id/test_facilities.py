@@ -26,6 +26,17 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         page_1_response_id = response_items_1[0].get('id')
         assert len(response_items_1) == NINJA_PAGINATION_PER_PAGE
         assert response_count_1 == 45  # total count of facilities
+        # make sure key fields are present
+        assert response_items_1[0].keys() == {
+            'id',
+            'status',
+            'facility__name',
+            'facility__type',
+            'facility__bcghg_id__id',
+            'facility__id',
+            'facility__latitude_of_largest_emissions',
+            'facility__longitude_of_largest_emissions',
+        }
 
         # Get the page 2 response
         response = TestUtils.mock_get_with_auth_role(

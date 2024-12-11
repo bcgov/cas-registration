@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch, MagicMock
+from uuid import uuid4
 from django.utils import timezone
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from model_bakery import baker
+from registration.schema.v2.transfer_event import TransferEventCreateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-
 from registration.utils import custom_reverse_lazy
 
 
@@ -136,3 +138,55 @@ class TestTransferEventEndpoint(CommonTestSetup):
         assert response.json().get('count') == 1
         assert response_items_2[0].get('facilities__name') == facilities__name_to_filter
         assert response_items_2[0].get('status') == status_to_filter
+
+    # POST
+    @patch("service.transfer_event_service.TransferEventService.create_transfer_event")
+    def test_user_can_post_transfer_event_success(self, mock_create_transfer_event: MagicMock):
+        mock_payload = {
+            "transfer_entity": "Operation",
+            "from_operator": uuid4(),
+            "to_operator": uuid4(),
+            "effective_date": "2023-10-13T15:27:00.000Z",
+            "operation": uuid4(),
+        }
+
+        mock_transfer_event = baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
+        mock_create_transfer_event.return_value = mock_transfer_event
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "cas_analyst",
+            self.content_type,
+            mock_payload,
+            custom_reverse_lazy("create_transfer_event"),
+        )
+
+        mock_create_transfer_event.assert_called_once_with(
+            self.user.user_guid,
+            TransferEventCreateIn.model_validate(mock_payload),
+        )
+
+        assert response.status_code == 201
+        response_json = response.json()
+        assert set(response_json.keys()) == {
+            'transfer_entity',
+            'from_operator',
+            'to_operator',
+            'effective_date',
+            'operation',
+            'from_operation',
+            'to_operation',
+            'facilities',
+        }
+        assert response_json['transfer_entity'] == "Operation"
+        assert response_json['from_operator'] == str(mock_transfer_event.from_operator.id)
+        assert response_json['to_operator'] == str(mock_transfer_event.to_operator.id)
+        # modify the effective date to match the format of the response
+        response_effective_date = datetime.strptime(response_json['effective_date'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        mock_transfer_event_effective_date = datetime.fromisoformat(str(mock_transfer_event.effective_date))
+        assert response_effective_date.replace(microsecond=0) == mock_transfer_event_effective_date.replace(
+            microsecond=0, tzinfo=None
+        )
+        assert response_json['operation'] == str(mock_transfer_event.operation.id)
+        assert response_json['from_operation'] is None
+        assert response_json['to_operation'] is None
+        assert response_json['facilities'] == []
