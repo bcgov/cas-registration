@@ -1,10 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import {
-  fetchOperatorsPageData,
-  useRouter,
-  useSearchParams,
-} from "@bciers/testConfig/mocks";
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import Operators from "apps/administration/app/components/operators/OperatorDataGridPage";
+import { fetchOperatorsPageData } from "@/administration/tests/components/operators/mocks";
 
 useRouter.mockReturnValue({
   query: {},
@@ -42,20 +39,16 @@ const mockResponse = {
   row_count: 2,
 };
 
-vi.mock(
-  "apps/administration/app/components/operators/fetchOperatorsPageData",
-  () => ({
-    default: fetchOperatorsPageData,
-  }),
-);
-
 describe("OperatorDataGridPage component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
 
   it("throws an error when there's a problem fetching data", async () => {
-    fetchOperatorsPageData.mockReturnValueOnce(undefined);
+    fetchOperatorsPageData.mockReturnValueOnce({
+      rows: undefined,
+      row_count: undefined,
+    });
     await expect(async () => {
       render(await Operators({ searchParams: {} }));
     }).rejects.toThrow("Failed to retrieve operators");

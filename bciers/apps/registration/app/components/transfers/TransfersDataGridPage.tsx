@@ -5,8 +5,8 @@ import { TransferRow, TransfersSearchParams } from "./types";
 import fetchTransferEventsPageData from "./fetchTransferEventsPageData";
 import Link from "next/link";
 import { Button } from "@mui/material";
-import { auth } from "@/dashboard/auth";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 // 🧩 Main component
 export default async function TransfersDataGridPage({
@@ -23,9 +23,10 @@ export default async function TransfersDataGridPage({
     throw new Error("Failed to retrieve transfers");
 
   // To get the user's role from the session
-  const session = await auth();
-  const role = session?.user?.app_role ?? "";
+  const role = await getSessionRole();
   const isCasAnalyst = role === FrontEndRoles.CAS_ANALYST;
+
+  console.log({ role });
 
   // Render the DataGrid component
   return (
