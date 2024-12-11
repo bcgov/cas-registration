@@ -14,12 +14,10 @@ import {
   Contact,
   ContactRow,
 } from "@reporting/src/app/components/operations/types";
-import { useSearchParams } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 interface Props {
   version_id: number;
@@ -42,12 +40,11 @@ const PersonResponsible = ({ version_id }: Props) => {
 
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
 
-  const queryString = serializeSearchParams(useSearchParams());
   const continueUrl =
     operationType === "Linear Facility Operation"
-      ? `/reporting/reports/${version_id}/facilities/lfo-facilities${queryString}`
-      : `/reporting/reports/${version_id}/facilities/${facilityId}/review${queryString}&facilities_title=Facility`;
-  const backUrl = `/reports/${version_id}/review-operator-data${queryString}`;
+      ? `/reports/${version_id}/facilities/lfo-facilities`
+      : `/reports/${version_id}/facilities/${facilityId}/review`;
+  const backUrl = `/reports/${version_id}/review-operator-data`;
 
   const taskListElements: TaskListElement[] = [
     {

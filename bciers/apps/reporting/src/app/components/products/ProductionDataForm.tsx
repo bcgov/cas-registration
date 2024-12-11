@@ -57,7 +57,7 @@ const ProductionDataForm: React.FC<Props> = ({
     );
   };
 
-  const backURL = `/reports/${report_version_id}/facilities/${facility_id}/emission-summary`;
+  const backUrl = `/reports/${report_version_id}/facilities/${facility_id}/emission-summary`;
   const saveAndContinueUrl = `/reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`;
 
   return (
@@ -70,7 +70,7 @@ const ProductionDataForm: React.FC<Props> = ({
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}
-      backUrl={backURL}
+      backUrl={backUrl}
       onSubmit={(data) => onSubmit(data.formData)}
       onChange={(data) => onChange(data.formData)}
       continueUrl={saveAndContinueUrl}

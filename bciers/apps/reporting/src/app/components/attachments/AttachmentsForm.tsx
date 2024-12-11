@@ -23,7 +23,7 @@ const AttachmentsForm: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/final-review`;
-  const backURL = `/reports/${version_id}/verification`;
+  const backUrl = `/reports/${version_id}/verification`;
 
   const [canContinue, setCanContinue] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -112,7 +112,7 @@ const AttachmentsForm: React.FC<Props> = ({
         taskListElements={taskListElements}
         onSubmit={submitExternallyToContinue}
         cancelUrl="#"
-        backUrl={backURL}
+        backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
         error={error}
         isSaving={isSaving}

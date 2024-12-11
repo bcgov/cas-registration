@@ -60,8 +60,7 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   });
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const queryString = serializeSearchParams(useSearchParams());
-  const reportsTitle = useSearchParams().get("reports_title");
-  const backUrl = `/reports/${version_id}/person-responsible?reports_title=${reportsTitle}`;
+  const backUrl = `/reports/${version_id}/person-responsible`;
   const continueURL = `activities${queryString}`;
   const router = useRouter();
   const formRef = useRef<FormContext>(null);
@@ -153,7 +152,6 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
         }, 3000);
       }
     } catch (error: any) {
-      console.error("Error updating facility:", error);
       setErrorList([error.message || "An error occurred"]);
     } finally {
       setIsSaving(false);
