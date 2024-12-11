@@ -102,9 +102,9 @@ class TestUserOperatorServiceV2:
             user__bceid_business_name="",
             operator__legal_name="",
         )
-        irc_user = baker.make_recipe('utils.irc_user')
+        cas_admin = baker.make_recipe('utils.cas_admin')
         user_operators_with_admin_access_status = UserOperatorServiceV2.list_user_operators_v2(
-            user_guid=irc_user.user_guid, filters=filters_2, sort_field="created_at", sort_order="asc"
+            user_guid=cas_admin.user_guid, filters=filters_2, sort_field="created_at", sort_order="asc"
         )
         assert user_operators_with_admin_access_status.count() == 5
         assert user_operators_with_admin_access_status.filter(status=UserOperator.Statuses.APPROVED).count() == 5
@@ -114,28 +114,28 @@ class TestUserOperatorServiceV2:
             update={"status": ""}
         )  # making a copy of filters_2 and updating status to empty string
         user_operators_sorted_by_created_at = UserOperatorServiceV2.list_user_operators_v2(
-            user_guid=irc_user.user_guid, filters=filters_3, sort_field="created_at", sort_order="asc"
+            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="created_at", sort_order="asc"
         )
         assert (
             user_operators_sorted_by_created_at.first().created_at
             < user_operators_sorted_by_created_at.last().created_at
         )
         user_operators_sorted_by_created_at_desc = UserOperatorServiceV2.list_user_operators_v2(
-            user_guid=irc_user.user_guid, filters=filters_3, sort_field="created_at", sort_order="desc"
+            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="created_at", sort_order="desc"
         )
         assert (
             user_operators_sorted_by_created_at_desc.first().created_at
             > user_operators_sorted_by_created_at_desc.last().created_at
         )
         user_operators_sorted_by_user_friendly_id = UserOperatorServiceV2.list_user_operators_v2(
-            user_guid=irc_user.user_guid, filters=filters_3, sort_field="user_friendly_id", sort_order="asc"
+            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="user_friendly_id", sort_order="asc"
         )
         assert (
             user_operators_sorted_by_user_friendly_id.first().user_friendly_id
             < user_operators_sorted_by_user_friendly_id.last().user_friendly_id
         )
         user_operators_sorted_by_status = UserOperatorServiceV2.list_user_operators_v2(
-            user_guid=irc_user.user_guid, filters=filters_3, sort_field="status", sort_order="asc"
+            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="status", sort_order="asc"
         )
         assert user_operators_sorted_by_status.first().status == UserOperator.Statuses.APPROVED
         assert user_operators_sorted_by_status.last().status == UserOperator.Statuses.PENDING
