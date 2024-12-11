@@ -15,8 +15,8 @@ export default async function fetchOperatorsPageData(
       "",
     );
     return {
-      rows: pageData.items,
-      row_count: pageData.count,
+      rows: pageData?.items,
+      row_count: pageData?.count,
     };
   } catch (error) {
     throw error;
