@@ -1,11 +1,12 @@
 from typing import Literal, Tuple, Optional
-from common.permissions import authorize
 from django.http import HttpRequest
+
+from common.permissions import authorize
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.report_additional_data import ReportAdditionalDataService
+from reporting.service.report_additional_data import ReportAdditionalDataService
 from .router import router
 from ..models import ReportAdditionalData
 from ..schema.report_additional_data import ReportAdditionalDataOut, ReportAdditionalDataIn
@@ -50,6 +51,6 @@ def save_report_additional_data(
 @handle_http_errors()
 def get_report_additional_data_by_version_id(
     request: HttpRequest, report_version_id: int
-) -> Tuple[Literal[200], Optional[ReportAdditionalDataOut]]:
+) -> tuple[Literal[200], Optional[ReportAdditionalData]]:
     report_additional_data = ReportAdditionalDataService.get_report_report_additional_data(report_version_id)
     return 200, report_additional_data
