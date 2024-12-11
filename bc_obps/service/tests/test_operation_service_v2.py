@@ -66,6 +66,7 @@ def set_up_valid_mock_operation(purpose: Operation.Purposes):
             'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
         operation.documents.add(new_entrant_application)
+        operation.date_of_first_shipment = "On or after April 1, 2024"
 
     if purpose == Operation.Purposes.OPTED_IN_OPERATION:
         # opt in record
@@ -607,7 +608,6 @@ class TestOperationServiceV2UpdateOperation:
         )
         payload = OperationInformationIn(
             registration_purpose='Potential Reporting Operation',
-            regulated_products=[1],
             name="Test Update Operation Name",
             type="SFO",
             naics_code_id=1,
@@ -627,7 +627,6 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.created_by == approved_user_operator.user
         assert operation.created_at is not None
         assert operation.updated_at is not None
-        assert operation.regulated_products.count() == 1
         assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
 
     def test_update_operation_with_no_regulated_products(self):
@@ -833,7 +832,8 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).delete()
 
         with pytest.raises(
-            Exception, match="Operation must have a signed statutory declaration if it is a new entrant."
+            Exception,
+            match="Operation must have a signed statutory declaration and date of first shipment if it is a new entrant.",
         ):
             OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 

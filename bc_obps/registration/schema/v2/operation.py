@@ -83,6 +83,7 @@ class OperationInformationIn(ModelSchema):
     boundary_map: str
     process_flow_diagram: str
     naics_code_id: int
+    opt_in: Optional[bool] = False
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None

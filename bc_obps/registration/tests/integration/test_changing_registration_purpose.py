@@ -1,4 +1,5 @@
 import pytest
+from service.data_access_service.document_service import DocumentDataAccessService
 from registration.enums.enums import OperationTypes
 from model_bakery import baker
 from copy import deepcopy
@@ -49,6 +50,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             "name": self.operation.name,
             "type": self.operation.type,
             "registration_purpose": self.operation.registration_purpose,
+            "regulated_products": [1, 2],
         }
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -90,6 +92,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             "secondary_naics_code_id": self.operation.secondary_naics_code_id,
             "name": self.operation.name,
             "type": self.operation.type,
+            "regulated_products": [1, 2] if new_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION else [],
         }
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -185,14 +188,15 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_reporting_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to Electricity Import Operation.
-        Expect the following to be removed: reporting activities, process flow diagram, boundary map.
+        Expect the following to be removed: reporting activities, process flow diagram, boundary map, NAICS code.
         Should only have 1 facility.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
-        assert self.operation.regulated_products is None
-        assert self.operation.documents.count() == 0
+        assert self.operation.regulated_products.count() == 0
+        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
         assert self.operation.facilities.count() == 1
+        assert self.operation.naics_code is None
 
     def _test_reporting_to_new_entrant(self):
         """
@@ -293,11 +297,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_regulated_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from OBPS Regulated to Electricity Import Operation.
-        Fields to be removed: process flow diagram, boundary map, reporting activities.
+        Fields to be removed: process flow diagram, boundary map, reporting activities, NAICS code.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
-        assert self.operation.documents.count() == 0
+        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
+        assert self.operation.naics_code is None
 
     ### Tests for Original Purpose = Opted-in
 
@@ -308,7 +313,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation is None
+        assert self.operation.opted_in_operation.archived_at is not None
+        assert self.operation.opted_in_operation.archived_by is not None
 
     def _test_opted_in_to_potential_reporting(self):
         """
@@ -317,7 +323,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation is None
+        assert self.operation.opted_in_operation.archived_at is not None
+        assert self.operation.opted_in_operation.archived_by is not None
 
     def _test_opted_in_to_regulated(self):
         """
@@ -326,7 +333,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation is None
+        assert self.operation.opted_in_operation.archived_at is not None
+        assert self.operation.opted_in_operation.archived_by is not None
 
     def _test_opted_in_to_eio(self):
         """
@@ -335,8 +343,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation is None
+        assert self.operation.opted_in_operation.archived_at is not None
+        assert self.operation.opted_in_operation.archived_by is not None
         assert self.operation.regulated_products.count() == 0
+        assert self.operation.naics_code is None
+        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
 
     def _test_opted_in_to_new_entrant(self):
         """
@@ -345,10 +356,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation is None
+        assert self.operation.opted_in_operation.archived_at is not None
+        assert self.operation.opted_in_operation.archived_by is not None
         assert self.operation.date_of_first_shipment is not None
         assert (
-            self.operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')) is not None
+            self.operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() > 0
         )
 
     ### Tests for Original Purpose = New Entrant
@@ -359,9 +371,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")).count() > 0
+        assert (
+            self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).count() == 0
+        )
         assert self.operation.date_of_first_shipment is None
         assert self.operation.activities is not None
         assert self.operation.activities == self.original_operation_record.activities
@@ -372,9 +386,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")).count() > 0
+        assert (
+            self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).count() == 0
+        )
         assert self.operation.date_of_first_shipment is None
         assert self.operation.activities is not None
         assert self.operation.activities == self.original_operation_record.activities
@@ -386,13 +402,16 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         In addition, data for process flow diagram, boundary map, regulated products, and reporting activities should be removed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-        assert self.operation.documents.count() == 0
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() == 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")).count() == 0
+        assert (
+            self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).count() == 0
+        )
         assert self.operation.date_of_first_shipment is None
         assert self.operation.activities.count() == 0
         assert self.operation.regulated_products.count() == 0
+        assert self.operation.naics_code is None
 
     def _test_new_entrant_to_regulated(self):
         """
@@ -401,9 +420,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
         assert self.operation.date_of_first_shipment is None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")).count() > 0
+        assert (
+            self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).count() == 0
+        )
         assert self.operation.regulated_products.count() > 0
         assert self.operation.activities.count() > 0
 
@@ -414,7 +435,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
         assert self.operation.date_of_first_shipment is None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is None
+        assert (
+            self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).count() == 0
+        )
         assert self.operation.opt_in is True
         assert self.operation.opted_in_operation is not None
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
@@ -435,8 +458,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.activities.count() > 0
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
-        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() > 0
+        assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")).count() > 0
+        assert self.operation.naics_code is not None
 
     def _test_eio_to_regulated(self):
         """
@@ -448,6 +472,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
         assert self.operation.regulated_products.count() > 0
+        assert self.operation.naics_code is not None
 
     def _test_eio_to_potential_reporting(self):
         """
@@ -458,6 +483,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.activities.count() > 0
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
+        assert self.operation.naics_code is not None
 
     def _test_eio_to_new_entrant(self):
         """
@@ -473,6 +499,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             self.operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')) is not None
         )
         assert self.operation.date_of_first_shipment is not None
+        assert self.operation.naics_code is not None
 
     def _test_eio_to_opted_in(self):
         """
@@ -483,7 +510,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.activities.count() > 0
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='process_flow_diagram')) is not None
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')) is not None
-        assert self.operation.opted_in is True
+        assert self.operation.opt_in is True
         assert self.operation.opted_in_operation is not None
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
         assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
@@ -549,8 +576,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
-        assert self.operation.documents.count() == 0
+        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
         assert self.operation.facilities.count() == 1
+        assert self.operation.naics_code is None
 
     @pytest.mark.parametrize("original_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("new_purpose", list(Operation.Purposes))
@@ -588,12 +616,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         # if the registration wasn't submitted, (was_submitted == False), the irrelevant data should be deleted
 
         ### Assertions applicable to all purposes
-        # all operations should have a (primary) NAICS code
-        assert self.operation.naics_code is not None
-        # NAICS codes should not be getting overwritten anywhere
-        assert self.operation.naics_code == self.original_operation_record.naics_code
-        assert self.operation.secondary_naics_code == self.original_operation_record.secondary_naics_code
-        assert self.operation.tertiary_naics_code == self.original_operation_record.tertiary_naics_code
         # assert that we're patching the same operation, not creating a new one
         assert self.operation.id == self.original_operation_record.id
         assert self.operation.created_at == self.original_operation_record.created_at

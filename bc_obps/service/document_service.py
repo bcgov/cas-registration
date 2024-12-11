@@ -34,3 +34,18 @@ class DocumentService:
         # if there is no existing document, create a new one
         document = DocumentDataAccessService.create_document(user_guid, file_data, document_type)
         return document, True
+
+    @classmethod
+    def archive_operation_document(cls, user_guid: UUID, operation_id: UUID, document_type: str) -> bool:
+        """
+        This function receives an operation ID and document type.
+        If the specified document_type for the operation_id can be found and hasn't already been archived, this
+        function will archive that document.
+        :returns: bool to indicate whether the document was successfully archived.
+        """
+        document = DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
+        if document:
+            if document.archived_at is None and document.archived_by is None:
+                document.set_archive(user_guid)
+                return True
+        return False

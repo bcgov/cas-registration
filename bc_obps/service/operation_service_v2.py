@@ -199,6 +199,14 @@ class OperationServiceV2:
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
         # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
+        if operation_id:
+            original_operation = Operation.objects.get(id=operation_id)
+            if payload.registration_purpose != original_operation.registration_purpose:
+                print('New RP detected!!!')
+                payload = cls.handle_change_of_registration_purpose(user_guid, original_operation, payload)
+                print(payload)
+
+        operation: Operation
         operation_data = payload.dict(
             include={
                 'name',
@@ -208,22 +216,18 @@ class OperationServiceV2:
                 'tertiary_naics_code_id',
                 'date_of_first_shipment',
                 'registration_purpose',
+                'opt_in',
             }
         )
+        operation_data['pk'] = operation_id if operation_id else None
         operation_data['operator_id'] = user_operator.operator_id
-        if operation_id:
-            operation_data['pk'] = operation_id
-            original_operation = Operation.objects.get(id=operation_id)
-            if operation_data.get('registration_purpose') != original_operation.registration_purpose:
-                print('New RP detected!!!')
-
-        operation: Operation
         operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
 
         # set m2m relationships
-        operation.activities.set(payload.activities)
-        if payload.regulated_products:
-            operation.regulated_products.set(payload.regulated_products)
+        operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
+        operation.regulated_products.set(
+            payload.regulated_products
+        ) if payload.regulated_products else operation.regulated_products.clear()
 
         # create or replace documents
         operation_documents = [
@@ -421,7 +425,14 @@ class OperationServiceV2:
                 lambda: FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists(),
                 "Operation must have at least one facility.",
             )
-            yield lambda: operation.activities.exists(), "Operation must have at least one reporting activity."
+            # unless the registration purpose is Electricity Import Operation, the operation should have at least 1 reporting activity
+            yield (
+                lambda: not (
+                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+                    and not operation.activities.exists()
+                ),
+                "Operation must have at least one reporting activity.",
+            )
 
             # Check if the operation has both a process flow diagram and a boundary map
             yield (
@@ -436,7 +447,7 @@ class OperationServiceV2:
                     operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
                     and not cls.is_operation_new_entrant_information_complete(operation)
                 ),
-                "Operation must have a signed statutory declaration if it is a new entrant.",
+                "Operation must have a signed statutory declaration and date of first shipment if it is a new entrant.",
             )
             yield (
                 lambda: not (
@@ -497,3 +508,31 @@ class OperationServiceV2:
         operation.save(update_fields=["operator_id"])
         operation.set_create_or_update(user_guid)
         return operation
+    
+    @classmethod
+    def handle_change_of_registration_purpose(
+        cls, user_guid: UUID, original_operation: Operation, payload: OperationInformationIn
+    ) -> OperationInformationIn:
+        if original_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            payload.opt_in = False
+            opted_in_detail: OptedInOperationDetail = original_operation.opted_in_operation
+            opted_in_detail.set_archive(user_guid)
+        elif original_operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
+            payload.date_of_first_shipment = None
+            DocumentService.archive_operation_document(user_guid, original_operation.id, 'new_entrant_application')
+
+        if payload.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            payload.activities = []
+            payload.regulated_products = []
+            payload.naics_code_id = None
+            payload.secondary_naics_code_id = None
+            payload.tertiary_naics_code_id = None
+            DocumentService.archive_operation_document(user_guid, original_operation.id, 'process_flow_diagram')
+            DocumentService.archive_operation_document(user_guid, original_operation.id, 'boundary_map')
+        elif payload.registration_purpose in [
+            Operation.Purposes.REPORTING_OPERATION,
+            Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+        ]:
+            payload.regulated_products = []
+
+        return payload

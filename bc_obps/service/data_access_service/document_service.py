@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models import Document, DocumentType
@@ -8,7 +8,6 @@ from django.core.files.base import ContentFile
 class DocumentDataAccessService:
     @classmethod
     def get_operation_document_by_type(cls, operation_id: UUID, document_type: str) -> Document | None:
-
         operation = OperationDataAccessService.get_by_id(operation_id=operation_id)
 
         try:
@@ -17,6 +16,12 @@ class DocumentDataAccessService:
             return None
 
         return document
+
+    @classmethod
+    def get_active_operation_documents(cls, operation_id: UUID) -> List[Document]:
+        operation = OperationDataAccessService.get_by_id(operation_id=operation_id)
+
+        return operation.documents.filter(archived_at__isnull=True)
 
     @classmethod
     def create_document(cls, user_guid: UUID, file_data: Optional[ContentFile], document_type_name: str) -> Document:
