@@ -83,11 +83,7 @@ const ActionCell = (params: GridRenderCellParams) => {
     return (
       <Button
         color="primary"
-        onClick={() =>
-          router.push(
-            `reports/${reportId}/review-operator-data?reports_title=${params.row.name}`,
-          )
-        }
+        onClick={() => router.push(`reports/${reportId}/review-operator-data`)}
       >
         Continue
       </Button>
@@ -103,9 +99,7 @@ const ActionCell = (params: GridRenderCellParams) => {
           OperationId,
           reportingYearObj.reporting_year,
         );
-        router.push(
-          `reports/${newReportId}/review-operator-data?reports_title=${params.row.name}`,
-        );
+        router.push(`reports/${newReportId}/review-operator-data`);
       }}
     >
       Start
