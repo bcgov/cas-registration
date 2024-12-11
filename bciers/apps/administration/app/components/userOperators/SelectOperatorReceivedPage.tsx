@@ -2,21 +2,20 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import { notFound } from "next/navigation";
 import { Operator } from "../userOperators/types";
-import getOperator from "../operators/getOperator";
 import getOperatorHasAdmin from "../operators/getOperatorHasAdmin";
 import { UUID } from "crypto";
+import getOperatorConfirmationInfo from "../operators/getOperatorConfirmationInfo";
 // 🧩 Main component
 export default async function SelectOperatorReceivedPage({
   step,
   id,
 }: Readonly<{ step: string; id?: UUID }>) {
   if (id) {
-    const operator: Operator | { error: string } = await getOperator(
-      id,
-      `/select-operator/confirm/${id}`,
-    );
+    const operator: Operator | { error: string } =
+      await getOperatorConfirmationInfo(id, `/select-operator/confirm/${id}`);
     const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(id);
 
+    console.log("-------------------getOperatorHasAdmin", getOperatorHasAdmin);
     if (
       "error" in operator ||
       (typeof hasAdmin !== "boolean" && "error" in hasAdmin)

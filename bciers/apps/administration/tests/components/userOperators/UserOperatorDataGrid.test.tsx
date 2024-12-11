@@ -110,7 +110,7 @@ describe("UserOperatorDataGrid component", () => {
     expect(screen.getAllByText(/view details/i)).toHaveLength(4);
     expect(screen.getAllByText(/view details/i)[0]).toHaveAttribute(
       "href",
-      "TBD",
+      "/operator-administrators-and-access-requests/1?title=Request ID: 1",
     );
   });
 });

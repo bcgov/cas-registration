@@ -121,3 +121,11 @@ class OperatorIn(ModelSchema):
             'bc_corporate_registry_number',
             'mailing_address',
         ]
+
+
+class ConfirmSelectedOperatorOut(ModelSchema):
+    street_address: str = Field('', alias="mailing_address.street_address")
+
+    class Meta:
+        model = Operator
+        fields = ["id", "legal_name", "trade_name", "cra_business_number"]

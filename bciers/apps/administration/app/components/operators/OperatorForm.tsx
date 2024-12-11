@@ -18,22 +18,25 @@ interface Props {
   formData: OperatorFormData;
   isCreating?: boolean;
   isInternalUser: boolean;
+  showTasklist?: boolean;
 }
 export default function OperatorForm({
   formData,
   schema,
   isCreating,
   isInternalUser,
+  showTasklist = true,
 }: Readonly<Props>) {
   // @ ts-ignore
-  const [error, setError] = useState(undefined);
 
+  const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
   const { update } = useSession();
   return (
     <SingleStepTaskListForm
+      showTasklist={showTasklist}
       error={error}
       schema={schema}
       uiSchema={operatorUiSchema}

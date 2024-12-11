@@ -34,7 +34,7 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "list_business_structures"},
             {"method": "get", "endpoint_name": "list_naics_codes"},
             {"method": "get", "endpoint_name": "get_operators_by_cra_number_or_legal_name"},
-            {"method": "get", "endpoint_name": "get_operator", "kwargs": {"operator_id": mock_uuid}},
+            {"method": "get", "endpoint_name": "get_operator_confirm", "kwargs": {"operator_id": mock_uuid}},
             {"method": "get", "endpoint_name": "list_regulated_products"},
             {"method": "get", "endpoint_name": "list_reporting_activities"},
             {
@@ -244,6 +244,7 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "list_transfer_events"},
         ],
         "approved_authorized_roles": [
+            {"method": "get", "endpoint_name": "get_operator", "kwargs": {"operator_id": mock_uuid}},
             {"method": "get", "endpoint_name": "v1_list_operations"},
             {"method": "get", "endpoint_name": "v1_get_operation", "kwargs": {"operation_id": mock_uuid}},
             {

@@ -359,4 +359,28 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             custom_reverse_lazy('get_user_operator_by_id', kwargs={'user_operator_id': user_operator.id}),
         )
         assert response.status_code == 200
-        assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
+
+        expected_keys = [
+            "role",
+            "status",
+            "legal_name",
+            "trade_name",
+            "cra_business_number",
+            "bc_corporate_registry_number",
+            "business_structure",
+            "street_address",
+            "municipality",
+            "province",
+            "postal_code",
+            "operator_has_parent_operators",
+            "parent_operators_array",
+            "operator_has_partner_operators",
+            "partner_operators_array",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "position_title",
+            "bceid_business_name",
+        ]
+        assert sorted(response.json().keys()) == sorted(expected_keys)
