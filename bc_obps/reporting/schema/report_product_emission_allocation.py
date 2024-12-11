@@ -18,6 +18,7 @@ class ReportProductEmissionAllocationSchema(ModelSchema):
 
 class ReportProductEmissionAllocationSchemaIn(Schema):
     report_product_id: int
+    product_name: str
     allocated_quantity: Decimal
 
 
