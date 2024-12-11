@@ -89,7 +89,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
           ? value.map((val: string | number) => {
               return options.find((option: Option) => option.id === val);
             })
-          : undefined
+          : []
       }
       sx={styles}
       isOptionEqualToValue={(option: Option, val: Option) => {
