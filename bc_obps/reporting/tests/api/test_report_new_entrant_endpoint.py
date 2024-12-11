@@ -1,84 +1,91 @@
+from datetime import datetime
 from unittest.mock import patch, MagicMock
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
 
 
-class TestReportNewEntrantEndpoints(CommonTestSetup):
+class TestNewEntrantEndpoints(CommonTestSetup):
     def setup_method(self):
-        self.report_version = make_recipe("reporting.tests.utils.report_version")
-        self.endpoint_get = f"/api/reporting/report-version/{self.report_version.id}/new-entrant-data"
-        self.endpoint_post = f"/api/reporting/report-version/{self.report_version.id}/new-entrant-data"
-
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        self.endpoint_get = f"/api/reporting/report-version/{report_version.id}/new-entrant-data"
+        self.endpoint_post = f"/api/reporting/report-version/{report_version.id}/new-entrant-data"
+        self.report_version = report_version
         return super().setup_method()
 
-    @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_new_entrant_data")
-    def test_get_new_entrant_data(self, mock_get_new_entrant_data: MagicMock):
+    def test_get_returns_correct_data(self):
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        current_time = datetime.now()
 
-        mock_new_entrant_data = {
-            "products": [
-                {"id": 2, "name": "Cement equivalent", "unit": "Tonne cement equivalent", "production_amount": 10}
-            ],
-            "emissions": [
-                {
-                    "name": "basic",
-                    "title": "Emission categories after new entrant period began",
-                    "items": [
-                        {"id": 1, "name": "Flaring emissions", "emission": 6},
-                        {"id": 2, "name": "Fugitive emissions", "emission": 5},
-                    ],
-                },
-                {
-                    "name": "fuel_excluded",
-                    "title": "Emissions excluded by fuel type",
-                    "items": [{"id": 10, "name": "CO2 emissions from excluded woody biomass", "emission": 5}],
-                },
-                {
-                    "name": "other_excluded",
-                    "title": "Other excluded emissions",
-                    "items": [
-                        {
-                            "id": 13,
-                            "name": "Emissions from line tracing and non-processing and non-compression activities",
-                            "emission": 5,
-                        }
-                    ],
-                },
-            ],
+        mock_new_entrant_data = make_recipe(
+            "reporting.tests.utils.report_new_entrant",
+            authorization_date=current_time,
+            first_shipment_date=current_time,
+            new_entrant_period_start=current_time,
+            assertion_statement=True
+        )
+        emission_category = make_recipe("reporting.tests.utils.emission_category", category_name="Flaring emissions",
+                                        category_type="basic")
+
+
+        mock_emissions = make_recipe(
+            "reporting.tests.utils.report_new_entrant_emissions",
+            report_new_entrant=mock_new_entrant_data,
+            emission_category=emission_category,
+            emission="12.05",
+        )
+
+        mock_products = make_recipe("reporting.tests.utils.report_new_entrant_production",
+                                    report_new_entrant=mock_new_entrant_data,
+                                    production_amount="5.0000")
+        mock_naics_code = make_recipe("reporting.tests.utils.naics_code")
+
+        with patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_new_entrant_data",
+                   return_value=mock_new_entrant_data), \
+                patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_emissions_data",
+                      return_value=[mock_emissions]), \
+                patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_products_data",
+                      return_value=[mock_products]), \
+                patch("reporting.service.naics_code.NaicsCodeService.get_naics_code_by_version_id",
+                      return_value=str(mock_naics_code)):
+            response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_get)
+        assert response.status_code == 200
+
+        assert response.json() == {
             "new_entrant_data": {
-                "id": 1,
-                "authorization_date": "2024-12-01T16:15:00.070Z",
-                "first_shipment_date": "2024-12-01T16:15:01.816Z",
-                "new_entrant_period_start": "2024-12-01T16:15:03.750Z",
-                "assertion_statement": True,
+                "authorization_date": current_time,
+                "first_shipment_date": current_time,
+                "new_entrant_period_start": current_time,
+                "assertion_statement": True
             },
+            "emissions": mock_emissions,
+            "products": mock_products,
+            "naics_code": mock_naics_code,
         }
 
-        mock_get_new_entrant_data.return_value = mock_new_entrant_data
-
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_get)
-
-        assert response.status_code == 200
-        assert response.json() == mock_new_entrant_data
-
     @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.save_new_entrant_data")
-    def test_save_new_entrant_data(self, mock_save_new_entrant_data: MagicMock):
-        report_version_mock = make_recipe("reporting.tests.utils.report_version")
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version_mock.report.operator)
+    def test_post_saves_data_correctly(self, mock_save: MagicMock):
+        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
-        payload = ReportNewEntrantSchemaIn(
-            products=[],
-            emissions=[],
-            authorization_date="1234",
-            first_shipment_date="1234",
-            new_entrant_period_start="1234",
-            assertion_statement=True,
-        )
+        payload = {
+            "new_entrant_data": {
+                "authorization_date": "2024-01-01",
+                "first_shipment_date": "2024-01-15",
+                "new_entrant_period_start": "2024-01-01",
+                "assertion_statement": "Sample assertion",
+            },
+            "emissions": [
+                {"category": "CO2", "emission": 123.45},
+                {"category": "CH4", "emission": 67.89},
+            ],
+            "products": [
+                {"product_id": 1, "production_amount": 100.5},
+                {"product_id": 2, "production_amount": 200.75},
+            ],
+        }
 
         response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", endpoint=self.endpoint_post, content_type=self.content_type, data=payload.dict()
+            self, "industry_user", "application/json", payload, self.endpoint_post
         )
 
         assert response.status_code == 200
-        mock_save_new_entrant_data.assert_called_once_with(self.report_version.id, payload)
+        mock_save.assert_called_once_with(self.report_version.id, payload)

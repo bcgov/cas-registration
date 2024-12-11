@@ -1,5 +1,5 @@
 from datetime import datetime
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from decimal import Decimal
@@ -29,7 +29,7 @@ class NewEntrantDataSchema(ModelSchema):
     assertion_statement: Optional[bool] = None
 
 
-class ReportNewEntrantDataOut(BaseModel):
+class ReportNewEntrantDataOut(Schema):
     products: List[ReportNewEntrantProductionSchema]
     emissions: List[ReportNewEntrantEmissionSchema]
     new_entrant_data: Optional[NewEntrantDataSchema]
@@ -43,29 +43,3 @@ class ReportNewEntrantSchemaIn(BaseModel):
     new_entrant_period_start: Optional[datetime]
     products: List[dict]
     emissions: List[dict]
-
-
-class ReportNewEntrantSchema(BaseModel):
-    id: int
-    authorization_date: Optional[datetime]
-    first_shipment_date: Optional[datetime]
-    new_entrant_period_start: Optional[datetime]
-    assertion_statement: bool
-
-
-class ProductDataSchema(BaseModel):
-    id: int
-    name: str
-    unit: str
-    production_amount: Optional[int]
-
-
-class EmissionSchema(BaseModel):
-    id: int
-    name: str
-    emission: Optional[int]
-
-
-class EmissionCategorydataSchema(BaseModel):
-    category_type: str
-    emissions: List[EmissionSchema]

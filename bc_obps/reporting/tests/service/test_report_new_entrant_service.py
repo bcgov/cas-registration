@@ -1,109 +1,85 @@
+from django.test import TestCase
+from model_bakery.baker import make_recipe
 from unittest.mock import patch
-
-import pytest
-from model_bakery import baker
-from reporting.models import (
-    ReportNewEntrant,
-    ReportNewEntrantProduction,
-    ReportNewEntrantEmissions,
-)
-from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
-from reporting.schema.report_regulated_products import RegulatedProductOut
 from reporting.service.report_new_entrant_service import ReportNewEntrantService
+from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn, ReportNewEntrantProductionSchema
+from decimal import Decimal
 
-pytestmark = pytest.mark.django_db
 
-
-class TestReportNewEntrantService:
-    def setup_method(self):
-        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        self.report_new_entrant = baker.make_recipe(
-            "reporting.tests.utils.report_new_entrant", report_version=self.report_version
-        )
-        self.emission_category = baker.make_recipe("reporting.tests.utils.emission_category")
-        self.product = baker.make_recipe("reporting.tests.utils.regulated_product")
-        self.report_version_id = self.report_version.id
-
-        self.test_data = ReportNewEntrantSchemaIn(
-            authorization_date="2024-12-01T16:15:00.070Z",
-            first_shipment_date="2024-12-01T16:15:00.070Z",
-            new_entrant_period_start="2024-12-01T16:15:00.070Z",
-            assertion_statement=True,
-            emissions=[
-                {
-                    "name": "basic",
-                    "title": "Emission categories after new entrant period began",
-                    "emissionData": [
-                        {"id": self.emission_category.id, "name": self.emission_category.category_name, "emission": 100}
-                    ],
-                },
-            ],
-            products=[
-                {
-                    "id": self.product.id,
-                    "production_amount": 100,
-                }
-            ],
-        )
+class TestReportNewEntrantService(TestCase):
+    def setUp(self):
+        # Arrange: Create mock data
+        self.report_version = make_recipe('reporting.tests.utils.report_version')
+        self.report_new_entrant = make_recipe('reporting.tests.utils.report_new_entrant',
+                                              report_version=self.report_version)
+        self.regulated_product = make_recipe('registration.tests.utils.regulated_product')
+        self.report_operation = make_recipe('reporting.tests.utils.report_operation',
+                                            report_version=self.report_version)
+        self.emission_category = make_recipe('reporting.tests.utils.emission_category')
+        self.report_new_entrant_emissions = make_recipe('reporting.tests.utils.report_new_entrant_emissions',
+                                                        report_new_entrant=self.report_new_entrant)
+        self.report_new_entrant_production = make_recipe('reporting.tests.utils.report_new_entrant_production',
+                                                         report_new_entrant=self.report_new_entrant)
 
     def test_get_new_entrant_data(self):
-        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        self.report_version_id = self.report_version.id  # Use the ID of the created ReportVersion
+        """
+        Test that the service retrieves the correct ReportNewEntrant instance
+        for a given report version ID.
+        """
+        # Act: Call the service to get the new entrant data
+        result = ReportNewEntrantService.get_new_entrant_data(self.report_version.id)
 
-        mocked_products = [
-            RegulatedProductOut(id=1, name="Product 1", unit="kg"),
-        ]
+        self.assertEqual(result, self.report_new_entrant)
+        self.assertEqual(result.report_version, self.report_version)
 
-        with patch(
-            'service.report_service.ReportService.get_regulated_products_by_version_id', return_value=mocked_products
-        ):
-            report_new_entrant = ReportNewEntrant.objects.create(
-                report_version_id=self.report_version_id,
-                authorization_date="2024-01-01",
-                first_shipment_date="2024-02-01",
-                new_entrant_period_start="2024-03-01",
-                assertion_statement=True,
-            )
+    def test_get_products_data(self):
+        """
+        Test that the service retrieves regulated products with associated production amounts.
+        """
+        result = list(ReportNewEntrantService.get_products_data(self.report_version.id))
+        print('result', result)
 
-            category1 = baker.make_recipe(
-                "reporting.tests.utils.emission_category", category_name="Category 1", category_type="basic"
-            )
+        self.assertCountEqual(result, [self.report_new_entrant_production])
 
-            report_new_entrant.report_new_entrant_emissions.create(emission_category=category1, emission=100)
+    def test_get_emissions_data(self):
+        """
+        Test that the service retrieves emissions data categorized by emission type.
+        """
+        result = ReportNewEntrantService.get_emissions_data(self.report_version.id)
 
-            result = ReportNewEntrantService.get_new_entrant_data(self.report_version_id)
+        self.assertEqual(result, self.report_new_entrant_emissions)
 
-            assert "products" in result
-            assert "emissions" in result
-            assert "new_entrant_data" in result
-            assert len(result["products"]) == 1
-            assert result["products"][0]["name"] == "Product 1"  # Check product name
-            assert result["emissions"][0]["name"] == "basic"  # Check emission category name
-
-    def test_save_new_entrant_data(self):
-        new_data = self.test_data
-
-        new_authorization_date = "2024-12-01T16:15:00.070Z"
-        new_first_shipment_date = "2024-12-01T16:15:00.070Z"
-        new_new_entrant_period_start = "2024-12-01T16:15:00.070Z"
-
-        ReportNewEntrantService.save_new_entrant_data(self.report_version_id, new_data)
-
-        report_new_entrant = ReportNewEntrant.objects.get(report_version=self.report_version)
-
-        auth_date_str = report_new_entrant.authorization_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
-        first_shipment_date_str = report_new_entrant.first_shipment_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
-        new_entrant_period_start_str = (
-            report_new_entrant.new_entrant_period_start.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    @patch('reporting.service.report_new_entrant_service.ReportNewEntrant.objects.update_or_create')
+    @patch('reporting.service.report_new_entrant_service.ReportNewEntrantEmissions.objects.bulk_create')
+    @patch('reporting.service.report_new_entrant_service.ReportNewEntrantProduction.objects.bulk_create')
+    def test_save_new_entrant_data(self, mock_bulk_create_production, mock_bulk_create_emissions,
+                                   mock_update_or_create):
+        """
+        Test that the service saves or updates the new entrant data correctly.
+        """
+        data = ReportNewEntrantSchemaIn(
+            authorization_date='2024-01-01',
+            first_shipment_date='2024-02-01',
+            new_entrant_period_start='2024-03-01',
+            assertion_statement=True,
+            emissions=[{'id': self.emission_category.id, 'emissionData': [{'id': 1, 'emission': 50}]}],
+            products=[{'id': self.regulated_product.id, 'production_amount': Decimal('200.0')}],
         )
 
-        assert auth_date_str == new_authorization_date
-        assert first_shipment_date_str == new_first_shipment_date
-        assert new_entrant_period_start_str == new_new_entrant_period_start
+        mock_update_or_create.return_value = (self.report_new_entrant, True)
+        mock_bulk_create_emissions.return_value = None
+        mock_bulk_create_production.return_value = None
 
-        emission = ReportNewEntrantEmissions.objects.get(report_new_entrant=report_new_entrant)
-        assert emission.emission == 100
-        assert emission.emission_category.category_name == self.emission_category.category_name
+        ReportNewEntrantService.save_new_entrant_data(self.report_version.id, data)
 
-        production = ReportNewEntrantProduction.objects.get(report_new_entrant=report_new_entrant)
-        assert production.production_amount == 100
+        mock_update_or_create.assert_called_once_with(
+            report_version=self.report_version,
+            defaults={
+                "authorization_date": data.authorization_date,
+                "first_shipment_date": data.first_shipment_date,
+                "new_entrant_period_start": data.new_entrant_period_start,
+                "assertion_statement": data.assertion_statement,
+            }
+        )
+        mock_bulk_create_emissions.assert_called_once()
+        mock_bulk_create_production.assert_called_once()

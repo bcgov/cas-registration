@@ -1,7 +1,10 @@
 from datetime import date, timedelta, datetime
+from decimal import Decimal
 from typing import Any
+
+from registration.models import NaicsCode, RegulatedProduct
 from registration.models.activity import Activity
-from reporting.models import ReportNewEntrant
+from reporting.models import ReportNewEntrant, ReportNewEntrantEmissions, ReportNewEntrantProduction
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
@@ -147,7 +150,6 @@ report_non_attributable_emissions = Recipe(
     gas_type=[foreign_key(gas_type)],
 )
 
-
 report_new_entrant = Recipe(
     ReportNewEntrant,
     report_version=foreign_key(report_version),
@@ -178,4 +180,23 @@ report_additional_data = Recipe(
     emissions_on_site_sequestration=50.0,
     emissions_off_site_transfer=20.0,
     electricity_generated=500.0,
+)
+
+report_new_entrant_emissions = Recipe(
+    ReportNewEntrantEmissions,
+    report_new_entrant=foreign_key(report_new_entrant),
+    emission_category=foreign_key(emission_category),
+    emission=seq(Decimal('10.0'), start=Decimal('5.0'), increment_by=Decimal('1.0')),
+)
+
+report_new_entrant_production = Recipe(
+    ReportNewEntrantProduction,
+    report_new_entrant=foreign_key(report_new_entrant),
+    product=foreign_key(regulated_product),
+    production_amount=seq(Decimal('100.0'), start=Decimal('50.0'), increment_by=Decimal('10.0')),
+)
+
+naics_code = Recipe(
+    NaicsCode,
+    naics_code='12345',
 )
