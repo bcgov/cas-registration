@@ -216,6 +216,7 @@ export default function FacilityEmissionAllocationForm({
             products: item.products.map((product: Product) => ({
               report_product_id: product.report_product_id,
               allocated_quantity: parseFloat(product.allocated_quantity),
+              product_name: product.product_name,
             })),
           }),
         ),
@@ -226,6 +227,7 @@ export default function FacilityEmissionAllocationForm({
             products: item.products.map((product: Product) => ({
               report_product_id: product.report_product_id,
               allocated_quantity: parseFloat(product.allocated_quantity),
+              product_name: product.product_name,
             })),
           }),
         ),
@@ -235,8 +237,6 @@ export default function FacilityEmissionAllocationForm({
     const endpoint = `reporting/report-version/${version_id}/facilities/${facility_id}/allocate-emissions`;
     const pathToRevalidate = "reporting/reports";
     const payload = safeJsonParse(JSON.stringify(transformedPayload));
-    console.log(payload);
-    debugger;
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(payload),
     });
