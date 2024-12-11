@@ -42,9 +42,11 @@ class FacilityDesignatedOperationTimelineService:
         return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
-    def get_current_timeline_by_facility_id(cls, facility_id: UUID) -> Optional[FacilityDesignatedOperationTimeline]:
+    def get_current_timeline(
+        cls, operation_id: UUID, facility_id: UUID
+    ) -> Optional[FacilityDesignatedOperationTimeline]:
         return FacilityDesignatedOperationTimeline.objects.filter(
-            facility_id=facility_id, end_date__isnull=True
+            operation_id=operation_id, facility_id=facility_id, end_date__isnull=True
         ).first()
 
     @classmethod
