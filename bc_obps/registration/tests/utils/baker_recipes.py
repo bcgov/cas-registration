@@ -1,6 +1,8 @@
 from datetime import datetime
 from itertools import cycle
 from zoneinfo import ZoneInfo
+
+from registration.models import OperationDesignatedOperatorTimeline
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -78,8 +80,8 @@ operator_for_operation = Recipe(
 
 
 industry_operator_user = Recipe(User, app_role=AppRole.objects.get(role_name="industry_user"))
-
-irc_user = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
+cas_admin = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
+cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 
 operation = Recipe(
     Operation,
@@ -140,6 +142,14 @@ facility_designated_operation_timeline = Recipe(
     facility=foreign_key(facility),
     status=cycle([status for status in FacilityDesignatedOperationTimeline.Statuses]),
     end_date=datetime.now(ZoneInfo("UTC")),
+)
+
+operation_designated_operator_timeline = Recipe(
+    OperationDesignatedOperatorTimeline,
+    operation=foreign_key(operation),
+    operator=foreign_key(operator),
+    status=cycle([status for status in OperationDesignatedOperatorTimeline.Statuses]),
+    start_date=datetime.now(ZoneInfo("UTC")),
 )
 
 
