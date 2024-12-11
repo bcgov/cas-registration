@@ -75,7 +75,7 @@ export const createTransferSchema = (
               properties: {
                 operation: {
                   type: "string",
-                  title: "Select your operation:",
+                  title: "Operation",
                 },
                 effective_date: {
                   type: "string",
