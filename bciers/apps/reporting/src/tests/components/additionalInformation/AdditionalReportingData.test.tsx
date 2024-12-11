@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
@@ -101,18 +100,6 @@ describe("AdditionalReportingData Component", () => {
         isNewEntrant={true}
       />,
     );
-  it(
-    "submits form data and redirects on success",
-    {
-      timeout: 10000,
-    },
-    async () => {
-      render(
-        <AdditionalReportingDataForm
-          versionId={versionId}
-          includeElectricityGenerated={false}
-        />,
-      );
 
       await waitFor(() => {
         const submitButton = screen.getByRole("button", {
@@ -126,10 +113,7 @@ describe("AdditionalReportingData Component", () => {
       });
       fireEvent.click(submitButton);
 
-      await waitFor(() => expect(actionHandler).toHaveBeenCalled());
-      expect(mockPush).toHaveBeenCalledWith(
-        `/reports/${versionId}/new-entrant-information`,
-      );
-    },
-  );
+    await waitFor(() => expect(actionHandler).toHaveBeenCalled());
+    expect(mockPush).toHaveBeenCalledWith(`new-entrant-information`);
+  });
 });

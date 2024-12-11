@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from typing import Any
 from registration.models.activity import Activity
+from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from reporting.models.configuration import Configuration
@@ -156,4 +157,13 @@ report_verification = Recipe(
     visit_type=ReportVerification.VisitType.IN_PERSON,
     other_facility_name=None,
     other_facility_coordinates=None,
+)
+report_additional_data = Recipe(
+    ReportAdditionalData,
+    report_version=foreign_key(report_version),
+    capture_emissions=True,
+    emissions_on_site_use=100.0,
+    emissions_on_site_sequestration=50.0,
+    emissions_off_site_transfer=20.0,
+    electricity_generated=500.0,
 )

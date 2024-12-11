@@ -12,6 +12,8 @@ import {
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
 
+const baseUrl = "/reports";
+const cancelUrl = "/reports";
 interface AdditionalReportingDataProps {
   versionId: number;
   includeElectricityGenerated: boolean;
@@ -43,8 +45,8 @@ export default function AdditionalReportingDataForm({
 
   const router = useRouter();
   const saveAndContinueUrl = isNewEntrant
-    ? `/reports/${versionId}/new-entrant-information`
-    : `reports/${versionId}/compliance-summary`;
+    ? `new-entrant-information`
+    : `compliance-summary`;
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
@@ -57,17 +59,15 @@ export default function AdditionalReportingDataForm({
       isActive: true,
       link: `/reports/${versionId}/additional-reporting-data`,
     },
-    {
+  ];
+
+  if (isNewEntrant) {
+    taskListElements.push({
       type: "Page",
       title: "New entrant information",
       link: `/reports/${versionId}/new-entrant-information`,
-    },
-    {
-      type: "Page",
-      title: "Operation emission summary",
-      link: `/reports/${versionId}/operation-emission-summary`,
-    },
-  ];
+    });
+  }
 
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/additional-data`;
@@ -78,10 +78,12 @@ export default function AdditionalReportingDataForm({
       ...data.captured_emissions_section,
       ...data.additional_data_section,
     };
-
-    await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
+    if (response) {
+      router.push(saveAndContinueUrl);
+    }
   };
 
   return (
@@ -98,8 +100,8 @@ export default function AdditionalReportingDataForm({
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
-      cancelUrl="#"
-      backUrl={backUrl}
+      baseUrl={baseUrl}
+      cancelUrl={cancelUrl}
       onChange={(data: any) => {
         setFormData(data.formData);
       }}
