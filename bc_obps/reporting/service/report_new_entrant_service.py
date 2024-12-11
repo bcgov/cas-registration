@@ -23,7 +23,7 @@ class ReportNewEntrantService:
     @staticmethod
     def get_products_data(version_id) -> List[ReportNewEntrantProductionSchema]:
         """Retrieve regulated products and associated production amounts for the given version_id."""
-        return RegulatedProduct.objects.filter(
+        products = RegulatedProduct.objects.filter(
             id__in=ReportOperation.objects.filter(report_version_id=version_id)
             .values_list('regulated_products__id', flat=True)
         ).annotate(
@@ -35,6 +35,8 @@ class ReportNewEntrantService:
                 output_field=DecimalField(),
             )
         )
+        print(products)
+        return products
 
     @staticmethod
     def get_emissions_data(report_version_id) -> dict:

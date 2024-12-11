@@ -23,7 +23,7 @@ from ..service.report_new_entrant_service import ReportNewEntrantService
     response={200: ReportNewEntrantDataOut, custom_codes_4xx: Message},
     description="""Retrieves the data for the new entrant data page, including selected products and emissions.""",
     exclude_none=True,
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[int, dict]:

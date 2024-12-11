@@ -23,7 +23,7 @@ from ..service.report_non_attributable_service import ReportNonAttributableServi
     response={200: List[ReportNonAttributableOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns all non-attributable emissions for that report version.""",
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_report_non_attributable_by_version_id(
