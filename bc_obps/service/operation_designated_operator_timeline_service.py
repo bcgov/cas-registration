@@ -11,15 +11,19 @@ class OperationDesignatedOperatorTimelineService:
         cls,
         operator_id: UUID,
     ) -> QuerySet[OperationDesignatedOperatorTimeline]:
-        """ """
+        """
+        List active timelines belonging to a specific operator.
+        """
         return OperationDesignatedOperatorTimeline.objects.filter(
             operator_id=operator_id, end_date__isnull=True
         ).distinct()
 
     @classmethod
-    def get_current_timeline_by_operation_id(cls, operation_id: UUID) -> Optional[OperationDesignatedOperatorTimeline]:
+    def get_current_timeline(
+        cls, operator_id: UUID, operation_id: UUID
+    ) -> Optional[OperationDesignatedOperatorTimeline]:
         return OperationDesignatedOperatorTimeline.objects.filter(
-            operation_id=operation_id, end_date__isnull=True
+            operator_id=operator_id, operation_id=operation_id, end_date__isnull=True
         ).first()
 
     @classmethod
