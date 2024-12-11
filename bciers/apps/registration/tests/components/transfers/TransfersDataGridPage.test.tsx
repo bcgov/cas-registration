@@ -1,10 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import {
+  auth,
   fetchTransferEventsPageData,
   useRouter,
   useSearchParams,
 } from "@bciers/testConfig/mocks";
 import TransfersDataGridPage from "@/registration/app/components/transfers/TransfersDataGridPage";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 useRouter.mockReturnValue({
   query: {},
@@ -21,6 +23,10 @@ vi.mock(
     default: fetchTransferEventsPageData,
   }),
 );
+
+auth.mockReturnValueOnce({
+  user: { app_role: FrontEndRoles.CAS_DIRECTOR },
+});
 
 const mockResponse = {
   items: [
@@ -68,7 +74,7 @@ const mockResponse = {
   row_count: 4,
 };
 
-describe("Transfers component", () => {
+describe("TransfersDataGrid page", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
@@ -88,5 +94,15 @@ describe("Transfers component", () => {
     expect(
       screen.queryByText(/No transfers data in database./i),
     ).not.toBeInTheDocument();
+    // make sure the `Make a Transfer` button is not visible
+    expect(screen.queryByText(/Make a Transfer/i)).not.toBeInTheDocument();
+  });
+  it("only shows the 'Make a Transfer' button to CAS_ANALYST users", async () => {
+    auth.mockReturnValueOnce({
+      user: { app_role: FrontEndRoles.CAS_ANALYST },
+    });
+    fetchTransferEventsPageData.mockReturnValueOnce(mockResponse);
+    render(await TransfersDataGridPage({ searchParams: {} }));
+    expect(screen.getByText(/make a transfer/i)).toBeVisible();
   });
 });
