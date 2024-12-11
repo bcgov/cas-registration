@@ -30,7 +30,7 @@ const taskListElements: TaskListElement[] = [
   },
 ];
 
-const SignOffPage: React.FC<HasReportVersion> = ({ version_id }) => {
+export default function SignOffPage({ version_id }: HasReportVersion) {
   const [formState, setFormState] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
@@ -88,6 +88,4 @@ const SignOffPage: React.FC<HasReportVersion> = ({ version_id }) => {
       )}
     </>
   );
-};
-
-export default SignOffPage;
+}
