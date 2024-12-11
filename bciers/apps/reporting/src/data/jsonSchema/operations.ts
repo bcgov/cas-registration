@@ -61,12 +61,15 @@ export const operationReviewSchema: RJSFSchema = {
             activities: {
               type: "array",
               title: "Reporting activities",
+              minItems: 1,
             },
             regulated_products: {
               type: "array",
               title: "Regulated products",
+              minItems: 1,
             },
           },
+          required: ["regulated_products", "activities"],
         },
       ],
     },
@@ -219,6 +222,7 @@ export const updateSchema = (
               activities: {
                 type: "array",
                 title: "Reporting activities",
+                minItems: 1,
                 items: {
                   type: "number",
                   enum: allActivities.map((activity) => activity.id),
@@ -228,6 +232,7 @@ export const updateSchema = (
               regulated_products: {
                 type: "array",
                 title: "Regulated products",
+                minItems: 1,
                 items: {
                   type: "number",
                   enum: allRegulatedProducts.map((product) => product.id),
