@@ -120,10 +120,10 @@ export default function SelectOperatorConfirmForm({
                   </TableRow>
                   <TableRow>
                     <TableCell sx={{ borderBottom: "none" }}>
-                      <b>Physical Address</b>
+                      <b>Street Address</b>
                     </TableCell>
                     <TableCell sx={{ borderBottom: "none" }}>
-                      {operator.physical_street_address || "-"}
+                      {operator.street_address || "-"}
                     </TableCell>
                   </TableRow>
                 </TableBody>
