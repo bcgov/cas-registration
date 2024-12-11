@@ -100,7 +100,7 @@ describe("NonAttributableEmissionsForm Component", () => {
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
     expect(mockPush).toHaveBeenCalledWith(
-      `/reporting/reports/${versionId}/facilities/${facilityId}/emission-summary`,
+      `/reports/${versionId}/facilities/${facilityId}/emission-summary`,
     );
   });
 
