@@ -196,7 +196,6 @@ export default function FacilityEmissionAllocationForm({
 
   // 🛠️ Handle form submit
   const handleSubmit = async () => {
-    setSubmitButtonDisabled(true);
     // Transform formData to match the schema in structure
     const transformedPayload = {
       allocation_methodology: formData.allocation_methodology,
@@ -245,7 +244,6 @@ export default function FacilityEmissionAllocationForm({
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}
-      baseUrl="#"
       cancelUrl="#"
       backUrl={backUrl}
       onChange={handleChange}

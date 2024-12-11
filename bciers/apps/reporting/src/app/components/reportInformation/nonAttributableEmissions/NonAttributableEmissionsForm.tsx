@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useRouter } from "next/navigation";
 import { UUID } from "crypto";
 import {
   generateUpdatedSchema,
@@ -65,8 +64,6 @@ export default function NonAttributableEmissionsForm({
           emissions_exceeded: false,
         },
   );
-
-  const router = useRouter();
 
   const saveAndContinueUrl = `/reports/${versionId}/facilities/${facilityId}/emission-summary`;
   const backUrl = `activities?step=-1`;
