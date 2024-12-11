@@ -139,3 +139,22 @@ class TestUserOperatorServiceV2:
         )
         assert user_operators_sorted_by_status.first().status == UserOperator.Statuses.APPROVED
         assert user_operators_sorted_by_status.last().status == UserOperator.Statuses.PENDING
+
+    @staticmethod
+    def test_create_operator_and_user_operator_v2():
+        user = baker.make_recipe('utils.industry_operator_user')
+        payload = OperatorIn(
+            legal_name="Test",
+            business_structure="BC Corporation",
+            bc_corporate_registry_number='aaa1111111',
+            cra_business_number=999999999,
+            street_address="Test",
+            municipality="Test",
+            province="AB",
+            postal_code="H0H0H0",
+        )
+        UserOperatorServiceV2.create_operator_and_user_operator(user_guid=user.user_guid, payload=payload)
+        assert UserOperator.objects.count() == 1
+        assert Operator.objects.count() == 1
+        assert Operator.objects.first().status == "Approved"
+        assert Operator.objects.first().is_new is False
