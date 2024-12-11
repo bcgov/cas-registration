@@ -64,6 +64,13 @@ class OperationServiceV2:
         )
 
     @classmethod
+    def check_current_users_registered_operation(cls, operator_id: UUID) -> bool:
+        """
+        Returns True if the userOperator's operator has at least one operation with status 'Registered', False otherwise.
+        """
+        return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()
+
+    @classmethod
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
@@ -167,6 +174,19 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
+    def remove_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
+        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation.opt_in = False
+        opted_in_detail: OptedInOperationDetail = operation.opted_in_operation
+        # TODO - determine whether this should be archived or deleted??
+        opted_in_detail.set_archive(user_guid)
+        operation.opted_in_operation = None
+        operation.save(update_fields=['opt_in', 'opted_in_operation'])
+
+        return operation
+
+    @classmethod
+    @transaction.atomic()
     def create_or_update_operation_v2(
         cls,
         user_guid: UUID,
@@ -174,7 +194,16 @@ class OperationServiceV2:
         operation_id: UUID | None = None,
     ) -> Operation:
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
+        # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
+        if operation_id:
+            original_operation = Operation.objects.get(id=operation_id)
+            if payload.registration_purpose != original_operation.registration_purpose:
+                print('New RP detected!!!')
+                payload = cls.handle_change_of_registration_purpose(user_guid, original_operation, payload)
+                print(payload)
+
+        operation: Operation
         operation_data = payload.dict(
             include={
                 'name',
@@ -184,19 +213,18 @@ class OperationServiceV2:
                 'tertiary_naics_code_id',
                 'date_of_first_shipment',
                 'registration_purpose',
+                'opt_in',
             }
         )
+        operation_data['pk'] = operation_id if operation_id else None
         operation_data['operator_id'] = user_operator.operator_id
-        if operation_id:
-            operation_data['pk'] = operation_id
-
-        operation: Operation
         operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
 
         # set m2m relationships
-        operation.activities.set(payload.activities)
-        if payload.regulated_products:
-            operation.regulated_products.set(payload.regulated_products)
+        operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
+        operation.regulated_products.set(
+            payload.regulated_products
+        ) if payload.regulated_products else operation.regulated_products.clear()
 
         # create or replace documents
         operation_documents = [
@@ -261,6 +289,7 @@ class OperationServiceV2:
             # TODO in ticket 2169 - replace this with create_or_update_-----
             operation = cls.create_opted_in_operation_detail(user_guid, operation)
 
+        # TODO should status reset to DRAFT if editing registration info?
         cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
         operation.set_create_or_update(user_guid)
 
@@ -359,6 +388,18 @@ class OperationServiceV2:
         return all(getattr(opted_in_operation, field) is not None for field in required_fields)
 
     @classmethod
+    def is_operation_new_entrant_information_complete(cls, operation: Operation) -> bool:
+        """
+        This function checks whether the expected data for new-entrant operations has been saved.
+        """
+        if (
+            operation.date_of_first_shipment is None
+            or not operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).exists()
+        ):
+            return False
+        return True
+
+    @classmethod
     def raise_exception_if_operation_missing_registration_information(cls, operation: Operation) -> None:
         """
         This function checks if the given operation instance has all necessary registration information.
@@ -381,7 +422,14 @@ class OperationServiceV2:
                 lambda: FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists(),
                 "Operation must have at least one facility.",
             )
-            yield lambda: operation.activities.exists(), "Operation must have at least one reporting activity."
+            # unless the registration purpose is Electricity Import Operation, the operation should have at least 1 reporting activity
+            yield (
+                lambda: not (
+                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+                    and not operation.activities.exists()
+                ),
+                "Operation must have at least one reporting activity.",
+            )
 
             # Check if the operation has both a process flow diagram and a boundary map
             yield (
@@ -394,11 +442,9 @@ class OperationServiceV2:
             yield (
                 lambda: not (
                     operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
-                    and not operation.documents.filter(
-                        type=DocumentType.objects.get(name='new_entrant_application')
-                    ).exists()
+                    and not cls.is_operation_new_entrant_information_complete(operation)
                 ),
-                "Operation must have a signed statutory declaration if it is a new entrant.",
+                "Operation must have a signed statutory declaration and date of first shipment if it is a new entrant.",
             )
             yield (
                 lambda: not (
@@ -443,3 +489,31 @@ class OperationServiceV2:
         operation.save(update_fields=['bcghg_id'])
 
         return operation.bcghg_id
+
+    @classmethod
+    def handle_change_of_registration_purpose(
+        cls, user_guid: UUID, original_operation: Operation, payload: OperationInformationIn
+    ) -> OperationInformationIn:
+        if original_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            payload.opt_in = False
+            opted_in_detail: OptedInOperationDetail = original_operation.opted_in_operation
+            opted_in_detail.set_archive(user_guid)
+        elif original_operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
+            payload.date_of_first_shipment = None
+            DocumentService.archive_operation_document(user_guid, original_operation.id, 'new_entrant_application')
+
+        if payload.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            payload.activities = []
+            payload.regulated_products = []
+            payload.naics_code_id = None
+            payload.secondary_naics_code_id = None
+            payload.tertiary_naics_code_id = None
+            DocumentService.archive_operation_document(user_guid, original_operation.id, 'process_flow_diagram')
+            DocumentService.archive_operation_document(user_guid, original_operation.id, 'boundary_map')
+        elif payload.registration_purpose in [
+            Operation.Purposes.REPORTING_OPERATION,
+            Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+        ]:
+            payload.regulated_products = []
+
+        return payload

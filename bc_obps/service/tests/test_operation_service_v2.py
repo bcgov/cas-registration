@@ -13,6 +13,7 @@ from registration.schema.v2.operation import (
     OperationRepresentativeIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeRemove,
+    OptedInOperationDetailIn,
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.operation_service_v2 import OperationServiceV2
@@ -60,6 +61,7 @@ def set_up_valid_mock_operation(purpose: Operation.Purposes):
             'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
         operation.documents.add(new_entrant_application)
+        operation.date_of_first_shipment = "On or after April 1, 2024"
 
     if purpose == Operation.Purposes.OPTED_IN_OPERATION:
         # opt in record
@@ -119,6 +121,55 @@ class TestOperationServiceV2:
         assert operation.updated_at is not None
         assert operation.updated_by == approved_user_operator.user
         assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+
+    @staticmethod
+    def test_remove_opted_in_operation_detail():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+        )
+        payload = OperationInformationIn(
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+            name="string",
+            type="SFO",
+            naics_code_id=1,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+        )
+        OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
+        operation.refresh_from_db()
+        assert operation.opt_in is True
+        assert operation.opted_in_operation is not None
+
+        opted_in_operation_detail_id = operation.opted_in_operation.id
+
+        opted_in_payload = OptedInOperationDetailIn(
+            meets_section_3_emissions_requirements=False,
+            meets_electricity_import_operation_criteria=False,
+            meets_entire_operation_requirements=True,
+            meets_section_6_emissions_requirements=True,
+            meets_naics_code_11_22_562_classification_requirements=False,
+            meets_producing_gger_schedule_a1_regulated_product=False,
+            meets_reporting_and_regulated_obligations=True,
+            meets_notification_to_director_on_criteria_change=True,
+        )
+        opted_in_operation_detail = OperationServiceV2.update_opted_in_operation_detail(
+            approved_user_operator.user.user_guid, operation.id, opted_in_payload
+        )
+
+        OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
+        opted_in_operation_detail.refresh_from_db()
+        operation.refresh_from_db()
+
+        assert operation.opt_in is False
+        assert operation.opted_in_operation is None
+        # assert OptedInOperationDetail.objects.get(pk=opted_in_operation_detail_id).exists()
+        assert opted_in_operation_detail is not None
+        assert opted_in_operation_detail.archived_by == approved_user_operator.user
+        assert opted_in_operation_detail.archived_at is not None
 
     @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
@@ -552,7 +603,6 @@ class TestOperationServiceV2UpdateOperation:
         )
         payload = OperationInformationIn(
             registration_purpose='Potential Reporting Operation',
-            regulated_products=[1],
             name="Test Update Operation Name",
             type="SFO",
             naics_code_id=1,
@@ -572,7 +622,6 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.created_by == approved_user_operator.user
         assert operation.created_at is not None
         assert operation.updated_at is not None
-        assert operation.regulated_products.count() == 1
         assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
 
     def test_update_operation_with_no_regulated_products(self):
@@ -778,7 +827,8 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).delete()
 
         with pytest.raises(
-            Exception, match="Operation must have a signed statutory declaration if it is a new entrant."
+            Exception,
+            match="Operation must have a signed statutory declaration and date of first shipment if it is a new entrant.",
         ):
             OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
 

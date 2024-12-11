@@ -4,6 +4,7 @@ import OperationInformationForm from "apps/registration/app/components/operation
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import { OperationInformationFormData } from "./types";
+import Modal from "@/libs/components/src/modal";
 
 const OperationInformationPage = async ({
   step,
@@ -23,7 +24,7 @@ const OperationInformationPage = async ({
     throw new Error("Failed to fetch operation data");
   return (
     <OperationInformationForm
-      rawFormData={formData}
+      rawFormData={{}}
       schema={await createRegistrationOperationInformationSchema()}
       step={step}
       steps={steps}
