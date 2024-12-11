@@ -378,6 +378,35 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.queryByRole("button", { name: "Edit" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Submit" })).toBeNull();
   });
+
+  it("should not render the Tasklist sidebar when showTasklist is false", () => {
+    render(
+      <SingleStepTaskListForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={{}}
+        showTasklist={false}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
+        allowEdit={false}
+      />,
+    );
+    expect(
+      screen.queryByRole("button", { name: "Section 1" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Section 2" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Section 3" }),
+    ).not.toBeInTheDocument();
+  });
 });
 
 // it("should render the task list checkmarks as sections are filled", async () => {

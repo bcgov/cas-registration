@@ -1,16 +1,19 @@
 import { render } from "@testing-library/react";
 import { notFound } from "@bciers/testConfig/mocks";
-import { getOperator, getOperatorHasAdmin } from "../userOperators/mocks";
 
 import SelectOperatorReceivedPage from "apps/administration/app/components/userOperators/SelectOperatorReceivedPage";
 
 import { expectIcon } from "@bciers/testConfig/helpers/expectIcon";
 import { expectMessage } from "@bciers/testConfig/helpers/expectMessage";
 import { id, operatorJSON } from "./constants";
+import {
+  getOperatorConfirmationInfo,
+  getOperatorHasAdmin,
+} from "../operators/mocks";
 
 // ⛏️ Helper function to mock the state of the operator based on admin presence and access decline status
 const mockOperatorState = (hasAdmin: boolean): void => {
-  getOperator.mockReturnValueOnce(operatorJSON);
+  getOperatorConfirmationInfo.mockReturnValueOnce(operatorJSON);
   getOperatorHasAdmin.mockReturnValueOnce(hasAdmin);
 };
 
@@ -56,7 +59,7 @@ describe("Select Operator Received Page", () => {
     );
   });
   it("renders error when getOperator fails", async () => {
-    getOperator.mockReturnValueOnce({
+    getOperatorConfirmationInfo.mockReturnValueOnce({
       error: "operator error",
     });
     getOperatorHasAdmin.mockReturnValueOnce(false);
@@ -70,7 +73,7 @@ describe("Select Operator Received Page", () => {
     }).rejects.toThrow("Failed to retrieve operator information.");
   });
   it("renders error when getOperatorHasAdmin fails", async () => {
-    getOperator.mockReturnValueOnce(operatorJSON);
+    getOperatorConfirmationInfo.mockReturnValueOnce(operatorJSON);
     getOperatorHasAdmin.mockReturnValueOnce({
       error: "operator admin error",
     });
