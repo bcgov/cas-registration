@@ -115,8 +115,10 @@ class TransferEventService:
             transfer_event = TransferEventDataAccessService.create_transfer_event(user_guid, prepared_payload)
 
         elif payload.transfer_entity == "Facility":
-            if not payload.facilities:
-                raise Exception("Facility is required for facility transfer events.")
+            if not all([payload.facilities, payload.from_operation, payload.to_operation]):
+                raise Exception(
+                    "Facilities, from_operation, and to_operation are required for facility transfer events."
+                )
 
             prepared_payload.update(
                 {
@@ -153,10 +155,8 @@ class TransferEventService:
         )
 
         if not transfer_events:
-            logger.info("No due transfer events found.")
             return
 
-        logger.info(f"Found {len(transfer_events)} transfer events to process.")
         processed_events = []
 
         for event in transfer_events:
@@ -178,7 +178,7 @@ class TransferEventService:
         """
         # If the timeline update is user-triggered (via a transfer event with a past effective date), use the user_guid.
         # Otherwise, for cronjob updates, use created_by_id from the event.
-        processed_by_id: UUID = user_guid if user_guid else event.created_by.id  # type: ignore # we are sure that created_by is not None
+        processed_by_id: UUID = user_guid if user_guid else event.created_by.pk  # type: ignore # we are sure that created_by is not None
 
         if event.facilities.exists():
             cls._process_facilities_transfer(event, processed_by_id)
@@ -196,8 +196,9 @@ class TransferEventService:
         Process a facility transfer event. Updates the timelines for all associated facilities.
         """
         for facility in event.facilities.all():
-            current_timeline = FacilityDesignatedOperationTimelineService.get_current_timeline_by_facility_id(
-                facility.id
+            # get the current timeline for the facility and operation
+            current_timeline = FacilityDesignatedOperationTimelineService.get_current_timeline(
+                event.from_operation.id, facility.id  # type: ignore # we are sure that from_operation is not None
             )
 
             if current_timeline:
@@ -224,8 +225,9 @@ class TransferEventService:
         """
         Process an operation transfer event. Updates the timelines for the associated operation.
         """
-        current_timeline = OperationDesignatedOperatorTimelineService.get_current_timeline_by_operation_id(
-            event.operation.id  # type: ignore # we are sure that operation is not None
+        # get the current timeline for the operation and operator
+        current_timeline = OperationDesignatedOperatorTimelineService.get_current_timeline(
+            event.from_operator.id, event.operation.id  # type: ignore # we are sure that operation is not None
         )
 
         if current_timeline:
