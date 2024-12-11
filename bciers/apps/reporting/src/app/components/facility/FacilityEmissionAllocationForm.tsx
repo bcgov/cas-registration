@@ -27,10 +27,9 @@ interface Product {
 }
 
 interface EmissionAllocationData {
-  emission_category_name: string;
-  emission_category_id: number;
+  emission_category: string;
+  emission_total: number;
   category_type: string;
-  emission_total: string;
   products: Product[];
 }
 
@@ -95,17 +94,11 @@ export default function FacilityEmissionAllocationForm({
       initialData.allocation_other_methodology_description,
     basic_emission_allocation_data:
       initialData.report_product_emission_allocations
-        .filter(
-          (category: EmissionAllocationData) =>
-            category.category_type === "basic",
-        )
+        .filter((category: any) => category.category_type === "basic")
         .map(calculateEmissionData),
     fuel_excluded_emission_allocation_data:
       initialData.report_product_emission_allocations
-        .filter(
-          (category: EmissionAllocationData) =>
-            category.category_type === "fuel_excluded",
-        )
+        .filter((category: any) => category.category_type === "fuel_excluded")
         .map(calculateEmissionData),
     total_emission_allocations: {
       facility_total_emissions: initialData.facility_total_emissions,
@@ -209,28 +202,24 @@ export default function FacilityEmissionAllocationForm({
       allocation_other_methodology_description:
         formData.allocation_other_methodology_description,
       report_product_emission_allocations: [
-        ...formData.basic_emission_allocation_data.map(
-          (item: EmissionAllocationData) => ({
-            emission_total: item.emission_total,
-            emission_category_id: item.emission_category_id,
-            products: item.products.map((product: Product) => ({
-              report_product_id: product.report_product_id,
-              allocated_quantity: parseFloat(product.allocated_quantity),
-              product_name: product.product_name,
-            })),
-          }),
-        ),
-        ...formData.fuel_excluded_emission_allocation_data.map(
-          (item: EmissionAllocationData) => ({
-            emission_total: item.emission_total,
-            emission_category_id: item.emission_category_id,
-            products: item.products.map((product: Product) => ({
-              report_product_id: product.report_product_id,
-              allocated_quantity: parseFloat(product.allocated_quantity),
-              product_name: product.product_name,
-            })),
-          }),
-        ),
+        ...formData.basic_emission_allocation_data.map((item: any) => ({
+          emission_total: item.emission_total,
+          emission_category_name: item.emission_category,
+          products: item.products.map((product: any) => ({
+            report_product_id: product.report_product_id,
+            product_name: product.product_name,
+            allocated_quantity: parseFloat(product.allocated_quantity),
+          })),
+        })),
+        ...formData.fuel_excluded_emission_allocation_data.map((item: any) => ({
+          emission_total: item.emission_total,
+          emission_category_name: item.emission_category,
+          products: item.products.map((product: any) => ({
+            report_product_id: product.report_product_id,
+            product_name: product.product_name,
+            allocated_quantity: parseFloat(product.allocated_quantity),
+          })),
+        })),
       ],
     };
     const method = "POST";
