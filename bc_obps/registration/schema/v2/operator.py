@@ -33,7 +33,9 @@ class OperatorOut(ModelSchema):
     municipality: str = Field('', alias="mailing_address.municipality")
     province: str = Field('', alias="mailing_address.province")
     postal_code: str = Field('', alias="mailing_address.postal_code")
-    operator_has_parent_operators: bool
+    operator_has_parent_operators: (
+        bool  # we don't have this field for partner operators because it depends on business structure
+    )
     parent_operators_array: Optional[List[ParentOperatorOut]] = None
     partner_operators_array: Optional[List[PartnerOperatorOut]] = None
 
@@ -121,3 +123,11 @@ class OperatorIn(ModelSchema):
             'bc_corporate_registry_number',
             'mailing_address',
         ]
+
+
+class ConfirmSelectedOperatorOut(ModelSchema):
+    street_address: str = Field('', alias="mailing_address.street_address")
+
+    class Meta:
+        model = Operator
+        fields = ["id", "legal_name", "trade_name", "cra_business_number"]
