@@ -1,7 +1,8 @@
 const getCurrentOperator = vi.fn();
-const getBusinessStructures = vi.fn();
-
 const getOperator = vi.fn();
+const getOperatorHasAdmin = vi.fn();
+const getOperatorConfirmationInfo = vi.fn();
+const getOperatorAccessDeclined = vi.fn();
 
 vi.mock(
   "apps/administration/app/components/operators/getCurrentOperator",
@@ -9,14 +10,34 @@ vi.mock(
     default: getCurrentOperator,
   }),
 );
-vi.mock(
-  "apps/administration/app/components/operators/getBusinessStructures",
-  () => ({
-    default: getBusinessStructures,
-  }),
-);
-vi.mock("@/administration/app/components/operators/getOperator", () => ({
+
+vi.mock("apps/administration/app/components/operators/getOperator", () => ({
   default: getOperator,
 }));
+vi.mock(
+  "apps/administration/app/components/operators/getOperatorHasAdmin",
+  () => ({
+    default: getOperatorHasAdmin,
+  }),
+);
 
-export { getCurrentOperator, getBusinessStructures, getOperator };
+vi.mock(
+  "apps/administration/app/components/operators/getOperatorConfirmationInfo",
+  () => ({
+    default: getOperatorConfirmationInfo,
+  }),
+);
+vi.mock(
+  "apps/administration/app/components/operators/getOperatorAccessDeclined",
+  () => ({
+    default: getOperatorAccessDeclined,
+  }),
+);
+
+export {
+  getCurrentOperator,
+  getOperator,
+  getOperatorHasAdmin,
+  getOperatorConfirmationInfo,
+  getOperatorAccessDeclined,
+};

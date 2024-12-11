@@ -1,22 +1,11 @@
-const getOperator = vi.fn();
-const getOperatorHasAdmin = vi.fn();
-const getOperatorAccessDeclined = vi.fn();
 const getAccessRequests = vi.fn();
 const handleAccessRequestStatus = vi.fn();
+const getUserOperatorFormData = vi.fn();
 
-vi.mock("apps/administration/app/components/operators/getOperator", () => ({
-  default: getOperator,
-}));
 vi.mock(
-  "apps/administration/app/components/operators/getOperatorHasAdmin",
+  "apps/administration/app/components/userOperators/getUserOperatorFormData",
   () => ({
-    default: getOperatorHasAdmin,
-  }),
-);
-vi.mock(
-  "apps/administration/app/components/operators/getOperatorAccessDeclined",
-  () => ({
-    default: getOperatorAccessDeclined,
+    default: getUserOperatorFormData,
   }),
 );
 
@@ -35,9 +24,7 @@ vi.mock(
 );
 
 export {
-  getOperator,
-  getOperatorHasAdmin,
-  getOperatorAccessDeclined,
   getAccessRequests,
   handleAccessRequestStatus,
+  getUserOperatorFormData,
 };
