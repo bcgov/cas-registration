@@ -20,6 +20,7 @@ vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
 
 describe("AdditionalReportingData Component", () => {
   const versionId = 1;
+  const facilityId = "abc";
   const mockPush = vi.fn();
 
   beforeEach(() => {

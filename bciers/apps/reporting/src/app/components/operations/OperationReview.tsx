@@ -35,9 +35,6 @@ interface Props {
   };
 }
 
-const baseUrl = "/reports";
-const cancelUrl = "/reports";
-
 export default function OperationReview({
   formData,
   version_id,
@@ -53,8 +50,10 @@ export default function OperationReview({
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [facilityId, setFacilityId] = useState<number | null>(null);
   const [operationType, setOperationType] = useState("");
-  const queryString = serializeSearchParams(useSearchParams());
-  const continueUrl = `/reporting/reports/${version_id}/person-responsible${queryString}`;
+
+  // 🛸 Set up routing urls
+  const backUrl = `/reports`;
+  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
@@ -158,7 +157,7 @@ export default function OperationReview({
     reportVersionId: number,
   ) => {
     const method = "POST";
-    const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
+    const endpoint = `/reporting/report-version/${reportVersionId}/report-operation`;
 
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
     const preparedData = prepareFormData(formDataObject);
@@ -217,12 +216,11 @@ export default function OperationReview({
       schema={schema}
       uiSchema={uiSchema}
       formData={formDataState}
-      baseUrl={baseUrl}
-      cancelUrl={cancelUrl}
+      cancelUrl="#"
       onSubmit={(data: { formData?: any }) => saveHandler(data, version_id)}
       onChange={onChangeHandler}
-      backUrl={cancelUrl}
-      continueUrl={continueUrl}
+      backUrl={backUrl}
+      continueUrl={saveAndContinueUrl}
     />
   );
 }

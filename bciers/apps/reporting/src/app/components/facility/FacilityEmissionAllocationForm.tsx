@@ -1,7 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
@@ -114,10 +112,9 @@ export default function FacilityEmissionAllocationForm({
   const [error, setError] = useState<string | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
-  const searchParams = useSearchParams();
-  const queryString = serializeSearchParams(searchParams);
-  const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data${queryString}`;
-  const backURL = `/reports/${version_id}/facilities/${facility_id}/production-data${queryString}`;
+  // 🛸 Set up routing urls
+  const backUrl = `/reports/${version_id}/facilities/${facility_id}/production-data`;
+  const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;
 
   // 📋 Get the task list elements for the form
   const taskListElements = getFacilitiesInformationTaskList(
@@ -250,7 +247,7 @@ export default function FacilityEmissionAllocationForm({
       submitButtonDisabled={submitButtonDisabled}
       baseUrl="#"
       cancelUrl="#"
-      backUrl={backURL}
+      backUrl={backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
       continueUrl={saveAndContinueUrl}

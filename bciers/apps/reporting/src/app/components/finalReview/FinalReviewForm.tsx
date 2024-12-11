@@ -13,7 +13,7 @@ interface Props extends HasReportVersion {
 const FinalReviewForm: React.FC<Props> = ({ version_id, taskListElements }) => {
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/sign-off`;
-  const backURL = `/reports/${version_id}/attachments`;
+  const backUrl = `/reports/${version_id}/attachments`;
 
   const submitHandler = async () => {
     router.push(saveAndContinueUrl);
@@ -26,7 +26,7 @@ const FinalReviewForm: React.FC<Props> = ({ version_id, taskListElements }) => {
       onSubmit={submitHandler}
       taskListElements={taskListElements}
       cancelUrl="#"
-      backUrl={backURL}
+      backUrl={backUrl}
       continueUrl={saveAndContinueUrl}
     >
       Placeholder for Final Review
