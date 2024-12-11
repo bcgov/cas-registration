@@ -96,7 +96,7 @@ export default function TransferForm({
   const fetchOperatorOperations = async (operatorId?: string) => {
     if (!operatorId) return [];
     const response = await getOperationsByOperatorId(operatorId);
-    if ("error" in response) {
+    if (!response || "error" in response) {
       setError("Failed to fetch operations data!" as any);
       return [];
     }
@@ -106,7 +106,6 @@ export default function TransferForm({
   const handleOperatorChange = async () => {
     // Reset error state
     setError(undefined);
-
     // Handle the error when the same operator is selected for both from and to operators when transferring an operation
     if (sameOperatorSelectedForOperationEntity()) updateUiSchemaWithError();
     else resetUiSchema();
@@ -151,7 +150,7 @@ export default function TransferForm({
       end_date: true, // this indicates that the end_date is not null,
       status: "Active", // only fetch active facilities
     });
-    if ("error" in response) {
+    if (!response || "error" in response || !response.rows) {
       setError("Failed to fetch facilities data!" as any);
       return [];
     }
