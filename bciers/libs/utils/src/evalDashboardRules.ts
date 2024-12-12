@@ -1,5 +1,7 @@
 import { ContentItem, LinkItem } from "@bciers/types/tiles";
 import { actionHandler } from "@bciers/actions";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 /**
  * Evaluates conditions for dashboard data items and their links.
@@ -13,9 +15,11 @@ import { actionHandler } from "@bciers/actions";
   if (!Array.isArray(items)) {
     items = [];
   }
+  const userRole: FrontEndRoles = await getSessionRole();
 
   const result = await Promise.all(
     items.map(async (item) => {
+      // If item has conditions, evaluate them
       if (item.conditions && Array.isArray(item.conditions)) {
         const allConditionsMet = await evaluateAllConditions(item.conditions);
         if (!allConditionsMet) return null;
@@ -30,9 +34,14 @@ import { actionHandler } from "@bciers/actions";
               );
               return allLinkConditionsMet ? link : null;
             }
+            // If item has allowedRoles, evaluate them
+            if (link.allowedRoles && Array.isArray(link.allowedRoles)) {
+              if (!link.allowedRoles.includes(userRole)) return null;
+            }
             return link;
           }),
         );
+
         item.links = filteredLinks.filter(
           (link): link is LinkItem => link !== null,
         );

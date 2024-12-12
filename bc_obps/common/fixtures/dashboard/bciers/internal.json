@@ -49,12 +49,7 @@
               {
                 "title": "Transfer an operation or facility",
                 "href": "/registration/transfers/transfer-entity",
-                "conditions": [
-                  {
-                    "allowedRoles": ["cas_analyst"],
-                    "value": true
-                  }
-                ]
+                "allowedRoles": ["cas_analyst"]
               }
             ]
           },
