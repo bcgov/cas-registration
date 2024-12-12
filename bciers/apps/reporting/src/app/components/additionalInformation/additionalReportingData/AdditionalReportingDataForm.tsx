@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   additionalReportingDataSchema,
   additionalReportingDataUiSchema,
@@ -12,9 +12,13 @@ import {
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
 
+const baseUrl = "/reports";
+const cancelUrl = "/reports";
 interface AdditionalReportingDataProps {
   versionId: number;
   includeElectricityGenerated: boolean;
+  initialFormData: any;
+  isNewEntrant: boolean;
 }
 
 interface FormData {
@@ -34,17 +38,15 @@ interface FormData {
 export default function AdditionalReportingDataForm({
   versionId,
   includeElectricityGenerated,
+  initialFormData,
+  isNewEntrant,
 }: AdditionalReportingDataProps) {
-  const [formData, setFormData] = useState<FormData>({
-    captured_emissions_section: {
-      capture_emissions: false,
-    },
-  });
-  // 🛸 Set up routing urls
-  const searchParams = useSearchParams();
-  const facilityId = searchParams.get("facility_id");
-  const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
-  const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+
+  const router = useRouter();
+  const saveAndContinueUrl = isNewEntrant
+    ? `new-entrant-information`
+    : `compliance-summary`;
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
@@ -57,17 +59,15 @@ export default function AdditionalReportingDataForm({
       isActive: true,
       link: `/reports/${versionId}/additional-reporting-data`,
     },
-    {
+  ];
+
+  if (isNewEntrant) {
+    taskListElements.push({
       type: "Page",
       title: "New entrant information",
       link: `/reports/${versionId}/new-entrant-information`,
-    },
-    {
-      type: "Page",
-      title: "Operation emission summary",
-      link: `/reports/${versionId}/operation-emission-summary`,
-    },
-  ];
+    });
+  }
 
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/additional-data`;
@@ -78,10 +78,12 @@ export default function AdditionalReportingDataForm({
       ...data.captured_emissions_section,
       ...data.additional_data_section,
     };
-
-    await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
+    if (response) {
+      router.push(saveAndContinueUrl);
+    }
   };
 
   return (
@@ -98,8 +100,8 @@ export default function AdditionalReportingDataForm({
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
-      cancelUrl="#"
-      backUrl={backUrl}
+      baseUrl={baseUrl}
+      cancelUrl={cancelUrl}
       onChange={(data: any) => {
         setFormData(data.formData);
       }}

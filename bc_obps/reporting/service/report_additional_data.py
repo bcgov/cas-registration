@@ -1,24 +1,26 @@
-from registration.models import Operation
-from reporting.models import ReportVersion, Report, ReportAdditionalData
-from reporting.schema.report_additional_data import ReportAdditionalDataIn
+from typing import Optional
+
+from reporting.models import ReportVersion, ReportAdditionalData
+from reporting.schema.report_additional_data import (
+    ReportAdditionalDataIn,
+)
 
 
 class ReportAdditionalDataService:
     @staticmethod
-    def get_report_person_responsible_by_version_id(
+    def get_report_report_additional_data(
         report_version_id: int,
-    ) -> ReportAdditionalData:
-        return ReportAdditionalData.objects.get(report_version__id=report_version_id)
+    ) -> Optional[ReportAdditionalData]:
+        return ReportAdditionalData.objects.filter(report_version__id=report_version_id).first()
 
     @staticmethod
     def get_registration_purpose_by_version_id(version_id: int) -> dict:
-        # Fetch the operation associated with the report version
-        operation = Operation.objects.get(
-            id=Report.objects.get(id=ReportVersion.objects.get(id=version_id).report_id).operation_id
+        registration_purpose = (
+            ReportVersion.objects.select_related('report', 'report__operation')
+            .get(id=version_id)
+            .report.operation.registration_purpose
         )
-
-        # Always return the result as a dictionary (empty or populated)
-        return {"registration_purpose": operation.registration_purpose}
+        return {"registration_purpose": registration_purpose}
 
     @staticmethod
     def save_report_additional_data(version_id: int, data: ReportAdditionalDataIn) -> ReportAdditionalData:
