@@ -304,10 +304,10 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000023",
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "role": "pending",
-      "status": "Pending",
-      "verified_at": null,
-      "verified_by": null,
+      "role": "admin",
+      "status": "Approved",
+      "verified_at": "2024-02-26 06:24:57.293242-08",
+      "verified_by": "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
       "user_friendly_id": 26
     }
   },
@@ -340,10 +340,10 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000026",
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "role": "admin",
-      "status": "Approved",
-      "verified_at": "2024-02-26 06:24:57.293242-08",
-      "verified_by": "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
+      "role": "pending",
+      "status": "Pending",
+      "verified_at": null,
+      "verified_by": null,
       "user_friendly_id": 29
     }
   }
