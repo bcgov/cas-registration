@@ -27,7 +27,11 @@ describe("PersonResponsible", () => {
   it("renders the form correctly after loading", async () => {
     render(<PersonResponsible version_id={1} />);
     await waitFor(() => {
-      expect(screen.getByText("Person Responsible")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Assign someone responsible for this report for the purpose of contacting",
+        ),
+      ).toBeInTheDocument();
     });
     expect(screen.getByText(/Back/i)).toBeInTheDocument();
     expect(screen.getByText(/Continue/i)).toBeInTheDocument();

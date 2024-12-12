@@ -11,14 +11,15 @@ import {
   additionalReportingDataWithElectricityGeneratedSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
-
-const baseUrl = "/reports";
-const cancelUrl = "/reports";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import { UUID } from "crypto";
 interface AdditionalReportingDataProps {
   versionId: number;
+  taskListElements: TaskListElement[];
   includeElectricityGenerated: boolean;
   initialFormData: any;
   isNewEntrant: boolean;
+  facility_id: UUID;
 }
 
 interface FormData {
@@ -37,9 +38,11 @@ interface FormData {
 
 export default function AdditionalReportingDataForm({
   versionId,
+  taskListElements,
   includeElectricityGenerated,
   initialFormData,
   isNewEntrant,
+  facility_id,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
@@ -47,27 +50,11 @@ export default function AdditionalReportingDataForm({
   const saveAndContinueUrl = isNewEntrant
     ? `new-entrant-information`
     : `compliance-summary`;
+  const backUrl = `/reports/${versionId}/facilities/${facility_id}/allocation-of-emissions`;
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
     : additionalReportingDataSchema;
-
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Page",
-      title: "Additional reporting data",
-      isActive: true,
-      link: `/reports/${versionId}/additional-reporting-data`,
-    },
-  ];
-
-  if (isNewEntrant) {
-    taskListElements.push({
-      type: "Page",
-      title: "New entrant information",
-      link: `/reports/${versionId}/new-entrant-information`,
-    });
-  }
 
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/additional-data`;
@@ -89,19 +76,12 @@ export default function AdditionalReportingDataForm({
   return (
     <MultiStepFormWithTaskList
       initialStep={2}
-      steps={[
-        "Operation Information",
-        "Report Information",
-        "Additional Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
+      steps={multiStepHeaderSteps}
       taskListElements={taskListElements}
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
-      baseUrl={baseUrl}
-      cancelUrl={cancelUrl}
+      backUrl={backUrl}
       onChange={(data: any) => {
         setFormData(data.formData);
       }}

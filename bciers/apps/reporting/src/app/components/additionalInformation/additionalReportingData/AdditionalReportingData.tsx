@@ -3,6 +3,11 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
+import {
+  ActivePage,
+  getAdditionalInformationTaskList,
+} from "@reporting/src/app/components/taskList/3_additionalInformation";
+import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 const REGULATED_OPERATION = "OBPS Regulated Operation";
 const NEW_ENTRANT = "New Entrant Operation";
@@ -45,6 +50,11 @@ export default async function AdditionalReportingData({
   const registrationPurpose = (await getRegistrationPurpose(versionId))
     ?.registration_purpose;
   const reportAdditionalData = await getReportAdditionalData(versionId);
+  const taskListElements = getAdditionalInformationTaskList(
+    versionId,
+    ActivePage.AdditionalInformation,
+  );
+  const facilityReport = await getFacilityReport(versionId);
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
 
@@ -52,11 +62,13 @@ export default async function AdditionalReportingData({
     <Suspense fallback={<Loading />}>
       <AdditionalReportingDataForm
         versionId={versionId}
+        taskListElements={taskListElements}
         includeElectricityGenerated={
           registrationPurpose === REGULATED_OPERATION
         }
         isNewEntrant={registrationPurpose === NEW_ENTRANT}
         initialFormData={transformedData}
+        facility_id={facilityReport?.facility_id}
       />
     </Suspense>
   );

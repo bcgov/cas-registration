@@ -4,7 +4,7 @@ import SignOffPage from "@reporting/src/app/components/signOff/SignOffPage";
 
 describe("SignOffPage Component", () => {
   it("renders the form with correct fields and values", async () => {
-    render(<SignOffPage />);
+    render(<SignOffPage version_id={1} />);
     expect(
       screen.getByText(
         "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
@@ -33,7 +33,7 @@ describe("SignOffPage Component", () => {
   });
 
   it("enables the submit button when all checkboxes are checked", () => {
-    render(<SignOffPage />);
+    render(<SignOffPage version_id={1} />);
 
     // Identify all the checkbox fields based on their titles
     const reviewCheckbox = screen.getByRole("checkbox", {
@@ -61,13 +61,13 @@ describe("SignOffPage Component", () => {
   });
 
   it("disables the submit button initially", () => {
-    render(<SignOffPage />);
+    render(<SignOffPage version_id={1} />);
     const submitButton = screen.getByText(/submit report/i);
     expect(submitButton).toBeDisabled();
   });
 
   it("toggles the checkbox state when clicked", () => {
-    render(<SignOffPage />);
+    render(<SignOffPage version_id={1} />);
 
     const reviewCheckbox = screen.getByRole("checkbox", {
       name: /i certify that i have reviewed the annual report/i,
