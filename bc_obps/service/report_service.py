@@ -1,5 +1,7 @@
 from uuid import UUID
 from django.db import transaction
+from django.db.models import QuerySet
+
 from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models.report import Report
@@ -100,6 +102,12 @@ class ReportService:
         report_operation.activities.set(activities)
         report_operation.regulated_products.set(regulated_products)
         report_operation.save()
+
+        facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(report_version__id=report_version_id)
+        if activities.exists():
+            for f in facility_reports:
+                f.activities.set(activities)
+                f.save()
 
         report_version = ReportVersion.objects.get(id=report_version_id)
         report_version.report_type = data.operation_report_type

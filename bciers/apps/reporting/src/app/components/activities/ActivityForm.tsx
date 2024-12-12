@@ -119,7 +119,7 @@ export default function ActivityForm({
     if (taskListLength && step === -1) step = taskListLength - 1;
 
     if (step === 0 && !isContinue)
-      return `/reports/${reportVersionId}/facilities/${facilityId}/review`; // Facility review page
+      return `/reports/${reportVersionId}/person-responsible`; // Facility review page
     if (taskListLength && step + 1 >= taskListLength && isContinue)
       return "non-attributable"; // Activities done, go to Non-attributable emissions
 

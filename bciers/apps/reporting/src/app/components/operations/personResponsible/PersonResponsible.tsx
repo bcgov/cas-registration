@@ -43,7 +43,7 @@ const PersonResponsible = ({ version_id }: Props) => {
   const continueUrl =
     operationType === "Linear Facility Operation"
       ? `/reports/${version_id}/facilities/lfo-facilities`
-      : `/reports/${version_id}/facilities/${facilityId}/review`;
+      : `/reports/${version_id}/facilities/${facilityId}/activities`;
   const backUrl = `/reports/${version_id}/review-operator-data`;
 
   const taskListElements: TaskListElement[] = [
@@ -63,11 +63,6 @@ const PersonResponsible = ({ version_id }: Props) => {
           title: "Person responsible",
           isActive: true,
           link: `/reports/${version_id}/person-responsible`,
-        },
-        {
-          type: "Page",
-          title: "Review facilities",
-          link: continueUrl,
         },
       ],
     },
