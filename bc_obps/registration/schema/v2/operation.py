@@ -80,8 +80,8 @@ class OperationInformationIn(ModelSchema):
     registration_purpose: Optional[Operation.Purposes] = None
     regulated_products: Optional[List[int]] = None
     activities: List[int]
-    boundary_map: str
-    process_flow_diagram: str
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
     naics_code_id: int
     opt_in: Optional[bool] = False
     secondary_naics_code_id: Optional[int] = None

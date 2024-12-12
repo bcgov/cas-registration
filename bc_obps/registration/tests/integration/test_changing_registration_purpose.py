@@ -1,4 +1,5 @@
 import pytest
+from service.operation_service_v2 import OperationServiceV2
 from service.data_access_service.document_service import DocumentDataAccessService
 from registration.enums.enums import OperationTypes
 from model_bakery import baker
@@ -129,6 +130,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         self.operation_representative_id = response.json()['id']
         self.operation.refresh_from_db()
 
+    def _set_operation_status(self, status):
+        # manually setting the operation status this way because normally industry users don't have control
+        # over the status of their operation
+        self.operation.status = status
+        self.operation.refresh_from_db()
+
     def _set_opted_in_operation_detail(self):
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -194,8 +201,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
         assert self.operation.regulated_products.count() == 0
-        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
-        assert self.operation.facilities.count() == 1
+        assert self.operation.documents.count() == 0
         assert self.operation.naics_code is None
 
     def _test_reporting_to_new_entrant(self):
@@ -301,7 +307,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
-        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
+        assert self.operation.documents.count() == 0
         assert self.operation.naics_code is None
 
     ### Tests for Original Purpose = Opted-in
@@ -313,8 +319,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation.archived_at is not None
-        assert self.operation.opted_in_operation.archived_by is not None
+        if self.operation.status == Operation.Statuses.REGISTERED:
+            assert self.operation.opted_in_operation.archived_at is not None
+            assert self.operation.opted_in_operation.archived_by is not None
+        else:
+            assert self.operation.opted_in_operation is None
 
     def _test_opted_in_to_potential_reporting(self):
         """
@@ -323,8 +332,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation.archived_at is not None
-        assert self.operation.opted_in_operation.archived_by is not None
+        if self.operation.status == Operation.Statuses.REGISTERED:
+            assert self.operation.opted_in_operation.archived_at is not None
+            assert self.operation.opted_in_operation.archived_by is not None
+        else:
+            assert self.operation.opted_in_operation is None
 
     def _test_opted_in_to_regulated(self):
         """
@@ -333,8 +345,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation.archived_at is not None
-        assert self.operation.opted_in_operation.archived_by is not None
+        if self.operation.status == Operation.Statuses.REGISTERED:
+            assert self.operation.opted_in_operation.archived_at is not None
+            assert self.operation.opted_in_operation.archived_by is not None
+        else:
+            assert self.operation.opted_in_operation is None
 
     def _test_opted_in_to_eio(self):
         """
@@ -343,11 +358,14 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation.archived_at is not None
-        assert self.operation.opted_in_operation.archived_by is not None
+        if self.operation.status == Operation.Statuses.REGISTERED:
+            assert self.operation.opted_in_operation.archived_at is not None
+            assert self.operation.opted_in_operation.archived_by is not None
+        else:
+            assert self.operation.opted_in_operation is None
         assert self.operation.regulated_products.count() == 0
         assert self.operation.naics_code is None
-        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
+        assert self.operation.documents.count() == 0
 
     def _test_opted_in_to_new_entrant(self):
         """
@@ -356,8 +374,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
         assert self.operation.opt_in is False
-        assert self.operation.opted_in_operation.archived_at is not None
-        assert self.operation.opted_in_operation.archived_by is not None
+        if self.operation.status == Operation.Statuses.REGISTERED:
+            assert self.operation.opted_in_operation.archived_at is not None
+            assert self.operation.opted_in_operation.archived_by is not None
+        else:
+            assert self.operation.opted_in_operation is None
         assert self.operation.date_of_first_shipment is not None
         assert (
             self.operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() > 0
@@ -402,7 +423,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         In addition, data for process flow diagram, boundary map, regulated products, and reporting activities should be removed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() == 0
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")).count() == 0
         assert (
@@ -576,15 +596,18 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
-        assert DocumentDataAccessService.get_active_operation_documents(self.operation.id).count() == 0
-        assert self.operation.facilities.count() == 1
+        assert self.operation.documents.count() == 0
         assert self.operation.naics_code is None
 
     @pytest.mark.parametrize("original_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("new_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("operation_type", [OperationTypes.SFO.value, OperationTypes.LFO.value])
-    # @pytest.mark.parametrize("was_submitted", ["Submitted", "Not Submitted"])
-    def test_changing_registration_purpose(self, original_purpose, new_purpose, operation_type):
+    @pytest.mark.parametrize("registration_status", [Operation.Statuses.REGISTERED, Operation.Statuses.DRAFT])
+    def test_changing_registration_purpose(self, original_purpose, new_purpose, operation_type, registration_status):
+        """
+        If the registration_status == Registered, the irrelevant data should be archived
+        If the registration_status == Draft, the irrelevant data should be deleted
+        """
         if original_purpose == new_purpose:
             pytest.skip()
 
@@ -597,10 +620,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             self._set_new_entrant_info()
         self._set_facilities()
         self._set_operation_representative()
-
-        ### mock registration submission if was_submitted == True
-        # if was_submitted == "Submitted":
-        #     self._set_registration_submission()
+        self._set_operation_status(registration_status)
 
         # make a copy of the original operation record to compare against later
         self.original_operation_record = deepcopy(self.operation)
@@ -611,9 +631,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             self._set_opted_in_operation_detail()
         elif new_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             self._set_new_entrant_info()
-
-        # if the registration was_submitted == True, the irrelevant data should be archived
-        # if the registration wasn't submitted, (was_submitted == False), the irrelevant data should be deleted
 
         ### Assertions applicable to all purposes
         # assert that we're patching the same operation, not creating a new one

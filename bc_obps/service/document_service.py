@@ -36,16 +36,20 @@ class DocumentService:
         return document, True
 
     @classmethod
-    def archive_operation_document(cls, user_guid: UUID, operation_id: UUID, document_type: str) -> bool:
+    def archive_or_delete_operation_document(cls, user_guid: UUID, operation_id: UUID, document_type: str) -> bool:
         """
         This function receives an operation ID and document type.
-        If the specified document_type for the operation_id can be found and hasn't already been archived, this
+        If the operation's status != "Registered", the specified document will be deleted.
+        If the operation's status == "Registered", and the specified document_type for the operation_id can be found, this
         function will archive that document.
-        :returns: bool to indicate whether the document was successfully archived.
+        :returns: bool to indicate whether the document was successfully archived or deleted.
         """
+        operation = OperationDataAccessService.get_by_id(operation_id)
         document = DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
-        if document:
-            if document.archived_at is None and document.archived_by is None:
-                document.set_archive(user_guid)
-                return True
+        if document and operation.status == Operation.Statuses.REGISTERED:
+            document.set_archive(user_guid)
+            return True
+        elif document:
+            document.delete()
+            return True
         return False
