@@ -1,6 +1,4 @@
 import pytest
-from service.operation_service_v2 import OperationServiceV2
-from service.data_access_service.document_service import DocumentDataAccessService
 from registration.enums.enums import OperationTypes
 from model_bakery import baker
 from copy import deepcopy
