@@ -159,7 +159,6 @@ export default function OperationReview({
 
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
     const preparedData = prepareFormData(formDataObject);
-
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(preparedData),
     });
