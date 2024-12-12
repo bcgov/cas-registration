@@ -1,7 +1,7 @@
 import React from "react";
 // import { actionHandler } from "@bciers/actions";
 import ComplianceSummary from "./ComplianceSummary";
-import { tasklistData } from "./TaskListElements";
+import { getComplianceSummaryTaskList } from "@reporting/src/app/components/taskList/4_complianceSummary";
 
 interface Props {
   versionId: number;
@@ -44,7 +44,7 @@ const ComplianceSummaryData = async ({ versionId }: Props) => {
     <ComplianceSummary
       versionId={versionId}
       summaryFormData={formData}
-      taskListElements={tasklistData}
+      taskListElements={getComplianceSummaryTaskList()}
     />
   );
 };

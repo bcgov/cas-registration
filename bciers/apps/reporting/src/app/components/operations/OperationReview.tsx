@@ -12,6 +12,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 interface Props {
   formData: any;
@@ -27,10 +28,7 @@ interface Props {
   allActivities: { id: number; name: string }[];
   allRegulatedProducts: { id: number; name: string }[];
   registrationPurpose: string;
-  facilityReport: {
-    facility_id: number;
-    operation_type: string;
-  };
+  taskListElements: TaskListElement[];
 }
 
 export default function OperationReview({
@@ -41,13 +39,11 @@ export default function OperationReview({
   allActivities,
   allRegulatedProducts,
   registrationPurpose,
-  facilityReport,
+  taskListElements,
 }: Props) {
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const [facilityId, setFacilityId] = useState<number | null>(null);
-  const [operationType, setOperationType] = useState("");
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -57,37 +53,6 @@ export default function OperationReview({
     reportingYear.reporting_window_end,
     "MMM DD YYYY",
   );
-
-  const facilityPageUrl =
-    operationType === "Linear Facility Operation"
-      ? `/reports/${version_id}/facilities/lfo-facilities`
-      : `/reports/${version_id}/facilities/${facilityId}/review`;
-
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Section",
-      title: "Operation information",
-      isExpanded: true,
-      elements: [
-        {
-          type: "Page",
-          title: "Review Operation information",
-          isActive: true,
-          link: `/reports/${version_id}/review-operator-data`,
-        },
-        {
-          type: "Page",
-          title: "Person responsible",
-          link: `/reports/${version_id}/person-responsible`,
-        },
-        {
-          type: "Page",
-          title: "Review facilities",
-          link: `${facilityPageUrl}`,
-        },
-      ],
-    },
-  ];
 
   const prepareFormData = (formDataObject: any) => {
     return {
@@ -136,14 +101,9 @@ export default function OperationReview({
         ),
       );
     }
-    if (facilityReport?.facility_id) {
-      setFacilityId(facilityReport.facility_id);
-      setOperationType(facilityReport.operation_type);
-    }
   }, [
     formData,
     reportType,
-    facilityReport,
     allActivities,
     allRegulatedProducts,
     registrationPurpose,
@@ -204,12 +164,7 @@ export default function OperationReview({
   return (
     <MultiStepFormWithTaskList
       initialStep={0}
-      steps={[
-        "Operation Information",
-        "Facilities Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
+      steps={multiStepHeaderSteps}
       taskListElements={taskListElements}
       schema={schema}
       uiSchema={uiSchema}

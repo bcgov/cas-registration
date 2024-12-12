@@ -9,6 +9,7 @@ import {
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 interface ActivityData {
   id: number;
@@ -21,7 +22,8 @@ interface ActivityData {
 interface NonAttributableEmissionsProps {
   versionId: number;
   facilityId: UUID;
-  emissionFormData: ActivityData[]; // Define emissionFormData as an array of ActivityData
+  emissionFormData: ActivityData[];
+  taskListElements: TaskListElement[];
   gasTypes: { id: number; chemical_formula: string }[];
   emissionCategories: { id: number; category_name: string }[];
   gasTypeMap: Record<number, string>;
@@ -31,6 +33,7 @@ interface NonAttributableEmissionsProps {
 export default function NonAttributableEmissionsForm({
   versionId,
   facilityId,
+  taskListElements,
   emissionFormData,
   gasTypes,
   emissionCategories,
@@ -69,28 +72,6 @@ export default function NonAttributableEmissionsForm({
   const backUrl = `activities?step=-1`;
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Section",
-      title: "Facility1 Information",
-      isExpanded: true,
-      elements: [
-        {
-          type: "Section",
-          title: "Activities Information",
-          elements: [
-            { type: "Page", title: "General stationary combustion" },
-            { type: "Page", title: "Mobile Combustion" },
-            { type: "Page", title: "Cement Production" },
-          ],
-        },
-        { type: "Page", title: "Non-attributable emissions", isActive: true },
-        { type: "Page", title: "Emissions summary" },
-        { type: "Page", title: "Production Data" },
-        { type: "Page", title: "Allocations of emissions" },
-      ],
-    },
-  ];
 
   const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
@@ -102,13 +83,7 @@ export default function NonAttributableEmissionsForm({
   return (
     <MultiStepFormWithTaskList
       initialStep={1}
-      steps={[
-        "Operation Information",
-        "Report Information",
-        "Additional Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
+      steps={multiStepHeaderSteps}
       taskListElements={taskListElements}
       schema={schema}
       uiSchema={nonAttributableEmissionUiSchema}

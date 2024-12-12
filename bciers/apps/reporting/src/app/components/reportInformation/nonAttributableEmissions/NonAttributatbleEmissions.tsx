@@ -5,6 +5,11 @@ import { UUID } from "crypto";
 import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 import { getAllEmissionCategories } from "@reporting/src/app/utils/getAllEmissionCategories";
 import { getNonAttributableEmissionsData } from "@reporting/src/app/utils/getNonAttributableEmissionsData";
+import {
+  ActivePage,
+  getFacilitiesInformationTaskList,
+} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
+import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 
 interface NonAttributableEmissionsProps {
   versionId: number;
@@ -44,16 +49,26 @@ export default async function NonAttributableEmissions({
     {} as Record<number, string>,
   );
 
+  const orderedActivities = await getOrderedActivities(versionId, facilityId);
+
+  const taskListElements = getFacilitiesInformationTaskList(
+    versionId,
+    facilityId,
+    orderedActivities,
+    ActivePage.NonAttributableEmission,
+  );
+
   return (
     <Suspense fallback={<Loading />}>
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
+        taskListElements={taskListElements}
         emissionFormData={emissionFormData}
         gasTypes={gasTypes}
         emissionCategories={emissionCategories}
-        gasTypeMap={gasTypeMap} // Pass the map to the form component
-        emissionCategoryMap={emissionCategoryMap} // Pass the map to the form component
+        gasTypeMap={gasTypeMap}
+        emissionCategoryMap={emissionCategoryMap}
       />
     </Suspense>
   );

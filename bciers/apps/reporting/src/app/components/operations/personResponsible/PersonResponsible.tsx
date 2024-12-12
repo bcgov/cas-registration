@@ -18,6 +18,11 @@ import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import {
+  ActivePage,
+  getOperationInformationTaskList,
+} from "@reporting/src/app/components/taskList/1_operationInformation";
 
 interface Props {
   version_id: number;
@@ -36,42 +41,22 @@ const PersonResponsible = ({ version_id }: Props) => {
     person_responsible: "", // Default to empty string
   });
   const [facilityId, setFacilityId] = useState<number | null>();
-  const [operationType, setOperationType] = useState(null);
+  const [operationType, setOperationType] = useState("");
 
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
 
   const continueUrl =
     operationType === "Linear Facility Operation"
       ? `/reports/${version_id}/facilities/lfo-facilities`
-      : `/reports/${version_id}/facilities/${facilityId}/review`;
+      : `/reports/${version_id}/facilities/${facilityId}/activities`;
   const backUrl = `/reports/${version_id}/review-operator-data`;
 
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Section",
-      title: "Operation information",
-      isExpanded: true,
-      elements: [
-        {
-          type: "Page",
-          title: "Review Operation information",
-          isChecked: true,
-          link: `/reports/${version_id}/review-operator-data`,
-        },
-        {
-          type: "Page",
-          title: "Person responsible",
-          isActive: true,
-          link: `/reports/${version_id}/person-responsible`,
-        },
-        {
-          type: "Page",
-          title: "Review facilities",
-          link: continueUrl,
-        },
-      ],
-    },
-  ];
+  const taskListElements: TaskListElement[] = getOperationInformationTaskList(
+    version_id,
+    ActivePage.PersonResponsible,
+    continueUrl,
+    operationType,
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,9 +114,6 @@ const PersonResponsible = ({ version_id }: Props) => {
       if (facilityReport?.facility_id) {
         setFacilityId(facilityReport.facility_id);
         setOperationType(facilityReport.operation_type);
-      } else {
-        setFacilityId(null);
-        setOperationType(null);
       }
     };
     getFacilityId();
@@ -200,13 +182,7 @@ const PersonResponsible = ({ version_id }: Props) => {
     <>
       <MultiStepFormWithTaskList
         initialStep={0}
-        steps={[
-          "Operation Information",
-          "Report Information",
-          "Additional Information",
-          "Compliance Summary",
-          "Sign-off & Submit",
-        ]}
+        steps={multiStepHeaderSteps}
         cancelUrl={"/reports"}
         backUrl={backUrl}
         continueUrl={continueUrl}

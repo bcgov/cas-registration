@@ -12,29 +12,24 @@ import { SignOffFormData } from "@reporting/src/app/components/signOff/types";
 import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
+import {
+  ActivePage,
+  getSignOffAndSubmitSteps,
+} from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
-
-const taskListElements: TaskListElement[] = [
-  {
-    type: "Section",
-    title: "Sign-off & Submit",
-    isExpanded: true,
-    elements: [
-      { type: "Page", title: "Verification" },
-      { type: "Page", title: "Confidentiality request" },
-      { type: "Page", title: "Attachments" },
-      { type: "Page", title: "Final review" },
-      { type: "Page", title: "Sign-off", isActive: true },
-    ],
-  },
-];
 
 export default function SignOffPage({ version_id }: HasReportVersion) {
   const [formState, setFormState] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
+  const taskListElements: TaskListElement[] = getSignOffAndSubmitSteps(
+    version_id,
+    ActivePage.SignOff,
+  );
   const backUrl = `/reports/${version_id}/final-review`;
 
   const allChecked = (formData: SignOffFormData) => {
@@ -64,13 +59,8 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
         <ReportSubmission />
       ) : (
         <MultiStepFormWithTaskList
-          initialStep={3}
-          steps={[
-            "Operation Information",
-            "Facilities Information",
-            "Compliance Summary",
-            "Sign-off & Submit",
-          ]}
+          initialStep={4}
+          steps={multiStepHeaderSteps}
           taskListElements={taskListElements}
           schema={signOffSchema}
           uiSchema={signOffUiSchema}
@@ -81,7 +71,7 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
           buttonText={"Submit Report"}
           onChange={handleChange}
           saveButtonDisabled={true}
-          submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
+          submitButtonDisabled={submitButtonDisabled}
           continueUrl={""}
           backUrl={backUrl}
         />

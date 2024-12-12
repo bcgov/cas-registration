@@ -46,6 +46,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={false}
         initialFormData={{}}
         isNewEntrant={true}
+        taskListElements={[]}
       />,
     );
     const capturedEmissionsText = await screen.findByText(
@@ -61,6 +62,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={false}
         initialFormData={{}}
         isNewEntrant={true}
+        taskListElements={[]}
       />,
     );
 
@@ -83,6 +85,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={true}
         initialFormData={{}}
         isNewEntrant={false}
+        taskListElements={[]}
       />,
     );
 
@@ -97,6 +100,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={false}
         initialFormData={{}}
         isNewEntrant={true}
+        taskListElements={[]}
       />,
     );
 
