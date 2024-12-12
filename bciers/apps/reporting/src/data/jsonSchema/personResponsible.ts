@@ -9,7 +9,7 @@ import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTem
 import { Contact } from "@reporting/src/app/components/operations/types";
 
 export const personResponsibleSchema: RJSFSchema = {
-  title: "Person Responsible",
+  title: "Person Responsible for Submitting Report",
   type: "object",
   properties: {
     purpose_note: {
