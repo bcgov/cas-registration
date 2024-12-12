@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models import Document, DocumentType
