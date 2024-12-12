@@ -4,6 +4,7 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
+import { TextAreaWidget } from "@bciers/components/form/widgets";
 import {
   RJSFSchema,
   UiSchema,
@@ -86,7 +87,7 @@ const getAssociatedProductName = (
       if (Array.isArray(context)) {
         const matchedCategory = context.find(
           (item: any) =>
-            item.emission_category?.toLowerCase().replace(/\s+/g, "_") ===
+            item.emission_category_name?.toLowerCase().replace(/\s+/g, "_") ===
             contextKey,
         );
         const productData = matchedCategory?.products?.[Number(productIndex)];
@@ -250,7 +251,7 @@ export const emissionAllocationSchema: RJSFSchema = {
     emissionCategoryAllocationItem: {
       type: "object",
       properties: {
-        emission_category: {
+        emission_category_name: {
           title: "Name",
           type: "string",
         },
@@ -307,8 +308,8 @@ export const emissionAllocationUiSchema: UiSchema = {
     "ui:placeholder": "Select the allocation methodology",
   },
   allocation_other_methodology_description: {
-    "ui:widget": "textarea",
-    "ui:rows": 5,
+    "ui:widget": TextAreaWidget,
+    "ui:placeholder": "Methodology Description",
   },
   basic_emission_allocation_data_title: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
@@ -324,7 +325,7 @@ export const emissionAllocationUiSchema: UiSchema = {
       label: false,
     },
     items: {
-      emission_category: {
+      emission_category_name: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:widget": EmissionAllocationTitleWidget,
         "ui:classNames": "emission-array-header w-full",
@@ -372,7 +373,7 @@ export const emissionAllocationUiSchema: UiSchema = {
       label: false,
     },
     items: {
-      emission_category: {
+      emission_category_name: {
         "ui:FieldTemplate": FieldTemplate,
         "ui:widget": EmissionAllocationTitleWidget,
         "ui:classNames": "emission-array-header w-full",
@@ -411,6 +412,10 @@ export const emissionAllocationUiSchema: UiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
+
+    facility_total_emissions: {
+      "ui:widget": ReadOnlyWidget,
+    },
     products: {
       "ui:options": {
         label: false,
