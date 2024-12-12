@@ -11,6 +11,7 @@ export type LinkItem = {
   href: string; // URL the link points to
   title: string; // The title of the link
   conditions?: Condition[]; // Optional array of conditions to display the link
+  allowedRoles?: string[]; // Optional array of roles that can see the tile
 };
 
 // Main ContentItem type, including optional conditions and links

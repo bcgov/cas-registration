@@ -1,5 +1,6 @@
 import { auth } from "@/dashboard/auth";
 import { useSession } from "next-auth/react";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 // use getSessionRole in server components
 const getSessionRole = async () => {
@@ -8,7 +9,7 @@ const getSessionRole = async () => {
     throw new Error("Failed to retrieve session role");
   }
 
-  return session.user.app_role;
+  return session.user.app_role as FrontEndRoles;
 };
 
 // useSessionFole is for client components
