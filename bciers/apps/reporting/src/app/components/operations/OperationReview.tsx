@@ -155,7 +155,7 @@ export default function OperationReview({
     reportVersionId: number,
   ) => {
     const method = "POST";
-    const endpoint = `/reporting/report-version/${reportVersionId}/report-operation`;
+    const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
 
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
     const preparedData = prepareFormData(formDataObject);
