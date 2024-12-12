@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
@@ -33,6 +33,11 @@ describe("AdditionalReportingData Component", () => {
     (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: true,
     });
+
+    // Mock useSearchParams to return `?facility_id=abc`
+    (useSearchParams as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+      new URLSearchParams("?facility_id=abc"),
+    );
   });
 
   afterEach(() => {
