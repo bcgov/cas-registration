@@ -34,7 +34,7 @@ export default function TransferForm({
   const router = useRouter();
 
   const [formState, setFormState] = useState(formData);
-  const [key, setKey] = useState(Math.random());
+  const [key, setKey] = useState(Math.random()); // NOSONAR
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(createTransferSchema(operators));
   const [uiSchema, setUiSchema] = useState(transferUISchema);
@@ -183,7 +183,8 @@ export default function TransferForm({
         ...formState,
         facilities: [],
       });
-      setKey(Math.random()); // force re-render
+      // force re-render
+      setKey(Math.random()); // NOSONAR
     }
   };
 
