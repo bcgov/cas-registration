@@ -304,7 +304,7 @@ export const emissionAllocationUiSchema: UiSchema = {
   ],
   allocation_methodology: {
     "ui:widget": "SelectWidget",
-    "ui:placeholder": "Select the allocation_methodology",
+    "ui:placeholder": "Select the allocation methodology",
   },
   allocation_other_methodology_description: {
     "ui:widget": "textarea",

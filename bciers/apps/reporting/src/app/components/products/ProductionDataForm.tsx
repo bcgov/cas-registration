@@ -7,7 +7,6 @@ import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productio
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
-import { useRouter } from "next/navigation";
 
 interface Props {
   report_version_id: number;
@@ -26,10 +25,6 @@ const ProductionDataForm: React.FC<Props> = ({
   initialData,
   taskListElements,
 }) => {
-  const router = useRouter();
-
-  const saveAndContinueUrl = `reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`;
-
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
     production_data: initialData,
@@ -60,12 +55,10 @@ const ProductionDataForm: React.FC<Props> = ({
       facility_id,
       data.production_data,
     );
-
-    router.push(saveAndContinueUrl);
   };
 
-  const backURL = `/reports/${report_version_id}/facilities/${facility_id}/emission-summary`;
-  const continueURL = `/reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`; // Update when page complete
+  const backUrl = `/reports/${report_version_id}/facilities/${facility_id}/emission-summary`;
+  const saveAndContinueUrl = `/reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`;
 
   return (
     <MultiStepFormWithTaskList
@@ -77,10 +70,10 @@ const ProductionDataForm: React.FC<Props> = ({
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}
+      backUrl={backUrl}
       onSubmit={(data) => onSubmit(data.formData)}
       onChange={(data) => onChange(data.formData)}
-      backUrl={backURL}
-      continueUrl={continueURL}
+      continueUrl={saveAndContinueUrl}
     />
   );
 };
