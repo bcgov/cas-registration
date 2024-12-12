@@ -78,7 +78,7 @@
                         <div class="col-md-12">
                             <div class="callout callout-info">
                                 <h4>SchemaSpy Analysis of default.erc</h4>
-                                <p>Generated on Thu Nov 28 00:36 GMT 2024</p>
+                                <p>Generated on Thu Dec 12 19:37 GMT 2024</p>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                                 <span class="info-box-icon bg-aqua"><i class="fa fa-table"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">TABLES</span>
-                                    <span class="info-box-number">77</span>
+                                    <span class="info-box-number">80</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -118,7 +118,7 @@
                                 <span class="info-box-icon bg-green"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">COLUMNS</span>
-                                    <span class="info-box-number">610</span>
+                                    <span class="info-box-number">636</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -130,7 +130,7 @@
                                 <span class="info-box-icon bg-yellow"><i class="ion ion-key"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Constraints</span>
-                                    <span class="info-box-number">246</span>
+                                    <span class="info-box-number">255</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -225,7 +225,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/regulated_product.html">regulated_product</a></td>
-                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">1</td>
                                         <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">-1</td>
@@ -269,6 +269,15 @@
                                         <td class="comment detail" style="display: table-cell;"><p>Table containing data about operators&rsquo; partner operators. Partner operators may have a record in the Operator table. If so, that record is controlled by someone who works for that partner operator. The information in this table is controlled by BCOBPS operators who should not have access to other operator&rsquo;s records.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/report_product_emission_allocation.html">report_product_emission_allocation</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">7</td>
+                                        <td class="detail" align="right">14</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>A table to store the allocated amount of emissions for a given product</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/emission_category_mapping.html">emission_category_mapping</a></td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">3</td>
@@ -279,7 +288,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_version.html">report_version</a></td>
-                                        <td class="detail" align="right">14</td>
+                                        <td class="detail" align="right">15</td>
                                         <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">11</td>
                                         <td class="detail" align="right">-1</td>
@@ -288,16 +297,16 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_product.html">report_product</a></td>
-                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">1</td>
                                         <td class="detail" align="right">6</td>
-                                        <td class="detail" align="right">17</td>
+                                        <td class="detail" align="right">18</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"><p>A table storing the production information for a single product, as part of a facility report</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/naics_code.html">naics_code</a></td>
-                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">3</td>
                                         <td class="detail" align="right">-1</td>
@@ -375,6 +384,15 @@
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/product_emission_intensity.html">product_emission_intensity</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">37</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>This table contains the emission intensity value of a product and the from/to date values that the emission intesity is valid for that product.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/restart_event.html">restart_event</a></td>
@@ -719,6 +737,15 @@
                                         <td class="comment detail" style="display: table-cell;"></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/naics_regulatory_values.html">naics_regulatory_values</a></td>
+                                        <td class="detail" align="right">0</td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">6</td>
+                                        <td class="detail" align="right">33</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>This table contains the regulatory values that apply to a naics code within a set timeframe from where the values are valid and when the values are no longer valid.</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_emission_emission_categories.html">report_emission_emission_categories</a></td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">2</td>
@@ -774,7 +801,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/user.html">user</a></td>
-                                        <td class="detail" align="right">109</td>
+                                        <td class="detail" align="right">112</td>
                                         <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">9</td>
                                         <td class="detail" align="right">-1</td>
@@ -792,7 +819,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/emission_category.html">emission_category</a></td>
-                                        <td class="detail" align="right">3</td>
+                                        <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">1</td>
                                         <td class="detail" align="right">3</td>
                                         <td class="detail" align="right">-1</td>
@@ -810,7 +837,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/facility_report.html">facility_report</a></td>
-                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">6</td>
                                         <td class="detail" align="right">6</td>
                                         <td class="detail" align="right">12</td>
                                         <td class="detail" align="right">-1</td>

@@ -1,8 +1,8 @@
 parent_operator
 multiple_operator
+report_product_emission_allocation
 partner_operator
 user_operator
-report_product
 report_person_responsible
 report_methodology
 report_verification
@@ -31,8 +31,11 @@ facility_report_activities
 contact_documents
 configuration_element_reporting_fields
 closure_event_facilities
+product_emission_intensity
+naics_regulatory_values
 configuration_element
 transfer_event
+report_product
 report_non_attributable_emissions
 temporary_shutdown_event
 restart_event
@@ -41,7 +44,6 @@ well_authorization_number
 reporting_field
 report_operation
 report_emission
-regulated_product
 document
 report_fuel
 custom_methodology_schema
@@ -63,8 +65,9 @@ operator
 fuel_type
 document_type
 methodology
-emission_category
+regulated_product
 gas_type
+emission_category
 source_type
 activity
 user

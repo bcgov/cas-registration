@@ -8,8 +8,9 @@ reporting_year
 user
 activity
 source_type
-gas_type
 emission_category
+gas_type
+regulated_product
 methodology
 document_type
 fuel_type
@@ -31,7 +32,6 @@ report_unit
 custom_methodology_schema
 report_fuel
 document
-regulated_product
 report_emission
 report_operation
 reporting_field
@@ -40,8 +40,11 @@ closure_event
 restart_event
 temporary_shutdown_event
 report_non_attributable_emissions
+report_product
 transfer_event
 configuration_element
+naics_regulatory_values
+product_emission_intensity
 closure_event_facilities
 configuration_element_reporting_fields
 contact_documents
@@ -70,8 +73,8 @@ report_raw_activity_data
 report_verification
 report_methodology
 report_person_responsible
-report_product
 user_operator
 partner_operator
+report_product_emission_allocation
 multiple_operator
 parent_operator

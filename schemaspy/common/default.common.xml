@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><database name="default" schema="common" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
    <tables>
-      <table name="dashboard_data" numRows="7" remarks="The JSON information for dashboard navigation tiles by app and ID type." schema="common" type="TABLE">
+      <table name="dashboard_data" numRows="6" remarks="The JSON information for dashboard navigation tiles by app and ID type." schema="common" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the dashboard by app and ID type used as a friendly unique identifier." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="data" nullable="false" remarks="JSON representation of dashboard navigation tiles." size="2147483647" type="jsonb" typeCode="1111"/>
