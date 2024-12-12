@@ -1,6 +1,6 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
-export const getComplianceSummaryTaskList = (): TaskListElement => {
+export const getComplianceSummaryTaskList = (): TaskListElement[] => {
   return [
     {
       type: "Page",
