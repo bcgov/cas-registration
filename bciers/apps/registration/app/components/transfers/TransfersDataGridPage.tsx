@@ -26,8 +26,6 @@ export default async function TransfersDataGridPage({
   const role = await getSessionRole();
   const isCasAnalyst = role === FrontEndRoles.CAS_ANALYST;
 
-  console.log({ role });
-
   // Render the DataGrid component
   return (
     <Suspense fallback={<Loading />}>
