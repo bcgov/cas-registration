@@ -94,7 +94,7 @@ export default function NonAttributableEmissionsForm({
 
   const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
-    const response = await actionHandler(endpoint, "POST", endpoint, {
+    await actionHandler(endpoint, "POST", endpoint, {
       body: JSON.stringify(formData),
     });
   };
