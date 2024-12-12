@@ -102,6 +102,7 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
             onSubmit={handleFormSave}
             formData={formData}
             onChange={onChange}
+            onError={() => setCanContinue(false)}
             formContext={formContext}
           >
             <ReportingStepButtons
