@@ -1,7 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import DashboardPage from "apps/dashboard/app/dashboard/page";
-import { auth } from "@bciers/testConfig/mocks";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
+
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  getSessionRole: vi.fn(),
+}));
+
 const roles = [
   "cas_admin",
   "cas_analyst",
@@ -109,9 +114,7 @@ describe("Registration dashboard page", () => {
   });
 
   it("renders the dashboard page with the correct tiles", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_admin" },
-    });
+    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue("cas_admin");
 
     render(await DashboardPage());
 
@@ -126,9 +129,7 @@ describe("Registration dashboard page", () => {
   });
 
   it("renders the correct links for each tile", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_admin" },
-    });
+    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue("cas_admin");
 
     render(await DashboardPage());
 
@@ -204,9 +205,9 @@ describe("Registration dashboard page", () => {
   });
 
   it("renders the Note component for industry_admin role", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "industry_admin" },
-    });
+    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
+      "industry_admin",
+    );
 
     render(await DashboardPage());
 
@@ -216,9 +217,9 @@ describe("Registration dashboard page", () => {
   });
 
   it("renders the Note component for industry_user role", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "industry_user" },
-    });
+    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
+      "industry_user",
+    );
 
     render(await DashboardPage());
 
@@ -228,9 +229,7 @@ describe("Registration dashboard page", () => {
   });
 
   it("does not render the Note component for cas_admin", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_admin" },
-    });
+    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue("cas_admin");
 
     render(await DashboardPage());
 
@@ -238,9 +237,9 @@ describe("Registration dashboard page", () => {
   });
 
   it("does not render the Note component for cas_analyst", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_analyst" },
-    });
+    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
+      "cas_analyst",
+    );
 
     render(await DashboardPage());
 
@@ -248,9 +247,9 @@ describe("Registration dashboard page", () => {
   });
 
   it("renders the dashboard-pending-message card for cas_pending role", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "cas_pending" },
-    });
+    (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(
+      "cas_pending",
+    );
 
     render(await DashboardPage());
 
@@ -262,9 +261,7 @@ describe("Registration dashboard page", () => {
   it.each(roles)(
     "does not render the dashboard-pending-message card for role: %s",
     async (role) => {
-      auth.mockReturnValueOnce({
-        user: { app_role: role },
-      });
+      (getSessionRole as ReturnType<typeof vi.fn>).mockResolvedValue(role);
 
       render(await DashboardPage());
 
