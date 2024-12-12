@@ -1,6 +1,7 @@
 from service.data_access_service.document_service import DocumentDataAccessService
 from registration.utils import data_url_to_file
 from registration.models.document import Document
+from registration.models.operation import Operation
 from registration.tests.constants import MOCK_DATA_URL, MOCK_DATA_URL_2
 from service.document_service import DocumentService
 import pytest
@@ -67,26 +68,26 @@ class TestDocumentService:
         assert document.file.name.find("test") != -1
         assert created is True
 
-    @staticmethod
-    def test_get_active_documents():
+    @pytest.mark.parametrize("registration_status", [Operation.Statuses.REGISTERED, Operation.Statuses.DRAFT])
+    def test_archive_or_delete_operation_document(self, registration_status):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, status=registration_status
+        )
         b_map = DocumentDataAccessService.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map'
         )
         pfd = DocumentDataAccessService.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'process_flow_diagram'
         )
-        nea = DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'new_entrant_application'
-        )
-        operation.documents.set([b_map.id, pfd.id, nea.id])
-
-        assert Document.objects.count() == 3
-
-        DocumentService.archive_operation_document(
-            approved_user_operator.user_id, operation.id, 'new_entrant_application'
-        )
+        operation.documents.set([b_map.id, pfd.id])
 
         assert Document.objects.count() == 2
-        assert DocumentDataAccessService.get_active_operation_documents(operation.id).count() == 2
+        assert operation.documents.count() == 2
+
+        DocumentService.archive_or_delete_operation_document(
+            approved_user_operator.user_id, operation.id, 'boundary_map'
+        )
+
+        assert Document.objects.count() == 1
+        assert operation.documents.count() == 1

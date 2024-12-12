@@ -18,12 +18,6 @@ class DocumentDataAccessService:
         return document
 
     @classmethod
-    def get_active_operation_documents(cls, operation_id: UUID) -> List[Document]:
-        operation = OperationDataAccessService.get_by_id(operation_id=operation_id)
-
-        return operation.documents.filter(archived_at__isnull=True)
-
-    @classmethod
     def create_document(cls, user_guid: UUID, file_data: Optional[ContentFile], document_type_name: str) -> Document:
         document = Document.objects.create(
             file=file_data,

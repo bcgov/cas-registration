@@ -200,9 +200,8 @@ class OperationServiceV2:
         # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
         if operation_id:
-            original_operation = Operation.objects.get(id=operation_id)
+            original_operation = OperationService.get_if_authorized(user_guid, operation_id)
             if payload.registration_purpose != original_operation.registration_purpose:
-                print('New RP detected!!!')
                 payload = cls.handle_change_of_registration_purpose(user_guid, original_operation, payload)
                 print(payload)
 
@@ -233,17 +232,29 @@ class OperationServiceV2:
         operation_documents = [
             doc
             for doc, created in [
-                DocumentService.create_or_replace_operation_document(
-                    user_guid,
-                    operation.id,
-                    payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                    'boundary_map',
+                *(
+                    [
+                        DocumentService.create_or_replace_operation_document(
+                            user_guid,
+                            operation.id,
+                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
+                            'boundary_map',
+                        )
+                    ]
+                    if payload.boundary_map
+                    else []
                 ),
-                DocumentService.create_or_replace_operation_document(
-                    user_guid,
-                    operation.id,
-                    payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                    'process_flow_diagram',
+                *(
+                    [
+                        DocumentService.create_or_replace_operation_document(
+                            user_guid,
+                            operation.id,
+                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
+                            'process_flow_diagram',
+                        )
+                    ]
+                    if payload.process_flow_diagram
+                    else []
                 ),
                 *(
                     [
@@ -434,12 +445,15 @@ class OperationServiceV2:
                 "Operation must have at least one reporting activity.",
             )
 
-            # Check if the operation has both a process flow diagram and a boundary map
+            # Check if the operation has both a process flow diagram and a boundary map (unless it is an EIO)
             yield (
-                lambda: operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
-                .distinct()
-                .count()
-                == 2,
+                lambda: (
+                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+                    and operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
+                    .distinct()
+                    .count()
+                    == 2
+                ),
                 "Operation must have a process flow diagram and a boundary map.",
             )
             yield (
@@ -516,10 +530,15 @@ class OperationServiceV2:
         if original_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             payload.opt_in = False
             opted_in_detail: OptedInOperationDetail = original_operation.opted_in_operation
-            opted_in_detail.set_archive(user_guid)
+            if original_operation.status == Operation.Statuses.REGISTERED:
+                opted_in_detail.set_archive(user_guid)
+            else:
+                opted_in_detail.delete()
         elif original_operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             payload.date_of_first_shipment = None
-            DocumentService.archive_operation_document(user_guid, original_operation.id, 'new_entrant_application')
+            DocumentService.archive_or_delete_operation_document(
+                user_guid, original_operation.id, 'new_entrant_application'
+            )
 
         if payload.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             payload.activities = []
@@ -527,8 +546,20 @@ class OperationServiceV2:
             payload.naics_code_id = None
             payload.secondary_naics_code_id = None
             payload.tertiary_naics_code_id = None
-            DocumentService.archive_operation_document(user_guid, original_operation.id, 'process_flow_diagram')
-            DocumentService.archive_operation_document(user_guid, original_operation.id, 'boundary_map')
+            payload.boundary_map = None
+            payload.process_flow_diagram = None
+            if original_operation.status == Operation.Statuses.REGISTERED:
+                DocumentService.archive_or_delete_operation_document(
+                    user_guid, original_operation.id, 'process_flow_diagram'
+                )
+                DocumentService.archive_or_delete_operation_document(user_guid, original_operation.id, 'boundary_map')
+            else:
+                boundary_map = original_operation.get_boundary_map()
+                if boundary_map:
+                    boundary_map.delete()
+                process_flow_diagram = original_operation.get_process_flow_diagram()
+                if process_flow_diagram:
+                    process_flow_diagram.delete()
         elif payload.registration_purpose in [
             Operation.Purposes.REPORTING_OPERATION,
             Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
