@@ -18,7 +18,6 @@ const ProductionData: React.FC<Props> = async ({
   facility_id,
 }) => {
   const response = await getProductionData(report_version_id, facility_id);
-
   const allowedProductNames = response.allowed_products.map((p) => p.name);
   const allowedProducts = response.allowed_products.map((p) => ({
     product_id: p.id,
@@ -43,13 +42,31 @@ const ProductionData: React.FC<Props> = async ({
     ActivePage.ProductionData,
   );
 
+  // TEMP FOR DEMO: Merge allowed_products with report_products
+  const mergedProducts = response.allowed_products.map((product) => {
+    const match = response.report_products.find(
+      (report) => report.product_id === product.id,
+    );
+
+    return match
+      ? match // Include detailed report data if available
+      : {
+          product_id: product.id,
+          product_name: product.name,
+          unit: product.unit,
+          annual_production: null,
+          production_data_apr_dec: null,
+          production_methodology: null,
+        }; // Add default values for missing fields
+  });
+
   return (
     <Suspense fallback="Loading Production Data Form">
       <ProductionDataForm
         report_version_id={report_version_id}
         facility_id={facility_id}
         allowedProducts={allowedProducts}
-        initialData={response.report_products}
+        initialData={mergedProducts}
         schema={schema}
         taskListElements={taskListElements}
       />
