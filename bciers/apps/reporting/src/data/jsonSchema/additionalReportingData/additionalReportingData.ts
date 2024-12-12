@@ -25,12 +25,12 @@ export const additionalReportingDataSchema: RJSFSchema = {
           oneOf: [
             {
               properties: {
-                capture_emissions: { enum: [false] },
+                capture_emissions: { const: false },
               },
             },
             {
               properties: {
-                capture_emissions: { enum: [true] },
+                capture_emissions: { const: true },
                 capture_type: {
                   type: "array",
                   title: "Capture type",
@@ -60,6 +60,7 @@ export const additionalReportingDataSchema: RJSFSchema = {
                         title: "Emissions (t) captured for on-site use",
                       },
                     },
+                    required: ["emissions_on_site_use"],
                   },
                 },
                 {
@@ -78,6 +79,7 @@ export const additionalReportingDataSchema: RJSFSchema = {
                           "Emissions (t) captured for on-site sequestration",
                       },
                     },
+                    required: ["emissions_on_site_sequestration"],
                   },
                 },
                 {
@@ -95,6 +97,7 @@ export const additionalReportingDataSchema: RJSFSchema = {
                         title: "Emissions (t) captured for off-site transfer",
                       },
                     },
+                    required: ["emissions_off_site_transfer"],
                   },
                 },
               ],

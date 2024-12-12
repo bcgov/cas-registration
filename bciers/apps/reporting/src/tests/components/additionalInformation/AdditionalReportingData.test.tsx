@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
@@ -24,8 +23,6 @@ describe("AdditionalReportingData Component", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
-    // Use vi's type-safe mock instead of jest.Mock
-    // Mock useRouter
     (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
@@ -33,15 +30,9 @@ describe("AdditionalReportingData Component", () => {
       back: vi.fn(),
     });
 
-    // Mock actionHandler
     (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: true,
     });
-
-    // Mock useSearchParams to return `?facility_id=abc`
-    (useSearchParams as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      new URLSearchParams("?facility_id=abc"),
-    );
   });
 
   afterEach(() => {
@@ -53,6 +44,8 @@ describe("AdditionalReportingData Component", () => {
       <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={false}
+        initialFormData={{}}
+        isNewEntrant={true}
       />,
     );
     const capturedEmissionsText = await screen.findByText(
@@ -66,6 +59,8 @@ describe("AdditionalReportingData Component", () => {
       <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={false}
+        initialFormData={{}}
+        isNewEntrant={true}
       />,
     );
 
@@ -86,6 +81,8 @@ describe("AdditionalReportingData Component", () => {
       <AdditionalReportingDataForm
         versionId={versionId}
         includeElectricityGenerated={true}
+        initialFormData={{}}
+        isNewEntrant={false}
       />,
     );
 
@@ -93,35 +90,29 @@ describe("AdditionalReportingData Component", () => {
     expect(element).toBeInTheDocument();
   });
 
-  it(
-    "submits form data and redirects on success",
-    {
-      timeout: 10000,
-    },
-    async () => {
-      render(
-        <AdditionalReportingDataForm
-          versionId={versionId}
-          includeElectricityGenerated={false}
-        />,
-      );
+  it("submits form data and redirects on success", async () => {
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+        initialFormData={{}}
+        isNewEntrant={true}
+      />,
+    );
 
-      await waitFor(() => {
-        const submitButton = screen.getByRole("button", {
-          name: /Save & Continue/i,
-        });
-        expect(submitButton).toBeInTheDocument(); // Confirm it's in the document
-      });
-
+    await waitFor(() => {
       const submitButton = screen.getByRole("button", {
         name: /Save & Continue/i,
       });
-      fireEvent.click(submitButton);
+      expect(submitButton).toBeInTheDocument();
+    });
 
-      await waitFor(() => expect(actionHandler).toHaveBeenCalled());
-      expect(mockPush).toHaveBeenCalledWith(
-        `/reports/${versionId}/new-entrant-information`,
-      );
-    },
-  );
+    const submitButton = screen.getByRole("button", {
+      name: /Save & Continue/i,
+    });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => expect(actionHandler).toHaveBeenCalled());
+    expect(mockPush).toHaveBeenCalledWith(`new-entrant-information`);
+  });
 });
