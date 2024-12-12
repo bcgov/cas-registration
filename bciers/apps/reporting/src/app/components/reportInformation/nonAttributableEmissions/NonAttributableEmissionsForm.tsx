@@ -3,16 +3,12 @@
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useRouter } from "next/navigation";
 import { UUID } from "crypto";
 import {
   generateUpdatedSchema,
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
-
-const BASE_URL = "/reporting/reports";
-const CANCEL_URL = "/reports";
 
 interface ActivityData {
   id: number;
@@ -69,10 +65,8 @@ export default function NonAttributableEmissionsForm({
         },
   );
 
-  const router = useRouter();
-
-  const SAVE_AND_CONTINUE_URL = `${BASE_URL}/${versionId}/facilities/${facilityId}/emission-summary`;
-  const BACK_URL = `activities?step=-1`;
+  const saveAndContinueUrl = `/reports/${versionId}/facilities/${facilityId}/emission-summary`;
+  const backUrl = `activities?step=-1`;
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
   const taskListElements: TaskListElement[] = [
@@ -100,12 +94,9 @@ export default function NonAttributableEmissionsForm({
 
   const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
-    const response = await actionHandler(endpoint, "POST", endpoint, {
+    await actionHandler(endpoint, "POST", endpoint, {
       body: JSON.stringify(formData),
     });
-    if (response) {
-      router.push(SAVE_AND_CONTINUE_URL);
-    }
   };
 
   return (
@@ -122,12 +113,11 @@ export default function NonAttributableEmissionsForm({
       schema={schema}
       uiSchema={nonAttributableEmissionUiSchema}
       formData={formData}
-      baseUrl={BASE_URL}
-      cancelUrl={CANCEL_URL}
+      cancelUrl="#"
       onChange={(data) => setFormData(data.formData)}
       onSubmit={() => handleSubmit()}
-      backUrl={BACK_URL}
-      continueUrl={SAVE_AND_CONTINUE_URL}
+      backUrl={backUrl}
+      continueUrl={saveAndContinueUrl}
     />
   );
 }

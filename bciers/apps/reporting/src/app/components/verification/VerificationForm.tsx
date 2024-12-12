@@ -35,6 +35,7 @@ export default function VerificationForm({
   const queryString = serializeSearchParams(searchParams);
 
   const saveAndContinueUrl = `/reports/${version_id}/attachments${queryString}`;
+  const backUrl = `/reports/${version_id}/compliance-summary${queryString}`;
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
@@ -69,7 +70,7 @@ export default function VerificationForm({
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}
-      backUrl={cancelUrlReports}
+      backUrl={backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
       error={error}

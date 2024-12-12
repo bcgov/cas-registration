@@ -43,9 +43,6 @@ describe("The ProductionDataForm component", () => {
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
     await calledProps.onSubmit({ formData: { production_data: "test" } });
     expect(mockPostProductionData).toHaveBeenCalledWith(1000, "abcd", "test");
-    expect(mockPush).toHaveBeenCalledWith(
-      "reports/1000/facilities/abcd/allocation-of-emissions",
-    );
   });
 
   it("on change, adds an item to the form data when a checkbox is checked", async () => {

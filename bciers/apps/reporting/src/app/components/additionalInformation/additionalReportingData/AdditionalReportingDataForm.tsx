@@ -4,16 +4,13 @@ import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   additionalReportingDataSchema,
   additionalReportingDataUiSchema,
   additionalReportingDataWithElectricityGeneratedSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
-
-const baseUrl = "/reports";
-const cancelUrl = "/reports";
 
 interface AdditionalReportingDataProps {
   versionId: number;
@@ -43,8 +40,10 @@ export default function AdditionalReportingDataForm({
       capture_emissions: false,
     },
   });
-
-  const router = useRouter();
+  // 🛸 Set up routing urls
+  const searchParams = useSearchParams();
+  const facilityId = searchParams.get("facility_id");
+  const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
   const saveAndContinueUrl = `/reports/${versionId}/new-entrant-information`;
 
   const schema: RJSFSchema = includeElectricityGenerated
@@ -80,12 +79,9 @@ export default function AdditionalReportingDataForm({
       ...data.additional_data_section,
     };
 
-    const response = await actionHandler(endpoint, method, endpoint, {
+    await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
-    if (response) {
-      router.push(saveAndContinueUrl);
-    }
   };
 
   return (
@@ -102,13 +98,13 @@ export default function AdditionalReportingDataForm({
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
-      baseUrl={baseUrl}
-      cancelUrl={cancelUrl}
+      cancelUrl="#"
+      backUrl={backUrl}
       onChange={(data: any) => {
         setFormData(data.formData);
       }}
       onSubmit={(data: any) => handleSubmit(data.formData)}
-      continueUrl={""}
+      continueUrl={saveAndContinueUrl}
     />
   );
 }

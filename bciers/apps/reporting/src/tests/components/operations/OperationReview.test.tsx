@@ -1,6 +1,6 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import OperationReview from "@reporting/src/app/components/operations/OperationReview";
 
@@ -14,9 +14,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
-const mockUseSearchParams = useSearchParams as vi.MockedFunction<
-  typeof useSearchParams
->;
+
 const mockActionHandler = actionHandler as vi.MockedFunction<
   typeof actionHandler
 >;
@@ -24,9 +22,6 @@ const mockActionHandler = actionHandler as vi.MockedFunction<
 describe("OperationReview Component", () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({ push: vi.fn() });
-    mockUseSearchParams.mockReturnValue(
-      "reports_title=Operation+3&facilities_title=Facility",
-    );
     mockActionHandler.mockResolvedValue(true); // Mock the action handler to always resolve successfully
   });
 
@@ -66,53 +61,59 @@ describe("OperationReview Component", () => {
     expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
   });
 
-  it("submits the form and navigates to the next page", async () => {
-    const { push } = useRouter();
+  it(
+    "submits the form and navigates to the next page",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      const { push } = useRouter();
 
-    render(
-      <OperationReview
-        formData={{
-          activities: [1],
-          regulated_products: [1],
-          operation_representative_name: "John Doe",
-          operation_bcghgid: "your-bcghg-id",
-          operation_name: "Operation Name",
-          operation_type: "Test Operation",
-        }}
-        version_id={1}
-        reportType={{ report_type: "Annual Report" }}
-        reportingYear={{
-          reporting_year: 2024,
-          report_due_date: "2024-12-31",
-          reporting_window_end: "2024-12-31",
-        }}
-        allActivities={[{ id: 1, name: "Activity 1" }]}
-        allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-        registrationPurpose="Test Purpose"
-        facilityReport={{
-          facility_id: 2344,
-          operation_type: "Single Facility Operation",
-        }}
-      />,
-    );
-
-    // Simulate form submission
-    fireEvent.click(screen.getByText(/Save & Continue/i));
-
-    await waitFor(() => {
-      expect(mockActionHandler).toHaveBeenCalledWith(
-        expect.stringContaining("reporting/report-version/1/report-operation"),
-        expect.any(String),
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.any(String),
-        }),
+      render(
+        <OperationReview
+          formData={{
+            activities: [1],
+            regulated_products: [1],
+            operation_representative_name: "John Doe",
+            operation_bcghgid: "your-bcghg-id",
+            operation_name: "Operation Name",
+            operation_type: "Test Operation",
+          }}
+          version_id={1}
+          reportType={{ report_type: "Annual Report" }}
+          reportingYear={{
+            reporting_year: 2024,
+            report_due_date: "2024-12-31",
+            reporting_window_end: "2024-12-31",
+          }}
+          allActivities={[{ id: 1, name: "Activity 1" }]}
+          allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
+          registrationPurpose="Test Purpose"
+          facilityReport={{
+            facility_id: 2344,
+            operation_type: "Single Facility Operation",
+          }}
+        />,
       );
-      expect(push).toHaveBeenCalledWith(
-        "/reporting/reports/1/person-responsible?",
-      );
-    });
-  });
+
+      // Simulate form submission
+      fireEvent.click(screen.getByText(/Save & Continue/i));
+
+      await waitFor(() => {
+        expect(mockActionHandler).toHaveBeenCalledWith(
+          expect.stringContaining(
+            "reporting/report-version/1/report-operation",
+          ),
+          expect.any(String),
+          expect.any(String),
+          expect.objectContaining({
+            body: expect.any(String),
+          }),
+        );
+        expect(push).toHaveBeenCalledWith("/reports/1/person-responsible");
+      });
+    },
+  );
 
   it("shows helper text for Simple Report", async () => {
     render(

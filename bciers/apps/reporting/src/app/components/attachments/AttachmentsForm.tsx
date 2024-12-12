@@ -3,7 +3,7 @@ import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
 import AttachmentElement from "./AttachmentElement";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UploadedAttachment } from "./types";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
@@ -23,6 +23,11 @@ const AttachmentsForm: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/final-review`;
+  const backUrl = `/reports/${version_id}/verification`;
+
+  const [canContinue, setCanContinue] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
   const [error, setError] = useState<string>();
   const [pendingUploadFiles, setPendingUploadFiles] = useState<{
@@ -40,9 +45,13 @@ const AttachmentsForm: React.FC<Props> = ({
 
   const handleSubmit = async () => {
     // Nothing to submit
-    if (Object.keys(pendingUploadFiles).length === 0) return;
+    if (Object.keys(pendingUploadFiles).length === 0) {
+      if (canContinue) router.push(saveAndContinueUrl);
+      else return;
+    }
 
     const formData = new FormData();
+    setIsSaving(true);
 
     for (const [fileType, file] of Object.entries(pendingUploadFiles)) {
       formData.append("files", file);
@@ -53,9 +62,13 @@ const AttachmentsForm: React.FC<Props> = ({
 
     if (response.error) {
       setError(response.error);
-    } else {
+    }
+
+    if (canContinue) {
+      setIsRedirecting(true);
       router.push(saveAndContinueUrl);
     }
+    setIsSaving(false);
   };
 
   // Returns the id of the file if it has been saved,
@@ -82,16 +95,29 @@ const AttachmentsForm: React.FC<Props> = ({
     />
   );
 
+  const submitExternallyToContinue = () => {
+    setCanContinue(true);
+  }; // Only submit after canContinue is set so the submitHandler can read the boolean
+  useEffect(() => {
+    if (canContinue) {
+      handleSubmit();
+    }
+  }, [canContinue]);
+
   return (
     <>
       <MultiStepWrapperWithTaskList
         steps={multiStepHeaderSteps}
         initialStep={4}
         taskListElements={taskListElements}
-        onSubmit={handleSubmit}
+        onSubmit={submitExternallyToContinue}
         cancelUrl="#"
-        submittingButtonText="Uploading..."
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
         error={error}
+        isSaving={isSaving}
+        isRedirecting={isRedirecting}
+        noFormSave={handleSubmit}
       >
         <p>
           Please upload any of the documents below that is applicable to your

@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
@@ -24,7 +22,7 @@ interface Props {
 
 interface Product {
   allocated_quantity: number;
-  product_id: number;
+  report_product_id: number;
   product_name: string;
 }
 
@@ -114,10 +112,9 @@ export default function FacilityEmissionAllocationForm({
   const [error, setError] = useState<string | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const queryString = serializeSearchParams(searchParams);
-  const saveAndContinueUrl = `/reports/${version_id}/facilities/${facility_id}/additional-reporting-data${queryString}`;
+  // 🛸 Set up routing urls
+  const backUrl = `/reports/${version_id}/facilities/${facility_id}/production-data`;
+  const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;
 
   // 📋 Get the task list elements for the form
   const taskListElements = getFacilitiesInformationTaskList(
@@ -144,7 +141,7 @@ export default function FacilityEmissionAllocationForm({
     ];
     let errorMessage;
 
-    // Initialize a map to store total allocated quantities by product_id
+    // Initialize a map to store total allocated quantities by report_product_id
     const productAllocations: Record<string, number> = {};
 
     // Iterate through each category and recalculate allocated emissions data for the category
@@ -156,9 +153,10 @@ export default function FacilityEmissionAllocationForm({
             const allocatedQuantity =
               parseFloat(product.allocated_quantity as any) || 0;
 
-            // Accumulate the allocated quantity for this product_id
-            productAllocations[product.product_id] =
-              (productAllocations[product.product_id] || 0) + allocatedQuantity;
+            // Accumulate the allocated quantity for this report_product_id
+            productAllocations[product.report_product_id] =
+              (productAllocations[product.report_product_id] || 0) +
+              allocatedQuantity;
 
             return {
               ...product,
@@ -173,11 +171,11 @@ export default function FacilityEmissionAllocationForm({
     if (updatedFormData.total_emission_allocations?.products) {
       updatedFormData.total_emission_allocations.products =
         updatedFormData.total_emission_allocations.products.map(
-          (product: { product_id: number }) => ({
+          (product: { report_product_id: number }) => ({
             ...product,
             allocated_quantity: String(
               parseFloat(
-                (productAllocations[product.product_id] || 0).toFixed(4),
+                (productAllocations[product.report_product_id] || 0).toFixed(4),
               ),
             ),
           }),
@@ -198,7 +196,6 @@ export default function FacilityEmissionAllocationForm({
 
   // 🛠️ Handle form submit
   const handleSubmit = async () => {
-    setSubmitButtonDisabled(true);
     // Transform formData to match the schema in structure
     const transformedPayload = {
       allocation_methodology: formData.allocation_methodology,
@@ -233,11 +230,8 @@ export default function FacilityEmissionAllocationForm({
       body: JSON.stringify(payload),
     });
 
-    setSubmitButtonDisabled(false);
     if (response?.error) {
       setError(response.error);
-    } else {
-      router.push(saveAndContinueUrl);
     }
   };
 
@@ -250,12 +244,12 @@ export default function FacilityEmissionAllocationForm({
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}
-      baseUrl="#"
       cancelUrl="#"
+      backUrl={backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
-      error={error}
       continueUrl={saveAndContinueUrl}
+      error={error}
       formContext={{
         facility_emission_data: formData.basic_emission_allocation_data.concat(
           formData.fuel_excluded_emission_allocation_data,
