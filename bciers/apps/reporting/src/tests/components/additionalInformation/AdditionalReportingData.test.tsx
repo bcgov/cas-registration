@@ -23,7 +23,6 @@ describe("AdditionalReportingData Component", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
-    // Use vi's type-safe mock instead of jest.Mock
     (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
@@ -101,17 +100,17 @@ describe("AdditionalReportingData Component", () => {
       />,
     );
 
-      await waitFor(() => {
-        const submitButton = screen.getByRole("button", {
-          name: /Save & Continue/i,
-        });
-        expect(submitButton).toBeInTheDocument(); // Confirm it's in the document
-      });
-
+    await waitFor(() => {
       const submitButton = screen.getByRole("button", {
         name: /Save & Continue/i,
       });
-      fireEvent.click(submitButton);
+      expect(submitButton).toBeInTheDocument();
+    });
+
+    const submitButton = screen.getByRole("button", {
+      name: /Save & Continue/i,
+    });
+    fireEvent.click(submitButton);
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
     expect(mockPush).toHaveBeenCalledWith(`new-entrant-information`);
