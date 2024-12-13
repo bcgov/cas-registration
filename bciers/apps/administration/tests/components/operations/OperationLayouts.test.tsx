@@ -1,9 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import {
-  fetchOperationsPageData,
-  useRouter,
-  useSearchParams,
-} from "@bciers/testConfig/mocks";
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import {
   ExternalUserOperationDataGridLayout,
   InternalUserOperationDataGridLayout,
@@ -17,13 +13,6 @@ useRouter.mockReturnValue({
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
-
-vi.mock(
-  "apps/administration/app/components/operations/fetchOperationsPageData",
-  () => ({
-    default: fetchOperationsPageData,
-  }),
-);
 
 describe("OperationLayouts component", () => {
   beforeEach(async () => {
