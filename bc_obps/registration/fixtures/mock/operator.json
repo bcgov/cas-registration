@@ -113,7 +113,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": false,
       "verified_at": null,
       "verified_by": null
@@ -133,7 +133,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
@@ -153,7 +153,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
@@ -173,7 +173,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
@@ -193,7 +193,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
@@ -213,7 +213,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
@@ -233,7 +233,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
@@ -253,7 +253,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Draft",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
@@ -273,7 +273,7 @@
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [1],
-      "status": "Pending",
+      "status": "Approved",
       "is_new": true,
       "verified_at": null,
       "verified_by": null
