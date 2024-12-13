@@ -25,6 +25,8 @@ interface SingleStepTaskListFormProps {
   mode?: FormMode;
   allowEdit?: boolean;
   formContext?: { [key: string]: any };
+  showTasklist?: boolean;
+  showCancelButton?: boolean;
 }
 
 const SingleStepTaskListForm = ({
@@ -40,6 +42,8 @@ const SingleStepTaskListForm = ({
   mode = FormMode.CREATE,
   allowEdit = true,
   formContext,
+  showTasklist = true,
+  showCancelButton = true,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -92,11 +96,13 @@ const SingleStepTaskListForm = ({
         message={FrontendMessages.SUBMIT_CONFIRMATION}
         setIsSnackbarOpen={setIsSnackbarOpen}
       />
-      <TaskList
-        // Hide the task list on mobile
-        className="hidden sm:block"
-        taskListItems={taskListItems}
-      />
+      {showTasklist && (
+        <TaskList
+          // Hide the task list on mobile
+          className="hidden sm:block"
+          taskListItems={taskListItems}
+        />
+      )}
       <div className="w-full">
         <FormBase
           formContext={formContext}
@@ -137,14 +143,16 @@ const SingleStepTaskListForm = ({
                 )}
               </div>
             )}
-            <Button
-              className="ml-4"
-              variant="outlined"
-              type="button"
-              onClick={onCancel}
-            >
-              Cancel
-            </Button>
+            {showCancelButton && (
+              <Button
+                className="ml-4"
+                variant="outlined"
+                type="button"
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+            )}
           </div>
         </FormBase>
       </div>

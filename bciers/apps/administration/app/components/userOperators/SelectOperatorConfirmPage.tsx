@@ -4,19 +4,17 @@ import { notFound } from "next/navigation";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import { Operator } from "../userOperators/types";
 import SelectOperatorConfirmForm from "./SelectOperatorConfirmForm";
-import getOperator from "../operators/getOperator";
 import getOperatorHasAdmin from "../operators/getOperatorHasAdmin";
 import getOperatorAccessDeclined from "../operators/getOperatorAccessDeclined";
 import { UUID } from "crypto";
+import getOperatorConfirmationInfo from "../operators/getOperatorConfirmationInfo";
 // 🧩 Main component
 export default async function SelectOperatorConfirmPage({
   id,
 }: Readonly<{ id?: UUID }>) {
   if (id) {
-    const operator: Operator | { error: string } = await getOperator(
-      id,
-      `/select-operator/confirm/${id}`,
-    );
+    const operator: Operator | { error: string } =
+      await getOperatorConfirmationInfo(id, `/select-operator/confirm/${id}`);
     const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(id);
     const accessDeclined: boolean | { error: string } =
       await getOperatorAccessDeclined(id);
