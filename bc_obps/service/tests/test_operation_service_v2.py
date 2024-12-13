@@ -149,8 +149,6 @@ class TestOperationServiceV2:
         assert operation.opt_in is True
         assert operation.opted_in_operation is not None
 
-        opted_in_operation_detail_id = operation.opted_in_operation.id
-
         opted_in_payload = OptedInOperationDetailIn(
             meets_section_3_emissions_requirements=False,
             meets_electricity_import_operation_criteria=False,
@@ -166,15 +164,11 @@ class TestOperationServiceV2:
         )
 
         OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
-        opted_in_operation_detail.refresh_from_db()
         operation.refresh_from_db()
 
         assert operation.opt_in is False
         assert operation.opted_in_operation is None
-        # assert OptedInOperationDetail.objects.get(pk=opted_in_operation_detail_id).exists()
         assert opted_in_operation_detail is not None
-        assert opted_in_operation_detail.archived_by == approved_user_operator.user
-        assert opted_in_operation_detail.archived_at is not None
 
     @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
@@ -512,7 +506,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
     @staticmethod
     def test_update_operation_with_multiple_operators():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation')
+        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         multiple_operators = baker.make_recipe('utils.multiple_operator', operation=existing_operation, _quantity=3)
         existing_operation.multiple_operators.set(multiple_operators)
 
@@ -571,7 +565,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
     @staticmethod
     def test_update_operation_archive_multiple_operators():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation')
+        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         multiple_operators = baker.make_recipe('utils.multiple_operator', operation=existing_operation, _quantity=3)
         existing_operation.multiple_operators.set(multiple_operators)
 

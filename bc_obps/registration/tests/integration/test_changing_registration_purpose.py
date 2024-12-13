@@ -83,16 +83,28 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
 
     def _set_new_registration_purpose(self, new_purpose):
         operation_payload = {
-            "registration_purpose": new_purpose,
-            "boundary_map": MOCK_DATA_URL,
-            "process_flow_diagram": MOCK_DATA_URL,
-            "activities": [2, 3],
-            "naics_code_id": self.operation.naics_code_id,
-            "secondary_naics_code_id": self.operation.secondary_naics_code_id,
             "name": self.operation.name,
             "type": self.operation.type,
-            "regulated_products": [1, 2] if new_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION else [],
+            "registration_purpose": new_purpose,
         }
+        if new_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            operation_payload.update(
+                {
+                    "activities": [],
+                    "regulated_products": [],
+                }
+            )
+        else:
+            operation_payload.update(
+                {
+                    "boundary_map": MOCK_DATA_URL,
+                    "process_flow_diagram": MOCK_DATA_URL,
+                    "activities": [2, 3],
+                    "naics_code_id": self.operation.naics_code_id,
+                    "secondary_naics_code_id": self.operation.secondary_naics_code_id,
+                    "regulated_products": [1, 2],
+                }
+            )
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",

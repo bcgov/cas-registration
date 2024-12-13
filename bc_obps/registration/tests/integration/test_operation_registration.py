@@ -234,12 +234,14 @@ class TestOperationRegistration(CommonTestSetup):
             assert self.operation.opted_in_operation_id is None
 
         # make sure we have the two required documents
-        assert (
-            self.operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
-            .distinct()
-            .count()
-            == 2
-        )
+        # (unless the registration_purpose is EIO, in which case no documents are required)
+        if purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            assert (
+                self.operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
+                .distinct()
+                .count()
+                == 2
+            )
 
         # make sure we have the facility
         if operation_type == OperationTypes.LFO:

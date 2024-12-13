@@ -180,9 +180,7 @@ class OperationServiceV2:
     def remove_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
         operation.opt_in = False
-        opted_in_detail: OptedInOperationDetail = operation.opted_in_operation
-        # TODO - determine whether this should be archived or deleted??
-        opted_in_detail.set_archive(user_guid)
+        OptedInOperationDataAccessService.archive_or_delete_opted_in_operation_detail(user_guid, operation_id)
         operation.opted_in_operation = None
         operation.save(update_fields=['opt_in', 'opted_in_operation'])
 
@@ -203,7 +201,6 @@ class OperationServiceV2:
             original_operation = OperationService.get_if_authorized(user_guid, operation_id)
             if payload.registration_purpose != original_operation.registration_purpose:
                 payload = cls.handle_change_of_registration_purpose(user_guid, original_operation, payload)
-                print(payload)
 
         operation: Operation
         operation_data = payload.dict(
@@ -220,6 +217,7 @@ class OperationServiceV2:
         )
         operation_data['pk'] = operation_id if operation_id else None
         operation_data['operator_id'] = user_operator.operator_id
+
         operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
 
         # set m2m relationships
@@ -447,12 +445,12 @@ class OperationServiceV2:
 
             # Check if the operation has both a process flow diagram and a boundary map (unless it is an EIO)
             yield (
-                lambda: (
+                lambda: not (
                     operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
                     and operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
                     .distinct()
                     .count()
-                    == 2
+                    < 2
                 ),
                 "Operation must have a process flow diagram and a boundary map.",
             )
@@ -529,10 +527,10 @@ class OperationServiceV2:
     ) -> OperationInformationIn:
         if original_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             payload.opt_in = False
-            opted_in_detail: OptedInOperationDetail = original_operation.opted_in_operation
-            if original_operation.status == Operation.Statuses.REGISTERED:
+            opted_in_detail = original_operation.opted_in_operation
+            if opted_in_detail and original_operation.status == Operation.Statuses.REGISTERED:
                 opted_in_detail.set_archive(user_guid)
-            else:
+            elif opted_in_detail:
                 opted_in_detail.delete()
         elif original_operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             payload.date_of_first_shipment = None
@@ -548,18 +546,10 @@ class OperationServiceV2:
             payload.tertiary_naics_code_id = None
             payload.boundary_map = None
             payload.process_flow_diagram = None
-            if original_operation.status == Operation.Statuses.REGISTERED:
-                DocumentService.archive_or_delete_operation_document(
-                    user_guid, original_operation.id, 'process_flow_diagram'
-                )
-                DocumentService.archive_or_delete_operation_document(user_guid, original_operation.id, 'boundary_map')
-            else:
-                boundary_map = original_operation.get_boundary_map()
-                if boundary_map:
-                    boundary_map.delete()
-                process_flow_diagram = original_operation.get_process_flow_diagram()
-                if process_flow_diagram:
-                    process_flow_diagram.delete()
+            DocumentService.archive_or_delete_operation_document(
+                user_guid, original_operation.id, 'process_flow_diagram'
+            )
+            DocumentService.archive_or_delete_operation_document(user_guid, original_operation.id, 'boundary_map')
         elif payload.registration_purpose in [
             Operation.Purposes.REPORTING_OPERATION,
             Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
