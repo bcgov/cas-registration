@@ -3,40 +3,111 @@ import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTem
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
+import { getBusinessStructures } from "@bciers/actions/api";
 
-export const section1: RJSFSchema = {
-  type: "object",
-  title: "Operator Information",
-  required: [
-    "legal_name",
-    "cra_business_number",
-    "bc_corporate_registry_number",
-    "business_structure",
-  ],
-  properties: {
-    legal_name: { type: "string", title: "Legal Name" },
-    trade_name: { type: "string", title: "Trade Name" },
-    business_structure: {
+const createSection1Schema = async () => {
+  // business structures
+  const businessStructures: { name: string }[] | { error: string } =
+    await getBusinessStructures();
+  if ("error" in businessStructures) {
+    throw new Error("Failed to retrieve business structure information");
+  }
+
+  const businessStructureOptions = businessStructures?.map(
+    (businessStructure) => ({
       type: "string",
-      title: "Business Structure",
+      title: businessStructure.name,
+      enum: [businessStructure.name],
+      value: businessStructure.name,
+    }),
+  );
+
+  // add business structure options for partner operators
+  const partnerOperatorsArray = {
+    type: "array",
+    default: [{}],
+    items: {
+      type: "object",
+      required: [
+        "partner_legal_name",
+        "partner_business_structure",
+        "partner_cra_business_number",
+        "partner_bc_corporate_registry_number",
+      ],
+      properties: {
+        partner_legal_name: { type: "string", title: "Legal Name" },
+        partner_trade_name: { type: "string", title: "Trade Name" },
+        partner_business_structure: {
+          type: "string",
+          title: "Business Structure",
+          anyOf: businessStructureOptions,
+        },
+        partner_cra_business_number: {
+          type: "number",
+          title: "CRA Business Number",
+          minimum: 100000000,
+          maximum: 999999999,
+        },
+        partner_bc_corporate_registry_number: {
+          type: "string",
+          title: "BC Corporate Registry Number",
+          format: "bc_corporate_registry_number",
+        },
+      },
     },
-    cra_business_number: {
-      type: "number",
-      title: "CRA Business Number",
-      minimum: 100000000,
-      maximum: 999999999,
+  };
+
+  // create dependencies for business structure
+  const oneOfOptions = [];
+  for (const el of businessStructures) {
+    const obj = {
+      properties: {
+        business_structure: {
+          const: el.name,
+        },
+        ...(el.name.includes("Partnership") && {
+          partner_operators_array: partnerOperatorsArray,
+        }),
+      },
+    };
+    oneOfOptions.push(obj);
+  }
+
+  return {
+    type: "object",
+    title: "Operator Information",
+    required: [
+      "legal_name",
+      "cra_business_number",
+      "bc_corporate_registry_number",
+      "business_structure",
+    ],
+    properties: {
+      legal_name: { type: "string", title: "Legal Name" },
+      trade_name: { type: "string", title: "Trade Name" },
+      business_structure: {
+        type: "string",
+        title: "Business Structure",
+        anyOf: businessStructureOptions,
+      },
+      cra_business_number: {
+        type: "number",
+        title: "CRA Business Number",
+        minimum: 100000000,
+        maximum: 999999999,
+      },
+      bc_corporate_registry_number: {
+        type: "string",
+        title: "BC Corporate Registry Number",
+        format: "bc_corporate_registry_number",
+      },
     },
-    bc_corporate_registry_number: {
-      type: "string",
-      title: "BC Corporate Registry Number",
-      format: "bc_corporate_registry_number",
+    dependencies: {
+      business_structure: {
+        oneOf: oneOfOptions,
+      },
     },
-  },
-  dependencies: {
-    business_structure: {
-      oneOf: [],
-    },
-  },
+  };
 };
 
 const section2: RJSFSchema = {
@@ -182,14 +253,16 @@ const section3: RJSFSchema = {
   },
 };
 
-export const operatorSchema: RJSFSchema = {
-  type: "object",
-  required: ["section1", "section2", "section3"],
-  properties: {
-    section1,
-    section2,
-    section3,
-  },
+export const createOperatorSchema = async () => {
+  return {
+    type: "object",
+    required: ["section1", "section2", "section3"],
+    properties: {
+      section1: await createSection1Schema(),
+      section2,
+      section3,
+    },
+  } as RJSFSchema;
 };
 
 export const operatorUiSchema = {

@@ -27,7 +27,7 @@ from ._facilities._facility_id import bcghg_id as facility_bcghg_id
 from ._facilities import facility_id
 from ._operators import search
 from .transfer_events import list_transfer_events
-from ._operators._operator_id import has_admin, request_access, request_admin_access, access_declined
+from ._operators._operator_id import has_admin, request_access, request_admin_access, access_declined, confirm
 from ._operators import operator_id
 from ._user_operators._current import (
     operator,

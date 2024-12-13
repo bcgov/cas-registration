@@ -14,10 +14,11 @@ export enum IDP {
 export enum FrontEndRoles {
   CAS_ADMIN = "cas_admin",
   CAS_ANALYST = "cas_analyst",
+  CAS_DIRECTOR = "cas_director",
+  CAS_VIEW_ONLY = "cas_view_only",
   CAS_PENDING = "cas_pending",
   INDUSTRY_USER = "industry_user",
   INDUSTRY_USER_ADMIN = "industry_user_admin",
-  CAS_DIRECTOR = "cas_director",
 }
 
 export enum FrontendMessages {
