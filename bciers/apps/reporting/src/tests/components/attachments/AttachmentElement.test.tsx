@@ -47,4 +47,16 @@ describe("The AttachmentElement component", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/will upload on save/g)).toBeVisible();
   });
+
+  it("Renders an error if passed", () => {
+    render(
+      <AttachmentElement
+        title="Test Title"
+        onFileChange={vi.fn()}
+        fileName="test file name"
+        error="This is an error"
+      />,
+    );
+    expect(screen.getByText("This is an error")).toBeInTheDocument();
+  });
 });

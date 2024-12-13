@@ -43,6 +43,7 @@ describe("The attachment page component", () => {
         },
         taskListElements: "test task list",
         version_id: 12345,
+        isVerificationStatementMandatory: true,
       },
       {},
     );

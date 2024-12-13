@@ -21,6 +21,7 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
       version_id={version_id}
       initialUploadedAttachments={uploadedAttachmentsDict}
       taskListElements={taskListElements}
+      isVerificationStatementMandatory={true}
     />
   );
 };
