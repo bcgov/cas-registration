@@ -11,6 +11,7 @@ class RegulatoryValueSchema(Schema):
 
 
 class ReportProductComplianceSchema(Schema):
+    name: str
     annual_production: Decimal | int
     apr_dec_production: Decimal | int
     emission_intensity: Decimal
@@ -19,5 +20,11 @@ class ReportProductComplianceSchema(Schema):
 
 
 class ComplianceDataSchemaOut(Schema):
+    emissions_attributable_for_reporting: Decimal | int
+    reporting_only_emissions: Decimal | int
+    emissions_attributable_for_compliance: Decimal | int
+    emissions_limit: Decimal | int
+    excess_emissions: Decimal | int
+    credited_emissions: Decimal | int
     regulatory_values: RegulatoryValueSchema
     products: List[ReportProductComplianceSchema]
