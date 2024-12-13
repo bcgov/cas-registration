@@ -33,6 +33,7 @@ describe("The attachments form", () => {
         taskListElements={[]}
         version_id={1}
         initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
       />,
     );
 
@@ -62,6 +63,7 @@ describe("The attachments form", () => {
         taskListElements={[]}
         version_id={1}
         initialUploadedAttachments={attachmentData}
+        isVerificationStatementMandatory={true}
       />,
     );
 
@@ -72,6 +74,8 @@ describe("The attachments form", () => {
         fileName: "test_name",
         onFileChange: expect.any(Function),
         title: "Verification Statement",
+        required: true,
+        error: undefined,
       },
       {},
     );
@@ -108,6 +112,61 @@ describe("The attachments form", () => {
     );
   });
 
+  it("shows an error if the verification statement must be submitted", async () => {
+    mockPostAttachments.mockReturnValue({});
+
+    render(
+      <AttachmentsForm
+        taskListElements={[]}
+        version_id={1346}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+      />,
+    );
+
+    mockAttachmentElement.mockClear();
+
+    await act(() => {
+      fireEvent.click(screen.getByText("Save & Continue"));
+    });
+
+    expect(mockPostAttachments).not.toHaveBeenCalled();
+
+    // After re-render, we see the error
+    expect(mockAttachmentElement).toHaveBeenNthCalledWith(
+      1,
+      {
+        error: "Must be present",
+        fileId: undefined,
+        fileName: undefined,
+        onFileChange: expect.any(Function),
+        required: true,
+        title: "Verification Statement",
+      },
+      {},
+    );
+  });
+
+  it("Submits the page if the verification statement doesn't have to be submitted", async () => {
+    mockPostAttachments.mockReturnValue({});
+
+    render(
+      <AttachmentsForm
+        taskListElements={[]}
+        version_id={1346}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={false}
+      />,
+    );
+
+    await act(() => {
+      fireEvent.click(screen.getByText("Save & Continue"));
+    });
+
+    expect(mockPostAttachments).toHaveBeenCalled();
+    expect(screen.queryByText("Must be present")).not.toBeInTheDocument();
+  });
+
   it("submits the changed files along with their type", async () => {
     mockPostAttachments.mockReturnValue({});
 
@@ -116,6 +175,7 @@ describe("The attachments form", () => {
         taskListElements={[]}
         version_id={1346}
         initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
       />,
     );
 

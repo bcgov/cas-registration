@@ -2,8 +2,10 @@
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
-import AttachmentElement from "./AttachmentElement";
-import { useEffect, useState } from "react";
+import AttachmentElement, {
+  AttachmentElementOptions,
+} from "./AttachmentElement";
+import { useState } from "react";
 import { UploadedAttachment } from "./types";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
@@ -14,22 +16,26 @@ interface Props extends HasReportVersion {
     [attachment_type: string]: UploadedAttachment;
   };
   taskListElements: TaskListElement[];
+  isVerificationStatementMandatory: boolean;
 }
 
 const AttachmentsForm: React.FC<Props> = ({
   version_id,
   taskListElements,
   initialUploadedAttachments,
+  isVerificationStatementMandatory,
 }) => {
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/final-review`;
   const backUrl = `/reports/${version_id}/verification`;
 
-  const [canContinue, setCanContinue] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
   const [error, setError] = useState<string>();
+  const [validationErrors, setValidationErrors] = useState<{
+    [fileType: string]: string;
+  }>({});
   const [pendingUploadFiles, setPendingUploadFiles] = useState<{
     [fileType: string]: File;
   }>({});
@@ -43,9 +49,30 @@ const AttachmentsForm: React.FC<Props> = ({
     }
   };
 
-  const handleSubmit = async () => {
-    // Nothing to submit
+  //
+  const validateAttachments = () => {
+    if (
+      isVerificationStatementMandatory &&
+      !(
+        "verification_statement" in pendingUploadFiles ||
+        "verification_statement" in initialUploadedAttachments
+      )
+    ) {
+      setValidationErrors({
+        verification_statement: "Must be present",
+      });
+      return false;
+    } else {
+      setValidationErrors({});
+      return true;
+    }
+  };
+
+  const handleSubmit = async (canContinue: boolean) => {
+    if (!validateAttachments()) return;
+
     if (Object.keys(pendingUploadFiles).length === 0) {
+      // Nothing to submit
       if (canContinue) router.push(saveAndContinueUrl);
       else return;
     }
@@ -86,23 +113,19 @@ const AttachmentsForm: React.FC<Props> = ({
       : initialUploadedAttachments[fileType]?.attachment_name;
   };
 
-  const buildAttachmentElement = (title: string, fileType: string) => (
+  const buildAttachmentElement = (
+    title: string,
+    fileType: string,
+    extraProps?: AttachmentElementOptions,
+  ) => (
     <AttachmentElement
       title={title}
       onFileChange={(file) => handleChange(fileType, file)}
       fileId={getFileId(fileType)}
       fileName={getFileName(fileType)}
+      {...(extraProps || {})}
     />
   );
-
-  const submitExternallyToContinue = () => {
-    setCanContinue(true);
-  }; // Only submit after canContinue is set so the submitHandler can read the boolean
-  useEffect(() => {
-    if (canContinue) {
-      handleSubmit();
-    }
-  }, [canContinue]);
 
   return (
     <>
@@ -110,14 +133,14 @@ const AttachmentsForm: React.FC<Props> = ({
         steps={multiStepHeaderSteps}
         initialStep={4}
         taskListElements={taskListElements}
-        onSubmit={submitExternallyToContinue}
+        onSubmit={() => handleSubmit(true)}
         cancelUrl="#"
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
         error={error}
         isSaving={isSaving}
         isRedirecting={isRedirecting}
-        noFormSave={handleSubmit}
+        noFormSave={() => handleSubmit(false)}
       >
         <p>
           Please upload any of the documents below that is applicable to your
@@ -126,6 +149,7 @@ const AttachmentsForm: React.FC<Props> = ({
         {buildAttachmentElement(
           "Verification Statement",
           "verification_statement",
+          { required: true, error: validationErrors.verification_statement },
         )}
         {buildAttachmentElement("WCI.352 and WCI.362", "wci_352_362")}
         {buildAttachmentElement(

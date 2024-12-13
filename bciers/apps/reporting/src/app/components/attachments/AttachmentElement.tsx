@@ -1,3 +1,4 @@
+import { AlertIcon } from "@bciers/components/icons";
 import { ChangeEvent, MutableRefObject, useRef } from "react";
 
 interface Props {
@@ -6,7 +7,13 @@ interface Props {
   accept?: string;
   title: string;
   onFileChange: (file: File | undefined) => void;
+  error?: string;
+  required?: boolean;
 }
+
+export type AttachmentElementOptions = {
+  [key in keyof Partial<Props>]: Props[key];
+};
 
 const AttachmentElement: React.FC<Props> = ({
   fileName,
@@ -14,6 +21,8 @@ const AttachmentElement: React.FC<Props> = ({
   accept = "application/pdf",
   title,
   onFileChange,
+  error,
+  required,
 }) => {
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 
@@ -36,7 +45,10 @@ const AttachmentElement: React.FC<Props> = ({
   return (
     <div className="py-4 pl-8 flex items-center">
       <p className="mr-8 my-2 w-64">
-        <b>{title}</b>
+        <b>
+          {title}
+          {required && "*"}
+        </b>
       </p>
       <button
         type="button"
@@ -67,6 +79,17 @@ const AttachmentElement: React.FC<Props> = ({
         </ul>
       ) : (
         <span className="ml-4 text-lg">No attachment was uploaded</span>
+      )}
+      {error !== undefined && (
+        <div
+          className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+          role="alert"
+        >
+          <div className="hidden md:block mr-3">
+            <AlertIcon />
+          </div>
+          <span>{error}</span>
+        </div>
       )}
     </div>
   );
