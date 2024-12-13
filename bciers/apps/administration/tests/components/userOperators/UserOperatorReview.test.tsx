@@ -37,7 +37,7 @@ describe("UserOperatorReview component", () => {
       />,
     );
 
-    userEvent.click(screen.getByText(/Approve/i));
+    await userEvent.click(screen.getByText(/Approve/i));
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -45,7 +45,7 @@ describe("UserOperatorReview component", () => {
         ),
       ).toBeVisible();
     });
-    userEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    await userEvent.click(screen.getByRole("button", { name: /confirm/i }));
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/update-status",
@@ -72,7 +72,7 @@ describe("UserOperatorReview component", () => {
       />,
     );
 
-    userEvent.click(screen.getByText(/Decline/i));
+    await userEvent.click(screen.getByText(/Decline/i));
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -80,7 +80,7 @@ describe("UserOperatorReview component", () => {
         ),
       ).toBeVisible();
     });
-    userEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    await userEvent.click(screen.getByRole("button", { name: /confirm/i }));
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/update-status",
