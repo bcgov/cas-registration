@@ -77,7 +77,7 @@ describe("UserOperatorReview component", () => {
     }
   });
 
-  it("renders the approve/decline buttons when user is cas_director or cas_analyast", async () => {
+  it("renders the approve/decline buttons when user is cas_director or cas_analyst", async () => {
     for (const role of [
       FrontEndRoles.CAS_ANALYST,
       FrontEndRoles.CAS_DIRECTOR,

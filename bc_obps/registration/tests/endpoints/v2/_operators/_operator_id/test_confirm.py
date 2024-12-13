@@ -16,8 +16,6 @@ class TestOperatorIdConfirmEndpoint(CommonTestSetup):
 
         operator = baker.make_recipe('utils.operator')
         mock_get_operator_confirm.return_value = operator
-        # Act: Mock the authorization and perform the request
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",

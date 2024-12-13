@@ -26,6 +26,7 @@ interface SingleStepTaskListFormProps {
   allowEdit?: boolean;
   formContext?: { [key: string]: any };
   showTasklist?: boolean;
+  showCancelButton?: boolean;
 }
 
 const SingleStepTaskListForm = ({
@@ -42,6 +43,7 @@ const SingleStepTaskListForm = ({
   allowEdit = true,
   formContext,
   showTasklist = true,
+  showCancelButton = true,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -141,14 +143,16 @@ const SingleStepTaskListForm = ({
                 )}
               </div>
             )}
-            <Button
-              className="ml-4"
-              variant="outlined"
-              type="button"
-              onClick={onCancel}
-            >
-              Cancel
-            </Button>
+            {showCancelButton && (
+              <Button
+                className="ml-4"
+                variant="outlined"
+                type="button"
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+            )}
           </div>
         </FormBase>
       </div>
