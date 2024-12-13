@@ -1,23 +1,10 @@
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from django.db.models import QuerySet
 from registration.models import OperationDesignatedOperatorTimeline
 
 
 class OperationDesignatedOperatorTimelineService:
-    @classmethod
-    def list_timeline_by_operator_id(
-        cls,
-        operator_id: UUID,
-    ) -> QuerySet[OperationDesignatedOperatorTimeline]:
-        """
-        List active timelines belonging to a specific operator.
-        """
-        return OperationDesignatedOperatorTimeline.objects.filter(
-            operator_id=operator_id, end_date__isnull=True
-        ).distinct()
-
     @classmethod
     def get_current_timeline(
         cls, operator_id: UUID, operation_id: UUID

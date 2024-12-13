@@ -20,6 +20,7 @@ from service.data_access_service.transfer_event_service import TransferEventData
 from service.data_access_service.user_service import UserDataAccessService
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
+from service.operation_service_v2 import OperationServiceV2
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +108,10 @@ class TransferEventService:
             if not payload.operation:
                 raise Exception("Operation is required for operation transfer events.")
 
+            # make sure that the from_operator and to_operator are different(we can't transfer operations within the same operator)
+            if payload.from_operator == payload.to_operator:
+                raise Exception("Operations cannot be transferred within the same operator.")
+
             prepared_payload.update(
                 {
                     "operation_id": payload.operation,
@@ -119,6 +124,10 @@ class TransferEventService:
                 raise Exception(
                     "Facilities, from_operation, and to_operation are required for facility transfer events."
                 )
+
+            # make sure that the from_operation and to_operation are different(we can't transfer facilities within the same operation)
+            if payload.from_operation == payload.to_operation:
+                raise Exception("Facilities cannot be transferred within the same operation.")
 
             prepared_payload.update(
                 {
@@ -248,3 +257,6 @@ class TransferEventService:
                 "status": OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
             },
         )
+
+        # update the operation's operator
+        OperationServiceV2.update_operator(user_guid, event.operation, event.to_operator.id)  # type: ignore # we are sure that operation is not None

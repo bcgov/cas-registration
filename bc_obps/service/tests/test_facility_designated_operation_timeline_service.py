@@ -116,6 +116,8 @@ class TestFacilityDesignatedOperationTimelineService:
     @staticmethod
     def test_get_current_timeline():
         timeline_with_no_end_date = baker.make_recipe('utils.facility_designated_operation_timeline', end_date=None)
+        # another timeline for the same facility to make sure it is not returned
+        baker.make_recipe('utils.facility_designated_operation_timeline', facility=timeline_with_no_end_date.facility)
         result_found = FacilityDesignatedOperationTimelineService.get_current_timeline(
             timeline_with_no_end_date.operation_id, timeline_with_no_end_date.facility_id
         )

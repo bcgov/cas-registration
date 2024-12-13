@@ -6,21 +6,19 @@ import { Alert, Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { useRouter } from "next/navigation";
 import { IChangeEvent } from "@rjsf/core";
-import {
-  Operation,
-  TransferFormData,
-} from "@/registration/app/components/transfers/types";
+import { TransferFormData } from "@/registration/app/components/transfers/types";
 import { OperatorRow } from "@/administration/app/components/operators/types";
 import {
   createTransferSchema,
   transferUISchema,
 } from "@/registration/app/data/jsonSchema/transfer/transfer";
-import { getOperationsByOperatorId } from "@bciers/actions/api";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import { FacilityRow } from "@/administration/app/components/facilities/types";
 import TaskList from "@bciers/components/form/components/TaskList";
 import { actionHandler } from "@bciers/actions";
 import TransferSuccess from "@/registration/app/components/transfers/TransferSuccess";
+import fetchOperationsPageData from "@/administration/app/components/operations/fetchOperationsPageData";
+import { OperationRow } from "@/administration/app/components/operations/types";
 
 interface TransferFormProps {
   formData: TransferFormData;
@@ -38,8 +36,10 @@ export default function TransferForm({
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(createTransferSchema(operators));
   const [uiSchema, setUiSchema] = useState(transferUISchema);
-  const [fromOperatorOperations, setFromOperatorOperations] = useState([]);
-  const [toOperatorOperations, setToOperatorOperations] = useState([]);
+  const [fromOperatorOperations, setFromOperatorOperations] = useState(
+    [] as any,
+  );
+  const [toOperatorOperations, setToOperatorOperations] = useState([] as any);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -95,12 +95,18 @@ export default function TransferForm({
 
   const fetchOperatorOperations = async (operatorId?: string) => {
     if (!operatorId) return [];
-    const response = await getOperationsByOperatorId(operatorId);
-    if (!response || "error" in response) {
+    const response: {
+      rows: OperationRow[];
+      row_count: number;
+    } = await fetchOperationsPageData({
+      paginate_results: false,
+      operator_id: operatorId,
+    });
+    if (!response || "error" in response || !response.rows) {
       setError("Failed to fetch operations data!" as any);
       return [];
     }
-    return response;
+    return response.rows;
   };
 
   const handleOperatorChange = async () => {
@@ -123,8 +129,8 @@ export default function TransferForm({
       setSchema(
         createTransferSchema(
           operators,
-          getFromOperatorOperations as Operation[],
-          getByOperatorOperations as Operation[],
+          getFromOperatorOperations,
+          getByOperatorOperations,
         ),
       );
 
@@ -167,7 +173,7 @@ export default function TransferForm({
     if (!error) {
       // Filter out the current from_operation from toOperatorOperations(we can't transfer facilities to the same operation)
       const filteredToOperatorOperations = toOperatorOperations.filter(
-        (operation: Operation) => operation.id !== formState?.from_operation,
+        (operation: OperationRow) => operation.id !== formState?.from_operation,
       );
 
       setSchema(

@@ -25,8 +25,3 @@ export interface TransferFormData {
   to_operation?: string;
   effective_date: string;
 }
-
-export interface Operation {
-  id: string;
-  name: string;
-}

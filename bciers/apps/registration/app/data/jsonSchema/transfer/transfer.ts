@@ -2,13 +2,13 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { OperatorRow } from "@/administration/app/components/operators/types";
-import { Operation } from "@/registration/app/components/transfers/types";
 import { FacilityRow } from "@/administration/app/components/facilities/types";
+import { OperationRow } from "@/administration/app/components/operations/types";
 
 export const createTransferSchema = (
   operatorOptions: OperatorRow[],
-  operationOptions: Operation[] = [], // fromOperationOptions and operationOptions are the same
-  toOperationOptions: Operation[] = [],
+  operationOptions: OperationRow[] = [], // fromOperationOptions and operationOptions are the same
+  toOperationOptions: OperationRow[] = [],
   facilityOptions: FacilityRow[] = [],
 ) => {
   const transferSchema: RJSFSchema = {
@@ -134,7 +134,7 @@ export const createTransferSchema = (
 
   if (operationOptions.length > 0) {
     const operationOptionsAnyOf = operationOptions.map(
-      (operation: Operation) => ({
+      (operation: OperationRow) => ({
         const: operation.id,
         title: operation.name,
       }),
@@ -150,7 +150,7 @@ export const createTransferSchema = (
   if (toOperationOptions.length > 0) {
     // Add the operation options to the to_operation field
     transferSchemaCopy.dependencies.transfer_entity.allOf[1].then.properties.to_operation.anyOf =
-      toOperationOptions.map((operation: Operation) => ({
+      toOperationOptions.map((operation: OperationRow) => ({
         const: operation.id,
         title: operation.name,
       }));

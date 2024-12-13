@@ -345,7 +345,6 @@ class TestEndpointPermissions(TestCase):
             },
         ],
         "cas_analyst": [
-            {"method": "get", "endpoint_name": "list_operations_by_operator_id", "kwargs": {"operator_id": mock_uuid}},
             {"method": "post", "endpoint_name": "create_transfer_event"},
         ],
     }

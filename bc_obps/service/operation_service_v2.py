@@ -443,3 +443,19 @@ class OperationServiceV2:
         operation.save(update_fields=['bcghg_id'])
 
         return operation.bcghg_id
+
+    @classmethod
+    @transaction.atomic()
+    def update_operator(cls, user_guid: UUID, operation: Operation, operator_id: UUID) -> Operation:
+        """
+        Update the operator for the operation
+        At the time of implementation, this is only used for transferring operations between operators and,
+        is only available to cas_analyst users
+        """
+        user = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_analyst():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        operation.operator_id = operator_id
+        operation.save(update_fields=["operator_id"])
+        operation.set_create_or_update(user_guid)
+        return operation

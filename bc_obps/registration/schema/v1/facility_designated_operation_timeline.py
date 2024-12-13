@@ -9,7 +9,7 @@ class FacilityDesignatedOperationTimelineOut(ModelSchema):
     facility__type: str = Field(..., alias="facility.type")
     facility__bcghg_id__id: Optional[str] = Field(None, alias="facility.bcghg_id.id")
     facility__id: UUID = Field(..., alias="facility.id")
-    # Using two below fields for rendering a list of facilities alogn with their locations for transfer event
+    # Using two below fields for rendering a list of facilities along with their locations for transfer event
     facility__latitude_of_largest_emissions: Optional[float] = Field(
         None, alias="facility.latitude_of_largest_emissions"
     )
