@@ -1,67 +1,103 @@
 # Transfer Events
 
-This document explains how transfer events are processed in the system. There are two types of transfer events: Facility
-transfers and Operation transfers.
+This document explains how transfer events are processed in the system, including the interaction between models,
+statuses, and dates. There are two types of transfer events: **Facility transfers** and **Operation transfers**.
+
+---
 
 ## What are Transfer Events?
 
-Transfer events are used to manage the movement of facilities between operations or the transfer of an entire operation
-to a new operator. These events can be initiated for a specific date in the future, or they can be set to take effect
-immediately.
+Transfer events manage the movement of facilities between operations or the transfer of an entire operation to a new
+operator. These events can be initiated for a specific future date or take effect immediately.
+
+When an internal user creates a transfer, it is stored in the **TransferEvent** model. The event's status and effective
+date control when and how the transfer is processed.
+
+---
 
 ## How do Transfer Events Work?
 
-The system categorizes transfer events based on the entity being transferred: Facility or Operation.
+### The TransferEvent Model and Statuses
 
-### Transferring Facilities
+- **TO_BE_TRANSFERRED:** Set when the event is created and pending processing. This status indicates the event is not
+  yet finalized.
+- **TRANSFERRED:** Used when the event has been processed and its associated timeline updates are complete. (See notes
+  below on when this is used.)
+- **COMPLETE:** Marks the event as fully finalized in certain contexts.
 
-- The facility's current operation (the one it's assigned to before the transfer).
-- The new operation (the one the facility will be assigned to after the transfer).
-- The effective date of the transfer.
+### Effective Date Behavior
 
-### Transferring Operations
+- **Past or Today:** If the event's effective date is today or earlier, the system processes it immediately:
+  - The event's timelines are updated to reflect the transfer.
+  - The event's status is updated (see the “Processing a Transfer Event” section).
+- **Future:** If the effective date is in the future, no immediate action is taken. A **cron job** later processes the
+  event when the effective date arrives.
 
-- The Operation's current operator (the one it's assigned to before the transfer).
-- The operation being transferred.
-- The new operator that will take over the operation.
-- The effective date of the transfer.
+### Interaction with Timeline Models
+
+Timeline models record the historical and current relationships between facilities, operations, and operators. The
+system ensures there is always a single active timeline record with no end date for each entity.
+
+---
+
+## Types of Transfer Events
+
+### Facility Transfers
+
+Facility transfers involve:
+
+- Moving facilities from one operation to another.
+- Updating both the originating and receiving operations’ timelines.
+
+### Operation Transfers
+
+Operation transfers involve:
+
+- Moving an operation from one operator to another.
+- Updating both the originating and receiving operators’ timelines.
+
+---
 
 ## Processing Transfer Events
 
-The system processes transfer events differently depending on their effective date:
+### General Workflow
 
-- **Today or Past Effective Date:** If a transfer event's effective date is today or in the past, the transfer is
-  processed immediately upon creation.
-- **Future Effective Date:** Transfer events with a future effective date are handled by a scheduled background job (
-  cron job). This job runs periodically and utilizes the `process_due_transfer_events` service to identify and process
-  any transfer events that have become due (effective date has arrived).
+1. **Validation:** The system ensures no overlapping active transfer events for the same entities.
+2. **Timeline Updates:**
+   - For facilities: The current timeline's status is updated to `TRANSFERRED`, and its end date is set.
+   - For operations: The same update is applied to the operation's timeline.
+   - New timelines are created for the receiving operation/operator, with a status of `ACTIVE` and no end date.
+3. **Status Update:** The transfer event's status is set to `TRANSFERRED` once the timeline updates are complete.
 
-## Processing a Transfer Event
+### Immediate vs. Scheduled Processing
 
-Once a transfer event is identified for processing (either immediately or by the cron job), the system performs the
-following actions specific to the transfer type:
+- **Immediate:** For past or present effective dates, timelines are updated immediately.
+- **Scheduled:** For future effective dates, a background job periodically processes due events.
 
-### Facility Transfer
+### Timeline Integrity
 
-1. **For each facility in the transfer:**
-   - Identify the current timeline record linking the facility to its original operation using the
-     `FacilityDesignatedOperationTimelineService.get_current_timeline` service.
-   - If a current timeline exists, update its end date and status to reflect the transfer using the
-     `FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date` service. The new status will be set
-     to `TRANSFERRED` and the end date will be set to the transfer's effective date.
-   - Create a new timeline record using the
-     `FacilityDesignatedOperationTimelineDataAccessService.create_facility_designated_operation_timeline` service. This
-     new record links the facility to the new operation, sets the start date to the transfer's effective date, and sets
-     the status to `ACTIVE`.
+- At any given time, the timeline record with no `end_date` represents the current, active state of the entity.
+- The `ACTIVE` status in timeline records reinforces this, but null `end_date` is the definitive check for activeness.
 
-### Operation Transfer
+---
 
-1. Identify the current timeline record linking the operation to its original operator using the
-   `OperationDesignatedOperatorTimelineService.get_current_timeline` service.
-2. If a current timeline exists, update its end date and status to reflect the transfer using the
-   `OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date` service. The new status will be set to
-   `TRANSFERRED` and the end date will be set to the transfer's effective date.
-3. Create a new timeline record using the
-   `OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline` service. This
-   new record links the operation to the new operator, sets the start date to the transfer's effective date, and sets
-   the status to `ACTIVE`.
+### Detailed Example: Facility Transfers
+
+1. **Validation:** Ensures no overlapping transfer events for the facility or operation.
+2. **Timeline Update:**
+   - The facility's current timeline (linking it to its current operation) is updated with:
+     - `end_date`: The transfer's effective date.
+     - `status`: `TRANSFERRED`.
+   - A new timeline record is created with:
+     - `start_date`: The transfer's effective date.
+     - `status`: `ACTIVE`.
+     - The new operation association.
+3. **TransferEvent Status:** Updated to `TRANSFERRED` once processing is complete.
+
+### Detailed Example: Operation Transfers
+
+1. **Validation:** Ensures no overlapping transfer events for the operation or operator.
+2. **Timeline Update:**
+   - The operation's current timeline (linking it to its current operator) is updated similarly to facilities.
+   - A new timeline record is created for the new operator.
+3. **TransferEvent Status:** Updated to `TRANSFERRED`.
