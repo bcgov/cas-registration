@@ -3,6 +3,8 @@ import re
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.apps import apps
+from django.db import connection
+from rls.utils import RlsRoles
 
 
 class Command(BaseCommand):
@@ -14,6 +16,10 @@ class Command(BaseCommand):
         if os.environ.get('ENVIRONMENT') not in ['test', 'prod']:
             self.stdout.write('Running default migrate command for all apps...')
             call_command('migrate')
+            # Revoke all RLS grants & policies for all roles
+            self.revoke_all_privileges()
+            # Re-apply all RLS grants & policies for all roles
+            self.apply_rls()
             return
         # Run the default migrate command for all apps except the reporting app
         self.stdout.write('Running default migrations for all apps except reporting...')
@@ -37,6 +43,11 @@ class Command(BaseCommand):
 
         # Run custom migrations for the reporting app
         self.migrate_app_to_latest('reporting')
+
+        # Revoke all RLS grants & policies for all roles
+        self.revoke_all_privileges()
+        # Re-apply all RLS grants & policies for all roles
+        self.apply_rls()
 
     def migrate_app_to_latest(self, app_label):
         """
@@ -99,3 +110,31 @@ class Command(BaseCommand):
         """
         migration_files.sort(key=lambda x: tuple(map(int, re.findall(r'\d+', x))))
         return migration_files[-1]
+
+    def revoke_all_privileges(self):
+        with connection.cursor() as cursor:
+            cursor.execute(f'drop owned by {RlsRoles.ALL_ROLES}')
+            cursor.execute(f'grant usage on schema erc to {RlsRoles.ALL_ROLES}')
+
+    def apply_rls(self):
+        apps_for_rls = ['reporting', 'registration', 'common']
+        for app in apps_for_rls:
+            for key in apps.all_models[app]:
+                # This constraint should be changed to ignore basemodels & historical models. It's just here for now to only run RLS on the examples that have been created for the POC
+                if key in ['emissioncategory', 'operation']:
+                    rls = apps.all_models[app][key].Rls
+                    with connection.cursor() as cursor:
+                        for grant in rls.grants:
+                            grant.apply_grant(cursor)
+                        if rls.enable_rls:
+                            cursor.execute(f'alter table {rls.schema}.{rls.table} enable row level security')
+                            for policy in rls.policies:
+                                policy.apply_policy(cursor)
+                        if rls.has_m2m:
+                            for m2m in rls.m2m_rls:
+                                for grant in m2m.grants:
+                                    grant.apply_grant(cursor)
+                                if m2m.enable_rls:
+                                    cursor.execute(f'alter table {m2m.schema}.{m2m.table} enable row level security')
+                                    for policy in m2m.policies:
+                                        policy.apply_policy(cursor)
