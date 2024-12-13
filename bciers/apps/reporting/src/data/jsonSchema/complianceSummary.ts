@@ -6,38 +6,42 @@ export const complianceSummarySchema: RJSFSchema = {
   type: "object",
   title: "Emissions Summary (in tCO2e)",
   properties: {
-    attributableForReporting: {
+    emissions_attributable_for_reporting: {
       type: "string",
       title: "Emissions attributable for reporting",
     },
-    reportingOnlyEmission: {
+    reporting_only_emissions: {
       type: "string",
       title: "Reporting-only emissions",
     },
-    emissionsLimit: {
+    emissions_attributable_for_compliance: {
+      type: "string",
+      title: "Emissions attributable for reporting",
+    },
+    emissions_limit: {
       type: "string",
       title: "Emissions limit",
     },
-    excessEmissions: {
+    excess_emissions: {
       type: "string",
       title: "Excess emissions",
     },
-    creditedEmissions: {
+    credited_emissions: {
       type: "string",
       title: "Credited emissions",
     },
-    regulatoryValues: {
+    regulatory_values: {
       type: "object",
       title: "Regulatory values",
       properties: {
-        reductionFactor: { type: "string", title: "Reduction factor" },
-        tighteningRate: { type: "string", title: "Tightening rate" },
-        initialCompliancePeriod: {
+        reduction_factor: { type: "string", title: "Reduction factor" },
+        tightening_rate: { type: "string", title: "Tightening rate" },
+        initial_compliance_period: {
           type: "string",
           title: "Initial compliance period",
           default: "2024",
         },
-        compliancePeriod: {
+        compliance_period: {
           type: "string",
           title: "Compliance period",
         },
@@ -51,21 +55,25 @@ export const complianceSummarySchema: RJSFSchema = {
           name: {
             type: "string",
           },
-          annualProduction: {
+          annual_production: {
             type: "string",
             title: "Annual production",
           },
-          emissionIntensity: {
+          apr_dec_production: {
             type: "string",
-            title: "Weighted average emission intensity",
+            title: "Production data for Apr 1 - Dec 31 2024",
           },
-          allocatedIndustrialProcessEmissions: {
+          emission_intensity: {
             type: "string",
-            title: "Emissions allocated to industrial process",
+            title: "Production-weighted average emission intensity",
           },
-          allocatedComplianceEmissions: {
+          allocated_industrial_process_emissions: {
             type: "string",
-            title: "Emissions allocated to compliance",
+            title: "Allocated industrial process emissions",
+          },
+          allocated_compliance_emissions: {
+            type: "string",
+            title: "Allocated Emissions attributable to compliance",
           },
         },
       },
@@ -77,32 +85,37 @@ export const complianceSummaryUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
-  attributableForReporting: {
+  emissions_attributable_for_reporting: {
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
-  reportingOnlyEmission: {
+  reporting_only_emissions: {
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
-  emissionsLimit: {
+  emissions_attributable_for_compliance: {
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
-  excessEmissions: {
+  emissions_limit: {
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
-  creditedEmissions: {
+  excess_emissions: {
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
-  regulatoryValues: {
+  credited_emissions: {
+    "ui:options": {
+      displayUnit: "tCO2e",
+    },
+  },
+  regulatory_values: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
@@ -121,22 +134,22 @@ export const complianceSummaryUiSchema = {
       name: {
         "ui:widget": "hidden",
       },
-      annualProduction: {
+      annual_production: {
         "ui:options": {
           displayUnit: "production unit",
         },
       },
-      emissionIntensity: {
+      emission_intensity: {
         "ui:options": {
           displayUnit: "tCO2e/production unit",
         },
       },
-      allocatedIndustrialProcessEmissions: {
+      allocated_industrial_process_emissions: {
         "ui:options": {
           displayUnit: "tCO2e",
         },
       },
-      allocatedComplianceEmissions: {
+      allocated_compliance_emissions: {
         "ui:options": {
           displayUnit: "tCO2e",
         },
