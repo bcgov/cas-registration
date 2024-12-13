@@ -1,4 +1,3 @@
-from itertools import cycle
 from unittest.mock import patch, MagicMock
 from zoneinfo import ZoneInfo
 import pytest
@@ -13,36 +12,16 @@ pytestmark = pytest.mark.django_db
 
 class TestOperationDesignatedOperatorTimelineService:
     @staticmethod
-    def test_list_timeline_by_operator_id():
-        operator = baker.make_recipe('utils.operator')
-        # timeline records without end date
-        baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
-            operator=operator,
-            operation=cycle(baker.make_recipe('utils.operation', _quantity=2)),
-            _quantity=2,
-        )
-        # timeline records with end date
-        baker.make_recipe(
-            'utils.operation_designated_operator_timeline', operator=operator, end_date=datetime.now(ZoneInfo("UTC"))
-        )
-
-        timelines = OperationDesignatedOperatorTimelineService.list_timeline_by_operator_id(operator.id)
-        assert timelines.count() == 2
-        assert all(timeline.end_date is None for timeline in timelines)
-        assert all(timeline.operator_id == operator.id for timeline in timelines)
-
-    @staticmethod
     def test_get_current_timeline():
-        timeline_with_no_end_date = baker.make_recipe('utils.operation_designated_operator_timeline')
+        timeline_with_no_end_date = baker.make_recipe('utils.operation_designated_operator_timeline', end_date=None)
+        # another timeline for the same operation to make sure it is not returned
+        baker.make_recipe('utils.operation_designated_operator_timeline', operation=timeline_with_no_end_date.operation)
         result_found = OperationDesignatedOperatorTimelineService.get_current_timeline(
             timeline_with_no_end_date.operator_id, timeline_with_no_end_date.operation_id
         )
         assert result_found == timeline_with_no_end_date
 
-        timeline_with_end_date = baker.make_recipe(
-            'utils.operation_designated_operator_timeline', end_date=datetime.now(ZoneInfo("UTC"))
-        )
+        timeline_with_end_date = baker.make_recipe('utils.operation_designated_operator_timeline')
         result_not_found = OperationDesignatedOperatorTimelineService.get_current_timeline(
             timeline_with_end_date.operator_id, timeline_with_end_date.operation_id
         )

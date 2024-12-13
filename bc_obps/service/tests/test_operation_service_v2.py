@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch, MagicMock
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from registration.models.contact import Contact
@@ -883,3 +885,27 @@ class TestRemoveOperationRepresentative:
         assert operation.updated_by == approved_user_operator.user
         # confirm the contact was only removed from the operation, not removed from the db
         assert Contact.objects.filter(id=2).exists()
+
+
+class TestUpdateOperationsOperator:
+    @staticmethod
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_unauthorized_user_cannot_update_operations_operator(mock_get_by_guid):
+        cas_admin = baker.make_recipe('utils.cas_admin')
+        mock_get_by_guid.return_value = cas_admin
+        operation = MagicMock()
+        operator_id = uuid4()
+        with pytest.raises(Exception, match="Unauthorized."):
+            OperationServiceV2.update_operator(cas_admin.user_guid, operation, operator_id)
+
+    @staticmethod
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("registration.models.Operation.set_create_or_update")
+    def test_update_operations_operator_success(mock_get_by_guid, mock_set_create_or_update):
+        cas_analyst = baker.make_recipe('utils.cas_analyst')
+        mock_get_by_guid.return_value = cas_analyst
+        operation = baker.make_recipe('utils.operation')
+        operator = baker.make_recipe('utils.operator')
+        OperationServiceV2.update_operator(cas_analyst.user_guid, operation, operator.id)
+        mock_set_create_or_update.assert_called_once()
+        assert operation.operator == operator

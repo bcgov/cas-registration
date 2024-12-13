@@ -28,19 +28,6 @@ class TestTransferEventService:
 
     @staticmethod
     def test_validate_no_overlapping_transfer_events():
-        operation = baker.make_recipe('utils.operation')
-        baker.make_recipe(
-            'utils.transfer_event',
-            operation=operation,
-            status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
-        )
-        facilities = baker.make_recipe('utils.facility', _quantity=2)
-        baker.make_recipe(
-            'utils.transfer_event',
-            facilities=facilities,
-            status=TransferEvent.Statuses.COMPLETE,
-        )
-
         # Scenario 1: No overlapping operation or facility
         new_operation = baker.make_recipe('utils.operation')
         new_facilities = baker.make_recipe('utils.facility', _quantity=2)
@@ -52,10 +39,22 @@ class TestTransferEventService:
             pytest.fail(f"Unexpected exception raised: {e}")
 
         # Scenario 2: Overlapping operation
+        operation = baker.make_recipe('utils.operation')
+        baker.make_recipe(
+            'utils.transfer_event',
+            operation=operation,
+            status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
+        )
         with pytest.raises(Exception, match="An active transfer event already exists for the selected operation."):
             TransferEventService.validate_no_overlapping_transfer_events(operation_id=operation.id)
 
         # Scenario 3: Overlapping facilities
+        facilities = baker.make_recipe('utils.facility', _quantity=2)
+        baker.make_recipe(
+            'utils.transfer_event',
+            facilities=facilities,
+            status=TransferEvent.Statuses.COMPLETE,
+        )
         with pytest.raises(
             Exception,
             match="One or more facilities in this transfer event are already part of an active transfer event.",
@@ -105,6 +104,26 @@ class TestTransferEventService:
 
         with pytest.raises(Exception, match="Operation is required for operation transfer events."):
             TransferEventService.create_transfer_event(cas_analyst.user_guid, payload)
+
+    @classmethod
+    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_create_transfer_event_operation_using_the_same_operator(cls, mock_get_by_guid, mock_validate_no_overlap):
+        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        payload_with_same_from_operator_and_to_operator = cls._get_transfer_event_payload_for_operation()
+        payload_with_same_from_operator_and_to_operator.to_operator = (
+            payload_with_same_from_operator_and_to_operator.from_operator
+        )
+
+        mock_user = MagicMock()
+        mock_user.is_cas_analyst.return_value = True
+        mock_get_by_guid.return_value = cas_analyst
+        mock_validate_no_overlap.return_value = None
+
+        with pytest.raises(Exception, match="Operations cannot be transferred within the same operator."):
+            TransferEventService.create_transfer_event(
+                cas_analyst.user_guid, payload_with_same_from_operator_and_to_operator
+            )
 
     @classmethod
     @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
@@ -187,6 +206,22 @@ class TestTransferEventService:
             Exception, match="Facilities, from_operation, and to_operation are required for facility transfer events."
         ):
             TransferEventService.create_transfer_event(cas_analyst.user_guid, payload_without_to_operation)
+
+    @classmethod
+    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_create_transfer_event_facility_between_the_same_operation(cls, mock_get_by_guid, mock_validate_no_overlap):
+        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        payload_with_same_from_and_to_operation = cls._get_transfer_event_payload_for_facility()
+        payload_with_same_from_and_to_operation.to_operation = payload_with_same_from_and_to_operation.from_operation
+
+        mock_user = MagicMock()
+        mock_user.is_cas_analyst.return_value = True
+        mock_get_by_guid.return_value = cas_analyst
+        mock_validate_no_overlap.return_value = None
+
+        with pytest.raises(Exception, match="Facilities cannot be transferred within the same operation."):
+            TransferEventService.create_transfer_event(cas_analyst.user_guid, payload_with_same_from_and_to_operation)
 
     @classmethod
     @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
@@ -448,8 +483,10 @@ class TestTransferEventService:
     @patch(
         "service.transfer_event_service.OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline"
     )
+    @patch("service.operation_service_v2.OperationServiceV2.update_operator")
     def test_process_operation_transfer(
         self,
+        mock_update_operator,
         mock_create_timeline,
         mock_set_timeline,
         mock_get_current_timeline,
@@ -483,6 +520,7 @@ class TestTransferEventService:
         mock_get_current_timeline.return_value = None
         mock_set_timeline.reset_mock()  # Reset mock for the next call
         mock_create_timeline.reset_mock()  # Reset mock for the next call
+        mock_update_operator.reset_mock()  # Reset mock for the next call
 
         # Call the method under test for the second scenario (no existing timeline)
         TransferEventService._process_operation_transfer(transfer_event, user_guid)
@@ -500,3 +538,8 @@ class TestTransferEventService:
 
         # Verify that set_timeline_status_and_end_date was not called, since the timeline did not exist
         mock_set_timeline.assert_not_called()
+        mock_update_operator.assert_called_once_with(
+            user_guid,
+            transfer_event.operation,
+            transfer_event.to_operator.id,
+        )

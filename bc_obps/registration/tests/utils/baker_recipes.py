@@ -150,6 +150,7 @@ operation_designated_operator_timeline = Recipe(
     operator=foreign_key(operator),
     status=cycle([status for status in OperationDesignatedOperatorTimeline.Statuses]),
     start_date=datetime.now(ZoneInfo("UTC")),
+    end_date=datetime.now(ZoneInfo("UTC")),
 )
 
 

@@ -1,7 +1,8 @@
 import { OptedInOperationFormData } from "@/registration/app/components/operations/registration/types";
+import { UUID } from "crypto";
 
 export interface OperationRow {
-  id: number;
+  id: UUID;
   bcghg_id: string;
   name: string;
   operator: string;
@@ -9,7 +10,7 @@ export interface OperationRow {
 }
 
 export interface OperationsSearchParams {
-  [key: string]: string | number | undefined;
+  [key: string]: string | number | undefined | boolean;
   bcghg_id?: string;
   name?: string;
   operator?: string;
@@ -17,7 +18,7 @@ export interface OperationsSearchParams {
   sort_field?: string;
   sort_order?: string;
   type?: string;
-  operator_id?: number;
+  operator_id?: string;
 }
 
 export interface OperationInformationFormData {
