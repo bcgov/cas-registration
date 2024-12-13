@@ -38,7 +38,6 @@
           },
           {
             "title": "Transfers",
-            "href": "/registration",
             "icon": "Layers",
             "content": "Transfer operations and facilities between Operators and view transfers.",
             "links": [
