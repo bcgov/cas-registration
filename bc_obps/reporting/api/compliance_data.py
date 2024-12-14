@@ -1,4 +1,5 @@
 from typing import Literal, Tuple
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -15,7 +16,7 @@ from .router import router
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the compliance summary page from multiple data sources.""",
     exclude_none=True,
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_compliance_summary_data(
