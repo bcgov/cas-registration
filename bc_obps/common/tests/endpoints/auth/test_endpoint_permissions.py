@@ -203,6 +203,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "remove_operation_representative",
                 "kwargs": {"operation_id": mock_uuid},
             },
+            {
+                "method": "get",
+                "endpoint_name": "get_compliance_summary_data",
+                "kwargs": {"report_version_id": mock_int},
+            },
         ],
         "all_roles": [
             {"method": "put", "endpoint_name": "v1_update_user_profile"},

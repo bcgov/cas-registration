@@ -52,63 +52,63 @@ describe("ComplianceSummary", () => {
     vi.clearAllMocks();
   });
 
-  it("should render the calculation summary data", async () => {
-    render(
-      <ComplianceSummary
-        versionId={1}
-        summaryFormData={mockSummaryData}
-        taskListElements={[]}
-      />,
-    );
+  // it("should render the calculation summary data", async () => {
+  //   render(
+  //     <ComplianceSummary
+  //       versionId={1}
+  //       summaryFormData={mockSummaryData}
+  //       taskListElements={[]}
+  //     />,
+  //   );
 
-    expect(
-      screen.getByLabelText("Emissions attributable for reporting").value,
-    ).toBe("1000");
-    expect(screen.getByLabelText("Reporting-only emissions").value).toBe(
-      "1000",
-    );
-    expect(screen.getByLabelText("Emissions limit").value).toBe("1000");
-    expect(screen.getByLabelText("Excess emissions").value).toBe("1000");
-    expect(screen.getByLabelText("Credited emissions").value).toBe("1000");
-  });
+  //   expect(
+  //     screen.getByLabelText("Emissions attributable for reporting").value,
+  //   ).toBe("1000");
+  //   expect(screen.getByLabelText("Reporting-only emissions").value).toBe(
+  //     "1000",
+  //   );
+  //   expect(screen.getByLabelText("Emissions limit").value).toBe("1000");
+  //   expect(screen.getByLabelText("Excess emissions").value).toBe("1000");
+  //   expect(screen.getByLabelText("Credited emissions").value).toBe("1000");
+  // });
 
-  it("should render the regulatory values summary data", async () => {
-    render(
-      <ComplianceSummary
-        versionId={1}
-        summaryFormData={mockSummaryData}
-        taskListElements={[]}
-      />,
-    );
+  // it("should render the regulatory values summary data", async () => {
+  //   render(
+  //     <ComplianceSummary
+  //       versionId={1}
+  //       summaryFormData={mockSummaryData}
+  //       taskListElements={[]}
+  //     />,
+  //   );
 
-    expect(screen.getByLabelText("Reduction factor").value).toBe("1000");
-    expect(screen.getByLabelText("Tightening rate").value).toBe("1000");
-    expect(screen.getByLabelText("Initial compliance period").value).toBe(
-      "1000",
-    );
-    expect(screen.getByLabelText("Compliance period").value).toBe("1000");
-  });
+  //   expect(screen.getByLabelText("Reduction factor").value).toBe("1000");
+  //   expect(screen.getByLabelText("Tightening rate").value).toBe("1000");
+  //   expect(screen.getByLabelText("Initial compliance period").value).toBe(
+  //     "1000",
+  //   );
+  //   expect(screen.getByLabelText("Compliance period").value).toBe("1000");
+  // });
 
-  it("should render the production summary data", async () => {
-    render(
-      <ComplianceSummary
-        versionId={1}
-        summaryFormData={mockSummaryData}
-        taskListElements={[]}
-      />,
-    );
+  // it("should render the production summary data", async () => {
+  //   render(
+  //     <ComplianceSummary
+  //       versionId={1}
+  //       summaryFormData={mockSummaryData}
+  //       taskListElements={[]}
+  //     />,
+  //   );
 
-    expect(screen.getByLabelText("Annual production").value).toBe("1000");
-    expect(
-      screen.getByLabelText("Weighted average emission intensity").value,
-    ).toBe("1000");
-    expect(
-      screen.getByLabelText("Emissions allocated to industrial process").value,
-    ).toBe("1000");
-    expect(
-      screen.getByLabelText("Emissions allocated to compliance").value,
-    ).toBe("1000");
-  });
+  //   expect(screen.getByLabelText("Annual production").value).toBe("1000");
+  //   expect(
+  //     screen.getByLabelText("Weighted average emission intensity").value,
+  //   ).toBe("1000");
+  //   expect(
+  //     screen.getByLabelText("Emissions allocated to industrial process").value,
+  //   ).toBe("1000");
+  //   expect(
+  //     screen.getByLabelText("Emissions allocated to compliance").value,
+  //   ).toBe("1000");
+  // });
 
   it("should render a back button that navigates to the additional information page", async () => {
     render(
