@@ -16,7 +16,7 @@ export const complianceSummarySchema: RJSFSchema = {
     },
     emissions_attributable_for_compliance: {
       type: "string",
-      title: "Emissions attributable for reporting",
+      title: "Emissions attributable for compliance",
     },
     emissions_limit: {
       type: "string",
