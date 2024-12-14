@@ -157,7 +157,7 @@ The .json file then sets the dashboard tile links' href property as per the proj
   "href": "/administration/select-operator",
   "conditions": [
     {
-      "api": "registration/v2/user-operators/current/operator",
+      "api": "registration/user-operators/current/operator",
       "field": "error",
       "operator": "exists",
       "value": true

@@ -9,6 +9,13 @@ class FacilityDesignatedOperationTimelineOut(ModelSchema):
     facility__type: str = Field(..., alias="facility.type")
     facility__bcghg_id__id: Optional[str] = Field(None, alias="facility.bcghg_id.id")
     facility__id: UUID = Field(..., alias="facility.id")
+    # Using two below fields for rendering a list of facilities along with their locations for transfer event
+    facility__latitude_of_largest_emissions: Optional[float] = Field(
+        None, alias="facility.latitude_of_largest_emissions"
+    )
+    facility__longitude_of_largest_emissions: Optional[float] = Field(
+        None, alias="facility.longitude_of_largest_emissions"
+    )
 
     class Meta:
         model = FacilityDesignatedOperationTimeline
@@ -23,3 +30,4 @@ class FacilityDesignatedOperationTimelineFilterSchema(FilterSchema):
     facility__name: Optional[str] = Field(None, json_schema_extra={'q': 'facility__name__icontains'})
     facility__type: Optional[str] = Field(None, json_schema_extra={'q': 'facility__type__icontains'})
     status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
+    end_date: Optional[bool] = Field(None, json_schema_extra={'q': 'end_date__isnull'})

@@ -38,7 +38,6 @@
           },
           {
             "title": "Transfers",
-            "href": "/registration",
             "icon": "Layers",
             "content": "Transfer operations and facilities between Operators and view transfers.",
             "links": [
@@ -48,13 +47,8 @@
               },
               {
                 "title": "Transfer an operation or facility",
-                "href": "/registration/transfer",
-                "conditions": [
-                  {
-                    "allowedRoles": ["cas_analyst"],
-                    "value": true
-                  }
-                ]
+                "href": "/registration/transfers/transfer-entity",
+                "allowedRoles": ["cas_analyst"]
               }
             ]
           },

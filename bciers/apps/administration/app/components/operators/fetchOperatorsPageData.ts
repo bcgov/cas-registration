@@ -1,22 +1,22 @@
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
-import { OperationsSearchParams } from "./types";
+import { OperatorsSearchParams } from "./types";
 import { actionHandler } from "@bciers/actions";
 
-// 🛠️ Function to fetch operations
-export default async function fetchOperationsPageData(
-  searchParams: OperationsSearchParams,
+// 🛠️ Function to fetch operators
+export default async function fetchOperatorsPageData(
+  searchParams: OperatorsSearchParams,
 ) {
   try {
     const queryParams = buildQueryParams(searchParams);
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations${queryParams}`,
+      `registration/operators${queryParams}`,
       "GET",
       "",
     );
     return {
-      rows: pageData.items,
-      row_count: pageData.count,
+      rows: pageData?.items,
+      row_count: pageData?.count,
     };
   } catch (error) {
     throw error;

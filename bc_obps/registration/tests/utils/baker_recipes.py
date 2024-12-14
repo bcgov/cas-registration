@@ -1,6 +1,8 @@
 from datetime import datetime
 from itertools import cycle
 from zoneinfo import ZoneInfo
+
+from registration.models import OperationDesignatedOperatorTimeline
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -78,8 +80,8 @@ operator_for_operation = Recipe(
 
 
 industry_operator_user = Recipe(User, app_role=AppRole.objects.get(role_name="industry_user"))
-
-irc_user = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
+cas_admin = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
+cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 
 operation = Recipe(
     Operation,
@@ -126,21 +128,10 @@ opted_in_operation_detail = Recipe(
 contact = Recipe(Contact, business_role=BusinessRole.objects.first(), address=foreign_key(address))
 
 
-# transfer event bakers
-contact_for_transfer_event = Recipe(Contact, business_role=BusinessRole.objects.first())
-
-other_operator_for_transfer_event = Recipe(
-    Operator,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
-    business_structure=BusinessStructure.objects.first(),
-    mailing_address=foreign_key(address),
-    cra_business_number=generate_random_cra_business_number,
-)
-
 transfer_event = Recipe(
     TransferEvent,
-    other_operator=foreign_key(other_operator_for_transfer_event),
-    other_operator_contact=foreign_key(contact_for_transfer_event),
+    from_operator=foreign_key(operator),
+    to_operator=foreign_key(operator),
 )
 
 facility = Recipe(Facility, address=foreign_key(address), name=seq('Facility 0'))
@@ -150,6 +141,15 @@ facility_designated_operation_timeline = Recipe(
     operation=foreign_key(operation),
     facility=foreign_key(facility),
     status=cycle([status for status in FacilityDesignatedOperationTimeline.Statuses]),
+    end_date=datetime.now(ZoneInfo("UTC")),
+)
+
+operation_designated_operator_timeline = Recipe(
+    OperationDesignatedOperatorTimeline,
+    operation=foreign_key(operation),
+    operator=foreign_key(operator),
+    status=cycle([status for status in OperationDesignatedOperatorTimeline.Statuses]),
+    start_date=datetime.now(ZoneInfo("UTC")),
     end_date=datetime.now(ZoneInfo("UTC")),
 )
 

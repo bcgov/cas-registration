@@ -3,6 +3,7 @@ const getOperator = vi.fn();
 const getOperatorHasAdmin = vi.fn();
 const getOperatorConfirmationInfo = vi.fn();
 const getOperatorAccessDeclined = vi.fn();
+const fetchOperatorsPageData = vi.fn();
 
 vi.mock(
   "apps/administration/app/components/operators/getCurrentOperator",
@@ -34,10 +35,18 @@ vi.mock(
   }),
 );
 
+vi.mock(
+  "@/administration/app/components/operators/fetchOperatorsPageData",
+  () => ({
+    default: fetchOperatorsPageData,
+  }),
+);
+
 export {
   getCurrentOperator,
   getOperator,
   getOperatorHasAdmin,
   getOperatorConfirmationInfo,
   getOperatorAccessDeclined,
+  fetchOperatorsPageData,
 };
