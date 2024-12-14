@@ -4,7 +4,7 @@ import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplat
 
 export const complianceSummarySchema: RJSFSchema = {
   type: "object",
-  title: "Emissions Summary (in tCO2e)",
+  title: "Compliance Summary",
   properties: {
     emissions_attributable_for_reporting: {
       type: "string",
