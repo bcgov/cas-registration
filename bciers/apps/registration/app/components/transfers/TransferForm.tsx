@@ -17,7 +17,7 @@ import { FacilityRow } from "@/administration/app/components/facilities/types";
 import TaskList from "@bciers/components/form/components/TaskList";
 import { actionHandler } from "@bciers/actions";
 import TransferSuccess from "@/registration/app/components/transfers/TransferSuccess";
-import fetchOperationsPageData from "@/administration/app/components/operations/fetchOperationsPageData";
+import fetchOperationsPageData from "@bciers/actions/api/fetchOperationsPageData";
 import { OperationRow } from "@/administration/app/components/operations/types";
 
 interface TransferFormProps {
