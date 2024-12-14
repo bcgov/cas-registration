@@ -122,6 +122,7 @@ class ComplianceService:
     @classmethod
     def get_calculated_compliance_data(cls, report_version_id: int) -> ComplianceDataSchemaOut:
         naics_data = ComplianceService.get_regulatory_values_by_naics_code(report_version_id)
+        ##### Don't use schemas, use classes or dicts
         compliance_product_list: List[ReportProductComplianceSchema] = []
         total_allocated_reporting_only = Decimal(0)
         total_allocated_for_compliance = Decimal(0)
@@ -180,14 +181,21 @@ class ComplianceService:
             )
         # Get attributable emission total
         attributable_for_reporting_total = ComplianceService.get_emissions_attributable_for_reporting(report_version_id)
+        # Calculated Excess/credited emissions
+        excess_emissions = Decimal(0)
+        credited_emissions = Decimal(0)
+        if total_allocated_for_compliance_2024 > emissions_limit_total:
+            excess_emissions = total_allocated_for_compliance_2024 - emissions_limit_total
+        else:
+            credited_emissions = emissions_limit_total - total_allocated_for_compliance_2024
         # Craft return object with all data
         return_object = ComplianceDataSchemaOut(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
             reporting_only_emissions=total_allocated_reporting_only,
             emissions_attributable_for_compliance=total_allocated_for_compliance_2024,
             emissions_limit=emissions_limit_total,
-            excess_emissions=0,
-            credited_emissions=0,
+            excess_emissions=excess_emissions,
+            credited_emissions=credited_emissions,
             regulatory_values=naics_data,
             products=compliance_product_list,
         )
