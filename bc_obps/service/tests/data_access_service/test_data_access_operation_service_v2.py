@@ -12,8 +12,8 @@ class TestDataAccessOperationServiceV2:
     @staticmethod
     def test_get_all_operations_for_irc_user():
         operation_baker(_quantity=10)
-        irc_user = user_baker({'app_role': AppRole.objects.get(role_name='cas_admin')})
-        assert OperationDataAccessServiceV2.get_all_operations_for_user(irc_user).count() == 10
+        cas_admin = user_baker({'app_role': AppRole.objects.get(role_name='cas_admin')})
+        assert OperationDataAccessServiceV2.get_all_operations_for_user(cas_admin).count() == 10
 
     @staticmethod
     def test_get_all_operations_for_industry_user():

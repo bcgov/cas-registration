@@ -125,6 +125,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "436dd99a-cb41-4494-91c9-98ab149b557d",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
@@ -144,6 +145,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "a47b5fb6-1e10-401a-b70e-574bd925db99",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
@@ -163,6 +165,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "21e70498-c4b0-4525-8443-86faa96206e3",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
@@ -182,6 +185,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "17550cd8-3e73-4e52-aa91-ab90cb3b62b0",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
@@ -201,6 +205,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "7d3fc7d1-0504-4ee4-a9c5-447f4b324b57",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
@@ -220,6 +225,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "acf5811e-d521-43f7-a5c7-a6d6dd47bb31",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
@@ -239,6 +245,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "8563da83-0762-4d29-9b22-da5b52ef0f24",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],

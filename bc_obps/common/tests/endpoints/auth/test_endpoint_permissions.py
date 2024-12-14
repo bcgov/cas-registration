@@ -344,6 +344,9 @@ class TestEndpointPermissions(TestCase):
                 "kwargs": {"user_operator_id": mock_uuid},
             },
         ],
+        "cas_analyst": [
+            {"method": "post", "endpoint_name": "create_transfer_event"},
+        ],
     }
 
     @classmethod

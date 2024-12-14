@@ -1,6 +1,6 @@
 import OperationDataGrid from "./OperationDataGrid";
 import { OperationRow, OperationsSearchParams } from "./types";
-import fetchOperationsPageData from "./fetchOperationsPageData";
+import fetchOperationsPageData from "@bciers/actions/api/fetchOperationsPageData";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";

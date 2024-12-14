@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
@@ -39,3 +40,25 @@ class FacilityDesignatedOperationTimelineService:
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = cls.get_timeline_by_operation_id(user, operation_id)
         return filters.filter(base_qs).order_by(sort_by)
+
+    @classmethod
+    def get_current_timeline(
+        cls, operation_id: UUID, facility_id: UUID
+    ) -> Optional[FacilityDesignatedOperationTimeline]:
+        return FacilityDesignatedOperationTimeline.objects.filter(
+            operation_id=operation_id, facility_id=facility_id, end_date__isnull=True
+        ).first()
+
+    @classmethod
+    def set_timeline_status_and_end_date(
+        cls,
+        user_guid: UUID,
+        timeline: FacilityDesignatedOperationTimeline,
+        status: FacilityDesignatedOperationTimeline.Statuses,
+        end_date: datetime,
+    ) -> FacilityDesignatedOperationTimeline:
+        timeline.status = status
+        timeline.end_date = end_date
+        timeline.save(update_fields=["status", "end_date"])
+        timeline.set_create_or_update(user_guid)
+        return timeline

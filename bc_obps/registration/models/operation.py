@@ -304,3 +304,6 @@ class Operation(TimeStampedModel):
             Operation.Purposes.NEW_ENTRANT_OPERATION,
             Operation.Purposes.OPTED_IN_OPERATION,
         ]
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.id})"

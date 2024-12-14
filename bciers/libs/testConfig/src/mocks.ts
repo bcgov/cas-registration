@@ -33,8 +33,6 @@ const useSearchParams = vi.fn();
 const notFound = vi.fn();
 const useSession = vi.fn();
 const auth = vi.fn();
-const fetchOperationsPageData = vi.fn();
-const fetchOperatorsPageData = vi.fn();
 const fetchTransferEventsPageData = vi.fn();
 const getUserOperatorsPageData = vi.fn();
 
@@ -48,8 +46,6 @@ export {
   usePathname,
   useSearchParams,
   useSession,
-  fetchOperationsPageData,
-  fetchOperatorsPageData,
   getUserOperatorsPageData,
   notFound,
   fetchTransferEventsPageData,

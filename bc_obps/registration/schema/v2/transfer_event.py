@@ -1,11 +1,10 @@
-from typing import Optional
+import uuid
+from typing import Optional, List, Literal
 from uuid import UUID
-
-from registration.models.event.transfer_event import TransferEvent
 from ninja import ModelSchema, Field, FilterSchema
+from registration.models import TransferEvent
 from django.db.models import Q
 import re
-from typing import Dict, Any
 
 
 class TransferEventListOut(ModelSchema):
@@ -13,17 +12,7 @@ class TransferEventListOut(ModelSchema):
     operation__name: Optional[str] = Field(None, alias="operation__name")
     facilities__name: Optional[str] = Field(None, alias="facilities__name")
     facility__id: Optional[UUID] = Field(None, alias="facilities__id")
-    id: UUID
-
-    @staticmethod
-    def resolve_id(obj: Dict[str, Any]) -> UUID:
-        operation_id = obj.get('operation__id', None)
-        facility_id = obj.get('facilities__id', None)
-
-        record_id = operation_id if operation_id else facility_id
-        if not isinstance(record_id, UUID):
-            raise Exception('Missing valid UUID')
-        return record_id
+    id: UUID = Field(default_factory=uuid.uuid4)
 
     class Meta:
         model = TransferEvent
@@ -50,3 +39,37 @@ class TransferEventFilterSchema(FilterSchema):
 
     def filter_facilities__name(self, value: str) -> Q:
         return self.filtering_including_not_applicable('facilities__name', value)
+
+
+class TransferEventCreateIn(ModelSchema):
+    transfer_entity: Literal["Operation", "Facility"]
+    from_operator: UUID
+    to_operator: UUID
+    operation: Optional[UUID] = None
+    from_operation: Optional[UUID] = None
+    to_operation: Optional[UUID] = None
+    facilities: Optional[List] = None
+
+    class Meta:
+        model = TransferEvent
+        fields = ['effective_date']
+
+
+class TransferEventOut(ModelSchema):
+    transfer_entity: str
+
+    class Meta:
+        model = TransferEvent
+        fields = [
+            'from_operator',
+            'to_operator',
+            'effective_date',
+            'operation',
+            'from_operation',
+            'to_operation',
+            'facilities',
+        ]
+
+    @staticmethod
+    def resolve_transfer_entity(obj: TransferEvent) -> str:
+        return "Facility" if obj.facilities.exists() else "Operation"
