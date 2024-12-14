@@ -8,7 +8,7 @@ import OperationFacilitiesActionCell from "apps/administration/app/components/op
 import operationColumns from "../datagrid/models/operations/operationColumns";
 import operationGroupColumns from "../datagrid/models/operations/operationGroupColumns";
 import { OperationRow } from "./types";
-import fetchOperationsPageData from "./fetchOperationsPageData";
+import fetchOperationsPageData from "@bciers/actions/api/fetchOperationsPageData";
 
 const OperationDataGrid = ({
   initialData,

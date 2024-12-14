@@ -3,16 +3,10 @@ import { UUID } from "crypto";
 import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectRadio from "@bciers/testConfig/helpers/expectRadio";
-import {
-  actionHandler,
-  getOperationsByOperatorId,
-} from "@bciers/testConfig/mocks";
+import { actionHandler } from "@bciers/testConfig/mocks";
+import { fetchOperationsPageData } from "@/administration/tests/components/operations/mocks";
 import { fetchFacilitiesPageData } from "@/administration/tests/components/facilities/mocks";
 import TransferForm from "@/registration/app/components/transfers/TransferForm";
-
-vi.mock("@bciers/actions/api/getOperationsByOperatorId", () => ({
-  default: getOperationsByOperatorId,
-}));
 
 const mockOperators = [
   {
@@ -31,16 +25,19 @@ const mockOperators = [
   },
 ];
 
-const mockOperations = [
-  {
-    id: "8be4c7aa-6ab3-4aad-9206-0ef914fea065" as UUID,
-    name: "Operation 1",
-  },
-  {
-    id: "8be4c7aa-6ab3-4aad-9206-0ef914fea066" as UUID,
-    name: "Operation 2",
-  },
-];
+const mockOperations = {
+  rows: [
+    {
+      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea065" as UUID,
+      name: "Operation 1",
+    },
+    {
+      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea066" as UUID,
+      name: "Operation 2",
+    },
+  ],
+  row_count: 2,
+};
 
 const renderTransferForm = () => {
   render(<TransferForm formData={{} as any} operators={mockOperators} />);
@@ -58,12 +55,13 @@ const selectOperator = (label: RegExp, operatorName: string) => {
   fireEvent.click(screen.getByRole("option", { name: operatorName }));
 };
 
-const selectEntity = async (entity: string) => {
+const selectEntityAndAssertFields = async (entity: string) => {
   fireEvent.click(screen.getByLabelText(entity));
   if (entity === "Operation") {
-    await waitFor(() =>
-      expect(screen.getByLabelText(/operation\*/i)).toBeVisible(),
-    );
+    // expect(screen.findByLabelText(/operation\*/i)).resolves.toBeVisible();
+    expect(screen.getByLabelText(/operation\*/i)).toBeVisible();
+    // await waitFor(() => {
+    // });
     expect(
       screen.getByLabelText(/effective date of transfer\*/i),
     ).toBeVisible();
@@ -128,7 +126,7 @@ const selectDateOfTransfer = (date: string) => {
 describe("The TransferForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    getOperationsByOperatorId.mockResolvedValue(mockOperations);
+    fetchOperationsPageData.mockResolvedValue(mockOperations);
   });
 
   it("should render the TransferForm component", async () => {
@@ -150,7 +148,11 @@ describe("The TransferForm component", () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
-    await selectEntity("Operation");
+    await selectEntityAndAssertFields("Operation");
+    expect(screen.getByLabelText(/operation\*/i)).toBeVisible();
+    expect(
+      screen.getByLabelText(/effective date of transfer\*/i),
+    ).toBeVisible();
     await selectOperation(/operation\*/i, "Operation 1");
     selectDateOfTransfer("2022-12-31");
     expectButton("Transfer Entity");
@@ -160,7 +162,7 @@ describe("The TransferForm component", () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 1");
-    await selectEntity("Operation");
+    await selectEntityAndAssertFields("Operation");
     // make sure the operation field is disabled and the error message is displayed
     expect(
       screen.getByText(/cannot transfer an operation to the same operator/i),
@@ -168,32 +170,34 @@ describe("The TransferForm component", () => {
     expect(screen.getByRole("combobox", { name: /operation/i })).toBeDisabled();
   });
 
-  it("calls getOperationsByOperatorId with new operator id when operator changes", async () => {
+  it("calls fetchOperationsPageData with new operator id when operator changes", async () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
-    expect(getOperationsByOperatorId).toHaveBeenCalledTimes(1);
-    expect(getOperationsByOperatorId).toHaveBeenCalledWith(
-      "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-    );
+    expect(fetchOperationsPageData).toHaveBeenCalledTimes(1);
+    expect(fetchOperationsPageData).toHaveBeenCalledWith({
+      operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+      paginate_results: false,
+    });
     selectOperator(/current operator\*/i, "Operator 2");
-    expect(getOperationsByOperatorId).toHaveBeenCalledTimes(2);
-    expect(getOperationsByOperatorId).toHaveBeenCalledWith(
-      "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
-    );
+    expect(fetchOperationsPageData).toHaveBeenCalledTimes(2);
+    expect(fetchOperationsPageData).toHaveBeenCalledWith({
+      operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
+      paginate_results: false,
+    });
   });
 
   it("displays fields related to Facility entity", async () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
-    await selectEntity("Facility");
+    await selectEntityAndAssertFields("Facility");
   });
 
   it("fetches facilities when operation changes", async () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
-    await selectEntity("Facility");
+    await selectEntityAndAssertFields("Facility");
     await selectOperation(
       /select the operation that the facility\(s\) currently belongs to\*/i,
       "Operation 1",
@@ -209,7 +213,7 @@ describe("The TransferForm component", () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
-    await selectEntity("Operation");
+    await selectEntityAndAssertFields("Operation");
     await selectOperation(/operation\*/i, "Operation 1");
     selectDateOfTransfer("2022-12-31");
     // submit the form

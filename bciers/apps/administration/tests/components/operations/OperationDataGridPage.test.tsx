@@ -1,11 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import {
-  fetchOperationsPageData,
-  useRouter,
-  useSearchParams,
-} from "@bciers/testConfig/mocks";
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
 import { auth } from "@bciers/testConfig/mocks";
+import { fetchOperationsPageData } from "@/administration/tests/components/operations/mocks";
 
 useRouter.mockReturnValue({
   query: {},
@@ -15,13 +12,6 @@ useRouter.mockReturnValue({
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
-
-vi.mock(
-  "apps/administration/app/components/operations/fetchOperationsPageData",
-  () => ({
-    default: fetchOperationsPageData,
-  }),
-);
 
 const mockResponse = {
   data: [
