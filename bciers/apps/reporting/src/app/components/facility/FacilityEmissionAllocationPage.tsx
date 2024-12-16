@@ -11,7 +11,6 @@ export default async function FacilityEmissionAllocationPage({
 }) {
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const initialData = await getEmissionAllocations(version_id, facility_id);
-  console.log(initialData);
   return (
     <Form
       version_id={version_id}
