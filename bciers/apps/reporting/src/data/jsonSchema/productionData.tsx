@@ -4,8 +4,8 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import { RJSFSchema, UiSchema, WidgetProps } from "@rjsf/utils";
-import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/common";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
 export const buildProductionDataSchema = (
   compliance_period_start: string,

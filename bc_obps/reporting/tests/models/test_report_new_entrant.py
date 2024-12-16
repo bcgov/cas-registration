@@ -16,5 +16,5 @@ class ReportNewEntrantModelTest(BaseTestCase):
             ("new_entrant_period_start", "new entrant period start", None, None),
             ("assertion_statement", "assertion statement", None, None),
             ("productions", "report new entrant production", None, 0),
-            ("report_new_entrant_emissions", "report new entrant emissions", None, None),
+            ("report_new_entrant_emission", "report new entrant emission", None, None),
         ]

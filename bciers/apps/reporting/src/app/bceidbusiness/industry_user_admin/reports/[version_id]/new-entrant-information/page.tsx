@@ -1,14 +1,4 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
 import NewEntrantInformation from "@reporting/src/app/components/additionalInformation/newEntrantInformation/NewEntrantInformation";
-interface PageProps {
-  params: { version_id: number };
-}
 
-export default async function Page({ params }: PageProps) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <NewEntrantInformation version_id={params.version_id} />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(NewEntrantInformation);

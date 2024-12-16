@@ -16,7 +16,7 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
-interface AdditionalReportingDataProps {
+interface NewEntrantInfornationProps {
   version_id: number;
   initialFormData: { assertion_statement?: boolean };
   taskListElements: TaskListElement[];
@@ -26,7 +26,7 @@ export default function NewEntrantInformationForm({
   version_id,
   initialFormData,
   taskListElements,
-}: AdditionalReportingDataProps) {
+}: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,

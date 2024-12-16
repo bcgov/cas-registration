@@ -1,6 +1,8 @@
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { getUiOptions } from "@rjsf/utils";
+import React from "react"; // Ensure this is imported
 
 const CheckboxWidget: React.FC<WidgetProps> = ({
   disabled,
@@ -10,10 +12,12 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
   value,
   required,
   uiSchema,
+  registry,
 }) => {
-  const alignment = uiSchema?.["ui:options"]?.alignment || "center";
-  const customLabel = uiSchema?.["ui:options"]?.label || label;
-
+  const { alignment = "center", label: checkboxLabel = label } = getUiOptions(
+    uiSchema,
+    registry.globalUiOptions,
+  );
   return (
     <FormControlLabel
       control={
@@ -28,13 +32,13 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
             onChange(event.target.checked)
           }
           sx={{
-            ...(alignment === "top" && { paddingTop: "2px" }),
+            ...(alignment === "top" && { paddingTop: "2px" }), // Apply alignment style if top
           }}
         />
       }
-      label={customLabel}
+      label={checkboxLabel} // Render the custom label or fallback label
       style={{
-        alignItems: alignment === "top" ? "flex-start" : "center",
+        alignItems: alignment === "top" ? "flex-start" : "center", // Handle alignment for label
       }}
     />
   );

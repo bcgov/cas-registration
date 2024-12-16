@@ -1,8 +1,11 @@
 from typing import Literal, Tuple, List
 
+from django.db.models import QuerySet
+
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
+from registration.models import RegulatedProduct
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn
@@ -85,7 +88,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
 @handle_http_errors()
 def get_regulated_products_by_version_id(
     request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], List[RegulatedProductOut]]:
+) -> tuple[Literal[200], QuerySet[RegulatedProduct]]:
     regulated_products = ReportService.get_regulated_products_by_version_id(version_id)
     return 200, regulated_products
 
