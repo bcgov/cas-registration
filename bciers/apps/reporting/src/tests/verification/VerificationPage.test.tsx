@@ -35,7 +35,7 @@ describe("VerificationPage component", () => {
       verificationSchema,
     );
     // Render the page with the `versionId` prop
-    render(await VerificationPage({ versionId: mockVersionId }));
+    render(await VerificationPage({ version_id: mockVersionId }));
 
     // Assert the VerificationForm is rendered
     await waitFor(() => {
