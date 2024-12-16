@@ -13,6 +13,7 @@ import ReportingStepButtons from "@bciers/components/form/components/ReportingSt
 
 interface Props {
   versionId: number;
+  needsVerification: boolean;
   summaryFormData: {
     attributableForReporting: string;
     reportingOnlyEmission: string;
@@ -37,8 +38,9 @@ interface Props {
   taskListElements: TaskListElement[];
 }
 
-const ComplianceSummary: React.FC<Props> = ({
+const ComplianceSummaryForm: React.FC<Props> = ({
   versionId,
+  needsVerification,
   summaryFormData,
   taskListElements,
 }) => {
@@ -50,8 +52,10 @@ const ComplianceSummary: React.FC<Props> = ({
     "Sign-off & Submit",
   ];
 
-  const backRef = `/reports/${versionId}/additional-reporting-data`;
-  const continueRef = `/reports/${versionId}/verification`;
+  const backUrl = `/reports/${versionId}/additional-reporting-data`;
+  const verificationUrl = `/reports/${versionId}/verification`;
+  const finalReviewUrl = `/reports/${versionId}/final-review`;
+  const continueUrl = needsVerification ? verificationUrl : finalReviewUrl;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -67,8 +71,8 @@ const ComplianceSummary: React.FC<Props> = ({
             formData={summaryFormData}
           >
             <ReportingStepButtons
-              backUrl={backRef}
-              continueUrl={continueRef}
+              backUrl={backUrl}
+              continueUrl={continueUrl}
               saveButtonDisabled={true}
             />
           </FormBase>
@@ -78,4 +82,4 @@ const ComplianceSummary: React.FC<Props> = ({
   );
 };
 
-export default ComplianceSummary;
+export default ComplianceSummaryForm;

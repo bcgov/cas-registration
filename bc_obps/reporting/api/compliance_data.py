@@ -1,3 +1,5 @@
+from decimal import Decimal
+from typing import Literal, Tuple
 from common.permissions import authorize
 from typing import Literal, Tuple
 from django.http import HttpRequest
@@ -25,3 +27,21 @@ def get_compliance_summary_data(
     compliance_data = ComplianceService.get_calculated_compliance_data(report_version_id)
 
     return 200, compliance_data
+
+
+@router.get(
+    "report-version/{report_version_id}/attributable-emissions",
+    response={200: Decimal, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Retrieves the total attributable emissions for a given report version.""",
+    exclude_none=True,
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def get_attributable_emissions(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], Decimal | int]:
+    """
+    Endpoint to retrieve the total emissions attributable for reporting.
+    """
+    attributable_emissions = ComplianceService.get_emissions_attributable_for_reporting(report_version_id)
+
+    return 200, attributable_emissions
