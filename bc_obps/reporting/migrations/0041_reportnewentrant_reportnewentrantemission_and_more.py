@@ -7,8 +7,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0061_remove_naics_code'),
-        ('reporting', '0039_reportproductemissionallocation_and_more'),
+        ('registration', '0063_remove_historicaltransferevent_description_and_more'),
+        ('reporting', '0040_alter_reportproductemissionallocation_allocated_quantity'),
     ]
 
     operations = [

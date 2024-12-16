@@ -21,11 +21,13 @@ from ..service.report_new_entrant_service import ReportNewEntrantService
 )
 @handle_http_errors()
 def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[int, dict]:
+
     report_new_entrant = ReportNewEntrantService.get_new_entrant_data(report_version_id=report_version_id)
     emission_category_data = ReportNewEntrantService.get_emissions_data(report_version_id=report_version_id)
     production_data = ReportNewEntrantService.get_products_data(report_version_id=report_version_id)
 
-    naics_code = report_new_entrant.report_version.report.operation.naics_code if report_new_entrant else None
+    naics_code_data = report_new_entrant.report_version.report.operation.naics_code if report_new_entrant else None
+    naics_code = naics_code_data.naics_code if naics_code_data else None
 
     return 200, {
         "new_entrant_data": report_new_entrant,
