@@ -24,14 +24,14 @@ export const createMultipleOperatorsInformationSchema =
             {
               properties: {
                 operation_has_multiple_operators: {
-                  enum: [false],
+                  const: false,
                 },
               },
             },
             {
               properties: {
                 operation_has_multiple_operators: {
-                  enum: [true],
+                  const: true,
                 },
                 multiple_operators_array: {
                   type: "array",
@@ -102,7 +102,7 @@ export const createMultipleOperatorsInformationSchema =
                           {
                             properties: {
                               mo_is_extraprovincial_company: {
-                                enum: [false],
+                                const: false,
                               },
                               mo_bc_corporate_registry_number: {
                                 type: "string",
@@ -115,7 +115,7 @@ export const createMultipleOperatorsInformationSchema =
                           {
                             properties: {
                               mo_is_extraprovincial_company: {
-                                enum: [true],
+                                const: true,
                               },
                             },
                           },
