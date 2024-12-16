@@ -204,7 +204,7 @@ export default function FacilityEmissionAllocationForm({
       report_product_emission_allocations: [
         ...formData.basic_emission_allocation_data.map((item: any) => ({
           emission_total: item.emission_total,
-          emission_category_name: item.emission_category,
+          emission_category_id: item.emission_category_id,
           products: item.products.map((product: any) => ({
             report_product_id: product.report_product_id,
             product_name: product.product_name,
@@ -213,7 +213,7 @@ export default function FacilityEmissionAllocationForm({
         })),
         ...formData.fuel_excluded_emission_allocation_data.map((item: any) => ({
           emission_total: item.emission_total,
-          emission_category_name: item.emission_category,
+          emission_category_id: item.emission_category_id,
           products: item.products.map((product: any) => ({
             report_product_id: product.report_product_id,
             product_name: product.product_name,
