@@ -37,7 +37,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
         db_comment="The emission category that this emission data belongs to",
     )
     allocated_quantity = models.DecimalField(
-        max_digits=10,
+        max_digits=20,
         decimal_places=4,
         db_comment="The quantity of emissions allocated to this product in tonnes of CO2 equivalent(tCO2e)",
     )
