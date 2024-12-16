@@ -4,7 +4,6 @@ from typing import Any
 from registration.models import NaicsCode
 from registration.models.activity import Activity
 from reporting.models import ReportNewEntrant, ReportNewEntrantEmission, ReportNewEntrantProduction
-from reporting.models import ReportNewEntrant, ReportNewEntrantEmissions, ReportNewEntrantProduction
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema

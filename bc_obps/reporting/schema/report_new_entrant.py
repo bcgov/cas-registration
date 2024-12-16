@@ -40,7 +40,7 @@ class ReportNewEntrantDataOut(Schema):
     products: List[ReportNewEntrantProductionSchema]
     emissions: List[ReportNewEntrantEmissionSchema]
     new_entrant_data: Optional[NewEntrantDataSchema]
-    naics_code: Optional[str] = Field(None, alias='naics_code')
+    naics_code: Optional[str]
 
 
 class ReportNewEntrantSchemaIn(BaseModel):
