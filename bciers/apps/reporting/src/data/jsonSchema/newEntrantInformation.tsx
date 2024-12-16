@@ -11,7 +11,7 @@ import { DateWidget } from "@bciers/components/form/widgets";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import React from "react";
 import ObjectFieldTemplate from "@rjsf/core/lib/components/templates/ObjectFieldTemplate";
-import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/common";
+import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
 interface FieldTemplateProps {
   id: string;

@@ -1,9 +1,9 @@
 from datetime import date, timedelta, datetime
-from decimal import Decimal
 from typing import Any
 
-from registration.models import NaicsCode, RegulatedProduct
+from registration.models import NaicsCode
 from registration.models.activity import Activity
+from reporting.models import ReportNewEntrant, ReportNewEntrantEmission, ReportNewEntrantProduction
 from reporting.models import ReportNewEntrant, ReportNewEntrantEmissions, ReportNewEntrantProduction
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -150,14 +150,6 @@ report_non_attributable_emissions = Recipe(
     gas_type=[foreign_key(gas_type)],
 )
 
-report_new_entrant = Recipe(
-    ReportNewEntrant,
-    report_version=foreign_key(report_version),
-    authorization_date=(datetime.now() - timedelta(days=10)).isoformat(),
-    first_shipment_date=(datetime.now() - timedelta(days=5)).isoformat(),
-    new_entrant_period_start=(datetime.now() - timedelta(days=20)).isoformat(),
-    assertion_statement=True,  # Example: Boolean field
-)
 
 report_verification = Recipe(
     ReportVerification,
@@ -182,18 +174,26 @@ report_additional_data = Recipe(
     electricity_generated=500.0,
 )
 
-report_new_entrant_emissions = Recipe(
-    ReportNewEntrantEmissions,
+report_new_entrant = Recipe(
+    ReportNewEntrant,
+    report_version=foreign_key(report_version),
+    authorization_date=(datetime.now() - timedelta(days=10)).isoformat(),
+    first_shipment_date=(datetime.now() - timedelta(days=5)).isoformat(),
+    new_entrant_period_start=(datetime.now() - timedelta(days=20)).isoformat(),
+    assertion_statement=True,
+)
+report_new_entrant_emission = Recipe(
+    ReportNewEntrantEmission,
     report_new_entrant=foreign_key(report_new_entrant),
     emission_category=foreign_key(emission_category),
-    emission=seq(Decimal('10.0'), start=Decimal('5.0'), increment_by=Decimal('1.0')),
+    emission="5.0000",
 )
 
 report_new_entrant_production = Recipe(
     ReportNewEntrantProduction,
     report_new_entrant=foreign_key(report_new_entrant),
     product=foreign_key(regulated_product),
-    production_amount=seq(Decimal('100.0'), start=Decimal('50.0'), increment_by=Decimal('10.0')),
+    production_amount="5.0000",
 )
 
 naics_code = Recipe(

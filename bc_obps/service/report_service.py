@@ -1,4 +1,3 @@
-from typing import List
 from uuid import UUID
 from django.db import transaction
 from django.db.models import QuerySet
@@ -10,7 +9,6 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.schema.report_operation import ReportOperationIn
-from reporting.schema.report_regulated_products import RegulatedProductOut
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
@@ -118,7 +116,7 @@ class ReportService:
         return report_operation
 
     @classmethod
-    def get_regulated_products_by_version_id(cls, version_id: int) -> List[RegulatedProductOut]:
+    def get_regulated_products_by_version_id(cls, version_id: int) -> QuerySet[RegulatedProduct]:
         report_operation = ReportOperation.objects.get(report_version_id=version_id)
 
         regulated_products = report_operation.regulated_products.all()
