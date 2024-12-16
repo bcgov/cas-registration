@@ -17,7 +17,6 @@ import {
   RegistrationPurposeHelpText,
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
-import ChangeRegistrationPurposeModal from "@/registration/app/components/operations/registration/ChangeRegistrationPurposeModal";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -132,32 +131,26 @@ const OperationInformationForm = ({
   };
 
   return (
-    <>
-      <ChangeRegistrationPurposeModal />
-      <MultiStepBase
-        key={key}
-        cancelUrl="/"
-        formData={formState}
-        onSubmit={handleSubmit}
-        schema={schema}
-        step={step}
-        steps={steps}
-        error={error}
-        onChange={(e: IChangeEvent) => {
-          let newSelectedOperation = e.formData?.section1?.operation;
-          let newSelectedPurpose = e.formData?.section1?.registration_purpose;
-          if (
-            newSelectedOperation &&
-            newSelectedOperation !== selectedOperation
-          )
-            handleSelectOperationChange(e.formData);
-          if (newSelectedPurpose !== selectedPurpose)
-            handleSelectedPurposeChange(e.formData);
-        }}
-        uiSchema={currentUiSchema}
-        customValidate={customValidate}
-      />
-    </>
+    <MultiStepBase
+      key={key}
+      cancelUrl="/"
+      formData={formState}
+      onSubmit={handleSubmit}
+      schema={schema}
+      step={step}
+      steps={steps}
+      error={error}
+      onChange={(e: IChangeEvent) => {
+        let newSelectedOperation = e.formData?.section1?.operation;
+        let newSelectedPurpose = e.formData?.section1?.registration_purpose;
+        if (newSelectedOperation && newSelectedOperation !== selectedOperation)
+          handleSelectOperationChange(e.formData);
+        if (newSelectedPurpose !== selectedPurpose)
+          handleSelectedPurposeChange(e.formData);
+      }}
+      uiSchema={currentUiSchema}
+      customValidate={customValidate}
+    />
   );
 };
 
