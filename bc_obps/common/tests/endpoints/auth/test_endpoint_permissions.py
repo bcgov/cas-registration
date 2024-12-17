@@ -410,7 +410,7 @@ class TestEndpointPermissions(TestCase):
                 mock_check_permission_for_role.reset_mock()
 
     @classmethod
-    def test_all_api_endpoints_are_permission_tested(cls):
+    def get_all_api_endpoints_to_test(cls):
         # these are the endpoints that we don't want to test
         exclusion_list = [
             "api-root",
@@ -430,7 +430,23 @@ class TestEndpointPermissions(TestCase):
             "get_fuel_data",
         ]
         all_url_patterns = get_resolver().url_patterns[1].url_patterns  # index 1 is the API route
-        valid_urls = [pattern.name for pattern in all_url_patterns if pattern.name not in exclusion_list]
+        return [pattern.name for pattern in all_url_patterns if pattern.name not in exclusion_list]
+
+    @classmethod
+    def test_endpoint_protections_by_role(
+        cls,
+        # mock_check_permission_for_role: MagicMock,
+    ):
+        valid_urls = cls.get_all_api_endpoints_to_test()
+        print(valid_urls)
+        for role, configs in cls.endpoints_to_test.items():
+            for config in configs:
+                print(role, config)
+
+    @classmethod
+    def test_all_api_endpoints_are_permission_tested(cls):
+        valid_urls = cls.get_all_api_endpoints_to_test()
+
         # Flatten endpoints_to_test to extract all endpoint names that are permission-tested
         tested_endpoints = {
             item["endpoint_name"] for role, configs in cls.endpoints_to_test.items() for item in configs
