@@ -2,10 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
 import { auth } from "@bciers/testConfig/mocks";
-import {
-  fetchOperationsPageData,
-  mockFetchOperationsTimelinePageData,
-} from "./mocks";
+import { mockFetchOperationsTimelinePageData } from "./mocks";
 
 useRouter.mockReturnValue({
   query: {},
@@ -57,7 +54,7 @@ describe("Operations component", () => {
     auth.mockReturnValueOnce({
       user: { app_role: "cas_director" },
     });
-    fetchOperationsPageData.mockReturnValueOnce(undefined);
+    mockFetchOperationsTimelinePageData.mockReturnValueOnce(undefined);
     await expect(async () => {
       render(await Operations({ searchParams: {} }));
     }).rejects.toThrow("Failed to retrieve operations");
