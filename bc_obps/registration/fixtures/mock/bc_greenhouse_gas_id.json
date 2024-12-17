@@ -344,5 +344,12 @@
       "id": "13219990027",
       "issued_at": "2024-10-31T15:27:00.000Z"
     }
+  },
+  {
+    "model": "registration.bcgreenhousegasid",
+    "fields": {
+      "id": "13219990999",
+      "issued_at": "2024-10-31T15:27:00.000Z"
+    }
   }
 ]
