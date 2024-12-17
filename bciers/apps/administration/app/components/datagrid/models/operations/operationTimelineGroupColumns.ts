@@ -5,7 +5,7 @@ import {
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 import { OPERATOR_COLUMN_INDEX } from "./operationColumns";
 
-const operationGroupColumns = (
+const operationTimelineGroupColumns = (
   isInternalUser: boolean,
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
@@ -60,4 +60,4 @@ const operationGroupColumns = (
   return columnGroupModel;
 };
 
-export default operationGroupColumns;
+export default operationTimelineGroupColumns;

@@ -8,7 +8,7 @@ import OperationFacilitiesActionCell from "apps/administration/app/components/op
 import operationColumns from "../datagrid/models/operations/operationColumns";
 import operationGroupColumns from "../datagrid/models/operations/operationGroupColumns";
 import { OperationRow } from "./types";
-import fetchOperationsPageData from "@bciers/actions/api/fetchOperationsPageData";
+import fetchOperationsTimelinePageData from "./fetchOperationsTimelinePageData";
 
 const OperationDataGrid = ({
   initialData,
@@ -21,7 +21,6 @@ const OperationDataGrid = ({
   };
 }) => {
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
     [lastFocusedField, setLastFocusedField],
@@ -46,7 +45,7 @@ const OperationDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchOperationsPageData}
+      fetchPageData={fetchOperationsTimelinePageData}
       paginationMode="server"
       initialData={initialData}
     />

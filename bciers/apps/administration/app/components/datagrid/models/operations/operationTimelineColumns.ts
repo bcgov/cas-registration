@@ -2,7 +2,7 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
-const operationColumns = (
+const operationTimelineColumns = (
   isInternalUser: boolean,
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
   FacilitiesActionCell: (params: GridRenderCellParams) => JSX.Element,
@@ -19,8 +19,7 @@ const operationColumns = (
       field: "operation__bc_obps_regulated_operation",
       headerName: "BORO ID",
       width: 120,
-      valueGetter: (params) =>
-        params.row?.operation__bc_obps_regulated_operation ?? "N/A",
+      valueGetter: (params) => params.row?.bc_obps_regulated_operation ?? "N/A",
     },
     { field: "operation__bcghg_id", headerName: "BC GHG ID", width: 120 },
     { field: "status", headerName: "Status", width: 100 },
@@ -51,4 +50,4 @@ const operationColumns = (
   return columns;
 };
 
-export default operationColumns;
+export default operationTimelineColumns;
