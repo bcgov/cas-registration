@@ -4,16 +4,16 @@ import { OperationStatus } from "@bciers/utils/src/enums";
 const OperationsActionCell = (isInternalUser: boolean) => {
   const renderCell = (params: GridRenderCellParams) => {
     let actionText = "View Operation";
-    let url = `../administration/operations/${params.row.id}?operations_title=${params.row.name}`;
+    let url = `/administration/operations/${params.row.id}?operations_title=${params.row.name}`;
     if (!isInternalUser) {
       switch (params.row.status) {
         case OperationStatus.NOT_STARTED:
           actionText = "Start Registration";
-          url = "../registration/register-an-operation";
+          url = "/registration/register-an-operation";
           break;
         case OperationStatus.DRAFT:
           actionText = "Continue Registration";
-          url = `../registration/register-an-operation/${params.row.id}/1`;
+          url = `/registration/register-an-operation/${params.row.id}/1`;
           break;
       }
     }
