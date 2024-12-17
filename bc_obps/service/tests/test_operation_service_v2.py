@@ -2,8 +2,10 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 from uuid import uuid4
 from zoneinfo import ZoneInfo
+from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 
 from registration.models.contact import Contact
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document_type import DocumentType
 from registration.models.activity import Activity
@@ -27,6 +29,7 @@ from registration.schema.v2.operation import (
 )
 from registration.tests.constants import MOCK_DATA_URL
 from model_bakery import baker
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 pytestmark = pytest.mark.django_db
 
@@ -909,3 +912,75 @@ class TestUpdateOperationsOperator:
         OperationServiceV2.update_operator(cas_analyst.user_guid, operation, operator.id)
         mock_set_create_or_update.assert_called_once()
         assert operation.operator == operator
+
+
+class TestListOperationTimeline:
+    @staticmethod
+    def test_raise_exception_if_user_unapproved():
+        user = baker.make_recipe('utils.industry_operator_user')
+        with pytest.raises(Exception, match="Unauthorized."):
+            OperationServiceV2.list_operations_timeline(
+                user.user_guid,
+                sort_field="created_at",
+                sort_order="desc",
+            )
+
+    @staticmethod
+    def test_gets_unfiltered_sorted_list_for_industry_user():
+
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            status=OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN,
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
+        )
+
+        timeline = OperationServiceV2.list_operations_timeline(
+            approved_user_operator.user.user_guid,
+            sort_field="created_at",
+            sort_order="desc",
+            filters=OperationTimelineFilterSchema(),
+        )
+
+        assert timeline.count() == 2  # transferred statuses are excluded in the data access service
+        assert timeline[0].status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
+        assert timeline[1].status == OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN
+
+    @staticmethod
+    def test_gets_filtered_sorted_list_for_industry_user():
+        filters = OperationTimelineFilterSchema(
+            operation__bcghg_id='1',
+        )
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='11111111111'))),
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='15555555555'))),
+        )
+        baker.make_recipe(
+            'utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='29999999999'))),
+        )
+
+        timeline = OperationServiceV2.list_operations_timeline(
+            approved_user_operator.user.user_guid, sort_field="created_at", sort_order="desc", filters=filters
+        )
+        assert timeline.count() == 2
