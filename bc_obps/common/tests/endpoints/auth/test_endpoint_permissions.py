@@ -320,6 +320,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_emission_summary_totals",
                 "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
             },
+            {
+                "method": "post",
+                "endpoint_name": "submit_report_version",
+                "kwargs": {"version_id": mock_int},
+            },
         ],
         "authorized_irc_user_and_industry_admin_user": [],
         "cas_director": [
