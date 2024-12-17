@@ -34,7 +34,6 @@ class OperationTimelineFilterSchema(FilterSchema):
     # brianna filtering on this isn't working
     operation__type: Optional[str] = Field(None, json_schema_extra={'q': 'operation__type__icontains'})
     status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
-    # brianna filtering also weird here
     operation__bc_obps_regulated_operation: Optional[str] = Field(
         None, json_schema_extra={'q': 'operation__bc_obps_regulated_operation__id__icontains'}
     )
