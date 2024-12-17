@@ -122,6 +122,7 @@ class ComplianceService:
     @classmethod
     def get_calculated_compliance_data(cls, report_version_id: int) -> ComplianceDataSchemaOut:
         naics_data = ComplianceService.get_regulatory_values_by_naics_code(report_version_id)
+        registration_purpose = ReportVersion.objects.get(pk=report_version_id).report.operation.registration_purpose
         ##### Don't use schemas, use classes or dicts
         compliance_product_list: List[ReportProductComplianceSchema] = []
         total_allocated_reporting_only = Decimal(0)
@@ -188,10 +189,16 @@ class ComplianceService:
             excess_emissions = total_allocated_for_compliance_2024 - emissions_limit_total
         else:
             credited_emissions = emissions_limit_total - total_allocated_for_compliance_2024
+
+        if registration_purpose == 'New Entrant Operation':
+            total_allocated_for_compliance_2024 = Decimal(0)
+            emissions_limit_total = Decimal(0)
+            excess_emissions = Decimal(0)
+            credited_emissions = Decimal(0)
         # Craft return object with all data
         return_object = ComplianceDataSchemaOut(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
-            reporting_only_emissions=total_allocated_reporting_only,
+            reporting_only_emissions=round(Decimal(total_allocated_reporting_only), 4),
             emissions_attributable_for_compliance=round(total_allocated_for_compliance_2024, 4),
             emissions_limit=round(emissions_limit_total, 4),
             excess_emissions=round(excess_emissions, 4),
