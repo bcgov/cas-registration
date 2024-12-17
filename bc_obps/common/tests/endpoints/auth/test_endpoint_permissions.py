@@ -127,6 +127,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_emission_allocations",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
             },
+            {
+                "method": "get",
+                "endpoint_name": "get_attributable_emissions",
+                "kwargs": {"report_version_id": mock_int},
+            },
             {"method": "post", "endpoint_name": "create_facilities"},
             {"method": "post", "endpoint_name": "create_contact"},
             {

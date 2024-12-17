@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import ComplianceSummary from "@reporting/src/app/components/complianceSummary/ComplianceSummary";
+import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
 import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
@@ -38,7 +38,7 @@ const mockSummaryData = {
   ],
 };
 
-describe("ComplianceSummary", () => {
+describe("ComplianceSummaryForm", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
@@ -112,8 +112,9 @@ describe("ComplianceSummary", () => {
 
   it("should render a back button that navigates to the additional information page", async () => {
     render(
-      <ComplianceSummary
+      <ComplianceSummaryForm
         versionId={1}
+        needsVerification={true}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
       />,
@@ -130,10 +131,11 @@ describe("ComplianceSummary", () => {
     );
   });
 
-  it("should render a continue button that navigates to the signoff page", async () => {
+  it("should render a continue button that navigates to the verification page", async () => {
     render(
-      <ComplianceSummary
+      <ComplianceSummaryForm
         versionId={1}
+        needsVerification={true}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
       />,
@@ -148,5 +150,26 @@ describe("ComplianceSummary", () => {
     fireEvent.click(button);
 
     expect(mockPush).toHaveBeenCalledWith(`/reports/1/verification`);
+  });
+
+  it("should render a continue button that navigates to the final review page", async () => {
+    render(
+      <ComplianceSummaryForm
+        versionId={1}
+        needsVerification={false}
+        summaryFormData={mockSummaryData}
+        taskListElements={[]}
+      />,
+    );
+
+    const button = screen.getByRole("button", {
+      name: /Continue/i,
+    });
+
+    expect(button).toBeVisible();
+
+    fireEvent.click(button);
+
+    expect(mockPush).toHaveBeenCalledWith(`/reports/1/final-review`);
   });
 });
