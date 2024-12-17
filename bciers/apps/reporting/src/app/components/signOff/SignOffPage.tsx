@@ -6,32 +6,25 @@ import {
   signOffSchema,
   signOffUiSchema,
 } from "@reporting/src/data/jsonSchema/signOff/signOff";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormData } from "@reporting/src/app/components/signOff/types";
 import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
+import postSubmitReport from "@bciers/actions/api/postSubmitReport";
+import reportValidationMessages from "./reportValidationMessages";
+import {
+  ActivePage,
+  getSignOffAndSubmitSteps,
+} from "../taskList/5_signOffSubmit";
+import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 
-const taskListElements: TaskListElement[] = [
-  {
-    type: "Section",
-    title: "Sign-off & Submit",
-    isExpanded: true,
-    elements: [
-      { type: "Page", title: "Verification" },
-      { type: "Page", title: "Confidentiality request" },
-      { type: "Page", title: "Attachments" },
-      { type: "Page", title: "Final review" },
-      { type: "Page", title: "Sign-off", isActive: true },
-    ],
-  },
-];
-
 export default function SignOffPage({ version_id }: HasReportVersion) {
   const [formState, setFormState] = useState({});
+  const [error, setError] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
@@ -53,6 +46,14 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
 
   const handleSubmit = async () => {
     if (!submitButtonDisabled) {
+      const response: any = await postSubmitReport(version_id);
+
+      if (response.error) {
+        setError(reportValidationMessages[response.error]);
+        throw new Error("Submit form returned errors.");
+      }
+      setError(undefined);
+
       setIsSubmitting(true);
       setSubmitButtonDisabled(true);
     }
@@ -65,13 +66,11 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
       ) : (
         <MultiStepFormWithTaskList
           initialStep={3}
-          steps={[
-            "Operation Information",
-            "Facilities Information",
-            "Compliance Summary",
-            "Sign-off & Submit",
-          ]}
-          taskListElements={taskListElements}
+          steps={multiStepHeaderSteps}
+          taskListElements={getSignOffAndSubmitSteps(
+            version_id,
+            ActivePage.SignOff,
+          )}
           schema={signOffSchema}
           uiSchema={signOffUiSchema}
           formData={formState}
@@ -84,6 +83,7 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
           submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
           continueUrl={""}
           backUrl={backUrl}
+          error={error}
         />
       )}
     </>

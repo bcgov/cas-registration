@@ -21,3 +21,4 @@ from .report_verification import get_report_verification_by_version_id, save_rep
 from .report_attachments import save_report_attachments, get_report_attachments
 from .report_emission_allocations import get_emission_allocations, save_emission_allocation_data
 from .compliance_data import get_compliance_summary_data
+from .submit import submit_report_version
