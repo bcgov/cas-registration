@@ -85,6 +85,7 @@ cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst")
 
 operation = Recipe(
     Operation,
+    name=seq('Operation 0'),
     naics_code=foreign_key(naics_code),
     operator=foreign_key(operator_for_operation),
     created_by=foreign_key(industry_operator_user),
@@ -148,10 +149,9 @@ operation_designated_operator_timeline = Recipe(
     OperationDesignatedOperatorTimeline,
     operation=foreign_key(operation),
     operator=foreign_key(operator),
-    status=cycle([status for status in OperationDesignatedOperatorTimeline.Statuses]),
     start_date=datetime.now(ZoneInfo("UTC")),
+    status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
     end_date=datetime.now(ZoneInfo("UTC")),
 )
-
 
 regulated_product = Recipe(RegulatedProduct)

@@ -1,24 +1,17 @@
 # ruff: noqa: F401
-from ._operations._operation_id._registration import (
-    operation,
-    operation_representative,
-    submission,
-    opted_in_operation,
-    new_entrant_application,
-)
-from ._operations import operation_id
 from . import (
     business_structures,
+    contacts,
     e2e_test_setup,
+    facilities,
     naics_codes,
+    operations,
+    operations_timeline,
     operators,
     regulated_products,
-    operations,
-    user_operators,
     reporting_activities,
+    user_operators,
     users,
-    contacts,
-    facilities,
 )
 from ._operations import current as operations_current
 from ._operations._operation_id import boro_id, bcghg_id as operation_bcghg_id, operation_representatives
@@ -28,17 +21,25 @@ from ._facilities import facility_id
 from ._operators import search, operator_id
 from .transfer_events import list_transfer_events
 from ._operators._operator_id import has_admin, request_access, request_admin_access, access_declined, confirm
+from ._contacts import contact_id
+from ._operations import operation_id
+from ._operations._operation_id._registration import (
+    new_entrant_application,
+    operation,
+    operation_representative,
+    opted_in_operation,
+    submission,
+)
+from ._user_operators import current, pending, user_operator_id
 from ._user_operators._current import (
-    operator,
     access_requests,
     has_registered_operation,
     has_required_fields,
     is_current_user_approved_admin,
+    operator,
     operator_users,
 )
 from ._user_operators._user_operator_id import update_status
 from .user import user_profile, user_app_role
-from ._user_operators import user_operator_id, pending, current
-from ._contacts import contact_id
 from ._users import user_id
 from . import transfer_events
