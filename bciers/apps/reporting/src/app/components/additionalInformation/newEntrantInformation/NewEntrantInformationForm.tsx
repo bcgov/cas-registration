@@ -50,9 +50,9 @@ export default function NewEntrantInformationForm({
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
     });
-    if (response) {
-      router.push(saveAndContinueUrl);
-    }
+    if (response.error) throw new Error(response.error);
+
+    router.push(saveAndContinueUrl);
   };
   return (
     <MultiStepFormWithTaskList
