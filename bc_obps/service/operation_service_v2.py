@@ -1,5 +1,9 @@
 from typing import Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
+from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
+from service.data_access_service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineDataAccessService,
+)
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.user import User
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
@@ -36,6 +40,7 @@ from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 
 class OperationServiceV2:
@@ -51,6 +56,20 @@ class OperationServiceV2:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = OperationDataAccessServiceV2.get_all_operations_for_user(user)
+        return filters.filter(base_qs).order_by(sort_by)
+
+    @classmethod
+    def list_operations_timeline(
+        cls,
+        user_guid: UUID,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: OperationTimelineFilterSchema = Query(...),
+    ) -> QuerySet[OperationDesignatedOperatorTimeline]:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        sort_direction = "-" if sort_order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}"
+        base_qs = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(user)
         return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
