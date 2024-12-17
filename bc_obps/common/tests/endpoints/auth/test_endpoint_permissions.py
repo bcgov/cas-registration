@@ -174,6 +174,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "register_edit_operation_information",
                 "kwargs": {"operation_id": mock_uuid},
             },
+            {
+                "method": "post",
+                "endpoint_name": "submit_report_version",
+                "kwargs": {"version_id": mock_int},
+            },
             {"method": "put", "endpoint_name": "update_operation", "kwargs": {"operation_id": mock_uuid}},
             {
                 "method": "put",

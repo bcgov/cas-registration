@@ -38,7 +38,7 @@ export const getSignOffAndSubmitSteps: (
         {
           type: "Page",
           title: "Sign-off",
-          link: `/reports/${versionId}/final-review`,
+          link: `/reports/${versionId}/sign-off`,
           isActive: activeIndex === ActivePage.SignOff,
         },
       ],
