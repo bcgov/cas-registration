@@ -2,155 +2,281 @@
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:08:53.565Z",
+      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "end_date": "2024-06-28T23:21:01Z",
+      "status": "Closed"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
       "operation": "002d5a9e-32a6-4191-938c-2c02bfec592d",
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:09:07Z",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "end_date": "2024-06-28T23:21:01Z",
       "status": "Active"
     }
   },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:11:26.265Z",
-      "operation": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:11:51Z",
-      "status": "Active"
-    }
-  },
-  {
-    "model": "registration.operationdesignatedoperatortimeline",
-    "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:11:45.702Z",
-      "operation": "0ac72fa9-2636-4f54-b378-af6b1a070787",
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:11:37Z",
-      "status": "Active"
-    }
-  },
-  {
-    "model": "registration.operationdesignatedoperatortimeline",
-    "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:12:18.766Z",
-      "operation": "17550cd8-3e73-4e52-aa91-ab90cb3b62b0",
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:12:13Z",
-      "status": "Active"
-    }
-  },
-  {
-    "model": "registration.operationdesignatedoperatortimeline",
-    "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:12:42.300Z",
-      "operation": "17f13f4d-29b4-45f4-b025-b21f2e126771",
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:12:40Z",
-      "status": "Active"
-    }
-  },
-  {
-    "model": "registration.operationdesignatedoperatortimeline",
-    "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:13:06.052Z",
-      "operation": "1bd04128-d070-4d3a-940a-0874c4956181",
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:13:03Z",
-      "status": "Active"
-    }
-  },
-  {
-    "model": "registration.operationdesignatedoperatortimeline",
-    "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:13:41.375Z",
-      "operation": "21e70498-c4b0-4525-8443-86faa96206e3",
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:15:00Z",
-      "status": "Active"
-    }
-  },
-  {
-    "model": "registration.operationdesignatedoperatortimeline",
-    "fields": {
-      "created_by": "4da70f32-65fd-4137-87c1-111f2daba3dd",
-      "created_at": "2024-12-06T21:14:06.087Z",
       "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "c0743c09-82fa-4186-91aa-4b5412e3415c",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:14:04Z",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
       "status": "Active"
     }
   },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:14:23.612Z",
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+
+    "fields": {
+      "operation": "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
       "operation": "436dd99a-cb41-4494-91c9-98ab149b557d",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:14:48Z",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
       "status": "Active"
     }
   },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:14:41.273Z",
-      "operation": "59d95661-c752-489b-9fd1-0c3fa3454dda",
+      "operation": "a47b5fb6-1e10-401a-b70e-574bd925db99",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:14:40Z",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
       "status": "Active"
     }
   },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2024-12-06T21:15:23.053Z",
-      "operation": "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+      "operation": "21e70498-c4b0-4525-8443-86faa96206e3",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "start_date": "2024-12-06T21:15:22Z",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
       "status": "Active"
     }
   },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "00000000-0000-0000-0000-000000000023",
-      "created_at": "2024-12-06T21:21:42.102Z",
+      "operation": "17550cd8-3e73-4e52-aa91-ab90cb3b62b0",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
       "operation": "7d3fc7d1-0504-4ee4-a9c5-447f4b324b57",
-      "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "start_date": "2024-12-06T21:21:40Z",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
       "status": "Active"
     }
   },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "00000000-0000-0000-0000-000000000023",
-      "created_at": "2024-12-06T21:22:04.647Z",
+      "operation": "acf5811e-d521-43f7-a5c7-a6d6dd47bb31",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
       "operation": "8563da83-0762-4d29-9b22-da5b52ef0f24",
-      "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "start_date": "2024-12-06T21:22:03Z",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
       "status": "Active"
     }
   },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "created_by": "00000000-0000-0000-0000-000000000023",
-      "created_at": "2024-12-06T21:22:24.993Z",
-      "operation": "954c0382-ff61-4e87-a8a0-873586534b54",
-      "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "start_date": "2024-12-06T21:22:22Z",
+      "operation": "df62d793-8cfe-4272-a93e-ea9c9139ff82",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
       "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "c5b3643b-c143-42f3-8a2b-03ccc7319cd9",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "954c0382-ff61-4e87-a8a0-873586534b54",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "59d95661-c752-489b-9fd1-0c3fa3454dda",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "1bd04128-d070-4d3a-940a-0874c4956181",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "17f13f4d-29b4-45f4-b025-b21f2e126771",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "ef9044dd-2a27-4d26-86fe-02e51e0755f7",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "0ac72fa9-2636-4f54-b378-af6b1a070787",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "status": "Active"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "0ac72fa9-2636-4f54-b378-af6b1a070787",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "created_by": "00000000-0000-0000-0000-000000000004",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z",
+      "end_date": "2024-06-05T23:20:57Z",
+      "status": "Transferred"
     }
   }
 ]
