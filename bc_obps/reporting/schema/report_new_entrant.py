@@ -41,12 +41,12 @@ class ReportNewEntrantDataOut(Schema):
 
 
 class RegulatedProductWithAmountIn(Schema):
-    production_amount: Optional[Decimal]
+    production_amount: Optional[Decimal] = None
     id: int
 
 
 class EmissionCategoryWithEmissionIn(Schema):
-    emission: Optional[Decimal]
+    emission: Optional[Decimal] = None
     id: int
 
 
