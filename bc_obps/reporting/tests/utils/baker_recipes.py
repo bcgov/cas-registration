@@ -1,6 +1,9 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Any
+
+from registration.models import NaicsCode
 from registration.models.activity import Activity
+from reporting.models import ReportNewEntrant, ReportNewEntrantEmission, ReportNewEntrantProduction
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
@@ -145,6 +148,8 @@ report_non_attributable_emissions = Recipe(
     emission_category=foreign_key(emission_category),
     gas_type=[foreign_key(gas_type)],
 )
+
+
 report_verification = Recipe(
     ReportVerification,
     report_version=foreign_key(report_version),
@@ -166,4 +171,31 @@ report_additional_data = Recipe(
     emissions_on_site_sequestration=50.0,
     emissions_off_site_transfer=20.0,
     electricity_generated=500.0,
+)
+
+report_new_entrant = Recipe(
+    ReportNewEntrant,
+    report_version=foreign_key(report_version),
+    authorization_date=(datetime.now() - timedelta(days=10)).isoformat(),
+    first_shipment_date=(datetime.now() - timedelta(days=5)).isoformat(),
+    new_entrant_period_start=(datetime.now() - timedelta(days=20)).isoformat(),
+    assertion_statement=True,
+)
+report_new_entrant_emission = Recipe(
+    ReportNewEntrantEmission,
+    report_new_entrant=foreign_key(report_new_entrant),
+    emission_category=foreign_key(emission_category),
+    emission="5.0000",
+)
+
+report_new_entrant_production = Recipe(
+    ReportNewEntrantProduction,
+    report_new_entrant=foreign_key(report_new_entrant),
+    product=foreign_key(regulated_product),
+    production_amount="5.0000",
+)
+
+naics_code = Recipe(
+    NaicsCode,
+    naics_code='12345',
 )

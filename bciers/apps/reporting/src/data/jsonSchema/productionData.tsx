@@ -4,15 +4,8 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import { RJSFSchema, UiSchema, WidgetProps } from "@rjsf/utils";
-
-const ProductionDataTitleWidget: React.FC<WidgetProps> = ({ id, value }) => {
-  return (
-    <div id={id} className="w-full mt-8">
-      <u>Product:</u> {value}
-    </div>
-  );
-};
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
 export const buildProductionDataSchema = (
   compliance_period_start: string,
@@ -58,6 +51,7 @@ export const buildProductionDataSchema = (
           product_name: {
             title: "Name",
             type: "string",
+            value: "custom value",
           },
           unit: {
             title: "Unit",

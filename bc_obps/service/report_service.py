@@ -115,6 +115,14 @@ class ReportService:
 
         return report_operation
 
+    @classmethod
+    def get_regulated_products_by_version_id(cls, version_id: int) -> QuerySet[RegulatedProduct]:
+        report_operation = ReportOperation.objects.get(report_version_id=version_id)
+
+        regulated_products = report_operation.regulated_products.all()
+
+        return regulated_products
+
     @staticmethod
     def get_report_type_by_version_id(version_id: int) -> ReportVersion:
         return ReportVersion.objects.get(id=version_id)
