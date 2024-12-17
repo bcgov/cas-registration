@@ -3,6 +3,7 @@ import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
+import { getRegistrationPurposes } from "@/administration/tests/components/operations/mocks";
 
 export const createAdministrationRegistrationInformationSchema = async (
   registrationPurposeValue: string,
@@ -10,6 +11,7 @@ export const createAdministrationRegistrationInformationSchema = async (
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
+  const registrationPurposes: { id: number; name: string }[] = await getRegistrationPurposes();
 
   const isRegulatedProducts =
     registrationPurposeValue ===
@@ -28,6 +30,12 @@ export const createAdministrationRegistrationInformationSchema = async (
       registration_purpose: {
         type: "string",
         title: "The purpose of this registration is to register as a:",
+        items: {
+          enum: registrationPurposes.map((purpose) => purpose.id),
+          // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
+          // @ts-ignore
+          enumNames: registrationPurposes.map((purpose) => purpose.name),
+        }
       },
       ...(isRegulatedProducts && {
         regulated_operation_preface: {
@@ -114,6 +122,9 @@ export const registrationInformationUiSchema: UiSchema = {
     "new_entrant_application",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
+  registration_purpose: {
+    "ui:widget": "ComboBox",
+  },
   regulated_operation_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
