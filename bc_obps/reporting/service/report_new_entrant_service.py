@@ -33,7 +33,7 @@ class ReportNewEntrantService:
             production_amount=Subquery(
                 ReportNewEntrantProduction.objects.filter(
                     product=OuterRef('pk'), report_new_entrant__report_version_id=report_version_id
-                ).values('production_amount')[:1],
+                ).values('production_amount'),
                 output_field=DecimalField(),
             )
         )
@@ -48,7 +48,7 @@ class ReportNewEntrantService:
             emission=Subquery(
                 ReportNewEntrantEmission.objects.filter(
                     emission_category=OuterRef('pk'), report_new_entrant__report_version_id=report_version_id
-                ).values('emission')[:1],
+                ).values('emission'),
                 output_field=DecimalField(),
             )
         )
