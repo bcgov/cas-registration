@@ -198,7 +198,7 @@ class ComplianceService:
         # Craft return object with all data
         return_object = ComplianceDataSchemaOut(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
-            reporting_only_emissions=total_allocated_reporting_only,
+            reporting_only_emissions=round(Decimal(total_allocated_reporting_only), 4),
             emissions_attributable_for_compliance=round(total_allocated_for_compliance_2024, 4),
             emissions_limit=round(emissions_limit_total, 4),
             excess_emissions=round(excess_emissions, 4),
