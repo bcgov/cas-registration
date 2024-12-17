@@ -158,9 +158,16 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def create_opted_in_operation_detail(cls, user_guid: UUID, operation: Operation) -> Operation:
+    def create_or_update_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
+        operation = OperationDataAccessService.get_by_id(operation_id)
+
+        # industry users can only edit operations that belong to their operator
+        if not operation.user_has_access(user_guid):
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
         operation.opt_in = True
-        operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
+        if not operation.opted_in_operation:
+            operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
         operation.save(update_fields=['opted_in_operation', 'opt_in'])
 
         return operation
@@ -272,7 +279,7 @@ class OperationServiceV2:
         operation.documents.add(*operation_documents)
 
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            operation = cls.create_opted_in_operation_detail(user_guid, operation)
+            operation = cls.create_or_update_opted_in_operation_detail(user_guid, operation.id)
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
@@ -298,11 +305,10 @@ class OperationServiceV2:
         )
 
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            # TODO in ticket 2169 - replace this with create_or_update_-----
-            operation = cls.create_opted_in_operation_detail(user_guid, operation)
+            operation = cls.create_or_update_opted_in_operation_detail(user_guid, operation.id)
 
-        # TODO should status reset to DRAFT if editing registration info?
-        cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
+        if operation.status in [Operation.Statuses.NOT_STARTED, Operation.Statuses.PENDING]:
+            cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
         operation.set_create_or_update(user_guid)
 
         return operation
@@ -520,7 +526,7 @@ class OperationServiceV2:
         operation.save(update_fields=["operator_id"])
         operation.set_create_or_update(user_guid)
         return operation
-    
+
     @classmethod
     def handle_change_of_registration_purpose(
         cls, user_guid: UUID, original_operation: Operation, payload: OperationInformationIn
