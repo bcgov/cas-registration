@@ -174,6 +174,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "register_edit_operation_information",
                 "kwargs": {"operation_id": mock_uuid},
             },
+            {
+                "method": "post",
+                "endpoint_name": "submit_report_version",
+                "kwargs": {"version_id": mock_int},
+            },
             {"method": "put", "endpoint_name": "update_operation", "kwargs": {"operation_id": mock_uuid}},
             {
                 "method": "put",
@@ -319,11 +324,6 @@ class TestEndpointPermissions(TestCase):
                 "method": "get",
                 "endpoint_name": "get_emission_summary_totals",
                 "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "submit_report_version",
-                "kwargs": {"version_id": mock_int},
             },
         ],
         "authorized_irc_user_and_industry_admin_user": [],
