@@ -176,7 +176,7 @@ class ComplianceService:
                     apr_dec_production=production_totals["apr_dec"],
                     emission_intensity=ei,
                     allocated_industrial_process_emissions=industrial_process,
-                    allocated_compliance_emissions=allocated_for_compliance_2024,
+                    allocated_compliance_emissions=round(allocated_for_compliance_2024, 4),
                 )
             )
         # Get attributable emission total
@@ -192,10 +192,10 @@ class ComplianceService:
         return_object = ComplianceDataSchemaOut(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
             reporting_only_emissions=total_allocated_reporting_only,
-            emissions_attributable_for_compliance=total_allocated_for_compliance_2024,
-            emissions_limit=emissions_limit_total,
-            excess_emissions=excess_emissions,
-            credited_emissions=credited_emissions,
+            emissions_attributable_for_compliance=round(total_allocated_for_compliance_2024, 4),
+            emissions_limit=round(emissions_limit_total, 4),
+            excess_emissions=round(excess_emissions, 4),
+            credited_emissions=round(credited_emissions, 4),
             regulatory_values=naics_data,
             products=compliance_product_list,
         )
