@@ -206,6 +206,5 @@ class ComplianceService:
             regulatory_values=naics_data,
             products=compliance_product_list,
         )
-        print(return_object)
 
         return return_object

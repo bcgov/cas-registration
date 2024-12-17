@@ -320,5 +320,19 @@
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "4486f2fb-62ed-438d-bb3e-0819b51e3aff",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 24",
+      "type": "Single Facility",
+      "swrs_facility_id": 1024,
+      "bcghg_id": "13219990999",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
   }
 ]
