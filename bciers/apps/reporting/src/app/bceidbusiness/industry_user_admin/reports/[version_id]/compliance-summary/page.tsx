@@ -1,14 +1,4 @@
-import { Suspense } from "react";
-import ComplianceSummaryData from "@reporting/src/app/components/complianceSummary/ComplianceSummaryData";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import ComplianceSummaryPage from "@reporting/src/app/components/complianceSummary/ComplianceSummaryPage";
 
-export default async function Page(router: any) {
-  return (
-    <>
-      <Suspense fallback="Loading Schema">
-        <ComplianceSummaryData
-          versionId={parseInt(router.params?.version_id)}
-        />
-      </Suspense>
-    </>
-  );
-}
+export default defaultPageFactory(ComplianceSummaryPage);
