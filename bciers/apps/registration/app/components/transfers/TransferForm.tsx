@@ -172,7 +172,7 @@ export default function TransferForm({
     if (!error) {
       // Filter out the current from_operation from toOperatorOperations(we can't transfer facilities to the same operation)
       const filteredToOperatorOperations = toOperatorOperations.filter(
-        (operation: { [key: string]: any }) =>
+        (operation: OperationTransferData) =>
           operation.id !== formState?.from_operation,
       );
 
