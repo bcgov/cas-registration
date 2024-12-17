@@ -83,23 +83,23 @@ class ReportNewEntrantService:
         emissions_to_create = [
             ReportNewEntrantEmission(
                 report_new_entrant=report_new_entrant,
-                emission_category_id=emission_item["id"],
-                emission=emission_item["emission"],
+                emission_category_id=emission_item.id,
+                emission=emission_item.emission,
             )
             for category in data.emissions
-            for emission_item in category["emissionData"]
-            if emission_item.get("emission") is not None
+            for emission_item in category.emissionData
+            if emission_item.emission is not None
         ]
         ReportNewEntrantEmission.objects.bulk_create(emissions_to_create)
 
         productions_to_create = [
             ReportNewEntrantProduction(
                 report_new_entrant=report_new_entrant,
-                product_id=product["id"],
-                production_amount=product["production_amount"],
+                product_id=product.id,
+                production_amount=product.production_amount,
             )
             for product in data.products
-            if product.get("production_amount") is not None
+            if product.production_amount is not None
         ]
         ReportNewEntrantProduction.objects.bulk_create(productions_to_create)
 
