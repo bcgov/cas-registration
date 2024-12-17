@@ -34,8 +34,8 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         for SFO facility ID and name.
 
         Depending on the user's role, this function returns a queryset of `Operation` objects:
-        - IRC users can access all operations.
-        - Industry users can only access operations associated with their own operator.
+        - IRC users can access all registered operations.
+        - Industry users can only access operations associated with their own operator (operations that have been transferred to another operator are excluded).
 
         The queryset is annotated with the `sfo_facility_id` and `facility_name` if the
         operation type is SFO and the operation is actively designated for a facility.
