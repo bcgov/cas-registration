@@ -1,8 +1,10 @@
-from decimal import Decimal
 from unittest.mock import patch, MagicMock
+from django.db.models import DecimalField, Value
 from model_bakery import baker
+from registration.models.regulated_product import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from reporting.models.emission_category import EmissionCategory
 from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
 
 
@@ -11,55 +13,159 @@ class TestNewEntrantDataApi(CommonTestSetup):
         # Set up common test data
         self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
         self.report_new_entrant = baker.make_recipe(
-            'reporting.tests.utils.report_new_entrant', report_version=self.report_version
+            'reporting.tests.utils.report_new_entrant',
+            report_version=self.report_version,
+            authorization_date='2022-01-01',
+            first_shipment_date='4999-01-02',
+            new_entrant_period_start='1999-01-02',
         )
-        self.regulated_product = baker.make_recipe('registration.tests.utils.regulated_product')
-        self.emission_category = baker.make_recipe('reporting.tests.utils.emission_category')
 
-        self.report_new_entrant_emission = baker.make_recipe(
-            'reporting.tests.utils.report_new_entrant_emission',
-            report_new_entrant=self.report_new_entrant,
-            emission_category=self.emission_category,
-            emission=Decimal('15.0'),
-        )
-        self.report_new_entrant_production = baker.make_recipe(
-            'reporting.tests.utils.report_new_entrant_production',
-            report_new_entrant=self.report_new_entrant,
-            product=self.regulated_product,
-            production_amount=Decimal('100.0'),
-        )
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
-    # """Tests for the get_new_entrant_data endpoint."""
-    #
-    # @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_new_entrant_data")
-    # @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_emissions_data")
-    # @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_products_data")
-    # def test_returns_new_entrant_data(
-    #     self,
-    #     mock_get_products_data: MagicMock,
-    #     mock_get_emissions_data: MagicMock,
-    #     mock_get_new_entrant_data: MagicMock,
-    # ):
-    #     mock_get_new_entrant_data.return_value = self.report_new_entrant
-    #
-    #     mock_get_emissions_data.return_value = [self.report_new_entrant_emission]
-    #
-    #     mock_get_products_data.return_value = [self.report_new_entrant_production]
-    #
-    #     response = TestUtils.mock_get_with_auth_role(
-    #         self,
-    #         "industry_user",
-    #         custom_reverse_lazy(
-    #             "get_new_entrant_data",
-    #             kwargs={"report_version_id": self.report_version.id},
-    #         ),
-    #     )
-    #
-    #     mock_get_new_entrant_data.assert_called_once()
-    #     mock_get_emissions_data.assert_called_once()
-    #     mock_get_products_data.assert_called_once()
+    """Tests for the get_new_entrant_data endpoint."""
+
+    @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_new_entrant_data")
+    @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_emissions_data")
+    @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_products_data")
+    def test_returns_new_entrant_data_with_emission_and_production_data_existing(
+        self,
+        mock_get_products_data: MagicMock,
+        mock_get_emissions_data: MagicMock,
+        mock_get_new_entrant_data: MagicMock,
+    ):
+        mock_get_new_entrant_data.return_value = self.report_new_entrant
+        mock_get_emissions_data.return_value = EmissionCategory.objects.all().annotate(emission=Value(123))[:3]
+        mock_get_products_data.return_value = RegulatedProduct.objects.all().annotate(production_amount=Value(234))[:2]
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_new_entrant_data",
+                kwargs={"report_version_id": self.report_version.id},
+            ),
+        )
+
+        mock_get_new_entrant_data.assert_called_once()
+        mock_get_emissions_data.assert_called_once()
+        mock_get_products_data.assert_called_once()
+
+        assert response.json() == {
+            'emissions': [
+                {
+                    'category_name': 'Flaring emissions',
+                    'category_type': 'basic',
+                    'emission': '123',
+                    'id': 1,
+                },
+                {
+                    'category_name': 'Fugitive emissions',
+                    'category_type': 'basic',
+                    'emission': '123',
+                    'id': 2,
+                },
+                {
+                    'category_name': 'Industrial process emissions',
+                    'category_type': 'basic',
+                    'emission': '123',
+                    'id': 3,
+                },
+            ],
+            'naics_code': '486210',
+            'new_entrant_data': {
+                'assertion_statement': True,
+                'authorization_date': '2022-01-01T00:00:00',
+                'first_shipment_date': '4999-01-02T00:00:00',
+                'id': 1,
+                'new_entrant_period_start': '1999-01-02T00:00:00',
+            },
+            'products': [
+                {
+                    'id': 1,
+                    'name': 'BC-specific refinery complexity throughput',
+                    'production_amount': '234',
+                    'unit': 'BCRCT',
+                },
+                {
+                    'id': 2,
+                    'name': 'Cement equivalent',
+                    'production_amount': '234',
+                    'unit': 'Tonne cement equivalent',
+                },
+            ],
+        }
+
+    @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_new_entrant_data")
+    @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_emissions_data")
+    @patch("reporting.service.report_new_entrant_service.ReportNewEntrantService.get_products_data")
+    def test_returns_new_entrant_data_without_emission_and_production_data_existing(
+        self,
+        mock_get_products_data: MagicMock,
+        mock_get_emissions_data: MagicMock,
+        mock_get_new_entrant_data: MagicMock,
+    ):
+        # annotate with Nones
+        mock_get_new_entrant_data.return_value = self.report_new_entrant
+        mock_get_emissions_data.return_value = EmissionCategory.objects.all().annotate(
+            emission=Value(None, output_field=DecimalField())
+        )[:3]
+        mock_get_products_data.return_value = RegulatedProduct.objects.all().annotate(
+            production_amount=Value(None, output_field=DecimalField())
+        )[:2]
+
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_new_entrant_data",
+                kwargs={"report_version_id": self.report_version.id},
+            ),
+        )
+
+        mock_get_new_entrant_data.assert_called_once()
+        mock_get_emissions_data.assert_called_once()
+        mock_get_products_data.assert_called_once()
+
+        assert response.json() == {
+            'emissions': [
+                {
+                    'category_name': 'Flaring emissions',
+                    'category_type': 'basic',
+                    'id': 1,
+                },
+                {
+                    'category_name': 'Fugitive emissions',
+                    'category_type': 'basic',
+                    'id': 2,
+                },
+                {
+                    'category_name': 'Industrial process emissions',
+                    'category_type': 'basic',
+                    'id': 3,
+                },
+            ],
+            'naics_code': '486210',
+            'new_entrant_data': {
+                'assertion_statement': True,
+                'authorization_date': '2022-01-01T00:00:00',
+                'first_shipment_date': '4999-01-02T00:00:00',
+                'id': 2,
+                'new_entrant_period_start': '1999-01-02T00:00:00',
+            },
+            'products': [
+                {
+                    'id': 1,
+                    'name': 'BC-specific refinery complexity throughput',
+                    'unit': 'BCRCT',
+                },
+                {
+                    'id': 2,
+                    'name': 'Cement equivalent',
+                    'unit': 'Tonne cement equivalent',
+                },
+            ],
+        }
 
     """Tests for the save_new_entrant_data endpoint."""
 
