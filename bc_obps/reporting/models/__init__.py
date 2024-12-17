@@ -28,6 +28,9 @@ from .custom_methodology_schema import CustomMethodologySchema
 from .report_additional_data import ReportAdditionalData
 from .emission_category import EmissionCategory
 from .emission_category_mapping import EmissionCategoryMapping
+from .report_new_entrant import ReportNewEntrant
+from .report_new_entrant_production import ReportNewEntrantProduction
+from .report_new_entrant_emission import ReportNewEntrantEmission
 from .report_non_attributable_emissions import ReportNonAttributableEmissions
 from .report_product import ReportProduct
 from .report_verification import ReportVerification
@@ -66,6 +69,9 @@ __all__ = [
     "EmissionCategoryMapping",
     "ReportNonAttributableEmissions",
     "ReportRawActivityData",
+    "ReportNewEntrant",
+    "ReportNewEntrantProduction",
+    "ReportNewEntrantEmission",
     "ReportVerification",
     "ReportAttachment",
     "NaicsRegulatoryValue",
