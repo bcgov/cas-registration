@@ -1,3 +1,31 @@
+# [1.17.0](https://github.com/bcgov/cas-registration/compare/v1.15.0...v1.17.0) (2024-12-18)
+
+### Bug Fixes
+
+- additional data nav buttons ([2676232](https://github.com/bcgov/cas-registration/commit/267623284e235fb01d7f79ae8234363d7aacaa11))
+- crash on removing all items from a multiselect widget ([cd7004b](https://github.com/bcgov/cas-registration/commit/cd7004b802f6b052bef7d7fa59a5954d32447e76))
+- Fix reporting step buttons on attachments and allocation pages ([d1097af](https://github.com/bcgov/cas-registration/commit/d1097af4de1516f7705810a33b2cbdf7a33c918b))
+- formState is not persisted across activity pages ([d096887](https://github.com/bcgov/cas-registration/commit/d096887a021b4ae429da0a92eb280469feb8c7cd))
+- minimum item count in products and activities for an operation ([0839662](https://github.com/bcgov/cas-registration/commit/08396624bbf4a85e1f535d90dcbaa53e6b71994b))
+- skip zero eemission allocations + omit excluded emis from totals ([9494db4](https://github.com/bcgov/cas-registration/commit/9494db48cb1e15c884e1474ae112035ce45424cb))
+- submit blocked when validation failed once ([5dbb0df](https://github.com/bcgov/cas-registration/commit/5dbb0dfb5e6f5ab76e1f4a19b3f368a5db860d82))
+
+### Features
+
+- a report cannot be submitted if the verification statement is missing ([bbdf2b3](https://github.com/bcgov/cas-registration/commit/bbdf2b3407ac98d9873dec5e0a2b5c9a99331e51))
+- Add alumina production JSON Schemas and UISchemas + rebase/style/field type edits ([1e22802](https://github.com/bcgov/cas-registration/commit/1e22802c335feb738f1726895839800d92f1db9b))
+- add compliance service to API to calculate data for compliance summary ([5a45ba2](https://github.com/bcgov/cas-registration/commit/5a45ba2f0876ce2342e469e1d489233ec3142911))
+- Add reporting step buttons component for reporting forms, separating save and continue buttons ([da2b6ac](https://github.com/bcgov/cas-registration/commit/da2b6acdd617872378c925d613a5497d204a7cff))
+- add transfer event feature ([2816b5d](https://github.com/bcgov/cas-registration/commit/2816b5db84ceb6a3c501d2b74902a0ede4d21e8a))
+- allocation of emissions ([38aad11](https://github.com/bcgov/cas-registration/commit/38aad11f8b682992081f2d09a072c3669a1b9b5a))
+- FE work for prime admin approval ([6012a4f](https://github.com/bcgov/cas-registration/commit/6012a4ff2236de7a26df4358771a1246195b7393))
+- new page for final report review ([abf15f0](https://github.com/bcgov/cas-registration/commit/abf15f08ded8590c9d84bfefd535122a29b385d9))
+- validation of verification statement for the attachments page ([9201a18](https://github.com/bcgov/cas-registration/commit/9201a187292127731252494719d690509d32e49c))
+
+### Reverts
+
+- Revert "test: v2 endpoint tests" ([505897a](https://github.com/bcgov/cas-registration/commit/505897af1a090d7a8115d445af738a31c0a3052d))
+
 # [1.16.0](https://github.com/bcgov/cas-registration/compare/v1.15.0...v1.16.0) (2024-12-12)
 
 ### Bug Fixes
