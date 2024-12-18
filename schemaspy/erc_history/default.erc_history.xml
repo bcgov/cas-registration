@@ -501,6 +501,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="operator_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="status" nullable="false" remarks="The status of an operation in relation to a specific operator (e.g. if an operation has transferred ownership, it may have a status of Transferred with its old operator and Active with its new one)" size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="operation_designated_operator_timeline_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -940,19 +941,20 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="id" nullable="false" remarks="Primary key to identify the event" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="effective_date" nullable="false" remarks="The effective date of the event" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="description" nullable="false" remarks="Description of the transfer or change in designated operator." size="2147483647" type="text" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="true" defaultValue="null" digits="0" id="8" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="other_operator_id" nullable="true" remarks="The second operator who is involved in the transfer but is not reporting the event." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="other_operator_contact_id" nullable="true" remarks="Contact information for the other operator." size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="7" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="from_operation_id" nullable="true" remarks="The operation that facilities are being transferred from." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="from_operator_id" nullable="true" remarks="The operator who is transferring the operation or facility." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="to_operation_id" nullable="true" remarks="The operation that facilities are being transferred to." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="to_operator_id" nullable="true" remarks="The operator who is receiving the operation or facility." size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="transfer_event_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -963,6 +965,12 @@
          <index name="transfer_event_history_created_by_id_94355b16" unique="false">
             <column ascending="true" name="created_by_id"/>
          </index>
+         <index name="transfer_event_history_from_operation_id_1741273c" unique="false">
+            <column ascending="true" name="from_operation_id"/>
+         </index>
+         <index name="transfer_event_history_from_operator_id_e2eff035" unique="false">
+            <column ascending="true" name="from_operator_id"/>
+         </index>
          <index name="transfer_event_history_history_date_6a531b2d" unique="false">
             <column ascending="true" name="history_date"/>
          </index>
@@ -972,11 +980,11 @@
          <index name="transfer_event_history_operation_id_d932215f" unique="false">
             <column ascending="true" name="operation_id"/>
          </index>
-         <index name="transfer_event_history_other_operator_contact_id_124be35a" unique="false">
-            <column ascending="true" name="other_operator_contact_id"/>
+         <index name="transfer_event_history_to_operation_id_eff442be" unique="false">
+            <column ascending="true" name="to_operation_id"/>
          </index>
-         <index name="transfer_event_history_other_operator_id_8b1bbf98" unique="false">
-            <column ascending="true" name="other_operator_id"/>
+         <index name="transfer_event_history_to_operator_id_18002f7f" unique="false">
+            <column ascending="true" name="to_operator_id"/>
          </index>
          <index name="transfer_event_history_updated_by_id_0c6c38ac" unique="false">
             <column ascending="true" name="updated_by_id"/>

@@ -212,23 +212,6 @@
                                     <td><p>The effective date of the event</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="description">description</span></td>
-                                    <td>text</td>
-                                    <td>2147483647</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Description of the transfer or change in designated operator.</p></td>
-                                </tr>
-                                <tr>
                                     <td><span id="status">status</span></td>
                                     <td>varchar</td>
                                     <td>100</td>
@@ -312,50 +295,6 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="other_operator_id">other_operator_id</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="transfer_event.other_operator_id references operator.id via transfer_event_other_operator_id_0c17347e_fk_operator_id"><a href='operator.html'>operator</a><span class='relatedKey'>.id</span></td>
-                                                <td class="constraint detail">transfer_event_other_operator_id_0c17347e_fk_operator_id</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>The second operator who is involved in the transfer but is not reporting the event.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="other_operator_contact_id">other_operator_contact_id</span></td>
-                                    <td>int8</td>
-                                    <td>19</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="transfer_event.other_operator_contact_id references contact.id via transfer_event_other_operator_contact_id_922e1c28_fk_contact_id"><a href='contact.html'>contact</a><span class='relatedKey'>.id</span></td>
-                                                <td class="constraint detail">transfer_event_other_operator_contact_id_922e1c28_fk_contact_id</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>Contact information for the other operator.</p></td>
-                                </tr>
-                                <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="updated_by_id">updated_by_id</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
@@ -376,6 +315,94 @@
                                         </table>
                                     </td>
                                     <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="from_operation_id">from_operation_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="transfer_event.from_operation_id references operation.id via transfer_event_from_operation_id_4e4208ed_fk_operation_id"><a href='operation.html'>operation</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">transfer_event_from_operation_id_4e4208ed_fk_operation_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The operation that facilities are being transferred from.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="from_operator_id">from_operator_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="transfer_event.from_operator_id references operator.id via transfer_event_from_operator_id_0bed1950_fk_operator_id"><a href='operator.html'>operator</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">transfer_event_from_operator_id_0bed1950_fk_operator_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The operator who is transferring the operation or facility.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="to_operation_id">to_operation_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="transfer_event.to_operation_id references operation.id via transfer_event_to_operation_id_9838b42e_fk_operation_id"><a href='operation.html'>operation</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">transfer_event_to_operation_id_9838b42e_fk_operation_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The operation that facilities are being transferred to.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="to_operator_id">to_operator_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="transfer_event.to_operator_id references operator.id via transfer_event_to_operator_id_50bffadc_fk_operator_id"><a href='operator.html'>operator</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">transfer_event_to_operator_id_50bffadc_fk_operator_id</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>The operator who is receiving the operation or facility.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -426,22 +453,34 @@
                                     <td>created_by_id</td>
                                 </tr>
                                 <tr>
+                                    <td title='Indexed'>transfer_event_from_operation_id_4e4208ed</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>from_operation_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>transfer_event_from_operator_id_0bed1950</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>from_operator_id</td>
+                                </tr>
+                                <tr>
                                     <td title='Indexed'>transfer_event_operation_id_9dedc582</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>operation_id</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>transfer_event_other_operator_contact_id_922e1c28</td>
+                                    <td title='Indexed'>transfer_event_to_operation_id_9838b42e</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>other_operator_contact_id</td>
+                                    <td>to_operation_id</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>transfer_event_other_operator_id_0c17347e</td>
+                                    <td title='Indexed'>transfer_event_to_operator_id_50bffadc</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>other_operator_id</td>
+                                    <td>to_operator_id</td>
                                 </tr>
                                 <tr>
                                     <td title='Indexed'>transfer_event_updated_by_id_a65894a8</td>
@@ -474,137 +513,137 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="contact.html" target="_top" title="contact" alt="" coords="325,647,502,969">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,439,224,703">
-<area shape="rect" id="node3" href="operation.html" target="_top" title="operation" alt="" coords="603,117,924,704">
-<area shape="rect" id="node4" href="operator.html" target="_top" title="operator" alt="" coords="268,189,559,629">
-<area shape="rect" id="node5" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="968,177,1365,628">
-<area shape="rect" id="node6" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1409,239,1680,391">
+<area shape="rect" id="node1" href="operation.html" target="_top" title="operation" alt="" coords="603,213,924,800">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,419,224,683">
+<area shape="rect" id="node3" href="operator.html" target="_top" title="operator" alt="" coords="268,589,559,1029">
+<area shape="rect" id="node4" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="968,5,1301,485">
+<area shape="rect" id="node5" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1345,67,1616,219">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/transfer_event.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="501,1715,755,1803">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="255,2006,370,2094">
-<area shape="rect" id="node49" href="app_role.html" target="_top" title="app_role" alt="" coords="5,2003,153,2091">
-<area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="472,1301,784,1389">
-<area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1224,337,1413,425">
-<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="872,1303,1029,1391">
-<area shape="rect" id="node6" href="contact.html" target="_top" title="contact" alt="" coords="558,478,698,566">
-<area shape="rect" id="node17" href="naics_code.html" target="_top" title="naics_code" alt="" coords="545,1406,711,1494">
-<area shape="rect" id="node18" href="operator.html" target="_top" title="operator" alt="" coords="553,583,703,671">
-<area shape="rect" id="node19" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="485,1195,771,1283">
-<area shape="rect" id="node7" href="address.html" target="_top" title="address" alt="" coords="242,422,383,510">
-<area shape="rect" id="node8" href="business_role.html" target="_top" title="business_role" alt="" coords="219,527,406,615">
-<area shape="rect" id="node9" href="contact_documents.html" target="_top" title="contact_documents" alt="" coords="833,817,1069,905">
-<area shape="rect" id="node10" href="document.html" target="_top" title="document" alt="" coords="547,829,709,917">
-<area shape="rect" id="node11" href="facility.html" target="_top" title="facility" alt="" coords="883,1845,1018,1933">
-<area shape="rect" id="node12" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1125,2123,1513,2211">
-<area shape="rect" id="node13" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1928,2735,2120,2823">
-<area shape="rect" id="node14" href="report_version.html" target="_top" title="report_version" alt="" coords="1601,2259,1797,2347">
-<area shape="rect" id="node29" href="report.html" target="_top" title="report" alt="" coords="1253,2018,1384,2106">
-<area shape="rect" id="node15" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1207,1555,1431,1643">
-<area shape="rect" id="node16" href="business_structure.html" target="_top" title="business_structure" alt="" coords="197,155,428,243">
-<area shape="rect" id="node20" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="1200,1301,1437,1389">
-<area shape="rect" id="node21" href="operation_contacts.html" target="_top" title="operation_contacts" alt="" coords="1202,531,1435,619">
-<area shape="rect" id="node22" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1117,1913,1520,2001">
-<area shape="rect" id="node23" href="operation_documents.html" target="_top" title="operation_documents" alt="" coords="1192,1195,1445,1283">
-<area shape="rect" id="node24" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="1159,1406,1479,1494">
-<area shape="rect" id="node25" href="operator_contacts.html" target="_top" title="operator_contacts" alt="" coords="838,498,1063,586">
-<area shape="rect" id="node26" href="operator_documents.html" target="_top" title="operator_documents" alt="" coords="828,958,1073,1046">
-<area shape="rect" id="node27" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="845,149,1056,237">
-<area shape="rect" id="node28" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="842,711,1059,799">
-<area shape="rect" id="node30" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2294,2343,2490,2431">
-<area shape="rect" id="node31" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="1893,3187,2155,3275">
-<area shape="rect" id="node32" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1908,3361,2140,3449">
-<area shape="rect" id="node33" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3448,1765,3656,1853">
-<area shape="rect" id="node34" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3236,1765,3404,1853">
-<area shape="rect" id="node35" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2681,1899,2913,1987">
-<area shape="rect" id="node36" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3023,2334,3192,2422">
-<area shape="rect" id="node37" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3700,3271,3943,3359">
-<area shape="rect" id="node38" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2213,3098,2571,3186">
-<area shape="rect" id="node39" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1916,1971,2132,2059">
-<area shape="rect" id="node40" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1879,2841,2169,2929">
-<area shape="rect" id="node41" href="report_product.html" target="_top" title="report_product" alt="" coords="2292,2646,2492,2734">
-<area shape="rect" id="node42" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2615,2537,2979,2625">
-<area shape="rect" id="node43" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2253,2993,2531,3081">
-<area shape="rect" id="node44" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1909,2946,2139,3034">
-<area shape="rect" id="node45" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1225,2569,1412,2657">
-<area shape="rect" id="node46" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1167,2742,1471,2830">
-<area shape="rect" id="node47" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1120,727,1517,1178">
-<area shape="rect" id="node48" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1564,1179,1835,1331">
-<area shape="rect" id="node50" href="user_documents.html" target="_top" title="user_documents" alt="" coords="845,1542,1056,1630">
-<area shape="rect" id="node51" href="user_operator.html" target="_top" title="user_operator" alt="" coords="855,1437,1047,1525">
-<area shape="rect" id="node52" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="479,1006,777,1094">
+<area shape="rect" id="node1" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="501,1517,755,1605">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="255,1943,370,2031">
+<area shape="rect" id="node50" href="app_role.html" target="_top" title="app_role" alt="" coords="5,1941,153,2029">
+<area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="472,1207,784,1295">
+<area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1224,233,1413,321">
+<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="872,873,1029,961">
+<area shape="rect" id="node6" href="contact.html" target="_top" title="contact" alt="" coords="558,419,698,507">
+<area shape="rect" id="node15" href="naics_code.html" target="_top" title="naics_code" alt="" coords="545,891,711,979">
+<area shape="rect" id="node16" href="operator.html" target="_top" title="operator" alt="" coords="553,525,703,613">
+<area shape="rect" id="node17" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="485,1102,771,1190">
+<area shape="rect" id="node7" href="address.html" target="_top" title="address" alt="" coords="242,417,383,505">
+<area shape="rect" id="node8" href="document.html" target="_top" title="document" alt="" coords="547,702,709,790">
+<area shape="rect" id="node9" href="facility.html" target="_top" title="facility" alt="" coords="883,1721,1018,1809">
+<area shape="rect" id="node10" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1125,2002,1513,2090">
+<area shape="rect" id="node11" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1928,2418,2120,2506">
+<area shape="rect" id="node12" href="report_version.html" target="_top" title="report_version" alt="" coords="1601,2222,1797,2310">
+<area shape="rect" id="node27" href="report.html" target="_top" title="report" alt="" coords="1253,1655,1384,1743">
+<area shape="rect" id="node13" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1207,1293,1431,1381">
+<area shape="rect" id="node14" href="business_structure.html" target="_top" title="business_structure" alt="" coords="197,522,428,610">
+<area shape="rect" id="node18" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="1200,1046,1437,1134">
+<area shape="rect" id="node19" href="operation_contacts.html" target="_top" title="operation_contacts" alt="" coords="1202,835,1435,923">
+<area shape="rect" id="node20" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1117,1829,1520,1917">
+<area shape="rect" id="node21" href="operation_documents.html" target="_top" title="operation_documents" alt="" coords="1192,941,1445,1029">
+<area shape="rect" id="node22" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="1159,1151,1479,1239">
+<area shape="rect" id="node23" href="operator_contacts.html" target="_top" title="operator_contacts" alt="" coords="838,474,1063,562">
+<area shape="rect" id="node24" href="operator_documents.html" target="_top" title="operator_documents" alt="" coords="828,723,1073,811">
+<area shape="rect" id="node25" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="845,70,1056,158">
+<area shape="rect" id="node26" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="842,1201,1059,1289">
+<area shape="rect" id="node28" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2294,1957,2490,2045">
+<area shape="rect" id="node29" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="1893,2870,2155,2958">
+<area shape="rect" id="node30" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1908,3043,2140,3131">
+<area shape="rect" id="node31" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3448,3315,3656,3403">
+<area shape="rect" id="node32" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3236,2093,3404,2181">
+<area shape="rect" id="node33" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2681,2093,2913,2181">
+<area shape="rect" id="node34" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3023,2761,3192,2849">
+<area shape="rect" id="node35" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3700,3399,3943,3487">
+<area shape="rect" id="node36" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1905,2523,2143,2611">
+<area shape="rect" id="node37" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2234,3179,2550,3267">
+<area shape="rect" id="node38" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2225,1739,2559,1827">
+<area shape="rect" id="node39" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2213,2607,2571,2695">
+<area shape="rect" id="node40" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1916,143,2132,231">
+<area shape="rect" id="node41" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1879,1530,2169,1618">
+<area shape="rect" id="node42" href="report_product.html" target="_top" title="report_product" alt="" coords="2292,2781,2492,2869">
+<area shape="rect" id="node43" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2615,2935,2979,3023">
+<area shape="rect" id="node44" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2253,2954,2531,3042">
+<area shape="rect" id="node45" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1909,2697,2139,2785">
+<area shape="rect" id="node46" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1225,2311,1412,2399">
+<area shape="rect" id="node47" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1167,2417,1471,2505">
+<area shape="rect" id="node48" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1152,338,1485,818">
+<area shape="rect" id="node49" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1564,885,1835,1037">
+<area shape="rect" id="node51" href="user_documents.html" target="_top" title="user_documents" alt="" coords="845,1306,1056,1394">
+<area shape="rect" id="node52" href="user_operator.html" target="_top" title="user_operator" alt="" coords="855,1411,1047,1499">
+<area shape="rect" id="node53" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="479,997,777,1085">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/transfer_event.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="contact.html" target="_top" title="contact" alt="" coords="325,647,502,969">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,439,224,703">
-<area shape="rect" id="node3" href="operation.html" target="_top" title="operation" alt="" coords="603,117,924,704">
-<area shape="rect" id="node4" href="operator.html" target="_top" title="operator" alt="" coords="268,189,559,629">
-<area shape="rect" id="node5" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="968,177,1365,628">
-<area shape="rect" id="node6" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1409,239,1680,391">
+<area shape="rect" id="node1" href="operation.html" target="_top" title="operation" alt="" coords="603,213,924,800">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,419,224,683">
+<area shape="rect" id="node3" href="operator.html" target="_top" title="operator" alt="" coords="268,589,559,1029">
+<area shape="rect" id="node4" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="968,5,1301,485">
+<area shape="rect" id="node5" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1345,67,1616,219">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/transfer_event.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="540,2360,793,2448">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="316,2362,431,2450">
-<area shape="rect" id="node9" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,481,236,569">
-<area shape="rect" id="node49" href="app_role.html" target="_top" title="app_role" alt="" coords="47,2360,195,2448">
-<area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="511,2081,823,2169">
-<area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1263,2421,1452,2509">
-<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="911,1986,1068,2074">
-<area shape="rect" id="node6" href="contact.html" target="_top" title="contact" alt="" coords="597,710,737,798">
-<area shape="rect" id="node17" href="naics_code.html" target="_top" title="naics_code" alt="" coords="584,2186,749,2274">
-<area shape="rect" id="node18" href="operator.html" target="_top" title="operator" alt="" coords="592,816,741,904">
-<area shape="rect" id="node19" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="524,1892,809,1980">
-<area shape="rect" id="node7" href="address.html" target="_top" title="address" alt="" coords="303,570,444,658">
-<area shape="rect" id="node8" href="business_role.html" target="_top" title="business_role" alt="" coords="280,676,467,764">
-<area shape="rect" id="node10" href="contact_documents.html" target="_top" title="contact_documents" alt="" coords="871,952,1107,1040">
-<area shape="rect" id="node11" href="document.html" target="_top" title="document" alt="" coords="586,1542,747,1630">
-<area shape="rect" id="node12" href="facility.html" target="_top" title="facility" alt="" coords="922,2360,1057,2448">
-<area shape="rect" id="node13" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1163,2244,1551,2332">
-<area shape="rect" id="node14" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1967,2416,2159,2504">
-<area shape="rect" id="node15" href="report_version.html" target="_top" title="report_version" alt="" coords="1640,2700,1836,2788">
-<area shape="rect" id="node29" href="report.html" target="_top" title="report" alt="" coords="1292,2526,1423,2614">
-<area shape="rect" id="node16" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1245,726,1469,814">
-<area shape="rect" id="node20" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="1239,2138,1476,2226">
-<area shape="rect" id="node21" href="operation_contacts.html" target="_top" title="operation_contacts" alt="" coords="1241,1249,1474,1337">
-<area shape="rect" id="node22" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1156,1354,1559,1442">
-<area shape="rect" id="node23" href="operation_documents.html" target="_top" title="operation_documents" alt="" coords="1231,1928,1484,2016">
-<area shape="rect" id="node24" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="1197,2033,1517,2121">
-<area shape="rect" id="node25" href="operator_contacts.html" target="_top" title="operator_contacts" alt="" coords="877,637,1102,725">
-<area shape="rect" id="node26" href="operator_documents.html" target="_top" title="operator_documents" alt="" coords="867,1437,1112,1525">
-<area shape="rect" id="node27" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="884,460,1095,548">
-<area shape="rect" id="node28" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="881,742,1098,830">
-<area shape="rect" id="node30" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2333,3124,2529,3212">
-<area shape="rect" id="node31" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="1932,3590,2193,3678">
-<area shape="rect" id="node32" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1947,3213,2179,3301">
-<area shape="rect" id="node33" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3487,3658,3695,3746">
-<area shape="rect" id="node34" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3275,3501,3443,3589">
-<area shape="rect" id="node35" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2719,3260,2951,3348">
-<area shape="rect" id="node36" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3061,3417,3231,3505">
-<area shape="rect" id="node37" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3739,3742,3981,3830">
-<area shape="rect" id="node38" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2252,1160,2609,1248">
-<area shape="rect" id="node39" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1955,950,2171,1038">
-<area shape="rect" id="node40" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1917,1056,2208,1144">
-<area shape="rect" id="node41" href="report_product.html" target="_top" title="report_product" alt="" coords="2331,2877,2531,2965">
-<area shape="rect" id="node42" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2653,2788,3017,2876">
-<area shape="rect" id="node43" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2292,3349,2569,3437">
-<area shape="rect" id="node44" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1948,2988,2177,3076">
-<area shape="rect" id="node45" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1264,2836,1451,2924">
-<area shape="rect" id="node46" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1205,3077,1509,3165">
-<area shape="rect" id="node47" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1159,1460,1556,1910">
-<area shape="rect" id="node48" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1603,1869,1873,2021">
-<area shape="rect" id="node50" href="user_documents.html" target="_top" title="user_documents" alt="" coords="884,1578,1095,1666">
-<area shape="rect" id="node51" href="user_operator.html" target="_top" title="user_operator" alt="" coords="893,1684,1085,1772">
-<area shape="rect" id="node52" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="517,1437,816,1525">
+<area shape="rect" id="node1" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="495,2190,748,2278">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="293,2482,408,2570">
+<area shape="rect" id="node8" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,436,236,524">
+<area shape="rect" id="node50" href="app_role.html" target="_top" title="app_role" alt="" coords="47,2479,195,2567">
+<area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="465,1700,777,1788">
+<area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1217,2598,1407,2686">
+<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="865,1764,1023,1852">
+<area shape="rect" id="node6" href="contact.html" target="_top" title="contact" alt="" coords="551,750,691,838">
+<area shape="rect" id="node15" href="naics_code.html" target="_top" title="naics_code" alt="" coords="539,1806,704,1894">
+<area shape="rect" id="node16" href="operator.html" target="_top" title="operator" alt="" coords="547,923,696,1011">
+<area shape="rect" id="node17" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="479,2084,764,2172">
+<area shape="rect" id="node7" href="address.html" target="_top" title="address" alt="" coords="280,608,421,696">
+<area shape="rect" id="node9" href="document.html" target="_top" title="document" alt="" coords="541,2395,702,2483">
+<area shape="rect" id="node10" href="facility.html" target="_top" title="facility" alt="" coords="877,2394,1011,2482">
+<area shape="rect" id="node11" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1118,2303,1506,2391">
+<area shape="rect" id="node12" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1921,2424,2113,2512">
+<area shape="rect" id="node13" href="report_version.html" target="_top" title="report_version" alt="" coords="1595,2744,1791,2832">
+<area shape="rect" id="node27" href="report.html" target="_top" title="report" alt="" coords="1247,2492,1377,2580">
+<area shape="rect" id="node14" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1200,618,1424,706">
+<area shape="rect" id="node18" href="operation_activities.html" target="_top" title="operation_activities" alt="" coords="1193,1987,1431,2075">
+<area shape="rect" id="node19" href="operation_contacts.html" target="_top" title="operation_contacts" alt="" coords="1195,1023,1429,1111">
+<area shape="rect" id="node20" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1111,1384,1513,1472">
+<area shape="rect" id="node21" href="operation_documents.html" target="_top" title="operation_documents" alt="" coords="1185,2198,1439,2286">
+<area shape="rect" id="node22" href="operation_regulated_products.html" target="_top" title="operation_regulated_products" alt="" coords="1152,2092,1472,2180">
+<area shape="rect" id="node23" href="operator_contacts.html" target="_top" title="operator_contacts" alt="" coords="831,887,1057,975">
+<area shape="rect" id="node24" href="operator_documents.html" target="_top" title="operator_documents" alt="" coords="821,2252,1067,2340">
+<area shape="rect" id="node25" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="839,564,1049,652">
+<area shape="rect" id="node26" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="835,782,1053,870">
+<area shape="rect" id="node28" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2287,1807,2483,1895">
+<area shape="rect" id="node29" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="1887,3336,2148,3424">
+<area shape="rect" id="node30" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1901,2854,2133,2942">
+<area shape="rect" id="node31" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3441,3714,3649,3802">
+<area shape="rect" id="node32" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3229,3556,3397,3644">
+<area shape="rect" id="node33" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2674,2688,2906,2776">
+<area shape="rect" id="node34" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3016,3179,3185,3267">
+<area shape="rect" id="node35" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3693,3798,3936,3886">
+<area shape="rect" id="node36" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1898,3510,2137,3598">
+<area shape="rect" id="node37" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2227,3887,2543,3975">
+<area shape="rect" id="node38" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2219,3992,2552,4080">
+<area shape="rect" id="node39" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2207,3646,2564,3734">
+<area shape="rect" id="node40" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1909,2959,2125,3047">
+<area shape="rect" id="node41" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1872,934,2163,1022">
+<area shape="rect" id="node42" href="report_product.html" target="_top" title="report_product" alt="" coords="2285,3268,2485,3356">
+<area shape="rect" id="node43" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2608,3344,2972,3432">
+<area shape="rect" id="node44" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2247,3095,2524,3183">
+<area shape="rect" id="node45" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1903,1106,2132,1194">
+<area shape="rect" id="node46" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1219,2703,1405,2791">
+<area shape="rect" id="node47" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1160,1279,1464,1367">
+<area shape="rect" id="node48" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1145,1490,1479,1970">
+<area shape="rect" id="node49" href="transfer_event_facilities.html" target="_top" title="transfer_event_facilities" alt="" coords="1557,1919,1828,2071">
+<area shape="rect" id="node51" href="user_documents.html" target="_top" title="user_documents" alt="" coords="839,2499,1049,2587">
+<area shape="rect" id="node52" href="user_operator.html" target="_top" title="user_operator" alt="" coords="848,2147,1040,2235">
+<area shape="rect" id="node53" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="472,1979,771,2067">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/transfer_event.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>

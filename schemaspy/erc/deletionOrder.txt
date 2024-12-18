@@ -7,6 +7,8 @@ report_person_responsible
 report_methodology
 report_verification
 report_raw_activity_data
+report_new_entrant_production
+report_new_entrant_emission
 report_attachment
 operation_designated_operator_timeline
 facility_designated_operation_timeline
@@ -33,8 +35,8 @@ configuration_element_reporting_fields
 closure_event_facilities
 product_emission_intensity
 naics_regulatory_values
-configuration_element
 transfer_event
+configuration_element
 report_product
 report_non_attributable_emissions
 temporary_shutdown_event
@@ -44,6 +46,7 @@ well_authorization_number
 reporting_field
 report_operation
 report_emission
+report_new_entrant
 document
 report_fuel
 custom_methodology_schema
@@ -65,10 +68,10 @@ operator
 fuel_type
 document_type
 methodology
-regulated_product
 gas_type
-emission_category
 source_type
+regulated_product
+emission_category
 activity
 user
 reporting_year

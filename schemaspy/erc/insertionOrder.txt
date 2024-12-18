@@ -7,10 +7,10 @@ business_role
 reporting_year
 user
 activity
-source_type
 emission_category
-gas_type
 regulated_product
+source_type
+gas_type
 methodology
 document_type
 fuel_type
@@ -32,6 +32,7 @@ report_unit
 custom_methodology_schema
 report_fuel
 document
+report_new_entrant
 report_emission
 report_operation
 reporting_field
@@ -41,8 +42,8 @@ restart_event
 temporary_shutdown_event
 report_non_attributable_emissions
 report_product
-transfer_event
 configuration_element
+transfer_event
 naics_regulatory_values
 product_emission_intensity
 closure_event_facilities
@@ -69,6 +70,8 @@ report_additional_data
 facility_designated_operation_timeline
 operation_designated_operator_timeline
 report_attachment
+report_new_entrant_emission
+report_new_entrant_production
 report_raw_activity_data
 report_verification
 report_methodology

@@ -391,7 +391,6 @@
             <child column="point_of_contact_id" foreignKey="operation_point_of_contact_id_73f671ce_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="contact_id" foreignKey="operation_contacts_contact_id_ac69cfa9_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="operation_contacts"/>
             <child column="contact_id" foreignKey="operator_contacts_contact_id_1ff91085_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="operator_contacts"/>
-            <child column="other_operator_contact_id" foreignKey="transfer_event_other_operator_contact_id_922e1c28_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -575,6 +574,7 @@
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="emission_category_id" foreignKey="emission_category_ma_emission_category_id_abb24558_fk_emission_" implied="false" onDeleteCascade="false" schema="erc" table="emission_category_mapping"/>
             <child column="emissioncategory_id" foreignKey="report_emission_emis_emissioncategory_id_9f49ed6f_fk_emission_" implied="false" onDeleteCascade="false" schema="erc" table="report_emission_emission_categories"/>
+            <child column="emission_category_id" foreignKey="report_new_entrant_e_emission_category_id_c7936c93_fk_emission_" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_emission"/>
             <child column="emission_category_id" foreignKey="report_non_attributa_emission_category_id_a6f39e29_fk_emission_" implied="false" onDeleteCascade="false" schema="erc" table="report_non_attributable_emissions"/>
             <child column="emission_category_id" foreignKey="report_product_emiss_emission_category_id_0a69bd3e_fk_emission_" implied="false" onDeleteCascade="false" schema="erc" table="report_product_emission_allocation"/>
          </column>
@@ -988,7 +988,9 @@
             <child column="operation_id" foreignKey="report_operation_id_cf790552_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="report"/>
             <child column="operation_id" foreignKey="restart_event_operation_id_691382f1_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="restart_event"/>
             <child column="operation_id" foreignKey="temporary_shutdown_event_operation_id_a81b8cb7_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="temporary_shutdown_event"/>
+            <child column="from_operation_id" foreignKey="transfer_event_from_operation_id_4e4208ed_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
             <child column="operation_id" foreignKey="transfer_event_operation_id_9dedc582_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
+            <child column="to_operation_id" foreignKey="transfer_event_to_operation_id_9838b42e_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="operation_has_multiple_operators" nullable="false" remarks="Whether or not the operation has multiple operators" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="verified_at" nullable="true" remarks="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS." size="35" type="timestamptz" typeCode="93"/>
@@ -1162,6 +1164,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="operation_designated_updated_by_id_c262e734_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="status" nullable="false" remarks="The status of an operation in relation to a specific operator (e.g. if an operation has transferred ownership, it may have a status of Transferred with its old operator and Active with its new one)" size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="operation_designated_operator_timeline_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -1243,7 +1246,8 @@
             <child column="child_operator_id" foreignKey="parent_operator_child_operator_id_66a27872_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="parent_operator"/>
             <child column="bc_obps_operator_id" foreignKey="partner_operator_bc_obps_operator_id_4f1b4361_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="partner_operator"/>
             <child column="operator_id" foreignKey="report_operator_id_9de3d271_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="report"/>
-            <child column="other_operator_id" foreignKey="transfer_event_other_operator_id_0c17347e_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
+            <child column="from_operator_id" foreignKey="transfer_event_from_operator_id_0bed1950_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
+            <child column="to_operator_id" foreignKey="transfer_event_to_operator_id_50bffadc_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
             <child column="operator_id" foreignKey="user_operator_operator_id_ce92d85f_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="legal_name" nullable="false" remarks="The legal name of an operator" size="1000" type="varchar" typeCode="12">
@@ -1567,6 +1571,7 @@
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="regulatedproduct_id" foreignKey="operation_regulated__regulatedproduct_id_5e0156ca_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="operation_regulated_products"/>
             <child column="product_id" foreignKey="product_emission_int_product_id_05c2d355_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="product_emission_intensity"/>
+            <child column="product_id" foreignKey="report_new_entrant_p_product_id_750578cd_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_production"/>
             <child column="regulatedproduct_id" foreignKey="report_operation_reg_regulatedproduct_id_10ce22ab_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="report_operation_regulated_products"/>
             <child column="product_id" foreignKey="report_product_product_id_95eeddf5_fk_regulated_product_id" implied="false" onDeleteCascade="false" schema="erc" table="report_product"/>
          </column>
@@ -1951,6 +1956,137 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="report_new_entrant" remarks="Table storing new entrant emissions data for the reporting system" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="report_new_entrant_id" foreignKey="report_new_entrant_e_report_new_entrant_i_b315faa8_fk_report_ne" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_emission"/>
+            <child column="report_new_entrant_id" foreignKey="report_new_entrant_p_report_new_entrant_i_40a1549a_fk_report_ne" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_production"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="authorization_date" nullable="false" remarks="Date of authorization for emission reporting" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="first_shipment_date" nullable="false" remarks="Date of the first shipment related to this report (if applicable)" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="new_entrant_period_start" nullable="false" remarks="Start date of the new entrant reporting period" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="assertion_statement" nullable="false" remarks="Indicates if the assertion statement is certified" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_archived_by_id_fb299851_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_created_by_id_c50eb056_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="report_version_id" nullable="false" remarks="The associated report version for this new entrant record" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_new_entrant_report_version_id_1d8cd9f9_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_updated_by_id_e0725b62_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_new_entrant_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_new_entrant_archived_by_id_fb299851" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_new_entrant_created_by_id_c50eb056" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_new_entrant_report_version_id_1d8cd9f9" unique="false">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+         <index name="report_new_entrant_updated_by_id_e0725b62" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="report_new_entrant_emission" remarks="Table for storing emission data related to new entrant" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="emission" nullable="true" remarks="The amount of production associated with this report" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_e_archived_by_id_4cf1cd73_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_e_created_by_id_ca2d829c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="emission_category_id" nullable="false" remarks="The emission category" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_new_entrant_e_emission_category_id_c7936c93_fk_emission_" implied="false" onDeleteCascade="false" schema="erc" table="emission_category"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="report_new_entrant_id" nullable="false" remarks="The new entrant report to which this production record belongs" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_new_entrant_e_report_new_entrant_i_b315faa8_fk_report_ne" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_e_updated_by_id_77087a4b_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_new_entrant_emission_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_new_entrant_emission_archived_by_id_4cf1cd73" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_new_entrant_emission_created_by_id_ca2d829c" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_new_entrant_emission_emission_category_id_c7936c93" unique="false">
+            <column ascending="true" name="emission_category_id"/>
+         </index>
+         <index name="report_new_entrant_emission_report_new_entrant_id_b315faa8" unique="false">
+            <column ascending="true" name="report_new_entrant_id"/>
+         </index>
+         <index name="report_new_entrant_emission_updated_by_id_77087a4b" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+         <index name="unique_new_entrant_emissions" unique="true">
+            <column ascending="true" name="report_new_entrant_id"/>
+            <column ascending="true" name="emission_category_id"/>
+         </index>
+      </table>
+      <table name="report_new_entrant_production" remarks="Table for storing production data related to new entrant emissions reporting" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="production_amount" nullable="true" remarks="The amount of production associated with this report" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_p_archived_by_id_6237cc8c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_p_created_by_id_6a9f74f2_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="product_id" nullable="false" remarks="The regulated product associated with this production record" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_new_entrant_p_product_id_750578cd_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="regulated_product"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="report_new_entrant_id" nullable="false" remarks="The new entrant report to which this production record belongs" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_new_entrant_p_report_new_entrant_i_40a1549a_fk_report_ne" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_new_entrant_p_updated_by_id_829eb9ee_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_new_entrant_production_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_new_entrant_production_archived_by_id_6237cc8c" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_new_entrant_production_created_by_id_6a9f74f2" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_new_entrant_production_product_id_750578cd" unique="false">
+            <column ascending="true" name="product_id"/>
+         </index>
+         <index name="report_new_entrant_production_report_new_entrant_id_40a1549a" unique="false">
+            <column ascending="true" name="report_new_entrant_id"/>
+         </index>
+         <index name="report_new_entrant_production_updated_by_id_829eb9ee" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+         <index name="unique_new_entrant_production" unique="true">
+            <column ascending="true" name="product_id"/>
+            <column ascending="true" name="report_new_entrant_id"/>
+         </index>
+      </table>
       <table name="report_non_attributable_emissions" remarks="A table to store non-attributable emissions data." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="reportnonattributableemissions_id" foreignKey="report_non_attributa_reportnonattributabl_7851b375_fk_report_no" implied="false" onDeleteCascade="false" schema="erc" table="report_non_attributable_emissions_gas_type"/>
@@ -2230,7 +2366,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="allocated_quantity" nullable="false" remarks="The quantity of emissions allocated to this product in tonnes of CO2 equivalent(tCO2e)" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="allocated_quantity" nullable="false" remarks="The quantity of emissions allocated to this product in tonnes of CO2 equivalent(tCO2e)" size="20" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="allocation_methodology" nullable="false" remarks="The methodology used to calculate the allocated emissions" size="255" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="allocation_other_methodology_description" nullable="true" remarks="A description of the methodology used if 'Other' is selected" size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
@@ -2482,6 +2618,7 @@
             <child column="report_version_id" foreignKey="report_emission_report_version_id_9731ba04_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="report_version_id" foreignKey="report_fuel_report_version_id_bee0037a_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_fuel"/>
             <child column="report_version_id" foreignKey="report_methodology_report_version_id_2c8b10ba_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_methodology"/>
+            <child column="report_version_id" foreignKey="report_new_entrant_report_version_id_1d8cd9f9_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant"/>
             <child column="report_version_id" foreignKey="report_non_attributa_report_version_id_426dd0ab_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_non_attributable_emissions"/>
             <child column="report_version_id" foreignKey="report_operation_report_version_id_9eb4269b_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_operation"/>
             <child column="report_version_id" foreignKey="report_person_respon_report_version_id_0d6ee4de_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>
@@ -2709,25 +2846,30 @@
             <child column="transferevent_id" foreignKey="transfer_event_facil_transferevent_id_18226c0f_fk_transfer_" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event_facilities"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="effective_date" nullable="false" remarks="The effective date of the event" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="description" nullable="false" remarks="Description of the transfer or change in designated operator." size="2147483647" type="text" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="transfer_event_archived_by_id_99ed41ca_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="transfer_event_created_by_id_2f2c6acc_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="id" foreignKey="transfer_event_operation_id_9dedc582_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="other_operator_id" nullable="false" remarks="The second operator who is involved in the transfer but is not reporting the event." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="id" foreignKey="transfer_event_other_operator_id_0c17347e_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="other_operator_contact_id" nullable="false" remarks="Contact information for the other operator." size="19" type="int8" typeCode="-5">
-            <parent column="id" foreignKey="transfer_event_other_operator_contact_id_922e1c28_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="contact"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="transfer_event_updated_by_id_a65894a8_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="from_operation_id" nullable="true" remarks="The operation that facilities are being transferred from." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="id" foreignKey="transfer_event_from_operation_id_4e4208ed_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="from_operator_id" nullable="false" remarks="The operator who is transferring the operation or facility." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="id" foreignKey="transfer_event_from_operator_id_0bed1950_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="to_operation_id" nullable="true" remarks="The operation that facilities are being transferred to." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="id" foreignKey="transfer_event_to_operation_id_9838b42e_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="to_operator_id" nullable="false" remarks="The operator who is receiving the operation or facility." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="id" foreignKey="transfer_event_to_operator_id_50bffadc_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
          </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="transfer_event_pkey" unique="true">
@@ -2739,14 +2881,20 @@
          <index name="transfer_event_created_by_id_2f2c6acc" unique="false">
             <column ascending="true" name="created_by_id"/>
          </index>
+         <index name="transfer_event_from_operation_id_4e4208ed" unique="false">
+            <column ascending="true" name="from_operation_id"/>
+         </index>
+         <index name="transfer_event_from_operator_id_0bed1950" unique="false">
+            <column ascending="true" name="from_operator_id"/>
+         </index>
          <index name="transfer_event_operation_id_9dedc582" unique="false">
             <column ascending="true" name="operation_id"/>
          </index>
-         <index name="transfer_event_other_operator_contact_id_922e1c28" unique="false">
-            <column ascending="true" name="other_operator_contact_id"/>
+         <index name="transfer_event_to_operation_id_9838b42e" unique="false">
+            <column ascending="true" name="to_operation_id"/>
          </index>
-         <index name="transfer_event_other_operator_id_0c17347e" unique="false">
-            <column ascending="true" name="other_operator_id"/>
+         <index name="transfer_event_to_operator_id_50bffadc" unique="false">
+            <column ascending="true" name="to_operator_id"/>
          </index>
          <index name="transfer_event_updated_by_id_a65894a8" unique="false">
             <column ascending="true" name="updated_by_id"/>
@@ -2850,6 +2998,15 @@
             <child column="archived_by_id" foreignKey="report_methodology_archived_by_id_6d444b25_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_methodology"/>
             <child column="created_by_id" foreignKey="report_methodology_created_by_id_9b2800e3_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_methodology"/>
             <child column="updated_by_id" foreignKey="report_methodology_updated_by_id_82819c89_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_methodology"/>
+            <child column="archived_by_id" foreignKey="report_new_entrant_archived_by_id_fb299851_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant"/>
+            <child column="created_by_id" foreignKey="report_new_entrant_created_by_id_c50eb056_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant"/>
+            <child column="updated_by_id" foreignKey="report_new_entrant_updated_by_id_e0725b62_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant"/>
+            <child column="archived_by_id" foreignKey="report_new_entrant_e_archived_by_id_4cf1cd73_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_emission"/>
+            <child column="created_by_id" foreignKey="report_new_entrant_e_created_by_id_ca2d829c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_emission"/>
+            <child column="updated_by_id" foreignKey="report_new_entrant_e_updated_by_id_77087a4b_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_emission"/>
+            <child column="archived_by_id" foreignKey="report_new_entrant_p_archived_by_id_6237cc8c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_production"/>
+            <child column="created_by_id" foreignKey="report_new_entrant_p_created_by_id_6a9f74f2_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_production"/>
+            <child column="updated_by_id" foreignKey="report_new_entrant_p_updated_by_id_829eb9ee_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_production"/>
             <child column="archived_by_id" foreignKey="report_non_attributa_archived_by_id_77c2b2c8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_non_attributable_emissions"/>
             <child column="created_by_id" foreignKey="report_non_attributa_created_by_id_277a76de_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_non_attributable_emissions"/>
             <child column="updated_by_id" foreignKey="report_non_attributa_updated_by_id_bc6a9882_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_non_attributable_emissions"/>
