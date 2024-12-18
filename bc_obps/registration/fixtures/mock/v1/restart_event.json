@@ -1,0 +1,45 @@
+[
+  {
+    "model": "registration.restartevent",
+    "pk": "1a491d98-fde9-482d-9241-0497c15dc517",
+    "fields": {
+      "created_by": "ba2ba62a121842e0942aab9e92ce8822",
+      "created_at": "2024-06-05T23:25:37.892Z",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
+      "effective_date": "2024-06-05T09:00:00Z"
+    }
+  },
+  {
+    "model": "registration.restartevent",
+    "pk": "a5f04108-886c-4eac-980c-f350714b099f",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000005",
+      "created_at": "2024-08-21T23:26:40.645Z",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
+      "effective_date": "2025-03-05T09:00:00Z"
+    }
+  },
+  {
+    "model": "registration.restartevent",
+    "pk": "1363536b-390b-4074-b691-575b678d0c70",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000003",
+      "created_at": "2024-06-05T23:23:08.327Z",
+      "operation": "002d5a9e-32a6-4191-938c-2c02bfec592d",
+      "effective_date": "2026-01-10T09:00:00Z"
+    }
+  },
+  {
+    "model": "registration.restartevent",
+    "pk": "375ab674-aba4-4381-a72d-95df0e03867e",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-08-20T18:23:08.327Z",
+      "effective_date": "2026-01-10T09:00:00Z",
+      "facilities": [
+        "459b80f9-b5f3-48aa-9727-90c30eaf3a58",
+        "f486f2fb-62ed-438d-bb3e-0819b51e3aeb"
+      ]
+    }
+  }
+]
