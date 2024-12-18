@@ -24,10 +24,10 @@ def v1_setup(
                 call_command('truncate_dev_data_tables')
                 return HttpResponse("Test setup complete.", status=200)
             if load_only:  # only load the data
-                call_command('load_fixtures', workflow)
+                call_command('load_fixtures_v1', workflow)
                 return HttpResponse("Test setup complete.", status=200)
             call_command('truncate_dev_data_tables')
-            call_command('load_fixtures', workflow)
+            call_command('load_fixtures_v1', workflow)
             return HttpResponse("Test setup complete.", status=200)
         except Exception as e:
             return HttpResponse(f"Test setup failed. Reason:{e}", status=500)
