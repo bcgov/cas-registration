@@ -92,6 +92,11 @@ superuser: ## create a superuser
 superuser:
 	$(POETRY_RUN) python $(MANAGE_PY) create_superuser
 
+loadfixtures_v1: ## add all registration fixture files to the db
+loadfixtures_v1:
+	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures_v1 $(ARGS)
+	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_fixtures $(ARGS)
+
 loadfixtures: ## add all registration fixture files to the db
 loadfixtures:
 	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
