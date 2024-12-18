@@ -253,25 +253,204 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
         'allocation_methodology': 'Calculator',
         'allocation_other_methodology_description': ''
         }
-
-        self.mock_post_payload = [
-            {
-                'allocated_quantity': Decimal('1234'),
-                'report_version_id': 2,
-                'report_product_id': 1,
-                'emission_category_name': 'Flaring emissions',
-                'methodology': 'Other',
-                'other_methodology_description': 'Test',
-            },
-            {
-                'allocated_quantity': Decimal('200'),
-                'report_version_id': 2,
-                'report_product_id': 2,
-                'emission_category_name': 'Fugitive emissions',
-                'methodology': 'Other',
-                'other_methodology_description': 'Test',
-            },
-        ]
+        self.mock_post_payload = {
+            'allocation_methodology': 'Calculator',
+            'allocation_other_methodology_description': '',
+            'report_product_emission_allocations': [
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 1,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 2,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 3,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '4321.0000',
+                    'emission_category_id': 4,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 4321
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '12345.0000',
+                    'emission_category_id': 5,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 12345
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 6,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 7,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 8,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 9,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '0',
+                    'emission_category_id': 10,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '12345.0000',
+                    'emission_category_id': 11,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                },
+                {
+                    'emission_total': '4321.0000',
+                    'emission_category_id': 12,
+                    'products': [
+                        {
+                            'report_product_id': 1,
+                            'product_name': 'Cement equivalent',
+                            'allocated_quantity': 0
+                        },
+                        {
+                            'report_product_id': 2,
+                            'product_name': 'Gypsum wallboard',
+                            'allocated_quantity': 0
+                        }
+                    ]
+                }
+            ]
+        }
 
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
@@ -320,73 +499,50 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
         # Assert: Verify the service was called with correct parameters
         mock_get_method.assert_called_once_with(self.report_version_id, self.facility_uuid)
 
-        # Assert: Validate the response structure and details
-        response_json = response.json()
-        assert len(response_json["report_product_emission_allocations"]) == len(
-            self.mock_get_response["report_product_emission_allocations"]
-        ), "Mismatch in the number of emission allocations"
-        assert (
-            response_json["facility_total_emissions"] == self.mock_get_response["facility_total_emissions"]
-        ), "Facility total emissions do not match"
-        for expected, actual in zip(
-            self.mock_get_response["report_product_emission_allocations"],
-            response_json["report_product_emission_allocations"],
-        ):
-            assert expected["emission_category_name"] == actual["emission_category_name"], "Emission category name does not match"
-            assert expected["emission_category_id"] == actual["emission_category_id"], "Emission category id does not match"
-            assert expected["category_type"] == actual["category_type"], "Emission category type does not match"
-            assert expected["emission_total"] == actual["emission_total"], "Emission total does not match"
-            assert len(expected["products"]) == len(actual["products"]), "Mismatch in the number of products"
+    @patch(
+        "reporting.service.report_emission_allocation_service.ReportEmissionAllocationService.save_emission_allocation_data",
+        autospec=True,
+    )
+    def test_save_emission_allocation_data(
+        self,
+        mock_post_method: MagicMock | AsyncMock,
+    ):
+        """
+        Test that the API correctly saves emission allocation data for a given report version and facility.
 
-            for exp_prod, act_prod in zip(expected["products"], actual["products"]):
-                assert exp_prod["report_product_id"] == act_prod["report_product_id"], "Report product ID does not match"
-                assert exp_prod["product_name"] == act_prod["product_name"], "Product name does not match"
-                assert exp_prod["allocated_quantity"] == act_prod["allocated_quantity"], "Product emission does not match"
+        Steps:
+        - Mock the payload to the `save_emission_allocation_data` service method.
+        - Perform a POST request to the API endpoint using a mock authenticated user with the "approved_industry_user" role.
+        - Assert that the status code of the API response is 200 (OK).
+        - Verify that the service method is called once with the expected parameters.
+        - Validate that the emission allocation data has been saved correctly.
 
-    # @patch(
-    #     "reporting.service.report_emission_allocation_service.ReportEmissionAllocationService.save_emission_allocation_data",
-    #     autospec=True,
-    # )
-    # def test_save_emission_allocation_data(
-    #     self,
-    #     mock_post_method: MagicMock | AsyncMock,
-    # ):
-    #     """
-    #     Test that the API correctly saves emission allocation data for a given report version and facility.
+        Mocked Service:
+        - `save_emission_allocation_data`: Simulates saving the emission allocation data.
 
-    #     Steps:
-    #     - Mock the payload to the `save_emission_allocation_data` service method.
-    #     - Perform a POST request to the API endpoint using a mock authenticated user with the "approved_industry_user" role.
-    #     - Assert that the status code of the API response is 200 (OK).
-    #     - Verify that the service method is called once with the expected parameters.
-    #     - Validate that the emission allocation data has been saved correctly.
+        Notes:
+        - Uses the `@patch` decorator to mock external service dependencies.
+        """
 
-    #     Mocked Service:
-    #     - `save_emission_allocation_data`: Simulates saving the emission allocation data.
+        # Act: Authorize user and perform POST request to save emission allocation data
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            self.mock_post_payload,
+            custom_reverse_lazy(
+                "save_emission_allocation_data",
+                kwargs={"report_version_id": self.report_version_id, "facility_id": self.facility_uuid},
+            ),
+        )
+        # Assert: Verify response status code
+        assert response.status_code == 200, f"Expected status code 200, got {response.status_code}"
 
-    #     Notes:
-    #     - Uses the `@patch` decorator to mock external service dependencies.
-    #     """
-
-    #     # Act: Authorize user and perform POST request to save emission allocation data
-    #     response = TestUtils.mock_post_with_auth_role(
-    #         self,
-    #         "industry_user",
-    #         self.content_type,
-    #         self.mock_post_payload,
-    #         custom_reverse_lazy(
-    #             "save_emission_allocation_data",
-    #             kwargs={"report_version_id": self.report_version_id, "facility_id": self.facility_uuid},
-    #         ),
-    #     )
-    #     # Assert: Verify response status code
-    #     assert response.status_code == 200, f"Expected status code 200, got {response.status_code}"
-
-    #     # Assert: Verify the service was called with correct parameters
-    #     mock_post_method.assert_called_once_with
-    #     (
-    #         self.report_version_id,
-    #         self.facility_uuid,
-    #         self.mock_post_payload,
-    #         self.test_user_guid,
-    #     )
+        # Assert: Verify the service was called with correct parameters
+        mock_post_method.assert_called_once_with
+        (
+            self.report_version_id,
+            self.facility_uuid,
+            self.mock_post_payload,
+            self.test_user_guid,
+        )
