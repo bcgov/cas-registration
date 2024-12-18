@@ -1,9 +1,11 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { getRegulatedProducts } from "@bciers/actions/api";
+import {
+  getRegulatedProducts,
+  getRegistrationPurposes,
+} from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
-import { getRegistrationPurposes } from "@/administration/tests/components/operations/mocks";
 
 export const createAdministrationRegistrationInformationSchema = async (
   registrationPurposeValue: string,
@@ -11,7 +13,8 @@ export const createAdministrationRegistrationInformationSchema = async (
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
-  const registrationPurposes: { id: number; name: string }[] = await getRegistrationPurposes();
+  const registrationPurposes: { id: number; name: string }[] =
+    await getRegistrationPurposes();
 
   const isRegulatedProducts =
     registrationPurposeValue ===
@@ -35,7 +38,7 @@ export const createAdministrationRegistrationInformationSchema = async (
           // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
           // @ts-ignore
           enumNames: registrationPurposes.map((purpose) => purpose.name),
-        }
+        },
       },
       ...(isRegulatedProducts && {
         regulated_operation_preface: {
