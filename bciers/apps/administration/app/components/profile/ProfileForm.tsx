@@ -71,7 +71,7 @@ export default function ProfileForm({ formData, isCreate }: Props) {
     }, 3000);
     if (isCreate) {
       // 🛸 Redirect: after the update is complete, navigate to the dashboard
-      window.location.href = "./";
+      window.location.href = "/dashboard";
     }
   };
 
