@@ -4,7 +4,7 @@ import { OperationTypes } from "@bciers/utils/src/enums";
 
 const OperationFacilitiesActionCell = (isInternalUser: boolean) => {
   const renderCell = (params: GridRenderCellParams) => {
-    const operationType = params.row.type;
+    const operationType = params.row.operation__type;
     const isSfo = operationType === OperationTypes.SFO;
     const sfoFacilityId = params.row.sfo_facility_id;
 
@@ -17,11 +17,11 @@ const OperationFacilitiesActionCell = (isInternalUser: boolean) => {
     }
 
     // LFO sees the datagrid, SFO goes straight to the facility since there is only one
-    const baseUrl = `/operations/${params.row.id}/facilities`;
+    const baseUrl = `/operations/${params.row.operation__id}/facilities`;
     const sfoUrl = `${baseUrl}/${sfoFacilityId ?? "add-facility"}`;
 
     const baseQuery = {
-      operations_title: params.row.name,
+      operations_title: params.row.operation__name,
     };
 
     const query =
