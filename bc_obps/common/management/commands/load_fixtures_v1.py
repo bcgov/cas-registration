@@ -9,7 +9,7 @@ class Command(BaseCommand):
         parser.add_argument('workflow', nargs='?', type=str, help='Name of the workflow')
 
     def handle(self, *args, **options):
-        fixture_base_dir = 'registration/fixtures/mock'
+        fixture_base_dir = 'registration/fixtures/mock/v1'
         fixtures_base = [  # Order of fixtures is important
             f'{fixture_base_dir}/address.json',
             f'{fixture_base_dir}/user.json',
@@ -44,15 +44,19 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/user_operator.json',
             ],
             "admin-industry_user": [
-                fixture.replace('user_operator.json', 'admin/user_operator.json')
-                if 'user_operator.json' in fixture
-                else fixture
+                (
+                    fixture.replace('user_operator.json', 'admin/user_operator.json')
+                    if 'user_operator.json' in fixture
+                    else fixture
+                )
                 for fixture in fixtures_base
             ],
             "admin-industry_user_operator": [
-                fixture.replace('user_operator.json', 'admin/user_operator_approved.json')
-                if 'user_operator.json' in fixture
-                else fixture
+                (
+                    fixture.replace('user_operator.json', 'admin/user_operator_approved.json')
+                    if 'user_operator.json' in fixture
+                    else fixture
+                )
                 for fixture in fixtures_base
             ],
             # Add more workflows here

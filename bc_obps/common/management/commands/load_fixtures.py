@@ -44,15 +44,19 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/user_operator.json',
             ],
             "admin-industry_user": [
-                fixture.replace('user_operator.json', 'admin/user_operator.json')
-                if 'user_operator.json' in fixture
-                else fixture
+                (
+                    fixture.replace('user_operator.json', 'admin/user_operator.json')
+                    if 'user_operator.json' in fixture
+                    else fixture
+                )
                 for fixture in fixtures_base
             ],
             "admin-industry_user_operator": [
-                fixture.replace('user_operator.json', 'admin/user_operator_approved.json')
-                if 'user_operator.json' in fixture
-                else fixture
+                (
+                    fixture.replace('user_operator.json', 'admin/user_operator_approved.json')
+                    if 'user_operator.json' in fixture
+                    else fixture
+                )
                 for fixture in fixtures_base
             ],
             # Add more workflows here
