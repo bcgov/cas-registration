@@ -1,0 +1,14 @@
+[
+  {
+    "model": "registration.multipleoperator",
+    "fields": {
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
+      "legal_name": "Multiple Operator Legal Name",
+      "trade_name": "Multiple Operator Trade Name",
+      "cra_business_number": 123456789,
+      "bc_corporate_registry_number": "abc1234567",
+      "business_structure": "Sole Proprietorship",
+      "attorney_address": 1
+    }
+  }
+]
