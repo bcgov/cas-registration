@@ -29,5 +29,6 @@ class ReportVersionTest(BaseTestCase):
             ("report_verification", "report verification", None, None),
             ("report_new_entrant", "report new entrant", None, None),
             ("report_attachments", "report attachment", None, 0),
-            ("reportproductemissionallocation_records", "report product emission allocation", None, 0),
+            ("report_attachments", "report attachment", None, 0),
+            ("report_operation_representatives", "report operation representative", None, 0),
         ]

@@ -4,6 +4,7 @@ from django.db.models import QuerySet
 
 from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
+from reporting.models import ReportOperationRepresentative
 from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
@@ -29,7 +30,7 @@ class ReportService:
             .prefetch_related('activities', 'regulated_products')
             .get(id=operation_id)
         )
-
+        print('operation', operation.contacts.all())
         operator = operation.operator
         facilities = FacilityDataAccessService.get_current_facilities_by_operation(operation)
 
@@ -61,6 +62,13 @@ class ReportService:
             ),
             report_version=report_version,
         )
+
+        for contact in operation.contacts.all():
+            ReportOperationRepresentative.objects.create(
+                report_version=report_version,
+                representative_name=contact.get_full_name(),
+                selected_for_report=False,
+            )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 

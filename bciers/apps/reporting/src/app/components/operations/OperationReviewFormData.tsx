@@ -20,10 +20,16 @@ export default async function OperationReviewFormData({
   const facilityReport = await getFacilityReport(version_id);
 
   const registrationPurposeString = registrationPurpose?.registration_purpose;
+  const transformedOperation = {
+    ...reportOperation.report_operation,
+    operation_representative_name:
+      reportOperation.report_operation_representative,
+  };
+  console.log("transformedOperation", transformedOperation);
 
   return (
     <OperationReview
-      formData={reportOperation}
+      formData={transformedOperation}
       version_id={version_id}
       reportType={reportType}
       allActivities={allActivities}
