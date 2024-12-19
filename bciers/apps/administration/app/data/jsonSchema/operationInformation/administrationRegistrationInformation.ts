@@ -13,8 +13,7 @@ export const createAdministrationRegistrationInformationSchema = async (
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
-  const registrationPurposes: { id: number; name: string }[] =
-    await getRegistrationPurposes();
+  const registrationPurposes = await getRegistrationPurposes();
 
   const isRegulatedProducts =
     registrationPurposeValue ===
@@ -33,12 +32,7 @@ export const createAdministrationRegistrationInformationSchema = async (
       registration_purpose: {
         type: "string",
         title: "The purpose of this registration is to register as a:",
-        items: {
-          enum: registrationPurposes.map((purpose) => purpose.id),
-          // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
-          // @ts-ignore
-          enumNames: registrationPurposes.map((purpose) => purpose.name),
-        },
+        enum: registrationPurposes,
       },
       ...(isRegulatedProducts && {
         regulated_operation_preface: {
@@ -126,7 +120,7 @@ export const registrationInformationUiSchema: UiSchema = {
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
   registration_purpose: {
-    "ui:widget": "ComboBox",
+    "ui:widget": "SelectWidget",
   },
   regulated_operation_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
