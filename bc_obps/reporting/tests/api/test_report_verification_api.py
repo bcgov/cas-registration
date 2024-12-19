@@ -32,7 +32,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_report_verification_by_version_id",
-                kwargs={"version_id": self.report_version.id},
+                kwargs={"report_version_id": self.report_version.id},
             ),
         )
 
@@ -53,6 +53,67 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         assert response_json["visit_type"] == self.report_verification.visit_type
         assert response_json["other_facility_name"] == self.report_verification.other_facility_name
         assert response_json["other_facility_coordinates"] == self.report_verification.other_facility_coordinates
+
+
+    """Tests for the get_report_needs_verification endpoint."""
+
+    @patch(
+        "reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification"
+    )
+    def test_returns_verification_needed_for_report_version_id(
+        self, mock_get_report_needs_verification: MagicMock
+    ):
+        # Arrange: Mock the service to return True
+        mock_get_report_needs_verification.return_value = True
+
+        # Act: Authorize user and perform GET request
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_report_needs_verification",
+                kwargs={"report_version_id": self.report_version.id},
+            ),
+        )
+
+        # Assert: Verify the response status
+        assert response.status_code == 200
+
+        # Assert: Verify the service was called with the correct version ID
+        mock_get_report_needs_verification.assert_called_once_with(self.report_version.id)
+
+        # Assert: Validate the response data
+        response_json = response.json()
+        assert response_json is True
+
+    @patch(
+        "reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification"
+    )
+    def test_returns_verification_not_needed_for_report_version_id(
+        self, mock_get_report_needs_verification: MagicMock
+    ):
+        # Arrange: Mock the service to return False
+        mock_get_report_needs_verification.return_value = False
+
+        # Act: Authorize user and perform GET request
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_report_needs_verification",
+                kwargs={"report_version_id": self.report_version.id},
+            ),
+        )
+
+        # Assert: Verify the response status
+        assert response.status_code == 200
+
+        # Assert: Verify the service was called with the correct version ID
+        mock_get_report_needs_verification.assert_called_once_with(self.report_version.id)
+
+        # Assert: Validate the response data
+        response_json = response.json()
+        assert response_json is False
 
     """Tests for the save_report_verification endpoint."""
 
@@ -95,7 +156,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
             payload.dict(),
             custom_reverse_lazy(
                 "save_report_verification",
-                kwargs={"version_id": self.report_version.id},
+                kwargs={"report_version_id": self.report_version.id},
             ),
         )
 

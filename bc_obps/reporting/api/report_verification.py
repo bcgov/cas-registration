@@ -12,7 +12,7 @@ from reporting.models import ReportVerification
 
 
 @router.get(
-    "/report-version/{version_id}/report-verification",
+    "/report-version/{report_version_id}/report-verification",
     response={200: ReportVerificationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the Verification data associated with the given report version ID.""",
@@ -20,14 +20,27 @@ from reporting.models import ReportVerification
 )
 @handle_http_errors()
 def get_report_verification_by_version_id(
-    request: HttpRequest, version_id: int
+    request: HttpRequest, report_version_id: int
 ) -> tuple[Literal[200], ReportVerification]:
-    report_verification = ReportVerificationService.get_report_verification_by_version_id(version_id)
+    report_verification = ReportVerificationService.get_report_verification_by_version_id(report_version_id)
     return 200, report_verification
 
 
+@router.get(
+     "/report-version/{report_version_id}/report-needs-verification",
+    response={200: bool, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Checks if a report needs verification based on its purpose and attributable emissions.""",
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def get_report_needs_verification(
+    request: HttpRequest, report_version_id: int) -> tuple[Literal[200], bool]:
+    return 200, ReportVerificationService.get_report_needs_verification(report_version_id)
+
+
 @router.post(
-    "/report-version/{version_id}/report-verification",
+    "/report-version/{report_version_id}/report-verification",
     response={200: ReportVerificationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Creates or updates the Verification data for the given report version ID.""",
@@ -35,7 +48,7 @@ def get_report_verification_by_version_id(
 )
 @handle_http_errors()
 def save_report_verification(
-    request: HttpRequest, version_id: int, payload: ReportVerificationIn
+    request: HttpRequest, report_version_id: int, payload: ReportVerificationIn
 ) -> tuple[Literal[200], ReportVerification]:
-    report_verification = ReportVerificationService.save_report_verification(version_id, payload)
+    report_verification = ReportVerificationService.save_report_verification(report_version_id, payload)
     return 200, report_verification

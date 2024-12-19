@@ -20,8 +20,8 @@ from .report_new_entrant_data import get_new_entrant_data
 from .report_non_attributable_emissions import save_report
 from .report_activity import save_report_activity_data, load_report_activity_data
 from .report_facilities import get_report_facility_list_by_version_id
-from .report_verification import get_report_verification_by_version_id, save_report_verification
+from .report_verification import get_report_verification_by_version_id, get_report_needs_verification, save_report_verification
 from .report_attachments import save_report_attachments, get_report_attachments
 from .report_emission_allocations import get_emission_allocations, save_emission_allocation_data
-from .compliance_data import get_compliance_summary_data, get_attributable_emissions
+from .compliance_data import get_compliance_summary_data
 from .submit import submit_report_version
