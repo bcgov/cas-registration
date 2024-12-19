@@ -28,11 +28,6 @@ export const operationReviewSchema: RJSFSchema = {
       default: "Annual report",
     },
 
-    operation_representative_name: {
-      type: "array",
-      title: "Operation representative",
-    },
-
     date_info: {
       type: "object",
       readOnly: true,
@@ -204,10 +199,10 @@ export const updateSchema = (
         items: {
           type: "number",
           enum: representatives.map(
-            (representative: { id: any }) => representative.id,
+            (representative: { id: number }) => representative.id,
           ),
           enumNames: representatives.map(
-            (representative: { representative_name: any }) =>
+            (representative: { representative_name: string }) =>
               representative.representative_name,
           ),
         },
