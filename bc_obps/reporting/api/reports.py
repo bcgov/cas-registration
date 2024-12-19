@@ -12,11 +12,11 @@ from reporting.schema.report import StartReportIn
 from service.report_service import ReportService
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
+from reporting.schema.report_operation import ReportOperationIn, ReportOperationSchemaOut
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
-from ..models import ReportingYear, ReportVersion
+from ..models import ReportingYear, ReportVersion, ReportOperationRepresentative
 from ..schema.report_version import ReportingVersionOut
 
 
@@ -27,7 +27,7 @@ from ..schema.report_version import ReportingVersionOut
     description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
     pre-populating them with facility, operation and operator information. Returns the id of the report that was created.
     This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
-    auth=authorize("approved_industry_user"),
+    # auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
@@ -37,22 +37,24 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
 
 @router.get(
     "/report-version/{version_id}/report-operation",
-    response={200: ReportOperationOut, custom_codes_4xx: Message},
+    response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    auth=authorize("approved_authorized_roles"),
+    # auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def get_report_operation_by_version_id(
-    request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], ReportOperationOut]:
+def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
     report_operation = ReportService.get_report_operation_by_version_id(version_id)
-    return 200, report_operation  # type: ignore
+    report_operation_representative = ReportOperationRepresentative.objects.filter(report_version__id=version_id)
+    return 200, {
+        "report_operation": report_operation,
+        "report_operation_representative": report_operation_representative,
+    }
 
 
 @router.post(
     "/report-version/{version_id}/report-operation",
-    response={201: ReportOperationOut, custom_codes_4xx: Message},
+    response={201: ReportOperationIn, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
@@ -61,7 +63,7 @@ def get_report_operation_by_version_id(
 @handle_http_errors()
 def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
-) -> Tuple[Literal[201], ReportOperationOut]:
+) -> Tuple[Literal[201], ReportOperationIn]:
     report_operation = ReportService.save_report_operation(version_id, payload)
     return 201, report_operation  # type: ignore
 
