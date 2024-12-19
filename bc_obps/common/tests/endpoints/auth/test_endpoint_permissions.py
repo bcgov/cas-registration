@@ -95,7 +95,7 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "get",
                 "endpoint_name": "get_report_verification_by_version_id",
-                "kwargs": {"version_id": mock_int},
+                "kwargs": {"report_version_id": mock_int},
             },
             {
                 "method": "get",
@@ -139,7 +139,7 @@ class TestEndpointPermissions(TestCase):
             },
             {
                 "method": "get",
-                "endpoint_name": "get_attributable_emissions",
+                "endpoint_name": "get_report_needs_verification",
                 "kwargs": {"report_version_id": mock_int},
             },
             {"method": "post", "endpoint_name": "create_facilities"},
@@ -170,7 +170,7 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "post",
                 "endpoint_name": "save_report_verification",
-                "kwargs": {"version_id": mock_int},
+                "kwargs": {"report_version_id": mock_int},
             },
             {"method": "post", "endpoint_name": "save_report_contact", "kwargs": {"version_id": mock_int}},
             {
