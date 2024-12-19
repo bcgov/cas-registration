@@ -18,10 +18,25 @@ export const createAdministrationRegistrationInformationSchema = async (
   const isRegulatedProducts =
     registrationPurposeValue ===
     RegistrationPurposes.OBPS_REGULATED_OPERATION.valueOf();
-  const isNewEntrant =
-    registrationPurposeValue === RegistrationPurposes.NEW_ENTRANT_OPERATION;
-  const isOptIn =
-    registrationPurposeValue === RegistrationPurposes.OPTED_IN_OPERATION;
+
+  const regulatedProductsSchema: RJSFSchema = {
+    regulated_operation_preface: {
+      // Not an actual field, just used to display a message
+      type: "object",
+      readOnly: true,
+    },
+    regulated_products: {
+      title: "Regulated Product Name(s)",
+      type: "array",
+      minItems: 1,
+      items: {
+        enum: regulatedProducts.map((product) => product.id),
+        // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
+        // @ts-ignore
+        enumNames: regulatedProducts.map((product) => product.name),
+      },
+    },
+  };
 
   // create the schema with the fetched values
   const registrationInformationSchema: RJSFSchema = {
@@ -34,76 +49,87 @@ export const createAdministrationRegistrationInformationSchema = async (
         title: "The purpose of this registration is to register as a:",
         enum: registrationPurposes,
       },
-      ...(isRegulatedProducts && {
-        regulated_operation_preface: {
-          // Not an actual field, just used to display a message
-          type: "object",
-          readOnly: true,
-        },
-        regulated_products: {
-          title: "Regulated Product Name(s)",
-          type: "array",
-          minItems: 1,
-          items: {
-            enum: regulatedProducts.map((product) => product.id),
-            // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
-            // @ts-ignore
-            enumNames: regulatedProducts.map((product) => product.name),
-          },
-        },
-      }),
-      ...(isOptIn && {
-        opted_in_preface: {
-          // Not an actual field, just used to display a message
-          type: "object",
-          readOnly: true,
-        },
-        opted_in_operation: {
-          type: "object",
-          properties: {
-            meets_section_3_emissions_requirements: {
-              type: "boolean",
-            },
-            meets_electricity_import_operation_criteria: {
-              type: "boolean",
-            },
-            meets_entire_operation_requirements: {
-              type: "boolean",
-            },
-            meets_section_6_emissions_requirements: {
-              type: "boolean",
-            },
-            meets_naics_code_11_22_562_classification_requirements: {
-              type: "boolean",
-            },
-            meets_producing_gger_schedule_a1_regulated_product: {
-              type: "boolean",
-            },
-            meets_reporting_and_regulated_obligations: {
-              type: "boolean",
-            },
-            meets_notification_to_director_on_criteria_change: {
-              type: "boolean",
+    },
+    dependencies: {
+      registration_purpose: {
+        oneOf: [
+          {
+            properties: {
+              registration_purpose: {
+                const: RegistrationPurposes.OBPS_REGULATED_OPERATION,
+              },
+              ...regulatedProductsSchema,
             },
           },
-        },
-      }),
-      ...(isNewEntrant && {
-        new_entrant_preface: {
-          // Not an actual field, just used to display a message
-          type: "object",
-          readOnly: true,
-        },
-        date_of_first_shipment: {
-          type: "string",
-          title: "When is this operation's date of First Shipment?",
-          enum: ["On or before March 31, 2024", "On or after April 1, 2024"],
-        },
-        new_entrant_application: {
-          type: "string",
-          title: "New Entrant Application and Statutory Declaration",
-        },
-      }),
+          {
+            properties: {
+              registration_purpose: {
+                const: RegistrationPurposes.OPTED_IN_OPERATION,
+              },
+              ...regulatedProductsSchema,
+              opted_in_preface: {
+                // Not an actual field, just used to display a message
+                type: "object",
+                readOnly: true,
+              },
+              opted_in_operation: {
+                type: "object",
+                properties: {
+                  meets_section_3_emissions_requirements: {
+                    type: "boolean",
+                  },
+                  meets_electricity_import_operation_criteria: {
+                    type: "boolean",
+                  },
+                  meets_entire_operation_requirements: {
+                    type: "boolean",
+                  },
+                  meets_section_6_emissions_requirements: {
+                    type: "boolean",
+                  },
+                  meets_naics_code_11_22_562_classification_requirements: {
+                    type: "boolean",
+                  },
+                  meets_producing_gger_schedule_a1_regulated_product: {
+                    type: "boolean",
+                  },
+                  meets_reporting_and_regulated_obligations: {
+                    type: "boolean",
+                  },
+                  meets_notification_to_director_on_criteria_change: {
+                    type: "boolean",
+                  },
+                },
+              },
+            },
+          },
+          {
+            properties: {
+              registration_purpose: {
+                const: RegistrationPurposes.NEW_ENTRANT_OPERATION,
+              },
+              ...regulatedProductsSchema,
+              new_entrant_preface: {
+                // Not an actual field, just used to display a message
+                type: "object",
+                readOnly: true,
+              },
+              date_of_first_shipment: {
+                type: "string",
+                title: "When is this operation's date of First Shipment?",
+                enum: [
+                  "On or before March 31, 2024",
+                  "On or after April 1, 2024",
+                ],
+              },
+              new_entrant_application: {
+                type: "string",
+                title: "New Entrant Application and Statutory Declaration",
+              },
+            },
+          },
+        ],
+      },
     },
   };
   return registrationInformationSchema;
