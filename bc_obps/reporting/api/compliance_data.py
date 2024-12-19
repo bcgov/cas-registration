@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest

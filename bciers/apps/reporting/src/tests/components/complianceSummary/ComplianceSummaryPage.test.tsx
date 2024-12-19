@@ -2,10 +2,8 @@ import { render } from "@testing-library/react";
 import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
 import ComplianceSummaryPage from "@reporting/src/app/components/complianceSummary/ComplianceSummaryPage";
 import { actionHandler } from "@bciers/actions";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import { getAttributableEmissions } from "@reporting/src/app/utils/getAttributableEmissions";
+import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import { tasklistData } from "@reporting/src/app/components/complianceSummary/TaskListElements";
-import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 import { vi } from "vitest";
 
@@ -21,22 +19,16 @@ vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
-vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
-  getRegistrationPurpose: vi.fn(),
-}));
-
-vi.mock("@reporting/src/app/utils/getAttributableEmissions", () => ({
-  getAttributableEmissions: vi.fn(),
+vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
+  getReportNeedsVerification: vi.fn(),
 }));
 
 const mockComplianceSummaryForm = ComplianceSummaryForm as ReturnType<
   typeof vi.fn
 >;
 const mockActionHandler = actionHandler as ReturnType<typeof vi.fn>;
-const mockGetRegistrationPurpose = getRegistrationPurpose as ReturnType<
-  typeof vi.fn
->;
-const mockGetAttributableEmissions = getAttributableEmissions as ReturnType<
+
+const mockGetReportNeedsVerification = getReportNeedsVerification as ReturnType<
   typeof vi.fn
 >;
 
@@ -46,14 +38,8 @@ describe("ComplianceSummaryPage", () => {
 
     // Mock the data for the test
     const complianceData = { some: "data" };
-    const registrationPurpose = RegistrationPurposes.REPORTING_OPERATION;
-    const attributableEmissions = 10000000; // Below the threshold
-
     mockActionHandler.mockResolvedValue(complianceData);
-    mockGetRegistrationPurpose.mockResolvedValue({
-      registration_purpose: registrationPurpose,
-    });
-    mockGetAttributableEmissions.mockResolvedValue(attributableEmissions);
+    mockGetReportNeedsVerification.mockResolvedValue(false);
 
     // Render the page
     render(await ComplianceSummaryPage({ version_id: versionId }));
@@ -75,12 +61,8 @@ describe("ComplianceSummaryPage", () => {
 
     // Mock the data for the test
     const complianceData = { some: "data" };
-    const registrationPurpose = RegistrationPurposes.OBPS_REGULATED_OPERATION;
-
     mockActionHandler.mockResolvedValue(complianceData);
-    mockGetRegistrationPurpose.mockResolvedValue({
-      registration_purpose: registrationPurpose,
-    });
+    mockGetReportNeedsVerification.mockResolvedValue(true);
 
     // Render the page
     render(await ComplianceSummaryPage({ version_id: versionId }));
@@ -102,15 +84,8 @@ describe("ComplianceSummaryPage", () => {
 
     // Mock the data for the test
     const complianceData = { some: "data" };
-    const registrationPurpose =
-      RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION;
-    const attributableEmissions = 30000000; // Above the threshold
-
     mockActionHandler.mockResolvedValue(complianceData);
-    mockGetRegistrationPurpose.mockResolvedValue({
-      registration_purpose: registrationPurpose,
-    });
-    mockGetAttributableEmissions.mockResolvedValue(attributableEmissions);
+    mockGetReportNeedsVerification.mockResolvedValue(true);
 
     // Render the page
     render(await ComplianceSummaryPage({ version_id: versionId }));
