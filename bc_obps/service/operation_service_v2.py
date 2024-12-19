@@ -44,19 +44,6 @@ from registration.models.operation_designated_operator_timeline import Operation
 
 
 class OperationServiceV2:
-    @classmethod
-    def list_operations(
-        cls,
-        user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
-        filters: OperationFilterSchema = Query(...),
-    ) -> QuerySet[Operation]:
-        user = UserDataAccessService.get_by_guid(user_guid)
-        sort_direction = "-" if sort_order == "desc" else ""
-        sort_by = f"{sort_direction}{sort_field}"
-        base_qs = OperationDataAccessServiceV2.get_all_operations_for_user(user)
-        return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
     def list_operations_timeline(
