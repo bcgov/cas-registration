@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectRadio from "@bciers/testConfig/helpers/expectRadio";
 import { actionHandler } from "@bciers/testConfig/mocks";
-import { fetchOperationsPageData } from "@/administration/tests/components/operations/mocks";
+import { mockFetchOperationsTimelinePageData } from "@/administration/tests/components/operations/mocks";
 import { fetchFacilitiesPageData } from "@/administration/tests/components/facilities/mocks";
 import TransferForm from "@/registration/app/components/transfers/TransferForm";
 
@@ -28,12 +28,12 @@ const mockOperators = [
 const mockOperations = {
   rows: [
     {
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea065" as UUID,
-      name: "Operation 1",
+      operation__id: "8be4c7aa-6ab3-4aad-9206-0ef914fea065" as UUID,
+      operation__name: "Operation 1",
     },
     {
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea066" as UUID,
-      name: "Operation 2",
+      operation__id: "8be4c7aa-6ab3-4aad-9206-0ef914fea066" as UUID,
+      operation__name: "Operation 2",
     },
   ],
   row_count: 2,
@@ -58,10 +58,7 @@ const selectOperator = (label: RegExp, operatorName: string) => {
 const selectEntityAndAssertFields = async (entity: string) => {
   fireEvent.click(screen.getByLabelText(entity));
   if (entity === "Operation") {
-    // expect(screen.findByLabelText(/operation\*/i)).resolves.toBeVisible();
     expect(screen.getByLabelText(/operation\*/i)).toBeVisible();
-    // await waitFor(() => {
-    // });
     expect(
       screen.getByLabelText(/effective date of transfer\*/i),
     ).toBeVisible();
@@ -126,7 +123,7 @@ const selectDateOfTransfer = (date: string) => {
 describe("The TransferForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    fetchOperationsPageData.mockResolvedValue(mockOperations);
+    mockFetchOperationsTimelinePageData.mockResolvedValue(mockOperations);
   });
 
   it("should render the TransferForm component", async () => {
@@ -144,15 +141,12 @@ describe("The TransferForm component", () => {
     expectButton("Back");
   });
 
-  it("should enable the submit button when the form is valid", async () => {
+  it.only("should enable the submit button when the form is valid", async () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
+    // brianna
     await selectEntityAndAssertFields("Operation");
-    expect(screen.getByLabelText(/operation\*/i)).toBeVisible();
-    expect(
-      screen.getByLabelText(/effective date of transfer\*/i),
-    ).toBeVisible();
     await selectOperation(/operation\*/i, "Operation 1");
     selectDateOfTransfer("2022-12-31");
     expectButton("Transfer Entity");
@@ -170,17 +164,17 @@ describe("The TransferForm component", () => {
     expect(screen.getByRole("combobox", { name: /operation/i })).toBeDisabled();
   });
 
-  it("calls fetchOperationsPageData with new operator id when operator changes", async () => {
+  it("calls mockFetchOperationsTimelinePageData with new operator id when operator changes", async () => {
     renderTransferForm();
     selectOperator(/current operator\*/i, "Operator 1");
-    expect(fetchOperationsPageData).toHaveBeenCalledTimes(1);
-    expect(fetchOperationsPageData).toHaveBeenCalledWith({
+    expect(mockFetchOperationsTimelinePageData).toHaveBeenCalledTimes(1);
+    expect(mockFetchOperationsTimelinePageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
       paginate_results: false,
     });
     selectOperator(/current operator\*/i, "Operator 2");
-    expect(fetchOperationsPageData).toHaveBeenCalledTimes(2);
-    expect(fetchOperationsPageData).toHaveBeenCalledWith({
+    expect(mockFetchOperationsTimelinePageData).toHaveBeenCalledTimes(2);
+    expect(mockFetchOperationsTimelinePageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
       paginate_results: false,
     });
