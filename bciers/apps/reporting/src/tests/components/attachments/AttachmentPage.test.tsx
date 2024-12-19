@@ -1,6 +1,7 @@
 import AttachmentsForm from "@reporting/src/app/components/attachments/AttachmentsForm";
 import AttachmentsPage from "@reporting/src/app/components/attachments/AttachmentsPage";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
+import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import { render } from "@testing-library/react";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentsForm", () => ({
@@ -15,8 +16,15 @@ vi.mock("@reporting/src/app/components/taskList/5_signOffSubmit", () => ({
   getSignOffAndSubmitSteps: vi.fn().mockReturnValue("test task list"),
 }));
 
+vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
+  getReportNeedsVerification: vi.fn(),
+}));
+
 const mockAttachmentsForm = AttachmentsForm as ReturnType<typeof vi.fn>;
 const mockGetAttachments = getAttachments as ReturnType<typeof vi.fn>;
+const mockGetReportNeedsVerification = getReportNeedsVerification as ReturnType<
+  typeof vi.fn
+>;
 
 describe("The attachment page component", () => {
   it("must render the client side component with the fetched data", async () => {
@@ -32,6 +40,7 @@ describe("The attachment page component", () => {
     };
 
     mockGetAttachments.mockReturnValue([attachment1, attachment2]);
+    mockGetReportNeedsVerification.mockResolvedValue(true);
 
     render(await AttachmentsPage({ version_id: 12345 }));
 
