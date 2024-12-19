@@ -81,7 +81,7 @@ class ReportVerificationService:
             return True
 
         # Emission threshold: Users must complete the verification page if the registration purpose is Reporting Operation, and total TCo₂e >+ 25,000
-        if registration_purpose ==  Operation.Purposes.REPORTING_OPERATION:
+        if registration_purpose == Operation.Purposes.REPORTING_OPERATION:
             attributable_emissions = ComplianceService.get_emissions_attributable_for_reporting(version_id)
             return attributable_emissions >= ATTRIBUTABLE_EMISSION_THRESHOLD
 

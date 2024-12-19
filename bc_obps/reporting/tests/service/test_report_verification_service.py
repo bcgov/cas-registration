@@ -7,12 +7,13 @@ from unittest.mock import patch
 
 from registration.models import Operation
 
-class TestReportVerificationService(TestCase):  
+
+class TestReportVerificationService(TestCase):
     REGULATED_OPERATION_PURPOSES = {
-            Operation.Purposes.OBPS_REGULATED_OPERATION,
-            Operation.Purposes.OPTED_IN_OPERATION,
-            Operation.Purposes.NEW_ENTRANT_OPERATION,
-        }
+        Operation.Purposes.OBPS_REGULATED_OPERATION,
+        Operation.Purposes.OPTED_IN_OPERATION,
+        Operation.Purposes.NEW_ENTRANT_OPERATION,
+    }
     ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal('25000000')
 
     def setUp(self):
@@ -67,7 +68,6 @@ class TestReportVerificationService(TestCase):
         # Arrange: Mock the registration purpose to simulate a regulated operation
         # The purpose is one of REGULATED_OPERATION_PURPOSES
         mock_get_registration_purpose.return_value = Operation.Purposes.OBPS_REGULATED_OPERATION
-       
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
@@ -78,7 +78,7 @@ class TestReportVerificationService(TestCase):
         mock_get_registration_purpose.assert_called_once_with(self.report_version.id)
         # Verify that emissions calculation is not called for regulated purpose
         mock_get_emissions.assert_not_called()
-   
+
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
     @patch(
         "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
@@ -115,7 +115,7 @@ class TestReportVerificationService(TestCase):
         """
 
         # Arrange: Simulate a reporting operation
-        mock_get_registration_purpose.return_value =  Operation.Purposes.REPORTING_OPERATION
+        mock_get_registration_purpose.return_value = Operation.Purposes.REPORTING_OPERATION
         # Simulate high attributable emissions exceeding the verification threshold
         mock_get_emissions.return_value = Decimal('30000000')
 
@@ -140,7 +140,7 @@ class TestReportVerificationService(TestCase):
         """
 
         # Arrange: Simulate a reporting operation
-        mock_get_registration_purpose.return_value =  Operation.Purposes.REPORTING_OPERATION
+        mock_get_registration_purpose.return_value = Operation.Purposes.REPORTING_OPERATION
         # Simulate low attributable emissions below the verification threshold
         mock_get_emissions.return_value = Decimal('20000000')
 
