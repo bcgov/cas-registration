@@ -17,8 +17,8 @@ import { FacilityRow } from "@/administration/app/components/facilities/types";
 import TaskList from "@bciers/components/form/components/TaskList";
 import { actionHandler } from "@bciers/actions";
 import TransferSuccess from "@/registration/app/components/transfers/TransferSuccess";
-import fetchOperationsPageData from "@bciers/actions/api/fetchOperationsPageData";
 import { OperationRow } from "@/administration/app/components/operations/types";
+import fetchOperationsTimelinePageData from "@/administration/app/components/operations/fetchOperationsTimelinePageData";
 
 interface TransferFormProps {
   formData: TransferFormData;
@@ -98,7 +98,7 @@ export default function TransferForm({
     const response: {
       rows: OperationRow[];
       row_count: number;
-    } = await fetchOperationsPageData({
+    } = await fetchOperationsTimelinePageData({
       paginate_results: false,
       operator_id: operatorId,
     });
@@ -173,7 +173,8 @@ export default function TransferForm({
     if (!error) {
       // Filter out the current from_operation from toOperatorOperations(we can't transfer facilities to the same operation)
       const filteredToOperatorOperations = toOperatorOperations.filter(
-        (operation: OperationRow) => operation.id !== formState?.from_operation,
+        (operation: OperationRow) =>
+          operation.operation__id !== formState?.from_operation,
       );
 
       setSchema(

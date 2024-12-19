@@ -1,16 +1,16 @@
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
-import { OperationsSearchParams } from "@/administration/app/components/operations/types";
+import { OperationsSearchParams } from "./types";
 import { actionHandler } from "@bciers/actions";
 
 // 🛠️ Function to fetch operations
-export default async function fetchOperationsPageData(
+export default async function fetchOperationsTimelinePageData(
   searchParams: OperationsSearchParams,
 ) {
   try {
     const queryParams = buildQueryParams(searchParams);
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations${queryParams}`,
+      `registration/operations-timeline${queryParams}`,
       "GET",
       "",
     );

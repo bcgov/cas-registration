@@ -18,25 +18,7 @@ from ninja.pagination import paginate
 from registration.utils import CustomPagination
 
 ##### GET #####
-
-
-@router.get(
-    "/operations",
-    response={200: List[OperationListOut], custom_codes_4xx: Message},
-    tags=V2,
-    auth=authorize("approved_authorized_roles"),
-)
-@handle_http_errors()
-@paginate(CustomPagination)
-def list_operations(
-    request: HttpRequest,
-    filters: OperationFilterSchema = Query(...),
-    sort_field: Optional[str] = "created_at",
-    sort_order: Optional[Literal["desc", "asc"]] = "desc",
-    paginate_result: bool = Query(True, description="Whether to paginate the results"),
-) -> QuerySet[Operation]:
-    # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return OperationServiceV2.list_operations(get_current_user_guid(request), sort_field, sort_order, filters)
+# Use the operations-timeline endpoint to get operations
 
 
 REGISTRATION_PURPOSES_LITERALS = Literal[
