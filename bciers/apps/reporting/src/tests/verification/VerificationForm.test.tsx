@@ -1,5 +1,5 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import { useRouter } from "@bciers/testConfig/mocks";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import {
   verificationSchema,
   verificationUiSchema,
@@ -20,6 +20,11 @@ const config = {
   buttons: {
     cancel: "Back",
     saveAndContinue: "Save & Continue",
+  },
+  actionPost: {
+    endPoint: "reporting/report-version/3/report-verification",
+    method: "POST",
+    revalidatePath: "reporting/reports",
   },
   mockVersionId: 3,
   mockRouteSubmit: `/reports/3/attachments?`,
@@ -95,7 +100,7 @@ const formDataSets = {
   },
 };
 
-// 🛠 Helpers
+// ⛏️ Helper function to render the form
 const renderVerificationForm = () => {
   render(
     <VerificationForm
@@ -108,18 +113,27 @@ const renderVerificationForm = () => {
   );
 };
 
+// ⛏️ Helper function to simulate form POST submission and assert the result
 const submitFormAndAssert = async (
   fields: { label: string; type: string; key: string }[],
   data: Record<string, string | number>,
 ) => {
+  actionHandler.mockReturnValueOnce({
+    success: true,
+  });
   await fillMandatoryFields(fields, data);
   const button = screen.getByRole("button", {
     name: config.buttons.saveAndContinue,
+  });
+  await waitFor(() => {
+    expect(button).toBeEnabled();
   });
   fireEvent.click(button);
 
   await waitFor(() => {
     expect(screen.queryByText(/Required field/i)).not.toBeInTheDocument();
+    // Assert expected behavior after submission
+    expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
   });
@@ -156,9 +170,24 @@ describe("VerificationForm component", () => {
     },
     async () => {
       renderVerificationForm();
+      // POST submit and assert the result
       await submitFormAndAssert(
         commonMandatoryFormFields,
         formDataSets.default,
+      );
+      // Assert if actionHandler was called correctly
+      expect(actionHandler).toHaveBeenCalledWith(
+        config.actionPost.endPoint,
+        "POST",
+        config.actionPost.revalidatePath,
+        {
+          body: JSON.stringify({
+            verification_body_name: "Test",
+            accredited_by: "SCC",
+            scope_of_verification: "Supplementary Report",
+            visit_name: "None",
+          }),
+        },
       );
     },
   );
@@ -182,7 +211,6 @@ describe("VerificationForm component", () => {
       await submitFormAndAssert(fields, formDataSets.facility);
     },
   );
-
   it(
     "fills other conditionally mandatory fields and submits successfully",
     {
@@ -194,7 +222,43 @@ describe("VerificationForm component", () => {
         ...commonMandatoryFormFields,
         ...specificMandatoryFields.conditional,
       ];
+      // POST submit and assert the result
       await submitFormAndAssert(fields, formDataSets.conditional);
+      // Assertion if actionHandler was called correctly
+      expect(actionHandler).toHaveBeenCalledWith(
+        config.actionPost.endPoint,
+        "POST",
+        config.actionPost.revalidatePath,
+        {
+          body: JSON.stringify({
+            verification_body_name: "Test",
+            accredited_by: "SCC",
+            scope_of_verification: "Supplementary Report",
+            visit_name: "Other",
+            visit_type: "Virtual",
+            other_facility_name: "Other Facility",
+            other_facility_coordinates: "Lat 41; Long 35",
+            threats_to_independence: false,
+            verification_conclusion: "Modified",
+          }),
+        },
+      );
     },
   );
+  it("routes to the compliance summary page when the Back button is clicked", () => {
+    const queryString = "?"; // Update this based on your query string logic if necessary.
+    const expectedRoute = `/reports/${config.mockVersionId}/compliance-summary${queryString}`;
+
+    renderVerificationForm();
+
+    // Click the "Back" button
+    const backButton = screen.getByRole("button", {
+      name: config.buttons.cancel,
+    });
+    fireEvent.click(backButton);
+
+    // Assert that the router's push method was called with the expected route
+    expect(mockRouterPush).toHaveBeenCalledTimes(1);
+    expect(mockRouterPush).toHaveBeenCalledWith(expectedRoute);
+  });
 });
