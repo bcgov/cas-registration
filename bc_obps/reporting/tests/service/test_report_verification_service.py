@@ -3,16 +3,14 @@ from django.test import TestCase
 from model_bakery.baker import make_recipe
 from reporting.service.report_verification_service import ReportVerificationService
 from reporting.schema.report_verification import ReportVerificationIn
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
 
 class TestReportVerificationService(TestCase):
-    REGULATED_OPERATION_PURPOSES = {
-        "OBPS_Regulated_Operation",
-        "Opt-in",
-        "New_Entrants"
-    }
+    REGULATED_OPERATION_PURPOSES = {"OBPS_Regulated_Operation", "Opt-in", "New_Entrants"}
 
     ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal('25000000')
+
     def setUp(self):
         # Arrange: Create a report version
         self.report_version = make_recipe('reporting.tests.utils.report_version')
@@ -52,14 +50,16 @@ class TestReportVerificationService(TestCase):
         )
 
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch("reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id")
+    @patch(
+        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
+    )
     def test_get_report_needs_verification_returns_true_for_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
-    ):   
+    ):
         """
         Test that the service returns true for reports with regulated_purpose is a REGULATED_OPERATION_PURPOSES.
         """
-       
+
         # Arrange: Mock the registration purpose to simulate a regulated operation
         # The purpose is one of REGULATED_OPERATION_PURPOSES
         mock_get_registration_purpose.return_value = "OBPS_Regulated_Operation"
@@ -72,9 +72,10 @@ class TestReportVerificationService(TestCase):
         # Ensure the registration purpose method was called with the correct version ID
         mock_get_registration_purpose.assert_called_once_with(self.report_version.id)
 
-    
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch("reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id")
+    @patch(
+        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
+    )
     def test_get_report_needs_verification_returns_false_for_non_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -95,16 +96,17 @@ class TestReportVerificationService(TestCase):
         # Verify that emissions calculation is not called for unregulated purposes
         mock_get_emissions.assert_not_called()
 
-
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch("reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id")
+    @patch(
+        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
+    )
     def test_get_report_needs_verification_returns_true_for_reporting_operation_with_high_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
-    ):   
+    ):
         """
         Test that the service returns true for report of Reporting_Operation with attributable emissions exceeding the verification threshold
         """
-       
+
         # Arrange: Simulate a reporting operation
         mock_get_registration_purpose.return_value = "Reporting_Operation"
         # Simulate high attributable emissions exceeding the verification threshold
@@ -120,14 +122,16 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_called_once_with(self.report_version.id)
 
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch("reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id")
+    @patch(
+        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
+    )
     def test_get_report_needs_verification_returns_false_for_reporting_operation_with_low_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
         """
         Test that the service returns false for report of Reporting_Operation with attributable emissions exceeding the verification threshold
         """
-       
+
         # Arrange: Simulate a reporting operation
         mock_get_registration_purpose.return_value = "Reporting_Operation"
         # Simulate low attributable emissions below the verification threshold
