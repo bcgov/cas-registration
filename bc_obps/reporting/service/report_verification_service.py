@@ -4,6 +4,7 @@ from reporting.models.report_verification import ReportVerification
 from reporting.models import ReportVersion
 from reporting.schema.report_verification import ReportVerificationIn
 
+from registration.models import Operation
 from reporting.service.report_additional_data import ReportAdditionalDataService
 from reporting.service.compliance_service import ComplianceService
 
@@ -65,14 +66,17 @@ class ReportVerificationService:
         and attributable emissions.
         """
         REGULATED_OPERATION_PURPOSES = {
-            "OBPS_Regulated_Operation",
-            "Opt-in",
-            "New_Entrants",
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
         }
         ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal("25000000")
         registration_purpose = ReportAdditionalDataService.get_registration_purpose_by_version_id(version_id)
 
         # Registration Purpose: Users must complete the verification page if the registration purpose is in REGULATED_OPERATION_PURPOSES
+        if isinstance(registration_purpose, dict):
+            registration_purpose = registration_purpose.get("registration_purpose")
+
         if registration_purpose in REGULATED_OPERATION_PURPOSES:
             return True
 
