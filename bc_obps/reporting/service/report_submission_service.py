@@ -2,6 +2,7 @@ from uuid import UUID
 
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_version import ReportVersion
+from reporting.service.report_verification_service import ReportVerificationService
 
 
 class ReportSubmissionService:
@@ -16,10 +17,15 @@ class ReportSubmissionService:
         Django-ninja could then have a special way of parsing that error with a custom error code.
         """
         try:
-            ReportAttachment.objects.get(
-                report_version_id=version_id,
-                attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
-            )
+            # Check if verification statement is mandatory
+            isVerificationStatementMandatory = ReportVerificationService.get_report_needs_verification(version_id)
+
+            if isVerificationStatementMandatory:
+                # Check for the attachment only if mandatory
+                ReportAttachment.objects.get(
+                    report_version_id=version_id,
+                    attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+                )
         except ReportAttachment.DoesNotExist:
             raise Exception("verification_statement")
 
