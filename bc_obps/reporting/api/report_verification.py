@@ -30,7 +30,7 @@ def get_report_verification_by_version_id(
     "/report-version/{report_version_id}/report-needs-verification",
     response={200: bool, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Checks if a report needs verification based on its purpose and attributable emissions.""",
+    description="""Checks if a report needs verification data based on its purpose and attributable emissions.""",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
