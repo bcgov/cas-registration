@@ -149,7 +149,10 @@ const AttachmentsForm: React.FC<Props> = ({
         {buildAttachmentElement(
           "Verification Statement",
           "verification_statement",
-          { required: true, error: validationErrors.verification_statement },
+          {
+            required: isVerificationStatementMandatory,
+            error: validationErrors.verification_statement,
+          },
         )}
         {buildAttachmentElement("WCI.352 and WCI.362", "wci_352_362")}
         {buildAttachmentElement(
