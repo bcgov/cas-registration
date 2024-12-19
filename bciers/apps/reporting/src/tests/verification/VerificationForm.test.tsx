@@ -3,7 +3,7 @@ import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import {
   verificationSchema,
   verificationUiSchema,
-} from "@reporting/src/data/verification/verification";
+} from "@reporting/src/data/jsonSchema/verification/verification";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
