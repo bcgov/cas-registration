@@ -91,7 +91,7 @@ class TestReportVerificationService(TestCase):
         """
 
         # Arrange: Simulate a purpose that is not in REGULATED_OPERATION_PURPOSES and NOT Operation.Purposes.REPORTING_OPERATION
-        mock_get_registration_purpose.return_value = "Electricity Import Operation"
+        mock_get_registration_purpose.return_value = Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
