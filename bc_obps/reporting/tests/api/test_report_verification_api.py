@@ -54,15 +54,10 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         assert response_json["other_facility_name"] == self.report_verification.other_facility_name
         assert response_json["other_facility_coordinates"] == self.report_verification.other_facility_coordinates
 
-
     """Tests for the get_report_needs_verification endpoint."""
 
-    @patch(
-        "reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification"
-    )
-    def test_returns_verification_needed_for_report_version_id(
-        self, mock_get_report_needs_verification: MagicMock
-    ):
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    def test_returns_verification_needed_for_report_version_id(self, mock_get_report_needs_verification: MagicMock):
         # Arrange: Mock the service to return True
         mock_get_report_needs_verification.return_value = True
 
@@ -86,12 +81,8 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         response_json = response.json()
         assert response_json is True
 
-    @patch(
-        "reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification"
-    )
-    def test_returns_verification_not_needed_for_report_version_id(
-        self, mock_get_report_needs_verification: MagicMock
-    ):
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    def test_returns_verification_not_needed_for_report_version_id(self, mock_get_report_needs_verification: MagicMock):
         # Arrange: Mock the service to return False
         mock_get_report_needs_verification.return_value = False
 
