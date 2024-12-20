@@ -30,7 +30,7 @@ class ReportService:
             .prefetch_related('activities', 'regulated_products')
             .get(id=operation_id)
         )
-        print('operation', operation.contacts.all())
+        
         operator = operation.operator
         facilities = FacilityDataAccessService.get_current_facilities_by_operation(operation)
 

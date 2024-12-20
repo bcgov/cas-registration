@@ -27,7 +27,7 @@ from ..schema.report_version import ReportingVersionOut
     description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
     pre-populating them with facility, operation and operator information. Returns the id of the report that was created.
     This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
@@ -40,7 +40,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    # auth=authorize("approved_authorized_roles"),
+    auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
 def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
@@ -54,7 +54,7 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
 
 @router.post(
     "/report-version/{version_id}/report-operation",
-    response={201: ReportOperationIn, custom_codes_4xx: Message},
+    response={200: ReportOperationIn, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
@@ -63,9 +63,9 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
 @handle_http_errors()
 def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
-) -> Tuple[Literal[201], ReportOperationIn]:
+) -> Tuple[Literal[200], ReportOperationIn]:
     report_operation = ReportService.save_report_operation(version_id, payload)
-    return 201, report_operation  # type: ignore
+    return 200, report_operation  # type: ignore
 
 
 @router.get(
