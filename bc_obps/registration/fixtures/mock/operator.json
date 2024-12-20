@@ -15,7 +15,7 @@
     "model": "registration.operator",
     "pk": "4242ea9d-b917-4129-93c2-db00b7451051",
     "fields": {
-      "legal_name": "Bravo Technologies",
+      "legal_name": "Bravo Technologies - has parTNER operator",
       "cra_business_number": 987654321,
       "bc_corporate_registry_number": "def1234567",
       "business_structure": "General Partnership",
@@ -71,7 +71,7 @@
     "model": "registration.operator",
     "pk": "5712ee05-5f3b-4822-825d-6fffddafda4c",
     "fields": {
-      "legal_name": "Foxtrot Enterprises",
+      "legal_name": "Foxtrot Enterprises - has parENT operator",
       "cra_business_number": 987654325,
       "bc_corporate_registry_number": "pqr1234567",
       "business_structure": "BC Corporation",
