@@ -46,13 +46,8 @@ const NavigationForm: React.FC<NavigationFormProps> = ({
   const router = useRouter();
 
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
-    console.log("save", navigateAfterSubmit, continueUrl);
-
     setIsSaving(true);
-
     const success = await onSubmit(data);
-
-    console.log("success", success);
 
     if (success) {
       if (navigateAfterSubmit) {
