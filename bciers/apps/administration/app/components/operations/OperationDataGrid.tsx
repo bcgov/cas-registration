@@ -8,7 +8,7 @@ import OperationFacilitiesActionCell from "apps/administration/app/components/op
 import operationColumns from "../datagrid/models/operations/operationColumns";
 import operationGroupColumns from "../datagrid/models/operations/operationGroupColumns";
 import { OperationRow } from "./types";
-import fetchOperationsPageData from "@bciers/actions/api/fetchOperationsPageData";
+import { fetchOperationsPageData } from "@bciers/actions/api";
 
 const OperationDataGrid = ({
   initialData,
@@ -21,7 +21,6 @@ const OperationDataGrid = ({
   };
 }) => {
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
     [lastFocusedField, setLastFocusedField],

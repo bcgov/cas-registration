@@ -28,12 +28,12 @@ const mockOperators = [
 const mockOperations = {
   rows: [
     {
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea065" as UUID,
-      name: "Operation 1",
+      operation__id: "8be4c7aa-6ab3-4aad-9206-0ef914fea065" as UUID,
+      operation__name: "Operation 1",
     },
     {
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea066" as UUID,
-      name: "Operation 2",
+      operation__id: "8be4c7aa-6ab3-4aad-9206-0ef914fea066" as UUID,
+      operation__name: "Operation 2",
     },
   ],
   row_count: 2,
@@ -58,10 +58,7 @@ const selectOperator = (label: RegExp, operatorName: string) => {
 const selectEntityAndAssertFields = async (entity: string) => {
   fireEvent.click(screen.getByLabelText(entity));
   if (entity === "Operation") {
-    // expect(screen.findByLabelText(/operation\*/i)).resolves.toBeVisible();
     expect(screen.getByLabelText(/operation\*/i)).toBeVisible();
-    // await waitFor(() => {
-    // });
     expect(
       screen.getByLabelText(/effective date of transfer\*/i),
     ).toBeVisible();
@@ -149,10 +146,6 @@ describe("The TransferForm component", () => {
     selectOperator(/current operator\*/i, "Operator 1");
     selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
-    expect(screen.getByLabelText(/operation\*/i)).toBeVisible();
-    expect(
-      screen.getByLabelText(/effective date of transfer\*/i),
-    ).toBeVisible();
     await selectOperation(/operation\*/i, "Operation 1");
     selectDateOfTransfer("2022-12-31");
     expectButton("Transfer Entity");

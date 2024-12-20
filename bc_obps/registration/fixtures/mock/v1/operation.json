@@ -280,7 +280,7 @@
       "bcghg_id": "23219990013",
       "created_at": "2024-1-20T15:27:00.000Z",
       "regulated_products": [1, 2, 3, 4],
-      "status": "Transferred",
+      "status": "Not Started",
       "registration_purpose": "Electricity Import Operation"
     }
   },
@@ -298,7 +298,7 @@
       "opt_in": false,
       "bcghg_id": "23219990014",
       "regulated_products": [],
-      "status": "Closed",
+      "status": "Not Started",
       "created_at": "2024-1-19T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "OBPS Regulated Operation"
@@ -318,7 +318,7 @@
       "opt_in": false,
       "bcghg_id": "23219990015",
       "regulated_products": [],
-      "status": "Temporarily Shutdown",
+      "status": "Draft",
       "created_at": "2024-1-18T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "Potential Reporting Operation"

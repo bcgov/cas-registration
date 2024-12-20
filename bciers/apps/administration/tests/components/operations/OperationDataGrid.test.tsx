@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import OperationDataGrid from "apps/administration/app/components/operations/OperationDataGrid";
 import React from "react";
+import { OperationStatus } from "@bciers/utils/src/enums";
 
 useRouter.mockReturnValue({
   query: {},
@@ -17,47 +18,55 @@ const mockResponse = {
   rows: [
     {
       id: 1,
-      operator: "FakeOperator",
-      name: "Operation 1",
-      bcghg_id: "12111130001",
-      type: "Single Facility Operation",
+      operator__legal_name: "FakeOperator",
+      operation__name: "Operation 1",
+      operation__bcghg_id: "12111130001",
+      operation__type: "Single Facility Operation",
       sfo_facility_id: null,
       sfo_facility_name: null,
-      status: "Draft",
-      bc_obps_regulated_operation: "N/A",
+      status: "Active",
+      operation__bc_obps_regulated_operation: "N/A",
+      operation__status: OperationStatus.NOT_STARTED,
+      operation__id: "uuid1",
     },
     {
       id: 2,
-      operator: "FakeOperator",
-      name: "Operation 2",
-      bcghg_id: "12111130002",
-      type: "Linear Facility Operation",
+      operator__legal_name: "FakeOperator",
+      operation__name: "Operation 2",
+      operation__bcghg_id: "12111130002",
+      operation__type: "Linear Facility Operation",
       sfo_facility_id: null,
       sfo_facility_name: null,
-      status: "Registered",
-      bc_obps_regulated_operation: "24-0001",
+      status: "Active",
+      operation__bc_obps_regulated_operation: "24-0001",
+      operation__status: OperationStatus.DRAFT,
+      operation__id: "uuid2",
     },
     {
       id: 3,
-      operator: "FakeOperator",
-      name: "Operation 3",
-      bcghg_id: "12111130003",
-      type: "Single Facility Operation",
+      operator__legal_name: "FakeOperator",
+      operation__name: "Operation 3",
+      operation__bcghg_id: "12111130003",
+      operation__type: "Single Facility Operation",
       sfo_facility_id: null,
       sfo_facility_name: null,
-      status: "Not Started",
-      bc_obps_regulated_operation: "N/A",
+      status: "Closed",
+      operation__bc_obps_regulated_operation: "N/A",
+      operation__status: OperationStatus.DRAFT,
+      operation__id: "uuid3",
     },
     {
       id: 4,
-      operator: "FakeOperator",
-      name: "Operation 4",
-      bcghg_id: "12111130004",
-      type: "Single Facility Operation",
-      status: "Draft",
+      operator__legal_name: "FakeOperator",
+      operation__name: "Operation 4",
+      operation__bcghg_id: "12111130004",
+      operation__type: "Single Facility Operation",
+      status: "Active",
       sfo_facility_id: "facility-test-id",
       sfo_facility_name: "Facility Test Name",
-      bc_obps_regulated_operation: "N/A",
+      operation__bc_obps_regulated_operation: "N/A",
+      operation__status: OperationStatus.REGISTERED,
+      operation__id: "uuid4",
     },
   ],
   row_count: 4,
@@ -100,9 +109,8 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(0);
     expect(screen.getByText(/24-0001/i)).toBeVisible();
-    expect(screen.getByText(/Registered/i)).toBeVisible();
-    expect(screen.getByText(/Not Started/i)).toBeVisible();
-    expect(screen.getByText(/12111130001/i)).toBeVisible();
+    expect(screen.getByText(/Closed/i)).toBeVisible();
+    expect(screen.getAllByText(/Active/i)).toHaveLength(3);
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
     expect(
       screen.getAllByRole("link", { name: /View Facilities/i }),
@@ -154,9 +162,8 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(4);
     expect(screen.getByText(/24-0001/i)).toBeVisible();
-    expect(screen.getByText(/Registered/i)).toBeVisible();
-    expect(screen.getByText(/Not Started/i)).toBeVisible();
-    expect(screen.getAllByText(/Draft/i)).toHaveLength(2);
+    expect(screen.getByText(/Closed/i)).toBeVisible();
+    expect(screen.getAllByText(/Active/i)).toHaveLength(3);
     expect(screen.getByText(/12111130001/i)).toBeVisible();
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
 
@@ -179,7 +186,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilitiesLink).toHaveAttribute(
       "href",
-      "/operations/2/facilities?operations_title=Operation+2",
+      "/operations/uuid2/facilities?operations_title=Operation+2",
     );
   });
 
@@ -194,7 +201,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLink).toHaveAttribute(
       "href",
-      "/operations/4/facilities/facility-test-id?operations_title=Operation+4&facilities_title=Facility+Test+Name",
+      "/operations/uuid4/facilities/facility-test-id?operations_title=Operation+4&facilities_title=Facility+Test+Name",
     );
   });
 
@@ -209,7 +216,7 @@ describe("OperationsDataGrid component", () => {
 
     expect(facilityLinks[0]).toHaveAttribute(
       "href",
-      "/operations/1/facilities/add-facility?operations_title=Operation+1",
+      "/operations/uuid1/facilities/add-facility?operations_title=Operation+1",
     );
   });
 
@@ -224,11 +231,11 @@ describe("OperationsDataGrid component", () => {
 
     expect(operationInfoLinks[0]).toHaveAttribute(
       "href",
-      "/administration/operations/1?operations_title=Operation 1",
+      "/administration/operations/uuid1?operations_title=Operation 1",
     );
     expect(operationInfoLinks[1]).toHaveAttribute(
       "href",
-      "/administration/operations/2?operations_title=Operation 2",
+      "/administration/operations/uuid2?operations_title=Operation 2",
     );
   });
 
@@ -248,7 +255,7 @@ describe("OperationsDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/administration/operations/2?operations_title=Operation 2",
+      "/administration/operations/uuid4?operations_title=Operation 4",
     );
 
     const continueRegistrationlinks = screen.getAllByRole("link", {
@@ -257,11 +264,11 @@ describe("OperationsDataGrid component", () => {
 
     expect(continueRegistrationlinks[0]).toHaveAttribute(
       "href",
-      "/registration/register-an-operation/1/1",
+      "/registration/register-an-operation/uuid2/1",
     );
     expect(continueRegistrationlinks[1]).toHaveAttribute(
       "href",
-      "/registration/register-an-operation/4/1",
+      "/registration/register-an-operation/uuid3/1",
     );
   });
 });
