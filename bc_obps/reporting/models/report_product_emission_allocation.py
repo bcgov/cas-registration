@@ -12,6 +12,10 @@ class ReportProductEmissionAllocation(TimeStampedModel):
     A model to store the allocated ammount of emissions for a given product
     """
 
+    class AllocationMethodologyChoices(models.TextChoices):
+        CALCULATOR = ("Calculator",)
+        OTHER = "other"
+
     report_version = models.ForeignKey(
         report_version.ReportVersion,
         on_delete=models.PROTECT,
@@ -43,6 +47,8 @@ class ReportProductEmissionAllocation(TimeStampedModel):
     )
     allocation_methodology = models.CharField(
         max_length=255,
+        choices=AllocationMethodologyChoices.choices,
+        default=AllocationMethodologyChoices.CALCULATOR,
         db_comment="The methodology used to calculate the allocated emissions",
     )
     allocation_other_methodology_description = models.TextField(
@@ -54,14 +60,16 @@ class ReportProductEmissionAllocation(TimeStampedModel):
     class Meta:
         db_table = 'erc"."report_product_emission_allocation'
         db_table_comment = "A table to store the allocated amount of emissions for a given product"
+        app_label = 'reporting'
         constraints = [
             models.UniqueConstraint(
                 fields=["report_version", "facility_report", "report_product", "emission_category"],
                 name="unique_report_product_emission_allocation",
+                violation_error_message="A FacilityReport can only have one ReportProductEmissionAllocation per Report Product and Emission Category",
             ),
             models.CheckConstraint(
                 name="allocation_other_methodology_must_have_description",
                 check=~Q(allocation_methodology="other", allocation_other_methodology_description__isnull=True),
-                violation_error_message="A value for allocation_other_methodology_description should be provided if the allocation_methodology is 'other'",
+                violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'other'",
             ),
         ]

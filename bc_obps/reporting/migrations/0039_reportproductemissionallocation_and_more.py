@@ -30,7 +30,10 @@ class Migration(migrations.Migration):
                 (
                     'allocation_methodology',
                     models.CharField(
-                        db_comment='The methodology used to calculate the allocated emissions', max_length=255
+                        choices=[('Calculator', 'Calculator'), ('other', 'Other')],
+                        default='Calculator',
+                        db_comment='The methodology used to calculate the allocated emissions',
+                        max_length=255,
                     ),
                 ),
                 (
@@ -116,6 +119,7 @@ class Migration(migrations.Migration):
             constraint=models.UniqueConstraint(
                 fields=('report_version', 'facility_report', 'report_product', 'emission_category'),
                 name='unique_report_product_emission_allocation',
+                violation_error_message="A FacilityReport can only have one ReportProductEmissionAllocation per Report Product and Emission Category",
             ),
         ),
         migrations.AddConstraint(
@@ -127,7 +131,7 @@ class Migration(migrations.Migration):
                     _negated=True,
                 ),
                 name='allocation_other_methodology_must_have_description',
-                violation_error_message="A value for allocation_other_methodology_description should be provided if the allocation_methodology is 'other'",
+                violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'other'",
             ),
         ),
     ]
