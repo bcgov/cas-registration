@@ -171,9 +171,11 @@ const PersonResponsible = ({ version_id }: Props) => {
       ...contactFormData,
     };
 
-    await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, "", {
       body: JSON.stringify(payload),
     });
+
+    return response && !response.error;
   };
 
   const handleSync = async () => {
