@@ -14,42 +14,45 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockUseRouter = useRouter as vi.MockedFunction<typeof useRouter>;
-
 const mockActionHandler = actionHandler as vi.MockedFunction<
   typeof actionHandler
 >;
 
-describe("OperationReview Component", () => {
+const defaultProps = {
+  formData: {
+    activities: [1],
+    regulated_products: [1],
+    operation_representative_name: [4],
+    operation_type: "Test Operation",
+  },
+  version_id: 1,
+  reportType: { report_type: "Annual Report" },
+  reportingYear: {
+    reporting_year: 2024,
+    report_due_date: "2024-12-31",
+    reporting_window_end: "2024-12-31",
+  },
+  allActivities: [{ id: 1, name: "Activity 1" }],
+  allRegulatedProducts: [{ id: 1, name: "Product 1" }],
+  registrationPurpose: "Test Purpose",
+  facilityReport: {
+    facility_id: 2344,
+    operation_type: "Single Facility Operation",
+  },
+  allRepresentatives: [{ id: 4, representative_name: "Shon Doe" }],
+};
+
+describe("OperationReviewForm Component", () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({ push: vi.fn() });
-    mockActionHandler.mockResolvedValue(true); // Mock the action handler to always resolve successfully
+    mockActionHandler.mockResolvedValue(true); // Mock successful action handler
   });
 
-  it("renders the form correctly after loading", async () => {
-    render(
-      <OperationReviewForm
-        formData={{
-          activities: [1],
-          regulated_products: [1],
-          operation_representative_name: "John Doe",
-          operation_type: "Test Operation",
-        }}
-        version_id={1}
-        reportType={{ report_type: "Annual Report" }}
-        reportingYear={{
-          reporting_year: 2024,
-          report_due_date: "2024-12-31",
-          reporting_window_end: "2024-12-31",
-        }}
-        allActivities={[{ id: 1, name: "Activity 1" }]}
-        allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-        registrationPurpose="Test Purpose"
-        facilityReport={{
-          facility_id: 2344,
-          operation_type: "Single Facility Operation",
-        }}
-      />,
-    );
+  const renderForm = (overrideProps = {}) =>
+    render(<OperationReviewForm {...defaultProps} {...overrideProps} />);
+
+  it("renders the form with the correct content", async () => {
+    renderForm();
 
     await waitFor(() => {
       expect(
@@ -63,38 +66,17 @@ describe("OperationReview Component", () => {
 
   it(
     "submits the form and navigates to the next page",
-    {
-      timeout: 10000,
-    },
+    { timeout: 10000 },
     async () => {
       const { push } = useRouter();
 
-      render(
-        <OperationReviewForm
-          formData={{
-            activities: [1],
-            regulated_products: [1],
-            operation_representative_name: "John Doe",
-            operation_bcghgid: "your-bcghg-id",
-            operation_name: "Operation Name",
-            operation_type: "Test Operation",
-          }}
-          version_id={1}
-          reportType={{ report_type: "Annual Report" }}
-          reportingYear={{
-            reporting_year: 2024,
-            report_due_date: "2024-12-31",
-            reporting_window_end: "2024-12-31",
-          }}
-          allActivities={[{ id: 1, name: "Activity 1" }]}
-          allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-          registrationPurpose="Test Purpose"
-          facilityReport={{
-            facility_id: 2344,
-            operation_type: "Single Facility Operation",
-          }}
-        />,
-      );
+      renderForm({
+        formData: {
+          ...defaultProps.formData,
+          operation_name: "Operation Name",
+          operation_bcghgid: "your-bcghg-id",
+        },
+      });
 
       // Simulate form submission
       fireEvent.click(screen.getByText(/Save & Continue/i));
@@ -115,30 +97,14 @@ describe("OperationReview Component", () => {
     },
   );
 
-  it("shows helper text for Simple Report", async () => {
-    render(
-      <OperationReviewForm
-        formData={{
-          activities: [1],
-          regulated_products: [1],
-          operation_report_type: "Simple Report",
-        }}
-        version_id={1}
-        reportType={{ report_type: "Simple Report" }}
-        reportingYear={{
-          reporting_year: 2024,
-          report_due_date: "2024-12-31",
-          reporting_window_end: "2024-12-31",
-        }}
-        allActivities={[{ id: 1, name: "Activity 1" }]}
-        allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-        registrationPurpose="Test Purpose"
-        facilityReport={{
-          facility_id: 2344,
-          operation_type: "Single Facility Operation",
-        }}
-      />,
-    );
+  it("displays helper text for Simple Report", async () => {
+    renderForm({
+      formData: {
+        ...defaultProps.formData,
+        operation_report_type: "Simple Report",
+      },
+      reportType: { report_type: "Simple Report" },
+    });
 
     await waitFor(() => {
       expect(
