@@ -139,11 +139,12 @@ export default function OperationReview({
 
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
     const preparedData = prepareFormData(formDataObject);
-    const response = await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, "", {
       body: JSON.stringify(preparedData),
     });
 
-    return response;
+    if (response && !response.error) return true;
+    return false;
   };
 
   const onChangeHandler = (data: { formData: any }) => {
