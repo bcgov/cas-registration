@@ -77,41 +77,41 @@ jobs:
           HAPPO_PROJECT: cas-registration1
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./bciers/apps/registration1
-  #     Reports weren't being used regularly though leaving this in here for debugging purposes.
-  #     Uncomment these if they are required to debug problematic e2e issues
-  #     - name: 💾 save Chromium report artifact
-  #       # prefer to upload the report only in case of test failure
-  #       if: failure()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         # Store all of the reports separately by reconfiguring the report name
-  #         name: blob-report-registration1-chromium
-  #         path: bciers/blob-report
-  #         retention-days: 1
-  #
-  # e2e-report:
-  #   name: 📊 e2e report artifact
-  #   runs-on: ubuntu-latest
-  #   needs: [e2e-tests]
-  #   if: ${{ always() && contains(needs.*.result, 'failure') && inputs.is_nx_affected }}
-  #   steps:
-  #     - name: Download blob reports from GitHub Actions Artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: all-blob-reports
-  #         # To minimize the report file size only download Chromium reports
-  #         # If you want to debug other reports, add the * pattern back in temporarily
-  #         pattern: blob-report-registration1-chromium #blob-report-*
-  #         merge-multiple: true
-  #
-  #     - name: Merge into HTML Report
-  #       run: npx playwright merge-reports --reporter html ./all-blob-reports
-  #     - name: Upload HTML report
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: playwright-report-registration1
-  #         path: playwright-report
-  #         retention-days: 14
+      #     Reports weren't being used regularly though leaving this in here for debugging purposes.
+      #     Uncomment these if they are required to debug problematic e2e issues
+      - name: 💾 save Chromium report artifact
+        # prefer to upload the report only in case of test failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          # Store all of the reports separately by reconfiguring the report name
+          name: blob-report-registration1-chromium
+          path: bciers/blob-report
+          retention-days: 1
+
+  e2e-report:
+    name: 📊 e2e report artifact
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    if: ${{ always() && contains(needs.*.result, 'failure') && inputs.is_nx_affected }}
+    steps:
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          # To minimize the report file size only download Chromium reports
+          # If you want to debug other reports, add the * pattern back in temporarily
+          pattern: blob-report-registration1-chromium #blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-registration1
+          path: playwright-report
+          retention-days: 1
 
   # Ensure the e2e tests and e2e report completed successfully
   e2e:
