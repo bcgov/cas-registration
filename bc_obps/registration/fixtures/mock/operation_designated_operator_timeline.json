@@ -268,7 +268,7 @@
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
-      "operation": "b35a  2095-80e6-4b75-990e-ccf19a57edfa",
+      "operation": "b35a2095-80e6-4b75-990e-ccf19a57edfa",
       "operator": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
       "status": "Active",
       "start_date": "2024-12-06T21:09:07Z"
