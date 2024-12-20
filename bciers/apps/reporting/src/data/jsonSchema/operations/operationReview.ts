@@ -1,7 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import { purposeNote } from "./reviewOperationInformationText";
+import { purposeNote } from "@reporting/src/data/jsonSchema/operations/operationReviewInformationText";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import selectWidget from "@bciers/components/form/widgets/SelectWidget";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
@@ -141,7 +141,6 @@ export const operationReviewUiSchema = {
     "ui:placeholder": "Regulated products",
     uniqueItems: true,
   },
-
   operation_representative_name: {
     "ui:widget": "MultiSelectWidget",
     "ui:options": {
@@ -178,9 +177,8 @@ export const updateSchema = (
   reportingWindowEnd: string,
   allActivities: any[],
   allRegulatedProducts: any[],
+  allRepresentatives: any[],
 ) => {
-  const representatives = formDataState.operation_representative_name;
-
   return {
     ...prevSchema,
     properties: {
@@ -198,10 +196,10 @@ export const updateSchema = (
         minItems: 1,
         items: {
           type: "number",
-          enum: representatives.map(
+          enum: allRepresentatives.map(
             (representative: { id: number }) => representative.id,
           ),
-          enumNames: representatives.map(
+          enumNames: allRepresentatives.map(
             (representative: { representative_name: string }) =>
               representative.representative_name,
           ),
