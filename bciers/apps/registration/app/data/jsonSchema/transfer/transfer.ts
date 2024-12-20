@@ -2,13 +2,13 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { FacilityRow } from "@/administration/app/components/facilities/types";
-import { OperationTransferData } from "@/administration/app/components/operations/types";
+import { OperationRow } from "@/administration/app/components/operations/types";
 import { OperatorRow } from "@/administration/app/components/operators/types";
 
 export const createTransferSchema = (
   operatorOptions: OperatorRow[],
-  operationOptions: OperationTransferData[] = [], // fromOperationOptions and operationOptions are the same
-  toOperationOptions: OperationTransferData[] = [],
+  operationOptions: OperationRow[] = [], // fromOperationOptions and operationOptions are the same
+  toOperationOptions: OperationRow[] = [],
   facilityOptions: FacilityRow[] = [],
 ) => {
   const transferSchema: RJSFSchema = {
@@ -134,9 +134,9 @@ export const createTransferSchema = (
 
   if (operationOptions.length > 0) {
     const operationOptionsAnyOf = operationOptions.map(
-      (operation: OperationTransferData) => ({
-        const: operation.id,
-        title: operation.name,
+      (operation: OperationRow) => ({
+        const: operation.operation__id,
+        title: operation.operation__name,
       }),
     );
     // Add the operation options to the operation field
@@ -150,9 +150,9 @@ export const createTransferSchema = (
   if (toOperationOptions.length > 0) {
     // Add the operation options to the to_operation field
     transferSchemaCopy.dependencies.transfer_entity.allOf[1].then.properties.to_operation.anyOf =
-      toOperationOptions.map((operation: OperationTransferData) => ({
-        const: operation.id,
-        title: operation.name,
+      toOperationOptions.map((operation: OperationRow) => ({
+        const: operation.operation__id,
+        title: operation.operation__name,
       }));
   }
 

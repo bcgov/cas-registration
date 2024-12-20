@@ -1,15 +1,6 @@
 import { OptedInOperationFormData } from "@/registration/app/components/operations/registration/types";
 import { UUID } from "crypto";
 
-export interface OperationTransferData {
-  id: UUID;
-  bcghg_id: string;
-  name: string;
-  operator: string;
-  type: string;
-  legal_name: string;
-}
-
 export interface OperationRow {
   operation__name: string;
   operation__type: string;

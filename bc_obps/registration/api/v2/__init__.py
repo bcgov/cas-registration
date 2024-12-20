@@ -6,7 +6,6 @@ from . import (
     facilities,
     naics_codes,
     operations,
-    operations_timeline,
     operators,
     regulated_products,
     reporting_activities,
