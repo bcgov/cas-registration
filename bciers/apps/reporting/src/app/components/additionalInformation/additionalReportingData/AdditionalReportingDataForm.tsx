@@ -79,9 +79,12 @@ export default function AdditionalReportingDataForm({
       ...data.captured_emissions_section,
       ...data.additional_data_section,
     };
-    await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
+
+    if (response && !response.error) return true;
+    return false;
   };
 
   return (
