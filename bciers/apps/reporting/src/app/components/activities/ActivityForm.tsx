@@ -11,6 +11,7 @@ import debounce from "lodash.debounce";
 import { useSearchParams } from "next/navigation";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+import { customizeValidator } from "@rjsf/validator-ajv8";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -45,7 +46,7 @@ export default function ActivityForm({
   let step = searchParams ? Number(searchParams.get("step")) : 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
-  const [formState, setFormState] = useState(activityFormData as any);
+  const [formState, setFormState] = useState(activityFormData);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
@@ -118,11 +119,8 @@ export default function ActivityForm({
   };
 
   // 🛠️ Function to submit user form data to API
-  const submitHandler = async (data: { formData?: any }) => {
+  const submitHandler = async () => {
     setErrorList([]);
-
-    console.log(data.formData);
-    console.log(formState);
 
     const response = await actionHandler(
       `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
@@ -130,7 +128,9 @@ export default function ActivityForm({
       "",
       {
         body: JSON.stringify({
-          activity_data: data.formData,
+          /* formState needs to be used instead of the data passed to the handler, since this is a controlled component.
+             See FormBase implementation comments. */
+          activity_data: formState,
         }),
       },
     );
@@ -162,6 +162,8 @@ export default function ActivityForm({
       errors={errorList}
       backUrl={createUrl(false)}
       continueUrl={createUrl(true)}
+      validator={customizeValidator({})}
+      omitExtraData={false}
     />
   );
 }
