@@ -38,8 +38,6 @@ class ReportVerification(TimeStampedModel):
     )
 
     threats_to_independence = models.BooleanField(
-        null=True,
-        blank=True,
         db_comment="Indicates whether there were any threats to independence noted",
     )
 
@@ -51,8 +49,6 @@ class ReportVerification(TimeStampedModel):
     verification_conclusion = models.CharField(
         max_length=8,
         choices=VerificationConclusion.choices,
-        null=True,
-        blank=True,
         db_comment="The conclusion of the verification",
     )
 
@@ -80,7 +76,7 @@ class ReportVerification(TimeStampedModel):
         db_comment="Name of the other facility visited if 'Other' is selected",
     )
 
-    other_facility_location = models.CharField(
+    other_facility_coordinates = models.CharField(
         max_length=100,
         null=True,
         blank=True,

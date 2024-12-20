@@ -13,6 +13,8 @@ export const verificationSchema: RJSFSchema = {
     "accredited_by",
     "scope_of_verification",
     "visit_name",
+    "threats_to_independence",
+    "verification_conclusion",
   ],
   properties: {
     verification_body_name: {
@@ -93,9 +95,9 @@ export const verificationSchema: RJSFSchema = {
               type: "string",
               title: "Please indicate the site visited",
             },
-            other_facility_location: {
+            other_facility_coordinates: {
               type: "string",
-              title: "Geographic location of site",
+              title: "Geographic coordinates of site",
             },
             visit_type: {
               type: "string",
@@ -112,7 +114,7 @@ export const verificationSchema: RJSFSchema = {
           },
           required: [
             "other_facility_name",
-            "other_facility_location",
+            "other_facility_coordinates",
             "visit_type",
             "threats_to_independence",
             "verification_conclusion",
@@ -147,7 +149,7 @@ export const verificationUiSchema = {
     "scope_of_verification",
     "visit_name",
     "other_facility_name",
-    "other_facility_location",
+    "other_facility_coordinates",
     "visit_type",
     "threats_to_independence",
     "verification_conclusion",
