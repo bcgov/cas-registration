@@ -31,10 +31,10 @@ class OperationTimelineFilterSchema(FilterSchema):
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
     operation__bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'operation__bcghg_id__id__icontains'})
     operation__name: Optional[str] = Field(None, json_schema_extra={'q': 'operation__name__icontains'})
-    # brianna filtering on this isn't working
     operation__type: Optional[str] = Field(None, json_schema_extra={'q': 'operation__type__icontains'})
     status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
     operation__bc_obps_regulated_operation: Optional[str] = Field(
         None, json_schema_extra={'q': 'operation__bc_obps_regulated_operation__id__icontains'}
     )
     operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
+    operator__id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator__id__exact'})
