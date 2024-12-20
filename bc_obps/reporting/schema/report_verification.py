@@ -15,9 +15,9 @@ class BaseReportVerificationSchema(ModelSchema):
     visit_name: str
     visit_type: Optional[str] = Field(None)
     other_facility_name: Optional[str] = Field(None)
-    other_facility_coordinates: Optional[str] = Field(None)
-    threats_to_independence: Optional[bool] = Field(None)
-    verification_conclusion: Optional[str] = Field(None)
+    other_facility_location: Optional[str] = Field(None)
+    threats_to_independence: bool
+    verification_conclusion: str
 
     class Meta:
         model = ReportVerification
@@ -28,7 +28,7 @@ class BaseReportVerificationSchema(ModelSchema):
             'visit_name',
             'visit_type',
             'other_facility_name',
-            'other_facility_coordinates',
+            'other_facility_location',
             'threats_to_independence',
             'verification_conclusion',
         ]
