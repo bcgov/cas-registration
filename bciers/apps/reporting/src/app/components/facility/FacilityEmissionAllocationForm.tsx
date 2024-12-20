@@ -42,6 +42,19 @@ interface FormData {
   allocation_methodology: string;
   allocation_other_methodology_description: string;
 }
+// Function that makes sure the percentage does not show 100 when it is not exactly 100
+const handlePercentageNearHundred = (value: number) => {
+  let res;
+  if (value > 100.0 && value < 100.01) {
+    res = 100.01;
+  } else if (value < 100.0 && value > 99.99) {
+    res = 99.99;
+  } else {
+    res = value;
+  }
+
+  return parseFloat(res.toFixed(4));
+};
 
 // 🛠️ Function to calculate category products allocation sum and set total sum in products_emission_allocation_sum
 const calculateEmissionData = (category: EmissionAllocationData) => {
@@ -52,7 +65,8 @@ const calculateEmissionData = (category: EmissionAllocationData) => {
   );
 
   const emissionTotal = Number(category.emission_total) || 1;
-  const percentage = (sum / emissionTotal) * 100;
+
+  const percentage = handlePercentageNearHundred((sum / emissionTotal) * 100);
 
   return {
     ...category,
@@ -135,10 +149,9 @@ export default function FacilityEmissionAllocationForm({
   // 🛠️ Handle changes to the form data, validates emissions, and updates the error state and submit button state.
   const handleChange = useCallback((e: IChangeEvent) => {
     const updatedFormData = e.formData;
-    const updatedDataKeys = [
-      "basic_emission_allocation_data",
-      "fuel_excluded_emission_allocation_data",
-    ];
+    const BASIC_CATEGORY_DATA = "basic_emission_allocation_data";
+    const EXCLUDED_CATEGORY_DATA = "fuel_excluded_emission_allocation_data";
+    const updatedDataKeys = [BASIC_CATEGORY_DATA, EXCLUDED_CATEGORY_DATA];
     let errorMessage;
 
     // Initialize a map to store total allocated quantities by report_product_id
@@ -153,11 +166,12 @@ export default function FacilityEmissionAllocationForm({
             const allocatedQuantity =
               parseFloat(product.allocated_quantity as any) || 0;
 
-            // Accumulate the allocated quantity for this report_product_id
-            productAllocations[product.report_product_id] =
-              (productAllocations[product.report_product_id] || 0) +
-              allocatedQuantity;
-
+            // Accumulate the reportable allocated quantity for this report_product_id
+            if (key == BASIC_CATEGORY_DATA) {
+              productAllocations[product.report_product_id] =
+                (productAllocations[product.report_product_id] || 0) +
+                allocatedQuantity;
+            }
             return {
               ...product,
               allocated_quantity: String(allocatedQuantity),
