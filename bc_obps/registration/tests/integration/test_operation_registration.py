@@ -201,12 +201,14 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.name == f'{purpose} name'
         assert self.operation.type == operation_type
         assert self.operation.operator_id == self.approved_user_operator.operator_id
-        assert self.operation.naics_code_id == 1
-        assert self.operation.secondary_naics_code_id == 2
-        assert self.operation.tertiary_naics_code_id == 3
         assert self.operation.bcghg_id_id == self.bcghg_id.id
-        assert self.operation.activities.count() == 2
-        assert list(self.operation.activities.values_list('id', flat=True)) == [1, 2]
+
+        if purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            assert self.operation.naics_code_id == 1
+            assert self.operation.secondary_naics_code_id == 2
+            assert self.operation.tertiary_naics_code_id == 3
+            assert self.operation.activities.count() == 2
+            assert list(self.operation.activities.values_list('id', flat=True)) == [1, 2]
 
         if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
@@ -228,16 +230,18 @@ class TestOperationRegistration(CommonTestSetup):
             assert self.operation.opted_in_operation.updated_by == self.user
             assert self.operation.opted_in_operation.updated_at is not None
         else:
-            assert self.operation.opt_in is None
+            assert self.operation.opt_in is False
             assert self.operation.opted_in_operation_id is None
 
         # make sure we have the two required documents
-        assert (
-            self.operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
-            .distinct()
-            .count()
-            == 2
-        )
+        # (unless the registration_purpose is EIO, in which case no documents are required)
+        if purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            assert (
+                self.operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
+                .distinct()
+                .count()
+                == 2
+            )
 
         # make sure we have the facility
         if operation_type == OperationTypes.LFO:
