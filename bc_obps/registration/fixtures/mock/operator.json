@@ -206,5 +206,19 @@
       "status": "Approved",
       "is_new": false
     }
+  },
+  {
+    "model": "registration.operator",
+    "pk": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
+    "fields": {
+      "legal_name": "Papa Enterprises - no associated operations",
+      "cra_business_number": 987654334,
+      "bc_corporate_registry_number": "qrs1234567",
+      "business_structure": "BC Corporation",
+      "mailing_address": 4,
+      "contacts": [1],
+      "status": "Approved",
+      "is_new": false
+    }
   }
 ]
