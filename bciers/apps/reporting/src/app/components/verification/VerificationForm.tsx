@@ -54,7 +54,7 @@ export default function VerificationForm({
 
     if (response?.error) {
       setError(response.error);
-      return;
+      return false;
     } else {
       setError(undefined);
     }

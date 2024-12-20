@@ -50,6 +50,7 @@ export default function OperationReviewForm({
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [facilityId, setFacilityId] = useState<number | null>(null);
   const [operationType, setOperationType] = useState("");
+  const [error, setError] = useState(undefined);
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -159,14 +160,18 @@ export default function OperationReviewForm({
   ) => {
     const method = "POST";
     const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
-
-    const formDataObject = safeJsonParse(JSON.stringify(data.formData));
-    const preparedData = prepareFormData(formDataObject);
+    const preparedData = prepareFormData(data.formData);
+    const payload = safeJsonParse(JSON.stringify(preparedData));
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(preparedData),
+      body: payload,
     });
 
-    return response;
+    if (response?.error) {
+      setError(response.error);
+      return false;
+    } else {
+      setError(undefined);
+    }
   };
 
   const onChangeHandler = (data: { formData: any }) => {
@@ -221,6 +226,7 @@ export default function OperationReviewForm({
       onChange={onChangeHandler}
       backUrl={backUrl}
       continueUrl={saveAndContinueUrl}
+      error={error}
     />
   );
 }
