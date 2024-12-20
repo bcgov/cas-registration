@@ -1,10 +1,12 @@
+"use client";
+
 import { useRef, useState } from "react";
 import FormBase, { FormPropsWithTheme } from "./FormBase";
 import Form from "@rjsf/core";
-import { useRouter } from "next/router";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import ReportingStepButtons from "./components/ReportingStepButtons";
 import { Alert } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export interface NavigationFormProps extends FormPropsWithTheme<any> {
   schema: RJSFSchema;
@@ -17,7 +19,7 @@ export interface NavigationFormProps extends FormPropsWithTheme<any> {
   onSubmit: (data: any) => Promise<boolean>;
   buttonText?: string;
   onChange?: (data: any) => void;
-  error?: any;
+  errors?: any[];
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
   formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
@@ -35,7 +37,7 @@ const NavigationForm: React.FC<NavigationFormProps> = ({
   saveButtonDisabled,
   submitButtonDisabled,
   buttonText,
-  error,
+  errors,
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -44,29 +46,36 @@ const NavigationForm: React.FC<NavigationFormProps> = ({
   const router = useRouter();
 
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
+    console.log("save", navigateAfterSubmit, continueUrl);
+
     setIsSaving(true);
-    try {
-      await onSubmit(data);
+
+    const success = await onSubmit(data);
+
+    console.log("success", success);
+
+    if (success) {
       if (navigateAfterSubmit) {
         setIsRedirecting(true);
         router.push(continueUrl);
       } else {
+        setIsSaving(false);
         setIsSuccess(true);
         setTimeout(() => {
           setIsSuccess(false);
         }, 3000);
       }
-    } catch {
-      setIsSuccess(false);
-      setIsRedirecting(false);
+      return;
     }
+
+    setIsSuccess(false);
     setIsSaving(false);
   };
 
   // Essentially a manual call to `submit()` with a context
   const onSaveAndContinue = async () => {
     if (formRef.current?.validateForm())
-      await handleFormSave(formRef.current.state.formData, true);
+      await handleFormSave(formRef.current.state, true);
   };
 
   return (
@@ -90,9 +99,13 @@ const NavigationForm: React.FC<NavigationFormProps> = ({
         saveAndContinue={onSaveAndContinue}
         buttonText={buttonText}
       />
-      <div className="min-h-[48px] box-border mt-4">
-        {error && <Alert severity="error">{error}</Alert>}
-      </div>
+      {errors && errors.length > 0 && (
+        <div className="min-h-[48px] box-border mt-4">
+          {errors.map((e) => (
+            <Alert severity="error">{e}</Alert>
+          ))}
+        </div>
+      )}
     </FormBase>
   );
 };
