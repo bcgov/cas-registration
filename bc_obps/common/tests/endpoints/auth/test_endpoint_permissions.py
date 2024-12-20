@@ -275,7 +275,6 @@ class TestEndpointPermissions(TestCase):
         ],
         "approved_authorized_roles": [
             {"method": "get", "endpoint_name": "get_operator", "kwargs": {"operator_id": mock_uuid}},
-            {"method": "get", "endpoint_name": "list_operations_timeline"},
             {"method": "get", "endpoint_name": "v1_list_operations"},
             {"method": "get", "endpoint_name": "v1_get_operation", "kwargs": {"operation_id": mock_uuid}},
             {

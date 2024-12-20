@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
 import { auth } from "@bciers/testConfig/mocks";
-import { mockFetchOperationsTimelinePageData } from "./mocks";
+import { fetchOperationsPageData } from "./mocks";
 
 useRouter.mockReturnValue({
   query: {},
@@ -54,7 +54,7 @@ describe("Operations component", () => {
     auth.mockReturnValueOnce({
       user: { app_role: "cas_director" },
     });
-    mockFetchOperationsTimelinePageData.mockReturnValueOnce(undefined);
+    fetchOperationsPageData.mockReturnValueOnce(undefined);
     await expect(async () => {
       render(await Operations({ searchParams: {} }));
     }).rejects.toThrow("Failed to retrieve operations");
@@ -65,7 +65,7 @@ describe("Operations component", () => {
     auth.mockReturnValueOnce({
       user: { app_role: "industry_user" },
     });
-    mockFetchOperationsTimelinePageData.mockReturnValueOnce(mockResponse);
+    fetchOperationsPageData.mockReturnValueOnce(mockResponse);
     render(await Operations({ searchParams: {} }));
     expect(screen.getByRole("grid")).toBeVisible();
     expect(

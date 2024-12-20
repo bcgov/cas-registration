@@ -3,7 +3,7 @@ import { OperationRow, OperationsSearchParams } from "./types";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
-import fetchOperationsTimelinePageData from "./fetchOperationsTimelinePageData";
+import { fetchOperationsPageData } from "@bciers/actions/api";
 
 // 🧩 Main component
 export default async function OperationDataGridPage({
@@ -18,7 +18,7 @@ export default async function OperationDataGridPage({
   const operations: {
     rows: OperationRow[];
     row_count: number;
-  } = await fetchOperationsTimelinePageData(searchParams);
+  } = await fetchOperationsPageData(searchParams);
 
   if (!operations || "error" in operations)
     throw new Error("Failed to retrieve operations");
