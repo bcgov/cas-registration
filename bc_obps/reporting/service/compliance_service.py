@@ -146,7 +146,9 @@ class ComplianceService:
             )  # ID=3 is Industrial Emissions category
             production_totals = ComplianceService.get_report_product_aggregated_totals(report_version_id, rp.product_id)
             allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
-                report_version_id, rp.product_id, list(EmissionCategory.objects.all().values_list('id', flat=True))
+                report_version_id,
+                rp.product_id,
+                list(EmissionCategory.objects.filter(category_type='basic').values_list('id', flat=True)),
             )
             allocated_reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
