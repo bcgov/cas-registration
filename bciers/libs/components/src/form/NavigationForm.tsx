@@ -25,20 +25,17 @@ export interface NavigationFormProps extends FormPropsWithTheme<any> {
   formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
 }
 
-const NavigationForm: React.FC<NavigationFormProps> = ({
-  schema,
-  uiSchema,
-  formData,
-  backUrl,
-  continueUrl,
-  onSubmit,
-  onChange,
-  formContext,
-  saveButtonDisabled,
-  submitButtonDisabled,
-  buttonText,
-  errors,
-}) => {
+const NavigationForm: React.FC<NavigationFormProps> = (props) => {
+  const {
+    backUrl,
+    continueUrl,
+    onSubmit,
+    saveButtonDisabled,
+    submitButtonDisabled,
+    buttonText,
+    errors,
+  } = props;
+
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -48,23 +45,20 @@ const NavigationForm: React.FC<NavigationFormProps> = ({
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
     setIsSaving(true);
     const success = await onSubmit(data);
+    setIsSaving(false);
 
     if (success) {
       if (navigateAfterSubmit) {
         setIsRedirecting(true);
         router.push(continueUrl);
+        setIsRedirecting(false);
       } else {
-        setIsSaving(false);
         setIsSuccess(true);
         setTimeout(() => {
           setIsSuccess(false);
         }, 3000);
       }
-      return;
     }
-
-    setIsSuccess(false);
-    setIsSaving(false);
   };
 
   // Essentially a manual call to `submit()` with a context
@@ -75,13 +69,9 @@ const NavigationForm: React.FC<NavigationFormProps> = ({
 
   return (
     <FormBase
+      {...props}
       formRef={formRef}
-      schema={schema}
-      uiSchema={uiSchema}
       onSubmit={(data) => handleFormSave(data, false)}
-      formData={formData}
-      onChange={onChange}
-      formContext={formContext}
     >
       <ReportingStepButtons
         backUrl={backUrl}
