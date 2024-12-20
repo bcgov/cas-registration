@@ -458,5 +458,174 @@
       "created_at": "2024-1-10T15:27:00.000Z",
       "activities": [1, 3]
     }
+  },
+  {
+    "pk": "b35a2095-80e6-4b75-990e-ccf19a57edfa",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
+      "point_of_contact": 1,
+      "name": "Cat",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "1d59cb82-2776-4785-a8f7-4b13bc9b4579",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "7e8b72dc-4196-427f-a553-7879748139e1",
+      "point_of_contact": 1,
+      "name": "Dog",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "82e6ac8f-42f2-42a7-b179-132a3488b2e1",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
+      "point_of_contact": 1,
+      "name": "Elephant",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "95f6ec29-4b5b-42a2-9759-d4e9c99738d7",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
+      "point_of_contact": 1,
+      "name": "Fox",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "1b21579c-87f9-452f-b9c1-c784cb96f62e",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "edb1aff1-f888-4199-ab88-068364496347",
+      "point_of_contact": 1,
+      "name": "Giraffe",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "4623c545-ef99-464a-bd8b-bb96ffb57e8e",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
+      "point_of_contact": 1,
+      "name": "Horse",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "f82c2a59-0f3a-4a89-b7d7-9fcd7a7ecb77",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "04384911-264a-4510-b582-11ee704b8e41",
+      "point_of_contact": 1,
+      "name": "Iguana",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "3182c8a4-22ff-4ca9-9f91-093c8888fd7c",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
+      "point_of_contact": 1,
+      "name": "Jaguar",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "68f0b68a-c6b5-4c4e-82a6-d7fbd690f55e",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "bb979661-0782-49b2-9c64-acd8424b692b",
+      "point_of_contact": 1,
+      "name": "Kangaroo",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "a5f7f5b3-fb56-4377-ae6c-b11c8b6d0041",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "bb702949-e303-4788-9ba9-806232a5f711",
+      "point_of_contact": 1,
+      "name": "Lion",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "8494e89c-489b-441b-a05d-e935b1d82487",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
+      "point_of_contact": 1,
+      "name": "Monkey",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "84d4c8b7-55b5-4700-90ad-fb1c169d4e1f",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "5c847c75-3b17-414c-97f8-88ba81cb3821",
+      "point_of_contact": 1,
+      "name": "Narwhal",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
+  },
+  {
+    "pk": "62d5d8ea-b163-4a83-95a4-bfadbb6b21f7",
+    "model": "registration.operation",
+    "fields": {
+      "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
+      "point_of_contact": 1,
+      "name": "Ostrich",
+      "type": "Single Facility Operation",
+      "naics_code": 20,
+      "status": "Draft",
+      "activities": [1, 5]
+    }
   }
 ]
