@@ -1,6 +1,9 @@
 from ninja import ModelSchema, Schema
+
+from reporting.models import ReportOperationRepresentative
 from reporting.models.report_operation import ReportOperation
 from pydantic import alias_generators
+
 from typing import List
 
 
@@ -31,6 +34,21 @@ class ReportOperationOut(ModelSchema):
             'regulated_products',
             'operation_representative_name',
         ]
+
+
+class ReportOperationRepresentativeSchema(ModelSchema):
+    class Meta:
+        model = ReportOperationRepresentative
+        fields = ["id", "representative_name", "selected_for_report"]
+
+
+class ReportOperationSchemaOut(Schema):
+    """
+    Schema for the report operation with representative details.
+    """
+
+    report_operation: ReportOperationOut
+    report_operation_representative: List[ReportOperationRepresentativeSchema]
 
 
 class ReportOperationIn(Schema):

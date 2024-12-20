@@ -15,6 +15,7 @@ from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.report_raw_activity_data import ReportRawActivityData
+from reporting.models.report_operation_representative import ReportOperationRepresentative
 from reporting.tests.utils.bakers import report_version_baker, activity_baker, source_type_baker
 
 
@@ -138,3 +139,12 @@ def report_new_entrant_production_baker(**props):
         "production_amount": 500,
     }
     return baker.make(ReportNewEntrantProduction, **(default_props | props))
+
+
+def report_operation_representative_baker(**props) -> ReportOperationRepresentative:
+    if "report_version" not in props:
+        props["report_version"] = report_version_baker()
+
+    report_representative = baker.make(ReportOperationRepresentative, **props)
+
+    return report_representative
