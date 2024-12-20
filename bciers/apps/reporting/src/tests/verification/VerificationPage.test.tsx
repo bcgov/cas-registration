@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import VerificationPage from "@reporting/src/app/components/verification/VerificationPage";
-import { verificationSchema } from "@reporting/src/data/verification/verification";
+import { verificationSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 
