@@ -1,7 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import { purposeNote } from "./reviewOperationInformationText";
+import { purposeNote } from "@reporting/src/data/jsonSchema/operations/operationReviewInformationText";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import selectWidget from "@bciers/components/form/widgets/SelectWidget";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
@@ -26,11 +26,6 @@ export const operationReviewSchema: RJSFSchema = {
         "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
       enum: ["Annual report", "Simple Report"],
       default: "Annual report",
-    },
-
-    operation_representative_name: {
-      type: "string",
-      title: "Operation representative",
     },
 
     date_info: {
@@ -146,10 +141,14 @@ export const operationReviewUiSchema = {
     "ui:placeholder": "Regulated products",
     uniqueItems: true,
   },
-
   operation_representative_name: {
-    "ui:widget": "select",
-    "ui:options": commonUiOptions,
+    "ui:widget": "MultiSelectWidget",
+    "ui:options": {
+      ...commonUiOptions,
+      label: { style: { verticalAlign: "top" } },
+    },
+    "ui:placeholder": "Operation representative",
+    uniqueItems: true,
   },
   "ui:submitButtonOptions": {
     props: {
@@ -178,6 +177,7 @@ export const updateSchema = (
   reportingWindowEnd: string,
   allActivities: any[],
   allRegulatedProducts: any[],
+  allRepresentatives: any[],
 ) => {
   return {
     ...prevSchema,
@@ -191,9 +191,19 @@ export const updateSchema = (
         default: formDataState?.operation_report_type || "Annual Report",
       },
       operation_representative_name: {
-        type: "string",
+        type: "array",
         title: "Operation representative",
-        enum: [formDataState.operation_representative_name || ""],
+        minItems: 1,
+        items: {
+          type: "number",
+          enum: allRepresentatives.map(
+            (representative: { id: number }) => representative.id,
+          ),
+          enumNames: allRepresentatives.map(
+            (representative: { representative_name: string }) =>
+              representative.representative_name,
+          ),
+        },
       },
       operation_type: {
         type: "string",

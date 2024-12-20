@@ -38,6 +38,7 @@ from .report_attachment import ReportAttachment
 from .naics_regulatory_value import NaicsRegulatoryValue
 from .product_emission_intensity import ProductEmissionIntensity
 from .report_product_emission_allocation import ReportProductEmissionAllocation
+from .report_operation_representative import ReportOperationRepresentative
 
 __all__ = [
     "ReportDataBaseModel",
@@ -77,4 +78,5 @@ __all__ = [
     "NaicsRegulatoryValue",
     "ProductEmissionIntensity",
     "ReportProductEmissionAllocation",
+    "ReportOperationRepresentative",
 ]
