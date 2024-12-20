@@ -12,6 +12,8 @@ from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
+from reporting.models.report_operation_representative import ReportOperationRepresentative
+
 
 
 class ReportService:
@@ -61,6 +63,12 @@ class ReportService:
             ),
             report_version=report_version,
         )
+        for contact in operation.contacts.all():
+            ReportOperationRepresentative.objects.create(
+                report_version=report_version,
+                representative_name=contact.get_full_name(),
+                selected_for_report=False,
+            )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
