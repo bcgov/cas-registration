@@ -13,6 +13,8 @@ export const verificationSchema: RJSFSchema = {
     "accredited_by",
     "scope_of_verification",
     "visit_name",
+    "threats_to_independence",
+    "verification_conclusion",
   ],
   properties: {
     verification_body_name: {
@@ -36,7 +38,16 @@ export const verificationSchema: RJSFSchema = {
     visit_name: {
       title: "Sites visited",
       type: "string",
-      enum: ["Other", "None"], // modified in components/verification/createVerificationSchema.ts
+      enum: ["Facility X", "Other", "None"], // modified in components/verification/createVerificationSchema.ts
+    },
+    threats_to_independence: {
+      title: "Were there any threats to independence noted",
+      type: "boolean",
+    },
+    verification_conclusion: {
+      title: "Verification conclusion",
+      type: "string",
+      enum: ["Positive", "Modified", "Negative"],
     },
     verification_note: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -47,9 +58,6 @@ export const verificationSchema: RJSFSchema = {
   dependencies: {
     visit_name: {
       oneOf: [
-        // type_of_facility_visit field display conditon:
-        // visit_name has one item
-        // visit_name is not "Other" or "None"
         {
           properties: {
             visit_name: {
@@ -64,17 +72,23 @@ export const verificationSchema: RJSFSchema = {
               title: "Type of site visit",
               enum: ["Virtual", "In person"],
             },
+            threats_to_independence: {
+              type: "boolean",
+            },
+            verification_conclusion: {
+              type: "string",
+              enum: ["Positive", "Modified", "Negative"],
+            },
           },
-          required: ["visit_type"],
+          required: [
+            "visit_type",
+            "threats_to_independence",
+            "verification_conclusion",
+          ],
         },
         {
-          // other_site_details field display condition
-          // visit_name has one item
-          // visit_name is "Other"
           properties: {
             visit_name: {
-              type: "string",
-              minItems: 1,
               enum: ["Other"],
             },
             other_facility_name: {
@@ -83,7 +97,7 @@ export const verificationSchema: RJSFSchema = {
             },
             other_facility_coordinates: {
               type: "string",
-              title: "Geographic coordinates",
+              title: "Geographic coordinates of site",
             },
             visit_type: {
               type: "string",
@@ -91,11 +105,9 @@ export const verificationSchema: RJSFSchema = {
               enum: ["Virtual", "In person"],
             },
             threats_to_independence: {
-              title: "Were there any threats to independence noted",
               type: "boolean",
             },
             verification_conclusion: {
-              title: "Verification conclusion",
               type: "string",
               enum: ["Positive", "Modified", "Negative"],
             },
@@ -107,6 +119,21 @@ export const verificationSchema: RJSFSchema = {
             "threats_to_independence",
             "verification_conclusion",
           ],
+        },
+        {
+          properties: {
+            visit_name: {
+              enum: ["None"],
+            },
+            threats_to_independence: {
+              type: "boolean",
+            },
+            verification_conclusion: {
+              type: "string",
+              enum: ["Positive", "Modified", "Negative"],
+            },
+          },
+          required: ["threats_to_independence", "verification_conclusion"],
         },
       ],
     },

@@ -44,11 +44,21 @@ const commonMandatoryFormFields = [
     key: "scope_of_verification",
   },
   { label: "Sites visited", type: "combobox", key: "visit_name" },
+  {
+    label: "Were there any threats to independence noted",
+    type: "radio",
+    key: "threats_to_independence",
+  },
+  {
+    label: "Verification conclusion",
+    type: "combobox",
+    key: "verification_conclusion",
+  },
 ];
 
 const specificMandatoryFields = {
   facility: [{ label: "Type of site visit", type: "radio", key: "visit_type" }],
-  conditional: [
+  other: [
     { label: "Type of site visit", type: "radio", key: "visit_type" },
     {
       label: "Please indicate the site visited",
@@ -56,19 +66,9 @@ const specificMandatoryFields = {
       key: "other_facility_name",
     },
     {
-      label: "Geographic coordinates",
+      label: "Geographic coordinates of site",
       type: "text",
       key: "other_facility_coordinates",
-    },
-    {
-      label: "Were there any threats to independence noted",
-      type: "radio",
-      key: "threats_to_independence",
-    },
-    {
-      label: "Verification conclusion",
-      type: "combobox",
-      key: "verification_conclusion",
     },
   ],
 };
@@ -79,15 +79,19 @@ const formDataSets = {
     accredited_by: "SCC",
     scope_of_verification: "Supplementary Report",
     visit_name: "None",
+    threats_to_independence: "No",
+    verification_conclusion: "Positive",
   },
   facility: {
     verification_body_name: "Test",
     accredited_by: "SCC",
     scope_of_verification: "Supplementary Report",
-    visit_name: "Facility A",
+    visit_name: "Facility X",
     visit_type: "Virtual",
+    threats_to_independence: "No",
+    verification_conclusion: "Positive",
   },
-  conditional: {
+  other: {
     verification_body_name: "Test",
     accredited_by: "SCC",
     scope_of_verification: "Supplementary Report",
@@ -116,7 +120,7 @@ const renderVerificationForm = () => {
 // ⛏️ Helper function to simulate form POST submission and assert the result
 const submitFormAndAssert = async (
   fields: { label: string; type: string; key: string }[],
-  data: Record<string, string | number>,
+  data: Record<string, string | number | boolean>,
 ) => {
   actionHandler.mockReturnValueOnce({
     success: true,
@@ -159,12 +163,12 @@ describe("VerificationForm component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryAllByText(/Required field/i)).toHaveLength(4);
+      expect(screen.queryAllByText(/Required field/i)).toHaveLength(6);
     });
   });
 
   it(
-    "fills mandatory fields and submits successfully",
+    "fills mandatory fields for 'None' option and submits successfully",
     {
       timeout: 10000,
     },
@@ -186,6 +190,8 @@ describe("VerificationForm component", () => {
             accredited_by: "SCC",
             scope_of_verification: "Supplementary Report",
             visit_name: "None",
+            threats_to_independence: false,
+            verification_conclusion: "Positive",
           }),
         },
       );
@@ -193,16 +199,11 @@ describe("VerificationForm component", () => {
   );
 
   it(
-    "fills facility mandatory fields and submits successfully",
+    "fills mandatory fields for 'Facility X' option and submits successfully",
     {
       timeout: 10000,
     },
     async () => {
-      (verificationSchema.properties?.visit_name as any).enum = [
-        ...(verificationSchema.properties?.visit_name as any).enum,
-        "Facility A",
-      ];
-
       renderVerificationForm();
       const fields = [
         ...commonMandatoryFormFields,
@@ -212,7 +213,7 @@ describe("VerificationForm component", () => {
     },
   );
   it(
-    "fills other conditionally mandatory fields and submits successfully",
+    "fills mandatory fields for 'Other' option and submits successfully",
     {
       timeout: 10000,
     },
@@ -220,10 +221,10 @@ describe("VerificationForm component", () => {
       renderVerificationForm();
       const fields = [
         ...commonMandatoryFormFields,
-        ...specificMandatoryFields.conditional,
+        ...specificMandatoryFields.other,
       ];
       // POST submit and assert the result
-      await submitFormAndAssert(fields, formDataSets.conditional);
+      await submitFormAndAssert(fields, formDataSets.other);
       // Assertion if actionHandler was called correctly
       expect(actionHandler).toHaveBeenCalledWith(
         config.actionPost.endPoint,
@@ -235,11 +236,11 @@ describe("VerificationForm component", () => {
             accredited_by: "SCC",
             scope_of_verification: "Supplementary Report",
             visit_name: "Other",
+            threats_to_independence: false,
+            verification_conclusion: "Modified",
             visit_type: "Virtual",
             other_facility_name: "Other Facility",
             other_facility_coordinates: "Lat 41; Long 35",
-            threats_to_independence: false,
-            verification_conclusion: "Modified",
           }),
         },
       );
