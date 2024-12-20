@@ -18,7 +18,6 @@ export default async function OperationReviewPage({
   const reportType = await getReportType(version_id);
   const registrationPurpose = await getRegistrationPurpose(version_id);
   const facilityReport = await getFacilityReport(version_id);
-
   const registrationPurposeString = registrationPurpose?.registration_purpose;
   const transformedOperation = {
     ...reportOperation.report_operation,
