@@ -9,7 +9,7 @@ from reporting.schema.generic import Message
 from reporting.schema.report_activity_data import ReportActivityDataIn
 from reporting.service.report_activity_load_service import ReportActivityLoadService
 from reporting.service.report_activity_save_service import ReportActivitySaveService
-from service.error_service import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 
 
