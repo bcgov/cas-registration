@@ -58,8 +58,14 @@ const MultiStepFormWithTaskList: React.FC<Props> = ({
   const handleFormSave = async (data: any) => {
     setIsSaving(true);
     try {
-      await onSubmit(data);
-      if (canContinue) {
+      const response = await onSubmit(data);
+      let newCanContinue = true;
+      // Check the response to proceed
+      if (response !== undefined) {
+        newCanContinue = !!response;
+        setCanContinue(newCanContinue);
+      }
+      if (canContinue && newCanContinue) {
         setIsRedirecting(true);
         router.push(continueUrl);
       } else {
