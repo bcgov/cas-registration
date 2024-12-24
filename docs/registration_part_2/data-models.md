@@ -28,3 +28,11 @@ If you need to change something:
 
 - See if it's possible to make the change in a way to make the existing models work for both v1 and v2. For example, in v1 we have `operation_type` as a `CharField`, and in v2 it will be a foreign key field to an `OperationType` models. We can add the v1 types (they were selected via dropdown so only a few options) to to the `OperationType` model so that both v1 and v2 can use the foreign key table.
 - If it's not possible to use the same models, we'll have to look into field or model versioning. E.g. of field versioning: We have `data_field`. We create `data_field_1`. Once we are done with v2, we can remove `data_field` and rename `data_field_1` to `data_field`.
+
+## Mock data
+
+v1 and v2 have separate fixtures. This is so that we can keep the v1 e2e tests running while allowing v2 testers to see more accurate data. For example, the only allowed operation.status in v2 are NOT STARTED, DRAFT, and REGISTERED. v1 had additional statuses that are still supported but can't be assigned, and it's confusing for testers to see these old statues.
+
+v1 fixtures are stored in `bc_obps/registration/fixtures/mock/v1`. They can be loaded with the v1-specific make command `loadfixtures_v1`, and the v1 e2e tests run this command.
+
+v2 fixtures are in `bc_obps/registration/fixtures/mock/`. The model tests, v2 e2e tests, and make `loadfixtures` point to this directory.
