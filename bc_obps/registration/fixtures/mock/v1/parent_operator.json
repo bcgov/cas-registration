@@ -1,0 +1,17 @@
+[
+  {
+    "model": "registration.parentoperator",
+    "pk": 1,
+    "fields": {
+      "child_operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
+      "legal_name": "Parent Operator Legal Name",
+      "trade_name": "Parent Operator Trade Name",
+      "operator_index": 1,
+      "cra_business_number": 123456780,
+      "bc_corporate_registry_number": "zzz1212121",
+      "business_structure": "Sole Proprietorship",
+      "physical_address": 3,
+      "mailing_address": 4
+    }
+  }
+]

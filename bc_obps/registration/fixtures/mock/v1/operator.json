@@ -3,13 +3,20 @@
     "model": "registration.operator",
     "pk": "685d581b-5698-411f-ae00-de1d97334a71",
     "fields": {
-      "legal_name": "Alpha Enterprises",
+      "legal_name": "Operator 1 Legal Name",
+      "trade_name": "Operator 1 Trade Name",
       "cra_business_number": 123456789,
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "Sole Proprietorship",
       "physical_address": 3,
-      "status": "Approved",
-      "is_new": false
+      "mailing_address": 4,
+      "website": "http://www.example.com",
+      "documents": [],
+      "contacts": [],
+      "status": "Draft",
+      "is_new": true,
+      "verified_at": null,
+      "verified_by": null
     }
   },
   {
