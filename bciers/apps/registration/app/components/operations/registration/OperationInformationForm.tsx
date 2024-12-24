@@ -5,6 +5,7 @@ import { OperationInformationFormData } from "apps/registration/app/components/o
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
+import { Button, Box } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { getOperationRegistration } from "@bciers/actions/api";
 import {
@@ -17,6 +18,8 @@ import {
   RegistrationPurposeHelpText,
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
+import Modal from "@bciers/components/modal/Modal";
+import { isUndefined } from "lodash";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -39,11 +42,13 @@ const OperationInformationForm = ({
     ? createNestedFormData(rawFormData, schema)
     : {};
   const [formState, setFormState] = useState(nestedFormData);
+  const [pendingFormDataState, setPendingFormDataState] = useState<any>();
   const [key, setKey] = useState(Math.random());
   const [selectedPurpose, setSelectedPurpose] = useState("");
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
+  const [isModalOpenState, setIsModalOpenState] = useState(false);
 
   function customValidate(
     formData: { [key: string]: any },
@@ -105,9 +110,13 @@ const OperationInformationForm = ({
     setKey(Math.random());
   };
 
-  const handleSelectedPurposeChange = (data: any) => {
+  const handleCloseModal = () => {
+    setIsModalOpenState(false);
+  };
+
+  const handleConfirmChangePurpose = () => {
     const newSelectedPurpose: RegistrationPurposes =
-      data.section1.registration_purpose;
+      pendingFormDataState.section1.registration_purpose;
     setSelectedPurpose(newSelectedPurpose);
     setCurrentUiSchema({
       ...registrationOperationInformationUiSchema,
@@ -125,30 +134,92 @@ const OperationInformationForm = ({
         },
       },
     });
-    setFormState(data);
+    setFormState(pendingFormDataState);
+    setPendingFormDataState(undefined);
+    setIsModalOpenState(false);
   };
 
   return (
-    <MultiStepBase
-      key={key}
-      cancelUrl="/"
-      formData={formState}
-      onSubmit={handleSubmit}
-      schema={schema}
-      step={step}
-      steps={steps}
-      error={error}
-      onChange={(e: IChangeEvent) => {
-        let newSelectedOperation = e.formData?.section1?.operation;
-        let newSelectedPurpose = e.formData?.section1?.registration_purpose;
-        if (newSelectedOperation && newSelectedOperation !== selectedOperation)
-          handleSelectOperationChange(e.formData);
-        if (newSelectedPurpose !== selectedPurpose)
-          handleSelectedPurposeChange(e.formData);
-      }}
-      uiSchema={currentUiSchema}
-      customValidate={customValidate}
-    />
+    <>
+      <Modal
+        title="Confirmation"
+        open={isModalOpenState}
+        onClose={handleCloseModal}
+      >
+        <Box
+          sx={{
+            fontSize: "16px",
+            minWidth: "100%",
+            margin: "8px 0",
+          }}
+        >
+          Are you sure you want to change your registration purpose? If you
+          proceed, all of the form data you have entered will be lost.
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "left",
+            marginTop: "24px",
+          }}
+        >
+          <Button
+            onClick={handleCloseModal}
+            color="primary"
+            variant="outlined"
+            aria-label="Cancel"
+          >
+            {"Cancel"}
+          </Button>
+          <Button
+            onClick={handleConfirmChangePurpose}
+            color="primary"
+            variant="contained"
+            aria-label="Change registration purpose"
+          >
+            {"Change registration purpose"}
+          </Button>
+        </Box>
+      </Modal>
+      <MultiStepBase
+        key={key}
+        cancelUrl="/"
+        formData={formState}
+        onSubmit={handleSubmit}
+        schema={schema}
+        step={step}
+        steps={steps}
+        error={error}
+        onChange={(e: IChangeEvent) => {
+          let newSelectedOperation = e.formData?.section1?.operation;
+          let newSelectedPurpose = e.formData?.section1?.registration_purpose;
+          if (
+            newSelectedOperation &&
+            newSelectedOperation !== selectedOperation
+          )
+            handleSelectOperationChange(e.formData);
+          if (
+            newSelectedPurpose &&
+            selectedPurpose != "" &&
+            newSelectedPurpose !== selectedPurpose
+          )
+            console.log(
+              "selected purpose ",
+              selectedPurpose,
+              " newSelectedPurpose ",
+              newSelectedPurpose,
+            );
+          setPendingFormDataState(e.formData);
+          setIsModalOpenState(true);
+          // handleSelectedPurposeChange(e.formData);
+        }}
+        uiSchema={currentUiSchema}
+        customValidate={customValidate}
+      />
+    </>
   );
 };
 
