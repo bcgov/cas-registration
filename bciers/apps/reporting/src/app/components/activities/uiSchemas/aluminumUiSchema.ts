@@ -12,13 +12,17 @@ const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
-    "annualEmissions",
     "smelterTechType",
+    "annualEmissions",
     "anodeCathodeBackingGreenCokeCalcination",
     "anodeEffects",
     "coverGasFromElectrolysisCells",
     "sourceTypes",
   ],
+  smelterTechType: {
+    "ui:widget": MultiSelectWidget,
+    "ui:placeholder": "Select Smelter Technology Type(s)",
+  },
   annualEmissions: {
     "ui:FieldTemplate": SectionFieldTemplate,
     "ui:options": {
@@ -42,10 +46,6 @@ const uiSchema = {
   },
   annualC2F6EmissionsFromAnodeEffectsForSoderbergCells: {
     "ui:FieldTemplate": InlineFieldTemplate,
-  },
-  smelterTechType: {
-    "ui:widget": MultiSelectWidget,
-    "ui:placeholder": "Select Smelter Technology Type(s)",
   },
   anodeCathodeBackingGreenCokeCalcination: {
     "ui:FieldTemplate": FieldTemplate,
