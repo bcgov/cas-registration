@@ -38,7 +38,7 @@ class Command(BaseCommand):
             ],
             "admin-industry_user": [
                 (
-                    fixture.replace('user_operator.json', 'admin/user_operator.json')
+                    fixture.replace('v1/user_operator.json', 'admin/user_operator.json')
                     if 'user_operator.json' in fixture
                     else fixture
                 )
@@ -46,7 +46,7 @@ class Command(BaseCommand):
             ],
             "admin-industry_user_operator": [
                 (
-                    fixture.replace('user_operator.json', 'admin/user_operator_approved.json')
+                    fixture.replace('v1/user_operator.json', 'admin/user_operator_approved.json')
                     if 'user_operator.json' in fixture
                     else fixture
                 )
