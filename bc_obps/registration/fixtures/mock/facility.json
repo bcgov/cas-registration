@@ -332,5 +332,271 @@
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "67fd8288-422b-43d3-a9b1-e4ddc54e2139",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 25",
+      "type": "Single Facility",
+      "swrs_facility_id": 1025,
+      "bcghg_id": "13219990028",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "9f7b0848-021e-4d08-9852-10524c4e5456",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 26",
+      "type": "Single Facility",
+      "swrs_facility_id": 1026,
+      "bcghg_id": "13219990029",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f4eb89dd-e081-4576-8663-b789c4a20478",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 27",
+      "type": "Single Facility",
+      "swrs_facility_id": 1027,
+      "bcghg_id": "13219990030",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "6d564423-abfe-4579-ba92-2c6c71c37bb9",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 28",
+      "type": "Single Facility",
+      "swrs_facility_id": 1028,
+      "bcghg_id": "13219990031",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f466e6fc-f338-4cf7-89b0-0211bd2be8b7",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 29",
+      "type": "Single Facility",
+      "swrs_facility_id": 1029,
+      "bcghg_id": "13219990032",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f2461804-f38a-4fcc-8586-7ee6eaefa830",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 30",
+      "type": "Single Facility",
+      "swrs_facility_id": 1030,
+      "bcghg_id": "13219990033",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "fab6a6a7-3c9b-426f-88fb-a9c06474fe51",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 31",
+      "type": "Single Facility",
+      "swrs_facility_id": 1031,
+      "bcghg_id": "13219990034",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "80db5b3a-b06b-4c06-b257-edaa4e873160",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "type": "Single Facility",
+      "name": "Facility 32",
+      "swrs_facility_id": 1032,
+      "bcghg_id": "13219990035",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "8d0777dd-b691-4079-9253-fca63df79300",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 33",
+      "type": "Single Facility",
+      "swrs_facility_id": 1033,
+      "bcghg_id": "13219990036",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "e5ade67f-f9ce-496c-b0ad-b8edcd7ecd08",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 34",
+      "type": "Single Facility",
+      "swrs_facility_id": 1034,
+      "bcghg_id": "13219990037",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "5ee7a6b1-e82a-4a6d-90d1-9a8bbf2017a8",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 35",
+      "type": "Single Facility",
+      "swrs_facility_id": 1035,
+      "bcghg_id": "13219990038",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "d844683d-e894-4dfe-9d2d-49944ec86005",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 36",
+      "type": "Single Facility",
+      "swrs_facility_id": 1036,
+      "bcghg_id": "13219990039",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "c27356fe-c1b1-42df-8845-246ad057f43d",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 37",
+      "type": "Single Facility",
+      "swrs_facility_id": 1037,
+      "bcghg_id": "13219990040",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "d477f3d9-2917-4f36-b5ae-166d47dc8172",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 38",
+      "type": "Single Facility",
+      "swrs_facility_id": 1038,
+      "bcghg_id": "13219990041",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "80ccea58-1920-46ea-8260-23bfe9b4fef0",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 39",
+      "type": "Single Facility",
+      "swrs_facility_id": 1039,
+      "bcghg_id": "13219990042",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "b66d0364-ad1d-42f4-93d9-82bf185c4304",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 40",
+      "type": "Single Facility",
+      "swrs_facility_id": 1040,
+      "bcghg_id": "13219990043",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "fdd723fe-88f5-46fb-af50-c19f1407e46d",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 41",
+      "type": "Single Facility",
+      "swrs_facility_id": 1041,
+      "bcghg_id": "13219990044",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "a4ffa43d-3f47-4f0f-a423-fde5d91e9d87",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 42",
+      "type": "Single Facility",
+      "swrs_facility_id": 1042,
+      "bcghg_id": "13219990045",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "f6f58bf4-2dd1-4669-b432-50281c6fdff6",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Facility 43",
+      "type": "Single Facility",
+      "swrs_facility_id": 1043,
+      "bcghg_id": "13219990046",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
   }
 ]
