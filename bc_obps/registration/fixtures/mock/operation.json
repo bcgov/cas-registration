@@ -449,7 +449,7 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
-      "name": "Brown Operation",
+      "name": "Brown Operation -- no facility",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "opt_in": false,
