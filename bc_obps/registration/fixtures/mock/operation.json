@@ -11,6 +11,7 @@
       "naics_code": 19,
       "swrs_facility_id": 1001,
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0014",
       "created_at": "2024-2-01T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "Reporting Operation"
@@ -30,6 +31,7 @@
       "bcghg_id": "23219990004",
       "regulated_products": [1],
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0015",
       "created_at": "2024-2-02T15:27:00.000Z",
       "activities": [1, 5],
       "contacts": [10],
@@ -66,7 +68,6 @@
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-12T15:27:00.000Z",
-      "bc_obps_regulated_operation": "21-0002",
       "name": "Alien Operation",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -74,6 +75,7 @@
       "bcghg_id": "23219990002",
       "regulated_products": [1],
       "status": "Registered",
+      "bc_obps_regulated_operation": "21-0002",
       "created_at": "2024-1-30T15:27:00.000Z",
       "activities": [1, 5],
       "contacts": [10, 11, 12],
@@ -96,6 +98,7 @@
       "regulated_products": [1, 2],
       "registration_purpose": "OBPS Regulated Operation",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0003",
       "created_at": "2024-1-29T15:27:00.000Z",
       "activities": [1, 5],
       "operation_has_multiple_operators": true
@@ -117,6 +120,7 @@
       "bcghg_id": "23219999999",
       "regulated_products": [1],
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0004",
       "created_at": "2024-1-28T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "Opted-in Operation"
@@ -136,6 +140,7 @@
       "opt_in": false,
       "bcghg_id": "23219990006",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0005",
       "created_at": "2024-1-27T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "Potential Reporting Operation"
@@ -155,6 +160,7 @@
       "opt_in": false,
       "bcghg_id": "23219990007",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0006",
       "created_at": "2024-1-26T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "Electricity Import Operation"
@@ -175,6 +181,7 @@
       "bcghg_id": "23219990008",
       "regulated_products": [2],
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0007",
       "created_at": "2024-1-25T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "New Entrant Operation"
@@ -194,6 +201,7 @@
       "opt_in": false,
       "bcghg_id": "23219990009",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0008",
       "created_at": "2024-1-24T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "Reporting Operation"
@@ -214,6 +222,7 @@
       "bcghg_id": "23219990010",
       "regulated_products": [3],
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0009",
       "created_at": "2024-1-23T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "OBPS Regulated Operation"
@@ -233,6 +242,7 @@
       "opt_in": false,
       "bcghg_id": "23219990011",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0010",
       "created_at": "2024-1-22T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "Reporting Operation"
@@ -253,6 +263,7 @@
       "bcghg_id": "23219990012",
       "regulated_products": [3, 4],
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0011",
       "created_at": "2024-1-21T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "OBPS Regulated Operation"
@@ -330,6 +341,7 @@
       "bcghg_id": "23219990016",
       "regulated_products": [5],
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0012",
       "created_at": "2024-1-17T15:27:00.000Z",
       "activities": [1, 5],
       "registration_purpose": "OBPS Regulated Operation"
@@ -368,6 +380,7 @@
       "bcghg_id": "23219990018",
       "regulated_products": [3],
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0013",
       "registration_purpose": "New Entrant Operation",
       "created_at": "2024-1-15T15:27:00.000Z",
       "activities": [1, 3]
@@ -387,6 +400,7 @@
       "opt_in": false,
       "bcghg_id": "23219990019",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0016",
       "created_at": "2024-1-14T15:27:00.000Z",
       "activities": [1, 5]
     }
@@ -404,6 +418,7 @@
       "opt_in": false,
       "bcghg_id": "23219990020",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0017",
       "created_at": "2024-1-13T15:27:00.000Z",
       "activities": [1, 5]
     }
@@ -421,6 +436,7 @@
       "opt_in": false,
       "bcghg_id": "23219990021",
       "status": "Registered",
+      "bc_obps_regulated_operation":"21-0018",
       "created_at": "2024-1-12T15:27:00.000Z",
       "activities": [1, 5]
     }
