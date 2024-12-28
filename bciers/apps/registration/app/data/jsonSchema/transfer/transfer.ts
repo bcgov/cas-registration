@@ -32,7 +32,7 @@ export const createTransferSchema = (
       from_operator: {
         type: "string",
         title: "Current Operator",
-        anyOf: operatorOptions?.map((operator) => ({
+        anyOf: operatorOptions?.map((operator: OperatorRow) => ({
           const: operator.id,
           title: operator.legal_name,
         })),
@@ -40,7 +40,7 @@ export const createTransferSchema = (
       to_operator: {
         type: "string",
         title: "Select the new operator",
-        anyOf: operatorOptions?.map((operator) => ({
+        anyOf: operatorOptions?.map((operator: OperatorRow) => ({
           const: operator.id,
           title: operator.legal_name,
         })),
