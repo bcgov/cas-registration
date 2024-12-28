@@ -62,10 +62,14 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             "operation__status",
             "operator__legal_name",
         ]
-        queryset = OperationDesignatedOperatorTimeline.objects.annotate(
-            sfo_facility_id=Subquery(sfo_facility_id_subquery, output_field=UUIDField()),
-            sfo_facility_name=Subquery(sfo_facility_name_subquery, output_field=CharField()),
-        ).only(*only_fields)
+        queryset = (
+            OperationDesignatedOperatorTimeline.objects.select_related('operator', 'operation')
+            .annotate(
+                sfo_facility_id=Subquery(sfo_facility_id_subquery, output_field=UUIDField()),
+                sfo_facility_name=Subquery(sfo_facility_name_subquery, output_field=CharField()),
+            )
+            .only(*only_fields)
+        )
 
         if user.is_irc_user():
             # IRC users only see registered operations
