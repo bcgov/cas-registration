@@ -39,13 +39,6 @@ vi.mock("libs/actions/src/api/fetchOperationsPageData", () => ({
   default: fetchOperationsPageData,
 }));
 
-vi.mock(
-  "apps/administration/app/components/operations/fetchOperationsPageData",
-  () => ({
-    default: fetchOperationsPageData,
-  }),
-);
-
 export {
   getOperation,
   getOperationWithDocuments,

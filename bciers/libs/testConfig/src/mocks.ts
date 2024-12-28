@@ -1,5 +1,4 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { vi } from "vitest";
 import { fetchMocker } from "./global";
 
 // To reduce code duplication and simplify mocking you can import these common mocks from this file
@@ -33,7 +32,6 @@ const useSearchParams = vi.fn();
 const notFound = vi.fn();
 const useSession = vi.fn();
 const auth = vi.fn();
-const fetchOperatorsPageData = vi.fn();
 const fetchTransferEventsPageData = vi.fn();
 const getUserOperatorsPageData = vi.fn();
 
@@ -47,7 +45,6 @@ export {
   usePathname,
   useSearchParams,
   useSession,
-  fetchOperatorsPageData,
   getUserOperatorsPageData,
   notFound,
   fetchTransferEventsPageData,
