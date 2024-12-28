@@ -169,16 +169,6 @@ export class OperationsPOM {
     await this.buttonAdd.click();
   }
 
-  async clickViewDetailsButton(index: number = 0) {
-    // Optionally pass the index since there are multiple view details buttons in the fixtures
-    const viewDetailsButtons = await this.page
-      .getByRole("link", {
-        name: ButtonText.VIEW_DETAILS,
-      })
-      .all();
-    await viewDetailsButtons[index].click();
-  }
-
   async clickViewDetailsButtonByOperationName(
     page: any,
     operationName: string,
@@ -376,10 +366,6 @@ export class OperationsPOM {
               OperationStatus.DECLINED,
               OperationStatus.CHANGES_REQUESTED,
               OperationStatus.REGISTERED,
-              // Below values are not possible in Registration1
-              OperationStatus.CLOSED,
-              OperationStatus.TEMPORARILY_SHUTDOWN,
-              OperationStatus.TRANSFERRED,
             ];
             break;
         }
@@ -394,7 +380,7 @@ export class OperationsPOM {
     const unexpectedValues = allStatusValues.filter(
       (value) => !expectedValues.includes(value),
     );
-    await expect(unexpectedValues.length).toBe(0);
+    expect(unexpectedValues.length).toBe(0);
   }
 
   async tableIsVisible() {

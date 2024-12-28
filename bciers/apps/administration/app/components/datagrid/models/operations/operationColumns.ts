@@ -9,19 +9,20 @@ const operationColumns = (
 ) => {
   const columns: GridColDef[] = [
     {
-      field: "name",
+      field: "operation__name",
       headerName: "Operation Name",
       // Set flex to 1 to make the column take up all the remaining width if user zooms out
       flex: 1,
     },
-    { field: "type", headerName: "Operation Type", width: 200 },
+    { field: "operation__type", headerName: "Operation Type", width: 200 },
     {
-      field: "bc_obps_regulated_operation",
+      field: "operation__bc_obps_regulated_operation",
       headerName: "BORO ID",
       width: 120,
-      valueGetter: (params) => params.row?.bc_obps_regulated_operation ?? "N/A",
+      valueGetter: (params) =>
+        params.row?.operation__bc_obps_regulated_operation ?? "N/A",
     },
-    { field: "bcghg_id", headerName: "BC GHG ID", width: 120 },
+    { field: "operation__bcghg_id", headerName: "BC GHG ID", width: 120 },
     { field: "status", headerName: "Status", width: 100 },
     {
       field: "facilities",
@@ -41,7 +42,7 @@ const operationColumns = (
 
   if (isInternalUser) {
     columns.splice(OPERATOR_COLUMN_INDEX, 0, {
-      field: "operator",
+      field: "operator__legal_name",
       headerName: "Operator Legal Name",
       width: 250,
     });
