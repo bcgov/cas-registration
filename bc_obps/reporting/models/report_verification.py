@@ -53,8 +53,7 @@ class ReportVerification(TimeStampedModel):
     )
 
     visit_name = models.CharField(
-        max_length=100,
-        db_comment="The name of the site visited (Facility X, Other, or None)"
+        max_length=100, db_comment="The name of the site visited (Facility X, Other, or None)"
     )
 
     class VisitType(models.TextChoices):
