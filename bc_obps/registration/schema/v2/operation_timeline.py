@@ -27,7 +27,7 @@ class OperationTimelineListOut(ModelSchema):
 
 class OperationTimelineFilterSchema(FilterSchema):
     # NOTE: we could simply use the `q` parameter to filter by related fields but,
-    # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
+    # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy, so I'm using the `json_schema_extra` parameter
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
     operation__bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'operation__bcghg_id__id__icontains'})
     operation__name: Optional[str] = Field(None, json_schema_extra={'q': 'operation__name__icontains'})
@@ -37,4 +37,4 @@ class OperationTimelineFilterSchema(FilterSchema):
         None, json_schema_extra={'q': 'operation__bc_obps_regulated_operation__id__icontains'}
     )
     operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
-    operator__id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator__id__exact'})
+    operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator__id__exact'})
