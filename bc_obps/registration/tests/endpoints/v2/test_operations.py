@@ -6,7 +6,6 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from unittest.mock import patch, MagicMock
 from model_bakery.baker import make_recipe
-from unittest.mock import AsyncMock
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -16,10 +15,7 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 class TestOperationsEndpoint(CommonTestSetup):
     @patch("service.operation_service_v2.OperationServiceV2.list_operations_timeline", autospec=True)
-    def test_returns_data_as_provided_by_the_service(
-        self,
-        mock_list_operations_timeline: MagicMock | AsyncMock,
-    ):
+    def test_returns_data_as_provided_by_the_service(self, mock_list_operations_timeline: MagicMock):
         """
         Testing that the API endpoint fetches the operation timeline data.
         """
