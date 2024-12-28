@@ -128,8 +128,9 @@ export default function ActivityForm({
       "",
       {
         body: JSON.stringify({
-          /* formState needs to be used instead of the data passed to the handler, since this is a controlled component.
-             See FormBase implementation comments. */
+          /* formState needs to be used instead of the data passed to the handler, since this is a controlled component;
+             otherwise the data passed to the handler lags behind the changes.
+             See FormBase implementation comments for more details. */
           activity_data: formState,
         }),
       },
@@ -158,7 +159,6 @@ export default function ActivityForm({
       formData={formState}
       uiSchema={getUiSchema(currentActivity.slug)}
       onChange={debounce(handleFormChange, 200)}
-      onError={(e) => console.log("ERROR: ", e)}
       errors={errorList}
       backUrl={createUrl(false)}
       continueUrl={createUrl(true)}
