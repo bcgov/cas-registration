@@ -262,7 +262,7 @@ test.describe("Test Workflow cas_admin", () => {
         OperationTableHeaders.OPERATOR,
         "Existing",
       );
-      await tableRowCount(operationsPage.page, 12);
+      await tableRowCount(operationsPage.page, 9);
 
       await sortTableByColumnLabel(
         operationsPage.page,

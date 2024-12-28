@@ -11,28 +11,28 @@ const operationGroupColumns = (
 ) => {
   const columnGroupModel: GridColumnGroupingModel = [
     {
-      groupId: "bcghg_id",
+      groupId: "operation__bcghg_id",
       headerName: "BC GHG ID",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "bcghg_id" }],
+      children: [{ field: "operation__bcghg_id" }],
     },
     {
-      groupId: "name",
+      groupId: "operation__name",
       headerName: "Operation Name",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "name" }],
+      children: [{ field: "operation__name" }],
     },
     {
-      groupId: "type",
+      groupId: "operation__type",
       headerName: "Operation Type",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "type" }],
+      children: [{ field: "operation__type" }],
     },
     {
-      groupId: "bc_obps_regulated_operation",
+      groupId: "operation__bc_obps_regulated_operation",
       headerName: "BORO ID",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "bc_obps_regulated_operation" }],
+      children: [{ field: "operation__bc_obps_regulated_operation" }],
     },
     {
       groupId: "status",
@@ -50,10 +50,10 @@ const operationGroupColumns = (
 
   if (isInternalUser) {
     columnGroupModel.splice(OPERATOR_COLUMN_INDEX, 0, {
-      groupId: "operator",
+      groupId: "operator__legal_name",
       headerName: "Operator Legal Name",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "operator" }],
+      children: [{ field: "operator__legal_name" }],
     });
   }
 

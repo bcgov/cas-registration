@@ -1,7 +1,6 @@
 from typing import List, Literal, Optional
 from registration.constants import V2
 from registration.models.operation import Operation
-from registration.schema.v2.operation import OperationFilterSchema, OperationListOut
 from typing import Tuple
 from registration.schema.v2.operation import OperationCreateOut, OperationInformationIn
 from service.operation_service_v2 import OperationServiceV2
@@ -16,13 +15,16 @@ from ninja import Query
 from django.db.models import QuerySet
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema, OperationTimelineListOut
+
 
 ##### GET #####
 
 
 @router.get(
     "/operations",
-    response={200: List[OperationListOut], custom_codes_4xx: Message},
+    response={200: List[OperationTimelineListOut], custom_codes_4xx: Message},
     tags=V2,
     auth=authorize("approved_authorized_roles"),
 )
@@ -30,13 +32,13 @@ from registration.utils import CustomPagination
 @paginate(CustomPagination)
 def list_operations(
     request: HttpRequest,
-    filters: OperationFilterSchema = Query(...),
+    filters: OperationTimelineFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
-) -> QuerySet[Operation]:
+) -> QuerySet[OperationDesignatedOperatorTimeline]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return OperationServiceV2.list_operations(get_current_user_guid(request), sort_field, sort_order, filters)
+    return OperationServiceV2.list_operations_timeline(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
 REGISTRATION_PURPOSES_LITERALS = Literal[
