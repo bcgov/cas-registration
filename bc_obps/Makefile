@@ -156,3 +156,7 @@ mypy: ## We can use --show-traceback to show the full traceback in case of an er
 load_test_data: ## Load test data into the database
 load_test_data:
 	$(POETRY_RUN) python $(MANAGE_PY) load_test_data
+
+.PHONY: prepare_backend
+prepare_backend: ## Install dependencies, reset the database, and run the server
+prepare_backend: install_poetry_deps reset_db run
