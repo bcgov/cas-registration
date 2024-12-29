@@ -38,7 +38,7 @@ export const verificationSchema: RJSFSchema = {
     visit_name: {
       title: "Sites visited",
       type: "string",
-      enum: ["Other", "None"], // modified in components/verification/createVerificationSchema.ts
+      enum: ["Facility X", "Other", "None"], // modified in components/verification/createVerificationSchema.ts
     },
     threats_to_independence: {
       title: "Were there any threats to independence noted",
