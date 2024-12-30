@@ -1,10 +1,14 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
 import NonAttributableEmissionsForm from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributableEmissionsForm";
 import { UUID } from "crypto";
 import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 import { getAllEmissionCategories } from "@reporting/src/app/utils/getAllEmissionCategories";
 import { getNonAttributableEmissionsData } from "@reporting/src/app/utils/getNonAttributableEmissionsData";
+import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
+import {
+  ActivePage,
+  getFacilitiesInformationTaskList,
+} from "../../taskList/2_facilitiesInformation";
+import { Suspense } from "react";
 
 interface NonAttributableEmissionsProps {
   versionId: number;
@@ -20,6 +24,13 @@ export default async function NonAttributableEmissions({
   const emissionFormData = await getNonAttributableEmissionsData(
     versionId,
     facilityId,
+  );
+  const orderedActivities = await getOrderedActivities(versionId, facilityId);
+  const taskListElements = getFacilitiesInformationTaskList(
+    versionId,
+    facilityId,
+    orderedActivities,
+    ActivePage.NonAttributableEmission,
   );
 
   const gasTypeMap = gasTypes.reduce(
@@ -45,7 +56,7 @@ export default async function NonAttributableEmissions({
   );
 
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense>
       <NonAttributableEmissionsForm
         versionId={versionId}
         facilityId={facilityId}
@@ -54,6 +65,7 @@ export default async function NonAttributableEmissions({
         emissionCategories={emissionCategories}
         gasTypeMap={gasTypeMap} // Pass the map to the form component
         emissionCategoryMap={emissionCategoryMap} // Pass the map to the form component
+        taskListElements={taskListElements}
       />
     </Suspense>
   );

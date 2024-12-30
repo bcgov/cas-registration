@@ -85,10 +85,9 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
         disabled={isSaving || submitButtonDisabled}
         sx={{ px: 4 }}
         onClick={() => {
-          if (saveAndContinue !== undefined) {
+          if (saveAndContinue) {
             saveAndContinue();
           } else {
-            isRedirecting = true;
             router.push(continueUrl);
           }
         }}

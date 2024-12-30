@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { UUID } from "crypto";
 import {
   generateUpdatedSchema,
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
 
 interface ActivityData {
   id: number;
@@ -26,6 +27,7 @@ interface NonAttributableEmissionsProps {
   emissionCategories: { id: number; category_name: string }[];
   gasTypeMap: Record<number, string>;
   emissionCategoryMap: Record<number, string>;
+  taskListElements: TaskListElement[];
 }
 
 export default function NonAttributableEmissionsForm({
@@ -36,10 +38,12 @@ export default function NonAttributableEmissionsForm({
   emissionCategories,
   gasTypeMap,
   emissionCategoryMap,
+  taskListElements,
 }: NonAttributableEmissionsProps & {
   gasTypeMap: Record<number, string>;
   emissionCategoryMap: Record<number, string>;
 }) {
+  const [errors, setErrors] = useState<string[]>();
   const [formData, setFormData] = useState(
     emissionFormData.length
       ? {
@@ -69,55 +73,34 @@ export default function NonAttributableEmissionsForm({
   const backUrl = `activities?step=-1`;
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Section",
-      title: "Facility1 Information",
-      isExpanded: true,
-      elements: [
-        {
-          type: "Section",
-          title: "Activities Information",
-          elements: [
-            { type: "Page", title: "General stationary combustion" },
-            { type: "Page", title: "Mobile Combustion" },
-            { type: "Page", title: "Cement Production" },
-          ],
-        },
-        { type: "Page", title: "Non-attributable emissions", isActive: true },
-        { type: "Page", title: "Emissions summary" },
-        { type: "Page", title: "Production Data" },
-        { type: "Page", title: "Allocations of emissions" },
-      ],
-    },
-  ];
 
   const handleSubmit = async () => {
     const endpoint = `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`;
-    await actionHandler(endpoint, "POST", endpoint, {
+    const response = await actionHandler(endpoint, "POST", endpoint, {
       body: JSON.stringify(formData),
     });
+
+    if (response.error) {
+      setErrors([response.error]);
+      return false;
+    }
+    return true;
   };
 
   return (
     <MultiStepFormWithTaskList
       initialStep={1}
-      steps={[
-        "Operation Information",
-        "Report Information",
-        "Additional Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
+      steps={multiStepHeaderSteps}
       taskListElements={taskListElements}
       schema={schema}
       uiSchema={nonAttributableEmissionUiSchema}
       formData={formData}
       cancelUrl="#"
       onChange={(data) => setFormData(data.formData)}
-      onSubmit={() => handleSubmit()}
+      onSubmit={handleSubmit}
       backUrl={backUrl}
       continueUrl={saveAndContinueUrl}
+      errors={errors}
     />
   );
 }
