@@ -1,9 +1,9 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
-import { OperatorRow } from "@/administration/app/components/operators/types";
 import { FacilityRow } from "@/administration/app/components/facilities/types";
 import { OperationRow } from "@/administration/app/components/operations/types";
+import { OperatorRow } from "@/administration/app/components/operators/types";
 
 export const createTransferSchema = (
   operatorOptions: OperatorRow[],
@@ -135,8 +135,8 @@ export const createTransferSchema = (
   if (operationOptions.length > 0) {
     const operationOptionsAnyOf = operationOptions.map(
       (operation: OperationRow) => ({
-        const: operation.id,
-        title: operation.name,
+        const: operation.operation__id,
+        title: operation.operation__name,
       }),
     );
     // Add the operation options to the operation field
@@ -151,8 +151,8 @@ export const createTransferSchema = (
     // Add the operation options to the to_operation field
     transferSchemaCopy.dependencies.transfer_entity.allOf[1].then.properties.to_operation.anyOf =
       toOperationOptions.map((operation: OperationRow) => ({
-        const: operation.id,
-        title: operation.name,
+        const: operation.operation__id,
+        title: operation.operation__name,
       }));
   }
 

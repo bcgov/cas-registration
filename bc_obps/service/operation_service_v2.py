@@ -1,5 +1,9 @@
 from typing import Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
+from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
+from service.data_access_service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineDataAccessService,
+)
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.user import User
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
@@ -16,7 +20,6 @@ from registration.models.user_operator import UserOperator
 from registration.models import Operation
 from ninja import Query
 from django.db import transaction
-from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.document_service import DocumentService
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
@@ -25,7 +28,6 @@ from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
 from service.operation_service import OperationService
 from registration.schema.v2.operation import (
-    OperationFilterSchema,
     OperationInformationIn,
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
@@ -36,21 +38,22 @@ from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 
 class OperationServiceV2:
     @classmethod
-    def list_operations(
+    def list_operations_timeline(
         cls,
         user_guid: UUID,
         sort_field: Optional[str],
         sort_order: Optional[str],
-        filters: OperationFilterSchema = Query(...),
-    ) -> QuerySet[Operation]:
+        filters: OperationTimelineFilterSchema = Query(...),
+    ) -> QuerySet[OperationDesignatedOperatorTimeline]:
         user = UserDataAccessService.get_by_guid(user_guid)
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        base_qs = OperationDataAccessServiceV2.get_all_operations_for_user(user)
+        base_qs = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(user)
         return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
