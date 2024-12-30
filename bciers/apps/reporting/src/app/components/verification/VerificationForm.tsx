@@ -11,7 +11,6 @@ import {
   cancelUrlReports,
 } from "@reporting/src/app/utils/constants";
 import { actionHandler } from "@bciers/actions";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
 interface Props {
@@ -30,7 +29,7 @@ export default function VerificationForm({
   taskListElements,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
-  const [error, setError] = useState(undefined);
+  const [errors, setErrors] = useState<string[]>();
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
 
@@ -47,16 +46,17 @@ export default function VerificationForm({
     const endpoint = `reporting/report-version/${version_id}/report-verification`;
     const method = "POST";
     const pathToRevalidate = "reporting/reports";
-    const payload = safeJsonParse(JSON.stringify(formData));
+
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
-      body: JSON.stringify(payload),
+      body: JSON.stringify(formData),
     });
 
-    if (response?.error) {
-      setError(response.error);
-      return;
+    if (response.error) {
+      setErrors([response.error]);
+      return false;
     } else {
-      setError(undefined);
+      setErrors(undefined);
+      return true;
     }
   };
 
@@ -73,7 +73,7 @@ export default function VerificationForm({
       backUrl={backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
-      error={error}
+      errors={errors}
       continueUrl={saveAndContinueUrl}
     />
   );
