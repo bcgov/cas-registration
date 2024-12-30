@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
 import { getContact } from "@bciers/actions/api";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import debounce from "lodash.debounce";
 import {
   personResponsibleSchema,
@@ -18,6 +17,11 @@ import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
+import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
+import {
+  ActivePage,
+  getOperationInformationTaskList,
+} from "../../taskList/1_operationInformation";
 
 interface Props {
   version_id: number;
@@ -28,15 +32,13 @@ const PersonResponsible = ({ version_id }: Props) => {
     items: ContactRow[];
     count: number;
   } | null>(null);
-  const [selectedContactId, setSelectedContactId] = useState<number | null>(
-    null,
-  );
-  const [contactFormData, setContactFormData] = useState<any>(null);
+  const [selectedContactId, setSelectedContactId] = useState<number>();
+  const [contactFormData, setContactFormData] = useState<any>();
   const [formData, setFormData] = useState({
     person_responsible: "", // Default to empty string
   });
-  const [facilityId, setFacilityId] = useState<number | null>();
-  const [operationType, setOperationType] = useState(null);
+  const [facilityId, setFacilityId] = useState<number>();
+  const [operationType, setOperationType] = useState<string>();
 
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
 
@@ -45,28 +47,6 @@ const PersonResponsible = ({ version_id }: Props) => {
       ? `/reports/${version_id}/facilities/lfo-facilities`
       : `/reports/${version_id}/facilities/${facilityId}/activities`;
   const backUrl = `/reports/${version_id}/review-operator-data`;
-
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Section",
-      title: "Operation information",
-      isExpanded: true,
-      elements: [
-        {
-          type: "Page",
-          title: "Review Operation information",
-          isChecked: true,
-          link: `/reports/${version_id}/review-operator-data`,
-        },
-        {
-          type: "Page",
-          title: "Person responsible",
-          isActive: true,
-          link: `/reports/${version_id}/person-responsible`,
-        },
-      ],
-    },
-  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,8 +105,8 @@ const PersonResponsible = ({ version_id }: Props) => {
         setFacilityId(facilityReport.facility_id);
         setOperationType(facilityReport.operation_type);
       } else {
-        setFacilityId(null);
-        setOperationType(null);
+        setFacilityId(undefined);
+        setOperationType(undefined);
       }
     };
     getFacilityId();
@@ -154,8 +134,8 @@ const PersonResponsible = ({ version_id }: Props) => {
         }`.trim(),
       });
     } else {
-      setSelectedContactId(null);
-      setContactFormData(null);
+      setSelectedContactId(undefined);
+      setContactFormData(undefined);
       setFormData((prevFormData: any) => ({
         ...prevFormData,
         person_responsible: "", // Reset to empty string if no contact is selected
@@ -181,14 +161,13 @@ const PersonResponsible = ({ version_id }: Props) => {
   const handleSync = async () => {
     const updatedContacts = await getContacts();
     setContacts(updatedContacts);
-    setSelectedContactId(null);
-    setContactFormData(null);
+    setSelectedContactId(undefined);
+    setContactFormData(undefined);
     setFormData({ person_responsible: "" });
 
     const updatedSchema = createPersonResponsibleSchema(
       personResponsibleSchema,
       updatedContacts.items,
-      null,
     );
     setSchema(updatedSchema);
   };
@@ -197,17 +176,14 @@ const PersonResponsible = ({ version_id }: Props) => {
     <>
       <MultiStepFormWithTaskList
         initialStep={0}
-        steps={[
-          "Operation Information",
-          "Report Information",
-          "Additional Information",
-          "Compliance Summary",
-          "Sign-off & Submit",
-        ]}
-        cancelUrl={"/reports"}
+        steps={multiStepHeaderSteps}
         backUrl={backUrl}
         continueUrl={continueUrl}
-        taskListElements={taskListElements}
+        taskListElements={getOperationInformationTaskList(
+          version_id,
+          ActivePage.PersonResponsible,
+          operationType,
+        )}
         schema={schema}
         uiSchema={{
           ...personResponsibleUiSchema,
