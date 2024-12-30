@@ -10,7 +10,7 @@ import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
 import { useSearchParams } from "next/navigation";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 
 const CUSTOM_FIELDS = {

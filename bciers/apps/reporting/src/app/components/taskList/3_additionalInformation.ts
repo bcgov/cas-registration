@@ -5,25 +5,27 @@ export enum ActivePage {
   "NewEntrantInformation",
 }
 
-export const getAdditionalInformationTaskList = (
+export const getAdditionalInformationTaskList: (
   versionId: number,
   activeIndex?: ActivePage | number,
-) => {
-  const taskListData: TaskListElement[] = [
-    {
-      type: "Page",
-      title: "Additional reporting data",
-      isChecked: true,
-      link: `/reports/${versionId}/additional-reporting-data`,
-      isActive: activeIndex === ActivePage.AdditionalReportingData,
-    },
-    {
-      type: "Page",
-      title: "New entrant information",
-      isActive: activeIndex === ActivePage.NewEntrantInformation,
-      link: `/reports/${versionId}/new-entrant-information`,
-    },
-  ];
+  isNewEntrant?: boolean,
+) => TaskListElement[] = (versionId, activeIndex, isNewEntrant) => {
+  const additionalReportingDataItem: TaskListElement = {
+    type: "Page",
+    title: "Additional reporting data",
+    isChecked: true,
+    link: `/reports/${versionId}/additional-reporting-data`,
+    isActive: activeIndex === ActivePage.AdditionalReportingData,
+  };
 
-  return taskListData;
+  const newEntrantItem: TaskListElement = {
+    type: "Page",
+    title: "New entrant information",
+    isActive: activeIndex === ActivePage.NewEntrantInformation,
+    link: `/reports/${versionId}/new-entrant-information`,
+  };
+
+  return isNewEntrant
+    ? [additionalReportingDataItem, newEntrantItem]
+    : [additionalReportingDataItem];
 };
