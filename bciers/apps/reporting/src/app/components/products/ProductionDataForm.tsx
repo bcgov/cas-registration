@@ -31,6 +31,7 @@ const ProductionDataForm: React.FC<Props> = ({
   };
 
   const [formData, setFormData] = useState<any>(initialFormData);
+  const [errors, setErrors] = useState<string[]>();
 
   const onChange = (newFormData: {
     product_selection: string[];
@@ -50,11 +51,17 @@ const ProductionDataForm: React.FC<Props> = ({
   };
 
   const onSubmit = async (data: any) => {
-    await postProductionData(
+    const response = await postProductionData(
       report_version_id,
       facility_id,
       data.production_data,
     );
+
+    if (response.error) {
+      setErrors([response.error]);
+      return false;
+    }
+    return true;
   };
 
   const backUrl = `/reports/${report_version_id}/facilities/${facility_id}/emission-summary`;
@@ -74,6 +81,7 @@ const ProductionDataForm: React.FC<Props> = ({
       onSubmit={(data) => onSubmit(data.formData)}
       onChange={(data) => onChange(data.formData)}
       continueUrl={saveAndContinueUrl}
+      errors={errors}
     />
   );
 };
