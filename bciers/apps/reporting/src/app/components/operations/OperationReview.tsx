@@ -54,6 +54,7 @@ export default function OperationReview({
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [facilityId, setFacilityId] = useState<string | null>(null);
+  const [operationType, setOperationType] = useState("");
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -118,7 +119,7 @@ export default function OperationReview({
       );
     }
     if (facilityReport?.facility_id) {
-      setFacilityId(facilityReport.facility_id);
+      setOperationType(facilityReport.operation_type);
     }
   }, [
     formData,

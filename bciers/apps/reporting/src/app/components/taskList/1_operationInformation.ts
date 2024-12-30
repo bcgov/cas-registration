@@ -6,17 +6,27 @@ export enum ActivePage {
   "ReviewFacilities",
 }
 
-/**
- *
- * @param versionId Int. The version ID
- * @param facilityId UUID. If applicable, the facility ID. A 'null' facility ID means the operation is an LFO
- * @returns The list of tasklist elements for the 'operation information' reporting step
- */
 export const getOperationInformationTaskList: (
   versionId: number,
-  facilityId?: string | null,
-  activeIndex?: ActivePage | number,
-) => TaskListElement[] = (versionId, facilityId, activeIndex) => {
+  activeIndex?: ActivePage,
+  operationType?: string, // "Single Facility Operation" or "Linear Facility Operation"
+) => TaskListElement[] = (
+  versionId,
+  activeIndex = 0,
+  operationType = "Single Facility Operation",
+) => {
+  const facilityReviewItem: TaskListElement[] =
+    operationType !== "Linear Facility Operation"
+      ? []
+      : [
+          {
+            type: "Page",
+            title: "Review facilities",
+            link: `/reports/${versionId}/facilities/lfo-facilities`,
+            isActive: activeIndex === ActivePage.ReviewFacilities,
+          },
+        ];
+
   return [
     {
       type: "Section",
@@ -35,14 +45,7 @@ export const getOperationInformationTaskList: (
           link: `/reports/${versionId}/person-responsible`,
           isActive: activeIndex === ActivePage.PersonResponsible,
         },
-        {
-          type: "Page",
-          title: "Review facilities",
-          link: facilityId
-            ? `/reports/${versionId}/facilities/${facilityId}/review`
-            : `/reports/${versionId}/facilities/lfo-facilities`,
-          isActive: activeIndex === ActivePage.ReviewFacilities,
-        },
+        ...facilityReviewItem,
       ],
     },
   ];
