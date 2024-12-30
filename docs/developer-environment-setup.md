@@ -12,7 +12,7 @@ Ensure the following are installed:
 - Ensure you have push access (most likely by being added to the **@bcgov/cas-developers** GitHub team) to [bcgov/cas-cif](https://github.com/bcgov/cas-cif).
 - Ensure you have [GPG commit signing](https://docs.github.com/en/github/authenticating-to-github/signing-commits) set up on your local environment.
   - First, ensure your `git config user.email` is set to the email address you want to use for signing.
-  - You can verify it's working when you commit to a branch and the signature is indicated by `git log --show-signature`. Once pushed, a "Verified" badge appears next to your commits on GitHub
+  - You can verify it's working when you commit to a branch and the signature is indicated by `git log --show-signature`. Once pushed, a "Verified" badge appears next to your commits on GitHub.
 - Clone a local copy of [bcgov/cas-registration](https://github.com/bcgov/cas-registration).
 
 ## App Environment Variables
@@ -106,7 +106,7 @@ In the `bciers` directory:
 
 - To run Vitest unit tests on a specific project: `yarn nx run {project}:test`.
 - To run Vitest unit tests on all projects: `yarn nx run-many -t test`.
-- To run playwright end-to-end tests: `nx run {project}:e2e` (For the first time, you may need to run `yarn playwright install ` to install the browsers)
+- To run playwright end-to-end tests: `nx run {project}:e2e` (For the first time, you may need to run `yarn playwright install --with-deps` to install the browsers)
 
 **Or**, you can use the scripts available in `bciers/package.json`
 
