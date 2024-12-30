@@ -17,6 +17,7 @@ interface Props {
   steps: string[];
   taskListElements: TaskListElement[];
   onSubmit: () => void;
+  noFormSave: () => void;
   children?: React.ReactNode;
   cancelUrl?: string;
   backUrl?: string;
@@ -33,6 +34,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   steps,
   taskListElements,
   onSubmit,
+  noFormSave,
   children,
   backUrl,
   continueUrl,
@@ -62,6 +64,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
             backUrl={backUrl}
             continueUrl={continueUrl}
             buttonText={submittingButtonText}
+            noFormSave={noFormSave}
             saveAndContinue={onSubmit}
             isRedirecting={isRedirecting}
             isSaving={isSaving}
