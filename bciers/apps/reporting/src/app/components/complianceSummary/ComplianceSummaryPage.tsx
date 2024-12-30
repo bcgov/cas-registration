@@ -1,7 +1,6 @@
 import React from "react";
 import { actionHandler } from "@bciers/actions";
 import ComplianceSummaryForm from "./ComplianceSummaryForm";
-import { tasklistData } from "./TaskListElements";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getAttributableEmissions } from "@reporting/src/app/utils/getAttributableEmissions";
@@ -9,6 +8,7 @@ import {
   RegistrationPurposes,
   regulatedOperationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
+import { getComplianceSummaryTaskList } from "../taskList/4_complianceSummary";
 
 const getComplianceData = async (versionId: number) => {
   return actionHandler(
@@ -43,7 +43,7 @@ export default async function ComplianceSummaryPage({
       versionId={version_id}
       needsVerification={needsVerification}
       summaryFormData={complianceData}
-      taskListElements={tasklistData}
+      taskListElements={getComplianceSummaryTaskList()}
     />
   );
 }
