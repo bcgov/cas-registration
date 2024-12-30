@@ -1,9 +1,9 @@
 import React from "react";
 import { actionHandler } from "@bciers/actions";
 import ComplianceSummaryForm from "./ComplianceSummaryForm";
-import { tasklistData } from "./TaskListElements";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getComplianceSummaryTaskList } from "../taskList/4_complianceSummary";
 
 const getComplianceData = async (versionId: number) => {
   return actionHandler(
@@ -23,7 +23,7 @@ export default async function ComplianceSummaryPage({
       versionId={version_id}
       needsVerification={needsVerification}
       summaryFormData={complianceData}
-      taskListElements={tasklistData}
+      taskListElements={getComplianceSummaryTaskList()}
     />
   );
 }
