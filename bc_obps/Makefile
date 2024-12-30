@@ -92,6 +92,11 @@ superuser: ## create a superuser
 superuser:
 	$(POETRY_RUN) python $(MANAGE_PY) create_superuser
 
+loadfixtures_v1: ## add all registration v1 fixture files to the db
+loadfixtures_v1:
+	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures_v1 $(ARGS)
+	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_fixtures $(ARGS)
+
 loadfixtures: ## add all registration fixture files to the db
 loadfixtures:
 	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
@@ -151,3 +156,7 @@ mypy: ## We can use --show-traceback to show the full traceback in case of an er
 load_test_data: ## Load test data into the database
 load_test_data:
 	$(POETRY_RUN) python $(MANAGE_PY) load_test_data
+
+.PHONY: prepare_backend
+prepare_backend: ## Install dependencies, reset the database, and run the server
+prepare_backend: install_poetry_deps reset_db run

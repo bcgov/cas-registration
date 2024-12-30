@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
 import { auth } from "@bciers/testConfig/mocks";
-import { fetchOperationsPageData } from "@/administration/tests/components/operations/mocks";
+import { fetchOperationsPageData } from "./mocks";
 
 useRouter.mockReturnValue({
   query: {},
@@ -39,12 +39,20 @@ const mockResponse = {
 
 describe("Operations component", () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+    useRouter.mockReturnValue({
+      query: {},
+      replace: vi.fn(),
+    });
+
+    useSearchParams.mockReturnValue({
+      get: vi.fn(),
+    });
   });
 
   it("throws an error when there's a problem fetching data", async () => {
     auth.mockReturnValueOnce({
-      user: { app_role: "industry_user_admin" },
+      user: { app_role: "cas_director" },
     });
     fetchOperationsPageData.mockReturnValueOnce(undefined);
     await expect(async () => {
@@ -53,9 +61,9 @@ describe("Operations component", () => {
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
   });
 
-  it("renders the OperationDataGrid component when there are operations in the database", async () => {
+  it("renders the OperationDataGrid component  when there are operations in the database", async () => {
     auth.mockReturnValueOnce({
-      user: { app_role: "cas_admin" },
+      user: { app_role: "industry_user" },
     });
     fetchOperationsPageData.mockReturnValueOnce(mockResponse);
     render(await Operations({ searchParams: {} }));

@@ -10,7 +10,6 @@ const OperationInformationPage = async ({
   operationId: UUID;
 }) => {
   let operation;
-
   if (operationId && isValidUUID(operationId)) {
     operation = await getOperationWithDocuments(operationId);
   } else throw new Error(`Invalid operation id: ${operationId}`);

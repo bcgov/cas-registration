@@ -1,14 +1,11 @@
 from registration.tests.constants import MOCK_DATA_URL
-from registration.constants import PAGE_SIZE
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
-from registration.models import (
-    Operation,
-)
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
-from registration.tests.utils.bakers import operator_baker
 from registration.utils import custom_reverse_lazy
+from unittest.mock import patch, MagicMock
+from model_bakery.baker import make_recipe
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -17,115 +14,46 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    endpoint = custom_reverse_lazy("list_operations")
+    @patch("service.operation_service_v2.OperationServiceV2.list_operations_timeline", autospec=True)
+    def test_returns_data_as_provided_by_the_service(self, mock_list_operations_timeline: MagicMock):
+        """
+        Testing that the API endpoint fetches the operation timeline data.
+        """
 
-    def test_operations_endpoint_list_operations_v2_paginated(self):
-        operator1 = operator_baker()
-        baker.make_recipe(
-            'utils.operation',
-            operator_id=operator1.id,
-            status=Operation.Statuses.PENDING,
-            _quantity=60,
-        )
-        # Get the default page 1 response
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
-        assert response.status_code == 200
-        response_data = response.json().get('items')
-        # save the id of the first paginated response item
-        page_1_response_id = response_data[0].get('id')
-        assert len(response_data) == PAGE_SIZE
-        # Get the page 2 response
+        # Arrange: Mock facilities returned by the service
+        timeline = make_recipe('utils.operation_designated_operator_timeline', _quantity=2)
+        mock_list_operations_timeline.return_value = timeline
+
+        # Act: Mock the authorization and perform the request
+        TestUtils.authorize_current_user_as_operator_user(self, operator=make_recipe('utils.operator'))
         response = TestUtils.mock_get_with_auth_role(
             self,
-            "cas_admin",
-            self.endpoint + "?page=2&sort_field=created_at&sort_order=desc",
-        )
-        assert response.status_code == 200
-        response_data = response.json().get('items')
-        # save the id of the first paginated response item
-        page_2_response_id = response_data[0].get('id')
-        assert len(response_data) == PAGE_SIZE
-        # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
-        assert page_1_response_id != page_2_response_id
-
-        # Get the page 2 response but with a different sort order
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "cas_admin",
-            self.endpoint + "?page=2&sort_field=created_at&sort_order=asc",
-        )
-        assert response.status_code == 200
-        response_data = response.json().get('items')
-        # save the id of the first paginated response item
-        page_2_response_id_reverse = response_data[0].get('id')
-        assert len(response_data) == PAGE_SIZE
-        # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
-        assert page_2_response_id != page_2_response_id_reverse
-
-    def test_operations_endpoint_list_operations_v2_with_filter(self):
-        operator1 = operator_baker()
-        operator2 = operator_baker()
-
-        baker.make_recipe(
-            'utils.operation',
-            operator_id=operator1.id,
-            name='Springfield Nuclear Power Plant',
-            type='Gouda',
-            status=Operation.Statuses.PENDING,
-            _quantity=10,
-        )
-        baker.make_recipe(
-            'utils.operation',
-            operator_id=operator2.id,
-            name='Krusty Burger',
-            type='Cheddar',
-            status=Operation.Statuses.PENDING,
-            _quantity=10,
-        )
-        baker.make_recipe(
-            'utils.operation',
-            operator_id=operator2.id,
-            name='Kwik-E-Mart',
-            status=Operation.Statuses.DECLINED,
-            bcghg_id=baker.make_recipe('utils.bcghg_id'),
-            type="Brie",
+            "industry_user",
+            custom_reverse_lazy("list_operations"),
         )
 
-        # Get the default page 1 response
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?type=gouda")
+        # Assert: Verify the response status
         assert response.status_code == 200
-        response_data = response.json().get('items')
-        assert len(response_data) == 10
-        for item in response_data:
-            assert item.get('type') == 'Gouda'
 
-        # Test with a status filter that doesn't exist
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?type=havarti")
-        assert response.status_code == 200
-        response_data = response.json().get('items')
-        assert len(response_data) == 0
-
-        # Test with a name filter
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?name=kwik-e-mart")
-        assert response.status_code == 200
-        response_data = response.json().get('items')
-        assert len(response_data) == 1
-
-        # Test with a name filter that doesn't exist
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "?name=abc")
-        assert response.status_code == 200
-        response_data = response.json().get('items')
-        assert len(response_data) == 0
-
-        # Test with multiple filters
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "cas_admin",
-            self.endpoint + "?name=kwik&status=dec&bcghg_id=23219990023&type=brie",
+        # Assert: Validate the response structure and data
+        response_json = response.json()
+        assert len(response_json) == 2
+        assert response_json.keys() == {'count', 'items'}
+        assert sorted(response_json['items'][0].keys()) == sorted(
+            [
+                'operation__name',
+                'operation__type',
+                'sfo_facility_id',
+                'sfo_facility_name',
+                'operation__bcghg_id',
+                'operation__bc_obps_regulated_operation',
+                'id',
+                'operator__legal_name',
+                'status',
+                'operation__id',
+                'operation__status',
+            ]
         )
-        assert response.status_code == 200
-        response_data = response.json().get('items')
-        assert len(response_data) == 1
 
 
 class TestPostOperationsEndpoint(CommonTestSetup):

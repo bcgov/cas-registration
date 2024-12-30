@@ -33,9 +33,6 @@ export enum OperationStatus {
   DECLINED = "Declined",
   REGISTERED = "Registered",
   CHANGES_REQUESTED = "Changes Requested",
-  TEMPORARILY_SHUTDOWN = "Temporarily Shutdown",
-  TRANSFERRED = "Transferred",
-  CLOSED = "Closed",
 }
 
 export enum OperationTypes {

@@ -132,7 +132,7 @@ Playwright will be re-testing the element with the test id of status until the f
 
 #### Prerequisites
 
-- To run playwright end-to-end tests for the first time, you may need to run `yarn playwright install --with-deps` to install the browsers
+- To run playwright end-to-end tests for the first time, you may need to run `yarn playwright install ` to install the browsers
   Ensure you have the configuration from file `bciers/bciers/.env.local.example` in `bciers/bciers/.env.local` with values reflecting instructions in file `bciers/bciers/.env.local.example`
 
   1.0 Ensure the server is running:
