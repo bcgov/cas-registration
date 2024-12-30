@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FormBase, { FormPropsWithTheme } from "./FormBase";
 import Form from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
@@ -45,21 +45,29 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
     setIsSaving(true);
     const success = await onSubmit(data);
-    setIsSaving(false);
 
     if (success) {
       if (navigateAfterSubmit) {
         setIsRedirecting(true);
         router.push(continueUrl);
-        setIsRedirecting(false);
       } else {
         setIsSuccess(true);
         setTimeout(() => {
           setIsSuccess(false);
         }, 3000);
+        setIsSaving(false);
       }
+    } else {
+      setIsSaving(false);
     }
   };
+
+  useEffect(() => {
+    /** Effect triggers when navigation to another page is finished and this component reloads
+     *  Otherwise the spinner stops spinning before the page changes. */
+    setIsRedirecting(false);
+    setIsSaving(false);
+  }, [backUrl, continueUrl]);
 
   // Essentially a manual call to `submit()` with a context
   const onSaveAndContinue = async () => {
