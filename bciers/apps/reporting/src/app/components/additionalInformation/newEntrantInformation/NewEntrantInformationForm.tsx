@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useRouter } from "next/navigation";
 
 import { actionHandler } from "@bciers/actions";
 import {
@@ -32,7 +31,6 @@ export default function NewEntrantInformationForm({
     !initialFormData.assertion_statement,
   );
 
-  const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/compliance-summary`;
 
   const handleChange = (e: IChangeEvent) => {
@@ -52,7 +50,7 @@ export default function NewEntrantInformationForm({
     });
     if (response.error) throw new Error(response.error);
 
-    router.push(saveAndContinueUrl);
+    return true;
   };
   return (
     <MultiStepFormWithTaskList
