@@ -47,6 +47,7 @@ class TestOperationsEndpoint(CommonTestSetup):
                 'sfo_facility_name',
                 'operation__bcghg_id',
                 'operation__bc_obps_regulated_operation',
+                'operation__registration_purpose',
                 'id',
                 'operator__legal_name',
                 'status',
