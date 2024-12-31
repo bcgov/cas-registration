@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationPage from "@reporting/src/app/components/facility/FacilityEmissionAllocationPage";
-import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllocations";
 
