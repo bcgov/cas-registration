@@ -57,10 +57,12 @@ const ProductionDataForm: React.FC<Props> = ({
       data.production_data,
     );
 
-    if (response.error) {
+    if (response?.error) {
       setErrors([response.error]);
       return false;
     }
+
+    setErrors(undefined);
     return true;
   };
 
