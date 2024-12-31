@@ -51,13 +51,13 @@ export default function VerificationForm({
       body: JSON.stringify(formData),
     });
 
-    if (response.error) {
+    if (response?.error) {
       setErrors([response.error]);
       return false;
-    } else {
-      setErrors(undefined);
-      return true;
     }
+
+    setErrors(undefined);
+    return true;
   };
 
   return (

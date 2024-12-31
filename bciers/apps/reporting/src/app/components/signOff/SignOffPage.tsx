@@ -48,7 +48,7 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
     if (!submitButtonDisabled) {
       const response: any = await postSubmitReport(version_id);
 
-      if (response.error) {
+      if (response?.error) {
         setErrors([reportValidationMessages[response.error]]);
         return false;
       }

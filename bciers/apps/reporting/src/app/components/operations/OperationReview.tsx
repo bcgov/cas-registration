@@ -55,6 +55,7 @@ export default function OperationReview({
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [facilityId, setFacilityId] = useState<string | null>(null);
   const [operationType, setOperationType] = useState("");
+  const [errors, setErrors] = useState<string[]>();
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -144,8 +145,13 @@ export default function OperationReview({
       body: JSON.stringify(preparedData),
     });
 
-    if (response && !response.error) return true;
-    return false;
+    if (response?.error) {
+      setErrors([response?.error]);
+      return false;
+    }
+
+    setErrors(undefined);
+    return true;
   };
 
   const onChangeHandler = (data: { formData: any }) => {

@@ -244,10 +244,11 @@ export default function FacilityEmissionAllocationForm({
     });
 
     if (response?.error) {
-      setErrors(response.error);
+      setErrors([response.error]);
       return false;
     }
 
+    setErrors(undefined);
     return true;
   };
 

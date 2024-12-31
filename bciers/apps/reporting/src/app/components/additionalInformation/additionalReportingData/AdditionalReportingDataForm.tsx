@@ -44,6 +44,7 @@ export default function AdditionalReportingDataForm({
   isNewEntrant,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [errors, setErrors] = useState<string[]>();
 
   // 🛸 Set up routing urls
   const searchParams = useSearchParams();
@@ -70,8 +71,13 @@ export default function AdditionalReportingDataForm({
       body: JSON.stringify(payload),
     });
 
-    if (response && !response.error) return true;
-    return false;
+    if (response?.error) {
+      setErrors([response.error]);
+      return false;
+    }
+
+    setErrors(undefined);
+    return true;
   };
 
   return (
@@ -92,6 +98,7 @@ export default function AdditionalReportingDataForm({
       }}
       onSubmit={(data: any) => handleSubmit(data.formData)}
       continueUrl={saveAndContinueUrl}
+      errors={errors}
     />
   );
 }

@@ -27,6 +27,7 @@ export default function NewEntrantInformationForm({
   taskListElements,
 }: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
+  const [errors, setErrors] = useState<string[]>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,
   );
@@ -48,8 +49,12 @@ export default function NewEntrantInformationForm({
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
     });
-    if (response.error) throw new Error(response.error);
+    if (response?.error) {
+      setErrors([response.error]);
+      return false;
+    }
 
+    setErrors(undefined);
     return true;
   };
   return (
@@ -67,6 +72,7 @@ export default function NewEntrantInformationForm({
       submitButtonDisabled={submitButtonDisabled}
       formContext={formData}
       continueUrl={saveAndContinueUrl}
+      errors={errors}
     />
   );
 }

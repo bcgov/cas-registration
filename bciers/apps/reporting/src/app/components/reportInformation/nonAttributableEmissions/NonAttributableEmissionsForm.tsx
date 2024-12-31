@@ -80,10 +80,12 @@ export default function NonAttributableEmissionsForm({
       body: JSON.stringify(formData),
     });
 
-    if (response.error) {
+    if (response?.error) {
       setErrors([response.error]);
       return false;
     }
+
+    setErrors(undefined);
     return true;
   };
 
