@@ -22,6 +22,17 @@ export const createRegistrationPurposeSchema = async () => {
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
   const operations = await getCurrentUsersOperations();
+  // Using empty array for anyOf will cause the field to not show up and raise an error
+  let operationsAnyOf;
+  if (Array.isArray(operations) && operations.length > 0) {
+    operationsAnyOf = operations.map(
+      (operation: { id: UUID; name: string }) => ({
+        const: operation.id,
+        title: operation.name,
+      }),
+    );
+  }
+
   const registrationPurposes = await getRegistrationPurposes();
 
   // create the schema with the fetched values
@@ -51,10 +62,7 @@ export const createRegistrationPurposeSchema = async () => {
       operation: {
         type: "string",
         title: "Select your operation:",
-        anyOf: operations.map((operation: { id: UUID; name: string }) => ({
-          const: operation.id,
-          title: operation.name,
-        })),
+        anyOf: operationsAnyOf,
       },
       operation_add: {
         //Not an actual field in the db - this is just to make the form look like the wireframes
