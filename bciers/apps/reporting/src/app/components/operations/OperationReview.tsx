@@ -51,6 +51,7 @@ export default function OperationReview({
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [operationType, setOperationType] = useState("");
+  const [errors, setErrors] = useState<string[]>();
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -134,8 +135,13 @@ export default function OperationReview({
       body: JSON.stringify(preparedData),
     });
 
-    if (response && !response.error) return true;
-    return false;
+    if (response?.error) {
+      setErrors([response?.error]);
+      return false;
+    }
+
+    setErrors(undefined);
+    return true;
   };
 
   const onChangeHandler = (data: { formData: any }) => {
@@ -189,6 +195,7 @@ export default function OperationReview({
       onChange={onChangeHandler}
       backUrl={backUrl}
       continueUrl={saveAndContinueUrl}
+      errors={errors}
     />
   );
 }
