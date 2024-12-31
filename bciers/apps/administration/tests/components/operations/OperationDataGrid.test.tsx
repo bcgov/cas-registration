@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import OperationDataGrid from "apps/administration/app/components/operations/OperationDataGrid";
 import React from "react";
 import { OperationStatus } from "@bciers/utils/src/enums";
+import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { expect } from "vitest";
 
 useRouter.mockReturnValue({
   query: {},
@@ -25,9 +27,10 @@ const mockResponse = {
       sfo_facility_id: null,
       sfo_facility_name: null,
       status: "Active",
-      operation__bc_obps_regulated_operation: "N/A",
+      operation__bc_obps_regulated_operation: null,
       operation__status: OperationStatus.NOT_STARTED,
       operation__id: "uuid1",
+      operation__registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
     },
     {
       id: 2,
@@ -41,6 +44,8 @@ const mockResponse = {
       operation__bc_obps_regulated_operation: "24-0001",
       operation__status: OperationStatus.DRAFT,
       operation__id: "uuid2",
+      operation__registration_purpose:
+        RegistrationPurposes.NEW_ENTRANT_OPERATION,
     },
     {
       id: 3,
@@ -51,9 +56,10 @@ const mockResponse = {
       sfo_facility_id: null,
       sfo_facility_name: null,
       status: "Closed",
-      operation__bc_obps_regulated_operation: "N/A",
+      operation__bc_obps_regulated_operation: null,
       operation__status: OperationStatus.DRAFT,
       operation__id: "uuid3",
+      operation__registration_purpose: RegistrationPurposes.OPTED_IN_OPERATION,
     },
     {
       id: 4,
@@ -64,7 +70,7 @@ const mockResponse = {
       status: "Active",
       sfo_facility_id: "facility-test-id",
       sfo_facility_name: "Facility Test Name",
-      operation__bc_obps_regulated_operation: "N/A",
+      operation__bc_obps_regulated_operation: null,
       operation__status: OperationStatus.REGISTERED,
       operation__id: "uuid4",
     },
@@ -270,5 +276,14 @@ describe("OperationsDataGrid component", () => {
       "href",
       "/registration/register-an-operation/uuid3/1",
     );
+  });
+  it("renders the correct text about BORO ID column depending the registration purpose", async () => {
+    render(
+      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+    );
+    expect(screen.getAllByRole("gridcell")[3]).toHaveTextContent("N/A");
+    expect(screen.getAllByRole("gridcell")[11]).toHaveTextContent("24-0001");
+    expect(screen.getAllByRole("gridcell")[19]).toHaveTextContent("Pending");
+    expect(screen.getAllByRole("gridcell")[27]).toHaveTextContent("N/A");
   });
 });
