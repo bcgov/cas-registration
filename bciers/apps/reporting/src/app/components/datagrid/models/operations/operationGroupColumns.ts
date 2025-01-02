@@ -41,6 +41,12 @@ const operationGroupColumns = (
       children: [{ field: "status" }],
     },
     {
+      groupId: "report_status",
+      headerName: "Status",
+      renderHeaderGroup: SearchCell,
+      children: [{ field: "report_status" }],
+    },
+    {
       groupId: "action",
       headerName: "Action",
       renderHeaderGroup: EmptyGroupCell,
