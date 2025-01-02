@@ -76,6 +76,13 @@ export enum Status {
   NOT_STARTED = "Not Started",
 }
 
+// report operation statuses
+export enum ReportOperationStatus {
+  NOT_STARTED = "Not started",
+  DRAFT = "Draft",
+  SUBMITTED = "Submitted",
+}
+
 export enum FormMode {
   CREATE = "create",
   EDIT = "edit",
