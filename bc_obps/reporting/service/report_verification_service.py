@@ -1,7 +1,12 @@
+from decimal import Decimal
 from django.db import transaction
 from reporting.models.report_verification import ReportVerification
 from reporting.models import ReportVersion
 from reporting.schema.report_verification import ReportVerificationIn
+
+from registration.models import Operation
+from reporting.service.report_additional_data import ReportAdditionalDataService
+from reporting.service.compliance_service import ComplianceService
 
 
 class ReportVerificationService:
@@ -53,3 +58,31 @@ class ReportVerificationService:
         )
 
         return report_verification
+
+    @staticmethod
+    def get_report_needs_verification(version_id: int) -> bool:
+        """
+        Determines if a report needs verification data based on its purpose
+        and attributable emissions.
+        """
+        REGULATED_OPERATION_PURPOSES = {
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+        }
+        ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal("25000000")
+        registration_purpose = ReportAdditionalDataService.get_registration_purpose_by_version_id(version_id)
+
+        # Registration Purpose: verification data is required if the registration purpose is in REGULATED_OPERATION_PURPOSES
+        if isinstance(registration_purpose, dict):
+            registration_purpose = registration_purpose.get("registration_purpose", {})
+
+        if registration_purpose in REGULATED_OPERATION_PURPOSES:
+            return True
+
+        # Emission threshold: verification data is required if the registration purpose is Reporting Operation, and total TCo₂e >+ 25,000
+        if registration_purpose == Operation.Purposes.REPORTING_OPERATION:
+            attributable_emissions = ComplianceService.get_emissions_attributable_for_reporting(version_id)
+            return attributable_emissions >= ATTRIBUTABLE_EMISSION_THRESHOLD
+
+        return False
