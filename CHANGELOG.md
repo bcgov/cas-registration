@@ -1,3 +1,9 @@
+## [1.17.1](https://github.com/bcgov/cas-registration/compare/v1.17.0...v1.17.1) (2025-01-02)
+
+### Bug Fixes
+
+- fix api docs endpoint ([6a8d77e](https://github.com/bcgov/cas-registration/commit/6a8d77ee4b55186aa3b4580e629664a9dc7b5eae))
+
 # [1.17.0](https://github.com/bcgov/cas-registration/compare/v1.15.0...v1.17.0) (2024-12-18)
 
 ### Bug Fixes
