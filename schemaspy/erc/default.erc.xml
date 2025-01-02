@@ -311,7 +311,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="315" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="276" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -362,7 +362,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="514" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -826,7 +826,7 @@
             <column ascending="true" name="facility_id"/>
          </index>
       </table>
-      <table name="fuel_type" numRows="64" remarks="This table contains the list of fuel types that can be reported." schema="erc" type="TABLE">
+      <table name="fuel_type" remarks="This table contains the list of fuel types that can be reported." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="fuel_type_id" foreignKey="report_fuel_fuel_type_id_561d24d5_fk_fuel_type_id" implied="false" onDeleteCascade="false" schema="erc" table="report_fuel"/>
          </column>
@@ -1567,7 +1567,7 @@
             <column ascending="true" name="product_id"/>
          </index>
       </table>
-      <table name="regulated_product" numRows="39" remarks="Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis." schema="erc" type="TABLE">
+      <table name="regulated_product" remarks="Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="regulatedproduct_id" foreignKey="operation_regulated__regulatedproduct_id_5e0156ca_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="operation_regulated_products"/>
             <child column="product_id" foreignKey="product_emission_int_product_id_05c2d355_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="product_emission_intensity"/>
@@ -2663,7 +2663,7 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
-      <table name="reporting_field" numRows="72" remarks="A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration" schema="erc" type="TABLE">
+      <table name="reporting_field" remarks="A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="reportingfield_id" foreignKey="configuration_elemen_reportingfield_id_89a926f0_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -2756,7 +2756,7 @@
             <column ascending="true" name="facility_id"/>
          </index>
       </table>
-      <table name="source_type" numRows="86" remarks="Source types" schema="erc" type="TABLE">
+      <table name="source_type" remarks="Source types" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="source_type_id" foreignKey="activity_source_type_source_type_id_71126d54_fk_source_ty" implied="false" onDeleteCascade="false" schema="erc" table="activity_source_type_json_schema"/>
             <child column="source_type_id" foreignKey="configuration_element_source_type_id_13693929_fk_source_type_id" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
