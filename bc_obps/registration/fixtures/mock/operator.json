@@ -7,7 +7,6 @@
       "cra_business_number": 123456789,
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "Sole Proprietorship",
-      "physical_address": 3,
       "status": "Approved",
       "is_new": false
     }
@@ -16,280 +15,210 @@
     "model": "registration.operator",
     "pk": "4242ea9d-b917-4129-93c2-db00b7451051",
     "fields": {
-      "legal_name": "Existing Operator 2 Legal Name",
-      "trade_name": "Existing Operator 2 Trade Name",
+      "legal_name": "Bravo Technologies - has parTNER operator",
       "cra_business_number": 987654321,
       "bc_corporate_registry_number": "def1234567",
       "business_structure": "General Partnership",
-      "physical_address": 4,
       "mailing_address": 3,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [10, 11, 12, 13, 14, 15],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": "2024-01-03 08:09:51.133556-08",
-      "verified_by": "00000000-0000-0000-0000-000000000002"
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
     "fields": {
-      "legal_name": "New Operator 3 Legal Name",
-      "trade_name": "New Operator 3 Trade Name",
+      "legal_name": "Charlie Solutions",
       "cra_business_number": 987654322,
       "bc_corporate_registry_number": "ghi1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "7e8b72dc-4196-427f-a553-7879748139e1",
     "fields": {
-      "legal_name": "Existing Operator 4 Legal Name",
-      "trade_name": "Existing Operator 4 Trade Name",
+      "legal_name": "Delta Innovations",
       "cra_business_number": 987654323,
       "bc_corporate_registry_number": "jkl1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1, 2],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": "2024-01-03 08:09:51.133556-08",
-      "verified_by": "00000000-0000-0000-0000-000000000002"
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
     "fields": {
-      "legal_name": "New Operator 5 Legal Name",
-      "trade_name": "New Operator 5 Trade Name",
+      "legal_name": "Echo Systems",
       "cra_business_number": 987654324,
       "bc_corporate_registry_number": "mno1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "5712ee05-5f3b-4822-825d-6fffddafda4c",
     "fields": {
-      "legal_name": "Existing Operator 6 Legal Name",
-      "trade_name": "Existing Operator 6 Trade Name",
+      "legal_name": "Foxtrot Enterprises - has parENT operator",
       "cra_business_number": 987654325,
       "bc_corporate_registry_number": "pqr1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "edb1aff1-f888-4199-ab88-068364496347",
     "fields": {
-      "legal_name": "New Operator 6 Legal Name",
-      "trade_name": "New Operator 6 Trade Name",
+      "legal_name": "Golf Solutions",
       "cra_business_number": 987654326,
       "bc_corporate_registry_number": "stu1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "ea4314ea-1974-465a-a851-278c8f9c8daa",
     "fields": {
-      "legal_name": "New Operator 7 Legal Name",
-      "trade_name": "New Operator 7 Trade Name",
+      "legal_name": "Hotel Ventures",
       "cra_business_number": 987654327,
       "bc_corporate_registry_number": "vwx1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "04384911-264a-4510-b582-11ee704b8e41",
     "fields": {
-      "legal_name": "New Operator 8 Legal Name",
-      "trade_name": "New Operator 8 Trade Name",
+      "legal_name": "India Innovations",
       "cra_business_number": 987654328,
       "bc_corporate_registry_number": "yza1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
     "fields": {
-      "legal_name": "New Operator 9 Legal Name",
-      "trade_name": "New Operator 9 Trade Name",
+      "legal_name": "Juliet Enterprises",
       "cra_business_number": 987654329,
       "bc_corporate_registry_number": "bcd1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "bb979661-0782-49b2-9c64-acd8424b692b",
     "fields": {
-      "legal_name": "New Operator 10 Legal Name",
-      "trade_name": "New Operator 10 Trade Name",
+      "legal_name": "Kilo Logistics",
       "cra_business_number": 987654330,
       "bc_corporate_registry_number": "efg1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "bb702949-e303-4788-9ba9-806232a5f711",
     "fields": {
-      "legal_name": "New Operator 11 Legal Name",
-      "trade_name": "New Operator 11 Trade Name",
+      "legal_name": "Lima Enterprises",
       "cra_business_number": 987654331,
       "bc_corporate_registry_number": "hij1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "a35fb5ad-edd9-4465-982e-81b824644d07",
     "fields": {
-      "legal_name": "New Operator 12 Legal Name",
-      "trade_name": "New Operator 12 Trade Name",
+      "legal_name": "Mike Ventures",
       "cra_business_number": 987654332,
       "bc_corporate_registry_number": "klm1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "5c847c75-3b17-414c-97f8-88ba81cb3821",
     "fields": {
-      "legal_name": "New Operator 13 Legal Name",
-      "trade_name": "New Operator 13 Trade Name",
+      "legal_name": "November Solutions",
       "cra_business_number": 987654333,
       "bc_corporate_registry_number": "nop1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
       "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": null,
-      "verified_by": null
+      "is_new": false
     }
   },
   {
     "model": "registration.operator",
     "pk": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
     "fields": {
-      "legal_name": "Existing Operator 14 Legal Name",
-      "trade_name": "Existing Operator 14 Trade Name",
+      "legal_name": "Oscar Enterprises",
       "cra_business_number": 987654334,
-      "bc_corporate_registry_number": "pqz1234567",
+      "bc_corporate_registry_number": "qrs1234567",
       "business_structure": "BC Corporation",
-      "physical_address": 3,
       "mailing_address": 4,
-      "website": "http://www.example2.com",
-      "documents": [],
-      "contacts": [],
+      "contacts": [1],
       "status": "Approved",
-      "is_new": false,
-      "verified_at": "2024-01-03 08:09:51.133556-08",
-      "verified_by": "00000000-0000-0000-0000-000000000002"
+      "is_new": false
+    }
+  },
+  {
+    "model": "registration.operator",
+    "pk": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
+    "fields": {
+      "legal_name": "Papa Enterprises - no associated operations",
+      "cra_business_number": 987654334,
+      "bc_corporate_registry_number": "qrs1234567",
+      "business_structure": "BC Corporation",
+      "mailing_address": 4,
+      "contacts": [1],
+      "status": "Approved",
+      "is_new": false
     }
   }
 ]
