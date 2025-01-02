@@ -6,28 +6,20 @@ from django.db import connection
 
 def init_roles(apps, schema_monitor):
     with connection.cursor() as cursor:
-        cursor.execute(
-            """\
-          select role_name from erc.app_role;
-          """
-        )
+        cursor.execute("SELECT role_name FROM erc.app_role;")
         roles = cursor.fetchall()
         for role in roles:
-            cursor.execute(f'create role "{role[0]}" ')
-            cursor.execute(f'grant usage on schema erc to "{role[0]}" ')
+            cursor.execute("CREATE ROLE %s", [role[0]])
+            cursor.execute("GRANT USAGE ON SCHEMA erc TO %s", [role[0]])
 
 
 def reverse_init_roles(apps, schema_monitor):
     with connection.cursor() as cursor:
-        cursor.execute(
-            """\
-          select role_name from erc.app_role;
-          """
-        )
+        cursor.execute("SELECT role_name FROM erc.app_role;")
         roles = cursor.fetchall()
         for role in roles:
-            cursor.execute(f'revoke usage on schema erc from "{role[0]}" ')
-            cursor.execute(f'drop role "{role[0]}" ')
+            cursor.execute("REVOKE USAGE ON SCHEMA erc FROM %s", [role[0]])
+            cursor.execute("DROP ROLE %s", [role[0]])
 
 
 class Migration(migrations.Migration):

@@ -21,7 +21,8 @@ from registration.models import (
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from rls.utils import RlsRoles, RlsOperations, RlsGrant, RlsPolicy, M2mRls
+from rls.utils import RlsGrant, RlsPolicy, M2mRls
+from rls.enums import RlsRoles, RlsOperations
 
 
 class Operation(TimeStampedModel):
@@ -311,36 +312,43 @@ class Operation(TimeStampedModel):
         table = 'operation'
         enable_rls = True
         has_m2m = True
+
         grants = [
-            RlsGrant(role=RlsRoles.INDUSTRY_USER, grants=[RlsOperations.SELECT], table="operation"),
-            RlsGrant(role=RlsRoles.CAS_ADMIN, grants=[RlsOperations.SELECT, RlsOperations.INSERT], table="operation"),
+            RlsGrant(role=RlsRoles.INDUSTRY_USER, grants=[RlsOperations.SELECT], table=table),
+            RlsGrant(role=RlsRoles.CAS_ADMIN, grants=[RlsOperations.SELECT, RlsOperations.INSERT], table=table),
         ]
+
         policies = [
             RlsPolicy(
                 role=RlsRoles.INDUSTRY_USER,
                 policy_name="operation_industry_select",
                 operation=RlsOperations.SELECT,
-                using_statement="""(
-                    operator_id in (
-                      select o.id from erc.operator o
-                      join erc.user_operator uo
-                      on o.id = uo.operator_id
-                      and uo.user_id = current_setting('my.guid', true)::uuid
-                      and uo.status = 'Approved'
-                      and uo.role = 'admin'
+                using_statement=(
+                    """
+                    operator_id IN (
+                        SELECT o.id
+                        FROM erc.operator o
+                        JOIN erc.user_operator uo
+                        ON o.id = uo.operator_id
+                        AND uo.user_id = current_setting('my.guid', true)::uuid
+                        AND uo.status = 'Approved'
+                        AND uo.role = 'admin'
                     )
-                )""",
-                check_statement=False,
-                table="operation",
-            )
+                    """
+                ),
+                table=table,
+            ),
         ]
+
         m2m_rls = [
             M2mRls(
                 table='operation_regulated_products',
                 enable_rls=True,
                 grants=[
                     RlsGrant(
-                        role=RlsRoles.INDUSTRY_USER, grants=[RlsOperations.SELECT], table='operation_regulated_products'
+                        role=RlsRoles.INDUSTRY_USER,
+                        grants=[RlsOperations.SELECT],
+                        table='operation_regulated_products',
                     )
                 ],
                 policies=[
@@ -348,21 +356,22 @@ class Operation(TimeStampedModel):
                         role=RlsRoles.INDUSTRY_USER,
                         policy_name="operation_regulated_products",
                         operation=RlsOperations.SELECT,
-                        using_statement="""(
-                        operation_id in (
-                          select op.id from erc.operation op
-                          join erc.operator o
-                          on op.operator_id = o.id
-                          join erc.user_operator uo
-                          on o.id = uo.operator_id
-                          and uo.user_id = current_setting('my.guid', true)::uuid
-                          and uo.status = 'Approved'
-                          and uo.role = 'admin'
-                        )
-                      )""",
-                        check_statement=False,
-                        table="operation_regulated_products",
-                    )
+                        using_statement=(
+                            """
+                            operation_id IN (
+                                SELECT op.id
+                                FROM erc.operation op
+                                JOIN erc.operator o ON op.operator_id = o.id
+                                JOIN erc.user_operator uo
+                                ON o.id = uo.operator_id
+                                AND uo.user_id = current_setting('my.guid', true)::uuid
+                                AND uo.status = 'Approved'
+                                AND uo.role = 'admin'
+                            )
+                            """
+                        ),
+                        table='operation_regulated_products',
+                    ),
                 ],
             )
         ]

@@ -1,6 +1,7 @@
 from common.models import BaseModel
 from django.db import models
-from rls.utils import RlsRoles, RlsOperations, RlsGrant, RlsPolicy
+from rls.utils import RlsGrant, RlsPolicy
+from rls.enums import RlsRoles, RlsOperations
 
 
 class EmissionCategory(BaseModel):
@@ -44,7 +45,6 @@ class EmissionCategory(BaseModel):
                 policy_name="emission_category_industry_select",
                 operation=RlsOperations.SELECT,
                 using_statement="(id < 4)",
-                check_statement=False,
                 table="emission_category",
             )
         ]

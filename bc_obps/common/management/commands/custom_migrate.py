@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.apps import apps
 from django.db import connection
-from rls.utils import RlsRoles
+from rls.enums import RlsRoles
 
 
 class Command(BaseCommand):
@@ -113,28 +113,33 @@ class Command(BaseCommand):
 
     def revoke_all_privileges(self):
         with connection.cursor() as cursor:
-            cursor.execute(f'drop owned by {RlsRoles.ALL_ROLES}')
-            cursor.execute(f'grant usage on schema erc to {RlsRoles.ALL_ROLES}')
+            cursor.execute('DROP OWNED BY %s', [RlsRoles.ALL_ROLES.value])
+            cursor.execute('GRANT USAGE ON SCHEMA erc TO %s', [RlsRoles.ALL_ROLES.value])
 
     def apply_rls(self):
         apps_for_rls = ['reporting', 'registration', 'common']
         for app in apps_for_rls:
-            for key in apps.all_models[app]:
-                # This constraint should be changed to ignore basemodels & historical models. It's just here for now to only run RLS on the examples that have been created for the POC
-                if key in ['emissioncategory', 'operation']:
-                    rls = apps.all_models[app][key].Rls
-                    with connection.cursor() as cursor:
-                        for grant in rls.grants:
-                            grant.apply_grant(cursor)
-                        if rls.enable_rls:
-                            cursor.execute(f'alter table {rls.schema}.{rls.table} enable row level security')
-                            for policy in rls.policies:
-                                policy.apply_policy(cursor)
-                        if rls.has_m2m:
-                            for m2m in rls.m2m_rls:
-                                for grant in m2m.grants:
-                                    grant.apply_grant(cursor)
-                                if m2m.enable_rls:
-                                    cursor.execute(f'alter table {m2m.schema}.{m2m.table} enable row level security')
-                                    for policy in m2m.policies:
-                                        policy.apply_policy(cursor)
+            for model in apps.all_models[app]:
+                if model in ['emissioncategory', 'operation']:
+                    self._apply_rls_for_model(app, model)
+
+    def _apply_rls_for_model(self, app, model):
+        rls = apps.all_models[app][model].Rls
+        with connection.cursor() as cursor:
+            for grant in rls.grants:
+                grant.apply_grant(cursor)
+            if rls.enable_rls:
+                cursor.execute('ALTER TABLE %s.%s ENABLE ROW LEVEL SECURITY', [rls.schema, rls.table])
+                for policy in rls.policies:
+                    policy.apply_policy(cursor)
+            if rls.has_m2m:
+                self._apply_m2m_rls(cursor, rls.m2m_rls)
+
+    def _apply_m2m_rls(self, cursor, m2m_rls):
+        for m2m in m2m_rls:
+            for grant in m2m.grants:
+                grant.apply_grant(cursor)
+            if m2m.enable_rls:
+                cursor.execute('ALTER TABLE %s.%s ENABLE ROW LEVEL SECURITY', [m2m.schema, m2m.table])
+                for policy in m2m.policies:
+                    policy.apply_policy(cursor)
