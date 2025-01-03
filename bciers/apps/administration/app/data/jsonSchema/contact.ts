@@ -1,7 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
-import { InlineArrayFieldTemplate } from "@bciers/components/form/fields";
+import { ArrayFieldTemplate } from "@bciers/components/form/fields";
 
 const section1: RJSFSchema = {
   type: "object",
@@ -25,6 +25,7 @@ const section1: RJSFSchema = {
       type: "array",
       default: ["None"],
       title: "Places assigned",
+      readOnly: true,
       items: {
         type: "string",
       },
@@ -140,11 +141,16 @@ export const contactsUiSchema = {
       "ui:placeholder": "Select the user",
     },
     places_assigned: {
+      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
       "ui:options": {
         note: "You cannot delete this contact unless you replace them with other contact(s) in the place(s) above.",
+        addable: false,
+        removable: false,
       },
-      "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
       "ui:classNames": "[&>div:last-child]:w-2/3",
+      items: {
+        "ui:widget": "ReadOnlyWidget",
+      },
     },
   },
   section2: {
