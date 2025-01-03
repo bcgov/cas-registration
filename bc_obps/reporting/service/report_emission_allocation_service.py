@@ -115,7 +115,7 @@ class ReportEmissionAllocationService:
 
         # Update the emission allocations from the data
         for allocations in report_emission_allocations:
-            # emission_total = allocations.emission_total # TODO: validation should be done with this value to make sure we are not under- or over-allocating
+            # emission_total = allocations.emission_total # TODO: validation should be done with this value to make sure we are not under- or over-allocating (currently, this validation occurs in the frontend)
             for product in allocations.products:
                 if product.allocated_quantity == 0:  # if the allocated quantity is 0, delete any existing allocation
                     existing_allocation = ReportProductEmissionAllocation.objects.filter(
