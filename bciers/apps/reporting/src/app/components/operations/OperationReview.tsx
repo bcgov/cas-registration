@@ -17,6 +17,7 @@ import {
   getOperationInformationTaskList,
 } from "../taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+import { useRouter } from "next/navigation";
 
 interface Props {
   formData: any;
@@ -59,6 +60,8 @@ export default function OperationReview({
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
   const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
+
+  const router = useRouter();
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
@@ -197,12 +200,16 @@ export default function OperationReview({
     return <div>No version ID found (TBD)</div>;
   }
 
-  const confirmReportTypeChange = () => {
-    setFormDataState({
-      ...formDataState,
-      operation_report_type: pendingChangeReportType,
+  const confirmReportTypeChange = async () => {
+    const method = "POST";
+    const endpoint = `reporting/report-version/${version_id}/change-report-type`;
+    const response = await actionHandler(endpoint, method, "", {
+      body: JSON.stringify({ report_type: pendingChangeReportType }),
     });
-    setPendingChangeReportType(undefined);
+
+    if (response && !response.error) {
+      router.push(`/reports/${response}/review-operator-data`);
+    }
   };
   const cancelReportTypeChange = () => {
     setPendingChangeReportType(undefined);
@@ -219,7 +226,7 @@ export default function OperationReview({
       >
         <p>
           Are you sure you want to change your report type? If you proceed, all
-          of the form data you have entered will be lost upon saving.
+          of the form data you have entered will be lost.
         </p>
       </SimpleModal>
       <MultiStepFormWithTaskList
