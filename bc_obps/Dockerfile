@@ -20,7 +20,15 @@ RUN git clone https://github.com/asdf-vm/asdf.git ${HOME}/asdf --depth 1 --branc
 ENV BASH_ENV="${HOME}/asdf/asdf.sh"
 SHELL ["/usr/bin/env", "bash", "-c"]
 
+# Source asdf
+RUN echo '. ${HOME}/asdf/asdf.sh' >> ${HOME}/.bashrc && \
+    echo '. ${HOME}/asdf/completions/asdf.bash' >> ${HOME}/.bashrc
+
+RUN echo -e "python 3.12.3\npoetry 1.8.1" > ${HOME}/.tool-versions
+
+# Install plugins and tools
 RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
+    . ${HOME}/asdf/asdf.sh && \
     cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin-add && \
     asdf plugin-update --all && \
     asdf install && \
@@ -29,8 +37,10 @@ RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
 # Add Poetry's bin directory to PATH
 ENV PATH="${HOME}/.asdf/installs/poetry/1.8.1/bin:${PATH}"
 
-# Configuring poetry to behave properly with asdf
-RUN poetry config virtualenvs.prefer-active-python true
+# Initialize Poetry
+RUN . ${HOME}/asdf/asdf.sh && \
+    poetry config virtualenvs.prefer-active-python true && \
+    poetry config virtualenvs.in-project true
 
 # Copy project files
 COPY ./ ${HOME}/
