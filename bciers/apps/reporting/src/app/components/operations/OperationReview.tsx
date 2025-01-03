@@ -2,16 +2,21 @@
 
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
+import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
   updateSchema,
 } from "@reporting/src/data/jsonSchema/operations";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import {
+  ActivePage,
+  getOperationInformationTaskList,
+} from "../taskList/1_operationInformation";
+import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 
 interface Props {
   formData: any;
@@ -28,7 +33,7 @@ interface Props {
   allRegulatedProducts: { id: number; name: string }[];
   registrationPurpose: string;
   facilityReport: {
-    facility_id: number;
+    facility_id: string;
     operation_type: string;
   };
 }
@@ -43,11 +48,12 @@ export default function OperationReview({
   registrationPurpose,
   facilityReport,
 }: Props) {
+  const [pendingChangeReportType, setPendingChangeReportType] =
+    useState<string>();
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const [facilityId, setFacilityId] = useState<number | null>(null);
-  const [operationType, setOperationType] = useState("");
+  const [facilityId, setFacilityId] = useState<string | null>(null);
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -58,36 +64,11 @@ export default function OperationReview({
     "MMM DD YYYY",
   );
 
-  const facilityPageUrl =
-    operationType === "Linear Facility Operation"
-      ? `/reports/${version_id}/facilities/lfo-facilities`
-      : `/reports/${version_id}/facilities/${facilityId}/review`;
-
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Section",
-      title: "Operation information",
-      isExpanded: true,
-      elements: [
-        {
-          type: "Page",
-          title: "Review Operation information",
-          isActive: true,
-          link: `/reports/${version_id}/review-operator-data`,
-        },
-        {
-          type: "Page",
-          title: "Person responsible",
-          link: `/reports/${version_id}/person-responsible`,
-        },
-        {
-          type: "Page",
-          title: "Review facilities",
-          link: `${facilityPageUrl}`,
-        },
-      ],
-    },
-  ];
+  const taskListElements = getOperationInformationTaskList(
+    version_id,
+    facilityId,
+    ActivePage.ReviewOperatorInfo,
+  );
 
   const prepareFormData = (formDataObject: any) => {
     return {
@@ -138,7 +119,6 @@ export default function OperationReview({
     }
     if (facilityReport?.facility_id) {
       setFacilityId(facilityReport.facility_id);
-      setOperationType(facilityReport.operation_type);
     }
   }, [
     formData,
@@ -168,6 +148,16 @@ export default function OperationReview({
 
   const onChangeHandler = (data: { formData: any }) => {
     const updatedFormData = data.formData;
+
+    if (
+      formDataState.operation_report_type !== undefined &&
+      formDataState.operation_report_type !==
+        updatedFormData.operation_report_type
+    ) {
+      setPendingChangeReportType(updatedFormData.operation_report_type);
+      updatedFormData.operation_report_type =
+        formDataState.operation_report_type;
+    }
 
     const helperText =
       updatedFormData.operation_report_type === "Simple Report" ? (
@@ -200,24 +190,43 @@ export default function OperationReview({
     return <div>No version ID found (TBD)</div>;
   }
 
+  const confirmReportTypeChange = () => {
+    setFormDataState({
+      ...formDataState,
+      operation_report_type: pendingChangeReportType,
+    });
+    setPendingChangeReportType(undefined);
+  };
+  const cancelReportTypeChange = () => {
+    setPendingChangeReportType(undefined);
+  };
+
   return (
-    <MultiStepFormWithTaskList
-      initialStep={0}
-      steps={[
-        "Operation Information",
-        "Facilities Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
-      taskListElements={taskListElements}
-      schema={schema}
-      uiSchema={uiSchema}
-      formData={formDataState}
-      cancelUrl="#"
-      onSubmit={(data: { formData?: any }) => saveHandler(data, version_id)}
-      onChange={onChangeHandler}
-      backUrl={backUrl}
-      continueUrl={saveAndContinueUrl}
-    />
+    <>
+      <SimpleModal
+        title="Confirmation"
+        open={pendingChangeReportType !== undefined}
+        onCancel={cancelReportTypeChange}
+        onConfirm={confirmReportTypeChange}
+        confirmText="Change report type"
+      >
+        <p>
+          Are you sure you want to change your report type? If you proceed, all
+          of the form data you have entered will be lost upon saving.
+        </p>
+      </SimpleModal>
+      <MultiStepFormWithTaskList
+        initialStep={0}
+        steps={multiStepHeaderSteps}
+        taskListElements={taskListElements}
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={formDataState}
+        onSubmit={(data: { formData?: any }) => saveHandler(data, version_id)}
+        onChange={onChangeHandler}
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+      />
+    </>
   );
 }
