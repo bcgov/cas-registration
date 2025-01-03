@@ -16,12 +16,10 @@ export default function ReportingOperationStatusCell(
   const statusColor = colorMap.get(status) || "primary";
   const isMultiLineStatus = status === ReportOperationStatus.NOT_STARTED;
 
-  // Adjust the font size for multi-line statuses so it will fit in the chip
   const fontSize = isMultiLineStatus ? "14px" : "16px";
   return (
     <Chip
       label={
-        // whiteSpace: "normal" is needed to wrap the text in the chip for multi-line statuses like "Not started"
         <div style={{ whiteSpace: "normal", color: statusColor, fontSize }}>
           {status}
         </div>
