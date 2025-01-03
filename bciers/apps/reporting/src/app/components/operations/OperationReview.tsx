@@ -59,7 +59,6 @@ export default function OperationReview({
   const backUrl = `/reports`;
   const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
 
-
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
     "MMM DD YYYY",
@@ -203,7 +202,6 @@ export default function OperationReview({
   };
 
   return (
-
     <>
       <SimpleModal
         title="Confirmation"
