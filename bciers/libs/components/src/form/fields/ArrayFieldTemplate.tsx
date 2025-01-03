@@ -40,6 +40,7 @@ const ArrayFieldTemplate = ({
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
   const customItemName = uiSchema?.["ui:options"]?.customItemName as boolean;
+  const note = uiSchema?.["ui:options"]?.note as string;
 
   return (
     <div className="flex min-w-full flex-col">
@@ -80,7 +81,6 @@ const ArrayFieldTemplate = ({
                   "ui:options": {
                     label: false,
                     inline: true,
-                    unit: "test",
                   },
                 },
               },
@@ -97,6 +97,11 @@ const ArrayFieldTemplate = ({
         >
           {arrayAddLabel as any}
         </Button>
+      )}
+      {note && (
+        <div className="w-full px-[14px] py-4 items-center">
+          <b>Note:</b> {note}
+        </div>
       )}
     </div>
   );
