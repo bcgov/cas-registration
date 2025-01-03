@@ -28,6 +28,7 @@ const FinalReviewForm: React.FC<Props> = ({ version_id, taskListElements }) => {
       cancelUrl="#"
       backUrl={backUrl}
       continueUrl={saveAndContinueUrl}
+      noFormSave={() => {}}
     >
       Placeholder for Final Review
       <br />

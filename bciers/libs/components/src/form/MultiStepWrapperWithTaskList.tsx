@@ -64,10 +64,10 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
             backUrl={backUrl}
             continueUrl={continueUrl}
             buttonText={submittingButtonText}
+            noFormSave={noFormSave}
             saveAndContinue={onSubmit}
             isRedirecting={isRedirecting}
             isSaving={isSaving}
-            noFormSave={noFormSave}
           />
         </div>
       </div>

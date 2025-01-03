@@ -24,7 +24,7 @@ const cancelUrl = "/reports";
 
 export default function SignOffPage({ version_id }: HasReportVersion) {
   const [formState, setFormState] = useState({});
-  const [error, setError] = useState<string>();
+  const [errors, setErrors] = useState<string[]>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
@@ -48,15 +48,16 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
     if (!submitButtonDisabled) {
       const response: any = await postSubmitReport(version_id);
 
-      if (response.error) {
-        setError(reportValidationMessages[response.error]);
-        throw new Error("Submit form returned errors.");
+      if (response?.error) {
+        setErrors([reportValidationMessages[response.error]]);
+        return false;
       }
-      setError(undefined);
-
+      setErrors(undefined);
       setIsSubmitting(true);
       setSubmitButtonDisabled(true);
     }
+
+    return true;
   };
 
   return (
@@ -83,7 +84,7 @@ export default function SignOffPage({ version_id }: HasReportVersion) {
           submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
           continueUrl={""}
           backUrl={backUrl}
-          error={error}
+          errors={errors}
         />
       )}
     </>

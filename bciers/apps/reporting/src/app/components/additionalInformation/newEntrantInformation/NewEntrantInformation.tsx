@@ -68,6 +68,7 @@ export default async function NewEntrantInformation({
   const taskListElements = getAdditionalInformationTaskList(
     version_id,
     ActivePage.NewEntrantInformation,
+    true,
   );
 
   return (

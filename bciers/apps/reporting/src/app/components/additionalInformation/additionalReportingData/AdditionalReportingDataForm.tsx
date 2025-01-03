@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
   additionalReportingDataSchema,
   additionalReportingDataUiSchema,
@@ -11,6 +10,11 @@ import {
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
 import { useSearchParams } from "next/navigation";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import {
+  ActivePage,
+  getAdditionalInformationTaskList,
+} from "../../taskList/3_additionalInformation";
 
 interface AdditionalReportingDataProps {
   versionId: number;
@@ -40,6 +44,7 @@ export default function AdditionalReportingDataForm({
   isNewEntrant,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [errors, setErrors] = useState<string[]>();
 
   // 🛸 Set up routing urls
   const searchParams = useSearchParams();
@@ -53,23 +58,6 @@ export default function AdditionalReportingDataForm({
     ? additionalReportingDataWithElectricityGeneratedSchema
     : additionalReportingDataSchema;
 
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Page",
-      title: "Additional reporting data",
-      isActive: true,
-      link: `/reports/${versionId}/additional-reporting-data`,
-    },
-  ];
-
-  if (isNewEntrant) {
-    taskListElements.push({
-      type: "Page",
-      title: "New entrant information",
-      link: `/reports/${versionId}/new-entrant-information`,
-    });
-  }
-
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${versionId}/additional-data`;
     const method = "POST";
@@ -79,22 +67,28 @@ export default function AdditionalReportingDataForm({
       ...data.captured_emissions_section,
       ...data.additional_data_section,
     };
-    await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(payload),
     });
+
+    if (response?.error) {
+      setErrors([response.error]);
+      return false;
+    }
+
+    setErrors(undefined);
+    return true;
   };
 
   return (
     <MultiStepFormWithTaskList
       initialStep={2}
-      steps={[
-        "Operation Information",
-        "Report Information",
-        "Additional Information",
-        "Compliance Summary",
-        "Sign-off & Submit",
-      ]}
-      taskListElements={taskListElements}
+      steps={multiStepHeaderSteps}
+      taskListElements={getAdditionalInformationTaskList(
+        versionId,
+        ActivePage.AdditionalReportingData,
+        isNewEntrant,
+      )}
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
@@ -104,6 +98,7 @@ export default function AdditionalReportingDataForm({
       }}
       onSubmit={(data: any) => handleSubmit(data.formData)}
       continueUrl={saveAndContinueUrl}
+      errors={errors}
     />
   );
 }

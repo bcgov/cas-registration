@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useRouter } from "next/navigation";
 
 import { actionHandler } from "@bciers/actions";
 import {
@@ -28,11 +27,11 @@ export default function NewEntrantInformationForm({
   taskListElements,
 }: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
+  const [errors, setErrors] = useState<string[]>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,
   );
 
-  const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/compliance-summary`;
 
   const handleChange = (e: IChangeEvent) => {
@@ -50,9 +49,13 @@ export default function NewEntrantInformationForm({
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
     });
-    if (response.error) throw new Error(response.error);
+    if (response?.error) {
+      setErrors([response.error]);
+      return false;
+    }
 
-    router.push(saveAndContinueUrl);
+    setErrors(undefined);
+    return true;
   };
   return (
     <MultiStepFormWithTaskList
@@ -69,6 +72,7 @@ export default function NewEntrantInformationForm({
       submitButtonDisabled={submitButtonDisabled}
       formContext={formData}
       continueUrl={saveAndContinueUrl}
+      errors={errors}
     />
   );
 }

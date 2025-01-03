@@ -123,7 +123,7 @@ export default function FacilityEmissionAllocationForm({
   // State for submit button disable
   const errorMismatch =
     "All emissions must be allocated to 100% before saving and continuing";
-  const [error, setError] = useState<string | undefined>();
+  const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   // 🛸 Set up routing urls
@@ -141,7 +141,7 @@ export default function FacilityEmissionAllocationForm({
   // 🔄 Check for allocation mismatch on page load to prevent submit
   useEffect(() => {
     if (!validateEmissions(formData)) {
-      setError(errorMismatch);
+      setErrors([errorMismatch]);
     }
     setSubmitButtonDisabled(!validateEmissions(formData));
   }, [formData]);
@@ -152,7 +152,6 @@ export default function FacilityEmissionAllocationForm({
     const BASIC_CATEGORY_DATA = "basic_emission_allocation_data";
     const EXCLUDED_CATEGORY_DATA = "fuel_excluded_emission_allocation_data";
     const updatedDataKeys = [BASIC_CATEGORY_DATA, EXCLUDED_CATEGORY_DATA];
-    let errorMessage;
 
     // Initialize a map to store total allocated quantities by report_product_id
     const productAllocations: Record<string, number> = {};
@@ -198,14 +197,14 @@ export default function FacilityEmissionAllocationForm({
 
     // Validate the updated form data and set an error message if validation fails
     if (!validateEmissions(updatedFormData)) {
-      errorMessage = errorMismatch;
+      setErrors([errorMismatch]);
+      setSubmitButtonDisabled(true);
+    } else {
+      setSubmitButtonDisabled(false);
     }
 
     // Update the form data state
     setFormData(updatedFormData);
-
-    setError(errorMessage);
-    setSubmitButtonDisabled(!!errorMessage);
   }, []);
 
   // 🛠️ Handle form submit
@@ -236,17 +235,21 @@ export default function FacilityEmissionAllocationForm({
         })),
       ],
     };
-    const method = "POST";
+
     const endpoint = `reporting/report-version/${version_id}/facilities/${facility_id}/allocate-emissions`;
-    const pathToRevalidate = "reporting/reports";
     const payload = safeJsonParse(JSON.stringify(transformedPayload));
-    const response = await actionHandler(endpoint, method, pathToRevalidate, {
+
+    const response = await actionHandler(endpoint, "POST", "", {
       body: JSON.stringify(payload),
     });
 
     if (response?.error) {
-      setError(response.error);
+      setErrors([response.error]);
+      return false;
     }
+
+    setErrors(undefined);
+    return true;
   };
 
   return (
@@ -258,12 +261,11 @@ export default function FacilityEmissionAllocationForm({
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}
-      cancelUrl="#"
       backUrl={backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
       continueUrl={saveAndContinueUrl}
-      error={error}
+      errors={errors}
       formContext={{
         facility_emission_data: formData.basic_emission_allocation_data.concat(
           formData.fuel_excluded_emission_allocation_data,

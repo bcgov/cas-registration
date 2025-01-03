@@ -4,10 +4,10 @@ import ComplianceSummaryPage from "@reporting/src/app/components/complianceSumma
 import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getAttributableEmissions } from "@reporting/src/app/utils/getAttributableEmissions";
-import { tasklistData } from "@reporting/src/app/components/complianceSummary/TaskListElements";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 import { vi } from "vitest";
+import { getComplianceSummaryTaskList } from "@reporting/src/app/components/taskList/4_complianceSummary";
 
 // ✨ Mocks
 vi.mock(
@@ -64,7 +64,7 @@ describe("ComplianceSummaryPage", () => {
         versionId,
         needsVerification: false,
         summaryFormData: complianceData,
-        taskListElements: tasklistData,
+        taskListElements: getComplianceSummaryTaskList(),
       },
       {},
     );
@@ -91,7 +91,7 @@ describe("ComplianceSummaryPage", () => {
         versionId,
         needsVerification: true,
         summaryFormData: complianceData,
-        taskListElements: tasklistData,
+        taskListElements: getComplianceSummaryTaskList(),
       },
       {},
     );
@@ -121,7 +121,7 @@ describe("ComplianceSummaryPage", () => {
         versionId,
         needsVerification: true,
         summaryFormData: complianceData,
-        taskListElements: tasklistData,
+        taskListElements: getComplianceSummaryTaskList(),
       },
       {},
     );
