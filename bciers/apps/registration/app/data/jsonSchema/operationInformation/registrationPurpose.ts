@@ -62,7 +62,7 @@ export const createRegistrationPurposeSchema = async () => {
       operation: {
         type: "string",
         title: "Select your operation:",
-        anyOf: operationsAnyOf,
+        ...(operationsAnyOf && { anyOf: operationsAnyOf }),
       },
       operation_add: {
         //Not an actual field in the db - this is just to make the form look like the wireframes
