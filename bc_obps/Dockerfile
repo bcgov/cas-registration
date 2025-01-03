@@ -1,5 +1,5 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12.3 AS main
+# Stage 1: Build stage
+FROM python:3.12.3 AS builder
 
 # Install system dependencies and clean up
 RUN apt-get update && \
@@ -10,21 +10,14 @@ RUN apt-get update && \
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    USER_ID=1001 \
     HOME=/root
 
 WORKDIR ${HOME}
-# Make everything in the home group-writable to support OpenShift's restricted SCC
-# Needs to be done as root to chown
-RUN useradd -ms /bin/bash -d ${HOME} --uid ${USER_ID} -g root bc_obps
-
-COPY ./ ${HOME}/
 
 # Install asdf
 RUN git clone https://github.com/asdf-vm/asdf.git ${HOME}/asdf --depth 1 --branch v0.11.2
 
 ENV BASH_ENV="${HOME}/asdf/asdf.sh"
-# Because asdf is loaded via BASH_ENV, all commands using adsf need to be executed using /usr/bin/env bash -c
 SHELL ["/usr/bin/env", "bash", "-c"]
 
 RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
@@ -39,14 +32,45 @@ ENV PATH="${HOME}/.asdf/installs/poetry/1.8.1/bin:${PATH}"
 # Configuring poetry to behave properly with asdf
 RUN poetry config virtualenvs.prefer-active-python true
 
-# Change ownership and permissions
-RUN chown -R bc_obps:0 ${HOME} && \
-    chmod -R g+rwX ${HOME}
-
-# Expose the port your Django application will run on (change as needed)
-EXPOSE 8000
+# Copy project files
+COPY ./ ${HOME}/
 
 # Install project dependencies using Poetry
 RUN poetry install --without dev
+
+# Stage 2: Production stage
+FROM python:3.12.3 AS main
+
+# Install system dependencies and clean up
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y curl build-essential && \
+    apt-get clean
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    USER_ID=1001 \
+    HOME=/root
+
+WORKDIR ${HOME}
+
+# Copy only necessary files from the build stage
+COPY --from=builder ${HOME}/.venv ${HOME}/.venv
+COPY ./ ${HOME}/
+
+# Change ownership and permissions
+RUN chown -R ${USER_ID}:0 ${HOME} && \
+    chmod -R g+rwX ${HOME}
+
+# Add virtual environment to PATH
+ENV PATH="${HOME}/.venv/bin:${PATH}"
+
+# Expose the port your Django application will run on
+EXPOSE 8000
+
+# Switch to non-root user
 USER ${USER_ID}
-CMD ["/usr/bin/env", "bash", "-c", "poetry run python manage.py collectstatic --noinput && poetry run python manage.py custom_migrate && poetry run gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
+
+# Command to run the application
+CMD ["/usr/bin/env", "bash", "-c", "python manage.py collectstatic --noinput && python manage.py custom_migrate && gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
