@@ -22,13 +22,13 @@ class ReportVersion(TimeStampedModel):
     )
 
     class ReportVersionStatus(models.TextChoices):
-        Draft = 'draft'
-        Submitted = 'submitted'
+        Draft = 'Draft'
+        Submitted = 'Submitted'
 
     status = models.CharField(
         max_length=1000,
         choices=ReportVersionStatus.choices,
-        db_comment="The status for this report version: draft or submitted.",
+        db_comment="The status for this report version: Draft or Submitted.",
         default=ReportVersionStatus.Draft,
     )
 
