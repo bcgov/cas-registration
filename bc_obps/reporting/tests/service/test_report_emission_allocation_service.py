@@ -1,5 +1,6 @@
 from decimal import Decimal
 from django.test import TestCase
+from reporting.models.emission_category import EmissionCategory
 from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationsSchemaIn
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
@@ -17,6 +18,53 @@ class TestReportEmissionAllocationService(TestCase):
     ALLOCATION_AMOUNT_1 = Decimal("100.9999")
     ALLOCATION_AMOUNT_2 = Decimal("200.0000")
     ALLOCATION_AMOUNT_3 = Decimal("100.0000")
+
+    ALLOCATING_AMOUNT_1 = Decimal("25.0000")
+    ALLOCATING_AMOUNT_2 = Decimal("75.0000")
+    ALLOCATING_AMOUNT_3 = Decimal("100.0000")
+
+    def create_mock_allocation_array(
+        self, report_product1: ReportProduct, report_product2: ReportProduct, test_stage: int
+    ):
+        result_array = []
+        emission_categories = EmissionCategory.objects.all().exclude(category_type="other_excluded")
+        for category in emission_categories:
+            mock_allocation = {
+                "emission_category_name": category.category_name,
+                "emission_category_id": category.id,
+                "products": [
+                    {
+                        "report_product_id": report_product1.id,
+                        "product_name": report_product1.product.name,
+                        "allocated_quantity": 0,
+                    },
+                    {
+                        "report_product_id": report_product2.id,
+                        "product_name": report_product2.product.name,
+                        "allocated_quantity": 0,
+                    },
+                ],
+                "emission_total": 0,
+                "category_type": category.category_type,
+            }
+            match test_stage:
+                case 1:  # specifics for get test
+                    if category.id == self.FLARING_CATEGORY_ID:
+                        mock_allocation["products"][0]["allocated_quantity"] = self.ALLOCATION_AMOUNT_1
+                        mock_allocation["products"][1]["allocated_quantity"] = self.ALLOCATION_AMOUNT_2
+                        mock_allocation["emission_total"] = self.ALLOCATION_AMOUNT_1 + self.ALLOCATION_AMOUNT_2
+                    if category.id == self.WOODY_BIOMASS_CATEGORY_ID:
+                        mock_allocation["products"][1]["allocated_quantity"] = self.ALLOCATION_AMOUNT_3
+                        mock_allocation["emission_total"] = self.ALLOCATION_AMOUNT_3
+                case 2:  # specifics for save test 1st part
+                    if category.id == self.FLARING_CATEGORY_ID:
+                        mock_allocation["products"][0]["allocated_quantity"] = self.ALLOCATING_AMOUNT_1
+                        mock_allocation["products"][1]["allocated_quantity"] = self.ALLOCATING_AMOUNT_2
+                case 3:  # specifics for save test 2nd part
+                    if category.id == self.FLARING_CATEGORY_ID:
+                        mock_allocation["products"][1]["allocated_quantity"] = self.ALLOCATING_AMOUNT_3
+            result_array.append(mock_allocation)
+        return result_array
 
     def setUp(self):
         # Arrange: sets up the report elements necessary to allocate emissions
@@ -96,234 +144,19 @@ class TestReportEmissionAllocationService(TestCase):
         )
 
         self.mock_get_response = {
-            "report_product_emission_allocations": [
-                {
-                    'emission_category_name': 'Flaring emissions',
-                    "emission_category_id": 1,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": self.ALLOCATION_AMOUNT_1,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": self.ALLOCATION_AMOUNT_2,
-                        },
-                    ],
-                    "emission_total": self.ALLOCATION_AMOUNT_1 + self.ALLOCATION_AMOUNT_2,
-                    "category_type": "basic",
-                },
-                {
-                    'emission_category_name': 'Fugitive emissions',
-                    "emission_category_id": 2,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    'emission_category_name': 'Industrial process emissions',
-                    "emission_category_id": 3,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    'emission_category_name': 'On-site transportation emissions',
-                    "emission_category_id": 4,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    "emission_category_name": "Stationary fuel combustion emissions",
-                    "emission_category_id": 5,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    "emission_category_name": "Venting emissions — useful",
-                    "emission_category_id": 6,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    "emission_category_name": "Venting emissions — non-useful",
-                    "emission_category_id": 7,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    "emission_category_name": "Emissions from waste",
-                    "emission_category_id": 8,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    "emission_category_name": "Emissions from wastewater",
-                    "emission_category_id": 9,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "basic",
-                },
-                {
-                    "emission_category_name": "CO2 emissions from excluded woody biomass",
-                    "emission_category_id": 10,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": self.ALLOCATION_AMOUNT_3,
-                        },
-                    ],
-                    "emission_total": self.ALLOCATION_AMOUNT_3,
-                    "category_type": "fuel_excluded",
-                },
-                {
-                    "emission_category_name": "Other emissions from excluded biomass",
-                    "emission_category_id": 11,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "fuel_excluded",
-                },
-                {
-                    "emission_category_name": "Emissions from excluded non-biomass",
-                    "emission_category_id": 12,
-                    "products": [
-                        {
-                            "report_product_id": report_product_1.id,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": report_product_2.id,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": 0,
-                        },
-                    ],
-                    "emission_total": 0,
-                    "category_type": "fuel_excluded",
-                },
-            ],
+            "report_product_emission_allocations": self.create_mock_allocation_array(
+                report_product1=report_product_1, report_product2=report_product_2, test_stage=1
+            ),
             "facility_total_emissions": self.ALLOCATION_AMOUNT_1 + self.ALLOCATION_AMOUNT_2,
             "report_product_emission_allocation_totals": [
                 {
                     "report_product_id": report_product_1.id,
-                    "product_name": "BC-specific refinery complexity throughput",
+                    "product_name": report_product_1.product.name,
                     "allocated_quantity": self.ALLOCATION_AMOUNT_1,
                 },
                 {
                     "report_product_id": report_product_2.id,
-                    "product_name": "Sugar: solid",
+                    "product_name": report_product_2.product.name,
                     "allocated_quantity": self.ALLOCATION_AMOUNT_2,
                 },
             ],
@@ -332,311 +165,17 @@ class TestReportEmissionAllocationService(TestCase):
         }
 
         self.post_payload = ReportProductEmissionAllocationsSchemaIn(
-            report_product_emission_allocations=[
-                {
-                    "emission_category_id": 1,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": Decimal('25.0000'),
-                        },
-                        {
-                            "report_product_id": 4,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": Decimal('75.0000'),
-                        },
-                    ],
-                    "emission_total": Decimal('100.0000'),
-                },
-                {
-                    "emission_category_id": 2,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 3,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 4,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 5,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 6,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 2, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 7,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 8,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 9,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 10,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 11,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 12,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-            ],
+            report_product_emission_allocations=self.create_mock_allocation_array(
+                report_product1=report_product_1, report_product2=report_product_2, test_stage=2
+            ),
             allocation_methodology="other",
             allocation_other_methodology_description="test",
         )
 
         self.post_payload2 = ReportProductEmissionAllocationsSchemaIn(
-            report_product_emission_allocations=[
-                {
-                    "emission_category_id": 1,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {
-                            "report_product_id": 4,
-                            "product_name": "Sugar: solid",
-                            "allocated_quantity": Decimal('100.0000'),
-                        },
-                    ],
-                    "emission_total": Decimal('100.0000'),
-                },
-                {
-                    "emission_category_id": 2,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 3,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 4,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 5,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 6,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 2, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 7,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 8,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 9,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 10,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 11,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-                {
-                    "emission_category_id": 12,
-                    "products": [
-                        {
-                            "report_product_id": 3,
-                            "product_name": "BC-specific refinery complexity throughput",
-                            "allocated_quantity": 0,
-                        },
-                        {"report_product_id": 4, "product_name": "Sugar: solid", "allocated_quantity": 0},
-                    ],
-                    "emission_total": 0,
-                },
-            ],
+            report_product_emission_allocations=self.create_mock_allocation_array(
+                report_product1=report_product_1, report_product2=report_product_2, test_stage=3
+            ),
             allocation_methodology="other",
             allocation_other_methodology_description="test",
         )
@@ -823,14 +362,14 @@ class TestReportEmissionAllocationService(TestCase):
         ).first()
         self.assertIsNotNone(allocation1)
         self.assertEqual(
-            allocation1.allocated_quantity, Decimal('25.0000'), "Expected allocated amount to match payload"
+            allocation1.allocated_quantity, self.ALLOCATING_AMOUNT_1, "Expected allocated amount to match payload"
         )
         allocation2 = ReportProductEmissionAllocation.objects.filter(
             report_product_id=4, emission_category_id=self.FLARING_CATEGORY_ID
         ).first()
         self.assertIsNotNone(allocation2)
         self.assertEqual(
-            allocation2.allocated_quantity, Decimal('75.0000'), "Expected allocated amount to match payload"
+            allocation2.allocated_quantity, self.ALLOCATING_AMOUNT_2, "Expected allocated amount to match payload"
         )
 
         # Act: Use the service to do a new save of emission allocation data
@@ -844,12 +383,14 @@ class TestReportEmissionAllocationService(TestCase):
 
         self.assertEqual(ReportProductEmissionAllocation.objects.count(), 1, "Expected only one allocation to be saved")
         allocation1 = ReportProductEmissionAllocation.objects.filter(
-            report_product_id=3, emission_category_id=1
+            report_product_id=3, emission_category_id=self.FLARING_CATEGORY_ID
         ).first()
         self.assertIsNone(allocation1, "Expected this allocation to be deleted")
         # Assert: Verify that the second allocation has been updated
         allocation2 = ReportProductEmissionAllocation.objects.filter(
-            report_product_id=4, emission_category_id=1
+            report_product_id=4, emission_category_id=self.FLARING_CATEGORY_ID
         ).first()
         self.assertIsNotNone(allocation2)
-        self.assertEqual(allocation2.allocated_quantity, Decimal('100.0000'), "Expected this allocation to be updated")
+        self.assertEqual(
+            allocation2.allocated_quantity, self.ALLOCATING_AMOUNT_3, "Expected this allocation to be updated"
+        )
