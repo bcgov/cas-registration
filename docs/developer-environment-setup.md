@@ -106,7 +106,7 @@ In the `bciers` directory:
 
 - To run Vitest unit tests on a specific project: `yarn nx run {project}:test`.
 - To run Vitest unit tests on all projects: `yarn nx run-many -t test`.
-- To run playwright end-to-end tests: `nx run {project}:e2e` (For the first time, you may need to run `yarn playwright install ` to install the browsers)
+- To run playwright end-to-end tests: `nx run {project}:e2e` (For the first time, you may need to run `yarn playwright install --with-deps` to install the browsers)
 
 **Or**, you can use the scripts available in `bciers/package.json`
 
