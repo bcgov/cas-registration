@@ -51,7 +51,10 @@ describe("operationColumns function", () => {
     );
     assert(columns[2].width === 120, "Column 3 width should be 120");
 
-    assert(columns[3].field === "report_status", 'Column 4 field should be "report_tatus"');
+    assert(
+      columns[3].field === "report_status",
+      'Column 4 field should be "report_status"',
+    );
     assert(columns[3].width === 160, "Column 4 width should be 160");
 
     assert(columns[4].field === "more", 'Column 5 field should be "action"');

@@ -94,7 +94,7 @@ class TestReportService(TestCase):
             report_version = report.report_versions.first()
             self.assertEqual(report_version.report, report)
             self.assertFalse(report_version.is_latest_submitted)
-            self.assertEqual(report_version.status, 'draft')
+            self.assertEqual(report_version.status, 'Draft')
 
             # Testing the report_operation data
             self.assertSequenceEqual(
