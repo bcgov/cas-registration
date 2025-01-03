@@ -10,6 +10,7 @@ from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn
 from service.report_service import ReportService
+from service.report_version_service import ReportVersionService
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
@@ -17,7 +18,7 @@ from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
 from ..models import ReportingYear, ReportVersion
-from ..schema.report_version import ReportingVersionOut
+from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
 
 
 @router.post(
@@ -64,6 +65,21 @@ def save_report(
 ) -> Tuple[Literal[201], ReportOperationOut]:
     report_operation = ReportService.save_report_operation(version_id, payload)
     return 201, report_operation  # type: ignore
+
+
+@router.post(
+    "/report-version/{version_id}/change-report-type",
+    response={201: int, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""a""",
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def change_report_version_type(
+    request: HttpRequest, version_id: int, payload: ReportVersionTypeIn
+) -> Tuple[Literal[201], int]:
+    report_version = ReportVersionService.change_report_version_type(version_id, payload.report_type)
+    return 201, report_version.id
 
 
 @router.get(
