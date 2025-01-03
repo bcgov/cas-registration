@@ -46,6 +46,11 @@ runs:
       run: poetry install --no-interaction --no-root
       working-directory: ./bc_obps
       shell: bash
+    - name: Install dependencies for PostgreSQL build
+      working-directory: ./bc_obps
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libreadline-dev
     - name: Install server dev tools
       working-directory: ./bc_obps
       shell: bash
