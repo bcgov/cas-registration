@@ -39,8 +39,6 @@ export const checkEmptyContactForm = () => {
   expect(screen.getByLabelText(/Select the user/i)).toHaveValue("");
   expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
   expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
-  expect(screen.getByText(/Places Assigned/i)).toBeVisible();
-
   expect(
     screen.getByRole("heading", { name: /Work Information/i }),
   ).toBeVisible();
@@ -108,7 +106,7 @@ describe("ContactForm component", () => {
   it("renders the empty contact form when creating a new contact", async () => {
     render(
       <ContactForm
-        schema={contactsSchema}
+        schema={createContactSchema(contactsSchema, [], true)}
         uiSchema={contactsUiSchema}
         formData={{}}
         isCreating
@@ -194,7 +192,7 @@ describe("ContactForm component", () => {
   it("does not allow new contact form submission if there are validation errors (empty form data)", async () => {
     render(
       <ContactForm
-        schema={contactsSchema}
+        schema={createContactSchema(contactsSchema, [], true)}
         uiSchema={contactsUiSchema}
         formData={{}}
         isCreating
@@ -214,7 +212,7 @@ describe("ContactForm component", () => {
     async () => {
       render(
         <ContactForm
-          schema={contactsSchema}
+          schema={createContactSchema(contactsSchema, [], true)}
           uiSchema={contactsUiSchema}
           formData={{}}
           isCreating
@@ -244,7 +242,6 @@ describe("ContactForm component", () => {
               existing_bciers_user: false,
               first_name: "John",
               last_name: "Doe",
-              places_assigned: ["None"],
               position_title: "Senior Officer",
               email: "john.doe@example.com",
               phone_number: "+1 1 604 401 1234",
@@ -275,7 +272,7 @@ describe("ContactForm component", () => {
     async () => {
       render(
         <ContactForm
-          schema={contactsSchema}
+          schema={createContactSchema(contactsSchema, [], true)}
           uiSchema={contactsUiSchema}
           formData={{}}
           isCreating
@@ -327,7 +324,6 @@ describe("ContactForm component", () => {
             existing_bciers_user: false,
             first_name: "John",
             last_name: "Doe",
-            places_assigned: ["None"],
             position_title: "Senior Officer",
             email: "john.doe@example.com",
             phone_number: "+1 1 604 401 1234",
@@ -368,7 +364,6 @@ describe("ContactForm component", () => {
             existing_bciers_user: false,
             first_name: "John updated",
             last_name: "Doe updated",
-            places_assigned: ["None"],
             position_title: "Senior Officer",
             email: "john.doe@example.com",
             phone_number: "+1 1 604 401 1234",

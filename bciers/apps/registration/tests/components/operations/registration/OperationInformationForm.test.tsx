@@ -1,6 +1,5 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import React from "react";
 import { useSession, useRouter } from "@bciers/testConfig/mocks";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import {
@@ -394,14 +393,76 @@ describe("the OperationInformationForm component", () => {
         steps={allOperationRegistrationSteps}
       />,
     );
-    userEvent.click(screen.getByRole("button", { name: /save and continue/i }));
-    await waitFor(() => {
-      expect(screen.getAllByText(/Required field/i)).toHaveLength(6);
-    });
-    await waitFor(() => {
-      expect(
-        screen.getByText(/You must select or add an operation/i),
-      ).toBeVisible();
-    });
+    await userEvent.click(
+      screen.getByRole("button", { name: /save and continue/i }),
+    );
+    expect(screen.getAllByText(/Required field/i)).toHaveLength(6);
+    expect(
+      screen.getByText(/You must select or add an operation/i),
+    ).toBeVisible();
+  });
+  it("should not raise an error when we pass an empty array to anyOf (operation has empty array in response)", async () => {
+    // listen for console warnings
+    const consoleErrorMock = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => {});
+
+    // repeat the fetchFormEnums, except this time we will mock the operation response to have an empty array
+    // Regulated products
+    actionHandler.mockResolvedValueOnce([
+      { id: 1, name: "BC-specific refinery complexity throughput" },
+      { id: 2, name: "Cement equivalent" },
+    ]);
+    // Operations
+    actionHandler.mockResolvedValueOnce([]);
+    // Purposes
+    actionHandler.mockResolvedValueOnce([
+      "Reporting Operation",
+      "Potential Reporting Operation",
+      "Electricity Import Operation",
+    ]);
+    // Naics codes
+    actionHandler.mockResolvedValueOnce([
+      {
+        id: 1,
+        naics_code: "211110",
+        naics_description: "Oil and gas extraction (except oil sands)",
+      },
+      {
+        id: 2,
+        naics_code: "212114",
+        naics_description: "Bituminous coal mining",
+      },
+    ]);
+    // Reporting activities
+    actionHandler.mockResolvedValueOnce([
+      { id: 1, name: "Amonia production" },
+      { id: 2, name: "Cement production" },
+    ]);
+    // Business structures
+    actionHandler.mockResolvedValueOnce([
+      { name: "General Partnership" },
+      { name: "BC Corporation" },
+    ]);
+
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    // make sure the error was not logged(before fixing the issue we would see this error)
+    expect(consoleErrorMock).not.toHaveBeenCalledWith(
+      "Error encountered compiling schema:",
+      expect.objectContaining({
+        message: expect.stringContaining(
+          "schema is invalid: data/properties/section1/properties/operation/anyOf must NOT have fewer than 1 items",
+        ),
+      }),
+    );
+    consoleErrorMock.mockRestore();
   });
 });
