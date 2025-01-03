@@ -5,12 +5,12 @@ import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import OperationReview from "./OperationReview";
-export default async function OperationReviewFormData({
+import OperationReviewForm from "@reporting/src/app/components/operations/OperationReviewForm";
+import { HasReportVersion } from "@reporting/src/app/utils//defaultPageFactoryTypes";
+
+export default async function OperationReviewPage({
   version_id,
-}: {
-  version_id: number;
-}) {
+}: HasReportVersion) {
   const reportOperation = await getReportingOperation(version_id);
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
@@ -18,12 +18,19 @@ export default async function OperationReviewFormData({
   const reportType = await getReportType(version_id);
   const registrationPurpose = await getRegistrationPurpose(version_id);
   const facilityReport = await getFacilityReport(version_id);
-
   const registrationPurposeString = registrationPurpose?.registration_purpose;
+  const transformedOperation = {
+    ...reportOperation.report_operation,
+    operation_representative_name:
+      reportOperation.report_operation_representative.map(
+        (rep: { id: number }) => rep.id,
+      ),
+  };
+  const allRepresentatives = reportOperation.report_operation_representative;
 
   return (
-    <OperationReview
-      formData={reportOperation}
+    <OperationReviewForm
+      formData={transformedOperation}
       version_id={version_id}
       reportType={reportType}
       allActivities={allActivities}
@@ -31,6 +38,7 @@ export default async function OperationReviewFormData({
       allRegulatedProducts={allRegulatedProducts}
       registrationPurpose={registrationPurposeString}
       facilityReport={facilityReport}
+      allRepresentatives={allRepresentatives}
     />
   );
 }

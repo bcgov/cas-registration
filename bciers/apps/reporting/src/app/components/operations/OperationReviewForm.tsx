@@ -7,7 +7,7 @@ import {
   operationReviewSchema,
   operationReviewUiSchema,
   updateSchema,
-} from "@reporting/src/data/jsonSchema/operations";
+} from "@reporting/src/data/jsonSchema/operations/operationReview";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
@@ -31,9 +31,10 @@ interface Props {
     facility_id: number;
     operation_type: string;
   };
+  allRepresentatives: { id: number; representative_name: string }[];
 }
 
-export default function OperationReview({
+export default function OperationReviewForm({
   formData,
   version_id,
   reportType,
@@ -42,12 +43,14 @@ export default function OperationReview({
   allRegulatedProducts,
   registrationPurpose,
   facilityReport,
+  allRepresentatives,
 }: Props) {
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [facilityId, setFacilityId] = useState<number | null>(null);
   const [operationType, setOperationType] = useState("");
+  const [error, setError] = useState(undefined);
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -133,6 +136,7 @@ export default function OperationReview({
           reportingWindowEnd,
           allActivities,
           allRegulatedProducts,
+          allRepresentatives,
         ),
       );
     }
@@ -156,14 +160,18 @@ export default function OperationReview({
   ) => {
     const method = "POST";
     const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
-
-    const formDataObject = safeJsonParse(JSON.stringify(data.formData));
-    const preparedData = prepareFormData(formDataObject);
+    const preparedData = prepareFormData(data.formData);
+    const payload = safeJsonParse(JSON.stringify(preparedData));
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(preparedData),
+      body: payload,
     });
 
-    return response;
+    if (response?.error) {
+      setError(response.error);
+      return false;
+    } else {
+      setError(undefined);
+    }
   };
 
   const onChangeHandler = (data: { formData: any }) => {
@@ -218,6 +226,7 @@ export default function OperationReview({
       onChange={onChangeHandler}
       backUrl={backUrl}
       continueUrl={saveAndContinueUrl}
+      error={error}
     />
   );
 }
