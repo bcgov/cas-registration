@@ -9,10 +9,10 @@ import { ContactFormData } from "./types";
 import getUserData from "./getUserData";
 import { IChangeEvent } from "@rjsf/core";
 import { FormMode } from "@bciers/utils/src/enums";
+import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 
 interface Props {
   schema: any;
-  uiSchema: any;
   formData: ContactFormData;
   isCreating?: boolean;
   allowEdit?: boolean;
@@ -27,7 +27,6 @@ const NewOperationMessage = () => (
 export default function ContactForm({
   formData,
   schema,
-  uiSchema,
   isCreating,
   allowEdit,
 }: Readonly<Props>) {
@@ -54,7 +53,7 @@ export default function ContactForm({
       key={key}
       error={error}
       schema={schema}
-      uiSchema={uiSchema}
+      uiSchema={contactsUiSchema}
       formData={formState}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       allowEdit={allowEdit}
