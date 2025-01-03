@@ -25,6 +25,19 @@ export interface NavigationFormProps extends FormPropsWithTheme<any> {
   formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
 }
 
+const useKey: () => [number, () => void] = () => {
+  /**
+   * Utility to manage a state meant to be used as a unique key to drive re-rendering of a component.
+   * Guaranteed to generate a different 'key' every time 'resetKey()' is called, by incrementing the previous value.
+   *
+   * Note: This is meant to be temporary until the implications of removing the FormBase `isSubmitting` guard
+   * on its formData are understood.
+   */
+  const [key, setKey] = useState(1);
+  const resetKey = () => setKey((prevKey) => prevKey + 1);
+  return [key, resetKey];
+};
+
 const NavigationForm: React.FC<NavigationFormProps> = (props) => {
   const {
     backUrl,
@@ -39,12 +52,14 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [key, resetKey] = useKey();
   const formRef = useRef<Form>(null);
   const router = useRouter();
 
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
     setIsSaving(true);
     const success = await onSubmit(data);
+    resetKey();
 
     if (success) {
       if (navigateAfterSubmit) {
@@ -78,6 +93,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
   return (
     <FormBase
       {...props}
+      key={key}
       formRef={formRef}
       onSubmit={(data) => handleFormSave(data, false)}
     >
