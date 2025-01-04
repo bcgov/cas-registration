@@ -17,6 +17,7 @@ class OperationTimelineListOut(ModelSchema):
     operator__legal_name: str = Field(..., alias="operator.legal_name")
     operation__status: str = Field(..., alias="operation.status")
     operation__id: UUID = Field(..., alias="operation.id")
+    operation__registration_purpose: Optional[str] = Field(None, alias="operation.registration_purpose")
 
     class Meta:
         model = OperationDesignatedOperatorTimeline
