@@ -38,10 +38,7 @@ class ReportVerification(TimeStampedModel):
     )
 
     threats_to_independence = models.BooleanField(
-        null=True,
-        blank=True,
-        db_comment="Optional field to store whether or not there is an indication of threats to independence of an other facility visited",
-        default=False,
+        db_comment="Indicates whether there were any threats to independence noted",
     )
 
     class VerificationConclusion(models.TextChoices):
@@ -50,14 +47,14 @@ class ReportVerification(TimeStampedModel):
         NEGATIVE = "Negative"
 
     verification_conclusion = models.CharField(
-        null=True,
-        blank=True,
         max_length=8,
         choices=VerificationConclusion.choices,
         db_comment="The conclusion of the verification",
     )
 
-    visit_name = models.CharField(max_length=100, db_comment="The name of the site visited")
+    visit_name = models.CharField(
+        max_length=100, db_comment="The name of the site visited (Facility X, Other, or None)"
+    )
 
     class VisitType(models.TextChoices):
         IN_PERSON = "In person"
@@ -68,21 +65,21 @@ class ReportVerification(TimeStampedModel):
         choices=VisitType.choices,
         null=True,
         blank=True,
-        db_comment="Optional field to store the type of visit conducted",
+        db_comment="The type of visit conducted (Virtual or In Person)",
     )
 
     other_facility_name = models.CharField(
         max_length=100,
         null=True,
         blank=True,
-        db_comment="Optional field to store the name of an other facility visited",
+        db_comment="Name of the other facility visited if 'Other' is selected",
     )
 
     other_facility_coordinates = models.CharField(
-        max_length=50,
+        max_length=100,
         null=True,
         blank=True,
-        db_comment="Optional field to store geographic coordinates of an other facility visited",
+        db_comment="Geographic location of the other facility visited",
     )
 
     class Meta:
