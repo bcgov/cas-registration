@@ -6,7 +6,7 @@ import { selectComboboxOption } from "@bciers/testConfig/helpers/selectComboboxO
 // Helper function to fill mandatory fields
 export const fillMandatoryFields = async (
   formFields: { label: string; type: string; key: string }[],
-  formData: Record<string, string | number>,
+  formData: Record<string, string | number | boolean>,
 ) => {
   for (const { label, type, key } of formFields) {
     const value = formData[key as keyof typeof formData];
