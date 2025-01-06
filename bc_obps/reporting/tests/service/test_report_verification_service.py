@@ -9,13 +9,6 @@ from registration.models import Operation
 
 
 class TestReportVerificationService(TestCase):
-    REGULATED_OPERATION_PURPOSES = {
-        Operation.Purposes.OBPS_REGULATED_OPERATION,
-        Operation.Purposes.OPTED_IN_OPERATION,
-        Operation.Purposes.NEW_ENTRANT_OPERATION,
-    }
-    ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal('25000000')
-
     def setUp(self):
         # Arrange: Create a report version
         self.report_version = make_recipe('reporting.tests.utils.report_version')
