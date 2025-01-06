@@ -74,8 +74,7 @@ class ReportVerificationService:
         registration_purpose = ReportAdditionalDataService.get_registration_purpose_by_version_id(version_id)
 
         # Registration Purpose: verification data is required if the registration purpose is in REGULATED_OPERATION_PURPOSES
-        if isinstance(registration_purpose, dict):
-            registration_purpose = registration_purpose.get("registration_purpose", {})
+        registration_purpose_value = registration_purpose.get("registration_purpose", {})
 
         if registration_purpose in REGULATED_OPERATION_PURPOSES:
             return True
