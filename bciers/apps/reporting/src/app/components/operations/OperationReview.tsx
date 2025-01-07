@@ -53,7 +53,6 @@ export default function OperationReview({
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const [facilityId, setFacilityId] = useState<string | null>(null);
   const [operationType, setOperationType] = useState("");
   const [errors, setErrors] = useState<string[]>();
 
@@ -68,8 +67,8 @@ export default function OperationReview({
 
   const taskListElements = getOperationInformationTaskList(
     version_id,
-    facilityId,
     ActivePage.ReviewOperatorInfo,
+    operationType,
   );
 
   const prepareFormData = (formDataObject: any) => {
@@ -234,6 +233,7 @@ export default function OperationReview({
         onChange={onChangeHandler}
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
+        errors={errors}
       />
     </>
   );
