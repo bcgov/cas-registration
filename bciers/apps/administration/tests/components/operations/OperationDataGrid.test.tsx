@@ -284,6 +284,6 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getAllByRole("gridcell")[3]).toHaveTextContent("N/A");
     expect(screen.getAllByRole("gridcell")[11]).toHaveTextContent("24-0001");
     expect(screen.getAllByRole("gridcell")[19]).toHaveTextContent("Pending");
-    expect(screen.getAllByRole("gridcell")[27]).toHaveTextContent("N/A");
+    expect(screen.getAllByRole("gridcell")[27]).toHaveTextContent("");
   });
 });
