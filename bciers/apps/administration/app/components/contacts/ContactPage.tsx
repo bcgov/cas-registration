@@ -1,9 +1,6 @@
 import { getContact } from "@bciers/actions/api";
 import ContactForm from "./ContactForm";
-import {
-  contactsSchema,
-  contactsUiSchema,
-} from "../../data/jsonSchema/contact";
+import { contactsSchema } from "@/administration/app/data/jsonSchema/contact";
 import { ContactFormData, UserOperatorUser } from "./types";
 import getUserOperatorUsers from "./getUserOperatorUsers";
 import { createContactSchema } from "./createContactSchema";
@@ -53,7 +50,6 @@ export default async function ContactPage({
           userOperatorUsers,
           isCreating,
         )}
-        uiSchema={contactsUiSchema}
         formData={contactFormData}
         isCreating={isCreating}
         allowEdit={role === FrontEndRoles.INDUSTRY_USER_ADMIN}
