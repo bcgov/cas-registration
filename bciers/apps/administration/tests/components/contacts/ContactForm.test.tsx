@@ -429,4 +429,29 @@ describe("ContactForm component", () => {
       },
     );
   });
+  it("renders the places assigned field in read-only mode when editing", async () => {
+    const readOnlyContactSchema = createContactSchema(
+      contactsSchema,
+      [],
+      false,
+    );
+    render(
+      <ContactForm
+        schema={readOnlyContactSchema}
+        uiSchema={contactsUiSchema}
+        formData={contactFormData}
+        allowEdit
+      />,
+    );
+    // switch to edit mode
+    await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+
+    // regression test: places assigned field should not be editable
+    expect(
+      screen.queryByDisplayValue(/operation representative \- operation 1/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /remove item/i }),
+    ).not.toBeInTheDocument();
+  });
 });
