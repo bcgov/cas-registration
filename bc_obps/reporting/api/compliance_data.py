@@ -7,6 +7,7 @@ from reporting.schema.generic import Message
 from reporting.service.compliance_service import ComplianceService, ComplianceData
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from .router import router
+from common.permissions import authorize
 
 
 @router.get(
@@ -15,7 +16,7 @@ from .router import router
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the compliance summary page from multiple data sources.""",
     exclude_none=True,
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_compliance_summary_data(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], ComplianceData]:
