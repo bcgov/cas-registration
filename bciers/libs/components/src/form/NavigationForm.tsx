@@ -98,6 +98,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
       onSubmit={(data) => handleFormSave(data, false)}
     >
       <ReportingStepButtons
+        key="form-buttons"
         backUrl={backUrl}
         continueUrl={continueUrl}
         isSaving={isSaving}
@@ -109,9 +110,11 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         buttonText={buttonText}
       />
       {errors && errors.length > 0 && (
-        <div className="min-h-[48px] box-border mt-4">
-          {errors.map((e) => (
-            <Alert severity="error">{e}</Alert>
+        <div key="form-alerts" className="min-h-[48px] box-border mt-4">
+          {errors.map((e, index) => (
+            <Alert key={index} severity="error">
+              {e}
+            </Alert>
           ))}
         </div>
       )}
