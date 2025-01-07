@@ -164,7 +164,7 @@ class ComplianceService:
         product_emission_limit = (apr_dec_production * pwaei) * (
             reduction_factor
             - (
-                (Decimal(1) - (allocated_industrial_process / allocated_for_compliance))
+                (Decimal('1') - (allocated_industrial_process / allocated_for_compliance))
                 * tightening_rate
                 * (compliance_period - initial_compliance_period)
             )
