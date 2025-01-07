@@ -67,13 +67,6 @@ class OperationServiceV2:
         )
 
     @classmethod
-    def check_current_users_registered_operation(cls, operator_id: UUID) -> bool:
-        """
-        Returns True if the userOperator's operator has at least one operation with status 'Registered', False otherwise.
-        """
-        return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()
-
-    @classmethod
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
@@ -531,13 +524,19 @@ class OperationServiceV2:
     def handle_change_of_registration_purpose(
         cls, user_guid: UUID, original_operation: Operation, payload: OperationInformationIn
     ) -> OperationInformationIn:
+        """
+        Logic to handle the situation when an industry user changes the selected registration purpose (RP) for their operation.
+        Changing the RP can happen during or after submitting the operation's registration info.
+        Depending on what the old RP was, some operation data may need to be removed.
+        Depending on what the new RP is, some new operation data may need to be added.
+        Generally, if the operation was already registered when the RP changed, the original data will be archived.
+        If the operation wasn't yet registered when the selected RP changed, the original data will be deleted.
+        """
         if original_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             payload.opt_in = False
             opted_in_detail = original_operation.opted_in_operation
-            if opted_in_detail and original_operation.status == Operation.Statuses.REGISTERED:
-                opted_in_detail.set_archive(user_guid)
-            elif opted_in_detail:
-                opted_in_detail.delete()
+            if opted_in_detail:
+                OperationServiceV2.remove_opted_in_operation_detail(user_guid, original_operation.id)
         elif original_operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             payload.date_of_first_shipment = None
             DocumentService.archive_or_delete_operation_document(

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
+import pytest
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
@@ -21,7 +22,6 @@ from registration.schema.v2.operation import (
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.operation_service_v2 import OperationServiceV2
-import pytest
 from registration.models.multiple_operator import MultipleOperator
 from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from registration.models.operation import Operation
@@ -168,7 +168,8 @@ class TestOperationServiceV2:
 
         assert operation.opt_in is False
         assert operation.opted_in_operation is None
-        assert opted_in_operation_detail is not None
+        # operation.status is 'Draft', so opted_in_operation_detail should be deleted
+        assert not OptedInOperationDetail.objects.filter(id=opted_in_operation_detail.id).exists()
 
     @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
@@ -971,7 +972,6 @@ class TestListOperationTimeline:
 
     @staticmethod
     def test_gets_unfiltered_sorted_list_for_industry_user():
-
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
 
         baker.make_recipe(

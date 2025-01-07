@@ -246,7 +246,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_reporting_to_obps_regulated(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to OBPS Regulated.
-        Should have at least one regulated product for OBPS Regulated - no products were required for Reporting..
+        Should have at least one regulated product for OBPS Regulated - no products were required for Reporting.
         """
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
         assert self.operation.regulated_products is not None

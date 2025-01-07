@@ -91,3 +91,14 @@ class TestDocumentService:
 
         assert Document.objects.count() == 1
         assert operation.documents.count() == 1
+
+        if registration_status == Operation.Statuses.REGISTERED:
+            """if the registration has been completed, the document should be archived"""
+            print(b_map.file)
+            print(b_map.archived_at, b_map.archived_by)
+            assert b_map.archived_at is not None
+            assert b_map.archived_by is not None
+        elif registration_status == Operation.Statuses.DRAFT:
+            """if the registration wasn't completed, the document should be deleted"""
+            print(b_map.file)
+            assert b_map is None
