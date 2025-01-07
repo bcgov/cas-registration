@@ -35,4 +35,4 @@ process_transfer_event = PythonOperator(
     op_args=['process-due-transfer-events', bciers_namespace],
     dag=process_transfer_event_dag)
 
-process_transfer_event_dag
+process_transfer_event_dag # NOSONAR
