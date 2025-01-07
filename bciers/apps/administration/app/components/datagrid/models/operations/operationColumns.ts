@@ -25,10 +25,17 @@ const operationColumns = (
           operation__bc_obps_regulated_operation: boroId,
           operation__registration_purpose: purpose,
         } = params?.row || {};
-        return (
-          boroId ||
-          (regulatedOperationPurposes.includes(purpose) ? "Pending" : "N/A")
-        );
+
+        switch (true) {
+          case !purpose:
+            return ""; // Return empty string if operation purpose is not defined
+          case !!boroId:
+            return boroId; // Return 'boroId' if it exists
+          case regulatedOperationPurposes.includes(purpose):
+            return "Pending"; // Return "Pending" if 'purpose' is in the list
+          default:
+            return "N/A"; // Default case
+        }
       },
     },
     { field: "operation__bcghg_id", headerName: "BC GHG ID", width: 120 },
