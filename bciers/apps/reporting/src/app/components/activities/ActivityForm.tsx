@@ -22,7 +22,7 @@ interface Props {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
-  activityFormData: object;
+  activityFormData: any;
   currentActivity: { id: number; name: string; slug: string };
   taskListData: TaskListElement[];
   reportVersionId: number;
@@ -94,6 +94,7 @@ export default function ActivityForm({
       setJsonSchema(safeJsonParse(schemaData).schema);
       setSelectedSourceTypeIds(selectedSourceTypes);
     }
+
     setFormState(c.formData);
   };
 
@@ -122,6 +123,20 @@ export default function ActivityForm({
   const submitHandler = async () => {
     setErrorList([]);
 
+    const selectedSourceTypeData = Object.keys(formState.sourceTypes)
+      // Only filter the keys where the checkBox for that source type is checked
+      .filter((slug) => formState[slug])
+      // Only for selected source types we grab the form data
+      .reduce((filteredSourceTypeData, slug) => {
+        filteredSourceTypeData[slug] = formState.sourceTypes[slug];
+        return filteredSourceTypeData;
+      }, {} as any);
+
+    const submittedData = {
+      ...formState,
+      sourceTypes: selectedSourceTypeData,
+    };
+
     const response = await actionHandler(
       `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
       "POST",
@@ -131,7 +146,7 @@ export default function ActivityForm({
           /* formState needs to be used instead of the data passed to the handler, since this is a controlled component;
              otherwise the data passed to the handler lags behind the changes.
              See FormBase implementation comments for more details. */
-          activity_data: formState,
+          activity_data: submittedData,
         }),
       },
     );
