@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: process-due-transfer-events
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+    component: backend
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-bciers.labels" . | nindent 10 }}
+        spec:
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+          - name: process-due-transfer-events
+            image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+            imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+            env:
+              {{- include "cas-bciers.backendEnvVars" . | nindent 14 }}
+            command:
+              - /bin/sh
+              - -c
+              - |
+                set -euo pipefail;
+                poetry run python manage.py process_due_transfer_events
