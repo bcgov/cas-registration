@@ -1,3 +1,4 @@
+from reporting.models.facility_report import FacilityReport
 from reporting.models import EmissionCategory
 from reporting.models.report_emission import ReportEmission
 from decimal import Decimal
@@ -80,6 +81,67 @@ class EmissionCategoryService:
         )
         attributable_for_threshold = attributable_for_reporting - woody_biomass_total
         reporting_only = EmissionCategoryService.get_reporting_only_emissions(facility_report_id)
+
+        return {
+            'flaring': flaring_total,
+            'fugitive': fugitive_total,
+            'industrial_process': industrial_process_total,
+            'onsite': onsite_transportation_total,
+            'stationary': stationary_combustion_total,
+            'venting_useful': venting_useful_total,
+            'venting_non_useful': venting_non_useful_total,
+            'waste': waste_total,
+            'wastewater': wastewater_total,
+            'woody_biomass': woody_biomass_total,
+            'excluded_biomass': excluded_biomass_total,
+            'excluded_non_biomass': excluded_non_biomass_total,
+            'lfo_excluded': lfo_excluded_total,
+            'attributable_for_reporting': attributable_for_reporting,
+            'attributable_for_threshold': attributable_for_threshold,
+            'reporting_only': reporting_only,
+        }
+
+    @classmethod
+    def get_emission_category_totals_by_operation(cls, version_id: int) -> Dict[str, Decimal | int]:
+
+        flaring_total: Decimal | int = 0
+        fugitive_total: Decimal | int = 0
+        industrial_process_total: Decimal | int = 0
+        onsite_transportation_total: Decimal | int = 0
+        stationary_combustion_total: Decimal | int = 0
+        venting_useful_total: Decimal | int = 0
+        venting_non_useful_total: Decimal | int = 0
+        waste_total: Decimal | int = 0
+        wastewater_total: Decimal | int = 0
+        woody_biomass_total: Decimal | int = 0
+        excluded_biomass_total: Decimal | int = 0
+        excluded_non_biomass_total: Decimal | int = 0
+        lfo_excluded_total: Decimal | int = 0
+        attributable_for_reporting: Decimal | int = 0
+        attributable_for_threshold: Decimal | int = 0
+        reporting_only: Decimal | int = 0
+
+        facility_report_ids = list(
+            FacilityReport.objects.filter(report_version_id=version_id).values_list('id', flat=True)
+        )
+        for facility_report_id in facility_report_ids:
+            category_totals = cls.get_all_category_totals(facility_report_id)
+            flaring_total += category_totals['flaring']
+            fugitive_total += category_totals['fugitive']
+            industrial_process_total += category_totals['industrial_process']
+            onsite_transportation_total += category_totals['onsite']
+            stationary_combustion_total += category_totals['stationary']
+            venting_useful_total += category_totals['venting_useful']
+            venting_non_useful_total += category_totals['venting_non_useful']
+            waste_total += category_totals['waste']
+            wastewater_total += category_totals['wastewater']
+            woody_biomass_total += category_totals['woody_biomass']
+            excluded_biomass_total += category_totals['excluded_biomass']
+            excluded_non_biomass_total += category_totals['excluded_non_biomass']
+            lfo_excluded_total += category_totals['lfo_excluded']
+            attributable_for_reporting += category_totals['attributable_for_reporting']
+            attributable_for_threshold += category_totals['attributable_for_threshold']
+            reporting_only += category_totals['reporting_only']
 
         return {
             'flaring': flaring_total,

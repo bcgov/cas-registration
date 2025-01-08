@@ -38,3 +38,16 @@ def get_emission_summary_totals(
 ) -> Tuple[int, Dict[str, Decimal | int]]:
     facility_report_id = FacilityReport.objects.get(report_version_id=version_id, facility_id=facility_id).pk
     return 200, EmissionCategoryService.get_all_category_totals(facility_report_id)
+
+
+@router.get(
+    "/report-version/{version_id}/emission-summary",
+    response={200: Dict[str, Decimal | int], custom_codes_4xx: Message},
+    url_name="get_operation_emission_summary_totals",
+    auth=authorize("approved_authorized_roles"),
+)
+@handle_http_errors()
+def get_operation_emission_summary_totals(
+    request: HttpRequest, version_id: int
+) -> Tuple[int, Dict[str, Decimal | int]]:
+    return 200, EmissionCategoryService.get_emission_category_totals_by_operation(version_id)
