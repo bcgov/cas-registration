@@ -8,7 +8,7 @@ from reporting.models.report_version import ReportVersion
 class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
     report_version = models.OneToOneField(
         ReportVersion,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="report_person_responsible",
         db_comment="The report version this person responsible applies to",
         primary_key=True,
@@ -37,4 +37,4 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
     class Meta:
         db_table_comment = "A table to store the data about the person responsible for the report"
         db_table = 'erc"."report_person_responsible'
-        app_label = 'reporting'
+        app_label = "reporting"
