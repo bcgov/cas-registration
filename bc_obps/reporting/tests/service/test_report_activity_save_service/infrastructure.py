@@ -87,6 +87,24 @@ class TestInfrastructure:
         )
         return t
 
+    @classmethod
+    def build_with_defined_report_version(cls, report_version):
+        t = TestInfrastructure()
+        t.facility_report = make_recipe(
+            'reporting.tests.utils.facility_report',
+            report_version=report_version,
+        )
+        t.report_version = report_version
+        t.user = make_recipe('registration.tests.utils.industry_operator_user')
+        t.configuration = Configuration.objects.get(slug='2024')
+        t.activity = Activity.objects.get(slug="gsc_non_compression")
+        t.activity_json_schema = ActivityJsonSchema.objects.get(
+            activity=t.activity,
+            valid_from=t.configuration,
+            valid_to=t.configuration,
+        )
+        return t
+
     def make_activity_source_type(self, **kwargs):
         return make_recipe(
             "reporting.tests.utils.activity_source_type_json_schema",
