@@ -53,11 +53,7 @@ class TestEmissionCategoryService(TestCase):
         report_emission.emission_categories.set([1])
         report_emission_2.emission_categories.set([1])
         # id 2 = Woody Biomass (should not be double counted)
-        report_emission_2.emission_categories.set(
-            [
-                1,
-            ]
-        )
+        report_emission_2.emission_categories.set([1])
 
         flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category(
             report_activity.facility_report.id, 1
@@ -221,3 +217,125 @@ class TestEmissionCategoryService(TestCase):
         # Each report_emission record was counted only once despite sharing categories that contribue to the reporting_only emissions total
         # Should be: (report_emission_1 + report_emission_2 + report_emission_3)
         assert reporting_only_emisisons == Decimal('600.0006')
+
+    def test_aggregates_by_category_by_operation(self):
+        test_infrastructure = TestInfrastructure.build_from_real_config()
+        ti2 = TestInfrastructure.build_with_defined_report_version(test_infrastructure.report_version)
+
+        act_st_1 = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeWithUnitAndFuel",
+            has_unit=True,
+            has_fuel=True,
+        )
+        act_st_2 = ti2.make_activity_source_type(
+            source_type__json_key="sourceTypeWithUnitAndFuelb",
+            has_unit=True,
+            has_fuel=True,
+        )
+
+        report_activity = test_infrastructure.make_report_activity()
+        report_activity_2 = ti2.make_report_activity()
+
+        report_source_type = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st_1,
+            source_type=act_st_1.source_type,
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+        report_source_type_2 = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st_2,
+            source_type=act_st_2.source_type,
+            report_activity=report_activity_2,
+            report_version=ti2.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+
+        report_fuel = make(
+            ReportFuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_unit": True},
+            report_unit=None,
+        )
+        report_fuel_2 = make(
+            ReportFuel,
+            report_source_type=report_source_type_2,
+            report_version=ti2.report_version,
+            json_data={"test_report_unit": True},
+            report_unit=None,
+        )
+
+        report_emission = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"equivalentEmission": 101},
+        )
+
+        report_emission_2 = make(
+            ReportEmission,
+            report_fuel=report_fuel,
+            report_source_type=report_source_type,
+            report_version=test_infrastructure.report_version,
+            json_data={"equivalentEmission": 99.4151},
+        )
+
+        report_emission_a = make(
+            ReportEmission,
+            report_fuel=report_fuel_2,
+            report_source_type=report_source_type_2,
+            report_version=ti2.report_version,
+            json_data={"equivalentEmission": 45},
+        )
+
+        report_emission_b = make(
+            ReportEmission,
+            report_fuel=report_fuel_2,
+            report_source_type=report_source_type_2,
+            report_version=ti2.report_version,
+            json_data={"equivalentEmission": 55},
+        )
+
+        # id 1 = Flaring
+        # id 2 = Fugitive
+        report_emission.emission_categories.set([1])
+        report_emission_2.emission_categories.set([1])
+        report_emission_a.emission_categories.set([1])
+        report_emission_b.emission_categories.set([1])
+
+        # assert that emissions are properly aggregated by faclity before checking operation
+        ti1_flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category(
+            report_activity.facility_report.id, 1
+        )
+        ti2_flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category(
+            report_activity_2.facility_report.id, 1
+        )
+        assert ti1_flaring_return_value == Decimal('200.4151')
+        assert ti2_flaring_return_value == Decimal('100')
+
+        # assert that the emissions from different facilities are properly aggregated by operation
+        operation_summary = EmissionCategoryService.get_emission_category_totals_by_operation(
+            test_infrastructure.report_version.id
+        )
+        assert operation_summary == {
+            'flaring': Decimal('300.4151'),
+            'fugitive': 0,
+            'industrial_process': 0,
+            'onsite': 0,
+            'stationary': 0,
+            'venting_useful': 0,
+            'venting_non_useful': 0,
+            'waste': 0,
+            'wastewater': 0,
+            'woody_biomass': 0,
+            'excluded_biomass': 0,
+            'excluded_non_biomass': 0,
+            'lfo_excluded': 0,
+            'attributable_for_reporting': Decimal('300.4151'),
+            'attributable_for_threshold': Decimal('300.4151'),
+            'reporting_only': 0,
+        }
