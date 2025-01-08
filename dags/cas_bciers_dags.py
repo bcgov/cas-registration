@@ -26,7 +26,7 @@ default_args = {
 """
 
 
-process_transfer_event_dag = DAG(PROCESS_DUE_TRANSFERS_DAG_NAME, schedule_interval='0 0 * * *',
+process_transfer_event_dag = DAG(PROCESS_DUE_TRANSFERS_DAG_NAME, schedule_interval='0 8 * * *',
     default_args=default_args, is_paused_upon_creation=False)
 
 process_transfer_event = PythonOperator(
