@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { UUID } from "crypto";
 import {
   generateUpdatedSchema,
   nonAttributableEmissionUiSchema,
@@ -21,7 +20,7 @@ interface ActivityData {
 
 interface NonAttributableEmissionsProps {
   versionId: number;
-  facilityId: UUID;
+  facilityId: string;
   emissionFormData: ActivityData[]; // Define emissionFormData as an array of ActivityData
   gasTypes: { id: number; chemical_formula: string }[];
   emissionCategories: { id: number; category_name: string }[];
