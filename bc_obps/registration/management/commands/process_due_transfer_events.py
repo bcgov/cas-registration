@@ -11,3 +11,4 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Successfully processed due transfer events'))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error processing due transfer events: {e}'))
+            raise e
