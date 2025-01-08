@@ -224,3 +224,10 @@ terraform-bucket-provision:
 
 growthbook:
   clientKey: ~
+
+download-dags:
+  enabled: true
+  airflowEndpoint: ~
+  dagId: fetch_and_save_dag_from_github
+  helm:
+    hook: "pre-install,pre-upgrade"

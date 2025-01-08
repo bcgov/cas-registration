@@ -146,8 +146,6 @@ Define environment variables for the application.
     secretKeyRef:
       key: bucket_name
       name: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
-- name: GOOGLE_APPLICATION_CREDENTIALS
-  value: "/attachment-credentials/attachment-credentials.json"
 - name: ENVIRONMENT
   value: {{ .Values.backend.environment }}
 {{- end }}
