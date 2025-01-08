@@ -124,3 +124,6 @@ dashboardFrontend:
 
 growthbook:
   clientKey: sdk-9Vyna67jpIYdjMa
+
+download-dags:
+  airflowEndpoint: https://cas-airflow-test.apps.silver.devops.gov.bc.ca

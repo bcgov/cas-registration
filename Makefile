@@ -51,9 +51,12 @@ install: CHART_DIR=./helm/cas-bciers
 install: CHART_INSTANCE=cas-bciers
 install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
 										--set defaultImageTag=$(IMAGE_TAG) \
-										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml
+										--set download-dags.dagConfiguration="$$dagConfig" \
+										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
+										--dry-run
 install:
 	@set -euo pipefail; \
+	dagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/cas_bciers_dags.py"}' | base64 -w0); \
 	helm dep up $(CHART_DIR); \
 	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
 		echo "ERROR: Postgres is not deployed to $(NAMESPACE)."; \
