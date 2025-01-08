@@ -39,7 +39,17 @@ admin.site.register(RestartEvent)
 
 @admin.register(Operation)
 class OperationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'operator', 'name', 'type', 'status', 'created_at', 'updated_at', 'archived_at')
+    list_display = (
+        'id',
+        'operator',
+        'name',
+        'type',
+        'status',
+        'registration_purpose',
+        'created_at',
+        'updated_at',
+        'archived_at',
+    )
     search_fields = ('id', 'operator', 'name', 'operation_type', 'status', 'created_at', 'updated_at', 'archived_at')
     ordering = ('id',)
 
