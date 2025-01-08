@@ -12,10 +12,7 @@ TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
 PROCESS_DUE_TRANSFERS_DAG_NAME = 'cas_bciers_process_due_transfer_events'
 bciers_namespace = os.getenv('BCIERS_NAMESPACE')
 
-default_args = {
-    **default_dag_args,
-    'start_date': TWO_DAYS_AGO
-}
+default_args = {**default_dag_args, 'start_date': TWO_DAYS_AGO}
 
 """
 ###############################################################################
@@ -26,13 +23,18 @@ default_args = {
 """
 
 
-process_transfer_event_dag = DAG(PROCESS_DUE_TRANSFERS_DAG_NAME, schedule_interval='0 8 * * *',
-    default_args=default_args, is_paused_upon_creation=False)
+process_transfer_event_dag = DAG(
+    PROCESS_DUE_TRANSFERS_DAG_NAME,
+    schedule_interval='0 8 * * *',
+    default_args=default_args,
+    is_paused_upon_creation=False,
+)
 
 process_transfer_event = PythonOperator(
     python_callable=trigger_k8s_cronjob,
     task_id='process_transfer_event',
     op_args=['process-due-transfer-events', bciers_namespace],
-    dag=process_transfer_event_dag)
+    dag=process_transfer_event_dag,
+)
 
-process_transfer_event_dag # NOSONAR
+process_transfer_event_dag  # NOSONAR
