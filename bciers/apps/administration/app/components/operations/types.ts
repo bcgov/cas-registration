@@ -10,6 +10,7 @@ export interface OperationRow {
   sfo_facility_name: string | null;
   operation__bcghg_id: string | null;
   operation__bc_obps_regulated_operation: string | null;
+  operation__registration_purpose: string;
   id: number;
   operator__legal_name: string;
   status: string;

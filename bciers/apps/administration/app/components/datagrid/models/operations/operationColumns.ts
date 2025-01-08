@@ -1,4 +1,5 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { regulatedOperationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -19,8 +20,23 @@ const operationColumns = (
       field: "operation__bc_obps_regulated_operation",
       headerName: "BORO ID",
       width: 120,
-      valueGetter: (params) =>
-        params.row?.operation__bc_obps_regulated_operation ?? "N/A",
+      valueGetter: (params) => {
+        const {
+          operation__bc_obps_regulated_operation: boroId,
+          operation__registration_purpose: purpose,
+        } = params?.row || {};
+
+        switch (true) {
+          case !purpose:
+            return ""; // Return empty string if operation purpose is not defined
+          case !!boroId:
+            return boroId; // Return 'boroId' if it exists
+          case regulatedOperationPurposes.includes(purpose):
+            return "Pending"; // Return "Pending" if 'purpose' is in the list
+          default:
+            return "N/A"; // Default case
+        }
+      },
     },
     { field: "operation__bcghg_id", headerName: "BC GHG ID", width: 120 },
     { field: "status", headerName: "Status", width: 100 },
