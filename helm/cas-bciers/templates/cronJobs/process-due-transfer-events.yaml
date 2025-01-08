@@ -25,7 +25,8 @@ spec:
             env:
               {{- include "cas-bciers.backendEnvVars" . | nindent 14 }}
             command:
-              - /bin/sh
+              - /usr/bin/env
+              - bash
               - -c
               - |
                 set -euo pipefail;
