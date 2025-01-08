@@ -33,10 +33,10 @@ class TestDataAccessOptedInOperationService:
             meets_reporting_and_regulated_obligations=False,
             meets_notification_to_director_on_criteria_change=False,
         )
-        opted_in_operation_detail = OptedInOperationDataAccessService.update_opted_in_operation_detail(
+        opted_in_operation_detail = OptedInOperationDataAccessService.create_or_update_opted_in_operation_detail(
             approved_user_operator.user.user_guid,
-            users_operation.opted_in_operation.id,
             opted_in_operation_detail_payload,
+            users_operation.opted_in_operation.id,
         )
         users_operation.refresh_from_db()
         assert opted_in_operation_detail.id == users_operation.opted_in_operation.id
