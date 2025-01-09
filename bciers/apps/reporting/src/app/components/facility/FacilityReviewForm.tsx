@@ -26,7 +26,7 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   version_id: number;
-  facility_id: UUID;
+  facility_id: string;
 }
 
 interface Activity {
@@ -34,7 +34,7 @@ interface Activity {
   id: number;
 }
 
-const getFacilityReport = async (version_id: number, facility_id: UUID) => {
+const getFacilityReport = async (version_id: number, facility_id: string) => {
   return actionHandler(
     `reporting/report-version/${version_id}/facility-report/${facility_id}`,
     "GET",
@@ -46,7 +46,7 @@ const getAllActivities = async () => {
   return actionHandler(`reporting/activities`, "GET", `reporting/activities`);
 };
 
-const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
+const FacilityReviewForm: React.FC<Props> = ({ version_id, facility_id }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -247,4 +247,4 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   );
 };
 
-export default FacilityReview;
+export default FacilityReviewForm;

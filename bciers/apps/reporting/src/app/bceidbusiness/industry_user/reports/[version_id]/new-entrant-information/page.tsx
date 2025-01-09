@@ -1,4 +1,4 @@
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import NewEntrantInformation from "@reporting/src/app/components/additionalInformation/newEntrantInformation/NewEntrantInformation";
+import Page from "@reporting/src/app/components/additionalInformation/newEntrantInformation/NewEntrantInformationPage";
 
-export default defaultPageFactory(NewEntrantInformation);
+export default defaultPageFactory(Page);

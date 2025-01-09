@@ -1,33 +1,20 @@
-import React from "react";
-import { actionHandler } from "@bciers/actions";
-import { UUID } from "crypto";
-import FacilityEmissionSummary from "./FacilityEmissionSummary";
+import FacilityEmissionSummaryForm from "@reporting/src/app/components/facility/FacilityEmissionSummaryForm";
 import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformation";
 import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
-interface Props {
-  versionId: number;
-  facilityId: UUID;
-}
+import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import { getSummaryData } from "@reporting/src/app/utils/getSummaryData";
 
-const getsummaryData = async (versionId: number, facilityId: UUID) => {
-  return actionHandler(
-    `reporting/report-version/${versionId}/facility-report/${facilityId}/emission-summary`,
-    "GET",
-    `reporting/report-version/${versionId}/facility-report/${facilityId}/emission-summary`,
-  );
-};
-
-const FacilityEmissionSummaryData = async ({
-  versionId,
-  facilityId,
-}: Props) => {
-  const summaryData = await getsummaryData(versionId, facilityId);
-  const orderedActivities = await getOrderedActivities(versionId, facilityId);
+export default async function FacilityEmissionSummaryPage({
+  version_id,
+  facility_id,
+}: HasFacilityId) {
+  const summaryData = await getSummaryData(version_id, facility_id);
+  const orderedActivities = await getOrderedActivities(version_id, facility_id);
 
   const taskListData = getFacilitiesInformationTaskList(
-    versionId,
-    facilityId,
+    version_id,
+    facility_id,
     orderedActivities,
   );
 
@@ -64,13 +51,11 @@ const FacilityEmissionSummaryData = async ({
   };
 
   return (
-    <FacilityEmissionSummary
-      versionId={versionId}
-      facilityId={facilityId}
+    <FacilityEmissionSummaryForm
+      versionId={version_id}
+      facilityId={facility_id}
       summaryFormData={formData}
       taskListElements={taskListData}
     />
   );
-};
-
-export default FacilityEmissionSummaryData;
+}

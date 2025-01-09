@@ -1,4 +1,4 @@
-import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import AttachmentsForm from "./AttachmentsForm";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
 import { UploadedAttachment } from "./types";

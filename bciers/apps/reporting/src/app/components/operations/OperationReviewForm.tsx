@@ -38,7 +38,7 @@ interface Props {
   };
 }
 
-export default function OperationReview({
+export default function OperationReviewForm({
   formData,
   version_id,
   reportType,

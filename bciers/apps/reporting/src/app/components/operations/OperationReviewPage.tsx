@@ -5,12 +5,12 @@ import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import OperationReview from "./OperationReview";
-export default async function OperationReviewFormData({
+import OperationReview from "./OperationReviewForm";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+
+export default async function OperationReviewPage({
   version_id,
-}: {
-  version_id: number;
-}) {
+}: HasReportVersion) {
   const reportOperation = await getReportingOperation(version_id);
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
