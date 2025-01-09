@@ -9,12 +9,11 @@ import {
   facilityEmissionSummaryUiSchema,
   facilityEmissionSummarySchema,
 } from "@reporting/src/data/jsonSchema/facilityEmissionSummary";
-import { UUID } from "crypto";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 
 interface Props {
   versionId: number;
-  facilityId: UUID;
+  facilityId: string;
   summaryFormData: {
     attributableForReporting: string;
     attributableForReportingThreshold: string;
@@ -43,7 +42,7 @@ interface Props {
   taskListElements: TaskListElement[];
 }
 
-const FacilityEmissionSummary: React.FC<Props> = ({
+const FacilityEmissionSummaryForm: React.FC<Props> = ({
   versionId,
   facilityId,
   summaryFormData,
@@ -89,4 +88,4 @@ const FacilityEmissionSummary: React.FC<Props> = ({
   );
 };
 
-export default FacilityEmissionSummary;
+export default FacilityEmissionSummaryForm;

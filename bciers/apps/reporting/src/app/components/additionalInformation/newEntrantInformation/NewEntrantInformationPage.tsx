@@ -1,15 +1,12 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
 import NewEntrantInformationForm from "./NewEntrantInformationForm";
 import { getNewEntrantData } from "@reporting/src/app/utils/getNewEntrantData";
 import { getAdditionalInformationTaskList } from "@reporting/src/app/components/taskList/3_additionalInformation";
 import { ActivePage } from "@reporting/src/app/components/taskList/3_additionalInformation";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 
-export default async function NewEntrantInformation({
+export default async function NewEntrantInformationPage({
   version_id,
-}: {
-  version_id: number;
-}) {
+}: HasReportVersion) {
   const newEntrantData = await getNewEntrantData(version_id);
 
   const { new_entrant_data: initialFormData } = newEntrantData;
@@ -72,12 +69,10 @@ export default async function NewEntrantInformation({
   );
 
   return (
-    <Suspense fallback={<Loading />}>
-      <NewEntrantInformationForm
-        version_id={version_id}
-        initialFormData={formData}
-        taskListElements={taskListElements}
-      />
-    </Suspense>
+    <NewEntrantInformationForm
+      version_id={version_id}
+      initialFormData={formData}
+      taskListElements={taskListElements}
+    />
   );
 }

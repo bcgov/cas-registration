@@ -1,15 +1,10 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 
 const REGULATED_OPERATION = "OBPS Regulated Operation";
 const NEW_ENTRANT = "New Entrant Operation";
-
-interface AdditionalReportingDataProps {
-  versionId: number;
-}
 
 function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
@@ -39,25 +34,21 @@ function transformReportAdditionalData(reportAdditionalData: any) {
   };
 }
 
-export default async function AdditionalReportingData({
-  versionId,
-}: AdditionalReportingDataProps) {
-  const registrationPurpose = (await getRegistrationPurpose(versionId))
+export default async function AdditionalReportingDataPage({
+  version_id,
+}: HasReportVersion) {
+  const registrationPurpose = (await getRegistrationPurpose(version_id))
     ?.registration_purpose;
-  const reportAdditionalData = await getReportAdditionalData(versionId);
+  const reportAdditionalData = await getReportAdditionalData(version_id);
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
 
   return (
-    <Suspense fallback={<Loading />}>
-      <AdditionalReportingDataForm
-        versionId={versionId}
-        includeElectricityGenerated={
-          registrationPurpose === REGULATED_OPERATION
-        }
-        isNewEntrant={registrationPurpose === NEW_ENTRANT}
-        initialFormData={transformedData}
-      />
-    </Suspense>
+    <AdditionalReportingDataForm
+      versionId={version_id}
+      includeElectricityGenerated={registrationPurpose === REGULATED_OPERATION}
+      isNewEntrant={registrationPurpose === NEW_ENTRANT}
+      initialFormData={transformedData}
+    />
   );
 }

@@ -1,4 +1,4 @@
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import FinalReviewPage from "@reporting/src/app/components/finalReview/FinalReviewPage";
+import Page from "@reporting/src/app/components/finalReview/FinalReviewPage";
 
-export default defaultPageFactory(FinalReviewPage);
+export default defaultPageFactory(Page);
