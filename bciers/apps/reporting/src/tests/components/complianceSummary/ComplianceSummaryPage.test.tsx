@@ -3,9 +3,9 @@ import ComplianceSummaryForm from "@reporting/src/app/components/complianceSumma
 import ComplianceSummaryPage from "@reporting/src/app/components/complianceSummary/ComplianceSummaryPage";
 import { actionHandler } from "@bciers/actions";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
-import { tasklistData } from "@reporting/src/app/components/complianceSummary/TaskListElements";
 
 import { vi } from "vitest";
+import { getComplianceSummaryTaskList } from "@reporting/src/app/components/taskList/4_complianceSummary";
 
 // ✨ Mocks
 vi.mock(
@@ -50,7 +50,7 @@ describe("ComplianceSummaryPage", () => {
         versionId,
         needsVerification: false,
         summaryFormData: complianceData,
-        taskListElements: tasklistData,
+        taskListElements: getComplianceSummaryTaskList(),
       },
       {},
     );
@@ -73,7 +73,7 @@ describe("ComplianceSummaryPage", () => {
         versionId,
         needsVerification: true,
         summaryFormData: complianceData,
-        taskListElements: tasklistData,
+        taskListElements: getComplianceSummaryTaskList(),
       },
       {},
     );
@@ -96,7 +96,7 @@ describe("ComplianceSummaryPage", () => {
         versionId,
         needsVerification: true,
         summaryFormData: complianceData,
-        taskListElements: tasklistData,
+        taskListElements: getComplianceSummaryTaskList(),
       },
       {},
     );

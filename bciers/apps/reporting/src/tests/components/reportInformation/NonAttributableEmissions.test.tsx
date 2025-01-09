@@ -48,6 +48,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
+        taskListElements={[]}
       />,
     );
 
@@ -69,6 +70,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
+        taskListElements={[]}
       />,
     );
 
@@ -88,6 +90,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
+        taskListElements={[]}
       />,
     );
 
@@ -118,6 +121,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
+        taskListElements={[]}
       />,
     );
 

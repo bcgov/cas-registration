@@ -1,22 +1,17 @@
 "use client";
-import { customizeValidator } from "@rjsf/validator-ajv8";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { actionHandler } from "@bciers/actions";
-import { Alert } from "@mui/material";
-import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps, RJSFSchema } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
-import FormContext, { withTheme } from "@rjsf/core";
-import formTheme from "@bciers/components/form/theme/defaultTheme";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
-import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
-import { useRouter, useSearchParams } from "next/navigation";
-
-const Form = withTheme(formTheme);
+import { useSearchParams } from "next/navigation";
+import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import { customizeValidator } from "@rjsf/validator-ajv8";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -27,7 +22,7 @@ interface Props {
     activityId: number;
     sourceTypeMap: { [key: number]: string };
   };
-  activityFormData: object;
+  activityFormData: any;
   currentActivity: { id: number; name: string; slug: string };
   taskListData: TaskListElement[];
   reportVersionId: number;
@@ -51,21 +46,13 @@ export default function ActivityForm({
   let step = searchParams ? Number(searchParams.get("step")) : 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
-  // 🌀 Loading state for the Submit button
-  const [isLoading, setIsLoading] = useState(false);
-  // ✅ Success state for the Submit button
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  const [formState, setFormState] = useState(activityFormData as any);
+  const [formState, setFormState] = useState(activityFormData);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
   );
-  const [canContinue, setCanContinue] = useState<boolean>(false);
-  const router = useRouter();
 
   const { activityId, sourceTypeMap } = activityData;
-  const formRef = useRef<FormContext>(null);
 
   const arrayEquals = (x: string[], y: string[]) => {
     x = x.sort((a, b) => a.localeCompare(b));
@@ -83,8 +70,6 @@ export default function ActivityForm({
     setFormState(activityFormData);
     setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
   }, [currentActivity]);
-
-  const validator = customizeValidator({});
 
   const fetchSchemaData = async (sourceTypeIds: string[]) => {
     const sourceTypeQueryString = sourceTypeIds
@@ -109,6 +94,7 @@ export default function ActivityForm({
       setJsonSchema(safeJsonParse(schemaData).schema);
       setSelectedSourceTypeIds(selectedSourceTypes);
     }
+
     setFormState(c.formData);
   };
 
@@ -134,11 +120,22 @@ export default function ActivityForm({
   };
 
   // 🛠️ Function to submit user form data to API
-  const submitHandler = async (data: { formData?: any }) => {
-    //Set states
+  const submitHandler = async () => {
     setErrorList([]);
-    setIsLoading(true);
-    setIsSuccess(false);
+
+    const selectedSourceTypeData = Object.keys(formState.sourceTypes)
+      // Only filter the keys where the checkBox for that source type is checked
+      .filter((slug) => formState[slug])
+      // Only for selected source types we grab the form data
+      .reduce((filteredSourceTypeData, slug) => {
+        filteredSourceTypeData[slug] = formState.sourceTypes[slug];
+        return filteredSourceTypeData;
+      }, {} as any);
+
+    const submittedData = {
+      ...formState,
+      sourceTypes: selectedSourceTypeData,
+    };
 
     const response = await actionHandler(
       `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
@@ -146,74 +143,42 @@ export default function ActivityForm({
       "",
       {
         body: JSON.stringify({
-          activity_data: data.formData,
+          /* formState needs to be used instead of the data passed to the handler, since this is a controlled component;
+             otherwise the data passed to the handler lags behind the changes.
+             See FormBase implementation comments for more details. */
+          activity_data: submittedData,
         }),
       },
     );
-    setFormState(response);
-
-    // 🛑 Set loading to false after the API call is completed
-    setIsLoading(false);
 
     if (response.error) {
-      setCanContinue(false);
-      setErrorList([{ message: response.error }]);
-      return;
+      setErrorList([response.error]);
+      return false;
     }
     if (response) {
-      if (canContinue) {
-        setIsRedirecting(true);
-        router.push(createUrl(true));
-      } else {
-        setIsSuccess(true);
-        setTimeout(() => {
-          setIsSuccess(false);
-        }, 3000);
-      }
+      setFormState(response);
+      return true;
     }
+
+    return false;
   };
 
-  const submitExternallyToContinue = () => {
-    setCanContinue(true);
-  }; // Only submit after canContinue is set so the submitHandler can read the boolean
-  useEffect(() => {
-    if (formRef.current && canContinue) {
-      formRef.current.submit();
-    }
-  }, [canContinue]);
-
   return (
-    <div className="w-full flex flex-row">
-      <ReportingTaskList elements={taskListData} />
-      <div className="w-full">
-        <Form
-          ref={formRef}
-          schema={jsonSchema}
-          fields={CUSTOM_FIELDS}
-          formData={formState}
-          uiSchema={getUiSchema(currentActivity.slug)}
-          validator={validator}
-          onChange={debounce(handleFormChange, 200)}
-          onError={(e: any) => console.log("ERROR: ", e)}
-          onSubmit={submitHandler}
-        >
-          {errorList.length > 0 &&
-            errorList.map((e: any) => (
-              <Alert key={e.message} severity="error">
-                {e?.stack ?? e.message}
-              </Alert>
-            ))}
-          <ReportingStepButtons
-            backUrl={createUrl(false)}
-            continueUrl={createUrl(true)}
-            isSaving={isLoading}
-            isSuccess={isSuccess}
-            saveButtonDisabled={isLoading}
-            isRedirecting={isRedirecting}
-            saveAndContinue={submitExternallyToContinue}
-          />
-        </Form>
-      </div>
-    </div>
+    <MultiStepFormWithTaskList
+      steps={multiStepHeaderSteps}
+      initialStep={1}
+      taskListElements={taskListData}
+      onSubmit={submitHandler}
+      schema={jsonSchema}
+      fields={CUSTOM_FIELDS}
+      formData={formState}
+      uiSchema={getUiSchema(currentActivity.slug)}
+      onChange={debounce(handleFormChange, 200)}
+      errors={errorList}
+      backUrl={createUrl(false)}
+      continueUrl={createUrl(true)}
+      validator={customizeValidator({})}
+      omitExtraData={false}
+    />
   );
 }
