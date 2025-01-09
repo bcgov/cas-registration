@@ -65,7 +65,7 @@ const sfoFormData = {
 
 const lfoFormData = {
   name: "Monkeyfuzz",
-  type: "Single Facility",
+  type: "Large Facility",
   well_authorization_numbers: [24546, 54321],
   latitude_of_largest_emissions: "3.000000",
   longitude_of_largest_emissions: "4.000000",
@@ -119,15 +119,15 @@ const lfoResponsePost = [
   {
     name: "test facility name",
     type: "Large Facility",
-    well_authorization_numbers: [355],
-    is_current_year: true,
-    starting_date: "2024-07-07T09:00:00.000Z",
     street_address: "address",
     municipality: "city",
     province: "BC",
     postal_code: "H0H0H0",
     latitude_of_largest_emissions: 48.3,
     longitude_of_largest_emissions: 123.32,
+    well_authorization_numbers: [355],
+    is_current_year: true,
+    starting_date: "2024-07-07T09:00:00.000Z",
     operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
   },
 ];
@@ -166,7 +166,7 @@ const checkOptionalFieldValues = (
   expect(screen.getByLabelText(/Municipality+/i)).toHaveValue(municipality);
   if (container) {
     expect(
-      container.querySelector("#root_section2_province"),
+      container.querySelector("#root_section1_province"),
     ).toHaveTextContent("British Columbia");
   }
   expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue(postal_code);
@@ -189,9 +189,9 @@ export const editFormFields = async (schema: RJSFSchema) => {
 
     const typeInput = screen.getByLabelText(/Facility Type+/i);
     await userEvent.click(typeInput);
-    // Select the last option in the dropdown
+    // Select the second-last option in the dropdown (last option is Small Aggregate, which has few fields)
     const typeOptions = screen.getAllByRole("option");
-    const lastTypeOption = typeOptions[typeOptions.length - 1];
+    const lastTypeOption = typeOptions[typeOptions.length - 2];
     await userEvent.click(lastTypeOption);
   }
 
@@ -386,9 +386,6 @@ describe("FacilityForm component", () => {
     expect(
       screen.queryByLabelText(/Date of facility starting operations+/i),
     ).toBeNull();
-    expect(
-      screen.getByRole("heading", { name: /Facility Address/i }),
-    ).toBeVisible();
     expect(screen.getByLabelText(/Street address+/i)).toHaveValue("");
     expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("");
     expect(
@@ -426,33 +423,6 @@ describe("FacilityForm component", () => {
       "",
     );
 
-    expect(
-      screen.getByText(/BC Energy Regulator Well Authorization+/i),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: "Add Well Authorization Number" }),
-    ).toBeVisible();
-    expect(
-      screen.getByLabelText(/Did this facility begin operations in+/i),
-    ).not.toBeChecked();
-    expect(
-      screen.queryByLabelText(/Date of facility starting operations+/i),
-    ).toBeNull();
-    expect(
-      screen.getByRole("heading", { name: /Facility Address/i }),
-    ).toBeVisible();
-    expect(screen.getByLabelText(/Street address+/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("");
-    expect(
-      container.querySelector("#root_section2_province"),
-    ).toHaveTextContent("British Columbia");
-    expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("");
-    expect(
-      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-    ).toHaveValue(null);
-    expect(
-      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-    ).toHaveValue(null);
     // submit button
     const submitButton = screen.getByRole("button", { name: /submit/i });
     expect(submitButton).toBeEnabled();
@@ -502,7 +472,7 @@ describe("FacilityForm component", () => {
       container.querySelector("#root_section2_longitude_of_largest_emissions"),
     ).toHaveTextContent(".000000");
   });
-  it("loads existing readonly LFO form data", async () => {
+  it("loads existing readonly LFO (Large Facility) form data", async () => {
     const { container } = render(
       <FacilityForm
         schema={facilitiesLfoSchema}
@@ -515,7 +485,7 @@ describe("FacilityForm component", () => {
       "Monkeyfuzz",
     );
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
-      "Single Facility",
+      "Large Facility",
     );
     expect(
       screen.getByText("BC Energy Regulator Well Authorization Number(s)"),
@@ -534,23 +504,48 @@ describe("FacilityForm component", () => {
       container.querySelector("#root_section1_starting_date"),
     ).toHaveTextContent("2024-07-11");
     expect(
-      container.querySelector("#root_section2_street_address"),
+      container.querySelector("#root_section1_street_address"),
     ).toHaveTextContent("adf");
     expect(
-      container.querySelector("#root_section2_municipality"),
+      container.querySelector("#root_section1_municipality"),
     ).toHaveTextContent("ad");
     expect(
-      container.querySelector("#root_section2_province"),
+      container.querySelector("#root_section1_province"),
     ).toHaveTextContent("British Columbia");
     expect(
-      container.querySelector("#root_section2_postal_code"),
+      container.querySelector("#root_section1_postal_code"),
     ).toHaveTextContent("h0h0h0");
     expect(
-      container.querySelector("#root_section2_latitude_of_largest_emissions"),
+      container.querySelector("#root_section1_latitude_of_largest_emissions"),
     ).toHaveTextContent("3.000000");
     expect(
-      container.querySelector("#root_section2_longitude_of_largest_emissions"),
+      container.querySelector("#root_section1_longitude_of_largest_emissions"),
     ).toHaveTextContent(".000000");
+  });
+  it("loads existing readonly LFO (Small Aggregate) form data", async () => {
+    const { container } = render(
+      <FacilityForm
+        schema={facilitiesLfoSchema}
+        uiSchema={facilitiesLfoUiSchema}
+        formData={{ name: "Smagg Facility", type: "Small Aggregrate" }}
+      />,
+    );
+    // form fields
+    expect(container.querySelector("#root_section1_name")).toHaveTextContent(
+      "Smagg Facility",
+    );
+    expect(container.querySelector("#root_section1_type")).toHaveTextContent(
+      "Small Aggregrate",
+    );
+    expect(
+      screen.queryByText("BC Energy Regulator Well Authorization Number(s)"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Did this facility begin operations in+/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Date of facility starting operations+/i),
+    ).not.toBeInTheDocument();
   });
   it("does not allow SFO submission if there are validation errors (empty form data)", async () => {
     render(
@@ -583,6 +578,7 @@ describe("FacilityForm component", () => {
         schema={facilitiesLfoSchema}
         uiSchema={facilitiesLfoUiSchema}
         formData={{
+          type: "Large Facility",
           latitude_of_largest_emissions: -600,
           longitude_of_largest_emissions: 1800,
           postal_code: "garbage",
@@ -594,7 +590,7 @@ describe("FacilityForm component", () => {
     fireEvent.click(editButton);
     const submitButton = screen.getByRole("button", { name: "Submit" });
     fireEvent.click(submitButton);
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(2); // name and type
+    expect(screen.getAllByText(/Required field/i)).toHaveLength(1); // name
     expect(screen.getAllByText(/Format should be A1A 1A1/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
