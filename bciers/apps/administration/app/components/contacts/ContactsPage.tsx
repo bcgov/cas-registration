@@ -4,12 +4,10 @@ import ContactsDataGrid from "./ContactsDataGrid";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import { Button } from "@mui/material";
-import { auth } from "@/dashboard/auth";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 
-const ExternalContactsLayout = ({ isAdmin }: { isAdmin: boolean }) => {
+const ExternalContactsLayout = () => {
   return (
     <>
       <Note>
@@ -18,13 +16,12 @@ const ExternalContactsLayout = ({ isAdmin }: { isAdmin: boolean }) => {
         up to date here.
       </Note>
       <h2 className="text-bc-primary-blue">Contacts</h2>
-      {isAdmin && (
-        <div className="text-right">
-          <Link href={`/contacts/add-contact`}>
-            <Button variant="contained">Add Contact</Button>
-          </Link>
-        </div>
-      )}
+
+      <div className="text-right">
+        <Link href={`/contacts/add-contact`}>
+          <Button variant="contained">Add Contact</Button>
+        </Link>
+      </div>
     </>
   );
 };
@@ -58,20 +55,10 @@ export default async function ContactsPage({
     return <div>No contacts data in database.</div>;
   }
 
-  // To get the user's role from the session
-  const session = await auth();
-  const role = session?.user?.app_role ?? "";
-
   // Render the DataGrid component
   return (
     <>
-      {isExternalUser ? (
-        <ExternalContactsLayout
-          isAdmin={role === FrontEndRoles.INDUSTRY_USER_ADMIN}
-        />
-      ) : (
-        <InternalContactsLayout />
-      )}
+      {isExternalUser ? <ExternalContactsLayout /> : <InternalContactsLayout />}
       <Suspense fallback={<Loading />}>
         <div className="mt-5">
           <ContactsDataGrid

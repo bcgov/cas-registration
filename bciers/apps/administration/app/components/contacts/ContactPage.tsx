@@ -6,7 +6,6 @@ import getUserOperatorUsers from "./getUserOperatorUsers";
 import { createContactSchema } from "./createContactSchema";
 import Note from "@bciers/components/layout/Note";
 import { auth } from "@/dashboard/auth";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 // 🧩 Main component
 export default async function ContactPage({
@@ -52,7 +51,7 @@ export default async function ContactPage({
         )}
         formData={contactFormData}
         isCreating={isCreating}
-        allowEdit={role === FrontEndRoles.INDUSTRY_USER_ADMIN}
+        allowEdit={role.includes("industry")}
       />
     </>
   );
