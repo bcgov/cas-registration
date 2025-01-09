@@ -53,7 +53,8 @@ export default function OperationReview({
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const [facilityId, setFacilityId] = useState<string | null>(null);
+  const [operationType, setOperationType] = useState("");
+  const [errors, setErrors] = useState<string[]>();
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -66,8 +67,8 @@ export default function OperationReview({
 
   const taskListElements = getOperationInformationTaskList(
     version_id,
-    facilityId,
     ActivePage.ReviewOperatorInfo,
+    operationType,
   );
 
   const prepareFormData = (formDataObject: any) => {
@@ -118,7 +119,7 @@ export default function OperationReview({
       );
     }
     if (facilityReport?.facility_id) {
-      setFacilityId(facilityReport.facility_id);
+      setOperationType(facilityReport.operation_type);
     }
   }, [
     formData,
@@ -139,11 +140,17 @@ export default function OperationReview({
 
     const formDataObject = safeJsonParse(JSON.stringify(data.formData));
     const preparedData = prepareFormData(formDataObject);
-    const response = await actionHandler(endpoint, method, endpoint, {
+    const response = await actionHandler(endpoint, method, "", {
       body: JSON.stringify(preparedData),
     });
 
-    return response;
+    if (response?.error) {
+      setErrors([response?.error]);
+      return false;
+    }
+
+    setErrors(undefined);
+    return true;
   };
 
   const onChangeHandler = (data: { formData: any }) => {
@@ -226,6 +233,7 @@ export default function OperationReview({
         onChange={onChangeHandler}
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
+        errors={errors}
       />
     </>
   );

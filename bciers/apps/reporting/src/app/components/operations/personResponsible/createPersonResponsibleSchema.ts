@@ -16,7 +16,7 @@ import { createContactDetailsProperties } from "@reporting/src/data/jsonSchema/p
 export const createPersonResponsibleSchema = (
   schema: RJSFSchema,
   contactOptions: ContactRow[],
-  contactId: number | null,
+  contactId?: number,
   contactData?: Contact, // Renamed parameter
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(schema));

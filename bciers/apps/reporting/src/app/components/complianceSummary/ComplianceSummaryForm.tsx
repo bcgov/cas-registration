@@ -10,6 +10,7 @@ import {
   complianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
+import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 
 interface Props {
   versionId: number;
@@ -44,14 +45,6 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   taskListElements,
 }) => {
-  const customStepNames = [
-    "Operation Information",
-    "Report Information",
-    "Additional Information",
-    "Compliance Summary",
-    "Sign-off & Submit",
-  ];
-
   const backUrl = `/reports/${versionId}/additional-reporting-data`;
   const verificationUrl = `/reports/${versionId}/verification`;
   const finalReviewUrl = `/reports/${versionId}/final-review`;
@@ -60,7 +53,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="compliance-summary">
-        <MultiStepHeader stepIndex={3} steps={customStepNames} />
+        <MultiStepHeader stepIndex={3} steps={multiStepHeaderSteps} />
       </div>
       <div className="w-full flex">
         <ReportingTaskList elements={taskListElements} />
