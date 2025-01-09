@@ -52,8 +52,7 @@ install: CHART_INSTANCE=cas-bciers
 install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
 										--set defaultImageTag=$(IMAGE_TAG) \
 										--set download-dags.dagConfiguration="$$dagConfig" \
-										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
-										--dry-run
+										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml
 install:
 	@set -euo pipefail; \
 	dagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/cas_bciers_dags.py"}' | base64 -w0); \
