@@ -37,15 +37,13 @@ class ReportVersion(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = (
-            "A table representing the multiple versions that a single report can have."
-        )
+        db_table_comment = "A table representing the multiple versions that a single report can have."
         db_table = 'erc"."report_version'
         app_label = "reporting"
         constraints = [
             models.UniqueConstraint(
                 fields=["report"],
-                condition=models.Q(status="draft"),
+                condition=models.Q(status="Draft"),
                 name="unique_report_version_with_draft_status_per_report",
                 violation_error_message="Only one draft report version can exist on a report.",
             )

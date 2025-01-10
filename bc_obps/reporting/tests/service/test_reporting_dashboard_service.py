@@ -28,7 +28,7 @@ class TestReportingDashboardService:
         # Create reports for first two operations
         r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
         r0_version1 = ReportVersion.objects.get(id=r0_version1_id)
-        r0_version1.status = "submitted"
+        r0_version1.status = "Submitted"
         r0_version1.save()
 
         r0 = ReportVersion.objects.get(pk=r0_version1_id).report
