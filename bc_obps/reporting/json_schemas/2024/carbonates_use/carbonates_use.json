@@ -12,7 +12,8 @@
         "properties": {
           "emission": {
             "title": "Emission",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "gasType": {
             "title": "Gas Type",

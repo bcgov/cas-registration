@@ -58,6 +58,7 @@ export const additionalReportingDataSchema: RJSFSchema = {
                       emissions_on_site_use: {
                         type: "number",
                         title: "Emissions (t) captured for on-site use",
+                        minimum: 0,
                       },
                     },
                     required: ["emissions_on_site_use"],
@@ -77,6 +78,7 @@ export const additionalReportingDataSchema: RJSFSchema = {
                         type: "number",
                         title:
                           "Emissions (t) captured for on-site sequestration",
+                        minimum: 0,
                       },
                     },
                     required: ["emissions_on_site_sequestration"],
@@ -95,6 +97,7 @@ export const additionalReportingDataSchema: RJSFSchema = {
                       emissions_off_site_transfer: {
                         type: "number",
                         title: "Emissions (t) captured for off-site transfer",
+                        minimum: 0,
                       },
                     },
                     required: ["emissions_off_site_transfer"],
@@ -159,6 +162,7 @@ function buildSchemaWithElectricityGenerated(): RJSFSchema {
           electricity_generated: {
             type: "number",
             title: "Electricity Generated",
+            minimum: 0,
           },
         },
       },

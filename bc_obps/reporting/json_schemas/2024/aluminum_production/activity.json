@@ -29,15 +29,18 @@
             "properties": {
               "annualAnodeConsumptionForPrebakeCells": {
                 "type": "number",
-                "title": "Annual Anode Consumption for Prebake Cells"
+                "title": "Annual Anode Consumption for Prebake Cells",
+                "minimum": 0
               },
               "annualCF4EmissionsFromAnodeEffectsForPrebakeCells": {
                 "type": "number",
-                "title": "Annual CF4 Emissions from Anode Effects for Prebake Cells"
+                "title": "Annual CF4 Emissions from Anode Effects for Prebake Cells",
+                "minimum": 0
               },
               "annualC2F6EmissionsFromAnodeEffectsForPrebakeCells": {
                 "type": "number",
-                "title": "Annual C2F6 Emissions from Anode Effects for Prebake Cells"
+                "title": "Annual C2F6 Emissions from Anode Effects for Prebake Cells",
+                "minimum": 0
               }
             }
           }
@@ -61,15 +64,18 @@
             "properties": {
               "annualAnodePasteConsumptionForSoderbergCells": {
                 "type": "number",
-                "title": "Annual Anode Paste Consumption for Soderberg Cells"
+                "title": "Annual Anode Paste Consumption for Soderberg Cells",
+                "minimum": 0
               },
               "annualCF4EmissionsFromAnodeEffectsForSoderbergCells": {
                 "type": "number",
-                "title": "Annual CF4 Emissions from Anode Effects for Soderberg Cells"
+                "title": "Annual CF4 Emissions from Anode Effects for Soderberg Cells",
+                "minimum": 0
               },
               "annualC2F6EmissionsFromAnodeEffectsForSoderbergCells": {
                 "type": "number",
-                "title": "Annual C2F6 Emissions from Anode Effects for Soderberg Cells"
+                "title": "Annual C2F6 Emissions from Anode Effects for Soderberg Cells",
+                "minimum": 0
               }
             }
           }
