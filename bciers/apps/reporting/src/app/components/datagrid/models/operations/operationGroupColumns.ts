@@ -4,17 +4,7 @@ import {
 } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 import { OPERATOR_COLUMN_INDEX } from "./operationColumns";
-
-const createColumnGroup = (
-  groupId: string,
-  headerName: string,
-  renderHeaderGroup: any,
-) => ({
-  groupId,
-  headerName,
-  renderHeaderGroup,
-  children: [{ field: groupId }],
-});
+import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
 
 const operationGroupColumns = (
   isOperatorColumn: boolean,
