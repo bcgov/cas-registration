@@ -430,6 +430,49 @@ class TestOperationServiceV2:
         assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
 
+    @staticmethod
+    def test_is_operation_new_entrant_information_complete_true():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        users_operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
+            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
+        )
+        new_entrant_application = baker.make_recipe(
+            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
+        )
+        users_operation.documents.add(new_entrant_application)
+
+        assert OperationServiceV2.is_operation_new_entrant_information_complete(users_operation)
+
+    @staticmethod
+    def test_is_operation_new_entrant_information_complete_no_date():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        users_operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
+        )
+        new_entrant_application = baker.make_recipe(
+            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
+        )
+        users_operation.documents.add(new_entrant_application)
+
+        assert not OperationServiceV2.is_operation_new_entrant_information_complete(users_operation)
+
+    @staticmethod
+    def test_is_operation_new_entrant_information_complete_no_application():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        users_operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
+            date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
+        )
+
+        assert not OperationServiceV2.is_operation_new_entrant_information_complete(users_operation)
+
 
 class TestOperationServiceV2CreateOrUpdateOperation:
     def test_create_operation_without_multiple_operators(self):

@@ -88,8 +88,8 @@ class OperationServiceV2:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         if not operation.opted_in_operation:
             raise Exception("Operation does not have an opted-in operation.")
-        return OptedInOperationDataAccessService.create_or_update_opted_in_operation_detail(
-            user_guid, payload, operation.opted_in_operation.id
+        return OptedInOperationDataAccessService.update_opted_in_operation_detail(
+            user_guid, operation.opted_in_operation.id, payload
         )
 
     @classmethod
@@ -151,7 +151,11 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def create_or_update_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
+    def create_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
+        """
+        Creates an empty OptedInOperationDetail instance for the specified operation.
+        This method is called before any opt-in data is available.
+        """
         operation = OperationDataAccessService.get_by_id(operation_id)
 
         # industry users can only edit operations that belong to their operator
@@ -159,8 +163,7 @@ class OperationServiceV2:
             raise Exception(UNAUTHORIZED_MESSAGE)
 
         operation.opt_in = True
-        if not operation.opted_in_operation:
-            operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
+        operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
         operation.save(update_fields=['opted_in_operation', 'opt_in'])
 
         return operation
@@ -272,7 +275,7 @@ class OperationServiceV2:
         operation.documents.add(*operation_documents)
 
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            operation = cls.create_or_update_opted_in_operation_detail(user_guid, operation.id)
+            operation = cls.create_opted_in_operation_detail(user_guid, operation.id)
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
@@ -298,9 +301,9 @@ class OperationServiceV2:
         )
 
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            operation = cls.create_or_update_opted_in_operation_detail(user_guid, operation.id)
+            operation = cls.create_opted_in_operation_detail(user_guid, operation.id)
 
-        if operation.status in [Operation.Statuses.NOT_STARTED, Operation.Statuses.PENDING]:
+        if operation.status == Operation.Statuses.NOT_STARTED:
             cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
         operation.set_create_or_update(user_guid)
 
