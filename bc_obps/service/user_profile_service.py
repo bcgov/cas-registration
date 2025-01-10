@@ -12,7 +12,7 @@ class UserProfileService:
     def create_user_profile(cls, user_guid: UUID, user_data: UserIn) -> User:
         # Determine the role based on the identity provider
         role_mapping = {
-            IdPs.IDIR.value: AppRole.objects.get(role_name="cas_admin")
+            IdPs.IDIR.value: AppRole.objects.get(role_name="cas_analyst")
             if settings.BYPASS_ROLE_ASSIGNMENT
             else AppRole.objects.get(role_name="cas_pending"),
             IdPs.BCEIDBUSINESS.value: AppRole.objects.get(role_name="industry_user"),
