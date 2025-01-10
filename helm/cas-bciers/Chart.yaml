@@ -14,7 +14,3 @@ dependencies:
     repository: https://bcgov.github.io/cas-airflow
     alias: download-dags
     condition: download-dags.enabled
-  - name: cas-airflow-dag-trigger
-    version: 1.0.7
-    repository: https://bcgov.github.io/cas-airflow
-    alias: process-due-transfer-events
