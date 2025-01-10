@@ -13,7 +13,9 @@ class TestReportingDashboardService:
     @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_operations_for_reporting_dashboard(
-        self, mock_get_by_guid: MagicMock | AsyncMock, mock_get_all_operations_for_user: MagicMock | AsyncMock
+        self,
+        mock_get_by_guid: MagicMock | AsyncMock,
+        mock_get_all_operations_for_user: MagicMock | AsyncMock,
     ):
         user = user_baker()
         mock_get_by_guid.return_value = user
@@ -25,6 +27,10 @@ class TestReportingDashboardService:
 
         # Create reports for first two operations
         r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
+        r0_version1 = ReportVersion.objects.get(id=r0_version1_id)
+        r0_version1.status = "submitted"
+        r0_version1.save()
+
         r0 = ReportVersion.objects.get(pk=r0_version1_id).report
         latest_r0_revision = report_version_baker(report=r0)
 
@@ -37,7 +43,7 @@ class TestReportingDashboardService:
         assert len(result_list) == 3
 
         # Create dictionaries for easy lookup by operation ID
-        result_dict = {str(item['id']): item for item in result_list}
+        result_dict = {str(item["id"]): item for item in result_list}
 
         # Test operation with multiple versions
         op0_result = result_dict[str(operations[0].id)]
