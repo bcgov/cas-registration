@@ -150,6 +150,9 @@ describe("OperationReview Component", () => {
   });
 
   it("shows modal when switching report type and switches report type when accepting", async () => {
+    mockActionHandler.mockResolvedValue(1234);
+    const { push } = useRouter();
+
     render(
       <OperationReview
         formData={{
@@ -178,10 +181,8 @@ describe("OperationReview Component", () => {
       /Select what type of report you are filling/i,
     );
 
-    await waitFor(() => {
-      fireEvent.change(reportTypeSelect, {
-        target: { value: "Simple Report" },
-      });
+    fireEvent.change(reportTypeSelect, {
+      target: { value: "Simple Report" },
     });
 
     expect(
@@ -189,17 +190,11 @@ describe("OperationReview Component", () => {
     ).toBeVisible();
     expect(screen.getByText(/Change Report Type/i)).toBeVisible();
 
-    await waitFor(() => {
-      fireEvent.click(
-        screen.getByRole("button", { name: "Change report type" }),
-      );
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Change report type" }));
 
-    expect(
-      screen.queryByText(/Are you sure you want to change your report type/i),
-    ).not.toBeVisible();
-    expect(screen.getByText(/Simple Report/i)).toBeVisible();
-    expect(screen.queryByText(/Annual Report/i)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith("/reports/1234/review-operator-data");
+    });
   });
 
   it("shows modal when switching report type and reverts report type when clicking cancel", async () => {
