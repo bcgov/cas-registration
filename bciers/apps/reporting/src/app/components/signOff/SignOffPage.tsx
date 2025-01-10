@@ -10,14 +10,14 @@ import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormData } from "@reporting/src/app/components/signOff/types";
 import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
-import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import reportValidationMessages from "./reportValidationMessages";
 import {
   ActivePage,
   getSignOffAndSubmitSteps,
-} from "../taskList/5_signOffSubmit";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+} from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";

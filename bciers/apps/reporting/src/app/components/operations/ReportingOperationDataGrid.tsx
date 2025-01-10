@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import operationGroupColumns from "../datagrid/models/operations/operationGroupColumns";
+import operationGroupColumns from "@reporting/src/app/components/datagrid/models/operations/operationGroupColumns";
 import { fetchOperationsPageData } from "./fetchOperationsPageData";
-import operationColumns from "../datagrid/models/operations/operationColumns";
+import operationColumns from "@reporting/src/app/components/datagrid/models/operations/operationColumns";
 import { OperationRow } from "./types";
 
 const ReportingOperationDataGrid = ({

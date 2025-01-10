@@ -1,6 +1,6 @@
 import FacilityEmissionSummaryForm from "@reporting/src/app/components/facility/FacilityEmissionSummaryForm";
-import { getFacilitiesInformationTaskList } from "../taskList/2_facilitiesInformation";
-import { getOrderedActivities } from "../../utils/getOrderedActivities";
+import { getFacilitiesInformationTaskList } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
+import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getSummaryData } from "@reporting/src/app/utils/getSummaryData";

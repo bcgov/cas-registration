@@ -2,7 +2,7 @@ import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTyp
 import AttachmentsForm from "./AttachmentsForm";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
 import { UploadedAttachment } from "./types";
-import { getSignOffAndSubmitSteps } from "../taskList/5_signOffSubmit";
+import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 
 export const getDictFromAttachmentArray = (array: UploadedAttachment[]) =>

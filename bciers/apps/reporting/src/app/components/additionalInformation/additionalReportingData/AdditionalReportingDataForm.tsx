@@ -14,7 +14,7 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 import {
   ActivePage,
   getAdditionalInformationTaskList,
-} from "../../taskList/3_additionalInformation";
+} from "@reporting/src/app/components/taskList/3_additionalInformation";
 
 interface AdditionalReportingDataProps {
   versionId: number;
