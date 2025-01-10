@@ -209,6 +209,7 @@ export const emissionAllocationSchema: RJSFSchema = {
             properties: {
               report_product_id: {
                 type: "number",
+                minimum: 0,
               },
               product_name: {
                 type: "string",
@@ -267,6 +268,7 @@ export const emissionAllocationSchema: RJSFSchema = {
             properties: {
               report_product_id: {
                 type: "number",
+                minimum: 0,
               },
               product_name: {
                 type: "string",

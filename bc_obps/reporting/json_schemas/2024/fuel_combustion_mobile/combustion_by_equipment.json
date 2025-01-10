@@ -38,23 +38,28 @@
           },
           "q1FuelAmount": {
             "title": "Q1 Fuel Amount",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "q2FuelAmount": {
             "title": "Q2 Fuel Amount",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "q3FuelAmount": {
             "title": "Q3 Fuel Amount",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "q4FuelAmount": {
             "title": "Q4 Fuel Amount",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "annualFuelAmount": {
             "title": "Annual Fuel Amount",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "emissions": {
             "title": "Emission Data",
@@ -69,7 +74,8 @@
                 },
                 "emission": {
                   "title": "Emission",
-                  "type": "number"
+                  "type": "number",
+                  "minimum": 0
                 },
                 "equivalentEmission": {
                   "title": "Equivalent Emission",

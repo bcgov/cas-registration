@@ -16,7 +16,8 @@
           },
           "emission": {
             "title": "Emission",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "equivalentEmission": {
             "title": "Equivalent Emission",

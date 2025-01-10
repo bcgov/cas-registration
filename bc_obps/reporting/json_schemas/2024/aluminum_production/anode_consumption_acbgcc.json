@@ -15,7 +15,8 @@
           },
           "emission": {
             "title": "Emissions (tonnes)",
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "equivalentEmission": {
             "title": "Equivalent emissions (tC02e)",
