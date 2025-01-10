@@ -44,7 +44,7 @@ class ReportVersionTest(BaseTestCase):
     def test_unique_draft_version_per_report(self):
         report = baker.make_recipe("reporting.tests.utils.report")
         report_version_1 = baker.make_recipe(
-            "reporting.tests.utils.report_version", status="draft", report_id=report.id
+            "reporting.tests.utils.report_version", status="Draft", report_id=report.id
         )
 
         with pytest.raises(
@@ -53,15 +53,15 @@ class ReportVersionTest(BaseTestCase):
         ):
             baker.make_recipe(
                 "reporting.tests.utils.report_version",
-                status="draft",
+                status="Draft",
                 report_id=report.id,
             )
 
-        report_version_1.status = "submitted"
+        report_version_1.status = "Submitted"
         report_version_1.save()
 
         baker.make_recipe(
             "reporting.tests.utils.report_version",
-            status="draft",
+            status="Draft",
             report_id=report.id,
         )
