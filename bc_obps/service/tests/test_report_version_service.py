@@ -1,4 +1,4 @@
-from django.db.models import CASCADE
+from django.db.models import CASCADE, Field, Model
 from model_bakery import baker
 import pytest
 from reporting.models.report_version import ReportVersion
@@ -7,7 +7,7 @@ from service.report_version_service import ReportVersionService
 pytestmark = pytest.mark.django_db
 
 
-def get_cascading_models(model):
+def get_cascading_models(model: Model | Field) -> set[Model]:
     if not hasattr(model, "_meta"):
         return {}
 
