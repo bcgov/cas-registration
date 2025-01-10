@@ -174,7 +174,9 @@ describe("the OperationInformationForm component", () => {
         );
 
         expect(mockPush).toHaveBeenCalledWith(
-          "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2",
+          `/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=${encodeURIComponent(
+            "Existing Operation edited",
+          )}`,
         );
       });
     },
@@ -189,6 +191,7 @@ describe("the OperationInformationForm component", () => {
       fetchFormEnums();
       actionHandler.mockResolvedValueOnce({
         id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        name: "Picklejuice",
       }); // mock the POST response from the submit handler
       render(
         <OperationInformationForm
@@ -341,7 +344,7 @@ describe("the OperationInformationForm component", () => {
         );
       });
       expect(mockPush).toHaveBeenCalledWith(
-        "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2",
+        "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=Picklejuice",
       );
     },
   );

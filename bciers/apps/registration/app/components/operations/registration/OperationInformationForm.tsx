@@ -85,7 +85,9 @@ const OperationInformationForm = ({
         return { error: resolve.error };
       } else if (resolve?.id) {
         // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
-        const nextStepUrl = `/register-an-operation/${resolve.id}/${step + 1}`;
+        const nextStepUrl = `/register-an-operation/${resolve.id}/${
+          step + 1
+        }?operations_title=${encodeURIComponent(resolve.name)}`;
         router.push(nextStepUrl);
         return resolve;
       }
