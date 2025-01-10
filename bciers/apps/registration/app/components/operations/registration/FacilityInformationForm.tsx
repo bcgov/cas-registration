@@ -8,7 +8,6 @@ import { actionHandler } from "@bciers/actions";
 import FacilitiesDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { FacilityInitialData } from "apps/administration/app/components/facilities/types";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
-import { facilitiesLfoSchema } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import {
   facilityInformationLfoSchema,
   facilityInformationSfoSchema,
@@ -17,6 +16,7 @@ import {
 } from "apps/registration/app/data/jsonSchema/operationRegistration/facilityInformation";
 import { FacilityInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
+import { facilitiesSfoSchema } from "@/administration/app/data/jsonSchema/facilitiesSfo";
 
 interface FacilityInformationFormProps {
   facilityId?: UUID;
@@ -68,8 +68,8 @@ const FacilityInformationForm = ({
   const [formState, setFormState] = useState(formData ?? {});
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Get the list of sections in the LFO schema - used to unnest the formData
-  const formSectionListLFo = Object.keys(
-    facilitiesLfoSchema.properties as RJSFSchema,
+  const formSectionListSfo = Object.keys(
+    facilitiesSfoSchema.properties as RJSFSchema,
   );
 
   const schema = isOperationSfo
@@ -106,9 +106,8 @@ const FacilityInformationForm = ({
       const endpoint = isCreating
         ? "registration/facilities"
         : `registration/facilities/${facilityId}`;
-
       const sfoFormData = isOperationSfo && {
-        ...createUnnestedFormData(e.formData, formSectionListLFo),
+        ...createUnnestedFormData(e.formData, formSectionListSfo),
         operation_id: operation,
         facility_id: facilityId,
       };
@@ -122,7 +121,7 @@ const FacilityInformationForm = ({
         : // Facilities POST route expects an array of facilities
           createUnnestedArrayFormData(
             e.formData.facility_information_array,
-            formSectionListLFo,
+            formSectionListSfo,
             operation,
           );
       const response = await actionHandler(endpoint, method, "", {
@@ -142,7 +141,7 @@ const FacilityInformationForm = ({
 
       return response;
     },
-    [operation, isOperationSfo, formSectionListLFo, isCreating, facilityId],
+    [operation, isOperationSfo, formSectionListSfo, isCreating, facilityId],
   );
 
   return (

@@ -260,15 +260,15 @@ describe("the FacilityInformationForm component", () => {
           {
             name: "Test Facility",
             type: "Large Facility",
-            well_authorization_numbers: [],
-            is_current_year: true,
-            starting_date: "2024-01-01T09:00:00.000Z",
             street_address: "123 Test St",
             municipality: "Test City",
             province: "BC",
             postal_code: "V8X3K1",
             latitude_of_largest_emissions: 0.1,
             longitude_of_largest_emissions: 0.1,
+            well_authorization_numbers: [],
+            is_current_year: true,
+            starting_date: "2024-01-01T09:00:00.000Z",
             operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
           },
         ]),
@@ -326,15 +326,15 @@ describe("the FacilityInformationForm component", () => {
       const expectedMockData = {
         name: "Test Facility",
         type: "Large Facility",
-        well_authorization_numbers: [],
-        is_current_year: true,
-        starting_date: "2024-01-01T09:00:00.000Z",
         street_address: "123 Test St",
         municipality: "Test City",
         province: "BC",
         postal_code: "V8X3K1",
         latitude_of_largest_emissions: 0.1,
         longitude_of_largest_emissions: 0.1,
+        well_authorization_numbers: [],
+        is_current_year: true,
+        starting_date: "2024-01-01T09:00:00.000Z",
         operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
       };
 
@@ -398,7 +398,14 @@ describe("the FacilityInformationForm component", () => {
     act(() => {
       fireEvent.click(addButton);
     });
+    const comboBoxInput = screen.getAllByRole("combobox");
+    const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
+      ?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openFacilityTypeDropdownButton);
 
+    const typeOption = screen.getAllByText("Large Facility");
+    // [0] is the form, later ones are in the grid
+    await userEvent.click(typeOption[0]);
     fillAddressFields(0);
 
     const streetAddress = screen.getByLabelText(/Street Address/i);

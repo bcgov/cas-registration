@@ -19,6 +19,7 @@ export const facilityInformationLfoSchema: RJSFSchema = {
         properties: {
           ...facilitiesLfoSchema.properties,
         },
+        dependencies: { ...facilitiesLfoSchema.dependencies },
       },
     },
   },
