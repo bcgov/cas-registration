@@ -1,3 +1,5 @@
+from unittest.mock import patch, MagicMock
+from model_bakery import baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.bakers import report_version_baker
@@ -63,3 +65,27 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert response_json["operation_bcghgid"] == data["operation_bcghgid"]
         assert response_json["bc_obps_regulated_operation_id"] == data["bc_obps_regulated_operation_id"]
         assert response_json["operation_representative_name"] == data["operation_representative_name"]
+
+    @patch("service.report_version_service.ReportVersionService.change_report_version_type")
+    def test_change_report_version_type(self, mock_change_version_service_method: MagicMock):
+        mock_change_version_service_method.return_value = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            id=1234,
+        )
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            report_type="Annual Report",
+        )
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {"report_type": "Simple Report"},
+            f"/api/reporting/report-version/{report_version.id}/change-report-type",
+        )
+
+        assert response.status_code == 201
+        assert response.json() == 1234
