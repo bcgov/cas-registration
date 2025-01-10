@@ -17,10 +17,21 @@ export default async function FinalReviewPage({
     needsVerification,
   );
 
+  const finalReviewData = [
+    {
+      schema: operationReviewSchema,
+      data: await getReportingOperation(version_id),
+      uiSchema: operationReviewUiSchema,
+    },
+  ];
+
+  console.log(finalReviewData[0].data);
+
   return (
     <FinalReviewForm
       version_id={version_id}
       taskListElements={taskListElements}
+      data={finalReviewData}
     />
   );
 }
