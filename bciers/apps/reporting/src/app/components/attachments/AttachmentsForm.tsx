@@ -1,6 +1,6 @@
 "use client";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
-import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
 import AttachmentElement, {
   AttachmentElementOptions,

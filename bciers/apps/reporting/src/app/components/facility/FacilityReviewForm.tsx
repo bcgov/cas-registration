@@ -17,7 +17,6 @@ import {
 } from "@reporting/src/data/jsonSchema/facilities";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
-import { UUID } from "crypto";
 import FormContext, { IChangeEvent } from "@rjsf/core";
 import { useSearchParams } from "next/navigation";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
@@ -46,7 +45,7 @@ const getAllActivities = async () => {
   return actionHandler(`reporting/activities`, "GET", `reporting/activities`);
 };
 
-const FacilityReviewForm: React.FC<Props> = ({ version_id, facility_id }) => {
+const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -247,4 +246,4 @@ const FacilityReviewForm: React.FC<Props> = ({ version_id, facility_id }) => {
   );
 };
 
-export default FacilityReviewForm;
+export default FacilityReview;

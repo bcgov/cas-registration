@@ -7,9 +7,9 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import {
   ActivityData,
   getFacilitiesInformationTaskList,
-} from "../taskList/2_facilitiesInformation";
-import { getOrderedActivities } from "../../utils/getOrderedActivities";
-import { getActivityFormData } from "../../utils/getActivityFormData";
+} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
+import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
+import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 
 interface Props {
   versionId: number;

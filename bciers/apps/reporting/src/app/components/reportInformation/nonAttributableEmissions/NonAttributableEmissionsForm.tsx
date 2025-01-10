@@ -8,7 +8,7 @@ import {
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 interface ActivityData {
   id: number;

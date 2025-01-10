@@ -6,7 +6,7 @@ import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivit
 import {
   ActivePage,
   getFacilitiesInformationTaskList,
-} from "../../taskList/2_facilitiesInformation";
+} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 
@@ -20,10 +20,10 @@ export default async function NonAttributableEmissionsPage({
     version_id,
     facility_id,
   );
-  const orderedActivities = await getOrderedActivities(versionId, facilityId);
+  const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const taskListElements = getFacilitiesInformationTaskList(
-    versionId,
-    facilityId,
+    version_id,
+    facility_id,
     orderedActivities,
     ActivePage.NonAttributableEmission,
   );

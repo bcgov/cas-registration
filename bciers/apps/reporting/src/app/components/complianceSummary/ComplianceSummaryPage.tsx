@@ -1,8 +1,8 @@
 import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
-import { tasklistData } from "./TaskListElements";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import { getComplianceData } from "@reporting/src/app/utils/getComplianceData";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getComplianceSummaryTaskList } from "@reporting/src/app/components/taskList/4_complianceSummary";
+import { getComplianceData } from "@reporting/src/app/utils/getComplianceData";
 
 export default async function ComplianceSummaryPage({
   version_id,
@@ -15,7 +15,7 @@ export default async function ComplianceSummaryPage({
       versionId={version_id}
       needsVerification={needsVerification}
       summaryFormData={complianceData}
-      taskListElements={tasklistData}
+      taskListElements={getComplianceSummaryTaskList()}
     />
   );
 }
