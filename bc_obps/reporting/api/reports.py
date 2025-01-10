@@ -71,7 +71,8 @@ def save_report(
     "/report-version/{version_id}/change-report-type",
     response={201: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""a""",
+    description="""Changes the report type of a report version. This operation deletes the report version, including all existing data associated with that report version,
+    and returns the id of a newly initialized report version.""",
     auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
