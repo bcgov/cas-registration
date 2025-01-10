@@ -49,9 +49,7 @@
       "name": "Facility 4",
       "type": "Small Aggregate",
       "swrs_facility_id": 1004,
-      "bcghg_id": "13219990008",
-      "latitude_of_largest_emissions": 43.5,
-      "longitude_of_largest_emissions": -123.5
+      "bcghg_id": "13219990008"
     }
   },
   {
