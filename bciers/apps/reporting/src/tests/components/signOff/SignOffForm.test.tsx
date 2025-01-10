@@ -1,10 +1,15 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import SignOffPage from "@reporting/src/app/components/signOff/SignOffPage";
+import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
 
-describe("SignOffPage Component", () => {
+// ⛏️ Helper function to render the form
+const renderSignOffForm = () => {
+  render(<SignOffForm version_id={1} taskListElements={[]} />);
+};
+
+describe("SignOffForm Component", () => {
   it("renders the form with correct fields and values", async () => {
-    render(<SignOffPage />);
+    renderSignOffForm();
     expect(
       screen.getByText(
         "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
@@ -33,7 +38,7 @@ describe("SignOffPage Component", () => {
   });
 
   it("enables the submit button when all checkboxes are checked", () => {
-    render(<SignOffPage />);
+    renderSignOffForm();
 
     // Identify all the checkbox fields based on their titles
     const reviewCheckbox = screen.getByRole("checkbox", {
@@ -61,13 +66,13 @@ describe("SignOffPage Component", () => {
   });
 
   it("disables the submit button initially", () => {
-    render(<SignOffPage />);
+    renderSignOffForm();
     const submitButton = screen.getByText(/submit report/i);
     expect(submitButton).toBeDisabled();
   });
 
   it("toggles the checkbox state when clicked", () => {
-    render(<SignOffPage />);
+    renderSignOffForm();
 
     const reviewCheckbox = screen.getByRole("checkbox", {
       name: /i certify that i have reviewed the annual report/i,
