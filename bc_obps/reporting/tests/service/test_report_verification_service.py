@@ -60,7 +60,9 @@ class TestReportVerificationService(TestCase):
 
         # Arrange: Mock the registration purpose to simulate a regulated operation
         # The purpose is one of REGULATED_OPERATION_PURPOSES
-        mock_get_registration_purpose.return_value = Operation.Purposes.OBPS_REGULATED_OPERATION
+        mock_get_registration_purpose.return_value = {
+            "registration_purpose": Operation.Purposes.OBPS_REGULATED_OPERATION
+        }
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
@@ -84,7 +86,9 @@ class TestReportVerificationService(TestCase):
         """
 
         # Arrange: Simulate a purpose that is not in REGULATED_OPERATION_PURPOSES and NOT Operation.Purposes.REPORTING_OPERATION
-        mock_get_registration_purpose.return_value = Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        mock_get_registration_purpose.return_value = {
+            "registration_purpose": Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        }
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
@@ -108,9 +112,9 @@ class TestReportVerificationService(TestCase):
         """
 
         # Arrange: Simulate a reporting operation
-        mock_get_registration_purpose.return_value = Operation.Purposes.REPORTING_OPERATION
+        mock_get_registration_purpose.return_value = {"registration_purpose": Operation.Purposes.REPORTING_OPERATION}
         # Simulate high attributable emissions exceeding the verification threshold
-        mock_get_emissions.return_value = Decimal('30000000')
+        mock_get_emissions.return_value = Decimal('26000')
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
@@ -133,9 +137,9 @@ class TestReportVerificationService(TestCase):
         """
 
         # Arrange: Simulate a reporting operation
-        mock_get_registration_purpose.return_value = Operation.Purposes.REPORTING_OPERATION
+        mock_get_registration_purpose.return_value = {"registration_purpose": Operation.Purposes.REPORTING_OPERATION}
         # Simulate low attributable emissions below the verification threshold
-        mock_get_emissions.return_value = Decimal('20000000')
+        mock_get_emissions.return_value = Decimal('24000')
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
