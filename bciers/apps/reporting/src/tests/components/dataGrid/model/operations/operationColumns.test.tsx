@@ -22,7 +22,7 @@ describe("operationColumns function", () => {
   it("returns an array of column definitions", () => {
     const columns: GridColDef[] = operationColumns();
 
-    assert(columns.length === 4, "Expected 4 columns");
+    assert(columns.length === 5, "Expected 5 columns");
 
     assert(
       columns[0].field === "bcghg_id",
@@ -51,14 +51,20 @@ describe("operationColumns function", () => {
     );
     assert(columns[2].width === 120, "Column 3 width should be 120");
 
-    assert(columns[3].field === "more", 'Column 4 field should be "action"');
     assert(
-      columns[3].headerName === "More",
-      'Column 4 headerName should be "More"',
+      columns[3].field === "report_status",
+      'Column 4 field should be "report_status"',
     );
-    assert(columns[3].sortable === false, "Column 4 sortable should be false");
-    assert(columns[3].width === 120, "Column 4 width should be 120");
-    assert(columns[3].flex === 1, "Column 4 flex should be 1");
+    assert(columns[3].width === 160, "Column 4 width should be 160");
+
+    assert(columns[4].field === "more", 'Column 5 field should be "action"');
+    assert(
+      columns[4].headerName === "More",
+      'Column 5 headerName should be "More"',
+    );
+    assert(columns[4].sortable === false, "Column 4 sortable should be false");
+    assert(columns[4].width === 120, "Column 4 width should be 120");
+    assert(columns[4].flex === 1, "Column 4 flex should be 1");
   });
 
   it("has a 'start' button in the 'Actions' column when report_id is null", () => {
@@ -116,7 +122,7 @@ describe("operationColumns function", () => {
       name: "Operation without report",
       report_id: 1,
       report_version_id: 1,
-      report_status: "draft",
+      report_status: "Draft",
     };
 
     const params = {
@@ -139,7 +145,7 @@ describe("operationColumns function", () => {
       name: "Operation with report",
       report_id: 15,
       report_version_id: 15,
-      report_status: "draft",
+      report_status: "Draft",
     };
 
     const params = {
