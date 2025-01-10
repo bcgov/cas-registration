@@ -8,6 +8,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import ReportingOperationStatusCell from "@reporting/src/app/components/operations/cells/ReportingOperationStatusCell";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -121,6 +122,14 @@ const operationColumns = (): GridColDef[] => {
       renderCell: ActionCell,
       sortable: false,
       width: 120,
+    },
+    {
+      field: "report_status",
+      headerName: "Status",
+      renderCell: ReportingOperationStatusCell,
+      align: "center",
+      headerAlign: "center",
+      width: 160,
     },
     {
       field: "more",
