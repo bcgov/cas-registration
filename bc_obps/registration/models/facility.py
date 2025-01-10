@@ -55,12 +55,16 @@ class Facility(TimeStampedModel):
         db_comment='The latitude of the largest point of emissions',
         decimal_places=6,
         max_digits=8,
+        null=True,
+        blank=True,
         validators=[MinValueValidator(-90), MaxValueValidator(90)],
     )
     longitude_of_largest_emissions = models.DecimalField(
         db_comment='The longitude of the largest point of emissions',
         decimal_places=6,
         max_digits=9,
+        null=True,
+        blank=True,
         validators=[MinValueValidator(-180), MaxValueValidator(180)],
     )
     well_authorization_numbers = models.ManyToManyField(WellAuthorizationNumber, related_name='facilities')
