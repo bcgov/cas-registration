@@ -16,7 +16,7 @@ export default async function VerificationPage({
   // Create schema with dynamic facility list
   const verificationSchema = createVerificationSchema(facilityList.facilities);
   // Init the task list
-  const taskListElements = getSignOffAndSubmitSteps(version_id, 0);
+  const taskListElements = await getSignOffAndSubmitSteps(version_id, 0);
   // Render the verification form
   return (
     <>

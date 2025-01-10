@@ -8,7 +8,7 @@ import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalRevi
 export default async function FinalReviewPage({
   version_id,
 }: HasReportVersion) {
-  const taskListElements = getSignOffAndSubmitSteps(
+  const taskListElements = await getSignOffAndSubmitSteps(
     version_id,
     ActivePage.FinalReview,
   );

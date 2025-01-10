@@ -15,7 +15,7 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
   const uploadedAttachmentsDict =
     getDictFromAttachmentArray(uploadedAttachments);
 
-  const taskListElements = getSignOffAndSubmitSteps(version_id, 1);
+  const taskListElements = await getSignOffAndSubmitSteps(version_id, 1);
 
   //🔍 Check if reports need verification
   const needsVerification = await getReportNeedsVerification(version_id);
