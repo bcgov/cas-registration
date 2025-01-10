@@ -1,3 +1,4 @@
+from django.db import transaction
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
@@ -54,6 +55,7 @@ class ReportVersionService:
         report_version.delete()
 
     @staticmethod
+    @transaction.atomic
     def change_report_version_type(report_version_id: int, new_report_type: str) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=report_version_id)
         if report_version.report_type == new_report_type:
