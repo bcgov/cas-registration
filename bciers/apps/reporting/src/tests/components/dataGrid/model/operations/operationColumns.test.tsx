@@ -122,7 +122,7 @@ describe("operationColumns function", () => {
       name: "Operation without report",
       report_id: 1,
       report_version_id: 1,
-      report_status: "draft",
+      report_status: "Draft",
     };
 
     const params = {
@@ -145,7 +145,7 @@ describe("operationColumns function", () => {
       name: "Operation with report",
       report_id: 15,
       report_version_id: 15,
-      report_status: "draft",
+      report_status: "Draft",
     };
 
     const params = {

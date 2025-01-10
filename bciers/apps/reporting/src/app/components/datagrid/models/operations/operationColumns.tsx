@@ -8,7 +8,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
-import ReportingOperationStatusCell from "../../../operations/cells/ReportingOperationStatusCell";
+import ReportingOperationStatusCell from "@reporting/src/app/components/operations/cells/ReportingOperationStatusCell";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
