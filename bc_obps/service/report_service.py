@@ -18,15 +18,14 @@ class ReportService:
     @classmethod
     @transaction.atomic()
     def create_report(cls, operation_id: UUID, reporting_year: int) -> int:
-
         if ReportDataAccessService.report_exists(operation_id, reporting_year):
             raise Exception("A report already exists for this operation and year, unable to create a new one.")
 
         # Fetching report context
 
         operation = (
-            Operation.objects.select_related('operator')
-            .prefetch_related('activities', 'regulated_products')
+            Operation.objects.select_related("operator")
+            .prefetch_related("activities", "regulated_products")
             .get(id=operation_id)
         )
 

@@ -1,4 +1,4 @@
-from ninja import ModelSchema, Schema
+from ninja import Field, ModelSchema, Schema
 from reporting.models.report_operation import ReportOperation
 from pydantic import alias_generators
 from typing import List
@@ -17,19 +17,21 @@ class ReportOperationOut(ModelSchema):
     Schema for the get report operation endpoint request output
     """
 
+    registration_purpose: str = Field(..., alias="report_version.report.operation.registration_purpose")
+
     class Meta:
         alias_generator = to_snake
         model = ReportOperation
         fields = [
-            'operator_legal_name',
-            'operator_trade_name',
-            'operation_name',
-            'operation_type',
-            'operation_bcghgid',
-            'bc_obps_regulated_operation_id',
-            'activities',
-            'regulated_products',
-            'operation_representative_name',
+            "operator_legal_name",
+            "operator_trade_name",
+            "operation_name",
+            "operation_type",
+            "operation_bcghgid",
+            "bc_obps_regulated_operation_id",
+            "activities",
+            "regulated_products",
+            "operation_representative_name",
         ]
 
 
@@ -52,14 +54,14 @@ class ReportOperationIn(Schema):
     class Meta:
         alias_generator = to_snake
         fields = [
-            'operator_legal_name',
-            'operator_trade_name',
-            'operation_name',
-            'operation_type',
-            'operation_bcghgid',
-            'bc_obps_regulated_operation_id',
-            'activities',
-            'regulated_products',
-            'operation_representative_name',
-            'operation_report_type',
+            "operator_legal_name",
+            "operator_trade_name",
+            "operation_name",
+            "operation_type",
+            "operation_bcghgid",
+            "bc_obps_regulated_operation_id",
+            "activities",
+            "regulated_products",
+            "operation_representative_name",
+            "operation_report_type",
         ]

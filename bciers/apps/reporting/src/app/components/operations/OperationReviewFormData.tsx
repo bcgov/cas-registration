@@ -6,6 +6,10 @@ import { getRegulatedProducts } from "@bciers/actions/api";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import OperationReview from "./OperationReview";
+import {
+  ActivePage,
+  getOperationInformationTaskList,
+} from "../taskList/1_operationInformation";
 export default async function OperationReviewFormData({
   version_id,
 }: {
@@ -21,6 +25,12 @@ export default async function OperationReviewFormData({
 
   const registrationPurposeString = registrationPurpose?.registration_purpose;
 
+  const taskListElements = getOperationInformationTaskList(
+    version_id,
+    ActivePage.ReviewOperatorInfo,
+    reportOperation.operation_type,
+  );
+
   return (
     <OperationReview
       formData={reportOperation}
@@ -31,6 +41,7 @@ export default async function OperationReviewFormData({
       allRegulatedProducts={allRegulatedProducts}
       registrationPurpose={registrationPurposeString}
       facilityReport={facilityReport}
+      taskListElements={taskListElements}
     />
   );
 }

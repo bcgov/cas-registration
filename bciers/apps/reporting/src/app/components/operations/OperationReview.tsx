@@ -1,22 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
 import {
-  operationReviewSchema,
+  buildOperationsSchema,
   operationReviewUiSchema,
-  updateSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
-import {
-  ActivePage,
-  getOperationInformationTaskList,
-} from "../taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 interface Props {
   formData: any;
@@ -36,40 +32,37 @@ interface Props {
     facility_id: string;
     operation_type: string;
   };
+  taskListElements: TaskListElement[];
 }
 
 export default function OperationReview({
   formData,
   version_id,
-  reportType,
   reportingYear,
   allActivities,
   allRegulatedProducts,
-  registrationPurpose,
-  facilityReport,
+  taskListElements,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
-  const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
-  const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
-  const [formDataState, setFormDataState] = useState<any>(formData);
-  const [operationType, setOperationType] = useState("");
-  const [errors, setErrors] = useState<string[]>();
-
-  // 🛸 Set up routing urls
-  const backUrl = `/reports`;
-  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
-
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
     "MMM DD YYYY",
   );
 
-  const taskListElements = getOperationInformationTaskList(
-    version_id,
-    ActivePage.ReviewOperatorInfo,
-    operationType,
+  const schema = buildOperationsSchema(
+    reportingWindowEnd,
+    allActivities,
+    allRegulatedProducts,
   );
+
+  const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
+  const [formDataState, setFormDataState] = useState<any>(formData);
+  const [errors, setErrors] = useState<string[]>();
+
+  // 🛸 Set up routing urls
+  const backUrl = `/reports`;
+  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
 
   const prepareFormData = (formDataObject: any) => {
     return {
@@ -96,40 +89,6 @@ export default function OperationReview({
             }),
     };
   };
-
-  useEffect(() => {
-    if (formData && allActivities && allRegulatedProducts) {
-      const updatedFormData = {
-        ...formData,
-        operation_report_type: reportType?.report_type || "Annual Report",
-        activities: formData.activities || [],
-        regulated_products: formData.regulated_products || [],
-      };
-      setFormDataState(updatedFormData);
-
-      setSchema((prevSchema) =>
-        updateSchema(
-          prevSchema,
-          updatedFormData,
-          registrationPurpose,
-          reportingWindowEnd,
-          allActivities,
-          allRegulatedProducts,
-        ),
-      );
-    }
-    if (facilityReport?.facility_id) {
-      setOperationType(facilityReport.operation_type);
-    }
-  }, [
-    formData,
-    reportType,
-    facilityReport,
-    allActivities,
-    allRegulatedProducts,
-    registrationPurpose,
-    reportingWindowEnd,
-  ]);
 
   const saveHandler = async (
     data: { formData?: any },

@@ -1,80 +1,10 @@
-import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { purposeNote } from "./reviewOperationInformationText";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import selectWidget from "@bciers/components/form/widgets/SelectWidget";
+import { RJSFSchema } from "@rjsf/utils";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
-
-export const operationReviewSchema: RJSFSchema = {
-  type: "object",
-  title: "Review operation information",
-  required: [
-    "operation_representative_name",
-    "operation_bcghgid",
-    "operation_name",
-  ],
-
-  properties: {
-    purpose_note: {
-      type: "object",
-      readOnly: true,
-    },
-    operation_report_type: {
-      type: "string",
-      title:
-        "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
-      enum: ["Annual report", "Simple Report"],
-      default: "Annual report",
-    },
-
-    operation_representative_name: {
-      type: "string",
-      title: "Operation representative",
-    },
-
-    date_info: {
-      type: "object",
-      readOnly: true,
-    },
-
-    operator_legal_name: { type: "string", title: "Operator legal name" },
-    operator_trade_name: { type: "string", title: "Operator trade name" },
-    operation_name: { type: "string", title: "Operation name" },
-    operation_type: {
-      type: "string",
-      title: "Operation type",
-    },
-    registration_purpose: {
-      type: "string",
-      title: "Registration Purpose",
-    },
-    operation_bcghgid: { type: "string", title: "BCGHG ID" },
-    bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
-  },
-  dependencies: {
-    operation_report_type: {
-      oneOf: [
-        {
-          enum: ["Annual Report"],
-          properties: {
-            activities: {
-              type: "array",
-              title: "Reporting activities",
-              minItems: 1,
-            },
-            regulated_products: {
-              type: "array",
-              title: "Regulated products",
-              minItems: 1,
-            },
-          },
-          required: ["regulated_products", "activities"],
-        },
-      ],
-    },
-  },
-};
 
 export const operationReviewUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -148,7 +78,6 @@ export const operationReviewUiSchema = {
   },
 
   operation_representative_name: {
-    "ui:widget": "select",
     "ui:options": commonUiOptions,
   },
   "ui:submitButtonOptions": {
@@ -171,45 +100,60 @@ export const operationReviewUiSchema = {
   },
 };
 
-export const updateSchema = (
-  prevSchema: RJSFSchema,
-  formDataState: any,
-  registrationPurpose: string,
+export const buildOperationsSchema = (
   reportingWindowEnd: string,
   allActivities: any[],
   allRegulatedProducts: any[],
 ) => {
-  return {
-    ...prevSchema,
+  const schema: RJSFSchema = {
+    type: "object",
+    title: "Review operation information",
+    required: [
+      "operation_representative_name",
+      "operation_bcghgid",
+      "operation_name",
+    ],
+
     properties: {
-      ...prevSchema.properties,
+      purpose_note: {
+        type: "object",
+        readOnly: true,
+      },
       operation_report_type: {
         type: "string",
         title:
           "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
         enum: ["Annual Report", "Simple Report"],
-        default: formDataState?.operation_report_type || "Annual Report",
+        default: "Annual Report",
       },
+
       operation_representative_name: {
         type: "string",
         title: "Operation representative",
-        enum: [formDataState.operation_representative_name || ""],
       },
-      operation_type: {
-        type: "string",
-        title: "Operation type",
-        default: [formDataState.operation_type || ""],
-      },
-      registration_purpose: {
-        type: "string",
-        title: "Registration Purpose",
-        default: registrationPurpose || "",
-      },
+
       date_info: {
         type: "object",
         readOnly: true,
         title: `Please ensure this information was accurate for ${reportingWindowEnd}`,
       },
+
+      operator_legal_name: { type: "string", title: "Operator legal name" },
+      operator_trade_name: { type: "string", title: "Operator trade name" },
+
+      operation_name: { type: "string", title: "Operation name" },
+
+      operation_type: {
+        type: "string",
+        title: "Operation type",
+      },
+      registration_purpose: {
+        type: "string",
+        title: "Registration Purpose",
+      },
+
+      operation_bcghgid: { type: "string", title: "BCGHG ID" },
+      bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
     },
     dependencies: {
       operation_report_type: {
@@ -247,4 +191,5 @@ export const updateSchema = (
       },
     },
   };
+  return schema;
 };
