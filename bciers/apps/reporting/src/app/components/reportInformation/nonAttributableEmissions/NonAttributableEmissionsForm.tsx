@@ -2,14 +2,13 @@
 
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { UUID } from "crypto";
 import {
   generateUpdatedSchema,
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 interface ActivityData {
   id: number;
@@ -21,7 +20,7 @@ interface ActivityData {
 
 interface NonAttributableEmissionsProps {
   versionId: number;
-  facilityId: UUID;
+  facilityId: string;
   emissionFormData: ActivityData[]; // Define emissionFormData as an array of ActivityData
   gasTypes: { id: number; chemical_formula: string }[];
   emissionCategories: { id: number; category_name: string }[];

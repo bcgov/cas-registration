@@ -1,4 +1,4 @@
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import SignOffPage from "@reporting/src/app/components/signOff/SignOffPage";
+import Page from "@reporting/src/app/components/signOff/SignOffPage";
 
-export default defaultPageFactory(SignOffPage);
+export default defaultPageFactory(Page);

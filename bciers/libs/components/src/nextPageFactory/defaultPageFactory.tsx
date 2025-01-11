@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import LoadingSpinner from "../loading/LoadingSpinner";
+import Loading from "../loading/SkeletonForm";
 
 /**
  * Page factory for NextJS pages with parameters in URL.
@@ -24,7 +24,7 @@ export default function defaultPageFactory<TPageParams extends {}>(
 ) {
   return async function Page(props: { params: TPageParams }) {
     return (
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<Loading />}>
         <Component {...props.params} />
       </Suspense>
     );

@@ -4,12 +4,11 @@ import { createVerificationSchema } from "@reporting/src/app/components/verifica
 import { verificationUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 
 export default async function VerificationPage({
   version_id,
-}: {
-  version_id: number;
-}) {
+}: HasReportVersion) {
   // Fetch initial form data
   const initialData = await getReportVerification(version_id);
   // Fetch the list of facilities associated with the specified version ID

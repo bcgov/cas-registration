@@ -17,11 +17,11 @@ import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import {
   ActivePage,
   getOperationInformationTaskList,
-} from "../../taskList/1_operationInformation";
+} from "@reporting/src/app/components/taskList/1_operationInformation";
 
 interface Props {
   version_id: number;

@@ -17,7 +17,6 @@ import {
 } from "@reporting/src/data/jsonSchema/facilities";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
-import { UUID } from "crypto";
 import FormContext, { IChangeEvent } from "@rjsf/core";
 import { useSearchParams } from "next/navigation";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
@@ -26,7 +25,7 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   version_id: number;
-  facility_id: UUID;
+  facility_id: string;
 }
 
 interface Activity {
@@ -34,7 +33,7 @@ interface Activity {
   id: number;
 }
 
-const getFacilityReport = async (version_id: number, facility_id: UUID) => {
+const getFacilityReport = async (version_id: number, facility_id: string) => {
   return actionHandler(
     `reporting/report-version/${version_id}/facility-report/${facility_id}`,
     "GET",

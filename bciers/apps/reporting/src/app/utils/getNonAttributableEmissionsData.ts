@@ -1,8 +1,7 @@
 import { actionHandler } from "@bciers/actions";
-import { UUID } from "crypto";
 export async function getNonAttributableEmissionsData(
   version_id: number,
-  facilityId: UUID,
+  facilityId: string,
 ) {
   let response = await actionHandler(
     `reporting/report-version/${version_id}/facilities/${facilityId}/non-attributable`,

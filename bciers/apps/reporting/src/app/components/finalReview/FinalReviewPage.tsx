@@ -1,11 +1,13 @@
-import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import {
   ActivePage,
   getSignOffAndSubmitSteps,
-} from "../taskList/5_signOffSubmit";
-import FinalReviewForm from "./FinalReviewForm";
+} from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalReviewForm";
 
-const FinalReviewPage: React.FC<HasReportVersion> = ({ version_id }) => {
+export default async function FinalReviewPage({
+  version_id,
+}: HasReportVersion) {
   const taskListElements = getSignOffAndSubmitSteps(
     version_id,
     ActivePage.FinalReview,
@@ -17,6 +19,4 @@ const FinalReviewPage: React.FC<HasReportVersion> = ({ version_id }) => {
       taskListElements={taskListElements}
     />
   );
-};
-
-export default FinalReviewPage;
+}
