@@ -1,7 +1,4 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
 import NonAttributableEmissionsForm from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributableEmissionsForm";
-import { UUID } from "crypto";
 import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 import { getAllEmissionCategories } from "@reporting/src/app/utils/getAllEmissionCategories";
 import { getNonAttributableEmissionsData } from "@reporting/src/app/utils/getNonAttributableEmissionsData";
@@ -9,27 +6,24 @@ import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivit
 import {
   ActivePage,
   getFacilitiesInformationTaskList,
-} from "../../taskList/2_facilitiesInformation";
+} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 
-interface NonAttributableEmissionsProps {
-  versionId: number;
-  facilityId: UUID;
-}
+import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 
-export default async function NonAttributableEmissions({
-  versionId,
-  facilityId,
-}: NonAttributableEmissionsProps) {
+export default async function NonAttributableEmissionsPage({
+  version_id,
+  facility_id,
+}: HasFacilityId) {
   const gasTypes = await getAllGasTypes();
   const emissionCategories = await getAllEmissionCategories();
   const emissionFormData = await getNonAttributableEmissionsData(
-    versionId,
-    facilityId,
+    version_id,
+    facility_id,
   );
-  const orderedActivities = await getOrderedActivities(versionId, facilityId);
+  const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const taskListElements = getFacilitiesInformationTaskList(
-    versionId,
-    facilityId,
+    version_id,
+    facility_id,
     orderedActivities,
     ActivePage.NonAttributableEmission,
   );
@@ -57,17 +51,15 @@ export default async function NonAttributableEmissions({
   );
 
   return (
-    <Suspense fallback={<Loading />}>
-      <NonAttributableEmissionsForm
-        versionId={versionId}
-        facilityId={facilityId}
-        emissionFormData={emissionFormData}
-        gasTypes={gasTypes}
-        emissionCategories={emissionCategories}
-        gasTypeMap={gasTypeMap} // Pass the map to the form component
-        emissionCategoryMap={emissionCategoryMap} // Pass the map to the form component
-        taskListElements={taskListElements}
-      />
-    </Suspense>
+    <NonAttributableEmissionsForm
+      versionId={version_id}
+      facilityId={facility_id}
+      emissionFormData={emissionFormData}
+      gasTypes={gasTypes}
+      emissionCategories={emissionCategories}
+      gasTypeMap={gasTypeMap} // Pass the map to the form component
+      emissionCategoryMap={emissionCategoryMap} // Pass the map to the form component
+      taskListElements={taskListElements}
+    />
   );
 }

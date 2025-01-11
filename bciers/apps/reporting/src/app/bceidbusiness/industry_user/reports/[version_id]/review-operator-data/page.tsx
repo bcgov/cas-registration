@@ -1,15 +1,4 @@
-import OperationReviewFormData from "apps/reporting/src/app/components/operations/OperationReviewFormData";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "apps/reporting/src/app/components/operations/OperationReviewPage";
 
-export default async function Page({
-  params,
-}: {
-  params: { version_id: number };
-}) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <OperationReviewFormData version_id={params.version_id} />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(Page);

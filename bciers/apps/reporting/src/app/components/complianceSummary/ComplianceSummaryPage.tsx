@@ -1,17 +1,9 @@
-import React from "react";
-import { actionHandler } from "@bciers/actions";
-import ComplianceSummaryForm from "./ComplianceSummaryForm";
+import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
-import { getComplianceSummaryTaskList } from "../taskList/4_complianceSummary";
+import { getComplianceSummaryTaskList } from "@reporting/src/app/components/taskList/4_complianceSummary";
+import { getComplianceData } from "@reporting/src/app/utils/getComplianceData";
 
-const getComplianceData = async (versionId: number) => {
-  return actionHandler(
-    `reporting/report-version/${versionId}/compliance-data`,
-    "GET",
-    `reporting/report-version/${versionId}/compliance-data`,
-  );
-};
 export default async function ComplianceSummaryPage({
   version_id,
 }: HasReportVersion) {

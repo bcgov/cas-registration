@@ -15,8 +15,8 @@ import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import {
   ActivePage,
   getOperationInformationTaskList,
-} from "../taskList/1_operationInformation";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+} from "@reporting/src/app/components/taskList/1_operationInformation";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 interface Props {
   formData: any;
@@ -38,7 +38,7 @@ interface Props {
   };
 }
 
-export default function OperationReview({
+export default function OperationReviewForm({
   formData,
   version_id,
   reportType,

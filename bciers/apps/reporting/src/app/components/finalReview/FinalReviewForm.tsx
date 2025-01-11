@@ -1,8 +1,8 @@
 "use client";
 
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { HasReportVersion } from "../../utils/defaultPageFactoryTypes";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
+import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { useRouter } from "next/navigation";
 
