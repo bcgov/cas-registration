@@ -73,11 +73,7 @@ export default function ActivityForm({
     setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
   }, [currentActivity]);
 
-  const validator = customizeValidator({});
-  const customValidate = (
-    formData: { [key: string]: any },
-    errors: { [key: string]: any },
-  ) => {
+  const customValidate = (formData: { [key: string]: any }, errors: any) => {
     const results = findPathsWithNegativeNumbers(formData);
     results.forEach((result) => {
       setNestedErrorForCustomValidate(errors, result, "must be >= 0");
