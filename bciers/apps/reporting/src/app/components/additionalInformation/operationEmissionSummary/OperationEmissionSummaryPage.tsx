@@ -6,7 +6,7 @@ import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAddit
 import { NEW_ENTRANT_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
 
 interface Props {
-  versionId: number;
+  version_id: number; //name of the property from the pageFactory props
 }
 
 const getSummaryData = async (versionId: number) => {
@@ -17,7 +17,8 @@ const getSummaryData = async (versionId: number) => {
   );
 };
 
-const OperationEmissionSummaryPage = async ({ versionId }: Props) => {
+const OperationEmissionSummaryPage = async ({ version_id }: Props) => {
+  const versionId = version_id;
   const summaryData = await getSummaryData(versionId);
   const taskListData = getAdditionalInformationTaskList(versionId);
 
