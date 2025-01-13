@@ -122,3 +122,30 @@ class ComplianceTestInfrastructure:
         )
 
         return t
+
+    @classmethod
+    def pare_data_single_product_flaring(cls):
+        # Pare down build data to data needed for this test
+        ReportProductEmissionAllocation.objects.exclude(emission_category_id=1).delete()
+        ReportProduct.objects.exclude(product_id=1).delete()
+        ReportEmission.objects.exclude(gas_type_id=1).delete()
+
+    @classmethod
+    def pare_data_remove_reporting_only(cls):
+        # Pare down build data to data needed for this test
+        ReportProductEmissionAllocation.objects.filter(allocated_quantity='3000.0005').delete()
+        ReportProduct.objects.exclude(product_id=1).delete()
+        ReportEmission.objects.filter(gas_type_id=3).delete()
+
+    @classmethod
+    def reporting_year_2025(cls):
+        reporting_year = make_recipe(
+            "reporting.tests.utils.reporting_year",
+            reporting_year=2025,
+            reporting_window_start='2025-12-31 16:00:00-08',
+            reporting_window_end='2026-12-31 16:00:00-08',
+            report_due_data='2025-05-31 16:59:59.999-07',
+        )
+        report = Report.objects.get(reporting_year_id=2024)
+        report.reporting_year = reporting_year
+        report.save()
