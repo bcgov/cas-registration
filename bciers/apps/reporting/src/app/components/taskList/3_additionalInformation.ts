@@ -3,6 +3,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 export enum ActivePage {
   "AdditionalReportingData" = 1,
   "NewEntrantInformation",
+  "OperationEmissionSummary",
 }
 
 export const getAdditionalInformationTaskList: (
@@ -25,7 +26,18 @@ export const getAdditionalInformationTaskList: (
     link: `/reports/${versionId}/new-entrant-information`,
   };
 
+  const operationEmissionSummaryItem: TaskListElement = {
+    type: "Page",
+    title: "Operation emission summary",
+    isActive: activeIndex === ActivePage.OperationEmissionSummary,
+    link: `/reports/${versionId}/emission-summary`,
+  };
+
   return isNewEntrant
-    ? [additionalReportingDataItem, newEntrantItem]
-    : [additionalReportingDataItem];
+    ? [
+        additionalReportingDataItem,
+        newEntrantItem,
+        operationEmissionSummaryItem,
+      ]
+    : [additionalReportingDataItem, operationEmissionSummaryItem];
 };
