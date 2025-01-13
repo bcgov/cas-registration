@@ -3,8 +3,12 @@ import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilit
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
 import { verificationUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
-import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import {
+  ActivePage,
+  getSignOffAndSubmitSteps,
+} from "@reporting/src/app/components/taskList/5_signOffSubmit";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 
 export default async function VerificationPage({
   version_id,
@@ -15,8 +19,14 @@ export default async function VerificationPage({
   const facilityList = await getReportFacilityList(version_id);
   // Create schema with dynamic facility list
   const verificationSchema = createVerificationSchema(facilityList.facilities);
-  // Init the task list
-  const taskListElements = await getSignOffAndSubmitSteps(version_id, 0);
+
+  //🔍 Check if reports need verification
+  const needsVerification = await getReportNeedsVerification(version_id);
+  const taskListElements = await getSignOffAndSubmitSteps(
+    version_id,
+    ActivePage.Verification,
+    needsVerification,
+  );
   // Render the verification form
   return (
     <>

@@ -1,10 +1,10 @@
-import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
+import { render } from "@testing-library/react";
 import VerificationPage from "@reporting/src/app/components/verification/VerificationPage";
+import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import { getReportVerification } from "@reporting/src/app/utils/getReportVerification";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
 import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
-import { render } from "@testing-library/react";
 
 vi.mock("@reporting/src/app/components/verification/VerificationForm", () => ({
   default: vi.fn(),
@@ -25,8 +25,15 @@ vi.mock(
   }),
 );
 
+vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
+  getReportNeedsVerification: vi.fn(() => Promise.resolve(true)), // Mocking to return true
+}));
+
 vi.mock("@reporting/src/app/components/taskList/5_signOffSubmit", () => ({
   getSignOffAndSubmitSteps: vi.fn(),
+  ActivePage: {
+    Verification: "Verification",
+  },
 }));
 
 const mockVerificationForm = VerificationForm as ReturnType<typeof vi.fn>;
@@ -43,8 +50,9 @@ const mockGetSignOffAndSubmitSteps = getSignOffAndSubmitSteps as ReturnType<
   typeof vi.fn
 >;
 
-describe("The VerificationPage component", () => {
-  it("must render the VerificationForm component with the correct data", async () => {
+describe("VerificationPage component", () => {
+  it("renders the VerificationForm component with the correct data", async () => {
+    const mockVersionId = 12345;
     const mockInitialData = { field1: "value1", field2: "value2" };
     const mockFacilityList = {
       facilities: [
@@ -54,7 +62,7 @@ describe("The VerificationPage component", () => {
     };
     const mockVerificationSchema = { type: "object", properties: {} };
     const mockTaskListElements = [
-      { type: "Page", title: "Sign-off", isActive: true },
+      { type: "Page", title: "Verification", isActive: true },
     ];
 
     mockGetReportVerification.mockResolvedValue(mockInitialData);
@@ -62,13 +70,24 @@ describe("The VerificationPage component", () => {
     mockCreateVerificationSchema.mockReturnValue(mockVerificationSchema);
     mockGetSignOffAndSubmitSteps.mockResolvedValue(mockTaskListElements);
 
-    render(await VerificationPage({ version_id: 12345 }));
+    render(await VerificationPage({ version_id: mockVersionId }));
+
+    expect(mockGetReportVerification).toHaveBeenCalledWith(mockVersionId);
+    expect(mockGetReportFacilityList).toHaveBeenCalledWith(mockVersionId);
+    expect(mockCreateVerificationSchema).toHaveBeenCalledWith(
+      mockFacilityList.facilities,
+    );
+    expect(mockGetSignOffAndSubmitSteps).toHaveBeenCalledWith(
+      mockVersionId,
+      "Verification",
+      true,
+    );
 
     expect(mockVerificationForm).toHaveBeenCalledWith(
       {
-        version_id: 12345,
+        version_id: mockVersionId,
         verificationSchema: mockVerificationSchema,
-        verificationUiSchema: expect.any(Object), // UI Schema is a constant and doesn't need specific checks
+        verificationUiSchema: expect.any(Object),
         initialData: mockInitialData,
         taskListElements: mockTaskListElements,
       },

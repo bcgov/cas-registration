@@ -12,12 +12,15 @@ vi.mock("@reporting/src/app/utils/getAttachments", () => ({
   default: vi.fn(),
 }));
 
-vi.mock("@reporting/src/app/components/taskList/5_signOffSubmit", () => ({
-  getSignOffAndSubmitSteps: vi.fn().mockReturnValue("test task list"),
-}));
-
 vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
   getReportNeedsVerification: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/components/taskList/5_signOffSubmit", () => ({
+  getSignOffAndSubmitSteps: vi.fn().mockReturnValue("test task list"),
+  ActivePage: {
+    Attachments: "Attachments",
+  },
 }));
 
 const mockAttachmentsForm = AttachmentsForm as ReturnType<typeof vi.fn>;

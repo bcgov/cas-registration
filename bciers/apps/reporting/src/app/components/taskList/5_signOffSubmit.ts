@@ -1,5 +1,4 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 
 export enum ActivePage {
   "Verification" = 0,
@@ -10,13 +9,12 @@ export enum ActivePage {
 export const getSignOffAndSubmitSteps: (
   versionId: number,
   activeIndex?: ActivePage | number,
+  needsVerification?: boolean,
 ) => Promise<TaskListElement[]> = async (
   versionId,
   activeIndex = undefined,
+  needsVerification = false,
 ) => {
-  // Fetch needsVerification within the function
-  const needsVerification = await getReportNeedsVerification(versionId);
-  console.log(needsVerification);
   // Build the TaskListElement array
   const elements: TaskListElement[] = [
     {
@@ -44,12 +42,10 @@ export const getSignOffAndSubmitSteps: (
       isActive: activeIndex === ActivePage.SignOff,
     },
   ];
-  // Conditionally filter out "Verification" and "Attachments" based on needsVerification is false
+  // Conditionally filter out "Verification" based on needsVerification is false
   const filteredElements: TaskListElement[] = elements.filter((element) => {
     if (!needsVerification) {
-      return (
-        element.title !== "Verification" && element.title !== "Attachments"
-      );
+      return element.title !== "Verification";
     }
     return true; // If needsVerification is true, keep all elements
   });
