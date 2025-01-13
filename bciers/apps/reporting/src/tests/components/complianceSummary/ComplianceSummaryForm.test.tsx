@@ -129,9 +129,7 @@ describe("ComplianceSummaryForm", () => {
 
     fireEvent.click(button);
 
-    expect(mockPush).toHaveBeenCalledWith(
-      `/reports/1/additional-reporting-data`,
-    );
+    expect(mockPush).toHaveBeenCalledWith(`/reports/1/emission-summary`);
   });
 
   it("should render a continue button that navigates to the final review page", async () => {
