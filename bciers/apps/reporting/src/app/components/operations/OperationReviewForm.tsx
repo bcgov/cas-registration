@@ -11,7 +11,6 @@ import {
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { actionHandler } from "@bciers/actions";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 interface Props {
   formData: any;
@@ -31,7 +30,11 @@ interface Props {
     facility_id: number;
     operation_type: string;
   };
-  allRepresentatives: { id: number; representative_name: string }[];
+  allRepresentatives: {
+    selected_for_report: boolean;
+    id: number;
+    representative_name: string;
+  }[];
 }
 
 export default function OperationReviewForm({
@@ -120,11 +123,18 @@ export default function OperationReviewForm({
 
   useEffect(() => {
     if (formData && allActivities && allRegulatedProducts) {
+      const selectedRepresentatives =
+        formData.operation_representative_name
+          ?.filter(
+            (rep: { selected_for_report: any }) => rep.selected_for_report,
+          )
+          .map((rep: { id: any }) => rep.id) || [];
       const updatedFormData = {
         ...formData,
         operation_report_type: reportType?.report_type || "Annual Report",
         activities: formData.activities || [],
         regulated_products: formData.regulated_products || [],
+        operation_representative_name: selectedRepresentatives,
       };
       setFormDataState(updatedFormData);
 
@@ -152,6 +162,7 @@ export default function OperationReviewForm({
     allRegulatedProducts,
     registrationPurpose,
     reportingWindowEnd,
+    allRepresentatives,
   ]);
 
   const saveHandler = async (
@@ -161,7 +172,7 @@ export default function OperationReviewForm({
     const method = "POST";
     const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
     const preparedData = prepareFormData(data.formData);
-    const payload = safeJsonParse(JSON.stringify(preparedData));
+    const payload = JSON.stringify(preparedData);
     const response = await actionHandler(endpoint, method, endpoint, {
       body: payload,
     });

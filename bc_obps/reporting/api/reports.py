@@ -12,7 +12,7 @@ from reporting.schema.report import StartReportIn
 from service.report_service import ReportService
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from reporting.schema.report_operation import ReportOperationIn, ReportOperationSchemaOut
+from reporting.schema.report_operation import ReportOperationIn, ReportOperationSchemaOut, ReportOperationOut
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
@@ -54,7 +54,7 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
 
 @router.post(
     "/report-version/{version_id}/report-operation",
-    response={200: ReportOperationIn, custom_codes_4xx: Message},
+    response={201: ReportOperationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
@@ -63,9 +63,9 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
 @handle_http_errors()
 def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
-) -> Tuple[Literal[200], ReportOperationIn]:
+) -> Tuple[Literal[201], ReportOperationOut]:
     report_operation = ReportService.save_report_operation(version_id, payload)
-    return 200, report_operation  # type: ignore
+    return 201, report_operation  # type: ignore
 
 
 @router.get(

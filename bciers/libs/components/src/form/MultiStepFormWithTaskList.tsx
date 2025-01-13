@@ -22,7 +22,7 @@ interface Props {
   cancelUrl?: string;
   backUrl?: string;
   continueUrl: string;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: any) => Promise<any>;
   buttonText?: string;
   onChange?: (data: any) => void;
   error?: any;

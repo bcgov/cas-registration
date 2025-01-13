@@ -22,10 +22,9 @@ export default async function OperationReviewPage({
   const transformedOperation = {
     ...reportOperation.report_operation,
     operation_representative_name:
-      reportOperation.report_operation_representative.map(
-        (rep: { id: number }) => rep.id,
-      ),
+      reportOperation.report_operation_representative,
   };
+  console.log("transformedOperation", transformedOperation);
   const allRepresentatives = reportOperation.report_operation_representative;
 
   return (
