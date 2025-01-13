@@ -2,7 +2,10 @@ import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTyp
 import AttachmentsForm from "./AttachmentsForm";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
 import { UploadedAttachment } from "./types";
-import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import {
+  ActivePage,
+  getSignOffAndSubmitSteps,
+} from "@reporting/src/app/components/taskList/5_signOffSubmit";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 
 export const getDictFromAttachmentArray = (array: UploadedAttachment[]) =>
@@ -15,10 +18,13 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
   const uploadedAttachmentsDict =
     getDictFromAttachmentArray(uploadedAttachments);
 
-  const taskListElements = getSignOffAndSubmitSteps(version_id, 1);
-
   //🔍 Check if reports need verification
   const needsVerification = await getReportNeedsVerification(version_id);
+  const taskListElements = await getSignOffAndSubmitSteps(
+    version_id,
+    ActivePage.Attachments,
+    needsVerification,
+  );
 
   return (
     <AttachmentsForm
