@@ -10,6 +10,7 @@ import {
   operationEmissionSummaryUiSchema,
 } from "@reporting/src/data/jsonSchema/operationEmissionSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
+import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
 
 interface Props {
   versionId: number;
@@ -46,24 +47,20 @@ const OperationEmissionSummary: React.FC<Props> = ({
   summaryFormData,
   taskListElements,
 }) => {
-  const customStepNames = [
-    "Operation Information",
-    "Report Information",
-    "Additional Information",
-    "Compliance Summary",
-    "Sign-off & Submit",
-  ];
-
-  const backRef = `/reports/${versionId}/new-entrant-information`; // NEED TO CHECK THIS URL
-  const continueRef = `/reports/${versionId}/compliance-summary`; // NEED TO CHECK THIS URL
+  const backRef = `/reports/${versionId}/new-entrant-information`;
+  const continueRef = `/reports/${versionId}/compliance-summary`;
+  const additionalReportingStepIndex = 2;
 
   return (
     <Box sx={{ p: 3 }}>
       <div
         className="container mx-auto p-4"
-        data-testid="operation-emission-summary" // NEED TO CHECK THIS VALUE
+        data-testid="operation-emission-summary"
       >
-        <MultiStepHeader stepIndex={1} steps={customStepNames} />
+        <MultiStepHeader
+          stepIndex={additionalReportingStepIndex}
+          steps={multiStepHeaderSteps}
+        />
       </div>
       <div className="w-full flex">
         <ReportingTaskList elements={taskListElements} />
