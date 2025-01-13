@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
-import OperationEmissionSummary from "@reporting/src/app/components/additionalInformation/operationEmissionSummary/OperationEmissionSummary";
+import OperationEmissionSummary from "@reporting/src/app/components/additionalInformation/operationEmissionSummary/OperationEmissionSummaryForm";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),

@@ -1,14 +1,4 @@
-import { Suspense } from "react";
-import OperationEmissionSummaryData from "@reporting/src/app/components/additionalInformation/operationEmissionSummary/OperationEmissionSummaryData";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@reporting/src/app/components/additionalInformation/operationEmissionSummary/OperationEmissionSummaryPage";
 
-export default async function Page(router: any) {
-  return (
-    <>
-      <Suspense fallback="Loading Schema">
-        <OperationEmissionSummaryData
-          versionId={parseInt(router.params?.version_id)}
-        />
-      </Suspense>
-    </>
-  );
-}
+export default defaultPageFactory(Page);

@@ -40,14 +40,18 @@ interface Props {
     };
   };
   taskListElements: TaskListElement[];
+  isNewEntrant: boolean;
 }
 
 const OperationEmissionSummary: React.FC<Props> = ({
   versionId,
   summaryFormData,
   taskListElements,
+  isNewEntrant,
 }) => {
-  const backRef = `/reports/${versionId}/new-entrant-information`;
+  const backRef = isNewEntrant
+    ? `/reports/${versionId}/new-entrant-information`
+    : `/reports/${versionId}/additional-reporting-data`;
   const continueRef = `/reports/${versionId}/compliance-summary`;
   const additionalReportingStepIndex = 2;
 

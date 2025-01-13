@@ -1,12 +1,15 @@
 import React from "react";
 import { actionHandler } from "@bciers/actions";
-import OperationEmissionSummary from "./OperationEmissionSummary";
+import OperationEmissionSummaryForm from "./OperationEmissionSummaryForm";
 import { getAdditionalInformationTaskList } from "@reporting/src/app/components/taskList/3_additionalInformation";
+import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
+import { NEW_ENTRANT_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
+
 interface Props {
   versionId: number;
 }
 
-const getsummaryData = async (versionId: number) => {
+const getSummaryData = async (versionId: number) => {
   return actionHandler(
     `reporting/report-version/${versionId}/emission-summary`,
     "GET",
@@ -14,8 +17,8 @@ const getsummaryData = async (versionId: number) => {
   );
 };
 
-const OperationEmissionSummaryData = async ({ versionId }: Props) => {
-  const summaryData = await getsummaryData(versionId);
+const OperationEmissionSummaryPage = async ({ versionId }: Props) => {
+  const summaryData = await getSummaryData(versionId);
   const taskListData = getAdditionalInformationTaskList(versionId);
 
   const emissionSummaryTaskListElement = taskListData.find(
@@ -23,6 +26,10 @@ const OperationEmissionSummaryData = async ({ versionId }: Props) => {
   );
   if (emissionSummaryTaskListElement)
     emissionSummaryTaskListElement.isActive = true;
+
+  const isNewEntrant =
+    (await getReportAdditionalData(versionId))?.registration_purpose ===
+    NEW_ENTRANT_REGISTRATION_PURPOSE;
 
   const formData = {
     attributableForReporting: summaryData.attributable_for_reporting ?? "0",
@@ -52,12 +59,13 @@ const OperationEmissionSummaryData = async ({ versionId }: Props) => {
   };
 
   return (
-    <OperationEmissionSummary
+    <OperationEmissionSummaryForm
       versionId={versionId}
       summaryFormData={formData}
       taskListElements={taskListData}
+      isNewEntrant={isNewEntrant}
     />
   );
 };
 
-export default OperationEmissionSummaryData;
+export default OperationEmissionSummaryPage;
