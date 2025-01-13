@@ -100,7 +100,8 @@ const ActionCell = (params: GridRenderCellParams) => {
           OperationId,
           reportingYearObj.reporting_year,
         );
-        router.push(`reports/${newReportId}/review-operator-data`);
+        if (typeof newReportId === "number")
+          router.push(`reports/${newReportId}/review-operator-data`);
       }}
     >
       Start
