@@ -45,7 +45,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   taskListElements,
 }) => {
-  const backUrl = `/reports/${versionId}/additional-reporting-data`;
+  const backUrl = `/reports/${versionId}/emission-summary`;
   const continueUrl = `/reports/${versionId}/final-review`;
 
   return (
