@@ -17,7 +17,8 @@
           },
           "annualHydrogenProduction": {
             "type": "number",
-            "title": "Annual Hydrogen Production"
+            "title": "Annual Hydrogen Production",
+            "minimum": 0
           },
           "unitForAnnualFeedstockAmount": {
             "type": "string",

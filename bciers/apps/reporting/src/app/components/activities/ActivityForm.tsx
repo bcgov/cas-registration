@@ -12,6 +12,8 @@ import { useSearchParams } from "next/navigation";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { customizeValidator } from "@rjsf/validator-ajv8";
+import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
+import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -70,6 +72,15 @@ export default function ActivityForm({
     setFormState(activityFormData);
     setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
   }, [currentActivity]);
+
+  const customValidate = (formData: { [key: string]: any }, errors: any) => {
+    const results = findPathsWithNegativeNumbers(formData);
+    results.forEach((result) => {
+      setNestedErrorForCustomValidate(errors, result, "must be >= 0");
+    });
+
+    return errors;
+  };
 
   const fetchSchemaData = async (sourceTypeIds: string[]) => {
     const sourceTypeQueryString = sourceTypeIds
@@ -178,6 +189,7 @@ export default function ActivityForm({
       backUrl={createUrl(false)}
       continueUrl={createUrl(true)}
       validator={customizeValidator({})}
+      customValidate={customValidate}
       omitExtraData={false}
     />
   );

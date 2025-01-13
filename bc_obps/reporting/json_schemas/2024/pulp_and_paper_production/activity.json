@@ -15,11 +15,13 @@
           },
           "annualAmount": {
             "type": "number",
-            "title": "Annual Amount (t)"
+            "title": "Annual Amount (t)",
+            "minimum": 0
           },
           "purityOfCarbonate": {
             "type": "number",
-            "title": "Purity Of Carbonate (Weight Fraction)"
+            "title": "Purity Of Carbonate (Weight Fraction)",
+            "minimum": 0
           }
         }
       }
