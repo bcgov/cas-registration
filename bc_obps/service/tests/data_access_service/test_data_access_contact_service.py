@@ -10,6 +10,7 @@ from registration.tests.utils.bakers import (
 )
 from registration.models.user_operator import UserOperator
 from service.data_access_service.contact_service import ContactDataAccessService
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
@@ -17,9 +18,9 @@ pytestmark = pytest.mark.django_db
 class TestDataAccessContactService:
     @staticmethod
     def test_list_contacts_for_irc_user():
-        contact_baker(_quantity=10)
-        cas_admin = user_baker({'app_role': AppRole.objects.get(role_name='cas_admin')})
-        assert ContactDataAccessService.get_all_contacts_for_user(cas_admin).count() == 10
+        baker.make_recipe('utils.contact', _quantity=10)
+        user = baker.make_recipe('utils.cas_admin')
+        assert ContactDataAccessService.get_all_contacts_for_user(user).count() == 10
 
     @staticmethod
     def test_list_contacts_for_industry_user():
