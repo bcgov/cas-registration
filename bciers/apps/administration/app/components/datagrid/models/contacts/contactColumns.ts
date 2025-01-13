@@ -13,17 +13,9 @@ const contactColumns = (
     },
     { field: "last_name", headerName: "Last Name", width: 200 },
     { field: "email", headerName: "Business Email Address", flex: 1 },
-    // Two below fields don't exist in the data coming from the server(until we figure out how to get them)
     {
-      field: "operation_name",
-      headerName: "Operation Name",
-      sortable: false,
-      width: 200,
-    },
-    {
-      field: "operator_legal_name",
+      field: "operators__legal_name",
       headerName: "Operator Legal Name",
-      sortable: false,
       width: 200,
     },
     {
@@ -37,7 +29,7 @@ const contactColumns = (
 
   if (isExternalUser) {
     // remove operator_legal_name and operation_name columns for external users
-    columns.splice(3, 2);
+    columns.splice(3, 1);
   }
 
   return columns;
