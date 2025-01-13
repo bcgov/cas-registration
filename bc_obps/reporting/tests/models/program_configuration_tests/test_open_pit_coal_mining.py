@@ -89,7 +89,7 @@ class OpenPitCoalMining2024Test(TestCase):
         # Define the expected schema for the "Feedstock Material Balance" methodology
         expected_schema = {
             "coalType": {"title": "Coal type", "type": "string", "enum": ["Bituminous coal"]},
-            "quantityOfCoal": {"type": "number", "title": "Quantity of coal"},
+            "quantityOfCoal": {"type": "number", "title": "Quantity of coal", "minimum": 0},
             "quantityOfCoalUnit": {
                 "type": "string",
                 "title": "Quantity of coal unit",
