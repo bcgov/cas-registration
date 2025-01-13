@@ -54,7 +54,8 @@
                 },
                 "annualFuelAmount": {
                   "title": "Annual Fuel Amount",
-                  "type": "number"
+                  "type": "number",
+                  "minimum": 0
                 },
                 "emissions": {
                   "title": "Emission Data",
@@ -69,7 +70,8 @@
                       },
                       "emission": {
                         "title": "Emission",
-                        "type": "number"
+                        "type": "number",
+                        "minimum": 0
                       },
                       "equivalentEmission": {
                         "title": "Equivalent Emission",

@@ -47,6 +47,7 @@ export const buildProductionDataSchema = (
         properties: {
           product_id: {
             type: "number",
+            minimum: 0,
           },
           product_name: {
             title: "Name",
@@ -61,10 +62,12 @@ export const buildProductionDataSchema = (
           annual_production: {
             title: "Annual Production",
             type: "number",
+            minimum: 0,
           },
           production_data_apr_dec: {
             title: "Production data for Apr 1 - Dec 31, 2024",
             type: "number",
+            minimum: 0,
           },
           production_methodology: {
             title: "Production Quantification Methodology",
@@ -75,18 +78,22 @@ export const buildProductionDataSchema = (
           storage_quantity_start_of_period: {
             title: `Quantity in storage at the beginning of the compliance period [${compliance_period_start}], if applicable`,
             type: "number",
+            minimum: 0,
           },
           storage_quantity_end_of_period: {
             title: `Quantity in storage at the end of the compliance period [${compliance_period_end}], if applicable`,
             type: "number",
+            minimum: 0,
           },
           quantity_sold_during_period: {
             title: `Quantity sold during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
             type: "number",
+            minimum: 0,
           },
           quantity_throughput_during_period: {
             title: `Quantity of throughput at point of sale during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
             type: "number",
+            minimum: 0,
           },
         },
         allOf: [

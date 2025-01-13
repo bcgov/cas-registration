@@ -9,7 +9,8 @@
 
     "quantityOfCoal": {
       "type": "number",
-      "title": "Quantity of coal"
+      "title": "Quantity of coal",
+      "minimum": 0
     },
     "quantityOfCoalUnit": {
       "type": "string",

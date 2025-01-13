@@ -279,6 +279,7 @@ export const NewEntrantSchema: RJSFSchema = {
       properties: {
         id: {
           type: "number",
+          minimum: 0,
         },
         name: {
           type: "string",
