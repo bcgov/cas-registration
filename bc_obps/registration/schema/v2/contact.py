@@ -1,19 +1,15 @@
 from typing import Optional
 from ninja import ModelSchema, Field
 from registration.models import Contact
-from itertools import count
 from ninja import FilterSchema
-
-_id_generator = count(1)
 
 
 class ContactListOutV2(ModelSchema):
     operators__legal_name: Optional[str] = None
-    id: int = Field(default_factory=lambda: next(_id_generator))  # Auto-incrementing ID
 
     class Meta:
         model = Contact
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['id', 'first_name', 'last_name', 'email']
 
 
 class ContactFilterSchemaV2(FilterSchema):

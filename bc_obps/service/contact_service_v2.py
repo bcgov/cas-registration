@@ -27,7 +27,7 @@ class ContactServiceV2:
         queryset = (
             filters.filter(base_qs)
             .order_by(sort_by)
-            .values('first_name', 'last_name', 'email', 'operators__legal_name')
+            .values('id', 'first_name', 'last_name', 'email', 'operators__legal_name')
             .distinct()
         )
         return cast(QuerySet[Contact], queryset)
