@@ -50,4 +50,4 @@ def get_emission_summary_totals(
 def get_operation_emission_summary_totals(
     request: HttpRequest, version_id: int
 ) -> Tuple[int, Dict[str, Decimal | int]]:
-    return 200, EmissionCategoryService.get_emission_category_totals_by_operation(version_id)
+    return 200, EmissionCategoryService.get_all_category_totals_by_version(version_id)
