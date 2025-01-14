@@ -342,7 +342,6 @@
       "name": "Facility 25",
       "type": "Single Facility",
       "swrs_facility_id": 1025,
-      "bcghg_id": "13219990028",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -356,7 +355,6 @@
       "name": "Facility 26",
       "type": "Single Facility",
       "swrs_facility_id": 1026,
-      "bcghg_id": "13219990029",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -370,7 +368,6 @@
       "name": "Facility 27",
       "type": "Single Facility",
       "swrs_facility_id": 1027,
-      "bcghg_id": "13219990030",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -384,7 +381,6 @@
       "name": "Facility 28",
       "type": "Single Facility",
       "swrs_facility_id": 1028,
-      "bcghg_id": "13219990031",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -398,7 +394,6 @@
       "name": "Facility 29",
       "type": "Single Facility",
       "swrs_facility_id": 1029,
-      "bcghg_id": "13219990032",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -412,7 +407,6 @@
       "name": "Facility 30",
       "type": "Single Facility",
       "swrs_facility_id": 1030,
-      "bcghg_id": "13219990033",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -426,7 +420,6 @@
       "name": "Facility 31",
       "type": "Single Facility",
       "swrs_facility_id": 1031,
-      "bcghg_id": "13219990034",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -440,7 +433,6 @@
       "type": "Single Facility",
       "name": "Facility 32",
       "swrs_facility_id": 1032,
-      "bcghg_id": "13219990035",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -454,7 +446,6 @@
       "name": "Facility 33",
       "type": "Single Facility",
       "swrs_facility_id": 1033,
-      "bcghg_id": "13219990036",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -468,7 +459,6 @@
       "name": "Facility 34",
       "type": "Single Facility",
       "swrs_facility_id": 1034,
-      "bcghg_id": "13219990037",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -482,7 +472,6 @@
       "name": "Facility 35",
       "type": "Single Facility",
       "swrs_facility_id": 1035,
-      "bcghg_id": "13219990038",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -496,7 +485,6 @@
       "name": "Facility 36",
       "type": "Single Facility",
       "swrs_facility_id": 1036,
-      "bcghg_id": "13219990039",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -510,7 +498,6 @@
       "name": "Facility 37",
       "type": "Single Facility",
       "swrs_facility_id": 1037,
-      "bcghg_id": "13219990040",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -524,7 +511,6 @@
       "name": "Facility 38",
       "type": "Single Facility",
       "swrs_facility_id": 1038,
-      "bcghg_id": "13219990041",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -538,7 +524,6 @@
       "name": "Facility 39",
       "type": "Single Facility",
       "swrs_facility_id": 1039,
-      "bcghg_id": "13219990042",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -552,7 +537,6 @@
       "name": "Facility 40",
       "type": "Single Facility",
       "swrs_facility_id": 1040,
-      "bcghg_id": "13219990043",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -566,7 +550,6 @@
       "name": "Facility 41",
       "type": "Single Facility",
       "swrs_facility_id": 1041,
-      "bcghg_id": "13219990044",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -580,7 +563,6 @@
       "name": "Facility 42",
       "type": "Single Facility",
       "swrs_facility_id": 1042,
-      "bcghg_id": "13219990045",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -594,7 +576,6 @@
       "name": "Facility 43",
       "type": "Single Facility",
       "swrs_facility_id": 1043,
-      "bcghg_id": "13219990046",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
