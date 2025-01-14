@@ -46,6 +46,14 @@ const ContactsDataGrid = ({
     [SearchCell, isExternalUser],
   );
 
+  // the mui grid requires a unique id, and since we can multiple rows with the same contact for different operators, we can't use the contact's id alone
+  function getRowId(row: ContactRow) {
+    const operator = row?.operators__legal_name
+      ? row.operators__legal_name
+      : "";
+    return row.id + operator;
+  }
+
   return (
     <DataGrid
       columns={columns}
@@ -53,6 +61,7 @@ const ContactsDataGrid = ({
       fetchPageData={fetchContactsPageData}
       paginationMode="server"
       initialData={initialData}
+      getRowId={getRowId}
     />
   );
 };

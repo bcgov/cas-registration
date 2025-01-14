@@ -9,6 +9,7 @@ import {
   GridColumnGroupingModel,
   GridSortDirection,
   GridSortItem,
+  GridRowIdGetter,
 } from "@mui/x-data-grid";
 import Pagination from "@bciers/components/datagrid/Pagination";
 import SortIcon from "@bciers/components/icons/SortIcon";
@@ -25,6 +26,7 @@ interface Props {
   };
   paginationMode?: "client" | "server";
   sx?: { [key: string]: any };
+  getRowId?: GridRowIdGetter<any> | undefined;
 }
 
 const AscendingIcon = () => {
@@ -61,6 +63,7 @@ const DataGrid: React.FC<Props> = ({
   fetchPageData,
   paginationMode = "client",
   initialData,
+  getRowId,
   sx,
 }) => {
   const [rows, setRows] = useState(initialData.rows ?? []);
@@ -70,7 +73,7 @@ const DataGrid: React.FC<Props> = ({
   const isRowsEmpty = !rows || rows.length === 0;
   const searchParams = useSearchParams();
   const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
-
+  console.log("rows", rows);
   const debouncedFetchData = debounce(async () => {
     const fetchData = async () => {
       const newParams = new URLSearchParams(searchParams);
@@ -210,6 +213,7 @@ const DataGrid: React.FC<Props> = ({
         experimentalFeatures={experimentalFeatures}
         disableColumnMenu
         initialState={initialState}
+        getRowId={getRowId}
         pagination
         pageSizeOptions={[PAGE_SIZE]}
         sortingMode={paginationMode}
