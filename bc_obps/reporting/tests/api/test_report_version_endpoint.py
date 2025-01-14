@@ -35,7 +35,6 @@ class TestReportVersionEndpoint(CommonTestSetup):
             "bc_obps_regulated_operation_id": "new bc obps regulated operation id",
             "activities": [],
             "regulated_products": [],
-            "operation_representative_name": "new operation representative name",
             "operation_report_type": "Annual Report",
         }
         assert report_version.report_operation.operator_legal_name != data['operator_legal_name']
@@ -43,7 +42,6 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert report_version.report_operation.operation_name != data['operation_name']
         assert report_version.report_operation.operation_bcghgid != data['operation_bcghgid']
         assert report_version.report_operation.bc_obps_regulated_operation_id != data['bc_obps_regulated_operation_id']
-        assert report_version.report_operation.operation_representative_name != data['operation_representative_name']
         assert report_version.report_type != data['operation_report_type']
 
         response = TestUtils.mock_post_with_auth_role(
@@ -57,4 +55,3 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert response_json['operation_name'] == data['operation_name']
         assert response_json['operation_bcghgid'] == data['operation_bcghgid']
         assert response_json['bc_obps_regulated_operation_id'] == data['bc_obps_regulated_operation_id']
-        assert response_json['operation_representative_name'] == data['operation_representative_name']

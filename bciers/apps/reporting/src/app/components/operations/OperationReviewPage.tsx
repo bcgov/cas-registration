@@ -7,6 +7,7 @@ import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistration
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import OperationReview from "./OperationReviewForm";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import OperationReviewForm from "./OperationReviewForm";
 
 export default async function OperationReviewPage({
   version_id,
@@ -20,10 +21,16 @@ export default async function OperationReviewPage({
   const facilityReport = await getFacilityReport(version_id);
 
   const registrationPurposeString = registrationPurpose?.registration_purpose;
+  const transformedOperation = {
+    ...reportOperation.report_operation,
+    operation_representative_name:
+      reportOperation.report_operation_representative,
+  };
+  const allRepresentatives = reportOperation.report_operation_representative;
 
   return (
-    <OperationReview
-      formData={reportOperation}
+    <OperationReviewForm
+      formData={transformedOperation}
       version_id={version_id}
       reportType={reportType}
       allActivities={allActivities}
@@ -31,6 +38,7 @@ export default async function OperationReviewPage({
       allRegulatedProducts={allRegulatedProducts}
       registrationPurpose={registrationPurposeString}
       facilityReport={facilityReport}
+      allRepresentatives={allRepresentatives}
     />
   );
 }
