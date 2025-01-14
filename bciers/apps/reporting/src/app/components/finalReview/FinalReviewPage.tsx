@@ -15,6 +15,16 @@ import {
   personResponsibleUiSchema,
 } from "@reporting/src/data/jsonSchema/personResponsible";
 import { getReportingPersonResponsible } from "../../utils/getReportingPersonResponsible";
+import { createPersonResponsibleSchema } from "../operations/personResponsible/createPersonResponsibleSchema";
+import { getFacilityReport } from "../../utils/getFacilityReport";
+import { getOrderedActivities } from "../../utils/getOrderedActivities";
+import { getActivityFormData } from "../../utils/getActivityFormData";
+import { getActivityInitData } from "../../utils/getActivityInitData";
+import { getActivitySchema } from "../../utils/getActivitySchema";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+
+// UiSchemas often contain client side components, passing a function will have it run on the client
+type ReviewData = { schema: any; uiSchema: Object | string; data: any };
 
 export default async function FinalReviewPage({
   version_id,
@@ -27,23 +37,67 @@ export default async function FinalReviewPage({
     needsVerification,
   );
 
+  // Operation Review
+
+  // Person Responsible
   const { sync_button: any, ...personResponsibleUiSchemaWithoutSyncButton } =
     personResponsibleUiSchema;
 
-  const finalReviewData: { schema: any; data: any; uiSchema: any }[] = [
+  // Schemas
+  const facilityId = (await getFacilityReport(version_id)).facility_id;
+  const orderedActivities: any[] = await getOrderedActivities(
+    version_id,
+    facilityId,
+  );
+
+  const activityReviewData: ReviewData[] = [];
+  for (const activity of orderedActivities) {
+    const initData = safeJsonParse(
+      await getActivityInitData(version_id, facilityId, activity.id),
+    );
+
+    const formData = await getActivityFormData(
+      version_id,
+      facilityId,
+      activity.id,
+    );
+
+    const sourceTypeQueryString = Object.entries(initData.sourceTypeMap)
+      .filter(([, v]) => String(v) in formData)
+      .map(([k]) => `&source_types[]=${k}`)
+      .join("");
+
+    const schema = safeJsonParse(
+      await getActivitySchema(version_id, activity.id, sourceTypeQueryString),
+    ).schema;
+    activityReviewData.push({
+      schema: schema,
+      uiSchema: activity.slug,
+      data: formData,
+    });
+
+    console.log(schema);
+    console.log(formData);
+  }
+
+  const finalReviewData: ReviewData[] = [
     {
       schema: operationReviewSchema,
       data: await getReportingOperation(version_id),
       uiSchema: operationReviewUiSchema,
     },
     {
-      schema: personResponsibleSchema,
+      schema: createPersonResponsibleSchema(
+        personResponsibleSchema,
+        [],
+        1,
+        await getReportingPersonResponsible(version_id),
+      ),
       uiSchema: personResponsibleUiSchemaWithoutSyncButton,
       data: await getReportingPersonResponsible(version_id),
     },
+    ...activityReviewData,
   ];
-
-  console.log(finalReviewData[0].data);
 
   return (
     <FinalReviewForm
