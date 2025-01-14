@@ -18,7 +18,6 @@ from registration.schema.v2.operation import (
     OperationRepresentativeIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeRemove,
-    OptedInOperationDetailIn,
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.operation_service_v2 import OperationServiceV2
@@ -130,38 +129,19 @@ class TestOperationServiceV2:
     @staticmethod
     def test_remove_opted_in_operation_detail():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        opted_in_operation_detail = baker.make_recipe('utils.opted_in_operation_detail')
         operation = baker.make_recipe(
             'utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+            opt_in=True,
         )
-        payload = OperationInformationIn(
-            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
-            name="string",
-            type="SFO",
-            naics_code_id=1,
-            activities=[1],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
-        )
-        OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
-        operation.refresh_from_db()
-        assert operation.opt_in is True
-        assert operation.opted_in_operation is not None
+        operation.opted_in_operation = opted_in_operation_detail
+        operation.save()
 
-        opted_in_payload = OptedInOperationDetailIn(
-            meets_section_3_emissions_requirements=False,
-            meets_electricity_import_operation_criteria=False,
-            meets_entire_operation_requirements=True,
-            meets_section_6_emissions_requirements=True,
-            meets_naics_code_11_22_562_classification_requirements=False,
-            meets_producing_gger_schedule_a1_regulated_product=False,
-            meets_reporting_and_regulated_obligations=True,
-            meets_notification_to_director_on_criteria_change=True,
-        )
-        opted_in_operation_detail = OperationServiceV2.update_opted_in_operation_detail(
-            approved_user_operator.user.user_guid, operation.id, opted_in_payload
-        )
+        assert operation.opted_in_operation is not None
+        assert OptedInOperationDetail.objects.count() == 1
+        detail_id = operation.opted_in_operation.id
 
         OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
@@ -169,7 +149,7 @@ class TestOperationServiceV2:
         assert operation.opt_in is False
         assert operation.opted_in_operation is None
         # operation.status is 'Draft', so opted_in_operation_detail should be deleted
-        assert not OptedInOperationDetail.objects.filter(id=opted_in_operation_detail.id).exists()
+        assert not OptedInOperationDetail.objects.filter(id=detail_id).exists()
 
     @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
