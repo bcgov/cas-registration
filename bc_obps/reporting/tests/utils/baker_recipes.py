@@ -162,10 +162,6 @@ report_verification = Recipe(
     scope_of_verification=ReportVerification.ScopeOfVerification.BC_OBPS,
     threats_to_independence=False,
     verification_conclusion=ReportVerification.VerificationConclusion.POSITIVE,
-    visit_name="Default Site",
-    visit_type=ReportVerification.VisitType.IN_PERSON,
-    other_facility_name=None,
-    other_facility_coordinates=None,
 )
 report_additional_data = Recipe(
     ReportAdditionalData,
