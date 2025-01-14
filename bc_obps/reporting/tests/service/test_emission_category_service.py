@@ -60,6 +60,11 @@ class TestEmissionCategoryService(TestCase):
         )
         assert flaring_return_value == Decimal('200.4151')
 
+        flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
+            test_infrastructure.report_version.id, 1
+        )
+        assert flaring_return_value == Decimal('200.4151')
+
     def test_returns_correct_value_all_categories(self):
         test_infrastructure = TestInfrastructure.build()
         act_st_1 = test_infrastructure.make_activity_source_type(
@@ -118,6 +123,8 @@ class TestEmissionCategoryService(TestCase):
 
         report_emission.emission_categories.set([1, 10])
         report_emission_2.emission_categories.set([1, 12])
+
+        # ACT: get values using facility report
         flaring_value = EmissionCategoryService.get_total_emissions_by_emission_category(
             report_activity.facility_report.id, 1
         )
@@ -131,15 +138,34 @@ class TestEmissionCategoryService(TestCase):
         assert woody_biomass_value == Decimal('100.0001')
         assert excluded_non_biomass_value == Decimal('200.0002')
 
+        # ACT: get values using report version
+        flaring_value = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
+            test_infrastructure.report_version.id, 1
+        )
+        woody_biomass_value = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
+            test_infrastructure.report_version.id, 10
+        )
+        excluded_non_biomass_value = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
+            test_infrastructure.report_version.id, 12
+        )
+        assert flaring_value == Decimal('300.0003')
+        assert woody_biomass_value == Decimal('100.0001')
+        assert excluded_non_biomass_value == Decimal('200.0002')
+
         report_emission_3.emission_categories.set([2])
         report_emission_4.emission_categories.set([2])
+
         fugitive_value = EmissionCategoryService.get_total_emissions_by_emission_category(
             report_activity.facility_report.id, 2
         )
         assert fugitive_value == Decimal('700.0007')
 
-        all_categories = EmissionCategoryService.get_all_category_totals(report_activity.facility_report.id)
-        assert all_categories == {
+        fugitive_value = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
+            test_infrastructure.report_version.id, 2
+        )
+        assert fugitive_value == Decimal('700.0007')
+
+        all_categories_expected = {
             'flaring': Decimal('300.0003'),
             'fugitive': Decimal('700.0007'),
             'industrial_process': 0,
@@ -159,6 +185,13 @@ class TestEmissionCategoryService(TestCase):
                 '1000.0010'
             ),  # fugitive + fuel_excluded + other_excluded - overlap (no overlaps in this scenario)
         }
+        all_categories = EmissionCategoryService.get_all_category_totals(report_activity.facility_report.id)
+        assert all_categories == all_categories_expected
+
+        all_categories = EmissionCategoryService.get_all_category_totals_by_version(
+            test_infrastructure.report_version.id
+        )
+        assert all_categories == all_categories_expected
 
     def test_reporting_only_emissions_counted_once(self):
         test_infrastructure = TestInfrastructure.build()
@@ -217,8 +250,13 @@ class TestEmissionCategoryService(TestCase):
         # Each report_emission record was counted only once despite sharing categories that contribue to the reporting_only emissions total
         # Should be: (report_emission_1 + report_emission_2 + report_emission_3)
         assert reporting_only_emisisons == Decimal('600.0006')
+        # Test the same thing but with the report version
+        reporting_only_emisisons = EmissionCategoryService.get_reporting_only_emissions_by_version(
+            test_infrastructure.report_version.id
+        )
+        assert reporting_only_emisisons == Decimal('600.0006')
 
-    def test_aggregates_by_category_by_operation(self):
+    def test_aggregates_by_operation(self):
         test_infrastructure = TestInfrastructure.build_from_real_config()
         ti2 = TestInfrastructure.build_with_defined_report_version(test_infrastructure.report_version)
 
@@ -303,9 +341,9 @@ class TestEmissionCategoryService(TestCase):
         # id 1 = Flaring
         # id 2 = Fugitive
         report_emission.emission_categories.set([1])
-        report_emission_2.emission_categories.set([1])
+        report_emission_2.emission_categories.set([2])
         report_emission_a.emission_categories.set([1])
-        report_emission_b.emission_categories.set([1])
+        report_emission_b.emission_categories.set([2])
 
         # assert that emissions are properly aggregated by faclity before checking operation
         ti1_flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category(
@@ -314,16 +352,21 @@ class TestEmissionCategoryService(TestCase):
         ti2_flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category(
             report_activity_2.facility_report.id, 1
         )
-        assert ti1_flaring_return_value == Decimal('200.4151')
-        assert ti2_flaring_return_value == Decimal('100')
+        assert ti1_flaring_return_value == Decimal('101')
+        assert ti2_flaring_return_value == Decimal('45')
+
+        operation_flaring_return_value = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
+            test_infrastructure.report_version.id, 1
+        )
+        assert operation_flaring_return_value == Decimal('146')
 
         # assert that the emissions from different facilities are properly aggregated by operation
-        operation_summary = EmissionCategoryService.get_emission_category_totals_by_operation(
+        operation_summary = EmissionCategoryService.get_all_category_totals_by_version(
             test_infrastructure.report_version.id
         )
         assert operation_summary == {
-            'flaring': Decimal('300.4151'),
-            'fugitive': 0,
+            'flaring': Decimal('146'),
+            'fugitive': Decimal('154.4151'),
             'industrial_process': 0,
             'onsite': 0,
             'stationary': 0,
@@ -337,5 +380,5 @@ class TestEmissionCategoryService(TestCase):
             'lfo_excluded': 0,
             'attributable_for_reporting': Decimal('300.4151'),
             'attributable_for_threshold': Decimal('300.4151'),
-            'reporting_only': 0,
+            'reporting_only': Decimal('154.4151'),
         }
