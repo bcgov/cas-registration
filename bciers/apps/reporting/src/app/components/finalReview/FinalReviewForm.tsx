@@ -7,6 +7,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
+import { getUiSchema } from "../activities/uiSchemas/schemaMaps";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
@@ -42,7 +43,12 @@ const FinalReviewForm: React.FC<Props> = ({
           key={idx}
           schema={d.schema}
           formData={d.data}
-          uiSchema={d.uiSchema}
+          uiSchema={{
+            ...(typeof d.uiSchema === "string"
+              ? getUiSchema(d.uiSchema)
+              : d.uiSchema),
+            "ui:submitButtonOptions": { norender: true },
+          }}
           readonly={true}
         />
       ))}

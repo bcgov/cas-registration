@@ -8,7 +8,9 @@ const CheckboxWidgetLeft: React.FC<WidgetProps> = ({
   label,
   value,
   required,
+  readonly,
 }) => {
+  if (readonly) return <></>;
   return (
     <div className="flex items-center">
       <Checkbox
