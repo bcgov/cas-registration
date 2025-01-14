@@ -8,11 +8,17 @@ import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { getUiSchema } from "../activities/uiSchemas/schemaMaps";
+import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
+import FinalReviewStringField from "./formCustomization/FinalReviewStringField";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
   data: { schema: RJSFSchema; uiSchema: any; data: any }[];
 }
+
+const resolveUiSchema = (uiSchema: any) => {
+  return typeof uiSchema === "string" ? getUiSchema(uiSchema) : uiSchema;
+};
 
 const FinalReviewForm: React.FC<Props> = ({
   version_id,
@@ -38,15 +44,17 @@ const FinalReviewForm: React.FC<Props> = ({
       continueUrl={saveAndContinueUrl}
       noFormSave={() => {}}
     >
-      {data.map((d, idx) => (
+      {data.map((form, idx) => (
         <FormBase
           key={idx}
-          schema={d.schema}
-          formData={d.data}
+          schema={form.schema}
+          formData={form.data}
+          widgets={{ CheckboxWidgetLeft: CheckboxWidgetLeft }}
+          fields={{
+            StringField: FinalReviewStringField,
+          }}
           uiSchema={{
-            ...(typeof d.uiSchema === "string"
-              ? getUiSchema(d.uiSchema)
-              : d.uiSchema),
+            ...resolveUiSchema(form.uiSchema),
             "ui:submitButtonOptions": { norender: true },
           }}
           readonly={true}

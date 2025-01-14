@@ -1,15 +1,14 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
-import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
-import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   mobileFuelCombustionPartOfFacility: {
     "ui:FieldTemplate": FieldTemplate,
-    "ui:widget": CheckboxWidgetLeft,
+    "ui:widget": "CheckboxWidgetLeft",
     "ui:options": {
       label: false,
     },
