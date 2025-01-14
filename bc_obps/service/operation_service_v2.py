@@ -201,11 +201,10 @@ class OperationServiceV2:
         # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
         if operation_id:
-            original_operation = OperationService.get_if_authorized(user_guid, operation_id)
-            if payload.registration_purpose != original_operation.registration_purpose:
-                payload = cls.handle_change_of_registration_purpose(user_guid, original_operation, payload)
+            operation = OperationService.get_if_authorized(user_guid, operation_id)
+            if payload.registration_purpose != operation.registration_purpose:
+                payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
 
-        operation: Operation
         operation_data = payload.dict(
             include={
                 'name',
@@ -525,7 +524,7 @@ class OperationServiceV2:
 
     @classmethod
     def handle_change_of_registration_purpose(
-        cls, user_guid: UUID, original_operation: Operation, payload: OperationInformationIn
+        cls, user_guid: UUID, operation: Operation, payload: OperationInformationIn
     ) -> OperationInformationIn:
         """
         Logic to handle the situation when an industry user changes the selected registration purpose (RP) for their operation.
@@ -535,18 +534,19 @@ class OperationServiceV2:
         Generally, if the operation was already registered when the RP changed, the original data will be archived.
         If the operation wasn't yet registered when the selected RP changed, the original data will be deleted.
         """
-        if original_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+        old_purpose = operation.registration_purpose
+        if old_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             payload.opt_in = False
-            opted_in_detail = original_operation.opted_in_operation
+            opted_in_detail = operation.opted_in_operation
             if opted_in_detail:
-                OperationServiceV2.remove_opted_in_operation_detail(user_guid, original_operation.id)
-        elif original_operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
+                OperationServiceV2.remove_opted_in_operation_detail(user_guid, operation.id)
+        elif old_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             payload.date_of_first_shipment = None
-            DocumentService.archive_or_delete_operation_document(
-                user_guid, original_operation.id, 'new_entrant_application'
-            )
+            DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'new_entrant_application')
 
-        if payload.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+        new_purpose = payload.registration_purpose
+        if new_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            # remove operation data that's no longer relevant (because operation is now an EIO)
             payload.activities = []
             payload.regulated_products = []
             payload.naics_code_id = None
@@ -554,14 +554,13 @@ class OperationServiceV2:
             payload.tertiary_naics_code_id = None
             payload.boundary_map = None
             payload.process_flow_diagram = None
-            DocumentService.archive_or_delete_operation_document(
-                user_guid, original_operation.id, 'process_flow_diagram'
-            )
-            DocumentService.archive_or_delete_operation_document(user_guid, original_operation.id, 'boundary_map')
-        elif payload.registration_purpose in [
+            DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'process_flow_diagram')
+            DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'boundary_map')
+        elif new_purpose in [
             Operation.Purposes.REPORTING_OPERATION,
             Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
         ]:
+            # remove regulated products - they're not relevant to Reporting/Potential Reporting operations
             payload.regulated_products = []
 
         return payload
