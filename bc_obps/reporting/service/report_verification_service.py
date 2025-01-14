@@ -45,10 +45,6 @@ class ReportVerificationService:
             "scope_of_verification": data.scope_of_verification,
             "threats_to_independence": data.threats_to_independence,
             "verification_conclusion": data.verification_conclusion,
-            "visit_name": data.visit_name,
-            "visit_type": data.visit_type,
-            "other_facility_name": data.other_facility_name,
-            "other_facility_coordinates": data.other_facility_coordinates,
         }
         report_version = ReportVersion.objects.get(pk=version_id)
         # Update or create ReportVerification record

@@ -143,9 +143,9 @@ class UserModelTest(BaseTestCase):
             ("reportnewentrant_created", "report new entrant", None, None),
             ("reportnewentrant_updated", "report new entrant", None, None),
             ("reportnewentrant_archived", "report new entrant", None, None),
-            ("reportversion_created", "report version", None, None),
-            ("reportversion_updated", "report version", None, None),
-            ("reportversion_archived", "report version", None, None),
+            ("reportverification_created", "report verification", None, None),
+            ("reportverification_updated", "report verification", None, None),
+            ("reportverification_archived", "report verification", None, None),
             ("reportattachment_created", "report attachment", None, None),
             ("reportattachment_updated", "report attachment", None, None),
             ("reportattachment_archived", "report attachment", None, None),
@@ -155,7 +155,10 @@ class UserModelTest(BaseTestCase):
             ("reportoperationrepresentative_created", "report operation representative", None, None),
             ("reportoperationrepresentative_updated", "report operation representative", None, None),
             ("reportoperationrepresentative_archived", "report operation representative", None, None),
-        ]
+            ("reportverificationvisit_created", "report verification visit", None, None),
+            ("reportverificationvisit_updated", "report verification visit", None, None),
+            ("reportverificationvisit_archived", "report verification visit", None, None),
+]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
         # First user is `cls.test_object` from the fixture, attempt to create another user with the same user_guid and business_guid
