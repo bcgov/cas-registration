@@ -1,3 +1,21 @@
+# [1.18.0](https://github.com/bcgov/cas-registration/compare/v1.17.1...v1.18.0) (2025-01-14)
+
+### Bug Fixes
+
+- Add minimum to most number fields and functions to validate numbers in activityForm oneOf arrays ([5cc53e4](https://github.com/bcgov/cas-registration/commit/5cc53e4213eabe6a1b6b67b2dff2e525338251e0))
+- populate anyOf only if we have options ([c71cc1f](https://github.com/bcgov/cas-registration/commit/c71cc1fb3c1590fdcf8b568acdb8908f1bc58e5b))
+- replace , with & in sourceType join aggregation to build_schema to avoid undefined type ([58cee2b](https://github.com/bcgov/cas-registration/commit/58cee2b49e58b9bcba7a488b20a124b91607f759))
+- update site visited logic for report verification page ([#2629](https://github.com/bcgov/cas-registration/issues/2629)) ([724ce1e](https://github.com/bcgov/cas-registration/commit/724ce1e46d09c23de9b352d99e018df7cbd844e6)), closes [/github.com/bcgov/cas-reporting/issues/199#issuecomment-2524359485](https://github.com//github.com/bcgov/cas-reporting/issues/199/issues/issuecomment-2524359485)
+- users shouldn't be able to edit places assigned on the contacts form ([ec1e495](https://github.com/bcgov/cas-registration/commit/ec1e4959209afc18d139d4e7fa08079a1a9805b4))
+
+### Features
+
+- a wrapper component for a form with navigation ([fddfde9](https://github.com/bcgov/cas-registration/commit/fddfde94e0139153054dbd9a958e0b72f7ea15f3))
+- Add status column to reporting operation table ([fbb011a](https://github.com/bcgov/cas-registration/commit/fbb011a17fb97a12a594ffc9f11faa3a05e9103b))
+- modal on report type change ([feae9fd](https://github.com/bcgov/cas-registration/commit/feae9fdb83e11a8e25972c0fc0c2f5d7944c70b6))
+- operations grid shows more details for BORO ID ([ba2d9ee](https://github.com/bcgov/cas-registration/commit/ba2d9eef881e3eaf400e51cfcf16e87ec38f3f45))
+- small aggregate facility requires fewer fields ([459372c](https://github.com/bcgov/cas-registration/commit/459372c6530451b52f13762f4cb95da1b05bdff6))
+
 ## [1.17.1](https://github.com/bcgov/cas-registration/compare/v1.17.0...v1.17.1) (2025-01-02)
 
 ### Bug Fixes
