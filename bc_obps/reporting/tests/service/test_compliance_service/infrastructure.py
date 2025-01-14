@@ -149,3 +149,9 @@ class ComplianceTestInfrastructure:
         report = Report.objects.get(reporting_year_id=2024)
         report.reporting_year = reporting_year
         report.save()
+
+    @classmethod
+    def new_entrant(cls):
+        operation = Operation.objects.get(name='test sfo')
+        operation.registration_purpose = 'New Entrant Operation'
+        operation.save()
