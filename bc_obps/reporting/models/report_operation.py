@@ -40,9 +40,6 @@ class ReportOperation(TimeStampedModel):
         blank=True,
         null=True,
     )
-    operation_representative_name = models.CharField(
-        max_length=10000, db_comment="The full name of the operation representative"
-    )
 
     # We don't create a backwards relation since this is a registration model
     activities = models.ManyToManyField(Activity, related_name="+")

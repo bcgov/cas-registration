@@ -16,7 +16,6 @@ class ReportOperationModelTest(BaseTestCase):
             operation_type="sfo",
             operation_bcghgid="A fake BC GHG ID",
             bc_obps_regulated_operation_id="123456789",
-            operation_representative_name="Kar Bonn",
             report_version=report_version_baker(report_operation=None),
         )
         cls.test_object.activities.add(Activity.objects.first())
@@ -31,7 +30,6 @@ class ReportOperationModelTest(BaseTestCase):
             ("operation_type", "operation type", 1000, None),
             ("operation_bcghgid", "operation bcghgid", 1000, None),
             ("bc_obps_regulated_operation_id", "bc obps regulated operation id", 255, None),
-            ("operation_representative_name", "operation representative name", 10000, None),
             ("activities", "activities", None, 1),
             ("regulated_products", "regulated products", None, 1),
         ]

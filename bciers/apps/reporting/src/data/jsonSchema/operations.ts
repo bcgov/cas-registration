@@ -28,11 +28,6 @@ export const operationReviewSchema: RJSFSchema = {
       default: "Annual report",
     },
 
-    operation_representative_name: {
-      type: "string",
-      title: "Operation representative",
-    },
-
     date_info: {
       type: "object",
       readOnly: true,
@@ -148,9 +143,15 @@ export const operationReviewUiSchema = {
   },
 
   operation_representative_name: {
-    "ui:widget": "select",
-    "ui:options": commonUiOptions,
+    "ui:widget": "MultiSelectWidget",
+    "ui:options": {
+      ...commonUiOptions,
+      label: { style: { verticalAlign: "top" } },
+    },
+    "ui:placeholder": "Operation representative",
+    uniqueItems: true,
   },
+
   "ui:submitButtonOptions": {
     props: {
       className:
@@ -178,6 +179,7 @@ export const updateSchema = (
   reportingWindowEnd: string,
   allActivities: any[],
   allRegulatedProducts: any[],
+  allRepresentatives: any[],
 ) => {
   return {
     ...prevSchema,
@@ -191,9 +193,19 @@ export const updateSchema = (
         default: formDataState?.operation_report_type || "Annual Report",
       },
       operation_representative_name: {
-        type: "string",
+        type: "array",
         title: "Operation representative",
-        enum: [formDataState.operation_representative_name || ""],
+        minItems: 1,
+        items: {
+          type: "number",
+          enum: allRepresentatives.map(
+            (representative: { id: number }) => representative.id,
+          ),
+          enumNames: allRepresentatives.map(
+            (representative: { representative_name: string }) =>
+              representative.representative_name,
+          ),
+        },
       },
       operation_type: {
         type: "string",

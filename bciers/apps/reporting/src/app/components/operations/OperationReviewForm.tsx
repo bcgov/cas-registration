@@ -36,6 +36,11 @@ interface Props {
     facility_id: string;
     operation_type: string;
   };
+  allRepresentatives: {
+    selected_for_report: boolean;
+    id: number;
+    representative_name: string;
+  }[];
 }
 
 export default function OperationReviewForm({
@@ -47,6 +52,7 @@ export default function OperationReviewForm({
   allRegulatedProducts,
   registrationPurpose,
   facilityReport,
+  allRepresentatives,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
@@ -99,11 +105,18 @@ export default function OperationReviewForm({
 
   useEffect(() => {
     if (formData && allActivities && allRegulatedProducts) {
+      const selectedRepresentatives =
+        formData.operation_representative_name
+          ?.filter(
+            (rep: { selected_for_report: any }) => rep.selected_for_report,
+          )
+          .map((rep: { id: any }) => rep.id) || [];
       const updatedFormData = {
         ...formData,
         operation_report_type: reportType?.report_type || "Annual Report",
         activities: formData.activities || [],
         regulated_products: formData.regulated_products || [],
+        operation_representative_name: selectedRepresentatives,
       };
       setFormDataState(updatedFormData);
 
@@ -115,6 +128,7 @@ export default function OperationReviewForm({
           reportingWindowEnd,
           allActivities,
           allRegulatedProducts,
+          allRepresentatives,
         ),
       );
     }
@@ -129,6 +143,7 @@ export default function OperationReviewForm({
     allRegulatedProducts,
     registrationPurpose,
     reportingWindowEnd,
+    allRepresentatives,
   ]);
 
   const saveHandler = async (
