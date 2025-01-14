@@ -4,7 +4,7 @@
     "fields": {
       "user_guid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "New Operator 3 Legal Name",
+      "bceid_business_name": "Charlie Solutions",
       "first_name": "Michael",
       "last_name": "Johnson",
       "position_title": "Manager",
@@ -18,7 +18,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000001",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Existing Operator 2 Legal Name",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "Samantha",
       "last_name": "Garcia",
       "position_title": "CEO",
@@ -46,7 +46,7 @@
     "fields": {
       "user_guid": "ba2ba62a121842e0942aab9e92ce8822",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Existing Operator 2 Legal Name",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "bc-cas-dev",
       "last_name": "Industry User",
       "position_title": "Code Monkey",
@@ -60,7 +60,7 @@
     "fields": {
       "user_guid": "279c80cf57814c28872740a133d17c0d",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "bc-cas-dev-secondary",
       "last_name": "Industry User",
       "position_title": "Code Monkey",
@@ -74,7 +74,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000002",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "New Operator 5 Legal Name",
+      "bceid_business_name": "Echo Systems",
       "first_name": "Jack",
       "last_name": "Sparrow",
       "position_title": "Captain",
@@ -88,7 +88,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000003",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Golf Solutions",
       "first_name": "User",
       "last_name": "3",
       "position_title": "Code Monkey",
@@ -102,7 +102,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000004",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Alpha Enterprises",
       "first_name": "User",
       "last_name": "4",
       "position_title": "Code Monkey",
@@ -116,7 +116,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000005",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "User",
       "last_name": "5",
       "position_title": "Code Monkey",
@@ -130,7 +130,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000006",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "India Innovations",
       "first_name": "User",
       "last_name": "6",
       "position_title": "Code Monkey",
@@ -144,7 +144,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000007",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Foxtrot Enterprises - has parENT operator",
       "first_name": "User",
       "last_name": "7",
       "position_title": "Code Monkey",
@@ -158,7 +158,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000008",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Hotel Ventures",
       "first_name": "User",
       "last_name": "8",
       "position_title": "Code Monkey",
@@ -172,7 +172,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000009",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Alpha Enterprises",
       "first_name": "User",
       "last_name": "9",
       "position_title": "Code Monkey",
@@ -186,7 +186,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000010",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "User",
       "last_name": "10",
       "position_title": "Code Monkey",
@@ -200,7 +200,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000011",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Juliet Enterprises",
       "first_name": "User",
       "last_name": "11",
       "position_title": "Code Monkey",
@@ -214,7 +214,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000012",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Kilo Logistics",
       "first_name": "User",
       "last_name": "12",
       "position_title": "Code Monkey",
@@ -228,7 +228,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000013",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Lima Enterprises",
       "first_name": "User",
       "last_name": "10",
       "position_title": "Code Monkey",
@@ -242,7 +242,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000014",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Foxtrot Enterprises - has parENT operator",
       "first_name": "User",
       "last_name": "14",
       "position_title": "Code Monkey",
@@ -256,7 +256,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000015",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Foxtrot Enterprises - has parENT operator",
       "first_name": "User",
       "last_name": "15",
       "position_title": "Code Monkey",
@@ -270,7 +270,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000016",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Alpha Enterprises",
       "first_name": "User",
       "last_name": "16",
       "position_title": "Code Monkey",
@@ -284,7 +284,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000017",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "User",
       "last_name": "17",
       "position_title": "Code Monkey",
@@ -298,7 +298,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000018",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Mike Ventures",
       "first_name": "User",
       "last_name": "18",
       "position_title": "Code Monkey",
@@ -312,7 +312,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000019",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "User",
       "last_name": "19",
       "position_title": "Code Monkey",
@@ -326,7 +326,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000020",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Hotel Ventures",
       "first_name": "User",
       "last_name": "20",
       "position_title": "Code Monkey",
@@ -340,7 +340,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000021",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Foxtrot Enterprises - has parENT operator",
       "first_name": "User",
       "last_name": "21",
       "position_title": "Code Monkey",
@@ -354,7 +354,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000022",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Alpha Enterprises",
       "first_name": "User",
       "last_name": "22",
       "position_title": "Code Monkey",
@@ -368,7 +368,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000023",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "User",
       "last_name": "23",
       "position_title": "Code Monkey",
@@ -382,7 +382,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000024",
       "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Foxtrot Enterprises - has parENT operator",
       "first_name": "User",
       "last_name": "24",
       "position_title": "Code Monkey",
@@ -396,7 +396,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000025",
       "business_guid": "b3e3e3e3-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Golf Solutions",
       "first_name": "User 25",
       "last_name": "25",
       "position_title": "Code Monkey",
@@ -410,7 +410,7 @@
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000026",
       "business_guid": "b6e6e6e6-88b7-4eb6-9f26-ec12b49c14c1",
-      "bceid_business_name": "Example Business",
+      "bceid_business_name": "Oscar Enterprises",
       "first_name": "User 26",
       "last_name": "26",
       "position_title": "Code Monkey",
@@ -459,6 +459,34 @@
       "email": "test2@email.com",
       "phone_number": "+16044015432",
       "app_role": "cas_analyst"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000029",
+      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+      "bceid_business_name": "Dog SFO - Draft",
+      "first_name": "User 29",
+      "last_name": "Industry User",
+      "position_title": "Code Monkey",
+      "email": "email@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "industry_user"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000030",
+      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+      "bceid_business_name": "Narwhal SFO - Draft",
+      "first_name": "User 30",
+      "last_name": "Industry User",
+      "position_title": "Code Monkey",
+      "email": "email@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "industry_user"
     }
   }
 ]

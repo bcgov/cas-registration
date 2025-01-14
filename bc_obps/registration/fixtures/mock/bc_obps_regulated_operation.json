@@ -18,7 +18,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0003",
+      "id": "24-0003",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -26,7 +26,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0004",
+      "id": "24-0004",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -34,7 +34,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0005",
+      "id": "24-0005",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -42,7 +42,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0006",
+      "id": "24-0006",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -50,7 +50,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0007",
+      "id": "24-0007",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -58,7 +58,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0008",
+      "id": "24-0008",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -66,7 +66,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0009",
+      "id": "24-0009",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -74,7 +74,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0010",
+      "id": "24-0010",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -82,7 +82,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0011",
+      "id": "24-0011",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -90,7 +90,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0012",
+      "id": "24-0012",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -98,7 +98,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0013",
+      "id": "24-0013",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -106,7 +106,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0014",
+      "id": "24-0014",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -114,7 +114,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0015",
+      "id": "24-0015",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -122,7 +122,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0016",
+      "id": "24-0016",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -130,7 +130,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0017",
+      "id": "24-0017",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -138,7 +138,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0018",
+      "id": "24-0018",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
