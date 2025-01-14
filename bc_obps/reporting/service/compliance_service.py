@@ -208,13 +208,13 @@ class ComplianceService:
                 allocated_for_compliance / Decimal(production_totals["annual_amount"])
             ) * Decimal(production_totals["apr_dec"])
             product_emission_limit = ComplianceService.calculate_product_emission_limit(
-                ei,
-                Decimal(production_totals["apr_dec"]),
-                Decimal(industrial_process),
-                Decimal(allocated_for_compliance),
-                naics_data.reduction_factor,
-                naics_data.tightening_rate,
-                naics_data.compliance_period,
+                pwaei=ei,
+                apr_dec_production=Decimal(production_totals["apr_dec"]),
+                allocated_industrial_process=Decimal(industrial_process),
+                allocated_for_compliance=Decimal(allocated_for_compliance),
+                tightening_rate=naics_data.tightening_rate,
+                reduction_factor=naics_data.reduction_factor,
+                compliance_period=naics_data.compliance_period,
             )
 
             # Add individual product amounts to totals
