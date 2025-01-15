@@ -373,8 +373,8 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="bcghg_id_id" nullable="true" remarks="A facility's BCGHG identifier." size="255" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="swrs_facility_id" nullable="true" remarks="A facility's SWRS facility ID." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="17" name="latitude_of_largest_emissions" nullable="false" remarks="The latitude of the largest point of emissions" size="8" type="numeric" typeCode="2"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="18" name="longitude_of_largest_emissions" nullable="false" remarks="The longitude of the largest point of emissions" size="9" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="17" name="latitude_of_largest_emissions" nullable="true" remarks="The latitude of the largest point of emissions" size="8" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="18" name="longitude_of_largest_emissions" nullable="true" remarks="The longitude of the largest point of emissions" size="9" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="is_current_year" nullable="true" remarks="The facility's starting date is within the current year or preceeding year" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="20" name="starting_date" nullable="true" remarks="The date of the facility starting operations" size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>

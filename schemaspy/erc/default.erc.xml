@@ -645,8 +645,8 @@
             <parent column="id" foreignKey="facility_bcghg_id_id_c2662128_fk_bc_greenhouse_gas_id_id" implied="false" onDeleteCascade="false" schema="erc" table="bc_greenhouse_gas_id"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="swrs_facility_id" nullable="true" remarks="A facility's SWRS facility ID." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="latitude_of_largest_emissions" nullable="false" remarks="The latitude of the largest point of emissions" size="8" type="numeric" typeCode="2"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="longitude_of_largest_emissions" nullable="false" remarks="The longitude of the largest point of emissions" size="9" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="latitude_of_largest_emissions" nullable="true" remarks="The latitude of the largest point of emissions" size="8" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="longitude_of_largest_emissions" nullable="true" remarks="The longitude of the largest point of emissions" size="9" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="is_current_year" nullable="true" remarks="The facility's starting date is within the current year or preceeding year" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="starting_date" nullable="true" remarks="The date of the facility starting operations" size="35" type="timestamptz" typeCode="93"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
@@ -2580,12 +2580,12 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accredited_by" nullable="false" remarks="The verification accreditation body" size="10" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="scope_of_verification" nullable="false" remarks="The scope of the verification" size="50" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="threats_to_independence" nullable="true" remarks="Optional field to store whether or not there is an indication of threats to independence of an other facility visited" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="verification_conclusion" nullable="true" remarks="The conclusion of the verification" size="8" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="visit_name" nullable="false" remarks="The name of the site visited" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="visit_type" nullable="true" remarks="Optional field to store the type of visit conducted" size="10" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="other_facility_name" nullable="true" remarks="Optional field to store the name of an other facility visited" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="other_facility_coordinates" nullable="true" remarks="Optional field to store geographic coordinates of an other facility visited" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="threats_to_independence" nullable="false" remarks="Indicates whether there were any threats to independence noted" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="verification_conclusion" nullable="false" remarks="The conclusion of the verification" size="8" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="visit_name" nullable="false" remarks="The name of the site visited (Facility X, Other, or None)" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="visit_type" nullable="true" remarks="The type of visit conducted (Virtual or In Person)" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="other_facility_name" nullable="true" remarks="Name of the other facility visited if 'Other' is selected" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="other_facility_coordinates" nullable="true" remarks="Geographic location of the other facility visited" size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_verification_archived_by_id_e48ad3cc_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
@@ -2632,7 +2632,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="is_latest_submitted" nullable="false" remarks="True if this version is the latest submitted one" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="status" nullable="false" remarks="The status for this report version: draft or submitted." size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="status" nullable="false" remarks="The status for this report version: Draft or Submitted." size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_version_archived_by_id_4cb54a40_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
