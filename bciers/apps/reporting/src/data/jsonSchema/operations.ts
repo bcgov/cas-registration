@@ -28,6 +28,11 @@ export const operationReviewSchema: RJSFSchema = {
       default: "Annual report",
     },
 
+    operation_representative_name: {
+      type: "array",
+      title: "Operation representative",
+    },
+
     date_info: {
       type: "object",
       readOnly: true,

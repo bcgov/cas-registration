@@ -65,7 +65,6 @@ def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
 ) -> Tuple[Literal[201], ReportOperationOut]:
     report_operation = ReportService.save_report_operation(version_id, payload)
-    print('report_operation', report_operation)
     return 201, report_operation  # type: ignore
 
 
