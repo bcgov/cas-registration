@@ -5,6 +5,7 @@ export interface ContactRow {
   first_name: string;
   last_name: string;
   email: string;
+  operators__legal_name?: string;
 }
 
 export interface ContactsSearchParams {
@@ -16,6 +17,7 @@ export interface ContactsSearchParams {
   sort_field?: string;
   sort_order?: string;
   operator_id?: UUID;
+  operators__legal_name?: string;
 }
 
 export interface ContactFormData {

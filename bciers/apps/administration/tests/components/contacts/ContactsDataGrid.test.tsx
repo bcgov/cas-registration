@@ -17,7 +17,7 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 } as QueryParams);
 
-const mockResponse = {
+const mockExternalResponse = {
   rows: [
     {
       id: 1,
@@ -35,13 +35,36 @@ const mockResponse = {
   row_count: 2,
 };
 
+const mockInternalResponse = {
+  rows: [
+    {
+      id: 1,
+      first_name: "John",
+      last_name: "Doe",
+      email: "john.doe@example.com",
+      operators__legal_name: "Legal name Doe",
+    },
+    {
+      id: 2,
+      first_name: "Jane",
+      last_name: "Smith",
+      email: "jane.smith@example.com",
+      operators__legal_name: "Legal name Smith",
+    },
+  ],
+  row_count: 2,
+};
+
 describe("ContactsDataGrid component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
   it("renders the ContactsDataGrid grid for external users", async () => {
     render(
-      <ContactsDataGrid isExternalUser={true} initialData={mockResponse} />,
+      <ContactsDataGrid
+        isExternalUser={true}
+        initialData={mockExternalResponse}
+      />,
     );
 
     // correct headers
@@ -55,9 +78,6 @@ describe("ContactsDataGrid component", () => {
       screen.queryByRole("columnheader", { name: "Business Email Address" }),
     ).toBeVisible();
     // Internal users should only see two below columns
-    expect(
-      screen.queryByRole("columnheader", { name: "Operation Name" }),
-    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
     ).not.toBeInTheDocument();
@@ -76,7 +96,10 @@ describe("ContactsDataGrid component", () => {
 
   it("renders the ContactsDataGrid grid for internal users", async () => {
     render(
-      <ContactsDataGrid isExternalUser={false} initialData={mockResponse} />,
+      <ContactsDataGrid
+        isExternalUser={false}
+        initialData={mockInternalResponse}
+      />,
     );
 
     // correct headers
@@ -90,19 +113,19 @@ describe("ContactsDataGrid component", () => {
       screen.queryByRole("columnheader", { name: "Business Email Address" }),
     ).toBeVisible();
     expect(
-      screen.queryByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
       screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
     ).toBeVisible();
     expect(
       screen.queryByRole("columnheader", { name: "Actions" }),
     ).toBeVisible();
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
+    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(4);
 
     // Check data displays
     expect(screen.getByText("john.doe@example.com")).toBeVisible();
+
+    expect(screen.getByText("Legal name Doe")).toBeVisible();
     expect(screen.getByText("jane.smith@example.com")).toBeVisible();
+    expect(screen.getByText("Legal name Smith")).toBeVisible();
     expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
       2,
     );
@@ -113,7 +136,10 @@ describe("ContactsDataGrid component", () => {
 
   it("makes API call with correct params when sorting", async () => {
     render(
-      <ContactsDataGrid isExternalUser={true} initialData={mockResponse} />,
+      <ContactsDataGrid
+        isExternalUser={true}
+        initialData={mockExternalResponse}
+      />,
     );
 
     // click on the first column header
@@ -169,9 +195,13 @@ describe("ContactsDataGrid component", () => {
       extractParams(String(mockReplace.mock.calls[3][2]), "sort_order"),
     ).toBe("desc");
   });
+
   it("makes API call with correct params when filtering", async () => {
     render(
-      <ContactsDataGrid isExternalUser={true} initialData={mockResponse} />,
+      <ContactsDataGrid
+        isExternalUser={true}
+        initialData={mockInternalResponse}
+      />,
     );
 
     const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // first name search input

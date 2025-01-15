@@ -11,7 +11,7 @@ const contactGroupColumns = (
   const columnGroupModel: GridColumnGroupingModel = [
     {
       groupId: "first_name",
-      headerName: "Facility Name",
+      headerName: "First Name",
       renderHeaderGroup: SearchCell,
       children: [{ field: "first_name" }],
     },
@@ -28,16 +28,10 @@ const contactGroupColumns = (
       children: [{ field: "email" }],
     },
     {
-      groupId: "operator_legal_name",
+      groupId: "operators__legal_name",
       headerName: "Operator Legal Name",
-      renderHeaderGroup: EmptyGroupCell,
-      children: [{ field: "operator_legal_name" }],
-    },
-    {
-      groupId: "operation_name",
-      headerName: "Operation Name",
-      renderHeaderGroup: EmptyGroupCell,
-      children: [{ field: "operation_name" }],
+      renderHeaderGroup: SearchCell,
+      children: [{ field: "operators__legal_name" }],
     },
     {
       groupId: "action",
