@@ -1,5 +1,4 @@
 import pytest
-from registration.enums.enums import OperationTypes
 from model_bakery import baker
 from copy import deepcopy
 
@@ -25,7 +24,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _create_new_entrant_payload(self):
         return {"date_of_first_shipment": "On or after April 1, 2024", "new_entrant_application": MOCK_DATA_URL}
 
-    def _prepare_test_data(self, registration_purpose, type):
+    def _prepare_test_data(self, registration_purpose):
         self.approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         contact = baker.make_recipe('utils.contact')
         self.operation = baker.make_recipe(
@@ -35,7 +34,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             registration_purpose=registration_purpose,
             contacts=[contact],
             name=f"{registration_purpose} Operation",
-            type=type,
         )
 
     def _set_operation_information(self):
@@ -62,39 +60,14 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             raise Exception(response.json())
         self.operation.refresh_from_db()
 
-    def _set_facilities(self):
-        quantity_of_facilities = 3 if self.operation.type == OperationTypes.LFO else 1
-        facilities_payloads = []
-        for index in range(quantity_of_facilities):
-            facility_payload = {
-                "name": f"Facility {index}",
-                "type": "Large Facility",
-                "latitude_of_largest_emissions": 2.3,
-                "longitude_of_largest_emissions": 111,
-                "operation_id": self.operation.id,
-            }
-            facilities_payloads.append(facility_payload)
-        response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, facilities_payloads, custom_reverse_lazy("create_facilities")
-        )
-        if response.status_code != 201:
-            raise Exception(response.json())
-        self.operation.refresh_from_db()
-
     def _set_new_registration_purpose(self, new_purpose):
         operation_payload = {
             "name": self.operation.name,
             "type": self.operation.type,
             "registration_purpose": new_purpose,
+            "activities": [],  # activities is required in payload so needs to be explicitly set, even if it's empty
         }
-        if new_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-            operation_payload.update(
-                {
-                    "activities": [],
-                    "regulated_products": [],
-                }
-            )
-        else:
+        if new_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             operation_payload.update(
                 {
                     "boundary_map": MOCK_DATA_URL,
@@ -102,9 +75,14 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
                     "activities": [2, 3],
                     "naics_code_id": self.operation.naics_code_id,
                     "secondary_naics_code_id": self.operation.secondary_naics_code_id,
-                    "regulated_products": [1, 2],
                 }
             )
+        if new_purpose in [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+        ]:
+            operation_payload.update({"regulated_products": [1, 2]})
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
@@ -114,30 +92,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         )
         if response.status_code != 200:
             raise Exception(response.json())
-        self.operation.refresh_from_db()
-
-    def _set_operation_representative(self):
-        operation_representative_payload = {
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'email': 'test@email.com',
-            'phone_number': '+16044011234',
-            'position_title': 'Manager',
-            'street_address': '123 Main St',
-            'municipality': 'Vancouver',
-            'province': 'BC',
-            'postal_code': 'H0H 0H0',
-        }
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            operation_representative_payload,
-            custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': self.operation.id}),
-        )
-        if response.status_code != 200:
-            raise Exception(response.json())
-        self.operation_representative_id = response.json()['id']
         self.operation.refresh_from_db()
 
     def _set_operation_status(self, status):
@@ -217,7 +171,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
         assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
-        assert self.operation.documents.count() >= 3
+        assert self.operation.documents.count() == 3
         assert (
             self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is not None
         )
@@ -326,6 +280,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.opt_in is False
+        assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
@@ -339,6 +294,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert self.operation.opt_in is False
+        assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
@@ -361,7 +317,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_opted_in_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to Electricity Import Operation.
-        Should delete opted_in_operation_detail, regulated_products, and set opt_in to False.
+        Should delete opted_in_operation_detail, documents, regulated_products, activities, NAICS codes, and set opt_in to False.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.opt_in is False
@@ -371,6 +327,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         else:
             assert self.operation.opted_in_operation is None
         assert self.operation.regulated_products.count() == 0
+        assert self.operation.activities.count() == 0
         assert self.operation.naics_code is None
         assert self.operation.documents.count() == 0
 
@@ -397,6 +354,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         Tests operation registration data for situation where registration_purpose changes from New Entrant to Reporting Operation.
         Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
+        Regulated products should also be removed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() > 0
@@ -407,11 +365,13 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.date_of_first_shipment is None
         assert self.operation.activities is not None
         assert self.operation.activities == self.original_operation_record.activities
+        assert self.operation.regulated_products.count() == 0
 
     def _test_new_entrant_to_potential_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from New Entrant to Potential Reporting Operation.
         Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
+        Regulated products should also be removed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() > 0
@@ -422,6 +382,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.date_of_first_shipment is None
         assert self.operation.activities is not None
         assert self.operation.activities == self.original_operation_record.activities
+        assert self.operation.regulated_products.count() == 0
 
     def _test_new_entrant_to_eio(self):
         """
@@ -531,10 +492,11 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_eio_to_opted_in(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to Opted-in Operation.
-        No data should be removed; must add data for reporting activities, process flow diagram, boundary map, and opted_in_operation_detail.
+        No data should be removed; must add data for reporting activities, regulated products, process flow diagram, boundary map, and opted_in_operation_detail.
         """
         assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
         assert self.operation.activities.count() > 0
+        assert self.operation.regulated_products.count() > 0
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='process_flow_diagram')) is not None
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')) is not None
         assert self.operation.opt_in is True
@@ -571,18 +533,22 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         Tests operation registration data for situation where registration_purpose changes from Potential Reporting to New Entrant.
         No data should be removed; additional information should be added specific to New Entrant information.
+        Regulated products and reporting activities should also be added.
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
         assert self.operation.date_of_first_shipment == "On or after April 1, 2024"
-        assert self.operation.documents.count() >= 3
+        assert self.operation.documents.count() == 3
         assert (
             self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")) is not None
         )
+        assert self.operation.regulated_products.count() > 0
+        assert self.operation.activities.count() > 0
 
     def _test_potential_reporting_to_opted_in(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Potential Reporting to Opted-in Operation.
         No data should be removed; additional information should be added specific to Opted-in information.
+        Regulated products and reporting activities should also be added.
         """
         assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
         assert self.operation.opted_in_operation is not None
@@ -595,6 +561,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product is True
         assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
         assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
+        assert self.operation.regulated_products.count() > 0
+        assert self.operation.activities.count() > 0
 
     def _test_potential_reporting_to_eio(self):
         """
@@ -608,9 +576,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
 
     @pytest.mark.parametrize("original_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("new_purpose", list(Operation.Purposes))
-    @pytest.mark.parametrize("operation_type", [OperationTypes.SFO.value, OperationTypes.LFO.value])
     @pytest.mark.parametrize("registration_status", [Operation.Statuses.REGISTERED, Operation.Statuses.DRAFT])
-    def test_changing_registration_purpose(self, original_purpose, new_purpose, operation_type, registration_status):
+    def test_changing_registration_purpose(self, original_purpose, new_purpose, registration_status):
         """
         If the registration_status == Registered, the irrelevant data should be archived
         If the registration_status == Draft, the irrelevant data should be deleted
@@ -619,14 +586,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             pytest.skip()
 
         ### set original registration_purpose and save the operation
-        self._prepare_test_data(original_purpose, operation_type)
+        self._prepare_test_data(original_purpose)
         self._set_operation_information()
         if original_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             self._set_opted_in_operation_detail()
         elif original_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             self._set_new_entrant_info()
-        self._set_facilities()
-        self._set_operation_representative()
         self._set_operation_status(registration_status)
 
         # make a copy of the original operation record to compare against later
