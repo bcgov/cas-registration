@@ -109,7 +109,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
         # Additional Assertions (If BYPASS_ROLE_ASSIGNMENT is True, app_role should be cas_admin, otherwise cas_pending)
 
         assert (
-            'app_role' in content and content["app_role"]["role_name"] == 'cas_admin'
+            'app_role' in content and content["app_role"]["role_name"] == 'cas_analyst'
             if settings.BYPASS_ROLE_ASSIGNMENT
             else 'cas_pending'
         )

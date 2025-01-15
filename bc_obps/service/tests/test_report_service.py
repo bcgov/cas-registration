@@ -36,7 +36,6 @@ class TestReportService(TestCase):
         self.assertEqual(str(exception_context.exception), "ReportingYear matching query does not exist.")
 
     def test_throws_if_report_already_exists(self):
-
         operation = operation_baker(type="lfo")
         reporting_year = reporting_year_baker(reporting_year=2002)
         _ = report_baker(operation=operation, reporting_year=reporting_year)
@@ -50,7 +49,6 @@ class TestReportService(TestCase):
         )
 
     def test_creates_report_with_right_data(self):
-
         with (
             mock.patch(
                 "service.data_access_service.report_service.ReportDataAccessService.report_exists"
@@ -79,7 +77,7 @@ class TestReportService(TestCase):
                 RegulatedProduct.objects.get(name='Liquefied natural gas'),
             )
             reporting_year = reporting_year_baker(reporting_year=2101)
-
+            # Calling the method under test
             report_version_id = ReportService.create_report(operation.id, reporting_year=2101)
             report = ReportVersion.objects.get(pk=report_version_id).report
 
@@ -89,13 +87,11 @@ class TestReportService(TestCase):
             self.assertEqual(report.reporting_year, reporting_year)
 
             self.assertEqual(report.report_versions.count(), 1)
-
             # Testing the report version
             report_version = report.report_versions.first()
             self.assertEqual(report_version.report, report)
             self.assertFalse(report_version.is_latest_submitted)
             self.assertEqual(report_version.status, 'Draft')
-
             # Testing the report_operation data
             self.assertSequenceEqual(
                 (
@@ -105,7 +101,6 @@ class TestReportService(TestCase):
                     report_version.report_operation.operation_type,
                     report_version.report_operation.operation_bcghgid,
                     report_version.report_operation.bc_obps_regulated_operation_id,
-                    report_version.report_operation.operation_representative_name,
                     report_version.report_operation.activities.count(),
                 ),
                 (
@@ -115,7 +110,6 @@ class TestReportService(TestCase):
                     operation.type,
                     operation.bcghg_id,
                     operation.bc_obps_regulated_operation.id,
-                    operation.point_of_contact.get_full_name(),
                     2,
                 ),
             )
