@@ -530,7 +530,6 @@ class OperationServiceV2:
         Logic to handle the situation when an industry user changes the selected registration purpose (RP) for their operation.
         Changing the RP can happen during or after submitting the operation's registration info.
         Depending on what the old RP was, some operation data may need to be removed.
-        Depending on what the new RP is, some new operation data may need to be added.
         Generally, if the operation was already registered when the RP changed, the original data will be archived.
         If the operation wasn't yet registered when the selected RP changed, the original data will be deleted.
         """
