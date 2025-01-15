@@ -90,15 +90,12 @@ class ReportService:
     def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperation:
         # Fetch the existing report operation
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
-        report_operation_representatives = ReportOperationRepresentative.objects.filter(
-            report_version=report_version_id
-        )
 
         # Update the selected_for_report field based on the provided data
         representative_ids_in_data = data.operation_representative_name  # List of IDs from input
-        for representative in report_operation_representatives:
-            representative.selected_for_report = representative.id in representative_ids_in_data
-            representative.save()
+        ReportOperationRepresentative.objects.filter(
+            report_version_id=report_version_id, id__in=representative_ids_in_data
+        ).update(selected_for_report=True)
         # Update fields from data
         report_operation.operator_legal_name = data.operator_legal_name
         report_operation.operator_trade_name = data.operator_trade_name

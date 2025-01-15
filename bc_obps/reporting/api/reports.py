@@ -48,7 +48,7 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
     report_operation = ReportService.get_report_operation_by_version_id(version_id)
     return 200, {
         "report_operation": report_operation,
-        "report_operation_representative": report_operation_representative,
+        "report_operation_representatives": report_operation_representative,
     }
 
 
