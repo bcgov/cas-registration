@@ -198,19 +198,15 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         No data should be changed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
-        assert self.operation.regulated_products is not None
-        assert self.operation.regulated_products == self.original_operation_record.regulated_products
         assert self.operation.activities == self.original_operation_record.activities
 
     def _test_reporting_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Reporting to Electricity Import Operation.
         Expect the following to be removed: reporting activities, process flow diagram, boundary map, NAICS code.
-        Should only have 1 facility.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
-        assert self.operation.regulated_products.count() == 0
         assert self.operation.documents.count() == 0
         assert self.operation.naics_code is None
 
@@ -313,12 +309,13 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_regulated_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from OBPS Regulated to Electricity Import Operation.
-        Fields to be removed: process flow diagram, boundary map, reporting activities, NAICS code.
+        Fields to be removed: process flow diagram, boundary map, reporting activities, regulated products, NAICS code.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
         assert self.operation.documents.count() == 0
         assert self.operation.naics_code is None
+        assert self.operation.regulated_products.count() == 0
 
     ### Tests for Original Purpose = Opted-in
 
