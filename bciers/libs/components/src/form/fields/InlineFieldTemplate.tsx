@@ -13,6 +13,7 @@ function InlineFieldTemplate({
   children,
   uiSchema,
   classNames,
+  readonly,
 }: FieldTemplateProps) {
   const isHidden = uiSchema?.["ui:widget"] === "hidden";
   if (isHidden) return null;
@@ -28,12 +29,18 @@ function InlineFieldTemplate({
   const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
 
   return (
-    <div className="mb-4 md:mb-2">
+    <div
+      className={`mb-4 md:mb-2 ${
+        readonly && "divide-solid divide-slate-200 divide-y"
+      }`}
+    >
       <div
         className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
       >
         {isLabel && (
-          <div className="w-full lg:w-3/12">
+          <div
+            className={`w-full ${readonly ? "lg:w-4/12 mr-2" : "lg:w-3/12"}`}
+          >
             <label htmlFor={id} className="font-bold">
               {label}
               {required && "*"}
