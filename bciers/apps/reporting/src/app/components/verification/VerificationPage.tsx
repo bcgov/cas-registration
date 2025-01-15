@@ -1,7 +1,7 @@
 import { getReportVerification } from "@reporting/src/app/utils/getReportVerification";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
-import { verificationUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
+import { createVerificationUiSchema } from "@reporting/src/app/components/verification/createVerificationUiSchema";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import {
   ActivePage,
@@ -17,8 +17,14 @@ export default async function VerificationPage({
   const initialData = await getReportVerification(version_id);
   // Fetch the list of facilities associated with the specified version ID
   const facilityList = await getReportFacilityList(version_id);
-  // Create schema with dynamic facility list
-  const verificationSchema = createVerificationSchema(facilityList.facilities);
+  const operationType = "SFO";
+  // Create schema with dynamic facility list for operation type
+  const verificationSchema = createVerificationSchema(
+    facilityList.facilities,
+    operationType,
+  );
+  // Create ui schema for operation type
+  const verificationUiSchema = createVerificationUiSchema(operationType);
 
   //🔍 Check if reports need verification
   const needsVerification = await getReportNeedsVerification(version_id);
