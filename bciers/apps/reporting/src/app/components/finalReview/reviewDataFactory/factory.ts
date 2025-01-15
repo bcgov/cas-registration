@@ -1,4 +1,5 @@
 import activityFactoryItem from "./activityFactoryItem";
+import nonAttributableEmissionsFactoryItem from "./nonAttributableEmissionsFactoryItem";
 import operationReviewFactoryItem from "./operationReviewFactoryItem";
 import personResponsibleFactoryItem from "./personResponsibleFactoryItem";
 
@@ -14,5 +15,6 @@ export default async function reviewDataFactory(
     ...(await operationReviewFactoryItem(versionId)),
     ...(await personResponsibleFactoryItem(versionId)),
     ...(await activityFactoryItem(versionId)),
+    ...(await nonAttributableEmissionsFactoryItem(versionId)),
   ];
 }

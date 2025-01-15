@@ -7,17 +7,24 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import { getUiSchema } from "../activities/uiSchemas/schemaMaps";
-import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
+import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
 import FinalReviewStringField from "./formCustomization/FinalReviewStringField";
+import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
   data: { schema: RJSFSchema; uiSchema: any; data: any }[];
 }
 
+// D
+const finalReviewSchemaMap: { [key: string]: any } = {
+  ...uiSchemaMap,
+  nonAttributableEmissions: nonAttributableEmissionUiSchema,
+};
+
 const resolveUiSchema = (uiSchema: any) => {
-  return typeof uiSchema === "string" ? getUiSchema(uiSchema) : uiSchema;
+  if (typeof uiSchema !== "string") return uiSchema;
+  return finalReviewSchemaMap[uiSchema];
 };
 
 const FinalReviewForm: React.FC<Props> = ({
@@ -49,7 +56,6 @@ const FinalReviewForm: React.FC<Props> = ({
           key={idx}
           schema={form.schema}
           formData={form.data}
-          widgets={{ CheckboxWidgetLeft: CheckboxWidgetLeft }}
           fields={{
             StringField: FinalReviewStringField,
           }}
