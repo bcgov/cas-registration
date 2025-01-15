@@ -1,4 +1,3 @@
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { ReviewData, ReviewDataFactoryItem } from "./factory";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
@@ -8,8 +7,8 @@ import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
 
 const activityFactoryItem: ReviewDataFactoryItem = async (
   versionId: number,
+  facilityId,
 ) => {
-  const facilityId = (await getFacilityReport(versionId)).facility_id;
   const orderedActivities: any[] = await getOrderedActivities(
     versionId,
     facilityId,

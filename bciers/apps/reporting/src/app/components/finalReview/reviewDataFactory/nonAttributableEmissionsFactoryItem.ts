@@ -3,16 +3,15 @@ import { ReviewDataFactoryItem } from "./factory";
 import { generateUpdatedSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { getAllEmissionCategories } from "@reporting/src/app/utils/getAllEmissionCategories";
 import { getNonAttributableEmissionsData } from "@reporting/src/app/utils/getNonAttributableEmissionsData";
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 const nonAttributableEmissionsFactoryItem: ReviewDataFactoryItem = async (
-  versionId: number,
+  versionId,
+  facilityId,
 ) => {
   const gasTypes = await getAllGasTypes();
   const emissionCategories = await getAllEmissionCategories();
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
-  const facilityId = (await getFacilityReport(versionId)).facility_id;
 
   const emissionFormData = await getNonAttributableEmissionsData(
     versionId,

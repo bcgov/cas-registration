@@ -5,9 +5,7 @@ import {
 import { ReviewDataFactoryItem } from "./factory";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 
-const operationReviewFactoryItem: ReviewDataFactoryItem = async (
-  versionId: number,
-) => {
+const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   return [
     {
       schema: operationReviewSchema,
