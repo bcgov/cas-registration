@@ -52,8 +52,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
       "operator": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 5
@@ -76,8 +76,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000004",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 7
@@ -100,8 +100,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000006",
       "operator": "04384911-264a-4510-b582-11ee704b8e41",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 9
@@ -113,7 +113,7 @@
       "user": "00000000-0000-0000-0000-000000000007",
       "operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
       "role": "admin",
-      "status": "Pending",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 10
@@ -124,8 +124,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000008",
       "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 11
@@ -160,8 +160,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000011",
       "operator": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 14
@@ -172,8 +172,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000012",
       "operator": "bb979661-0782-49b2-9c64-acd8424b692b",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 15
@@ -184,8 +184,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000013",
       "operator": "bb702949-e303-4788-9ba9-806232a5f711",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 16
@@ -244,8 +244,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000018",
       "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 21
@@ -328,8 +328,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000025",
       "operator": "edb1aff1-f888-4199-ab88-068364496347",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 28
@@ -340,8 +340,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000026",
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "role": "pending",
-      "status": "Pending",
+      "role": "admin",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 29
