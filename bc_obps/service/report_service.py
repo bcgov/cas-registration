@@ -109,8 +109,6 @@ class ReportService:
 
         # Fetch and set ManyToMany fields
         activities = Activity.objects.filter(name__in=data.activities)
-        regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
-
         report_operation.activities.set(activities)
         report_operation.save()
 
