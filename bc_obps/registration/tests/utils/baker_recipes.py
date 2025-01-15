@@ -39,6 +39,7 @@ boro_id = Recipe(BcObpsRegulatedOperation, id=seq("99-", start=1001))
 
 operator = Recipe(
     Operator,
+    legal_name=seq('Operator 0'),
     bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
     mailing_address=foreign_key(address),
@@ -126,7 +127,9 @@ opted_in_operation_detail = Recipe(
     meets_reporting_and_regulated_obligations=False,
     meets_notification_to_director_on_criteria_change=False,
 )
-contact = Recipe(Contact, business_role=BusinessRole.objects.first(), address=foreign_key(address))
+contact = Recipe(
+    Contact, business_role=BusinessRole.objects.first(), address=foreign_key(address), first_name=seq('Firstname 0')
+)
 
 
 transfer_event = Recipe(
