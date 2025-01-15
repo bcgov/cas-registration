@@ -1,8 +1,4 @@
-export default async function Page({
-  params,
-}: {
-  params: { version_id: number };
-}) {
-  console.log(params);
-  return <>Review Facilities List Page TBD</>;
-}
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@reporting/src/app/components/operations/reviewFacilities/ReviewFacilitiesPage";
+
+export default defaultPageFactory(Page);
