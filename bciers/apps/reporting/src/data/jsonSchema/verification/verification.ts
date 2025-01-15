@@ -12,7 +12,7 @@ export const verificationSchema: RJSFSchema = {
     "verification_body_name",
     "accredited_by",
     "scope_of_verification",
-    "visit_name",
+    "visit_names",
     "threats_to_independence",
     "verification_conclusion",
   ],
@@ -35,7 +35,7 @@ export const verificationSchema: RJSFSchema = {
         "Corrected Report",
       ],
     },
-    visit_name: {
+    visit_names: {
       title: "Sites visited",
       type: "string",
       enum: ["Facility X", "Other", "None"], // modified in components/verification/createVerificationSchema.ts
@@ -56,18 +56,18 @@ export const verificationSchema: RJSFSchema = {
     },
   },
   dependencies: {
-    visit_name: {
+    visit_names: {
       oneOf: [
         {
           properties: {
-            visit_name: {
+            visit_names: {
               type: "string",
               minItems: 1,
               not: {
                 enum: ["Other", "None"],
               },
             },
-            visit_type: {
+            visit_types: {
               type: "string",
               title: "Type of site visit",
               enum: ["Virtual", "In person"],
@@ -81,14 +81,14 @@ export const verificationSchema: RJSFSchema = {
             },
           },
           required: [
-            "visit_type",
+            "visit_types",
             "threats_to_independence",
             "verification_conclusion",
           ],
         },
         {
           properties: {
-            visit_name: {
+            visit_names: {
               enum: ["Other"],
             },
             other_facility_name: {
@@ -99,7 +99,7 @@ export const verificationSchema: RJSFSchema = {
               type: "string",
               title: "Geographic coordinates of site",
             },
-            visit_type: {
+            visit_types: {
               type: "string",
               title: "Type of site visit",
               enum: ["Virtual", "In person"],
@@ -115,14 +115,14 @@ export const verificationSchema: RJSFSchema = {
           required: [
             "other_facility_name",
             "other_facility_coordinates",
-            "visit_type",
+            "visit_types",
             "threats_to_independence",
             "verification_conclusion",
           ],
         },
         {
           properties: {
-            visit_name: {
+            visit_names: {
               enum: ["None"],
             },
             threats_to_independence: {
@@ -147,10 +147,10 @@ export const verificationUiSchema = {
     "verification_body_name",
     "accredited_by",
     "scope_of_verification",
-    "visit_name",
+    "visit_names",
     "other_facility_name",
     "other_facility_coordinates",
-    "visit_type",
+    "visit_types",
     "threats_to_independence",
     "verification_conclusion",
     "verification_note",
@@ -164,10 +164,10 @@ export const verificationUiSchema = {
   scope_of_verification: {
     "ui:placeholder": "Select scope of verification",
   },
-  visit_name: {
+  visit_names: {
     "ui:placeholder": "Select site visited",
   },
-  visit_type: {
+  visit_types: {
     "ui:widget": "RadioWidget",
   },
   threats_to_independence: {
