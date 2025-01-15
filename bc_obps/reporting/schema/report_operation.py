@@ -48,7 +48,7 @@ class ReportOperationSchemaOut(Schema):
     """
 
     report_operation: ReportOperationOut
-    report_operation_representative: List[ReportOperationRepresentativeSchema]
+    report_operation_representatives: List[ReportOperationRepresentativeSchema]
 
 
 class ReportOperationIn(Schema):

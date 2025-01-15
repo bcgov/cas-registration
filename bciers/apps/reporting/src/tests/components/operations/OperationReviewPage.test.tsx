@@ -52,7 +52,9 @@ const mockReportOperation = {
     operation_representative_name: [4],
     operation_type: "Test Operation",
   },
-  report_operation_representative: [{ id: 4, representative_name: "Shon Doe" }],
+  report_operation_representatives: [
+    { id: 4, representative_name: "Shon Doe" },
+  ],
 };
 
 const props: HasReportVersion = {

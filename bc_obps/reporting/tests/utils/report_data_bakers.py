@@ -2,7 +2,7 @@ from model_bakery import baker
 
 from registration.models import RegulatedProduct
 from registration.tests.utils.bakers import facility_baker
-from reporting.models import ReportNewEntrant, ReportNewEntrantProduction, ReportOperationRepresentative
+from reporting.models import ReportNewEntrant, ReportNewEntrantProduction
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from reporting.models.facility_report import FacilityReport
@@ -138,12 +138,3 @@ def report_new_entrant_production_baker(**props):
         "production_amount": 500,
     }
     return baker.make(ReportNewEntrantProduction, **(default_props | props))
-
-
-def report_operation_representative_baker(**props) -> ReportOperationRepresentative:
-    if "report_version" not in props:
-        props["report_version"] = report_version_baker()
-
-    report_representative = baker.make(ReportOperationRepresentative, **props)
-
-    return report_representative
