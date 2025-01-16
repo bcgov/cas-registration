@@ -10,6 +10,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
 import FinalReviewStringField from "./formCustomization/FinalReviewStringField";
 import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
+import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
@@ -20,6 +21,7 @@ interface Props extends HasReportVersion {
 const finalReviewSchemaMap: { [key: string]: any } = {
   ...uiSchemaMap,
   nonAttributableEmissions: nonAttributableEmissionUiSchema,
+  productionData: productionDataUiSchema,
 };
 
 const resolveUiSchema = (uiSchema: any) => {
