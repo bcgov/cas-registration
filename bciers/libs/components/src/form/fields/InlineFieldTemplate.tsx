@@ -35,7 +35,9 @@ function InlineFieldTemplate({
       }`}
     >
       <div
-        className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
+        className={`flex flex-col md:flex-row items-start md:items-center ${
+          readonly && "pb-2"
+        } ${classNames}`}
       >
         {isLabel && (
           <div
