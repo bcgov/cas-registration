@@ -5,10 +5,10 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import ReportingOperationStatusCell from "@reporting/src/app/components/operations/cells/ReportingOperationStatusCell";
+import { createReport } from "@reporting/src/app/utils/createReport";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -65,20 +65,10 @@ const ActionCell = (params: GridRenderCellParams) => {
     reportingYear: number,
   ): Promise<string> => {
     try {
-      const response = await actionHandler(
-        "reporting/create-report",
-        "POST",
-        "",
-        {
-          body: JSON.stringify({
-            operation_id: operationId,
-            reporting_year: reportingYear,
-          }),
-        },
-      );
-      if (response.error)
+      const response = await createReport(operationId, reportingYear);
+      if (response?.error)
         setResponseError(
-          `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response.error}.`,
+          `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response?.error}.`,
         );
       return response;
     } catch (error) {
