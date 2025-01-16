@@ -1,7 +1,7 @@
 import { describe } from "vitest";
 import operationColumns from "@reporting/src/app/components/datagrid/models/operations/operationColumns";
 import { GridColDef } from "@mui/x-data-grid";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "@bciers/testConfig/mocks";
 
@@ -17,6 +17,9 @@ describe("operationColumns function", () => {
 
   vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
     getReportingYear: vi.fn().mockResolvedValue({ reporting_year: 2023 }),
+  }));
+  vi.mock("@reporting/src/app/utils/createReport", () => ({
+    createReport: vi.fn().mockResolvedValue(1),
   }));
 
   it("returns an array of column definitions", () => {
@@ -84,7 +87,14 @@ describe("operationColumns function", () => {
       value: row.report_id,
     };
 
-    render(columns[2].renderCell(params));
+    function WrapperComponent() {
+      // in order for hook to work
+      const cell = columns[2].renderCell;
+
+      return <div>{cell(params)}</div>;
+    }
+
+    render(<WrapperComponent />);
     expect(screen.getByText("Start")).toBeInTheDocument();
   });
 
@@ -107,10 +117,18 @@ describe("operationColumns function", () => {
       value: row.report_id,
     };
 
-    render(columns[2].renderCell(params));
+    function WrapperComponent() {
+      const cell = columns[2].renderCell;
+
+      return <div>{cell(params)}</div>;
+    }
+
+    render(<WrapperComponent />);
     await user.click(screen.getByText("Start"));
 
-    expect(useRouter().push).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(useRouter().push).toHaveBeenCalled();
+    });
   });
 
   it("has a 'continue' button in the 'Actions' column when report_id exists", () => {
@@ -130,7 +148,13 @@ describe("operationColumns function", () => {
       value: row.report_id,
     };
 
-    render(columns[2].renderCell(params));
+    function WrapperComponent() {
+      const cell = columns[2].renderCell;
+
+      return <div>{cell(params)}</div>;
+    }
+
+    render(<WrapperComponent />);
     expect(screen.getByText("Continue")).toBeInTheDocument();
   });
 
@@ -153,7 +177,13 @@ describe("operationColumns function", () => {
       value: row.report_id,
     };
 
-    render(columns[2].renderCell(params));
+    function WrapperComponent() {
+      const cell = columns[2].renderCell;
+
+      return <div>{cell(params)}</div>;
+    }
+
+    render(<WrapperComponent />);
     await user.click(screen.getByText("Continue"));
 
     expect(useRouter().push).toHaveBeenCalledWith(

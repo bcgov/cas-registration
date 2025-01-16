@@ -5,10 +5,10 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import ReportingOperationStatusCell from "@reporting/src/app/components/operations/cells/ReportingOperationStatusCell";
+import { createReport } from "@reporting/src/app/utils/createReport";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -53,32 +53,42 @@ const MoreCell: React.FC = () => {
   );
 };
 
-const handleStartReport = async (
-  operationId: string,
-  reportingYear: number,
-): Promise<string> => {
-  try {
-    const reportId = await actionHandler(
-      "reporting/create-report",
-      "POST",
-      "",
-      {
-        body: JSON.stringify({
-          operation_id: operationId,
-          reporting_year: reportingYear,
-        }),
-      },
-    );
-    return reportId;
-  } catch (error) {
-    throw error;
-  }
-};
-
 const ActionCell = (params: GridRenderCellParams) => {
   const reportId = params.value;
   const router = useRouter();
   const OperationId = params.row.id;
+  const [responseError, setResponseError] = React.useState<string | null>(null);
+  const [hasClicked, setHasClicked] = React.useState<boolean>(false);
+
+  const handleStartReport = async (
+    operationId: string,
+    reportingYear: number,
+  ): Promise<string> => {
+    try {
+      const response = await createReport(operationId, reportingYear);
+      if (response?.error)
+        setResponseError(
+          `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response?.error}.`,
+        );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  if (responseError) {
+    throw new Error(responseError); // Use the error message in the error boundary in case operation not found
+  }
+
+  const handleStartClick = async () => {
+    const reportingYearObj = await getReportingYear();
+    const newReportId = await handleStartReport(
+      OperationId,
+      reportingYearObj.reporting_year,
+    );
+    if (typeof newReportId === "number")
+      router.push(`reports/${newReportId}/review-operator-data`);
+  };
 
   if (reportId) {
     return (
@@ -94,13 +104,10 @@ const ActionCell = (params: GridRenderCellParams) => {
   return (
     <Button
       color="primary"
-      onClick={async () => {
-        const reportingYearObj = await getReportingYear();
-        const newReportId = await handleStartReport(
-          OperationId,
-          reportingYearObj.reporting_year,
-        );
-        router.push(`reports/${newReportId}/review-operator-data`);
+      disabled={hasClicked}
+      onClick={() => {
+        setHasClicked(true);
+        handleStartClick();
       }}
     >
       Start
