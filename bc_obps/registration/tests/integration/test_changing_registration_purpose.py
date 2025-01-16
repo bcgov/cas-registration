@@ -9,7 +9,7 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestChangingRegistrationPurpose(CommonTestSetup):
-    def _create_opted_in_payload(self):
+    def _create_opted_in_detail_payload(self):
         return {
             "meets_section_3_emissions_requirements": False,
             "meets_electricity_import_operation_criteria": True,
@@ -37,18 +37,30 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         )
 
     def _set_operation_information(self):
-        mock_naics_codes = baker.make(NaicsCode, _quantity=3)
+        mock_naics_codes = baker.make(NaicsCode, _quantity=2)
         operation_information_payload = {
-            "boundary_map": MOCK_DATA_URL,
-            "process_flow_diagram": MOCK_DATA_URL,
-            "activities": [2, 3],
-            "naics_code_id": mock_naics_codes[1].id,
-            "secondary_naics_code_id": mock_naics_codes[2].id,
+            # begin with most basic allowed payload - EIOs will only use this
             "name": self.operation.name,
             "type": self.operation.type,
             "registration_purpose": self.operation.registration_purpose,
-            "regulated_products": [1, 2],
+            "activities": [],  # activities is required in payload so needs to be explicitly set, even if it's empty
         }
+        if self.operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            operation_information_payload.update(
+                {
+                    "boundary_map": MOCK_DATA_URL,
+                    "process_flow_diagram": MOCK_DATA_URL,
+                    "activities": [2, 3],
+                    "naics_code_id": mock_naics_codes[0].id,
+                    "secondary_naics_code_id": mock_naics_codes[1].id,
+                }
+            )
+        if self.operation.registration_purpose in [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+        ]:
+            operation_information_payload.update({"regulated_products": [1, 2]})
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
@@ -61,6 +73,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         self.operation.refresh_from_db()
 
     def _set_new_registration_purpose(self, new_purpose):
+        mock_naics_codes = baker.make(NaicsCode, _quantity=2)
+        # begin with most basic allowed payload - EIOs will only use this
         operation_payload = {
             "name": self.operation.name,
             "type": self.operation.type,
@@ -68,13 +82,15 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             "activities": [],  # activities is required in payload so needs to be explicitly set, even if it's empty
         }
         if new_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            # any purpose other than EIO requires these additional fields
             operation_payload.update(
                 {
                     "boundary_map": MOCK_DATA_URL,
                     "process_flow_diagram": MOCK_DATA_URL,
                     "activities": [2, 3],
-                    "naics_code_id": self.operation.naics_code_id,
-                    "secondary_naics_code_id": self.operation.secondary_naics_code_id,
+                    "naics_code_id": self.operation.naics_code_id
+                    or mock_naics_codes[0].id,  # if old purpose was EIO, operation won't have any NAICS codes
+                    "secondary_naics_code_id": self.operation.secondary_naics_code_id or mock_naics_codes[1].id,
                 }
             )
         if new_purpose in [
@@ -82,6 +98,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             Operation.Purposes.NEW_ENTRANT_OPERATION,
             Operation.Purposes.OPTED_IN_OPERATION,
         ]:
+            # regulated operations need to report their
             operation_payload.update({"regulated_products": [1, 2]})
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -105,7 +122,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            self._create_opted_in_payload(),
+            self._create_opted_in_detail_payload(),
             custom_reverse_lazy(
                 "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': self.operation.id}
             ),
@@ -388,7 +405,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         Tests operation registration data for situation where registration_purpose changes from New Entrant to Electricity Import Operation.
         Registration data specific to new entrants (date of first shipment, new entrant application document) should be removed.
-        In addition, data for process flow diagram, boundary map, regulated products, and reporting activities should be removed.
+        In addition, data for NAICS code, process flow diagram, boundary map, regulated products, and reporting activities should be removed.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() == 0
@@ -442,7 +459,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_eio_to_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to Reporting.
-        No data should be removed; must add data for reporting activities, process flow diagram, and boundary map.
+        No data should be removed; must add data for NAICS code, reporting activities, process flow diagram, and boundary map.
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.activities.count() > 0
@@ -453,7 +470,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_eio_to_regulated(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to OBPS Regulated.
-        No data should be removed; must add data for regulated products, reporting activities, process flow diagram, and boundary map.
+        No data should be removed; must add data for NAICS code, regulated products, reporting activities, process flow diagram, and boundary map.
         """
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
         assert self.operation.activities.count() > 0
@@ -465,7 +482,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_eio_to_potential_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to Potential Reporting.
-        No data should be removed; must add data for reporting activities, process flow diagram, and boundary map.
+        No data should be removed; must add data for NAICS code, reporting activities, process flow diagram, and boundary map.
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert self.operation.activities.count() > 0
@@ -476,7 +493,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_eio_to_new_entrant(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to New Entrant.
-        No data should be removed; must add data for reporting activities, process flow diagram, boundary map, new entrant application doc, and date of first shipment.
+        No data should be removed; must add data for NAICS code, reporting activities, process flow diagram, boundary map, new entrant application doc, and date of first shipment.
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
         assert self.operation.activities.count() > 0
@@ -492,13 +509,14 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_eio_to_opted_in(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Electricity Import Operation to Opted-in Operation.
-        No data should be removed; must add data for reporting activities, regulated products, process flow diagram, boundary map, and opted_in_operation_detail.
+        No data should be removed; must add data for NAICS code, reporting activities, regulated products, process flow diagram, boundary map, and opted_in_operation_detail.
         """
         assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
         assert self.operation.activities.count() > 0
         assert self.operation.regulated_products.count() > 0
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='process_flow_diagram')) is not None
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')) is not None
+        assert self.operation.naics_code is not None
         assert self.operation.opt_in is True
         assert self.operation.opted_in_operation is not None
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
@@ -572,10 +590,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.activities.count() == 0
         assert self.operation.documents.count() == 0
-        assert self.operation.naics_code is None
 
-    @pytest.mark.parametrize("original_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("new_purpose", list(Operation.Purposes))
+    @pytest.mark.parametrize("original_purpose", list(Operation.Purposes))
     @pytest.mark.parametrize("registration_status", [Operation.Statuses.REGISTERED, Operation.Statuses.DRAFT])
     def test_changing_registration_purpose(self, original_purpose, new_purpose, registration_status):
         """
