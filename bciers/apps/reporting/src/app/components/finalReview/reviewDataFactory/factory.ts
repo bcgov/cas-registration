@@ -7,6 +7,7 @@ import emissionsSummaryFactoryItem from "./emissionsSummaryFactoryItem";
 import productionDataFactoryItem from "./productionDataFactoryItem";
 import allocationOfEmissionsFactoryItem from "./allocationOfEmissions";
 import { RJSFSchema } from "@rjsf/utils";
+import additionalReportingDataFactoryItem from "./additionalReportingData";
 
 export type ReviewData = {
   schema: RJSFSchema;
@@ -32,5 +33,6 @@ export default async function reviewDataFactory(
     ...(await emissionsSummaryFactoryItem(versionId, facilityId)),
     ...(await productionDataFactoryItem(versionId, facilityId)),
     ...(await allocationOfEmissionsFactoryItem(versionId, facilityId)),
+    ...(await additionalReportingDataFactoryItem(versionId, facilityId)),
   ];
 }

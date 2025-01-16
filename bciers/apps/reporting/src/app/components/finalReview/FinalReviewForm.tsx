@@ -13,6 +13,7 @@ import { ReviewData } from "./reviewDataFactory/factory";
 import { withTheme } from "@rjsf/core";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import finalReviewTheme from "./formCustomization/finalReviewTheme";
+import { additionalReportingDataUiSchema } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
@@ -25,6 +26,7 @@ const finalReviewSchemaMap: { [key: string]: any } = {
   nonAttributableEmissions: nonAttributableEmissionUiSchema,
   productionData: productionDataUiSchema,
   emissionAllocation: emissionAllocationUiSchema,
+  additionalReportingData: additionalReportingDataUiSchema,
 };
 
 const resolveUiSchema = (uiSchema: any) => {
