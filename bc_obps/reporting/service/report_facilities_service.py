@@ -1,7 +1,7 @@
 from django.db import transaction
-from reporting.models.report_selected_facility import ReportSelectedFacility
-from reporting.models import ReportVersion
-from registration.models import Facility
+
+from reporting.models import ReportVersion, FacilityReport
+from registration.models import Facility, FacilityDesignatedOperationTimeline
 from typing import List, Dict
 from uuid import UUID
 
@@ -29,51 +29,74 @@ class ReportFacilitiesService:
         )
 
         return {"facilities": facilities_list}
-    
+
     @classmethod
     @transaction.atomic
     def save_selected_facilities(
         cls,
-        version_id: int, 
-        facility_list: List[UUID],
-        user_guid: UUID,
-        ) -> None:
+        version_id: int,
+        facility_list: list[UUID],
+    ) -> None:
         """
         Save selected facility to report version.
 
         Args:
             version_id: The report version ID
-            facility_list: The facility IDs of the selected facilities
-            user_guid: The user GUID of the user making the save request
-
-
+            facility_list: The facility UUIDs of the selected facilities
         """
-        
-        # Delete existing selected facilities that are no longer selected
-        ReportSelectedFacility.objects.filter(report_version_id=version_id).exclude(facility_id__in=facility_list).delete()
 
-        for facility_id in facility_list:
-            selected_facility_record, created = ReportSelectedFacility.objects.get_or_create(
-                report_version_id=version_id,
-                facility_id=facility_id,
-            )
-            if created:
-                selected_facility_record.set_create_or_update(user_guid)
+        report_version = ReportVersion.objects.get(id=version_id)
+
+        # Delete unselected facilities
+        FacilityReport.objects.filter(report_version=report_version).exclude(facility_id__in=facility_list).delete()
+
+        # Bulk create new facilities that are not already in Facility Report
+        FacilityReport.objects.bulk_create(
+            [
+                FacilityReport(
+                    report_version=report_version,
+                    facility=facility,
+                    facility_name=facility.name,
+                    facility_type=facility.type,
+                    facility_bcghgid=str(facility.bcghg_id.id) if facility.bcghg_id else None,
+                )
+                for facility in Facility.objects.filter(
+                    id__in=set(facility_list)
+                    - set(
+                        FacilityReport.objects.filter(report_version=report_version).values_list(
+                            'facility_id', flat=True
+                        )
+                    )
+                )
+            ]
+        )
 
     @staticmethod
     @transaction.atomic
-    def get_selected_facilities(
-        version_id: int,
-        ) -> List[UUID]:
+    def get_all_facilities_for_review(version_id: int) -> dict:
         """
-        Get selected facilities for a report version.
+        Get facilities associated with a report version, including selected and available facilities.
 
         Args:
             version_id: The report version ID
 
         Returns:
-            List of facility IDs
+            Dictionary with:
+            - "selected_facilities": List of selected facility details
+            - "available_facilities": List of all available facility details
         """
-        return list(ReportSelectedFacility.objects.filter(report_version_id=version_id).values_list('facility_id', flat=True))
-    
-    
+        selected_facilities = FacilityReport.objects.filter(report_version_id=version_id).values_list(
+            'facility_id', flat=True
+        )
+
+        report_version = ReportVersion.objects.select_related('report__operation').get(id=version_id)
+        available_facilities = (
+            FacilityDesignatedOperationTimeline.objects.filter(operation_id=report_version.report.operation.id)
+            .distinct()
+            .values('facility_id', 'facility__name', 'status', 'end_date')
+        )
+
+        return {
+            "selected_facilities": selected_facilities,
+            "available_facilities": available_facilities,
+        }
