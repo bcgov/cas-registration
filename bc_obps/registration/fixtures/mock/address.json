@@ -208,5 +208,13 @@
       "province": "ON",
       "postal_code": "N2L 3G1"
     }
+  },
+  {
+    "model": "registration.address",
+    "pk": 21,
+    "fields": {
+      "street_address": "Incomplete address",
+      "municipality": "Grove"
+    }
   }
 ]
