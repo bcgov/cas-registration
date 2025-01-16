@@ -68,11 +68,21 @@ class TestDataAccessOptedInOperationService:
             opt_in=True,
         )
         assert OptedInOperationDetail.objects.count() == 1
+
+        opted_in_detail = users_operation.opted_in_operation
+
         OptedInOperationDataAccessService.archive_or_delete_opted_in_operation_detail(
             approved_user_operator.user.user_guid, users_operation.id
         )
         users_operation.refresh_from_db()
-        # at the moment there's no easy way to tell whether a record has been deleted or archived, so not testing any further than
-        # this for now. We may eventually need to implement a way to fetch archived records from the db.
+
         assert users_operation.opted_in_operation is None
         assert OptedInOperationDetail.objects.count() == 0
+
+        if users_operation.status == Operation.Statuses.REGISTERED:
+            opted_in_detail.refresh_from_db()
+            assert opted_in_detail.archived_at is not None
+            assert opted_in_detail.archived_by is not None
+        else:
+            with pytest.raises(OptedInOperationDetail.DoesNotExist):
+                opted_in_detail.refresh_from_db()  # this should raise an exception because it's been deleted
