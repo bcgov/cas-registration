@@ -5,8 +5,8 @@ import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import OperationReview from "./OperationReviewForm";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import OperationReviewForm from "./OperationReviewForm";
 
 export default async function OperationReviewPage({
   version_id,
@@ -20,10 +20,16 @@ export default async function OperationReviewPage({
   const facilityReport = await getFacilityReport(version_id);
 
   const registrationPurposeString = registrationPurpose?.registration_purpose;
+  const transformedOperation = {
+    ...reportOperation.report_operation,
+    operation_representative_name:
+      reportOperation.report_operation_representatives,
+  };
+  const allRepresentatives = reportOperation.report_operation_representatives;
 
   return (
-    <OperationReview
-      formData={reportOperation}
+    <OperationReviewForm
+      formData={transformedOperation}
       version_id={version_id}
       reportType={reportType}
       allActivities={allActivities}
@@ -31,6 +37,7 @@ export default async function OperationReviewPage({
       allRegulatedProducts={allRegulatedProducts}
       registrationPurpose={registrationPurposeString}
       facilityReport={facilityReport}
+      allRepresentatives={allRepresentatives}
     />
   );
 }
