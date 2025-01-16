@@ -5,6 +5,7 @@ import operationReviewFactoryItem from "./operationReviewFactoryItem";
 import personResponsibleFactoryItem from "./personResponsibleFactoryItem";
 import emissionsSummaryFactoryItem from "./emissionsSummaryFactoryItem";
 import productionDataFactoryItem from "./productionDataFactoryItem";
+import allocationOfEmissionsFactoryItem from "./allocationOfEmissions";
 
 export type ReviewData = { schema: any; uiSchema: Object | string; data: any };
 export type ReviewDataFactoryItem = (
@@ -24,5 +25,6 @@ export default async function reviewDataFactory(
     ...(await nonAttributableEmissionsFactoryItem(versionId, facilityId)),
     ...(await emissionsSummaryFactoryItem(versionId, facilityId)),
     ...(await productionDataFactoryItem(versionId, facilityId)),
+    ...(await allocationOfEmissionsFactoryItem(versionId, facilityId)),
   ];
 }

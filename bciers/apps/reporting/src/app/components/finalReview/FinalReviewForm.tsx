@@ -11,6 +11,7 @@ import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
 import FinalReviewStringField from "./formCustomization/FinalReviewStringField";
 import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
+import { emissionAllocationUiSchema } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
@@ -22,6 +23,7 @@ const finalReviewSchemaMap: { [key: string]: any } = {
   ...uiSchemaMap,
   nonAttributableEmissions: nonAttributableEmissionUiSchema,
   productionData: productionDataUiSchema,
+  emissionAllocation: emissionAllocationUiSchema,
 };
 
 const resolveUiSchema = (uiSchema: any) => {
