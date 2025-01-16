@@ -135,9 +135,8 @@
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Ivy",
-      "last_name": "Jones",
+      "last_name": "Jones - no address",
       "position_title": "Manager",
-      "address": 11,
       "email": "ivy.jones@example.com",
       "phone_number": "+16044011243"
     }
@@ -148,9 +147,9 @@
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Jack",
-      "last_name": "King",
+      "last_name": "King - incomplete address",
       "position_title": "Manager",
-      "address": 12,
+      "address": 21,
       "email": "jack.king@example.com",
       "phone_number": "+16044011244"
     }
