@@ -14,6 +14,8 @@ import { withTheme } from "@rjsf/core";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import finalReviewTheme from "./formCustomization/finalReviewTheme";
 import { additionalReportingDataUiSchema } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
+import { complianceSummaryUiSchema } from "@reporting/src/data/jsonSchema/complianceSummary";
+import { useState } from "react";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
@@ -27,6 +29,7 @@ const finalReviewSchemaMap: { [key: string]: any } = {
   productionData: productionDataUiSchema,
   emissionAllocation: emissionAllocationUiSchema,
   additionalReportingData: additionalReportingDataUiSchema,
+  complianceSummary: complianceSummaryUiSchema,
 };
 
 const resolveUiSchema = (uiSchema: any) => {
@@ -42,10 +45,12 @@ const FinalReviewForm: React.FC<Props> = ({
   data,
 }) => {
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${version_id}/sign-off`;
+  const saveAndContinueUrl = `/reports/${version_id}/verification`;
   const backUrl = `/reports/${version_id}/attachments`;
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const submitHandler = async () => {
+    setIsRedirecting(true);
     router.push(saveAndContinueUrl);
   };
 
@@ -54,6 +59,7 @@ const FinalReviewForm: React.FC<Props> = ({
       steps={multiStepHeaderSteps}
       initialStep={4}
       onSubmit={submitHandler}
+      isRedirecting={isRedirecting}
       taskListElements={taskListElements}
       cancelUrl="#"
       backUrl={backUrl}
