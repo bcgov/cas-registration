@@ -26,7 +26,13 @@ const contactFormData = {
   municipality: "Cityville",
   province: "ON",
   postal_code: "A1B 2C3",
-  places_assigned: ["Operation Representative - Operation 1"],
+  places_assigned: [
+    {
+      role_name: "Operation Representative",
+      operation_name: "Operation 1",
+      operation_id: "c0743c09-82fa-4186-91aa-4b5412e3415c",
+    },
+  ],
 };
 
 export const checkEmptyContactForm = () => {
@@ -141,9 +147,11 @@ describe("ContactForm component", () => {
     ).toHaveTextContent("Doe");
 
     expect(screen.getByText(/Places Assigned/i)).toBeVisible();
-    expect(
-      screen.getByText(/Operation Representative - Operation 1/i),
-    ).toBeVisible();
+    expect(screen.getByText(/Operation Representative/i)).toBeVisible();
+    expect(screen.getByRole("link")).toHaveAttribute(
+      "href",
+      "/operations/c0743c09-82fa-4186-91aa-4b5412e3415c?operations_title=Operation 1&from_contacts=true",
+    );
 
     expect(
       container.querySelector("#root_section2_position_title"),
@@ -407,7 +415,13 @@ describe("ContactForm component", () => {
         body: JSON.stringify({
           first_name: "John updated",
           last_name: "Doe updated",
-          places_assigned: ["Operation Representative - Operation 1"],
+          places_assigned: [
+            {
+              role_name: "Operation Representative",
+              operation_name: "Operation 1",
+              operation_id: "c0743c09-82fa-4186-91aa-4b5412e3415c",
+            },
+          ],
           position_title: "Senior Officer",
           email: "john.doe@example.com",
           phone_number: "+16044011234",
