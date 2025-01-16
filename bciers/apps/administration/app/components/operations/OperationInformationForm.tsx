@@ -19,6 +19,7 @@ import {
 import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
+import Link from "next/link";
 
 const OperationInformationForm = ({
   formData,
@@ -49,6 +50,15 @@ const OperationInformationForm = ({
     );
 
     if (response?.error) {
+      if (response.error.includes("Please return to Contacts")) {
+        const splitError = response.error.split("Contacts");
+        response.error = (
+          <>
+            {splitError[0]} <Link href={"/contacts"}>Contacts</Link>
+            {splitError[1]}
+          </>
+        );
+      }
       setError(response.error);
       return { error: response.error };
     }
