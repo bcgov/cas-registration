@@ -95,3 +95,10 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* Purely so that scrolling doesn't increment/decrement value in rjsf number fields */
+.rjsf input[type="number"] {
+  -webkit-appearance: none; /* Disable native browser scroll */
+  appearance: none;
+  pointer-events: none; /* Disable scrolling */
+}
