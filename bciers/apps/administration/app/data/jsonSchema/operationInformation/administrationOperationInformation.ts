@@ -45,6 +45,7 @@ export const administrationOperationInformationUiSchema: UiSchema = {
   section3: {
     ...registrationInformationUiSchema,
     "ui:order": [
+      "operation_representatives",
       "registration_purpose",
       "regulated_operation_preface",
       "regulated_products",
