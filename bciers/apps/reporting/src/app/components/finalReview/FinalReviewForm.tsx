@@ -5,17 +5,18 @@ import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTyp
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { useRouter } from "next/navigation";
-import { RJSFSchema } from "@rjsf/utils";
-import FormBase from "@bciers/components/form/FormBase";
 import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
-import FinalReviewStringField from "./formCustomization/FinalReviewStringField";
 import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { emissionAllocationUiSchema } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
+import { ReviewData } from "./reviewDataFactory/factory";
+import { withTheme } from "@rjsf/core";
+import { customizeValidator } from "@rjsf/validator-ajv8";
+import finalReviewTheme from "./formCustomization/finalReviewTheme";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
-  data: { schema: RJSFSchema; uiSchema: any; data: any }[];
+  data: ReviewData[];
 }
 
 // D
@@ -30,6 +31,8 @@ const resolveUiSchema = (uiSchema: any) => {
   if (typeof uiSchema !== "string") return uiSchema;
   return finalReviewSchemaMap[uiSchema];
 };
+
+const Form = withTheme(finalReviewTheme);
 
 const FinalReviewForm: React.FC<Props> = ({
   version_id,
@@ -56,18 +59,17 @@ const FinalReviewForm: React.FC<Props> = ({
       noFormSave={() => {}}
     >
       {data.map((form, idx) => (
-        <FormBase
+        <Form
           key={idx}
           schema={form.schema}
           formData={form.data}
-          fields={{
-            StringField: FinalReviewStringField,
-          }}
           uiSchema={{
             ...resolveUiSchema(form.uiSchema),
             "ui:submitButtonOptions": { norender: true },
           }}
           readonly={true}
+          formContext={form.context || {}}
+          validator={customizeValidator({})}
         />
       ))}
     </MultiStepWrapperWithTaskList>

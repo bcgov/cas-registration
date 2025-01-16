@@ -32,6 +32,12 @@ const allocationOfEmissionsFactoryItem: ReviewDataFactoryItem = async (
       schema: emissionAllocationSchema,
       data: formData,
       uiSchema: "emissionAllocation",
+      context: {
+        facility_emission_data: formData.basic_emission_allocation_data.concat(
+          formData.fuel_excluded_emission_allocation_data,
+        ),
+        total_emission_allocations: formData.total_emission_allocations,
+      },
     },
   ];
 };

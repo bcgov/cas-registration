@@ -3,7 +3,7 @@
 import { FieldTemplateProps } from "@rjsf/utils";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
-function InlineFieldTemplate({
+function FinalReviewFieldTemplate({
   id,
   label,
   help,
@@ -28,12 +28,12 @@ function InlineFieldTemplate({
   const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
 
   return (
-    <div className="mb-4 md:mb-2">
+    <div className={"mb-4 md:mb-2 divide-solid divide-slate-200 divide-y"}>
       <div
-        className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
+        className={`flex flex-col md:flex-row items-start md:items-center pb-2 ${classNames}`}
       >
         {isLabel && (
-          <div className="w-full lg:w-3/12">
+          <div className={"w-full lg:w-4/12 mr-2"}>
             <label htmlFor={id} className="font-bold">
               {label}
               {required && "*"}
@@ -78,4 +78,4 @@ function InlineFieldTemplate({
   );
 }
 
-export default InlineFieldTemplate;
+export default FinalReviewFieldTemplate;
