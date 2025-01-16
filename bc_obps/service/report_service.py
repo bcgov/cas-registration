@@ -1,7 +1,7 @@
 from uuid import UUID
 from django.db import transaction
 from django.db.models import QuerySet
-
+from django.db.models import Case, When, Value, BooleanField
 from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models import ReportOperationRepresentative
@@ -93,9 +93,13 @@ class ReportService:
 
         # Update the selected_for_report field based on the provided data
         representative_ids_in_data = data.operation_representative_name  # List of IDs from input
-        ReportOperationRepresentative.objects.filter(
-            report_version_id=report_version_id, id__in=representative_ids_in_data
-        ).update(selected_for_report=True)
+        ReportOperationRepresentative.objects.filter(report_version_id=report_version_id).update(
+            selected_for_report=Case(
+                When(id__in=representative_ids_in_data, then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
         # Update fields from data
         report_operation.operator_legal_name = data.operator_legal_name
         report_operation.operator_trade_name = data.operator_trade_name
