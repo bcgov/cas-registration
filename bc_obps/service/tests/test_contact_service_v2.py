@@ -1,11 +1,8 @@
 from registration.schema.v1.contact import ContactFilterSchema
 import pytest
-from service.contact_service_v2 import ContactServiceV2
+from service.contact_service_v2 import ContactServiceV2, PlacesAssigned
 from model_bakery import baker
 from registration.models.business_role import BusinessRole
-import pytest
-from model_bakery import baker
-from service.contact_service_v2 import ContactServiceV2
 
 pytestmark = pytest.mark.django_db
 
@@ -52,7 +49,9 @@ class TestContactService:
 
         result = ContactServiceV2.get_with_places_assigned_v2(approved_user_operator.user.user_guid, contact.id)
         assert result.places_assigned == [
-            f"Operation Representative - {operation.name}",
+            PlacesAssigned(
+                role_name=contact.business_role.role_name, operation_name=operation.name, operation_id=operation.id
+            )
         ]
 
     @staticmethod

@@ -383,14 +383,20 @@ class OperationServiceV2:
         payload: OperationInformationIn,
         operation_id: UUID,
     ) -> Operation:
-        OperationService.get_if_authorized(user_guid, operation_id)
+        """
+        This service is used for updating an operation after it's been registered. During registration, we use the endpoints in cas-registration/bc_obps/registration/api/v2/_operations/_operation_id/_registration
+        """
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
 
-        operation: Operation = cls.create_or_update_operation_v2(
+        if not operation.status == Operation.Statuses.REGISTERED:
+            raise Exception('Operation must be registered')
+
+        updated_operation: Operation = cls.create_or_update_operation_v2(
             user_guid,
             payload,
             operation_id,
         )
-        return operation
+        return updated_operation
 
     @classmethod
     def is_operation_opt_in_information_complete(cls, operation: Operation) -> bool:
