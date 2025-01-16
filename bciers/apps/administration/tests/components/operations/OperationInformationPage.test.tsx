@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "@/administration/app/components/operations/OperationInformationPage";
 import { getOperationWithDocuments } from "./mocks";
-import { useSession } from "@bciers/testConfig/mocks";
+import { useSearchParams, useSession } from "@bciers/testConfig/mocks";
 import { fetchFormEnums } from "./OperationInformationForm.test";
 import { beforeAll } from "vitest";
 import { OperationStatus } from "@bciers/utils/src/enums";
@@ -45,6 +45,9 @@ describe("the OperationInformationPage component", () => {
           app_role: "industry_user_admin",
         },
       },
+    });
+    useSearchParams.mockReturnValue({
+      get: vi.fn(),
     });
   });
   it("renders the OperationInformationPage component without Registration Information", async () => {
