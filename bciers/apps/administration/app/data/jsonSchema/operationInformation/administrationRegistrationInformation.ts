@@ -1,7 +1,7 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { getRegulatedProducts } from "@bciers/actions/api";
+import { getRegulatedProducts, getContacts } from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
 export const createAdministrationRegistrationInformationSchema = async (
@@ -10,7 +10,8 @@ export const createAdministrationRegistrationInformationSchema = async (
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
-
+  const contacts: { id: number; first_name: string; last_name: string }[] =
+    await getContacts();
   const isRegulatedProducts =
     registrationPurposeValue ===
     RegistrationPurposes.OBPS_REGULATED_OPERATION.valueOf();
@@ -23,7 +24,10 @@ export const createAdministrationRegistrationInformationSchema = async (
   const registrationInformationSchema: RJSFSchema = {
     title: "Registration Information",
     type: "object",
-    required: isRegulatedProducts ? ["regulated_products"] : [],
+    required: [
+      "operation_representatives",
+      ...(isRegulatedProducts ? ["regulated_products"] : []),
+    ],
     properties: {
       registration_purpose: {
         type: "string",
@@ -47,6 +51,19 @@ export const createAdministrationRegistrationInformationSchema = async (
           },
         },
       }),
+      operation_representatives: {
+        title: "Operation Representative(s)",
+        type: "array",
+        minItems: 1,
+        items: {
+          enum: contacts.items.map((contact) => contact.id),
+          // Ts-ignore until we refactor enumNames https://github.com/bcgov/cas-registration/issues/2176
+          // @ts-ignore
+          enumNames: contacts.items.map(
+            (contact) => `${contact.first_name} ${contact.last_name}`,
+          ),
+        },
+      },
       ...(isOptIn && {
         opted_in_preface: {
           // Not an actual field, just used to display a message
@@ -114,6 +131,10 @@ export const registrationInformationUiSchema: UiSchema = {
     "new_entrant_application",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
+  // brianna why doesn't error show, looks exactly the same as regulated_products
+  operation_representatives: {
+    "ui:widget": "MultiSelectWidget",
+  },
   regulated_operation_preface: {
     "ui:classNames": "text-bc-bg-blue text-lg",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
