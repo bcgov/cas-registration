@@ -685,7 +685,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             )
             with pytest.raises(
                 Exception,
-                match=f'The contact "{contact.first_name}" "{contact.last_name}"is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
+                match=f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
             ):
                 OperationServiceV2.create_or_update_operation_v2(
                     approved_user_operator.user.user_guid,
@@ -695,10 +695,36 @@ class TestOperationServiceV2CreateOrUpdateOperation:
 
 
 class TestOperationServiceV2UpdateOperation:
+    def test_update_operation_fails_if_operation_not_registered(self):
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.DRAFT,
+        )
+        payload = OperationInformationIn(
+            registration_purpose='Potential Reporting Operation',
+            regulated_products=[1],
+            name="Test Update Operation Name",
+            type="SFO",
+            naics_code_id=1,
+            secondary_naics_code_id=1,
+            tertiary_naics_code_id=2,
+            activities=[2],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+        )
+        with pytest.raises(Exception, match='Operation must be registered'):
+            OperationServiceV2.update_operation(approved_user_operator.user.user_guid, payload, existing_operation.id)
+
     def test_update_operation(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
         )
         payload = OperationInformationIn(
             registration_purpose='Potential Reporting Operation',
@@ -726,7 +752,10 @@ class TestOperationServiceV2UpdateOperation:
     def test_update_operation_with_no_regulated_products(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
         )
         payload = OperationInformationIn(
             registration_purpose='OBPS Regulated Operation',
@@ -759,6 +788,7 @@ class TestOperationServiceV2UpdateOperation:
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
+            status=Operation.Statuses.REGISTERED,
         )
         payload = OperationInformationIn(
             registration_purpose='New Entrant Operation',
