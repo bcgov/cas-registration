@@ -29,6 +29,7 @@ export default function VerificationForm({
   taskListElements,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
+  const [uiSchema, setUiSchema] = useState(verificationUiSchema); // State for uiSchema
   const [errors, setErrors] = useState<string[]>();
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
@@ -38,8 +39,55 @@ export default function VerificationForm({
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
-    // Update the form state with the modified data
+    const updatedUiSchema = { ...uiSchema }; // Copy uiSchema for updates
+
+    if (Array.isArray(updatedData.visit_names)) {
+      const selectedValues = updatedData.visit_names;
+
+      // Check if "None" is selected
+      if (
+        selectedValues.includes("None") ||
+        e.formData.visit_names?.includes("None")
+      ) {
+        // Lock selection to "None" only
+        updatedData.visit_names = ["None"];
+        updatedData.visit_types = []; // Clear visit_types
+      } else {
+        // Remove "None" and handle visit_names
+        updatedData.visit_names = selectedValues.filter(
+          (value: string) => value !== "None",
+        );
+
+        // Update visit_types and dynamically update the label for visit_type
+        updatedData.visit_types = updatedData.visit_names.map(
+          (visit_name: string) => {
+            const existingVisitType = updatedData.visit_types?.find(
+              (item: { visit_name: string }) => item.visit_name === visit_name,
+            );
+
+            // Update the label dynamically for visit_type in uiSchema
+            if (!updatedUiSchema.visit_types) {
+              updatedUiSchema.visit_types = { items: {} };
+            }
+            updatedUiSchema.visit_types.items.visit_type = {
+              "ui:title": `Visit Type for ${visit_name}`, // Dynamic label
+            };
+
+            // Create or retain visit_type object
+            return (
+              existingVisitType ?? {
+                visit_name,
+                visit_type: "", // Default blank visit_type
+              }
+            );
+          },
+        );
+      }
+    }
+
+    // Update form data and uiSchema states
     setFormData(updatedData);
+    setUiSchema(updatedUiSchema);
   };
 
   const handleSubmit = async () => {
@@ -66,7 +114,7 @@ export default function VerificationForm({
       initialStep={4}
       taskListElements={taskListElements}
       schema={verificationSchema}
-      uiSchema={verificationUiSchema}
+      uiSchema={uiSchema} // Use dynamic uiSchema
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}

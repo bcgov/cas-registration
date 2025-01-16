@@ -17,7 +17,7 @@ export default async function VerificationPage({
   const initialData = await getReportVerification(version_id);
   // Fetch the list of facilities associated with the specified version ID
   const facilityList = await getReportFacilityList(version_id);
-  const operationType = "SFO";
+  const operationType = "LFO";
   // Create schema with dynamic facility list for operation type
   const verificationSchema = createVerificationSchema(
     facilityList.facilities,
