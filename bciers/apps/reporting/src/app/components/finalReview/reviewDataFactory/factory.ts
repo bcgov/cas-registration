@@ -6,8 +6,14 @@ import personResponsibleFactoryItem from "./personResponsibleFactoryItem";
 import emissionsSummaryFactoryItem from "./emissionsSummaryFactoryItem";
 import productionDataFactoryItem from "./productionDataFactoryItem";
 import allocationOfEmissionsFactoryItem from "./allocationOfEmissions";
+import { RJSFSchema } from "@rjsf/utils";
 
-export type ReviewData = { schema: any; uiSchema: Object | string; data: any };
+export type ReviewData = {
+  schema: RJSFSchema;
+  uiSchema: Object | string;
+  data: any;
+  context?: any;
+};
 export type ReviewDataFactoryItem = (
   version_id: number,
   facility_id: string,

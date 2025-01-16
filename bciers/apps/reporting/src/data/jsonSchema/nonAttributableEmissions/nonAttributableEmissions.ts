@@ -1,7 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-
 import { NonAttributableEmmissionsInfo } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/additionalMessage";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import RadioWidget from "@bciers/components/form/widgets/RadioWidget";
