@@ -16,6 +16,7 @@ from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
 from registration.schema.v2.operation import (
+    OperationInformationInUpdate,
     OperationRepresentativeIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeRemove,
@@ -617,6 +618,80 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         assert operation.multiple_operators.count() == 0
         assert operation.updated_by == approved_user_operator.user
         assert operation.updated_at is not None
+
+    @staticmethod
+    def test_update_operation_with_operation_representatives_with_address():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        existing_operation = baker.make_recipe('utils.operation')
+        contacts = baker.make_recipe(
+            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=3
+        )
+
+        payload = OperationInformationInUpdate(
+            registration_purpose='Reporting Operation',
+            regulated_products=[1],
+            name="I am updated",
+            type="SFO",
+            naics_code_id=1,
+            secondary_naics_code_id=2,
+            tertiary_naics_code_id=3,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            operation_representatives=[contact.id for contact in contacts],
+        )
+        operation = OperationServiceV2.create_or_update_operation_v2(
+            approved_user_operator.user.user_guid,
+            payload,
+            existing_operation.id,
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        assert operation.contacts.count() == 3
+        assert operation.updated_by == approved_user_operator.user
+        assert operation.updated_at is not None
+
+    @staticmethod
+    def test_update_operation_with_operation_representative_without_address():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        existing_operation = baker.make_recipe('utils.operation')
+        # create contacts with incomplete address data
+        contacts = baker.make_recipe(
+            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=5
+        )
+        contacts[0].address = None
+        contacts[0].save()
+        contacts[1].address.street_address = None
+        contacts[1].address.save()
+        contacts[2].address.municipality = None
+        contacts[2].address.save()
+        contacts[3].address.province = None
+        contacts[3].address.save()
+        contacts[4].address.postal_code = None
+        contacts[4].address.save()
+        for contact in contacts:
+            payload = OperationInformationInUpdate(
+                registration_purpose='Reporting Operation',
+                regulated_products=[1],
+                name="I am updated",
+                type="SFO",
+                naics_code_id=1,
+                secondary_naics_code_id=2,
+                tertiary_naics_code_id=3,
+                activities=[1],
+                process_flow_diagram=MOCK_DATA_URL,
+                boundary_map=MOCK_DATA_URL,
+                operation_representatives=[contact.id],
+            )
+            with pytest.raises(
+                Exception,
+                match=f'The contact "{contact.first_name}" "{contact.last_name}"is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
+            ):
+                OperationServiceV2.create_or_update_operation_v2(
+                    approved_user_operator.user.user_guid,
+                    payload,
+                    existing_operation.id,
+                )
 
 
 class TestOperationServiceV2UpdateOperation:

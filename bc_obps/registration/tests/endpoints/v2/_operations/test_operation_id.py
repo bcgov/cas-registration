@@ -107,6 +107,8 @@ class TestOperationIdEndpoint(CommonTestSetup):
     def test_operations_endpoint_put_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        contact = baker.make_recipe('utils.contact')
+        self.test_payload["operation_representatives"] = [contact.id]
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",

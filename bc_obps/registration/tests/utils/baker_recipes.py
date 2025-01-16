@@ -128,7 +128,11 @@ opted_in_operation_detail = Recipe(
     meets_notification_to_director_on_criteria_change=False,
 )
 contact = Recipe(
-    Contact, business_role=BusinessRole.objects.first(), address=foreign_key(address), first_name=seq('Firstname 0')
+    Contact,
+    business_role=BusinessRole.objects.first(),
+    address=foreign_key(address),
+    first_name=seq('Firstname 0'),
+    last_name=seq('Lastname 0'),
 )
 
 
