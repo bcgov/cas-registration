@@ -3,7 +3,12 @@ from typing import Any
 
 from registration.models import NaicsCode
 from registration.models.activity import Activity
-from reporting.models import ReportNewEntrant, ReportNewEntrantEmission, ReportNewEntrantProduction
+from reporting.models import (
+    ReportNewEntrant,
+    ReportNewEntrantEmission,
+    ReportNewEntrantProduction,
+    ReportOperationRepresentative,
+)
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
@@ -149,7 +154,6 @@ report_non_attributable_emissions = Recipe(
     gas_type=[foreign_key(gas_type)],
 )
 
-
 report_verification = Recipe(
     ReportVerification,
     report_version=foreign_key(report_version),
@@ -198,4 +202,11 @@ report_new_entrant_production = Recipe(
 naics_code = Recipe(
     NaicsCode,
     naics_code='12345',
+)
+
+report_operation_representative = Recipe(
+    ReportOperationRepresentative,
+    report_version=foreign_key(report_version),
+    representative_name="Test Report",
+    selected_for_report=True,
 )

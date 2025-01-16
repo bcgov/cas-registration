@@ -1,9 +1,10 @@
 from uuid import UUID
 from django.db import transaction
 from django.db.models import QuerySet
-
+from django.db.models import Case, When, Value, BooleanField
 from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
+from reporting.models import ReportOperationRepresentative
 from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
@@ -56,11 +57,15 @@ class ReportService:
             bc_obps_regulated_operation_id=(
                 operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
             ),
-            operation_representative_name=(
-                operation.point_of_contact.get_full_name() if operation.point_of_contact else ""
-            ),
             report_version=report_version,
         )
+
+        for contact in operation.contacts.all():
+            ReportOperationRepresentative.objects.create(
+                report_version=report_version,
+                representative_name=contact.get_full_name(),
+                selected_for_report=False,
+            )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
@@ -86,6 +91,15 @@ class ReportService:
         # Fetch the existing report operation
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
 
+        # Update the selected_for_report field based on the provided data
+        representative_ids_in_data = data.operation_representative_name  # List of IDs from input
+        ReportOperationRepresentative.objects.filter(report_version_id=report_version_id).update(
+            selected_for_report=Case(
+                When(id__in=representative_ids_in_data, then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
         # Update fields from data
         report_operation.operator_legal_name = data.operator_legal_name
         report_operation.operator_trade_name = data.operator_trade_name
@@ -93,14 +107,10 @@ class ReportService:
         report_operation.operation_type = data.operation_type
         report_operation.operation_bcghgid = data.operation_bcghgid
         report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
-        report_operation.operation_representative_name = data.operation_representative_name
 
         # Fetch and set ManyToMany fields
         activities = Activity.objects.filter(name__in=data.activities)
-        regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
-
         report_operation.activities.set(activities)
-        report_operation.regulated_products.set(regulated_products)
         report_operation.save()
 
         facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(report_version__id=report_version_id)
@@ -109,10 +119,7 @@ class ReportService:
                 f.activities.set(activities)
                 f.save()
 
-        report_version = ReportVersion.objects.get(id=report_version_id)
-        report_version.report_type = data.operation_report_type
-        report_version.save()
-
+        ReportVersion.objects.filter(id=report_version_id).update(report_type=data.operation_report_type)
         return report_operation
 
     @classmethod
