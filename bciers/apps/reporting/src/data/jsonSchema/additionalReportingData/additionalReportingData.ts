@@ -3,8 +3,8 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { CapturedEmmissionsInfo } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalMessage";
-import { RadioWidget } from "@bciers/components/form/widgets";
-import multiSelectWidget from "@bciers/components/form/widgets/MultiSelectWidget";
+import RadioWidget from "@bciers/components/form/widgets/RadioWidget";
+import MultiSelectWidget from "@bciers/components/form/widgets/MultiSelectWidget";
 
 export const additionalReportingDataSchema: RJSFSchema = {
   type: "object",
@@ -135,7 +135,7 @@ export const additionalReportingDataUiSchema = {
       "ui:widget": RadioWidget,
     },
     capture_type: {
-      "ui:widget": multiSelectWidget,
+      "ui:widget": MultiSelectWidget,
       "ui:options": { style: { width: "100%", textAlign: "justify" } },
       "ui:placeholder": "Capture type",
     },
