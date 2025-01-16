@@ -1,6 +1,10 @@
 from typing import Literal, Tuple
 from uuid import UUID
-from registration.schema.v2.operation import OperationOutV2, OperationInformationIn, OperationOutWithDocuments
+from registration.schema.v2.operation import (
+    OperationInformationInUpdate,
+    OperationOutV2,
+    OperationOutWithDocuments,
+)
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
@@ -57,6 +61,6 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 )
 @handle_http_errors()
 def update_operation(
-    request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
+    request: HttpRequest, operation_id: UUID, payload: OperationInformationInUpdate
 ) -> Tuple[Literal[200], Operation]:
     return 200, OperationServiceV2.update_operation(get_current_user_guid(request), payload, operation_id)

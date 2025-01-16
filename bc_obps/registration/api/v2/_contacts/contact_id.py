@@ -4,11 +4,12 @@ from django.http import HttpRequest
 from registration.constants import CONTACT_TAGS
 from registration.models.contact import Contact
 from registration.schema.v1.contact import ContactIn, ContactOut
-from service.contact_service import ContactService, ContactWithPlacesAssigned
 from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
+from service.contact_service_v2 import ContactServiceV2, ContactWithPlacesAssigned
+from service.contact_service import ContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
@@ -23,7 +24,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @handle_http_errors()
 def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Optional[ContactWithPlacesAssigned]]:
-    return 200, ContactService.get_with_places_assigned(get_current_user_guid(request), contact_id)
+    return 200, ContactServiceV2.get_with_places_assigned_v2(get_current_user_guid(request), contact_id)
 
 
 @router.put(

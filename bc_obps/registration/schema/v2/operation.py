@@ -112,6 +112,10 @@ class OperationInformationIn(ModelSchema):
         fields = ["name", 'type']
 
 
+class OperationInformationInUpdate(OperationInformationIn):
+    operation_representatives: List[int]
+
+
 class OptedInOperationDetailOut(ModelSchema):
     class Meta:
         model = OptedInOperationDetail
@@ -153,6 +157,11 @@ class OperationOutV2(ModelSchema):
     date_of_first_shipment: Optional[str] = None
     new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+    operation_representatives: Optional[List[int]] = []
+
+    @staticmethod
+    def resolve_operation_representatives(obj: Operation) -> List[int]:
+        return list(obj.contacts.filter(business_role='Operation Representative').values_list('id', flat=True))
 
     @staticmethod
     def resolve_multiple_operators_array(obj: Operation) -> List[MultipleOperator]:
@@ -176,7 +185,17 @@ class OperationOutV2(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["id", 'name', 'type', 'opt_in', 'regulated_products', 'status', 'activities', 'opted_in_operation']
+        fields = [
+            "id",
+            'name',
+            'type',
+            'opt_in',
+            'regulated_products',
+            'status',
+            'activities',
+            'opted_in_operation',
+            'contacts',
+        ]
         from_attributes = True
 
 
