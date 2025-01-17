@@ -161,10 +161,15 @@ class ComplianceService:
         compliance_period: int,
         initial_compliance_period: int = 2024,
     ) -> Decimal:
+        # Handle divide by 0 error if allocated_for_compliance is 0
+        industrial_process_compliance_allocated_division = Decimal('0')
+        if allocated_for_compliance > 0:
+            industrial_process_compliance_allocated_division = allocated_industrial_process / allocated_for_compliance
+
         product_emission_limit = (apr_dec_production * pwaei) * (
             reduction_factor
             - (
-                (Decimal('1') - (allocated_industrial_process / allocated_for_compliance))
+                (Decimal('1') - (industrial_process_compliance_allocated_division))
                 * tightening_rate
                 * (compliance_period - initial_compliance_period)
             )
