@@ -76,6 +76,20 @@
             ]
           },
           {
+            "title": "Report transfer of operation or facility",
+            "icon": "Layers",
+            "content": "Report a transfer in control, ownership or direction of your operation or facility(s).",
+            "href": "/administration/transfers",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/operator",
+                "field": "error",
+                "operator": "notExists",
+                "value": true
+              }
+            ]
+          },
+          {
             "title": "Contacts",
             "icon": "Users",
             "content": "View the contacts of your operator, or to add new contact for your operator here.",
