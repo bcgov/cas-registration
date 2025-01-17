@@ -1,25 +1,17 @@
 import React from "react";
-import { actionHandler } from "@bciers/actions";
 import OperationEmissionSummaryForm from "./OperationEmissionSummaryForm";
 import { getAdditionalInformationTaskList } from "@reporting/src/app/components/taskList/3_additionalInformation";
 import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
 import { NEW_ENTRANT_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
+import getOperationEmissionSummaryData from "@bciers/actions/api/getOperationEmissionSummaryData";
 
 interface Props {
   version_id: number; //name of the property from the pageFactory props
 }
 
-const getSummaryData = async (versionId: number) => {
-  return actionHandler(
-    `reporting/report-version/${versionId}/emission-summary`,
-    "GET",
-    `reporting/report-version/${versionId}/emission-summary`,
-  );
-};
-
 const OperationEmissionSummaryPage = async ({ version_id }: Props) => {
   const versionId = version_id;
-  const summaryData = await getSummaryData(versionId);
+  const summaryData = await getOperationEmissionSummaryData(versionId);
   const taskListData = getAdditionalInformationTaskList(versionId);
 
   const emissionSummaryTaskListElement = taskListData.find(
