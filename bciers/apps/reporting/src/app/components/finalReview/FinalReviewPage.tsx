@@ -7,8 +7,6 @@ import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNe
 import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalReviewForm";
 import reviewDataFactory, { ReviewData } from "./reviewDataFactory/factory";
 
-// UiSchemas often contain client side components, passing a function will have it run on the client
-
 export default async function FinalReviewPage({
   version_id,
 }: HasReportVersion) {
