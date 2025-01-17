@@ -43,5 +43,24 @@
       "status": "Complete",
       "effective_date": "2024-12-25T09:00:00Z"
     }
+  },
+  {
+    "model": "registration.transferevent",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000028",
+      "created_at": "2025-01-10T23:42:44.039Z",
+      "updated_by": "00000000-0000-0000-0000-000000000028",
+      "updated_at": "2025-01-10T23:50:44.039Z",
+      "facilities": [
+        "f486f2fb-62ed-438d-bb3e-0819b51e3af3",
+        "f486f2fb-62ed-438d-bb3e-0819b51e3af4"
+      ],
+      "from_operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "to_operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "from_operation": "002d5a9e-32a6-4191-938c-2c02bfec592d",
+      "to_operation": "59d95661-c752-489b-9fd1-0c3fa3454dda",
+      "status": "To be transferred",
+      "effective_date": "2026-03-01T09:00:00Z"
+    }
   }
 ]
