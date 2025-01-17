@@ -18,7 +18,7 @@ import { TransferEventStatus } from "@/registration/app/components/transfers/enu
 import { RJSFSchema } from "@rjsf/utils";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 
-interface TransferFormProps {
+interface TransferDetailFormProps {
   formData: TransferDetailFormData;
   transferId: UUID;
   schema: RJSFSchema;
@@ -28,7 +28,7 @@ export default function TransferDetailForm({
   formData,
   transferId,
   schema,
-}: Readonly<TransferFormProps>) {
+}: Readonly<TransferDetailFormProps>) {
   // To get the user's role from the session
   const role = useSessionRole();
   const isCasAnalyst = role === FrontEndRoles.CAS_ANALYST;
