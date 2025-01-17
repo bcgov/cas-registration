@@ -622,7 +622,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
     @staticmethod
     def test_update_operation_with_operation_representatives_with_address():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation')
+        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         contacts = baker.make_recipe(
             'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=3
         )
@@ -640,6 +640,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             boundary_map=MOCK_DATA_URL,
             operation_representatives=[contact.id for contact in contacts],
         )
+
         operation = OperationServiceV2.create_or_update_operation_v2(
             approved_user_operator.user.user_guid,
             payload,
@@ -654,7 +655,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
     @staticmethod
     def test_update_operation_with_operation_representative_without_address():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation')
+        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         # create contacts with incomplete address data
         contacts = baker.make_recipe(
             'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=5

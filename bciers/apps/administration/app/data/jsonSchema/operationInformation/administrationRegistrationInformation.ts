@@ -10,8 +10,9 @@ export const createAdministrationRegistrationInformationSchema = async (
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
-  const contacts: { id: number; first_name: string; last_name: string }[] =
-    await getContacts();
+  const contacts: {
+    items: [{ id: number; first_name: string; last_name: string }];
+  } = await getContacts();
   const isRegulatedProducts =
     registrationPurposeValue ===
     RegistrationPurposes.OBPS_REGULATED_OPERATION.valueOf();
@@ -131,7 +132,6 @@ export const registrationInformationUiSchema: UiSchema = {
     "new_entrant_application",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
-  // brianna why doesn't error show, looks exactly the same as regulated_products
   operation_representatives: {
     "ui:widget": "MultiSelectWidget",
   },

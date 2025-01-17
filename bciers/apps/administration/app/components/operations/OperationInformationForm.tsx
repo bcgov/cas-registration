@@ -40,6 +40,7 @@ const OperationInformationForm = ({
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
+    setError(undefined);
     const response = await actionHandler(
       `registration/operations/${operationId}`,
       "PUT",
