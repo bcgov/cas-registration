@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM postgres:14.6
+FROM postgres:16.6
 # Set environment variables
 ENV USER_ID=1001 \
     HOME=/root
