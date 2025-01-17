@@ -6,6 +6,7 @@ from decimal import Decimal
 
 class TestComplianceSummaryServiceClass(TestCase):
     def test_compliance_summary_only_flaring_single_product(self):
+        # Assertion values from compliance_class_manual_calcs.xlsx sheet 1
         build_data = ComplianceTestInfrastructure.build()
         ComplianceTestInfrastructure.pare_data_single_product_flaring()
 
@@ -17,6 +18,7 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.credited_emissions == 0
 
     def test_with_industrial_process_emissions(self):
+        # Assertion values from compliance_class_manual_calcs.xlsx sheet 2
         build_data = ComplianceTestInfrastructure.build()
         ComplianceTestInfrastructure.pare_data_remove_reporting_only()
 
@@ -30,6 +32,7 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.credited_emissions == 0
 
     def test_compliance_summary_with_all_data(self):
+        # Assertion values from compliance_class_manual_calcs.xlsx sheet 3
         build_data = ComplianceTestInfrastructure.build()
 
         result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
@@ -42,6 +45,7 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.credited_emissions == 0
 
     def test_compliance_summary_2025_period(self):
+        # Assertion values from compliance_class_manual_calcs.xlsx sheet 4
         build_data = ComplianceTestInfrastructure.build()
         ComplianceTestInfrastructure.reporting_year_2025()
 
