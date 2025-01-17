@@ -11,8 +11,12 @@ import transferGroupColumns from "@/registration/app/components/datagrid/models/
 import fetchTransferEventsPageData from "@/registration/app/components/transfers/fetchTransferEventsPageData";
 
 const TransfersActionCell = ActionCellFactory({
-  generateHref: (params: GridRenderCellParams) => {
-    return `/transfers/${params.row.id}`;
+  generateHref: ({ row }: GridRenderCellParams) => {
+    const title =
+      row.operation__name && row.operation__name !== "N/A"
+        ? row.operation__name
+        : row.facilities__name;
+    return `/transfers/${row.transfer_id}?transfers_title=${title}`;
   },
   cellText: "View Details",
 });

@@ -42,3 +42,4 @@ from ._user_operators._user_operator_id import update_status
 from .user import user_profile, user_app_role
 from ._users import user_id
 from . import transfer_events
+from ._transfer_events import transfer_id
