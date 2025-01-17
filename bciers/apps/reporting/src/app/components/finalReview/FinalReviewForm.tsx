@@ -22,7 +22,7 @@ interface Props extends HasReportVersion {
   data: ReviewData[];
 }
 
-// D
+// These uiSchemas need to be loaded on the client side, they contain interactive, stateful components.
 const finalReviewSchemaMap: { [key: string]: any } = {
   ...uiSchemaMap,
   nonAttributableEmissions: nonAttributableEmissionUiSchema,
