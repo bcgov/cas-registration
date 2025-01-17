@@ -56,7 +56,8 @@ describe("ComplianceSummaryForm", () => {
 
   it("should render the calculation summary data", async () => {
     render(
-      <ComplianceSummary
+      <ComplianceSummaryForm
+        needsVerification={false}
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
@@ -76,7 +77,8 @@ describe("ComplianceSummaryForm", () => {
 
   it("should render the regulatory values summary data", async () => {
     render(
-      <ComplianceSummary
+      <ComplianceSummaryForm
+        needsVerification={false}
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
@@ -93,7 +95,8 @@ describe("ComplianceSummaryForm", () => {
 
   it("should render the production summary data", async () => {
     render(
-      <ComplianceSummary
+      <ComplianceSummaryForm
+        needsVerification={false}
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
