@@ -225,8 +225,8 @@ export const lfoSchema: RJSFSchema = {
               contains: { const: "Other" },
             },
             visit_others: {
-              type: "array",
               title: "Other Visit(s)",
+              type: "array",
               default: [{}],
               items: {
                 type: "object",
@@ -387,9 +387,12 @@ export const lfoUiSchema: UiSchema = {
     },
   },
   visit_others: {
-    "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
+    "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
-      arrayAddLabel: "Add Visit",
+      addable: true,
+      removable: true,
+      label: true,
+      arrayAddLabel: "Add Other Visit",
     },
   },
   threats_to_independence: {
