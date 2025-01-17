@@ -17,6 +17,7 @@ spec:
           labels: {{ include "cas-bciers.labels" . | nindent 12 }}
             component: backend
         spec:
+          activeDeadlineSeconds: 600
           restartPolicy: Never
           serviceAccountName: deployer
           containers:
