@@ -46,7 +46,7 @@ const FinalReviewForm: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const saveAndContinueUrl = `/reports/${version_id}/verification`;
-  const backUrl = `/reports/${version_id}/attachments`;
+  const backUrl = `/reports/${version_id}/compliance-summary`;
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const submitHandler = async () => {

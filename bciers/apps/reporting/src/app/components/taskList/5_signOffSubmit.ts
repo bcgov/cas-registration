@@ -19,6 +19,12 @@ export const getSignOffAndSubmitSteps: (
   const elements: TaskListElement[] = [
     {
       type: "Page", // Set the type to "Page"
+      title: "Final review",
+      link: `/reports/${versionId}/final-review`,
+      isActive: activeIndex === ActivePage.FinalReview,
+    },
+    {
+      type: "Page", // Set the type to "Page"
       title: "Verification",
       link: `/reports/${versionId}/verification`,
       isActive: activeIndex === ActivePage.Verification,
@@ -28,12 +34,6 @@ export const getSignOffAndSubmitSteps: (
       title: "Attachments",
       link: `/reports/${versionId}/attachments`,
       isActive: activeIndex === ActivePage.Attachments,
-    },
-    {
-      type: "Page", // Set the type to "Page"
-      title: "Final review",
-      link: `/reports/${versionId}/final-review`,
-      isActive: activeIndex === ActivePage.FinalReview,
     },
     {
       type: "Page", // Set the type to "Page"
