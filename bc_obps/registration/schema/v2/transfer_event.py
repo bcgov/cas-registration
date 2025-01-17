@@ -3,7 +3,7 @@ from uuid import UUID
 from ninja import ModelSchema, Field, FilterSchema
 
 from common.utils import format_decimal
-from registration.models import TransferEvent
+from registration.models import TransferEvent, Facility
 from django.db.models import Q
 import re
 
@@ -80,15 +80,24 @@ class TransferEventOut(ModelSchema):
 
     @staticmethod
     def resolve_existing_facilities(obj: TransferEvent) -> FacilitiesNameType:
-        if obj.facilities.exists():
-            return [
-                {
-                    "id": facility.id,
-                    "name": f"{facility.name} ({format_decimal(facility.latitude_of_largest_emissions, 1)}, {format_decimal(facility.longitude_of_largest_emissions, 1)})",
-                }
-                for facility in obj.facilities.all()
-            ]
-        return []
+        def format_facility_name(facility: Facility) -> str:
+            if (
+                facility.latitude_of_largest_emissions is not None
+                and facility.longitude_of_largest_emissions is not None
+            ):
+                return f"{facility.name} ({format_decimal(facility.latitude_of_largest_emissions, 1)}, {format_decimal(facility.longitude_of_largest_emissions, 1)})"
+            return facility.name
+
+        if not obj.facilities.exists():
+            return []
+
+        return [
+            {
+                "id": facility.id,
+                "name": format_facility_name(facility),
+            }
+            for facility in obj.facilities.all()
+        ]
 
 
 class TransferEventUpdateIn(ModelSchema):
