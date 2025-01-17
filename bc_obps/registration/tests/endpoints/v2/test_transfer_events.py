@@ -4,6 +4,8 @@ from uuid import uuid4
 from django.utils import timezone
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from model_bakery import baker
+
+from registration.models import TransferEvent
 from registration.schema.v2.transfer_event import TransferEventCreateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -37,10 +39,12 @@ class TestTransferEventEndpoint(CommonTestSetup):
                 }
 
     def test_list_transfer_events_paginated(self):
-        # transfer of an operation
-        baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
-        # transfer of 50 facilities
-        baker.make_recipe('utils.transfer_event', facilities=baker.make_recipe('utils.facility', _quantity=50))
+
+        for _ in range(20):
+            # transfer of an operation
+            baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
+            # transfer of 50 facilities
+            baker.make_recipe('utils.transfer_event', facilities=baker.make_recipe('utils.facility', _quantity=2))
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("list_transfer_events"))
         assert response.status_code == 200
@@ -50,7 +54,7 @@ class TestTransferEventEndpoint(CommonTestSetup):
         # save the id of the first paginated response item
         page_1_response_id = response_items_1[0].get('id')
         assert len(response_items_1) == NINJA_PAGINATION_PER_PAGE
-        assert response_count_1 == 51  # total count of transfers
+        assert response_count_1 == 60  # total count of transfers
         # Get the page 2 response
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -150,7 +154,11 @@ class TestTransferEventEndpoint(CommonTestSetup):
             "operation": uuid4(),
         }
 
-        mock_transfer_event = baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
+        mock_transfer_event = baker.make_recipe(
+            'utils.transfer_event',
+            operation=baker.make_recipe('utils.operation'),
+            status=TransferEvent.Statuses.TRANSFERRED,
+        )
         mock_create_transfer_event.return_value = mock_transfer_event
         response = TestUtils.mock_post_with_auth_role(
             self,
@@ -170,16 +178,27 @@ class TestTransferEventEndpoint(CommonTestSetup):
         assert set(response_json.keys()) == {
             'transfer_entity',
             'from_operator',
+            'from_operator_id',
             'to_operator',
+            'operation_name',
+            'from_operation',
+            'from_operation_id',
+            'to_operation',
+            'existing_facilities',
+            'status',
             'effective_date',
             'operation',
-            'from_operation',
-            'to_operation',
             'facilities',
         }
         assert response_json['transfer_entity'] == "Operation"
-        assert response_json['from_operator'] == str(mock_transfer_event.from_operator.id)
-        assert response_json['to_operator'] == str(mock_transfer_event.to_operator.id)
+        assert response_json['from_operator'] == mock_transfer_event.from_operator.legal_name
+        assert response_json['from_operator_id'] == str(mock_transfer_event.from_operator.id)
+        assert response_json['to_operator'] == mock_transfer_event.to_operator.legal_name
+        assert response_json['operation_name'] == mock_transfer_event.operation.name
+        assert response_json['from_operation'] is None
+        assert response_json['from_operation_id'] is None
+        assert response_json['to_operation'] is None
+        assert response_json['existing_facilities'] == []
         # modify the effective date to match the format of the response
         response_effective_date = datetime.strptime(response_json['effective_date'], "%Y-%m-%dT%H:%M:%S.%fZ")
         mock_transfer_event_effective_date = datetime.fromisoformat(str(mock_transfer_event.effective_date))
@@ -187,6 +206,5 @@ class TestTransferEventEndpoint(CommonTestSetup):
             microsecond=0, tzinfo=None
         )
         assert response_json['operation'] == str(mock_transfer_event.operation.id)
-        assert response_json['from_operation'] is None
-        assert response_json['to_operation'] is None
         assert response_json['facilities'] == []
+        assert response_json['status'] == TransferEvent.Statuses.TRANSFERRED

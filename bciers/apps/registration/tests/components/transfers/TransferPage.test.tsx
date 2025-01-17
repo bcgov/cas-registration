@@ -13,7 +13,7 @@ describe("Transfer page", () => {
       row_count: undefined,
     });
     await expect(async () => {
-      render(await TransferPage());
+      render(await TransferPage({})); // passing empty object as props so that it doesn't throw an error when destructuring
     }).rejects.toThrow("Failed to fetch operators data");
   });
 
@@ -26,7 +26,7 @@ describe("Transfer page", () => {
       ],
       row_count: 1,
     });
-    render(await TransferPage());
+    render(await TransferPage({})); // passing empty object as props so that it doesn't throw an error when destructuring
     expect(screen.getByTestId("field-template-label")).toHaveTextContent(
       "Transfer Entity",
     );
