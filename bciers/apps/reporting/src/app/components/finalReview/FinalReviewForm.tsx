@@ -65,6 +65,8 @@ const FinalReviewForm: React.FC<Props> = ({
       backUrl={backUrl}
       continueUrl={saveAndContinueUrl}
       noFormSave={() => {}}
+      submittingButtonText="Continue"
+      noSaveButton
     >
       {data.map((form, idx) => (
         <Form
