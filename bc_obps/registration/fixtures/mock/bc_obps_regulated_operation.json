@@ -2,7 +2,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0001",
+      "id": "23-0001",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
@@ -10,8 +10,136 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "21-0002",
+      "id": "23-0002",
       "issued_at": "2023-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0003",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0004",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0005",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0006",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0007",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0008",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0009",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0010",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0011",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0012",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0013",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0014",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0015",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0016",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0017",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0018",
+      "issued_at": "2024-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
   }

@@ -106,7 +106,7 @@ class OperationModelTest(BaseTestCase):
         ]
 
     def test_unique_boro_id_per_operation(self):
-        boro_id_instance = baker.make(BcObpsRegulatedOperation, id='23-0001')
+        boro_id_instance = baker.make(BcObpsRegulatedOperation, id='22-0001')
         operation_instance: Operation = operation_baker()
         operation_instance.bc_obps_regulated_operation = boro_id_instance
         operation_instance.save(update_fields=['bc_obps_regulated_operation'])
@@ -122,7 +122,7 @@ class OperationModelTest(BaseTestCase):
             )
 
     def test_generate_unique_boro_id_existing_id(self):
-        existing_id = baker.make(BcObpsRegulatedOperation, id='23-0001')  # Example existing ID for the current year
+        existing_id = baker.make(BcObpsRegulatedOperation, id='22-0001')  # Example existing ID for the current year
         self.test_object.bc_obps_regulated_operation = existing_id
         self.test_object.generate_unique_boro_id()
         self.assertEqual(
