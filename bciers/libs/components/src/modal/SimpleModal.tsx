@@ -1,5 +1,6 @@
 import { Button, DialogActions, DialogContentText } from "@mui/material";
 import Modal from "./Modal";
+import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface Props extends React.PropsWithChildren {
   open: boolean;
@@ -8,6 +9,8 @@ interface Props extends React.PropsWithChildren {
   onConfirm: () => void;
   confirmText?: string;
   cancelText?: string;
+  dialogContentClassName?: string;
+  isSubmitting?: boolean;
 }
 
 const SimpleModal: React.FC<Props> = ({
@@ -18,17 +21,21 @@ const SimpleModal: React.FC<Props> = ({
   confirmText = "Confirm",
   cancelText = "Cancel",
   children,
+  dialogContentClassName,
+  isSubmitting = false,
 }) => {
   return (
     <Modal open={open} title={title}>
-      <DialogContentText>{children}</DialogContentText>
+      <DialogContentText className={`m-4 ${dialogContentClassName}`}>
+        {children}
+      </DialogContentText>
       <DialogActions>
         <Button variant="outlined" color="primary" onClick={onCancel}>
           {cancelText}
         </Button>
-        <Button variant="contained" color="primary" onClick={onConfirm}>
+        <SubmitButton isSubmitting={isSubmitting} onClick={onConfirm}>
           {confirmText}
-        </Button>
+        </SubmitButton>
       </DialogActions>
     </Modal>
   );
