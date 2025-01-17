@@ -7,38 +7,15 @@ import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/R
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
   operationEmissionSummarySchema,
-  operationEmissionSummaryUiSchema,
-} from "@reporting/src/data/jsonSchema/operationEmissionSummary";
+  emissionSummaryUiSchema,
+  EmissionSummaryFormData,
+} from "@reporting/src/data/jsonSchema/emissionSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
 
 interface Props {
   versionId: number;
-  summaryFormData: {
-    attributableForReporting: string;
-    attributableForReportingThreshold: string;
-    reportingOnlyEmission: string;
-    emissionCategories: {
-      flaring: string;
-      fugitive: string;
-      industrialProcess: string;
-      onSiteTransportation: string;
-      stationaryCombustion: string;
-      ventingUseful: string;
-      ventingNonUseful: string;
-      waste: string;
-      wastewater: string;
-    };
-    fuelExcluded: {
-      woodyBiomass: string;
-      excludedBiomass: string;
-      excludedNonBiomass: string;
-    };
-    otherExcluded: {
-      lfoExcluded: string;
-      fogExcluded: string; // To be handled once we implement a way to capture FOG emissions
-    };
-  };
+  summaryFormData: EmissionSummaryFormData;
   taskListElements: TaskListElement[];
   isNewEntrant: boolean;
 }
@@ -71,7 +48,7 @@ const OperationEmissionSummary: React.FC<Props> = ({
         <div className="w-full md:max-w-[60%]">
           <FormBase
             schema={operationEmissionSummarySchema}
-            uiSchema={operationEmissionSummaryUiSchema}
+            uiSchema={emissionSummaryUiSchema}
             formData={summaryFormData}
           >
             <ReportingStepButtons
