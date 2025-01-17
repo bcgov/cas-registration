@@ -33,10 +33,10 @@ administrationFrontend:
   resources:
     limits:
       cpu: 200m
-      memory: 512Mi
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 registrationFrontend:
   replicaCount: 1
@@ -53,10 +53,10 @@ registrationFrontend:
   resources:
     limits:
       cpu: 200m
-      memory: 512Mi
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 reportingFrontend:
   replicaCount: 1
@@ -73,10 +73,10 @@ reportingFrontend:
   resources:
     limits:
       cpu: 200m
-      memory: 512Mi
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 coamFrontend:
   replicaCount: 1
@@ -93,10 +93,10 @@ coamFrontend:
   resources:
     limits:
       cpu: 200m
-      memory: 512Mi
+      memory: 64Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 32Mi
 
 dashboardFrontend:
   replicaCount: 1
@@ -117,10 +117,10 @@ dashboardFrontend:
   resources:
     limits:
       cpu: 200m
-      memory: 512Mi
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 growthbook:
   clientKey: sdk-9Vyna67jpIYdjMa
