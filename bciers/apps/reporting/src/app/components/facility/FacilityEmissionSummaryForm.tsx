@@ -6,37 +6,16 @@ import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
-  facilityEmissionSummaryUiSchema,
+  emissionSummaryUiSchema,
   facilityEmissionSummarySchema,
-} from "@reporting/src/data/jsonSchema/facilityEmissionSummary";
+  EmissionSummaryFormData,
+} from "@reporting/src/data/jsonSchema/emissionSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 
 interface Props {
   versionId: number;
   facilityId: string;
-  summaryFormData: {
-    attributableForReporting: string;
-    attributableForReportingThreshold: string;
-    emissionCategories: {
-      flaring: string;
-      fugitive: string;
-      industrialProcess: string;
-      onSiteTransportation: string;
-      stationaryCombustion: string;
-      ventingUseful: string;
-      ventingNonUseful: string;
-      waste: string;
-      wastewater: string;
-    };
-    fuelExcluded: {
-      woodyBiomass: string;
-      excludedBiomass: string;
-      excludedNonBiomass: string;
-    };
-    otherExcluded: {
-      lfoExcluded: string;
-    };
-  };
+  summaryFormData: EmissionSummaryFormData;
   taskListElements: TaskListElement[];
 }
 
@@ -70,7 +49,7 @@ const FacilityEmissionSummaryForm: React.FC<Props> = ({
         <div className="w-full md:max-w-[60%]">
           <FormBase
             schema={facilityEmissionSummarySchema}
-            uiSchema={facilityEmissionSummaryUiSchema}
+            uiSchema={emissionSummaryUiSchema}
             formData={summaryFormData}
           >
             <ReportingStepButtons
