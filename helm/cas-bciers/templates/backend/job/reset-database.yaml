@@ -23,7 +23,7 @@ spec:
       activeDeadlineSeconds: 180
       containers:
         - name:  {{ template "cas-bciers.fullname" . }}-reset-database
-          image: postgres:14.6-alpine
+          image: postgres:16.6-alpine
           env:
             - name: PGUSER
               valueFrom:
