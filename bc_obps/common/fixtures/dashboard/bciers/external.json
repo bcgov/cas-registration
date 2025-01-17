@@ -74,6 +74,18 @@
                 ]
               },
               {
+                "title": "Report transfer of operation or facility",
+                "href": "/administration/transfers",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/operator",
+                    "field": "error",
+                    "operator": "notExists",
+                    "value": true
+                  }
+                ]
+              },
+              {
                 "title": "Contacts",
                 "href": "/administration/contacts",
                 "conditions": [
