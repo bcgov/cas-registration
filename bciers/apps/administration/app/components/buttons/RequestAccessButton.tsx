@@ -21,8 +21,8 @@ export default function RequestAccessButton({
   const [errorList, setErrorList] = useState([] as any[]);
 
   const label = isAdminRequest
-    ? "Request Administrator Access"
-    : "Request Access";
+    ? "Request administrator access"
+    : "Request access";
 
   const endpointUrl = `registration/operators/${operatorId}/${
     isAdminRequest ? "request-admin-access" : "request-access"

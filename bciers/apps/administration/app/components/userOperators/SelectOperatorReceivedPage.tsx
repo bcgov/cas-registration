@@ -1,4 +1,4 @@
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilledIcon";
 
 import { notFound } from "next/navigation";
 import { Operator } from "../userOperators/types";
@@ -22,13 +22,16 @@ export default async function SelectOperatorReceivedPage({
       throw new Error("Failed to retrieve operator information.");
     }
     const adminRequestJSX: JSX.Element = (
-      <>
-        <p>Once approved, you will receive an email.</p>
+      <div style={{ fontSize: "16px" }}>
         <p>
-          You can then log back in using your Business BCeID with Administrator
-          access.
+          Your access request as administrator for <b>{operator.legal_name}</b>{" "}
+          has been received by ministry staff and will be reviewed shortly.
         </p>
-      </>
+        <p>
+          Once approved, you will receive a confirmation email. You can then log
+          back in using our Business BCeID.
+        </p>
+      </div>
     );
 
     const addOperatorJSX: JSX.Element = (
@@ -60,20 +63,13 @@ export default async function SelectOperatorReceivedPage({
     else if (hasAdmin) content = requestSubsequentAccessJSX;
     else if (step === "request-access")
       content = (
-        <div data-testid="access-request-message">
-          <p>
-            Your access request for <b>{operator.legal_name}</b> as its
-            Operation Representative has been received and will be reviewed.
-          </p>
-
-          {adminRequestJSX}
-        </div>
+        <div data-testid="access-request-message">{adminRequestJSX}</div>
       );
 
     return (
       <section className="text-center my-auto text-2xl flex flex-col gap-3">
         <span>
-          <AccessTimeIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
+          <AccessTimeFilledIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
         </span>
         {content}
       </section>
