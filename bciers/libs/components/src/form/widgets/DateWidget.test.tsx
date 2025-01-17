@@ -223,12 +223,34 @@ describe("RJSF DateWidget", () => {
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
-    checkTextWidgetValidationStyles(
+    await checkTextWidgetValidationStyles(
       <FormBase
         schema={dateWidgetFieldSchema}
         uiSchema={dateWidgetFieldUiSchema}
       />,
       dateWidgetLabelRequired,
     );
+  });
+  it("should trigger validation error when user clicks the clear button", async () => {
+    render(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        formData={{ dateWidgetTestField: "2024-07-05T09:00:00.000Z" }}
+        uiSchema={dateWidgetFieldUiSchema}
+      />,
+    );
+    // select the date widget
+    const dateWidgetClickElement = screen.getByTestId("CalendarIcon")
+      .parentElement as HTMLElement;
+    await userEvent.click(dateWidgetClickElement);
+    // select the clear button
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /clear/i,
+      }),
+    );
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    await userEvent.click(submitButton);
+    expect(screen.getByText("Required field")).toBeVisible();
   });
 });
