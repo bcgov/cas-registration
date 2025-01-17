@@ -132,6 +132,12 @@ pythontests_coverage: ## run Python tests with coverage
 pythontests_coverage:
 	$(POETRY_RUN) pytest --cov=. --cov-config=.coveragerc --cov-report=term-missing --no-cov-on-fail
 
+
+.PHONY: pythontests_parallel
+pythontests_parallel: ## run Python tests in parallel for faster execution
+pythontests_parallel:
+	$(POETRY_RUN) pytest -n auto
+
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
 clear_db:
