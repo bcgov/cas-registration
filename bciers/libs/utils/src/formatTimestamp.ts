@@ -11,7 +11,6 @@ const formatTimestamp = (timestamp: string) => {
   const timeWithTimeZone = new Date(timestamp).toLocaleString("en-CA", {
     hour: "numeric",
     minute: "numeric",
-    second: "numeric",
     timeZoneName: "short",
     timeZone: "America/Vancouver",
   });
