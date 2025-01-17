@@ -293,3 +293,31 @@ class TestComplianceSummaryService(TestCase):
         #  = 10000 * 0.575
         #  = 5750
         assert emission_limit_for_test == Decimal('5750')
+
+    def test_get_emission_limit_handles_divide_by_zero(self):
+        emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
+            pwaei=Decimal('0.5'),
+            apr_dec_production=Decimal('20000'),
+            allocated_industrial_process=Decimal('5000'),
+            allocated_for_compliance=Decimal('0'),
+            tightening_rate=Decimal('0.1'),
+            reduction_factor=Decimal('0.65'),
+            compliance_period=2025,
+            initial_compliance_period=2024,
+        )
+
+        # CALCULATION DEFINITION
+        # product_emission_limit = (apr_dec_production * pwaei) * (
+        #     reduction_factor
+        #     - (
+        #         (Decimal('1') - (allocated_industrial_process / allocated_for_compliance))
+        #         * tightening_rate
+        #         * (compliance_period - initial_compliance_period)
+        #     )
+        # )
+        #  = (20000 * 0.5) * (0.65 - ((1 - (5000 / 0)) * 0.1 * (2025-2024)))
+        #  = 10000 * (0.65 - ((1)) * 0.1)
+        #  = 10000 * (0.65 - 0.1)
+        #  = 10000 * 0.55
+        #  = 5500
+        assert emission_limit_for_test == Decimal('5500')
