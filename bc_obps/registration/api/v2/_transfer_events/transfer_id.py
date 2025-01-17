@@ -32,7 +32,7 @@ def get_transfer_event(request: HttpRequest, transfer_id: UUID) -> Tuple[Literal
     response={200: DictStrAny, custom_codes_4xx: Message},
     tags=TRANSFER_EVENT_TAGS,
     description="""Deletes a transfer event by its ID.""",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("cas_analyst"),
 )
 @handle_http_errors()
 def delete_transfer_event(request: HttpRequest, transfer_id: UUID) -> Tuple[Literal[200], DictStrAny]:
@@ -45,10 +45,10 @@ def delete_transfer_event(request: HttpRequest, transfer_id: UUID) -> Tuple[Lite
     response={200: TransferEventOut, custom_codes_4xx: Message},
     tags=TRANSFER_EVENT_TAGS,
     description="""Updates the details of an existing transfer event by its ID.""",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("cas_analyst"),
 )
 @handle_http_errors()
-def update_facility(
+def update_transfer_event(
     request: HttpRequest, transfer_id: UUID, payload: TransferEventUpdateIn
 ) -> Tuple[Literal[200], TransferEvent]:
     return 200, TransferEventService.update_transfer_event(get_current_user_guid(request), transfer_id, payload)
