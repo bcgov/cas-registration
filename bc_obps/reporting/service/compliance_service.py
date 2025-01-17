@@ -27,11 +27,11 @@ class ReportProductComplianceData:
     def __init__(
         self,
         name: str,
-        annual_production: Decimal | int,
-        apr_dec_production: Decimal | int,
+        annual_production: Decimal,
+        apr_dec_production: Decimal,
         emission_intensity: Decimal,
-        allocated_industrial_process_emissions: Decimal | int,
-        allocated_compliance_emissions: Decimal | int,
+        allocated_industrial_process_emissions: Decimal,
+        allocated_compliance_emissions: Decimal,
     ):
         self.name = name
         self.annual_production = annual_production
@@ -44,12 +44,12 @@ class ReportProductComplianceData:
 class ComplianceData:
     def __init__(
         self,
-        emissions_attributable_for_reporting: Decimal | int,
-        reporting_only_emissions: Decimal | int,
-        emissions_attributable_for_compliance: Decimal | int,
-        emissions_limit: Decimal | int,
-        excess_emissions: Decimal | int,
-        credited_emissions: Decimal | int,
+        emissions_attributable_for_reporting: Decimal,
+        reporting_only_emissions: Decimal,
+        emissions_attributable_for_compliance: Decimal,
+        emissions_limit: Decimal,
+        excess_emissions: Decimal,
+        credited_emissions: Decimal,
         regulatory_values: RegulatoryValues,
         products: List[ReportProductComplianceData],
     ):
@@ -87,17 +87,17 @@ class ComplianceService:
         )
 
     @staticmethod
-    def get_emissions_attributable_for_reporting(report_version_id: int) -> Decimal | int:
+    def get_emissions_attributable_for_reporting(report_version_id: int) -> Decimal:
         records = ReportEmission.objects_with_decimal_emissions.filter(
             report_version_id=report_version_id,
             emission_categories__category_type='basic',
         )
         attributable_sum = records.aggregate(emission_sum=Sum('emission'))
 
-        return attributable_sum['emission_sum'] or 0
+        return attributable_sum['emission_sum'] or Decimal('0')
 
     @staticmethod
-    def get_production_totals(report_version_id: int) -> Dict[str, Decimal | int]:
+    def get_production_totals(report_version_id: int) -> Dict[str, Decimal]:
         records = ReportProduct.objects.filter(
             report_version_id=report_version_id,
         )
@@ -105,14 +105,14 @@ class ComplianceService:
         apr_dec_sum = records.aggregate(production_sum=Sum('production_data_apr_dec'))
 
         return {
-            "annual_amount": annual_production_sum['production_sum'] or 0,
-            "apr_dec": apr_dec_sum['production_sum'] or 0,
+            "annual_amount": annual_production_sum['production_sum'] or Decimal('0'),
+            "apr_dec": apr_dec_sum['production_sum'] or Decimal('0'),
         }
 
     @staticmethod
     def get_allocated_emissions_by_report_product_emission_category(
         report_version_id: int, product_id: int, emission_category_ids: List[int]
-    ) -> Decimal | int:
+    ) -> Decimal:
         records = ReportProductEmissionAllocation.objects.filter(
             report_version_id=report_version_id,
             report_product__product_id=product_id,
@@ -120,10 +120,10 @@ class ComplianceService:
         )
         allocated_to_category_sum = records.aggregate(production_sum=Sum('allocated_quantity'))
 
-        return allocated_to_category_sum['production_sum'] or 0
+        return allocated_to_category_sum['production_sum'] or Decimal('0')
 
     @staticmethod
-    def get_report_product_aggregated_totals(report_version_id: int, product_id: int) -> Dict[str, Decimal | int]:
+    def get_report_product_aggregated_totals(report_version_id: int, product_id: int) -> Dict[str, Decimal]:
         records = ReportProduct.objects.filter(
             report_version_id=report_version_id,
             product_id=product_id,
@@ -132,12 +132,12 @@ class ComplianceService:
         apr_dec_sum = records.aggregate(production_sum=Sum('production_data_apr_dec'))
 
         return {
-            "annual_amount": product_annual_amount_sum['production_sum'] or 0,
-            "apr_dec": apr_dec_sum['production_sum'] or 0,
+            "annual_amount": product_annual_amount_sum['production_sum'] or Decimal('0'),
+            "apr_dec": apr_dec_sum['production_sum'] or Decimal('0'),
         }
 
     @staticmethod
-    def get_reporting_only_allocated(report_version_id: int, product_id: int) -> Decimal | int:
+    def get_reporting_only_allocated(report_version_id: int, product_id: int) -> Decimal:
         # CO2 emissions from excluded woody biomass, Other emissions from excluded biomass, Emissions from excluded non-biomass, Fugitive emissions, Venting emissions — non-useful
         reporting_only_category_ids = [10, 11, 12, 2, 7]
         reporting_only_allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
@@ -148,7 +148,7 @@ class ComplianceService:
             report_product__product_id=39,  # Special Fat, Oil & Grease product
         )
         fog_allocated_amount = fog_records.aggregate(allocated_sum=Sum('allocated_quantity'))
-        return reporting_only_allocated + (fog_allocated_amount['allocated_sum'] or 0)
+        return reporting_only_allocated + (fog_allocated_amount['allocated_sum'] or Decimal('0'))
 
     @staticmethod
     def calculate_product_emission_limit(
