@@ -37,8 +37,8 @@ export default async function SelectOperatorConfirmPage({
       const declinedNoAdminJSX: JSX.Element = (
         <div data-testid="access-declined-no-admin-message">
           <p>
-            Your Administrator access request to be the Operation Representative
-            of <b>{(operator as Operator).legal_name}</b> was declined.
+            Your administrator access request for{" "}
+            <b>{(operator as Operator).legal_name}</b> was declined.
           </p>
           <p className="text-center">
             If you believe this is an error and you should be granted access,
