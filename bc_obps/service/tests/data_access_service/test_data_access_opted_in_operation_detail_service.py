@@ -53,3 +53,36 @@ class TestDataAccessOptedInOperationService:
         assert users_operation.opted_in_operation.meets_notification_to_director_on_criteria_change is False
         assert users_operation.opted_in_operation.updated_by == approved_user_operator.user
         assert users_operation.opted_in_operation.updated_at is not None
+
+    @staticmethod
+    def test_archive_or_delete_opted_in_operation_detail():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        users_operation = baker.make_recipe(
+            'utils.operation',
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+            created_by=approved_user_operator.user,
+            opted_in_operation=baker.make_recipe(
+                'utils.opted_in_operation_detail', created_by=approved_user_operator.user
+            ),
+            operator=approved_user_operator.operator,
+            opt_in=True,
+        )
+        assert OptedInOperationDetail.objects.count() == 1
+
+        opted_in_detail = users_operation.opted_in_operation
+
+        OptedInOperationDataAccessService.archive_or_delete_opted_in_operation_detail(
+            approved_user_operator.user.user_guid, users_operation.id
+        )
+        users_operation.refresh_from_db()
+
+        assert users_operation.opted_in_operation is None
+        assert OptedInOperationDetail.objects.count() == 0
+
+        if users_operation.status == Operation.Statuses.REGISTERED:
+            opted_in_detail.refresh_from_db()
+            assert opted_in_detail.archived_at is not None
+            assert opted_in_detail.archived_by is not None
+        else:
+            with pytest.raises(OptedInOperationDetail.DoesNotExist):
+                opted_in_detail.refresh_from_db()  # this should raise an exception because it's been deleted
