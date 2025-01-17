@@ -14,6 +14,7 @@ interface StepButtonProps {
   saveAndContinue?: () => void;
   buttonText?: string;
   noFormSave?: () => void;
+  noSaveButton?: boolean;
 }
 
 const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
@@ -27,6 +28,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   saveAndContinue,
   buttonText,
   noFormSave,
+  noSaveButton,
 }) => {
   const router = useRouter();
   const saveButtonContent = isSaving ? (
@@ -66,18 +68,20 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
             Back
           </Button>
         )}
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={isSaving || saveButtonDisabled}
-          sx={{ mx: 3 }}
-          type="submit"
-          onClick={() => {
-            if (noFormSave) noFormSave();
-          }}
-        >
-          {saveButtonContent}
-        </Button>
+        {!noSaveButton && (
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={isSaving || saveButtonDisabled}
+            sx={{ mx: 3 }}
+            type="submit"
+            onClick={() => {
+              if (noFormSave) noFormSave();
+            }}
+          >
+            {saveButtonContent}
+          </Button>
+        )}
       </div>
       <Button
         variant="contained"
