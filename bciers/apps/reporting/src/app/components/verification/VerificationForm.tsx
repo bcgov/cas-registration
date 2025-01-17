@@ -34,7 +34,7 @@ export default function VerificationForm({
   const queryString = serializeSearchParams(searchParams);
 
   const saveAndContinueUrl = `/reports/${version_id}/attachments${queryString}`;
-  const backUrl = `/reports/${version_id}/compliance-summary${queryString}`;
+  const backUrl = `/reports/${version_id}/final-review${queryString}`;
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };

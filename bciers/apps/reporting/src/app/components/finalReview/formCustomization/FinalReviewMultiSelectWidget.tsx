@@ -14,10 +14,10 @@ const FinalReviewMultiSelectWidget: React.FC<WidgetProps> = ({
   const options = mapOptions(fieldSchema);
   const selectedOptions = options.filter((option) => value.includes(option.id));
   const displayInline = uiSchema?.["ui:inline"];
-  const separator = displayInline ? ", " : ",\n";
+  const separator = displayInline ? ", " : "\n";
 
   const displayOptions = selectedOptions
-    .map((option) => `- ${option.label}`)
+    .map((option) => `${displayInline ? "" : "- "}${option.label}`)
     .join(separator);
 
   return (

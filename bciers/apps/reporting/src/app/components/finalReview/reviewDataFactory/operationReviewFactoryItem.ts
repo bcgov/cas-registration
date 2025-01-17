@@ -12,7 +12,7 @@ import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivi
 import { getRegulatedProducts } from "@bciers/actions/api";
 
 const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
-  const formData = await getReportingOperation(versionId);
+  const reportingOperationData = await getReportingOperation(versionId);
 
   const reportingYear = await getReportingYear();
   const reportingWindowEnd = formatDate(
@@ -28,12 +28,21 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
 
   const schema: any = updateSchema(
     operationReviewSchema,
-    formData,
+    reportingOperationData,
     registrationPurpose,
     reportingWindowEnd,
     allActivities,
     allRegulatedProducts,
+    reportingOperationData.report_operation_representatives,
   );
+
+  const formData = {
+    ...reportingOperationData.report_operation,
+    operation_representative_name:
+      reportingOperationData.report_operation_representatives.flatMap(
+        (rep: any) => (rep.selected_for_report ? [rep.id] : []),
+      ),
+  };
 
   return [
     {
