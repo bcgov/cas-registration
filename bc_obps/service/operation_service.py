@@ -218,9 +218,11 @@ class OperationService:
         base_qs = OperationDataAccessService.get_all_operations_for_user(user)
         list_of_filters = [
             Q(bcghg_id__id__icontains=bcghg_id) if bcghg_id else Q(),
-            Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
-            if bc_obps_regulated_operation
-            else Q(),
+            (
+                Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
+                if bc_obps_regulated_operation
+                else Q()
+            ),
             Q(name__icontains=name) if name else Q(),
             Q(operator__legal_name__icontains=operator) if operator else Q(),
             Q(status__icontains=status) if status else Q(),
