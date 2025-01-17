@@ -12,11 +12,12 @@ import {
 } from "@reporting/src/app/utils/constants";
 import { actionHandler } from "@bciers/actions";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
+import { lfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
+import { sfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 
 interface Props {
   version_id: number;
   verificationSchema: RJSFSchema;
-  verificationUiSchema: RJSFSchema;
   initialData: any;
   taskListElements: TaskListElement[];
 }
@@ -24,12 +25,10 @@ interface Props {
 export default function VerificationForm({
   version_id,
   verificationSchema,
-  verificationUiSchema,
   initialData,
   taskListElements,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
-  const [uiSchema, setUiSchema] = useState(verificationUiSchema); // State for uiSchema
   const [errors, setErrors] = useState<string[]>();
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
@@ -39,7 +38,6 @@ export default function VerificationForm({
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
-    const updatedUiSchema = { ...uiSchema }; // Copy uiSchema for updates
 
     if (Array.isArray(updatedData.visit_names)) {
       const selectedValues = updatedData.visit_names;
@@ -59,20 +57,12 @@ export default function VerificationForm({
         );
 
         // Update visit_types and dynamically update the label for visit_type
-        updatedData.visit_types = updatedData.visit_names.map(
-          (visit_name: string) => {
+        updatedData.visit_types = updatedData.visit_names
+          .filter((visit_name: string) => visit_name !== "Other") // Exclude "Other"
+          .map((visit_name: string) => {
             const existingVisitType = updatedData.visit_types?.find(
               (item: { visit_name: string }) => item.visit_name === visit_name,
             );
-
-            // Update the label dynamically for visit_type in uiSchema
-            if (!updatedUiSchema.visit_types) {
-              updatedUiSchema.visit_types = { items: {} };
-            }
-            updatedUiSchema.visit_types.items.visit_type = {
-              "ui:title": `Visit Type for ${visit_name}`, // Dynamic label
-            };
-
             // Create or retain visit_type object
             return (
               existingVisitType ?? {
@@ -80,14 +70,12 @@ export default function VerificationForm({
                 visit_type: "", // Default blank visit_type
               }
             );
-          },
-        );
+          });
       }
     }
 
-    // Update form data and uiSchema states
+    // Update form data state
     setFormData(updatedData);
-    setUiSchema(updatedUiSchema);
   };
 
   const handleSubmit = async () => {
@@ -107,6 +95,7 @@ export default function VerificationForm({
     setErrors(undefined);
     return true;
   };
+  const verificationUiSchema = lfoUiSchema;
 
   return (
     <MultiStepFormWithTaskList
@@ -114,7 +103,7 @@ export default function VerificationForm({
       initialStep={4}
       taskListElements={taskListElements}
       schema={verificationSchema}
-      uiSchema={uiSchema} // Use dynamic uiSchema
+      uiSchema={verificationUiSchema}
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}
@@ -123,6 +112,9 @@ export default function VerificationForm({
       onSubmit={handleSubmit}
       errors={errors}
       continueUrl={saveAndContinueUrl}
+      formContext={{
+        visit_types: formData.visit_types,
+      }}
     />
   );
 }

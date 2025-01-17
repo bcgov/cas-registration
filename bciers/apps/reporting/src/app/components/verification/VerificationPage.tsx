@@ -1,7 +1,6 @@
 import { getReportVerification } from "@reporting/src/app/utils/getReportVerification";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
-import { createVerificationUiSchema } from "@reporting/src/app/components/verification/createVerificationUiSchema";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import {
   ActivePage,
@@ -23,8 +22,6 @@ export default async function VerificationPage({
     facilityList.facilities,
     operationType,
   );
-  // Create ui schema for operation type
-  const verificationUiSchema = createVerificationUiSchema(operationType);
 
   //🔍 Check if reports need verification
   const needsVerification = await getReportNeedsVerification(version_id);
@@ -39,7 +36,6 @@ export default async function VerificationPage({
       <VerificationForm
         version_id={version_id}
         verificationSchema={verificationSchema}
-        verificationUiSchema={verificationUiSchema}
         initialData={initialData}
         taskListElements={taskListElements}
       />
