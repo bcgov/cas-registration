@@ -142,18 +142,31 @@ class ComplianceTestInfrastructure:
     @classmethod
     def pare_data_single_product_flaring(cls):
         # Pare down build data to data needed for this test
-        ReportProductEmissionAllocation.objects.exclude(emission_category_id=1).delete()
-        ReportProduct.objects.exclude(product_id=1).delete()
-        ReportEmission.objects.exclude(gas_type_id=1).delete()
+        t = cls.build()
+        t.allocation_2.delete()
+        t.allocation_3.delete()
+        t.allocation_4.delete()
+        t.allocation_5.delete()
+        t.allocation_6.delete()
+        t.report_product_2.delete()
+        t.report_product_3.delete()
+        t.report_emission_2.delete()
+        t.report_emission_3.delete()
+        t.report_emission_4.delete()
+        return t
 
     @classmethod
     def pare_data_remove_reporting_only(cls):
         # Pare down build data to data needed for this test
-        ReportProductEmissionAllocation.objects.filter(emission_category__in=[5, 12]).delete()
-        ReportEmission.objects.filter(gas_type_id=3).delete()
+        t = cls.build()
+        t.allocation_4.delete()
+        t.allocation_5.delete()
+        t.report_emission_4.delete()
+        return t
 
     @classmethod
     def reporting_year_2025(cls):
+        t = cls.build()
         reporting_year = make_recipe(
             "reporting.tests.utils.reporting_year",
             reporting_year=2025,
@@ -161,12 +174,11 @@ class ComplianceTestInfrastructure:
             reporting_window_end='2026-12-31 16:00:00-08',
             report_due_date='2025-05-31 16:59:59.999-07',
         )
-        report = Report.objects.get(reporting_year_id=2024)
-        report.reporting_year = reporting_year
-        report.save()
+        Report.objects.filter(pk=t.report_1.id).update(reporting_year=reporting_year)
+        return t
 
     @classmethod
     def new_entrant(cls):
-        operation = Operation.objects.get(name='test sfo')
-        operation.registration_purpose = 'New Entrant Operation'
-        operation.save()
+        t = cls.build()
+        Operation.objects.filter(pk=t.operation_1.id).update(registration_purpose='New Entrant Operation')
+        return t
