@@ -59,3 +59,27 @@ class EmissionSummarySchemaOut(Schema):
     emission_categories: BasicEmissionCategoriesSchema
     fuel_excluded: FuelExcludedEmissionCategoriesSchema
     other_excluded: OtherExcludedEmissionCategoriesSchema
+
+
+{
+    'attributable_for_reporting': Decimal('33330.0000'),
+    'attributable_for_reporting_threshold': Decimal('31108.0000'),
+    'reporting_only_emission': Decimal('2222.0000'),
+    'emission_categories': {
+        'flaring': Decimal('0'),
+        'fugitive': Decimal('0'),
+        'industrial_process': Decimal('0'),
+        'onsite_transportation': Decimal('0'),
+        'stationary_combustion': Decimal('31108.0000'),
+        'venting_useful': Decimal('0'),
+        'venting_non_useful': Decimal('0'),
+        'waste': Decimal('2222.0000'),
+        'wastewater': Decimal('0'),
+    },
+    'fuel_excluded': {
+        'woody_biomass': Decimal('2222.0000'),
+        'excluded_biomass': Decimal('0'),
+        'excluded_non_biomass': Decimal('0'),
+    },
+    'other_excluded': {'lfo_excluded': Decimal('0'), 'fog_excluded': 0},
+}
