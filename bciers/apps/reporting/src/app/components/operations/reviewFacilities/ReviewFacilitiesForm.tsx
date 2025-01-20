@@ -4,11 +4,7 @@ import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
-import {
-  operationReviewSchema,
-  operationReviewUiSchema,
-  updateSchema,
-} from "@reporting/src/data/jsonSchema/operations";
+import { reviewFacilitiesSchema, reviewFacilitiesUiSchema } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import {
@@ -20,29 +16,32 @@ import { Task } from "@nx/devkit";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 interface Props {
-    Initialdata: any;
+    initialData: any;
     version_id: number;
-    taskListElements: TaskListElement[];
 }
 
-export default function ReviewFacilitiesForm({
-  Initialdata,
+export default function LFOFacilitiesForm({
+  initialData,
   version_id,
-  taskListElements,
 }: Props) {
   const [formData, setFormData] = useState<any>(() => ({
-    ...Initialdata,
+    ...initialData,
   }));
-  const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
-  const [uiSchema, setUiSchema] = useState(operationReviewUiSchema);
+  const [schema, setSchema] = useState<RJSFSchema>(reviewFacilitiesSchema);
+  const [uiSchema, setUiSchema] = useState(reviewFacilitiesUiSchema);
   const [errors, setErrors] = useState<string[]>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   //const [modalMessage, setModalMessage] = useState<string | null>(null);
   //const [modalTitle, setModalTitle] = useState<string | null>(null);
   //const [modalType, setModalType] = useState<"error" | "success">("success");
-
-  const saveAndContinueUrl = `/reports/${version_id}/compliance-summary`;
+const saveAndContinueUrl = "/reports/${version_id}/report-information";
+const backUrl = `/reports/${version_id}/person-responsible`;
+  const taskListElements = getOperationInformationTaskList(
+    version_id,
+    ActivePage.ReviewFacilities,
+    "Linear Facility Operation",
+  );
 
   const handleChange = (e: any) => {
     const updatedData = { ...e.formData };
@@ -50,7 +49,7 @@ export default function ReviewFacilitiesForm({
   };
 
   const handleSubmit = async (data: any) => {
-    const endpoint = `reporting/report-version/${version_id}/selected-facilities`;
+    const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
