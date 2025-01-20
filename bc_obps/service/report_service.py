@@ -64,7 +64,7 @@ class ReportService:
             ReportOperationRepresentative.objects.create(
                 report_version=report_version,
                 representative_name=contact.get_full_name(),
-                selected_for_report=False,
+                selected_for_report=True,
             )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
