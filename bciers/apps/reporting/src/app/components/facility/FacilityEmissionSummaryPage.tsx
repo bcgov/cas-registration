@@ -24,35 +24,11 @@ export default async function FacilityEmissionSummaryPage({
   if (emissionSummaryTaskListElement)
     emissionSummaryTaskListElement.isActive = true;
 
-  const formData = {
-    attributableForReporting: summaryData.attributable_for_reporting,
-    attributableForReportingThreshold: summaryData.attributable_for_threshold,
-    emissionCategories: {
-      flaring: summaryData.flaring,
-      fugitive: summaryData.fugitive,
-      industrialProcess: summaryData.industrial_process,
-      onSiteTransportation: summaryData.onsite,
-      stationaryCombustion: summaryData.stationary,
-      ventingUseful: summaryData.venting_useful,
-      ventingNonUseful: summaryData.venting_non_useful,
-      waste: summaryData.waste,
-      wastewater: summaryData.wastewater,
-    },
-    fuelExcluded: {
-      woodyBiomass: summaryData.woody_biomass,
-      excludedBiomass: summaryData.excluded_biomass,
-      excludedNonBiomass: summaryData.excluded_non_biomass,
-    },
-    otherExcluded: {
-      lfoExcluded: summaryData.lfo_excluded,
-    },
-  };
-
   return (
     <FacilityEmissionSummaryForm
       versionId={version_id}
       facilityId={facility_id}
-      summaryFormData={formData}
+      summaryFormData={summaryData}
       taskListElements={taskListData}
     />
   );

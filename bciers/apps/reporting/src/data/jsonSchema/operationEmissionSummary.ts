@@ -5,38 +5,38 @@ export const operationEmissionSummarySchema: RJSFSchema = {
   type: "object",
   title: "Operation Emission Summary (in tCO2e)",
   properties: {
-    attributableForReporting: {
+    attributable_for_reporting: {
       type: "number",
       title: "Emissions attributable for reporting",
     },
-    attributableForReportingThreshold: {
+    attributable_for_reporting_threshold: {
       type: "number",
       title: "Emissions attributable for reporting threshold",
     },
-    reportingOnlyEmission: {
+    reporting_only_emission: {
       type: "number",
       title: "Reporting-only emissions",
     },
-    emissionCategories: {
+    emission_categories: {
       type: "object",
       title: "Emission Categories",
       properties: {
         flaring: { type: "number", title: "Flaring emissions" },
         fugitive: { type: "number", title: "Fugitive emissions" },
-        industrialProcess: {
+        industrial_process: {
           type: "number",
           title: "Industrial process emissions",
         },
-        onSiteTransportation: {
+        onsite: {
           type: "number",
           title: "On-site transportation emissions",
         },
-        stationaryCombustion: {
+        stationary_combustion: {
           type: "number",
           title: "Stationary fuel combustion emissions",
         },
-        ventingUseful: { type: "number", title: "Venting emissions - useful" },
-        ventingNonUseful: {
+        venting_useful: { type: "number", title: "Venting emissions - useful" },
+        venting_non_useful: {
           type: "number",
           title: "Venting emissions - non-useful",
         },
@@ -44,34 +44,34 @@ export const operationEmissionSummarySchema: RJSFSchema = {
         wastewater: { type: "number", title: "Emissions from wastewater" },
       },
     },
-    fuelExcluded: {
+    fuel_excluded: {
       type: "object",
       title: "Emissions excluded by fuel type",
       properties: {
-        woodyBiomass: {
+        woody_biomass: {
           type: "number",
           title: "CO2 emissions from excluded woody biomass",
         },
-        excludedBiomass: {
+        excluded_biomass: {
           type: "number",
           title: "Other emissions from excluded biomass",
         },
-        excludedNonBiomass: {
+        excluded_non_biomass: {
           type: "number",
           title: "Emissions from excluded non-biomass",
         },
       },
     },
-    otherExcluded: {
+    other_excluded: {
       type: "object",
       title: "Other excluded emissions",
       properties: {
-        lfoExcluded: {
+        lfo_excluded: {
           type: "number",
           title:
             "Emissions from line tracing and non-processing and non-compression activities",
         },
-        fogExcluded: {
+        fog_excluded: {
           type: "number",
           title:
             "Emissions from fat, oil and grease collection, refining and storage",
@@ -85,17 +85,17 @@ export const operationEmissionSummaryUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
-  emissionCategories: {
+  emission_categories: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
-  fuelExcluded: {
+  fuel_excluded: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
-  otherExcluded: {
+  other_excluded: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,

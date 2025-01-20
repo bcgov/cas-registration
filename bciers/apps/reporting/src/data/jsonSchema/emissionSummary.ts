@@ -2,38 +2,38 @@ import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 
 const properties: RJSFSchema = {
-  attributableForReporting: {
+  attributable_for_reporting: {
     type: "number",
     title: "Emissions attributable for reporting",
     minimum: 0,
   },
-  attributableForReportingThreshold: {
+  attributable_for_reporting_threshold: {
     type: "number",
     title: "Emissions attributable for reporting threshold",
     minimum: 0,
   },
-  reportingOnlyEmission: {
+  reporting_only_emission: {
     type: "number",
     title: "Reporting-only emissions",
     minimum: 0,
   },
-  emissionCategories: {
+  emission_categories: {
     type: "object",
     title: "Emission Categories",
     properties: {
       flaring: { type: "number", title: "Flaring emissions" },
       fugitive: { type: "number", title: "Fugitive emissions" },
-      industrialProcess: {
+      industrial_process: {
         type: "number",
         title: "Industrial process emissions",
         minimum: 0,
       },
-      onSiteTransportation: {
+      onsite_transportation: {
         type: "number",
         title: "On-site transportation emissions",
         minimum: 0,
       },
-      stationaryCombustion: {
+      stationary_combustion: {
         type: "number",
         title: "Stationary fuel combustion emissions",
         minimum: 0,
@@ -56,38 +56,38 @@ const properties: RJSFSchema = {
       },
     },
   },
-  fuelExcluded: {
+  fuel_excluded: {
     type: "object",
     title: "Emissions excluded by fuel type",
     properties: {
-      woodyBiomass: {
+      woody_biomass: {
         type: "number",
         title: "CO2 emissions from excluded woody biomass",
         minimum: 0,
       },
-      excludedBiomass: {
+      excluded_biomass: {
         type: "number",
         title: "Other emissions from excluded biomass",
         minimum: 0,
       },
-      excludedNonBiomass: {
+      excluded_non_biomass: {
         type: "number",
         title: "Emissions from excluded non-biomass",
         minimum: 0,
       },
     },
   },
-  otherExcluded: {
+  other_excluded: {
     type: "object",
     title: "Other excluded emissions",
     properties: {
-      lfoExcluded: {
+      lfo_excluded: {
         type: "number",
         title:
           "Emissions from line tracing and non-processing and non-compression activities",
         minimum: 0,
       },
-      fogExcluded: {
+      fog_excluded: {
         type: "number",
         title:
           "Emissions from fat, oil and grease collection, refining and storage",
@@ -113,45 +113,19 @@ export const emissionSummaryUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
-  emissionCategories: {
+  emission_categories: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
-  fuelExcluded: {
+  fuel_excluded: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
-  otherExcluded: {
+  other_excluded: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
 };
-
-export interface EmissionSummaryFormData {
-  attributableForReporting: string;
-  attributableForReportingThreshold: string;
-  reportingOnlyEmission: string;
-  emissionCategories: {
-    flaring: string;
-    fugitive: string;
-    industrialProcess: string;
-    onSiteTransportation: string;
-    stationaryCombustion: string;
-    ventingUseful: string;
-    ventingNonUseful: string;
-    waste: string;
-    wastewater: string;
-  };
-  fuelExcluded: {
-    woodyBiomass: string;
-    excludedBiomass: string;
-    excludedNonBiomass: string;
-  };
-  otherExcluded: {
-    lfoExcluded: string;
-    fogExcluded: string; // To be handled once we implement a way to capture FOG emissions
-  };
-}

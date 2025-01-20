@@ -1,7 +1,7 @@
 from reporting.models import EmissionCategory
 from reporting.models.report_emission import ReportEmission
 from decimal import Decimal
-from django.db.models import Sum
+from django.db.models import Sum, OuterRef
 from typing import Dict, List
 
 
@@ -124,42 +124,35 @@ class EmissionCategoryService:
         total_reporting_only = records.aggregate(emission_sum=Sum('emission'))
         return total_reporting_only['emission_sum'] or 0
 
-    @classmethod
-    def get_all_category_totals_by_version(cls, version_id: int) -> Dict[str, Decimal | int]:
+    @staticmethod
+    def get_all_category_totals_by_version(version_id: int) -> Dict[str, Decimal | int]:
+        totals = EmissionCategory.objects.annotate(
+            total=ReportEmission.objects_with_decimal_emissions.filter(
+                report_version_id=version_id, emission_categories__id=OuterRef("id")
+            )
+            .annotate(emission_sum=Sum("emission"))
+            .values("emission_sum")
+        ).values("id", "total")
+        totals_dict = {t["id"]: t["total"] or Decimal(0) for t in list(totals)}
+
         # BASIC
-        flaring_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(version_id, 1)
-        fugitive_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(version_id, 2)
-        industrial_process_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 3
-        )
-        onsite_transportation_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 4
-        )
-        stationary_combustion_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 5
-        )
-        venting_useful_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 6
-        )
-        venting_non_useful_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 7
-        )
-        waste_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(version_id, 8)
-        wastewater_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(version_id, 9)
+        flaring_total = totals_dict[1]
+        fugitive_total = totals_dict[2]
+        industrial_process_total = totals_dict[3]
+        onsite_transportation_total = totals_dict[4]
+        stationary_combustion_total = totals_dict[5]
+        venting_useful_total = totals_dict[6]
+        venting_non_useful_total = totals_dict[7]
+        waste_total = totals_dict[8]
+        wastewater_total = totals_dict[9]
+
         # FUEL EXCLUDED
-        woody_biomass_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 10
-        )
-        excluded_biomass_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 11
-        )
-        excluded_non_biomass_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 12
-        )
+        woody_biomass_total = totals_dict[10]
+        excluded_biomass_total = totals_dict[11]
+        excluded_non_biomass_total = totals_dict[12]
+
         # OTHER EXCLUDED
-        lfo_excluded_total = EmissionCategoryService.get_total_emissions_by_emission_category_and_version(
-            version_id, 13
-        )
+        lfo_excluded_total = totals_dict[13]
 
         # ATTRIBUTABLE EMISSIONS
         attributable_for_reporting = (
@@ -194,3 +187,43 @@ class EmissionCategoryService:
             'attributable_for_threshold': attributable_for_threshold,
             'reporting_only': reporting_only,
         }
+
+    @classmethod
+    def transform_category_totals_to_summary_form_data(
+        cls, emission_totals: Dict[str, Decimal | int]
+    ) -> Dict[str, Decimal | int | Dict]:
+        return {
+            'attributable_for_reporting': emission_totals['attributable_for_reporting'],
+            'attributable_for_reporting_threshold': emission_totals['attributable_for_threshold'],
+            'reporting_only_emission': emission_totals['reporting_only'],
+            'emission_categories': {
+                'flaring': emission_totals['flaring'],
+                'fugitive': emission_totals['fugitive'],
+                'industrial_process': emission_totals['industrial_process'],
+                'onsite_transportation': emission_totals['onsite'],
+                'stationary_combustion': emission_totals['stationary'],
+                'venting_useful': emission_totals['venting_useful'],
+                'venting_non_useful': emission_totals['venting_non_useful'],
+                'waste': emission_totals['waste'],
+                'wastewater': emission_totals['wastewater'],
+            },
+            'fuel_excluded': {
+                'woody_biomass': emission_totals['woody_biomass'],
+                'excluded_biomass': emission_totals['excluded_biomass'],
+                'excluded_non_biomass': emission_totals['excluded_non_biomass'],
+            },
+            'other_excluded': {
+                'lfo_excluded': emission_totals['lfo_excluded'],
+                'fog_excluded': 0,  # To be handled once we implement a way to capture FOG emissions
+            },
+        }
+
+    @classmethod
+    def get_operation_emission_summary_form_data(cls, version_id: int) -> Dict[str, Decimal | int]:
+        emission_totals = EmissionCategoryService.get_all_category_totals_by_version(version_id)
+        return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
+
+    @classmethod
+    def get_facility_emission_summary_form_data(cls, facility_report_id: int) -> Dict[str, Decimal | int]:
+        emission_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
+        return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
