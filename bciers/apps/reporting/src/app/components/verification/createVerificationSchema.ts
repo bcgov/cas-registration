@@ -1,16 +1,32 @@
 import { RJSFSchema } from "@rjsf/utils";
-import { verificationSchema } from "@reporting/src/data/jsonSchema/verification/verification";
+import { lfoSchema } from "@reporting/src/data/jsonSchema/verification/verification";
+import { sfoSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 
-export const createVerificationSchema = (facilities: string[]): RJSFSchema => {
-  // Retrieve a local copy of the base verification schema based
-  const localSchema = { ...verificationSchema };
+export const createVerificationSchema = (
+  facilities: string[],
+  schemaType: "SFO" | "LFO",
+): RJSFSchema => {
+  // Determine the schema based on the schemaType
+  const localSchema: RJSFSchema =
+    schemaType === "SFO" ? { ...sfoSchema } : { ...lfoSchema };
 
-  // Dynamically populate the "visited_facilities" field's enum with the facilities
-  (localSchema.properties?.visit_name as any).enum = [
-    ...facilities,
-    "Other",
-    "None",
-  ];
+  // Dynamically populate the "visit_names" field's enum with the facilities
+  switch (schemaType) {
+    case "SFO":
+      (localSchema.properties?.visit_names as any).enum = [
+        ...facilities,
+        "Other",
+        "None",
+      ];
+      break;
+    case "LFO":
+      (localSchema.properties?.visit_names as any).items.enum = [
+        ...facilities,
+        "Other",
+        "None",
+      ];
+      break;
+  }
 
   // Return the customized schema.
   return localSchema;
