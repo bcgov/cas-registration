@@ -4,7 +4,10 @@ import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
-import { reviewFacilitiesSchema, reviewFacilitiesUiSchema } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
+import {
+  reviewFacilitiesSchema,
+  reviewFacilitiesUiSchema,
+} from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import {
@@ -16,27 +19,22 @@ import { Task } from "@nx/devkit";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 interface Props {
-    initialData: any;
-    version_id: number;
+  initialData: any;
+  version_id: number;
 }
 
-export default function LFOFacilitiesForm({
-  initialData,
-  version_id,
-}: Props) {
+export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [formData, setFormData] = useState<any>(() => ({
     ...initialData,
   }));
-  const [schema, setSchema] = useState<RJSFSchema>(reviewFacilitiesSchema);
-  const [uiSchema, setUiSchema] = useState(reviewFacilitiesUiSchema);
   const [errors, setErrors] = useState<string[]>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   //const [modalMessage, setModalMessage] = useState<string | null>(null);
   //const [modalTitle, setModalTitle] = useState<string | null>(null);
   //const [modalType, setModalType] = useState<"error" | "success">("success");
-const saveAndContinueUrl = "/reports/${version_id}/report-information";
-const backUrl = `/reports/${version_id}/person-responsible`;
+  const saveAndContinueUrl = "/reports/${version_id}/report-information";
+  const backUrl = `/reports/${version_id}/person-responsible`;
   const taskListElements = getOperationInformationTaskList(
     version_id,
     ActivePage.ReviewFacilities,
@@ -66,15 +64,15 @@ const backUrl = `/reports/${version_id}/person-responsible`;
   return (
     <MultiStepFormWithTaskList
       formData={formData}
-      schema={schema}
-      uiSchema={uiSchema}
+      schema={reviewFacilitiesSchema}
+      uiSchema={reviewFacilitiesUiSchema}
       taskListElements={taskListElements}
-      headerSteps={multiStepHeaderSteps}
-      saveAndContinueUrl={saveAndContinueUrl}
-      handleChange={handleChange}
-      handleSubmit={handleSubmit}
+      steps={multiStepHeaderSteps}
       submitButtonDisabled={submitButtonDisabled}
       errors={errors}
+      continueUrl={""}
+      initialStep={1}
+      onSubmit={handleSubmit}
     />
   );
 }
