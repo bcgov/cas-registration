@@ -24,7 +24,9 @@ class ReportVerificationService:
         Returns:
             ReportVerificationOut schema
         """
-        return ReportVerification.objects.get(report_version__id=report_version_id)
+        report_verification = ReportVerification.objects.get(report_version__id=report_version_id)
+        report_verification.report_verification_visits = report_verification.reportverificationvisit_records.all() 
+        return report_verification
 
     @staticmethod
     @transaction.atomic

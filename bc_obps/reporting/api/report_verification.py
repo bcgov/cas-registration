@@ -24,15 +24,8 @@ def get_report_verification_by_version_id(
 ) -> tuple[Literal[200], ReportVerificationOut]:
     # Fetch the report verification data
     report_verification = ReportVerificationService.get_report_verification_by_version_id(report_version_id)
-    report_verification.verification_body_name="testing"
-    # Fetch the report verification visits data
-    # Simulate fetching associated visits
-    report_verification_visits = [{"visit_id": 1, "status": "completed"}]
-
-    # Combine the data
-    report_verification.report_verification_visits = report_verification_visits
-    return 200, report_verification
-
+    report_verification.visit_names=["Facility 22","Facility 23","Other"]
+    return 200, report_verification 
 
 
 @router.get(

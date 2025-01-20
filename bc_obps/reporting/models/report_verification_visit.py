@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_verification import ReportVerification
 
@@ -30,22 +31,28 @@ class ReportVerificationVisit(TimeStampedModel):
         blank=True,
         db_comment="The type of visit conducted (Virtual or In Person)",
     )
-
-    other_facility_name = models.CharField(
+       
+    visit_coordinates = models.CharField(
         max_length=100,
         null=True,
         blank=True,
-        db_comment="Name of the other facility visited if 'Other' is selected",
+        db_comment="Geographic location of an other facility visited",
     )
 
-    other_facility_coordinates = models.CharField(
-        max_length=100,
-        null=True,
-        blank=True,
-        db_comment="Geographic location of the other facility visited",
+    is_other_facility = models.BooleanField(
+        db_comment="Flag to indicate the visit is an other facility visited",
+        default=False,
     )
+    
 
     class Meta:
         db_table = 'erc"."verification_visit'
         db_table_comment = "Table to store individual verification visit information"
         app_label = 'reporting'
+        constraints = [
+            models.CheckConstraint(
+                name="other_facility_must_have_coordinates",
+                check=~Q(is_other_facility=True) | Q(visit_coordinates__isnull=False),
+                violation_error_message="Coordinates must be provided for an other facility visit",
+            ),
+        ]
