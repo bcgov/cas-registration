@@ -19,7 +19,7 @@ class ReportOperationRepresentative(TimeStampedModel):
         db_comment="The name of the operation representative.",
     )
     selected_for_report = models.BooleanField(
-        default=False,
+        default=True,
         db_comment="Indicates whether this representative is selected for reporting.",
     )
 
