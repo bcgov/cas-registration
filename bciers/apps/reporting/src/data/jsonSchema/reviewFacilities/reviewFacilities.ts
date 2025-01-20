@@ -39,9 +39,6 @@ export const reviewFacilitiesUiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": instructionNote,
   },
-  sync_button: {
-    "ui:FieldTemplate": SyncFacilitiesButton,
-  },
   current_facilities: {
     "ui:FieldTemplate": SectionFieldTemplate,
     "ui:title": "List of facilities currently assigned to this operation",
@@ -49,5 +46,8 @@ export const reviewFacilitiesUiSchema = {
   past_facilities: {
     "ui:FieldTemplate": SectionFieldTemplate,
     "ui:title": "Past facilities that belonged to this operation",
+  },
+  sync_button: {
+    "ui:FieldTemplate": SyncFacilitiesButton,
   },
 };
