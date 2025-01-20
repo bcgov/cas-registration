@@ -33,10 +33,6 @@ export const checkEmptyContactForm = () => {
   expect(
     screen.getByRole("heading", { name: /Personal Information/i }),
   ).toBeVisible();
-  expect(
-    screen.getByLabelText(/Is this contact a user in BCIERS/i),
-  ).toBeChecked();
-  expect(screen.getByLabelText(/Select the user/i)).toHaveValue("");
   expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
   expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
   expect(
@@ -59,11 +55,6 @@ export const checkEmptyContactForm = () => {
   expect(screen.getByLabelText(/Postal Code/i)).toHaveValue("");
 };
 export const fillContactForm = async () => {
-  // Switch off the user combobox(so it doesn't raise form error)
-  await userEvent.click(
-    screen.getByLabelText(/Is this contact a user in BCIERS/i),
-  );
-
   // Personal Information
   await userEvent.type(screen.getByLabelText(/First Name/i), "John");
   await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
@@ -106,7 +97,7 @@ describe("ContactForm component", () => {
   it("renders the empty contact form when creating a new contact", async () => {
     render(
       <ContactForm
-        schema={createContactSchema(contactsSchema, [], true)}
+        schema={createContactSchema(contactsSchema, true)}
         uiSchema={contactsUiSchema}
         formData={{}}
         isCreating
@@ -127,15 +118,10 @@ describe("ContactForm component", () => {
     expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
   });
   it("loads existing readonly contact form data", async () => {
-    const readOnlyContactSchema = createContactSchema(
-      contactsSchema,
-      [],
-      false,
-    );
+    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     const { container } = render(
       <ContactForm
         schema={readOnlyContactSchema}
-        uiSchema={contactsUiSchema}
         formData={contactFormData}
         isCreating={false}
       />,
@@ -192,8 +178,7 @@ describe("ContactForm component", () => {
   it("does not allow new contact form submission if there are validation errors (empty form data)", async () => {
     render(
       <ContactForm
-        schema={createContactSchema(contactsSchema, [], true)}
-        uiSchema={contactsUiSchema}
+        schema={createContactSchema(contactsSchema, true)}
         formData={{}}
         isCreating
       />,
@@ -202,7 +187,7 @@ describe("ContactForm component", () => {
     act(() => {
       submitButton.click();
     });
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(6); // 5 required fields + 1 for the user combobox
+    expect(screen.getAllByText(/Required field/i)).toHaveLength(9);
   });
   it(
     "fills the mandatory form fields, creates new contact, and redirects on success",
@@ -212,8 +197,7 @@ describe("ContactForm component", () => {
     async () => {
       render(
         <ContactForm
-          schema={createContactSchema(contactsSchema, [], true)}
-          uiSchema={contactsUiSchema}
+          schema={createContactSchema(contactsSchema, true)}
           formData={{}}
           isCreating
         />,
@@ -239,7 +223,6 @@ describe("ContactForm component", () => {
           "/contacts",
           {
             body: JSON.stringify({
-              existing_bciers_user: false,
               first_name: "John",
               last_name: "Doe",
               position_title: "Senior Officer",
@@ -272,8 +255,7 @@ describe("ContactForm component", () => {
     async () => {
       render(
         <ContactForm
-          schema={createContactSchema(contactsSchema, [], true)}
-          uiSchema={contactsUiSchema}
+          schema={createContactSchema(contactsSchema, true)}
           formData={{}}
           isCreating
         />,
@@ -286,11 +268,6 @@ describe("ContactForm component", () => {
         error: null,
       };
       actionHandler.mockReturnValueOnce(response);
-
-      // Switch off the user combobox(so it doesn't raise form error)
-      await userEvent.click(
-        screen.getByLabelText(/Is this contact a user in BCIERS/i),
-      );
 
       // Personal Information
       await userEvent.type(screen.getByLabelText(/First Name/i), "John");
@@ -310,6 +287,18 @@ describe("ContactForm component", () => {
         "+16044011234",
       );
 
+      await userEvent.type(
+        screen.getByLabelText(/Business Mailing Address+/i),
+        "123 Street",
+      );
+      await userEvent.type(screen.getByLabelText(/Municipality+/i), "Toronto");
+
+      const provinceDropdown = screen.getByLabelText(/Province+/i);
+      await userEvent.click(provinceDropdown);
+      await userEvent.click(screen.getByText(/ontario/i));
+
+      await userEvent.type(screen.getByLabelText(/Postal Code+/i), "H0H 0H0");
+
       // Submit
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
@@ -321,12 +310,15 @@ describe("ContactForm component", () => {
         "/contacts",
         {
           body: JSON.stringify({
-            existing_bciers_user: false,
             first_name: "John",
             last_name: "Doe",
             position_title: "Senior Officer",
             email: "john.doe@example.com",
             phone_number: "+1 1 604 401 1234",
+            street_address: "123 Street",
+            municipality: "Toronto",
+            province: "ON",
+            postal_code: "H0H0H0",
           }),
         },
       );
@@ -361,27 +353,25 @@ describe("ContactForm component", () => {
         "/contacts/123",
         {
           body: JSON.stringify({
-            existing_bciers_user: false,
             first_name: "John updated",
             last_name: "Doe updated",
             position_title: "Senior Officer",
             email: "john.doe@example.com",
             phone_number: "+1 1 604 401 1234",
+            street_address: "123 Street",
+            municipality: "Toronto",
+            province: "ON",
+            postal_code: "H0H0H0",
           }),
         },
       );
     },
   );
   it("updates existing contact form data and hits the correct endpoint", async () => {
-    const readOnlyContactSchema = createContactSchema(
-      contactsSchema,
-      [],
-      false,
-    );
+    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
       <ContactForm
         schema={readOnlyContactSchema}
-        uiSchema={contactsUiSchema}
         formData={contactFormData}
         allowEdit
       />,
@@ -430,15 +420,10 @@ describe("ContactForm component", () => {
     );
   });
   it("renders the places assigned field in read-only mode when editing", async () => {
-    const readOnlyContactSchema = createContactSchema(
-      contactsSchema,
-      [],
-      false,
-    );
+    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     render(
       <ContactForm
         schema={readOnlyContactSchema}
-        uiSchema={contactsUiSchema}
         formData={contactFormData}
         allowEdit
       />,
