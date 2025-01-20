@@ -113,7 +113,7 @@ export default function VerificationForm({
       errors={errors}
       continueUrl={saveAndContinueUrl}
       formContext={{
-        visit_types: formData.visit_types,
+        visit_types: formData?.visit_types,
       }}
     />
   );

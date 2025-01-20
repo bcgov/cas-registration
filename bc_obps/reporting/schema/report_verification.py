@@ -1,5 +1,6 @@
 from ninja import ModelSchema
 from reporting.models import ReportVerification
+from typing import List
 
 
 class BaseReportVerificationSchema(ModelSchema):
@@ -39,3 +40,5 @@ class ReportVerificationOut(BaseReportVerificationSchema):
 
     class Meta(BaseReportVerificationSchema.Meta):
         fields = BaseReportVerificationSchema.Meta.fields + ['report_version']
+        report_verification_visits: List[dict] = []  # field for the visits list
+

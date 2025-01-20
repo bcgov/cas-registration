@@ -14,6 +14,7 @@ export default async function VerificationPage({
 }: HasReportVersion) {
   // Fetch initial form data
   const initialData = await getReportVerification(version_id);
+  console.log(initialData);
   // Fetch the list of facilities associated with the specified version ID
   const facilityList = await getReportFacilityList(version_id);
   const operationType = "LFO";
