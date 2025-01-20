@@ -1,10 +1,12 @@
 import { actionHandler } from "@bciers/actions";
 
-async function getOperationEmissionSummaryData(id: Number) {
-  return actionHandler(
-    `reporting/report-version/${id}/emission-summary`,
+export async function getOperationEmissionSummaryData(versionId: number) {
+  const response = await actionHandler(
+    `reporting/report-version/${versionId}/emission-summary`,
     "GET",
-    `reporting/report-version/${id}/emission-summary`,
   );
+  if (response.error) {
+    throw new Error("We couldn't find the summary data for this report.");
+  }
+  return response;
 }
-export default getOperationEmissionSummaryData;

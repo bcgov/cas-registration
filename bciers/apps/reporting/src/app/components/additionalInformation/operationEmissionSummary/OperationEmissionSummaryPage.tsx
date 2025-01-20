@@ -2,7 +2,7 @@ import React from "react";
 import OperationEmissionSummaryForm from "./OperationEmissionSummaryForm";
 import { getAdditionalInformationTaskList } from "@reporting/src/app/components/taskList/3_additionalInformation";
 import { NEW_ENTRANT_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
-import getOperationEmissionSummaryData from "@bciers/actions/api/getOperationEmissionSummaryData";
+import { getOperationEmissionSummaryData } from "@bciers/actions/api/getOperationEmissionSummaryData";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 
 interface Props {
