@@ -8,10 +8,10 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import {
   operationEmissionSummarySchema,
   emissionSummaryUiSchema,
-  EmissionSummaryFormData,
 } from "@reporting/src/data/jsonSchema/emissionSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
+import { EmissionSummaryFormData } from "@reporting/src/app/utils/emissionSummaryTypes";
 
 interface Props {
   versionId: number;
