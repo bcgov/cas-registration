@@ -44,11 +44,7 @@ export default async function ContactPage({
         {isCreating ? "Add Contact" : "Contact Details"}
       </h2>
       <ContactForm
-        schema={createContactSchema(
-          contactsSchema,
-          userOperatorUsers,
-          isCreating,
-        )}
+        schema={createContactSchema(contactsSchema, isCreating)}
         formData={contactFormData}
         isCreating={isCreating}
         allowEdit={role.includes("industry")}

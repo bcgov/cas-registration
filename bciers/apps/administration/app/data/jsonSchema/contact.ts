@@ -8,11 +8,6 @@ const section1: RJSFSchema = {
   title: "Personal Information",
   required: ["first_name", "last_name"],
   properties: {
-    existing_bciers_user: {
-      type: "boolean",
-      default: true,
-      title: "Is this contact a user in BCIERS?",
-    },
     first_name: {
       type: "string",
       title: "First Name",
@@ -31,26 +26,6 @@ const section1: RJSFSchema = {
       },
     },
   },
-  allOf: [
-    {
-      if: {
-        properties: {
-          existing_bciers_user: {
-            const: true,
-          },
-        },
-      },
-      then: {
-        required: ["selected_user"],
-        properties: {
-          selected_user: {
-            type: "string",
-            title: "Select the user",
-          },
-        },
-      },
-    },
-  ],
 };
 
 const section2: RJSFSchema = {
@@ -86,6 +61,7 @@ const section3: RJSFSchema = {
 const section4: RJSFSchema = {
   type: "object",
   title: "Address Information",
+  required: ["street_address", "municipality", "province", "postal_code"],
   properties: {
     street_address: {
       type: "string",
@@ -126,20 +102,7 @@ export const contactsUiSchema = {
   },
   section1: {
     "ui:FieldTemplate": SectionFieldTemplate,
-    "ui:order": [
-      "existing_bciers_user",
-      "selected_user",
-      "first_name",
-      "last_name",
-      "places_assigned",
-    ],
-    existing_bciers_user: {
-      "ui:widget": "ToggleWidget",
-    },
-    selected_user: {
-      "ui:widget": "ComboBox",
-      "ui:placeholder": "Select the user",
-    },
+    "ui:order": ["selected_user", "first_name", "last_name", "places_assigned"],
     places_assigned: {
       "ui:ArrayFieldTemplate": ArrayFieldTemplate,
       "ui:options": {
