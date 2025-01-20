@@ -1,6 +1,4 @@
-from typing import Optional
 from ninja import ModelSchema
-from pydantic import Field
 from reporting.models import ReportVerification
 
 
@@ -12,10 +10,6 @@ class BaseReportVerificationSchema(ModelSchema):
     verification_body_name: str
     accredited_by: str
     scope_of_verification: str
-    visit_name: str
-    visit_type: Optional[str] = Field(None)
-    other_facility_name: Optional[str] = Field(None)
-    other_facility_coordinates: Optional[str] = Field(None)
     threats_to_independence: bool
     verification_conclusion: str
 
@@ -25,10 +19,6 @@ class BaseReportVerificationSchema(ModelSchema):
             'verification_body_name',
             'accredited_by',
             'scope_of_verification',
-            'visit_name',
-            'visit_type',
-            'other_facility_name',
-            'other_facility_coordinates',
             'threats_to_independence',
             'verification_conclusion',
         ]
