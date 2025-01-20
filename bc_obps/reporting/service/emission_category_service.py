@@ -191,7 +191,7 @@ class EmissionCategoryService:
     @classmethod
     def transform_category_totals_to_summary_form_data(
         cls, emission_totals: Dict[str, Decimal | int]
-    ) -> Dict[str, Decimal | int | Dict]:
+    ) -> dict:
         return {
             'attributable_for_reporting': emission_totals['attributable_for_reporting'],
             'attributable_for_reporting_threshold': emission_totals['attributable_for_threshold'],
@@ -219,11 +219,11 @@ class EmissionCategoryService:
         }
 
     @classmethod
-    def get_operation_emission_summary_form_data(cls, version_id: int) -> Dict[str, Decimal | int]:
+    def get_operation_emission_summary_form_data(cls, version_id: int) -> dict:
         emission_totals = EmissionCategoryService.get_all_category_totals_by_version(version_id)
         return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
 
     @classmethod
-    def get_facility_emission_summary_form_data(cls, facility_report_id: int) -> Dict[str, Decimal | int]:
+    def get_facility_emission_summary_form_data(cls, facility_report_id: int) -> dict:
         emission_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
         return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
