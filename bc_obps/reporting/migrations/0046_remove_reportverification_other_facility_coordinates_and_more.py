@@ -52,20 +52,19 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    'other_facility_name',
-                    models.CharField(
-                        blank=True,
-                        db_comment="Name of the other facility visited if 'Other' is selected",
-                        max_length=100,
-                        null=True,
-                    ),
-                ),
-                (
-                    'other_facility_coordinates',
+                    'visit_coordinates',
                     models.CharField(
                         blank=True,
                         db_comment='Geographic location of the other facility visited',
                         max_length=100,
+                        null=True,
+                    ),
+                ),
+                 (
+                    'opt_in',
+                    models.BooleanField(
+                        blank=True,
+                        db_comment='Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.',
                         null=True,
                     ),
                 ),
