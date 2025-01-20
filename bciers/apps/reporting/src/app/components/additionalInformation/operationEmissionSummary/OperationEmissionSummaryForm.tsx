@@ -12,7 +12,6 @@ import {
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
 import { EmissionSummaryFormData } from "@reporting/src/app/utils/emissionSummaryTypes";
-import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 
 interface Props {
   versionId: number;
@@ -33,53 +32,35 @@ const OperationEmissionSummary: React.FC<Props> = ({
   const continueRef = `/reports/${versionId}/compliance-summary`;
   const additionalReportingStepIndex = 2;
 
-  const handleSubmit = async (): Promise<boolean> => {
-    // This function does nothing and resolves to true
-    return true;
-  };
-
   return (
-    <MultiStepFormWithTaskList
-      initialStep={additionalReportingStepIndex}
-      steps={multiStepHeaderSteps}
-      taskListElements={taskListElements}
-      backUrl={backRef}
-      continueUrl={continueRef}
-      formData={summaryFormData}
-      schema={operationEmissionSummarySchema}
-      uiSchema={emissionSummaryUiSchema}
-      submitButtonDisabled={false}
-      saveButtonDisabled={true}
-      onSubmit={handleSubmit}
-    />
-    // <Box sx={{ p: 3 }}>
-    //   <div
-    //     className="container mx-auto p-4"
-    //     data-testid="operation-emission-summary"
-    //   >
-    //     <MultiStepHeader
-    //       stepIndex={additionalReportingStepIndex}
-    //       steps={multiStepHeaderSteps}
-    //     />
-    //   </div>
-    //   <div className="w-full flex">
-    //     <ReportingTaskList elements={taskListElements} />
-    //     <div className="w-full md:max-w-[60%]">
-    //       <FormBase
-    //         schema={operationEmissionSummarySchema}
-    //         uiSchema={emissionSummaryUiSchema}
-    //         formData={summaryFormData}
-    //       >
-    //         <ReportingStepButtons
-    //           backUrl={backRef}
-    //           continueUrl={continueRef}
-    //           saveButtonDisabled={true}
-    //           submitButtonDisabled={false}
-    //         />
-    //       </FormBase>
-    //     </div>
-    //   </div>
-    // </Box>
+    <Box sx={{ p: 3 }}>
+      <div
+        className="container mx-auto p-4"
+        data-testid="operation-emission-summary"
+      >
+        <MultiStepHeader
+          stepIndex={additionalReportingStepIndex}
+          steps={multiStepHeaderSteps}
+        />
+      </div>
+      <div className="w-full flex">
+        <ReportingTaskList elements={taskListElements} />
+        <div className="w-full md:max-w-[60%]">
+          <FormBase
+            schema={operationEmissionSummarySchema}
+            uiSchema={emissionSummaryUiSchema}
+            formData={summaryFormData}
+          >
+            <ReportingStepButtons
+              backUrl={backRef}
+              continueUrl={continueRef}
+              saveButtonDisabled={true}
+              submitButtonDisabled={false}
+            />
+          </FormBase>
+        </div>
+      </div>
+    </Box>
   );
 };
 

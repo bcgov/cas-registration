@@ -32,9 +32,7 @@ def get_emission_category(request: HttpRequest) -> Tuple[int, List[EmissionCateg
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def get_emission_summary_totals(
-    request: HttpRequest, version_id: int, facility_id: UUID
-) -> Tuple[int, EmissionSummarySchemaOut]:
+def get_emission_summary_totals(request: HttpRequest, version_id: int, facility_id: UUID) -> Tuple[int, dict]:
     facility_report_id = FacilityReport.objects.get(report_version_id=version_id, facility_id=facility_id).pk
     return 200, EmissionCategoryService.get_facility_emission_summary_form_data(facility_report_id)
 
@@ -46,7 +44,5 @@ def get_emission_summary_totals(
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-def get_operation_emission_summary_totals(
-    request: HttpRequest, version_id: int
-) -> Tuple[int, EmissionSummarySchemaOut]:
+def get_operation_emission_summary_totals(request: HttpRequest, version_id: int) -> Tuple[int, dict]:
     return 200, EmissionCategoryService.get_operation_emission_summary_form_data(version_id)
