@@ -4,7 +4,8 @@ import pytest
 from model_bakery import baker
 
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import Operator, User, UserOperator
+from registration.models import Operator, User, UserOperator, Contact
+from registration.schema.v1.user_operator import UserOperatorStatusUpdate
 from registration.schema.v2.operator import OperatorIn
 from registration.schema.v2.user_operator import UserOperatorFilterSchema
 from service.user_operator_service_v2 import UserOperatorServiceV2
@@ -158,3 +159,91 @@ class TestUserOperatorServiceV2:
         assert Operator.objects.count() == 1
         assert Operator.objects.first().status == "Approved"
         assert Operator.objects.first().is_new is False
+
+
+class TestUpdateStatusAndCreateContact:
+    def test_industry_user_cannot_approve_access_request_from_a_different_operator(
+        self,
+    ):
+        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
+        pending_user_operator = baker.make_recipe('utils.user_operator')
+
+        with pytest.raises(Exception, match='Your user is not associated with this operator.'):
+            UserOperatorServiceV2.update_status_and_create_contact(
+                pending_user_operator.id,
+                UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.ADMIN),
+                approved_admin_user_operator.user.user_guid,
+            )
+
+    @staticmethod
+    def test_cas_admin_declines_access_request():
+        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
+        pending_user_operator = baker.make_recipe('utils.user_operator', operator=approved_admin_user_operator.operator)
+
+        pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
+
+        UserOperatorServiceV2.update_status_and_create_contact(
+            pending_user_operator.id,
+            UserOperatorStatusUpdate(status='Declined', role=UserOperator.Roles.ADMIN),
+            approved_admin_user_operator.user.user_guid,
+        )
+
+        pending_user_operator.refresh_from_db()  # refresh the pending_user_operator object to get the updated status
+        assert pending_user_operator.status == UserOperator.Statuses.DECLINED
+        assert pending_user_operator.role == UserOperator.Roles.PENDING
+        assert pending_user_operator.verified_by == approved_admin_user_operator.user
+
+    @staticmethod
+    def test_cas_admin_undoes_approved_access_request():
+        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
+        previously_approved_user_operator = baker.make_recipe(
+            'utils.user_operator', operator=approved_admin_user_operator.operator, role=UserOperator.Roles.REPORTER
+        )
+
+        previously_approved_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
+        UserOperatorServiceV2.update_status_and_create_contact(
+            previously_approved_user_operator.id,
+            UserOperatorStatusUpdate(status='Pending', role=UserOperator.Roles.PENDING),
+            approved_admin_user_operator.user.user_guid,
+        )
+
+        previously_approved_user_operator.refresh_from_db()  # refresh the previously_approved_user_operator object to get the updated status
+        assert previously_approved_user_operator.status == UserOperator.Statuses.PENDING
+        assert previously_approved_user_operator.role == UserOperator.Roles.PENDING
+        assert previously_approved_user_operator.verified_by is None
+
+    @staticmethod
+    def test_update_status_and_create_contact_success():
+        industry_operator_user = baker.make_recipe(
+            'utils.industry_operator_user',
+            first_name="Wednesday",
+            last_name="Addams",
+            email="wednesday.addams@email.com",
+            phone_number='+16044011234',
+            position_title="child",
+        )
+        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
+        pending_user_operator = baker.make_recipe(
+            'utils.user_operator',
+            operator=approved_admin_user_operator.operator,
+            user=industry_operator_user,
+        )
+
+        # Set some existing contacts to make sure the service doesn't override them
+        pending_user_operator.operator.contacts.set(baker.make_recipe('utils.contact', _quantity=3))
+
+        pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
+
+        UserOperatorServiceV2.update_status_and_create_contact(
+            pending_user_operator.id,
+            UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.ADMIN),
+            approved_admin_user_operator.user.user_guid,
+        )
+        pending_user_operator.refresh_from_db()  # refresh the pending_user_operator object to get the updated status
+        assert pending_user_operator.status == UserOperator.Statuses.APPROVED
+        assert pending_user_operator.role == UserOperator.Roles.ADMIN
+        assert pending_user_operator.verified_by == approved_admin_user_operator.user
+
+        assert Contact.objects.count() == 4
+        assert pending_user_operator.operator.contacts.count() == 4
+        assert Contact.objects.filter(first_name="Wednesday").exists()
