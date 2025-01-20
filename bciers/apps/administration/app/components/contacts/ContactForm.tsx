@@ -1,13 +1,10 @@
 "use client";
 
-import { UUID } from "crypto";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { actionHandler } from "@bciers/actions";
 import { ContactFormData } from "./types";
-import getUserData from "./getUserData";
-import { IChangeEvent } from "@rjsf/core";
 import { FormMode } from "@bciers/utils/src/enums";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 
@@ -35,18 +32,6 @@ export default function ContactForm({
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const [key, setKey] = useState(Math.random());
-  const [selectedUser, setSelectedUser] = useState("");
-
-  const handleSelectUserChange = async (userId: UUID) => {
-    try {
-      setSelectedUser(userId);
-      const userData: ContactFormData = await getUserData(userId);
-      setFormState(userData);
-      setKey(Math.random());
-    } catch (err) {
-      setError("Failed to fetch user data!" as any);
-    }
-  };
 
   return (
     <SingleStepTaskListForm
@@ -100,12 +85,6 @@ export default function ContactForm({
           method === "POST" ? response.id : formState.id
         }?contacts_title=${response.first_name} ${response.last_name}`;
         router.replace(replaceUrl);
-      }}
-      onChange={(e: IChangeEvent) => {
-        let newSelectedUser = e.formData?.section1?.selected_user;
-        if (newSelectedUser && newSelectedUser !== selectedUser) {
-          handleSelectUserChange(e.formData.section1.selected_user);
-        }
       }}
       onCancel={() => router.replace("/contacts")}
     />
