@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { RJSFSchema } from "@rjsf/utils";
+
 import {
   buildReviewFacilitiesSchema,
   reviewFacilitiesUiSchema,
@@ -22,8 +22,6 @@ interface Props {
 export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [errors, setErrors] = useState<string[] | undefined>(undefined);
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
-
   const saveAndContinueUrl = `/reports/${version_id}/report-information`;
   const backUrl = `/reports/${version_id}/person-responsible`;
 
@@ -32,7 +30,6 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     initialData.past_facilities,
   );
 
-  console.log("schema", schema);
   const taskListElements = getOperationInformationTaskList(
     version_id,
     ActivePage.ReviewFacilities,
@@ -64,10 +61,6 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       return false;
     }
   };
-  const newForm = {
-    ...initialData,
-    current_facilities: ["facility1", "facility2", "facility3"],
-  };
 
   return (
     <MultiStepFormWithTaskList
@@ -76,12 +69,12 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       uiSchema={reviewFacilitiesUiSchema}
       taskListElements={taskListElements}
       steps={multiStepHeaderSteps}
-      submitButtonDisabled={submitButtonDisabled}
       errors={errors}
       continueUrl={saveAndContinueUrl}
       initialStep={1}
       onChange={handleChange}
       onSubmit={handleSubmit}
+      backUrl={backUrl}
     />
   );
 }
