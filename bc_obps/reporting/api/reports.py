@@ -18,7 +18,7 @@ from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
 from ..models import ReportingYear, ReportVersion, ReportOperationRepresentative
-from ..schema.report_version import ReportingVersionOut
+from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
 
 
 @router.post(

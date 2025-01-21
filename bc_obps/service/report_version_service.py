@@ -4,6 +4,7 @@ from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from service.data_access_service.facility_service import FacilityDataAccessService
+from reporting.models import ReportOperationRepresentative
 
 
 class ReportVersionService:
@@ -27,11 +28,14 @@ class ReportVersionService:
             bc_obps_regulated_operation_id=(
                 operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
             ),
-            operation_representative_name=(
-                operation.point_of_contact.get_full_name() if operation.point_of_contact else ""
-            ),
             report_version=report_version,
         )
+        for contact in operation.contacts.all():
+            ReportOperationRepresentative.objects.create(
+                report_version=report_version,
+                representative_name=contact.get_full_name(),
+                selected_for_report=True,
+            )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
