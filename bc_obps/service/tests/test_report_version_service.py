@@ -79,4 +79,5 @@ class TestReportVersionService:
             "ReportRawActivityData",
             "ReportSourceType",
             "ReportUnit",
+            "ReportOperationRepresentative",
         }
