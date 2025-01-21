@@ -1,20 +1,21 @@
 from uuid import UUID
-from ninja import ModelSchema, Schema
-from registration.models import FacilityDesignatedOperationTimeline
+from ninja import Schema
 
 
-class FacilityDesignatedOperationForReviewReport(ModelSchema):
-    class Meta:
-        model = FacilityDesignatedOperationTimeline
-        fields = ('facility', 'end_date', 'status')
+class FacilityForReview(Schema):
+    """
+    Schema for facilities in the review page.
+    """
 
+    facility_id: UUID
     facility__name: str
+    is_selected: bool
 
 
 class ReportReviewFacilitySchemaOut(Schema):
     """
-    Schema for the get selected facilities endpoint response
+    Schema for the get facilities for review page.
     """
 
-    selected_facilities: list[UUID]
-    available_facilities: list[FacilityDesignatedOperationForReviewReport]
+    current_facilities: list[FacilityForReview]
+    past_facilities: list[FacilityForReview]
