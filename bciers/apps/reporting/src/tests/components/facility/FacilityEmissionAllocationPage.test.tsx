@@ -167,7 +167,7 @@ describe("The FacilityEmissionAllocationPage component", () => {
     (getOrderedActivities as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
       orderedActivities,
     );
-    // Mock the returned value for `createVerificationSchema`
+    // Mock the returned value for `getEmissionAllocations`
     (getEmissionAllocations as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       emissionAllocations,
     );
