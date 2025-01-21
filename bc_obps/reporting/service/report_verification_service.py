@@ -1,33 +1,35 @@
 from decimal import Decimal
 from django.db import transaction
 from reporting.models.report_verification import ReportVerification
+from reporting.models.report_verification_visit import ReportVerificationVisit
 from reporting.models import ReportVersion
 from reporting.schema.report_verification import ReportVerificationIn
-from reporting.schema.report_verification import ReportVerificationOut
 
 from registration.models import Operation
 from reporting.service.report_additional_data import ReportAdditionalDataService
 from reporting.service.compliance_service import ComplianceService
 
 
+
 class ReportVerificationService:
     @staticmethod
     def get_report_verification_by_version_id(
         report_version_id: int,
-    ) -> ReportVerificationOut:
+    ) -> ReportVerification:
         """
         Retrieve a ReportVerification instance for a given report version ID.
 
         Args:
-            version_id: The report version ID
+            report_version_id: The report version ID
 
         Returns:
-            ReportVerificationOut schema
+            ReportVerification instance
         """
-        report_verification = ReportVerification.objects.get(report_version__id=report_version_id)
-        report_verification.report_verification_visits = report_verification.reportverificationvisit_records.all() 
+        report_verification = ReportVerification.objects.get(
+            report_version__id=report_version_id
+        )
         return report_verification
-
+   
     @staticmethod
     @transaction.atomic
     def save_report_verification(version_id: int, data: ReportVerificationIn) -> ReportVerification:
@@ -42,6 +44,9 @@ class ReportVerificationService:
             ReportVerification instance
         """
         # Retrieve the associated report version
+        report_version = ReportVersion.objects.get(pk=version_id)
+
+        # Prepare the defaults for the ReportVerification object
         data_defaults = {
             "verification_body_name": data.verification_body_name,
             "accredited_by": data.accredited_by,
@@ -49,15 +54,38 @@ class ReportVerificationService:
             "threats_to_independence": data.threats_to_independence,
             "verification_conclusion": data.verification_conclusion,
         }
-        report_version = ReportVersion.objects.get(pk=version_id)
+
         # Update or create ReportVerification record
-        report_verification, created = ReportVerification.objects.update_or_create(
+        report_verification, _ = ReportVerification.objects.update_or_create(
             report_version=report_version,
             defaults=data_defaults,
         )
 
-        return report_verification
+        # Process ReportVerificationVisit records
+        provided_visits = data.report_verification_visits
+        visit_ids_to_keep = []
 
+        for visit_data in provided_visits:
+            visit_defaults = {
+                "visit_type": visit_data.visit_type,
+                "is_other_visit": visit_data.is_other_visit,
+                "visit_coordinates": visit_data.visit_coordinates,
+            }
+
+            visit, _ = ReportVerificationVisit.objects.update_or_create(
+                report_verification=report_verification,
+                visit_name=visit_data.visit_name,
+                defaults=visit_defaults,
+            )
+            visit_ids_to_keep.append(visit.id)
+
+        # Delete any visits not included in the current payload
+        ReportVerificationVisit.objects.filter(
+            report_verification=report_verification
+        ).exclude(id__in=visit_ids_to_keep).delete()
+
+        return report_verification
+    
     @staticmethod
     def get_report_needs_verification(version_id: int) -> bool:
         """

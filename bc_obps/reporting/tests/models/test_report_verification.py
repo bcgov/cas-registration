@@ -21,5 +21,5 @@ class ReportVerificationTest(BaseTestCase):
             ("scope_of_verification", "scope of verification", None, None),
             ("threats_to_independence", "threats to independence", None, None),
             ("verification_conclusion", "verification conclusion", None, None),
-            ("reportverificationvisit_records", "report verification visit", None, 0),
+            ("report_verification_visits", "report verification visit", None, 0),
         ]
