@@ -73,7 +73,6 @@ const DataGrid: React.FC<Props> = ({
   const isRowsEmpty = !rows || rows.length === 0;
   const searchParams = useSearchParams();
   const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
-  console.log("rows", rows);
   const debouncedFetchData = debounce(async () => {
     const fetchData = async () => {
       const newParams = new URLSearchParams(searchParams);
