@@ -40,12 +40,6 @@ class TestReportVerificationService(TestCase):
         self.assertEqual(
             retrieved_verification.verification_conclusion, self.report_verification.verification_conclusion
         )
-        self.assertEqual(retrieved_verification.visit_name, self.report_verification.visit_name)
-        self.assertEqual(retrieved_verification.visit_type, self.report_verification.visit_type)
-        self.assertEqual(retrieved_verification.other_facility_name, self.report_verification.other_facility_name)
-        self.assertEqual(
-            retrieved_verification.other_facility_coordinates, self.report_verification.other_facility_coordinates
-        )
 
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
     @patch(
@@ -163,10 +157,6 @@ class TestReportVerificationService(TestCase):
             scope_of_verification="B.C. OBPS Annual Report",  # ScopeOfVerification choices: "B.C. OBPS Annual Report"; "Supplementary Report"; "Corrected Report"
             threats_to_independence=False,
             verification_conclusion="Positive",  # VerificationConclusion choices: "Positive", "Modified", "Negative"
-            visit_name="Site Visit 1",
-            visit_type="Virtual",  # VisitType choices: "In person", "Virtual"
-            other_facility_name="Additional Facility",
-            other_facility_coordinates="45.4215,-75.6972",
         )
 
         # Act: Call the service to save report verification data
@@ -183,7 +173,3 @@ class TestReportVerificationService(TestCase):
         self.assertEqual(report_verification.scope_of_verification, data.scope_of_verification)
         self.assertEqual(report_verification.threats_to_independence, data.threats_to_independence)
         self.assertEqual(report_verification.verification_conclusion, data.verification_conclusion)
-        self.assertEqual(report_verification.visit_name, data.visit_name)
-        self.assertEqual(report_verification.visit_type, data.visit_type)
-        self.assertEqual(report_verification.other_facility_name, data.other_facility_name)
-        self.assertEqual(report_verification.other_facility_coordinates, data.other_facility_coordinates)
