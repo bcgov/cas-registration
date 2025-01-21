@@ -9,21 +9,20 @@ export const createVerificationSchema = (
   // Determine the schema based on the schemaType
   const localSchema: RJSFSchema =
     schemaType === "SFO" ? { ...sfoSchema } : { ...lfoSchema };
+  const defaultVisistValues = ["None", "Other"];
 
   // Dynamically populate the "visit_names" field's enum with the facilities
   switch (schemaType) {
     case "SFO":
       (localSchema.properties?.visit_names as any).enum = [
+        ...defaultVisistValues,
         ...facilities,
-        "Other",
-        "None",
       ];
       break;
     case "LFO":
       (localSchema.properties?.visit_names as any).items.enum = [
+        ...defaultVisistValues,
         ...facilities,
-        "Other",
-        "None",
       ];
       break;
   }

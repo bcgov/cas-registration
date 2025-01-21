@@ -11,6 +11,15 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
         self.report_verification = baker.make_recipe('reporting.tests.utils.report_verification')
 
+        # Create related ReportVerificationVisit instances and link them
+        report_verification_visits = baker.make_recipe(
+            "reporting.tests.utils.report_verification_visit",
+            _quantity=2,
+        )
+
+        # Attach the visits to the report_verification instance
+        self.report_verification.report_verification_visits.set(report_verification_visits)
+
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
@@ -49,6 +58,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         assert response_json["scope_of_verification"] == self.report_verification.scope_of_verification
         assert response_json["threats_to_independence"] == self.report_verification.threats_to_independence
         assert response_json["verification_conclusion"] == self.report_verification.verification_conclusion
+        assert len(response_json["report_verification_visits"]) == 2
 
     """Tests for the get_report_needs_verification endpoint."""
 
@@ -116,6 +126,20 @@ class TestSaveReportVerificationApi(CommonTestSetup):
             scope_of_verification="B.C. OBPS Annual Report",  # ScopeOfVerification choices: "B.C. OBPS Annual Report"; "Supplementary Report"; "Corrected Report"
             threats_to_independence=False,
             verification_conclusion="Positive",  # VerificationConclusion choices: "Positive", "Modified", "Negative"
+            report_verification_visits=[  # Including visits in the payload
+                {
+                    "visit_name": "Visit 1",
+                    "visit_type": "In person",
+                    "visit_coordinates": "123.456, 789.101",
+                    "is_other_visit": True,
+                },
+                {
+                    "visit_name": "Visit 2",
+                    "visit_type": "Virtual",
+                    "visit_coordinates": "",
+                    "is_other_visit": False,
+                },
+            ],
         )
         mock_response = ReportVerification(
             report_version=self.report_version,
@@ -125,6 +149,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
             threats_to_independence=payload.threats_to_independence,
             verification_conclusion=payload.verification_conclusion,
         )
+
         mock_save_report_verification.return_value = mock_response
 
         # Act: Authorize user and perform POST request
