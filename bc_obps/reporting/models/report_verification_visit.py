@@ -12,7 +12,7 @@ class ReportVerificationVisit(TimeStampedModel):
     report_verification = models.ForeignKey(
         ReportVerification,
         on_delete=models.CASCADE,
-        related_name="%(class)s_records",
+        related_name="report_verification_visits",
         db_comment="The report verification associated with this visit",
     )
 
@@ -31,7 +31,7 @@ class ReportVerificationVisit(TimeStampedModel):
         blank=True,
         db_comment="The type of visit conducted (Virtual or In Person)",
     )
-       
+
     visit_coordinates = models.CharField(
         max_length=100,
         null=True,
@@ -43,7 +43,6 @@ class ReportVerificationVisit(TimeStampedModel):
         db_comment="Flag to indicate the visit is an other facility visited",
         default=False,
     )
-    
 
     class Meta:
         db_table = 'erc"."verification_visit'
