@@ -19,7 +19,7 @@ export const infoNote = (
         >
           large
         </Link>
-        and{" "}
+        &nbsp;and{" "}
         <Link
           href="TODO"
           target="_blank"
@@ -54,7 +54,12 @@ export const infoNote = (
 );
 
 export const instructionNote = (
-    <Typography variant="subtitle1">Select the facilities that apply to your operation, prior to Dec 31 of the current reporting year.</Typography>
+  <Typography variant="subtitle2" color="primary">
+    <i>
+      Select the facilities that apply to your operation, prior to Dec 31 of the
+      current reporting year period
+    </i>
+  </Typography>
 );
 
 export const SyncFacilitiesButton: React.FC<FieldTemplateProps> = ({
