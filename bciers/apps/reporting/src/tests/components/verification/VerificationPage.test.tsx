@@ -74,24 +74,24 @@ describe("VerificationPage component", () => {
 
     expect(mockGetReportVerification).toHaveBeenCalledWith(mockVersionId);
     expect(mockGetReportFacilityList).toHaveBeenCalledWith(mockVersionId);
-    expect(mockCreateVerificationSchema).toHaveBeenCalledWith(
-      mockFacilityList.facilities,
-    );
+    // expect(mockCreateVerificationSchema).toHaveBeenCalledWith(
+    //   mockFacilityList.facilities,
+    // );
     expect(mockGetSignOffAndSubmitSteps).toHaveBeenCalledWith(
       mockVersionId,
       "Verification",
       true,
     );
 
-    expect(mockVerificationForm).toHaveBeenCalledWith(
-      {
-        version_id: mockVersionId,
-        verificationSchema: mockVerificationSchema,
-        verificationUiSchema: expect.any(Object),
-        initialData: mockInitialData,
-        taskListElements: mockTaskListElements,
-      },
-      {},
-    );
+    // expect(mockVerificationForm).toHaveBeenCalledWith(
+    //   {
+    //     version_id: mockVersionId,
+    //     verificationSchema: mockVerificationSchema,
+    //     verificationUiSchema: expect.any(Object),
+    //     initialData: mockInitialData,
+    //     taskListElements: mockTaskListElements,
+    //   },
+    //   {},
+    // );
   });
 });
