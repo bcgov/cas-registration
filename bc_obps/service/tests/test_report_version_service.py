@@ -80,4 +80,7 @@ class TestReportVersionService:
             "ReportSourceType",
             "ReportUnit",
             "ReportOperationRepresentative",
+            "ReportAdditionalData",
+            "ReportVerification",
+            "ReportProductEmissionAllocation",
         }
