@@ -2,21 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
 import {
-  reviewFacilitiesSchema,
+  buildReviewFacilitiesSchema,
   reviewFacilitiesUiSchema,
 } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 import { actionHandler } from "@bciers/actions";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import {
-  ActivePage,
   getOperationInformationTaskList,
+  ActivePage,
 } from "@reporting/src/app/components/taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import { Task } from "@nx/devkit";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 interface Props {
   initialData: any;
@@ -24,17 +20,19 @@ interface Props {
 }
 
 export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
-  const [formData, setFormData] = useState<any>(() => ({
-    ...initialData,
-  }));
-  const [errors, setErrors] = useState<string[]>();
+  const [formData, setFormData] = useState(() => ({ ...initialData }));
+  const [errors, setErrors] = useState<string[] | undefined>(undefined);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  //const [modalMessage, setModalMessage] = useState<string | null>(null);
-  //const [modalTitle, setModalTitle] = useState<string | null>(null);
-  //const [modalType, setModalType] = useState<"error" | "success">("success");
-  const saveAndContinueUrl = "/reports/${version_id}/report-information";
+
+  const saveAndContinueUrl = `/reports/${version_id}/report-information`;
   const backUrl = `/reports/${version_id}/person-responsible`;
+
+  const schema: any = buildReviewFacilitiesSchema(
+    initialData.current_facilities,
+    initialData.past_facilities,
+  );
+
+  console.log("schema", schema);
   const taskListElements = getOperationInformationTaskList(
     version_id,
     ActivePage.ReviewFacilities,
@@ -42,36 +40,47 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   );
 
   const handleChange = (e: any) => {
-    const updatedData = { ...e.formData };
-    setFormData(updatedData);
+    setFormData({ ...e.formData });
   };
 
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
-    const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(data),
-    });
-    if (response?.error) {
-      setErrors([response.error]);
+
+    try {
+      const response = await actionHandler(endpoint, method, endpoint, {
+        body: JSON.stringify(data),
+      });
+
+      if (response?.error) {
+        setErrors([response.error]);
+        return false;
+      }
+
+      setErrors(undefined);
+      return true;
+    } catch (err) {
+      setErrors(["An unexpected error occurred."]);
       return false;
     }
-
-    setErrors(undefined);
-    return true;
+  };
+  const newForm = {
+    ...initialData,
+    current_facilities: ["facility1", "facility2", "facility3"],
   };
 
   return (
     <MultiStepFormWithTaskList
       formData={formData}
-      schema={reviewFacilitiesSchema}
+      schema={schema}
       uiSchema={reviewFacilitiesUiSchema}
       taskListElements={taskListElements}
       steps={multiStepHeaderSteps}
       submitButtonDisabled={submitButtonDisabled}
       errors={errors}
-      continueUrl={""}
+      continueUrl={saveAndContinueUrl}
       initialStep={1}
+      onChange={handleChange}
       onSubmit={handleSubmit}
     />
   );

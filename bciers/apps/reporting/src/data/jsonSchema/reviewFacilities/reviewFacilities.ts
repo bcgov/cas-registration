@@ -1,51 +1,75 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import { infoNote, instructionNote, SyncFacilitiesButton } from "./reviewFacilitiesInfoText"
-import { TitleOnlyFieldTemplate, SectionFieldTemplate, ArrayFieldTemplate } from "@bciers/components/form/fields";
-import { CheckboxGroupWidget } from "@bciers/components/form/widgets";
+import {
+  infoNote,
+  instructionNote,
+  SyncFacilitiesButton,
+} from "./reviewFacilitiesInfoText";
+import {
+  TitleOnlyFieldTemplate,
+  SectionFieldTemplate,
+  ArrayFieldTemplate,
+} from "@bciers/components/form/fields";
+import {
+  CheckboxGroupWidget,
+  CheckboxWidget,
+} from "@bciers/components/form/widgets";
 
-export const reviewFacilitiesSchema = (
+export const buildReviewFacilitiesSchema = (
   current_facilities: {
     facility_id: string;
-    facility_name: string;
+    facility__name: string;
     is_selected: boolean;
   }[],
   past_facilities: {
     facility_id: string;
-    facility_name: string;
+    facility__name: string;
     is_selected: boolean;
   }[],
-): RJSFSchema => ({
-  title: "Review Facilities",
-  type: "object",
-  properties: {
-    facilities_note: {
-      type: "object",
-      readOnly: true,
-    },
-    select_info: {
-      type: "object",
-      readOnly: true,
-    },
-    current_facilities: {
-      type: "array",
-      items: {
-        type: "string",
-        enum: current_facilities.map((facility) => facility.facility_name),
+) =>
+  ({
+    type: "object",
+    title: "Review Facilities",
+    properties: {
+      facilities_note: {
+        type: "object",
+        readOnly: true,
+      },
+      select_info: {
+        type: "object",
+        readOnly: true,
+      },
+      current_facilities: {
+        title: "Current Facilities",
+        type: "array",
+        items: {
+          type: "string",
+          enum: current_facilities.map((facility) => facility.facility__name),
+        },
+        default: current_facilities
+          .filter((facility) => facility.is_selected)
+          .map((facility) => facility.facility__name),
+      },
+      past_facilities: {
+        title: "Past Facilities",
+        type: "array",
+        items: {
+          type: "string",
+          enum: past_facilities.map((facility) => facility.facility__name),
+        },
+        default: past_facilities
+          .filter((facility) => facility.is_selected)
+          .map((facility) => facility.facility__name),
+      },
+      sync_button: {
+        type: "object",
+        properties: {
+          label: { type: "string", default: "Sync Facilities" },
+          disabled: { type: "boolean", default: false },
+        },
       },
     },
-    past_facilities: {
-      type: "array",
-      items: {
-        type: "string",
-        enum: past_facilities.map((facility) => facility.facility_name),
-      },
-    },
-    sync_button: {
-      type: "object",
-    },
-  },
-});
+  }) as RJSFSchema;
 
 export const reviewFacilitiesUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -66,17 +90,17 @@ export const reviewFacilitiesUiSchema = {
     "ui:title": instructionNote,
   },
   current_facilities: {
-    "ui:title": "List of facilities currently assigned to this operation",
-    "ui:widget": CheckboxGroupWidget,
+    "ui:widget": CheckboxWidget,
     "ui:options": {
-      inline: true,
+      alignment: "top",
+      columns: 1,
     },
   },
   past_facilities: {
-    "ui:title": "Past facilities that belonged to this operation",
-    "ui:widget": CheckboxGroupWidget,
+    "ui:widget": CheckboxWidget,
     "ui:options": {
-      inline: true,
+      alignment: "top",
+      columns: 1,
     },
   },
   sync_button: {
