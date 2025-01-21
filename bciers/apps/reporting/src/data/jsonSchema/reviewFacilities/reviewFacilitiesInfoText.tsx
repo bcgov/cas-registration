@@ -1,5 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Paper, Typography, Link, Button } from "@mui/material";
+import { Box, Paper, Typography, Button } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
@@ -10,44 +10,11 @@ export const infoNote = (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <InfoIcon sx={{ mr: 1 }} />
       <Typography variant="body2">
-        Linear Facilities Operations must register and report for all{" "}
-        <Link
-          href="TODO"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          large
-        </Link>
-        &nbsp;and{" "}
-        <Link
-          href="TODO"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          medium facilities
-        </Link>
-        , as well as{" "}
-        <Link
-          href="TODO"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          small aggregate
-        </Link>
-        , if applicable. <b>Don&apos;t see a facility?</b>{" "}
-        <Link
-          href="TODO"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          Add it under Facilities Information
-        </Link>{" "}
-        and click on the &apos;Sync latest data from Administration&apos; button
-        below to update the list.
+        Linear Facilities Operations must register and report for all large and
+        medium facilities, as well as a small aggregate, if applicable.{" "}
+        <b>Don’t see a facility?</b> Add it under Facilities information and
+        click on the ‘Sync latest data from registration’ here button to pull
+        the latest information.
       </Typography>
     </Box>
   </Paper>
