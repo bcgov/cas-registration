@@ -149,4 +149,112 @@ describe("OperationReviewForm Component", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("shows modal when switching report type and switches report type when accepting", async () => {
+    mockActionHandler.mockResolvedValue(1234);
+    const { push } = useRouter();
+
+    render(
+      <OperationReviewForm
+        formData={{
+          activities: [1],
+          regulated_products: [1],
+          operation_report_type: "Annual Report",
+        }}
+        version_id={1}
+        reportType={{ report_type: "Annual Report" }}
+        reportingYear={{
+          reporting_year: 2024,
+          report_due_date: "2024-12-31",
+          reporting_window_end: "2024-12-31",
+        }}
+        allActivities={[{ id: 1, name: "Activity 1" }]}
+        allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
+        registrationPurpose="Test Purpose"
+        facilityReport={{
+          facility_id: "fake-guid",
+          operation_type: "Single Facility Operation",
+        }}
+        allRepresentatives={[
+          {
+            id: 4,
+            representative_name: "Shon Doe",
+            selected_for_report: true,
+          },
+        ]}
+      />,
+    );
+
+    const reportTypeSelect = screen.getByLabelText(
+      /Select what type of report you are filling/i,
+    );
+
+    fireEvent.change(reportTypeSelect, {
+      target: { value: "Simple Report" },
+    });
+
+    expect(
+      screen.getByText(/Are you sure you want to change your report type/i),
+    ).toBeVisible();
+    expect(screen.getByText(/Change Report Type/i)).toBeVisible();
+
+    fireEvent.click(screen.getByRole("button", { name: "Change report type" }));
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith("/reports/1234/review-operator-data");
+    });
+  });
+
+  it("shows modal when switching report type and reverts report type when clicking cancel", async () => {
+    render(
+      <OperationReviewForm
+        formData={{
+          activities: [1],
+          regulated_products: [1],
+          operation_report_type: "Annual Report",
+        }}
+        version_id={1}
+        reportType={{ report_type: "Annual Report" }}
+        reportingYear={{
+          reporting_year: 2024,
+          report_due_date: "2024-12-31",
+          reporting_window_end: "2024-12-31",
+        }}
+        allActivities={[{ id: 1, name: "Activity 1" }]}
+        allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
+        registrationPurpose="Test Purpose"
+        facilityReport={{
+          facility_id: "fake-guid",
+          operation_type: "Single Facility Operation",
+        }}
+        allRepresentatives={[
+          {
+            id: 4,
+            representative_name: "Shon Doe",
+            selected_for_report: true,
+          },
+        ]}
+      />,
+    );
+
+    const reportTypeSelect = screen.getByLabelText(
+      /Select what type of report you are filling/i,
+    );
+
+    await waitFor(() => {
+      fireEvent.change(reportTypeSelect, {
+        target: { value: "Simple Report" },
+      });
+    });
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    });
+
+    expect(
+      screen.queryByText(/Are you sure you want to change your report type/i),
+    ).not.toBeVisible();
+    expect(screen.queryByText(/Simple Report/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Annual Report/i)).toBeVisible();
+  });
 });
