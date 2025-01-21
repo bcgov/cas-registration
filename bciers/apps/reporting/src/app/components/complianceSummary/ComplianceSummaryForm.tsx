@@ -16,24 +16,26 @@ interface Props {
   versionId: number;
   needsVerification: boolean;
   summaryFormData: {
-    attributableForReporting: string;
-    reportingOnlyEmission: string;
-    emissionsLimit: string;
-    excessEmissions: string;
-    creditedEmissions: string;
-    regulatoryValues: {
-      reductionFactor: string;
-      tighteningRate: string;
-      initialCompliancePeriod: string;
-      compliancePeriod: string;
+    emissions_attributable_for_reporting: string;
+    reporting_only_emissions: string;
+    emissions_attributable_for_compliance: string;
+    emissions_limit: string;
+    excess_emissions: string;
+    credited_emissions: string;
+    regulatory_values: {
+      reduction_factor: string;
+      tightening_rate: string;
+      initial_compliance_period: string;
+      compliance_period: string;
     };
     products: {
       name: string;
       customUnit: string;
-      annualProduction: string;
-      emissionIntensity: string;
-      allocatedIndustrialProcessEmissions: string;
-      allocatedComplianceEmissions: string;
+      annual_production: string;
+      apr_dec_production: string;
+      emission_intensity: string;
+      allocated_industrial_process_emissions: string;
+      allocated_compliance_emissions: string;
     }[];
   };
   taskListElements: TaskListElement[];

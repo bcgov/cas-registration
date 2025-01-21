@@ -2,13 +2,65 @@ from reporting.models.report_emission import ReportEmission
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.models.report_product import ReportProduct
 from reporting.models import NaicsRegulatoryValue, ReportVersion
-from reporting.schema.compliance_data import RegulatoryValueSchema
-from reporting.schema.compliance_data import ReportProductComplianceSchema, ComplianceDataSchemaOut
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
 from decimal import Decimal
 from django.db.models import Sum
 from typing import Dict, List
+
+
+class RegulatoryValues:
+    def __init__(
+        self,
+        reduction_factor: Decimal,
+        tightening_rate: Decimal,
+        initial_compliance_period: int,
+        compliance_period: int,
+    ):
+        self.reduction_factor = reduction_factor
+        self.tightening_rate = tightening_rate
+        self.initial_compliance_period = initial_compliance_period
+        self.compliance_period = compliance_period
+
+
+class ReportProductComplianceData:
+    def __init__(
+        self,
+        name: str,
+        annual_production: Decimal,
+        apr_dec_production: Decimal,
+        emission_intensity: Decimal,
+        allocated_industrial_process_emissions: Decimal,
+        allocated_compliance_emissions: Decimal,
+    ):
+        self.name = name
+        self.annual_production = annual_production
+        self.apr_dec_production = apr_dec_production
+        self.emission_intensity = emission_intensity
+        self.allocated_industrial_process_emissions = allocated_industrial_process_emissions
+        self.allocated_compliance_emissions = allocated_compliance_emissions
+
+
+class ComplianceData:
+    def __init__(
+        self,
+        emissions_attributable_for_reporting: Decimal,
+        reporting_only_emissions: Decimal,
+        emissions_attributable_for_compliance: Decimal,
+        emissions_limit: Decimal,
+        excess_emissions: Decimal,
+        credited_emissions: Decimal,
+        regulatory_values: RegulatoryValues,
+        products: List[ReportProductComplianceData],
+    ):
+        self.emissions_attributable_for_reporting = emissions_attributable_for_reporting
+        self.reporting_only_emissions = reporting_only_emissions
+        self.emissions_attributable_for_compliance = emissions_attributable_for_compliance
+        self.emissions_limit = emissions_limit
+        self.excess_emissions = excess_emissions
+        self.credited_emissions = credited_emissions
+        self.regulatory_values = regulatory_values
+        self.products = products
 
 
 class ComplianceService:
@@ -17,7 +69,7 @@ class ComplianceService:
     """
 
     @staticmethod
-    def get_regulatory_values_by_naics_code(report_version_id: int) -> RegulatoryValueSchema:
+    def get_regulatory_values_by_naics_code(report_version_id: int) -> RegulatoryValues:
         data = ReportVersion.objects.select_related('report__operation').get(pk=report_version_id)
         naics_code_id = data.report.operation.naics_code_id
         compliance_year = data.report.reporting_year.reporting_year
@@ -27,7 +79,7 @@ class ComplianceService:
             valid_to__gte=data.report.reporting_year.reporting_window_end,
         )
 
-        return RegulatoryValueSchema(
+        return RegulatoryValues(
             reduction_factor=regulatory_values.reduction_factor,
             tightening_rate=regulatory_values.tightening_rate,
             initial_compliance_period=2024,
@@ -35,17 +87,17 @@ class ComplianceService:
         )
 
     @staticmethod
-    def get_emissions_attributable_for_reporting(report_version_id: int) -> Decimal | int:
+    def get_emissions_attributable_for_reporting(report_version_id: int) -> Decimal:
         records = ReportEmission.objects_with_decimal_emissions.filter(
             report_version_id=report_version_id,
             emission_categories__category_type='basic',
         )
         attributable_sum = records.aggregate(emission_sum=Sum('emission'))
 
-        return attributable_sum['emission_sum'] or 0
+        return attributable_sum['emission_sum'] or Decimal('0')
 
     @staticmethod
-    def get_production_totals(report_version_id: int) -> Dict[str, Decimal | int]:
+    def get_production_totals(report_version_id: int) -> Dict[str, Decimal]:
         records = ReportProduct.objects.filter(
             report_version_id=report_version_id,
         )
@@ -53,14 +105,14 @@ class ComplianceService:
         apr_dec_sum = records.aggregate(production_sum=Sum('production_data_apr_dec'))
 
         return {
-            "annual_amount": annual_production_sum['production_sum'] or 0,
-            "apr_dec": apr_dec_sum['production_sum'] or 0,
+            "annual_amount": annual_production_sum['production_sum'] or Decimal('0'),
+            "apr_dec": apr_dec_sum['production_sum'] or Decimal('0'),
         }
 
     @staticmethod
     def get_allocated_emissions_by_report_product_emission_category(
         report_version_id: int, product_id: int, emission_category_ids: List[int]
-    ) -> Decimal | int:
+    ) -> Decimal:
         records = ReportProductEmissionAllocation.objects.filter(
             report_version_id=report_version_id,
             report_product__product_id=product_id,
@@ -68,10 +120,10 @@ class ComplianceService:
         )
         allocated_to_category_sum = records.aggregate(production_sum=Sum('allocated_quantity'))
 
-        return allocated_to_category_sum['production_sum'] or 0
+        return allocated_to_category_sum['production_sum'] or Decimal('0')
 
     @staticmethod
-    def get_report_product_aggregated_totals(report_version_id: int, product_id: int) -> Dict[str, Decimal | int]:
+    def get_report_product_aggregated_totals(report_version_id: int, product_id: int) -> Dict[str, Decimal]:
         records = ReportProduct.objects.filter(
             report_version_id=report_version_id,
             product_id=product_id,
@@ -80,12 +132,12 @@ class ComplianceService:
         apr_dec_sum = records.aggregate(production_sum=Sum('production_data_apr_dec'))
 
         return {
-            "annual_amount": product_annual_amount_sum['production_sum'] or 0,
-            "apr_dec": apr_dec_sum['production_sum'] or 0,
+            "annual_amount": product_annual_amount_sum['production_sum'] or Decimal('0'),
+            "apr_dec": apr_dec_sum['production_sum'] or Decimal('0'),
         }
 
     @staticmethod
-    def get_reporting_only_allocated(report_version_id: int, product_id: int) -> Decimal | int:
+    def get_reporting_only_allocated(report_version_id: int, product_id: int) -> Decimal:
         # CO2 emissions from excluded woody biomass, Other emissions from excluded biomass, Emissions from excluded non-biomass, Fugitive emissions, Venting emissions — non-useful
         reporting_only_category_ids = [10, 11, 12, 2, 7]
         reporting_only_allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
@@ -96,7 +148,7 @@ class ComplianceService:
             report_product__product_id=39,  # Special Fat, Oil & Grease product
         )
         fog_allocated_amount = fog_records.aggregate(allocated_sum=Sum('allocated_quantity'))
-        return reporting_only_allocated + (fog_allocated_amount['allocated_sum'] or 0)
+        return reporting_only_allocated + (fog_allocated_amount['allocated_sum'] or Decimal('0'))
 
     @staticmethod
     def calculate_product_emission_limit(
@@ -109,10 +161,15 @@ class ComplianceService:
         compliance_period: int,
         initial_compliance_period: int = 2024,
     ) -> Decimal:
+        # Handle divide by 0 error if allocated_for_compliance is 0
+        industrial_process_compliance_allocated_division = Decimal('0')
+        if allocated_for_compliance > 0:
+            industrial_process_compliance_allocated_division = allocated_industrial_process / allocated_for_compliance
+
         product_emission_limit = (apr_dec_production * pwaei) * (
             reduction_factor
             - (
-                (Decimal(1) - (allocated_industrial_process / allocated_for_compliance))
+                (Decimal('1') - (industrial_process_compliance_allocated_division))
                 * tightening_rate
                 * (compliance_period - initial_compliance_period)
             )
@@ -120,11 +177,11 @@ class ComplianceService:
         return product_emission_limit
 
     @classmethod
-    def get_calculated_compliance_data(cls, report_version_id: int) -> ComplianceDataSchemaOut:
+    def get_calculated_compliance_data(cls, report_version_id: int) -> ComplianceData:
         naics_data = ComplianceService.get_regulatory_values_by_naics_code(report_version_id)
         registration_purpose = ReportVersion.objects.get(pk=report_version_id).report.operation.registration_purpose
         ##### Don't use schemas, use classes or dicts
-        compliance_product_list: List[ReportProductComplianceSchema] = []
+        compliance_product_list: List[ReportProductComplianceData] = []
         total_allocated_reporting_only = Decimal(0)
         total_allocated_for_compliance = Decimal(0)
         total_allocated_for_compliance_2024 = Decimal(0)
@@ -156,13 +213,13 @@ class ComplianceService:
                 allocated_for_compliance / Decimal(production_totals["annual_amount"])
             ) * Decimal(production_totals["apr_dec"])
             product_emission_limit = ComplianceService.calculate_product_emission_limit(
-                ei,
-                Decimal(production_totals["apr_dec"]),
-                Decimal(industrial_process),
-                Decimal(allocated_for_compliance),
-                naics_data.reduction_factor,
-                naics_data.tightening_rate,
-                naics_data.compliance_period,
+                pwaei=ei,
+                apr_dec_production=Decimal(production_totals["apr_dec"]),
+                allocated_industrial_process=Decimal(industrial_process),
+                allocated_for_compliance=Decimal(allocated_for_compliance),
+                tightening_rate=naics_data.tightening_rate,
+                reduction_factor=naics_data.reduction_factor,
+                compliance_period=naics_data.compliance_period,
             )
 
             # Add individual product amounts to totals
@@ -173,7 +230,7 @@ class ComplianceService:
 
             # Add product to list of products
             compliance_product_list.append(
-                ReportProductComplianceSchema(
+                ReportProductComplianceData(
                     name=rp.product.name,
                     annual_production=production_totals["annual_amount"],
                     apr_dec_production=production_totals["apr_dec"],
@@ -198,7 +255,7 @@ class ComplianceService:
             excess_emissions = Decimal(0)
             credited_emissions = Decimal(0)
         # Craft return object with all data
-        return_object = ComplianceDataSchemaOut(
+        return_object = ComplianceData(
             emissions_attributable_for_reporting=attributable_for_reporting_total,
             reporting_only_emissions=round(Decimal(total_allocated_reporting_only), 4),
             emissions_attributable_for_compliance=round(total_allocated_for_compliance_2024, 4),

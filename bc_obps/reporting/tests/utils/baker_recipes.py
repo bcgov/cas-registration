@@ -1,6 +1,6 @@
 from datetime import date, timedelta, datetime
 from typing import Any
-
+from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from registration.models import NaicsCode
 from registration.models.activity import Activity
 from reporting.models import (
@@ -209,4 +209,12 @@ report_operation_representative = Recipe(
     report_version=foreign_key(report_version),
     representative_name="Test Report",
     selected_for_report=True,
+)
+
+report_product_emission_allocation = Recipe(
+    ReportProductEmissionAllocation,
+    report_version=foreign_key(report_version),
+    facility_report=foreign_key(facility_report),
+    report_product=foreign_key(report_product),
+    emission_category=foreign_key(emission_category),
 )
