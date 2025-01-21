@@ -8,12 +8,7 @@ import {
 import {
   TitleOnlyFieldTemplate,
   SectionFieldTemplate,
-  ArrayFieldTemplate,
 } from "@bciers/components/form/fields";
-import {
-  CheckboxGroupWidget,
-  CheckboxWidget,
-} from "@bciers/components/form/widgets";
 
 export const buildReviewFacilitiesSchema = (
   current_facilities: {
@@ -39,28 +34,44 @@ export const buildReviewFacilitiesSchema = (
         type: "object",
         readOnly: true,
       },
-      current_facilities: {
-        title: "Current Facilities",
-        type: "array",
-        items: {
-          type: "string",
-          enum: current_facilities.map((facility) => facility.facility__name),
+      current_facilities_section: {
+        type: "object",
+        title: "List of facilities currently assigned to this operation",
+        properties: {
+          current_facilities: {
+            type: "array",
+            items: {
+              type: "string",
+              enum: current_facilities.map(
+                (facility) => facility.facility__name,
+              ),
+            },
+            uniqueItems: true,
+            default: current_facilities
+              .filter((facility) => facility.is_selected)
+              .map((facility) => facility.facility__name),
+          },
         },
-        default: current_facilities
-          .filter((facility) => facility.is_selected)
-          .map((facility) => facility.facility__name),
       },
-      past_facilities: {
-        title: "Past Facilities",
-        type: "array",
-        items: {
-          type: "string",
-          enum: past_facilities.map((facility) => facility.facility__name),
+
+      past_facilities_section: {
+        type: "object",
+        title: "Past facilities that belonged to this operation",
+        properties: {
+          past_facilities: {
+            type: "array",
+            items: {
+              type: "string",
+              enum: past_facilities.map((facility) => facility.facility__name),
+            },
+            uniqueItems: true,
+            default: current_facilities
+              .filter((facility) => facility.is_selected)
+              .map((facility) => facility.facility__name),
+          },
         },
-        default: past_facilities
-          .filter((facility) => facility.is_selected)
-          .map((facility) => facility.facility__name),
       },
+
       sync_button: {
         type: "object",
         properties: {
@@ -77,8 +88,8 @@ export const reviewFacilitiesUiSchema = {
   "ui:order": [
     "facilities_note",
     "select_info",
-    "current_facilities",
-    "past_facilities",
+    "current_facilities_section",
+    "past_facilities_section",
     "sync_button",
   ],
   facilities_note: {
@@ -89,20 +100,30 @@ export const reviewFacilitiesUiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": instructionNote,
   },
-  current_facilities: {
-    "ui:widget": CheckboxWidget,
-    "ui:options": {
-      alignment: "top",
-      columns: 1,
+  current_facilities_section: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:order": ["current_facilities"],
+    current_facilities: {
+      "ui:widget": "CheckboxGroupWidget",
+      "ui:options": {
+        label: false,
+        columns: 1,
+      },
     },
   },
-  past_facilities: {
-    "ui:widget": CheckboxWidget,
-    "ui:options": {
-      alignment: "top",
-      columns: 1,
+
+  past_facilities_section: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:order": ["past_facilities"],
+    past_facilities: {
+      "ui:widget": "CheckboxGroupWidget",
+      "ui:options": {
+        label: false,
+        columns: 1,
+      },
     },
   },
+
   sync_button: {
     "ui:FieldTemplate": SyncFacilitiesButton,
   },
