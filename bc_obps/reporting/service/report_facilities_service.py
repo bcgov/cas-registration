@@ -74,29 +74,30 @@ class ReportFacilitiesService:
     @staticmethod
     @transaction.atomic
     def get_all_facilities_for_review(version_id: int) -> dict:
-        """
-        Get facilities associated with a report version, including selected and available facilities.
-
-        Args:
-            version_id: The report version ID
-
-        Returns:
-            Dictionary with:
-            - "selected_facilities": List of selected facility details
-            - "available_facilities": List of all available facility details
-        """
-        selected_facilities = FacilityReport.objects.filter(report_version_id=version_id).values_list(
-            'facility_id', flat=True
+        selected_facilities = set(
+            FacilityReport.objects.filter(report_version_id=version_id).values_list('facility_id', flat=True)
         )
-
         report_version = ReportVersion.objects.select_related('report__operation').get(id=version_id)
+
         available_facilities = (
             FacilityDesignatedOperationTimeline.objects.filter(operation_id=report_version.report.operation.id)
             .distinct()
-            .values('facility_id', 'facility__name', 'status', 'end_date')
+            .values('facility_id', 'facility__name', 'end_date')
         )
 
+        current_facilities: list = []
+        past_facilities: list = []
+
+        for facility in available_facilities:
+            facility_data = {
+                "facility_id": facility['facility_id'],
+                "facility__name": facility['facility__name'],
+                "is_selected": facility['facility_id'] in selected_facilities,
+            }
+
+            (current_facilities if not facility['end_date'] else past_facilities).append(facility_data)
+
         return {
-            "selected_facilities": selected_facilities,
-            "available_facilities": available_facilities,
+            "current_facilities": current_facilities,
+            "past_facilities": past_facilities,
         }
