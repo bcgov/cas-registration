@@ -18,7 +18,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
 
     report_version = models.ForeignKey(
         report_version.ReportVersion,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="%(class)s_records",
         db_comment="The report version this emission data is associated with",
     )

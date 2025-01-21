@@ -10,7 +10,7 @@ class ReportVerification(TimeStampedModel):
 
     report_version = models.OneToOneField(
         ReportVersion,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="report_verification",
         db_comment="The report version of this report verification",
         primary_key=True,
