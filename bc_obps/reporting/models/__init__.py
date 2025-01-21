@@ -34,6 +34,7 @@ from .report_new_entrant_emission import ReportNewEntrantEmission
 from .report_non_attributable_emissions import ReportNonAttributableEmissions
 from .report_product import ReportProduct
 from .report_verification import ReportVerification
+from .report_verification_visit import ReportVerificationVisit
 from .report_attachment import ReportAttachment
 from .naics_regulatory_value import NaicsRegulatoryValue
 from .product_emission_intensity import ProductEmissionIntensity
@@ -74,6 +75,7 @@ __all__ = [
     "ReportNewEntrantProduction",
     "ReportNewEntrantEmission",
     "ReportVerification",
+    "ReportVerificationVisit",
     "ReportAttachment",
     "NaicsRegulatoryValue",
     "ProductEmissionIntensity",
