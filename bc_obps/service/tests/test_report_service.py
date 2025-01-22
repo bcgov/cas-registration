@@ -20,13 +20,9 @@ class TestReportService(TestCase):
         baker.make(ReportingYear, reporting_year=2000)
 
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
-            ReportService.create_report(
-                operation_id="00000000-00000000-00000000-00000000", reporting_year=2000
-            )
+            ReportService.create_report(operation_id="00000000-00000000-00000000-00000000", reporting_year=2000)
 
-        self.assertEqual(
-            str(exception_context.exception), "Operation matching query does not exist."
-        )
+        self.assertEqual(str(exception_context.exception), "Operation matching query does not exist.")
 
     def test_throws_if_year_doesnt_exist(self):
         operator = operator_baker({"trade_name": "test_trade_name"})
