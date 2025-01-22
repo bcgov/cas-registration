@@ -30,7 +30,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
     )
     report_product = models.ForeignKey(
         ReportProduct,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="%(class)s_records",
         db_comment="The regulated product this emission data has been allocated to",
     )
