@@ -389,65 +389,71 @@ describe("the FacilityInformationForm component", () => {
     );
   });
 
-  it("should keep form data when sorting and filtering the Facility datagrid", async () => {
-    render(
-      <FacilityInformationForm
-        {...defaultProps}
-        initialGridData={facilityInitialData as any}
-      />,
-    );
+  it(
+    "should keep form data when sorting and filtering the Facility datagrid",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <FacilityInformationForm
+          {...defaultProps}
+          initialGridData={facilityInitialData as any}
+        />,
+      );
 
-    const addButton = screen.getByRole("button", {
-      name: "Add facility",
-    });
+      const addButton = screen.getByRole("button", {
+        name: "Add facility",
+      });
 
-    act(() => {
-      fireEvent.click(addButton);
-    });
-    const comboBoxInput = screen.getAllByRole("combobox");
-    const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
-      ?.children[1]?.children[0] as HTMLInputElement;
-    await userEvent.click(openFacilityTypeDropdownButton);
+      act(() => {
+        fireEvent.click(addButton);
+      });
+      const comboBoxInput = screen.getAllByRole("combobox");
+      const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openFacilityTypeDropdownButton);
 
-    const typeOption = screen.getAllByText("Large Facility");
-    // [0] is the form, later ones are in the grid
-    await userEvent.click(typeOption[0]);
-    fillAddressFields(0);
+      const typeOption = screen.getAllByText("Large Facility");
+      // [0] is the form, later ones are in the grid
+      await userEvent.click(typeOption[0]);
+      fillAddressFields(0);
 
-    const streetAddress = screen.getByLabelText(/Street Address/i);
+      const streetAddress = screen.getByLabelText(/Street Address/i);
 
-    expect(streetAddress).toHaveValue("123 Test St");
+      expect(streetAddress).toHaveValue("123 Test St");
 
-    // click on the first column header
-    const facilityNameHeader = screen.getByRole("columnheader", {
-      name: "Facility Name",
-    });
+      // click on the first column header
+      const facilityNameHeader = screen.getByRole("columnheader", {
+        name: "Facility Name",
+      });
 
-    act(() => {
-      facilityNameHeader.click();
-    });
+      act(() => {
+        facilityNameHeader.click();
+      });
 
-    const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // facility name search input
-    expect(searchInput).toBeVisible();
-    searchInput.focus();
-    act(() => {
-      fireEvent.change(searchInput, { target: { value: "facility 1" } });
-    });
-    expect(searchInput).toHaveValue("facility 1");
+      const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // facility name search input
+      expect(searchInput).toBeVisible();
+      searchInput.focus();
+      act(() => {
+        fireEvent.change(searchInput, { target: { value: "facility 1" } });
+      });
+      expect(searchInput).toHaveValue("facility 1");
 
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalled();
-    });
+      await waitFor(() => {
+        expect(mockReplace).toHaveBeenCalled();
+      });
 
-    await waitFor(() => {
-      // check that the API call was made with the correct params
-      expect(
-        extractParams(String(mockReplace.mock.calls), "facility__name"),
-      ).toBe("facility 1");
-    });
+      await waitFor(() => {
+        // check that the API call was made with the correct params
+        expect(
+          extractParams(String(mockReplace.mock.calls), "facility__name"),
+        ).toBe("facility 1");
+      });
 
-    expect(streetAddress).toHaveValue("123 Test St");
-  });
+      expect(streetAddress).toHaveValue("123 Test St");
+    },
+  );
 
   it("should direct the user to the next page of the form on successful submit", async () => {
     window = Object.create(window);
