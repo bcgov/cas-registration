@@ -76,6 +76,10 @@ class TestUtils:
             role=UserOperator.Roles.ADMIN,
         )
 
+    def mock_delete_with_auth_role(self, role_name, endpoint=None):
+        TestUtils.save_app_role(self, role_name)
+        return TestUtils.client.delete(endpoint or self.endpoint, HTTP_AUTHORIZATION=self.auth_header_dumps)
+
     def create_operator_and_operation(self):
         """
         Creates operator and operation instance for testing purposes.
