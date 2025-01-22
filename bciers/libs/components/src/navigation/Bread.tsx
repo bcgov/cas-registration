@@ -114,8 +114,8 @@ export default function Bread({
                 ? translateNumericPart(unslugifyAndCapitalize(link), index)
                 : translateNumericPart(link, index);
 
-              // 🚨 Skip rendering if content is null (segment should be omitted)
-              if (!content) {
+              // 🚨 Skip rendering if content is null (segment should be omitted) or if content is facilities
+              if (!content || content === "Facilities") {
                 return null;
               }
 
