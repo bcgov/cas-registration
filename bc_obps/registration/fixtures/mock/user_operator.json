@@ -26,7 +26,7 @@
   {
     "model": "registration.useroperator",
     "fields": {
-      "user": "279c80cf57814c28872740a133d17c0d",
+      "user": "00000000-0000-0000-0000-000000000002",
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "role": "pending",
       "status": "Pending",
