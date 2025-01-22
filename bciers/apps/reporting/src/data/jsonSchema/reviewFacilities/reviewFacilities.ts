@@ -1,7 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
-  infoNote,
+  getInfoNote,
   instructionNote,
   SyncFacilitiesButton,
 } from "./reviewFacilitiesInfoText";
@@ -82,7 +82,7 @@ export const buildReviewFacilitiesSchema = (
     },
   }) as RJSFSchema;
 
-export const reviewFacilitiesUiSchema = {
+export const buildReviewFacilitiesUiSchema = (operation_id: string) => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -94,7 +94,7 @@ export const reviewFacilitiesUiSchema = {
   ],
   facilities_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": infoNote,
+    "ui:title": getInfoNote(operation_id),
   },
   select_info: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
@@ -127,4 +127,4 @@ export const reviewFacilitiesUiSchema = {
   sync_button: {
     "ui:FieldTemplate": SyncFacilitiesButton,
   },
-};
+});

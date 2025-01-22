@@ -5,7 +5,7 @@ import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
 import LoopIcon from "@mui/icons-material/Loop";
 
-export const infoNote = (
+export const getInfoNote = (operationId: string) => (
   <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <InfoIcon sx={{ mr: 1 }} />
@@ -14,7 +14,7 @@ export const infoNote = (
         medium facilities, as well as a small aggregate, if applicable.
         <b>Don’t see a facility?</b> Add it under{" "}
         <Link
-          href="/administration/operations"
+          href={`/administration/operations/${operationId}/facilities`}
           target="_blank"
           rel="noopener noreferrer"
           sx={{ color: "inherit", textDecoration: "none" }}
