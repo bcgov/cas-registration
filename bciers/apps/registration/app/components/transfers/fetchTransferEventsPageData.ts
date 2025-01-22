@@ -15,7 +15,8 @@ export const formatTransferRows = (rows: GridRowsProp) => {
       created_at,
     }) => {
       return {
-        id: Math.random(), // We need to generate a unique id for each row to avoid issues with the DataGrid(MUI requires a unique id for each row) // NOSONAR
+        // We need to generate a unique id for each row to avoid issues with the DataGrid(MUI requires a unique id for each row)
+        id: Math.random(), // NOSONAR
         transfer_id: id,
         operation__name: operation__name || "N/A",
         facilities__name: facilities__name || "N/A",
