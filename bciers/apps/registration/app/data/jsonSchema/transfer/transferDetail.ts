@@ -7,6 +7,40 @@ import { fetchOperationsPageData } from "@bciers/actions/api";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import { ExistingFacilities } from "@/registration/app/components/transfers/types";
 
+const sharedSchemaProperties: RJSFSchema = {
+  properties: {
+    //Not an actual field in the db - this is just to make the form look like the wireframes
+    transfer_header: {
+      type: "object",
+      readOnly: true,
+      title: "Transfer Entity",
+    },
+    from_operator: {
+      type: "string",
+      readOnly: true,
+      title: "Current Operator",
+    },
+    to_operator: {
+      type: "string",
+      readOnly: true,
+      title: "New operator",
+    },
+    transfer_entity: {
+      type: "string",
+      readOnly: true,
+      title: "What is being transferred?",
+      oneOf: [
+        { const: "Operation", title: "Operation" },
+        { const: "Facility", title: "Facility" },
+      ],
+    },
+    effective_date: {
+      type: "string",
+      title: "Effective date of transfer",
+    },
+  },
+};
+
 export const operationEntitySchema = async (
   existingOperationId: string,
   existingOperationName: string,
@@ -49,45 +83,11 @@ export const operationEntitySchema = async (
     title: "Transfer Entity",
     required: ["operation", "effective_date"],
     properties: {
-      transfer_header: {
-        //Not an actual field in the db - this is just to make the form look like the wireframes
-        type: "object",
-        readOnly: true,
-        title: "Transfer Entity",
-      },
-      from_operator: {
-        type: "string",
-        readOnly: true,
-        title: "Current Operator",
-      },
-      to_operator: {
-        type: "string",
-        readOnly: true,
-        title: "New operator",
-      },
-      transfer_entity: {
-        type: "string",
-        readOnly: true,
-        title: "What is being transferred?",
-        oneOf: [
-          {
-            const: "Operation",
-            title: "Operation",
-          },
-          {
-            const: "Facility",
-            title: "Facility",
-          },
-        ],
-      },
+      ...sharedSchemaProperties.properties,
       operation: {
         type: "string",
         title: "Operation",
         anyOf: operationOptions,
-      },
-      effective_date: {
-        type: "string",
-        title: "Effective date of transfer",
       },
     },
   };
@@ -130,17 +130,22 @@ export const facilityEntitySchema = async (
     (facility: FacilityRow) =>
       !existingFacilityIds.includes(facility.facility__id),
   );
-
   if (newFacilities.length > 0) {
     facilityEnum = {
       enum: facilityEnum.enum.concat(
         newFacilities.map((facility: FacilityRow) => facility.facility__id),
       ),
       enumNames: facilityEnum.enumNames.concat(
-        newFacilities.map(
-          (facility: FacilityRow) =>
-            `${facility.facility__name} - (${facility.facility__latitude_of_largest_emissions}, ${facility.facility__longitude_of_largest_emissions})`,
-        ),
+        newFacilities.map((facility: FacilityRow) => {
+          const {
+            facility__name: facilityName,
+            facility__latitude_of_largest_emissions: facilityLatitude,
+            facility__longitude_of_largest_emissions: facilityLongitude,
+          } = facility;
+          return facilityLatitude && facilityLongitude
+            ? `${facilityName} - (${facilityLatitude}, ${facilityLongitude})`
+            : facilityName;
+        }),
       ),
     };
   }
@@ -150,41 +155,10 @@ export const facilityEntitySchema = async (
     title: "Transfer Entity",
     required: ["facilities", "effective_date"],
     properties: {
-      // We don't need the sectioning here, but it's just to make the form look like the wireframes
-      transfer_header: {
-        //Not an actual field in the db - this is just to make the form look like the wireframes
-        type: "object",
-        readOnly: true,
-        title: "Transfer Entity",
-      },
-      from_operator: {
-        type: "string",
-        readOnly: true,
-        title: "Current Operator",
-      },
-      to_operator: {
-        type: "string",
-        readOnly: true,
-        title: "New operator",
-      },
-      transfer_entity: {
-        type: "string",
-        readOnly: true,
-        title: "What is being transferred?",
-        oneOf: [
-          {
-            const: "Operation",
-            title: "Operation",
-          },
-          {
-            const: "Facility",
-            title: "Facility",
-          },
-        ],
-      },
+      ...sharedSchemaProperties.properties,
       from_operation: {
         type: "string",
-        title: "Select the operation that the facility(s) currently belongs to",
+        title: "Current operation",
       },
       facilities: {
         type: "array",
@@ -197,11 +171,7 @@ export const facilityEntitySchema = async (
       },
       to_operation: {
         type: "string",
-        title: "Select the new operation the facility(s) will be allocated to",
-      },
-      effective_date: {
-        type: "string",
-        title: "Effective date of transfer",
+        title: "New operation",
       },
     },
   };
@@ -209,6 +179,17 @@ export const facilityEntitySchema = async (
 
 export const editTransferUISchema: UiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,
+  "ui:order": [
+    "transfer_header",
+    "from_operator",
+    "to_operator",
+    "transfer_entity",
+    "operation",
+    "from_operation",
+    "facilities",
+    "to_operation",
+    "effective_date",
+  ],
   "ui:options": {
     label: false,
   },
