@@ -12,14 +12,13 @@ from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.models import Operator, User, UserOperator
 from django.db import transaction
-from zoneinfo import ZoneInfo
-from datetime import datetime
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.operator_service_v2 import OperatorServiceV2
 from registration.schema.v2.user_operator import UserOperatorFilterSchema
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from ninja import Query
+from registration.utils import set_verification_columns
 
 
 class UserOperatorServiceV2:
@@ -121,7 +120,7 @@ class UserOperatorServiceV2:
     def update_status_and_create_contact(
         cls, user_operator_id: UUID, payload: UserOperatorStatusUpdate, admin_user_guid: UUID
     ) -> UserOperator:
-        "Function to update the user_operator status. If they are being approved, we create a Contact record for them."
+        """Function to update the user_operator status. If they are being approved, we create a Contact record for them."""
         admin_user: User = UserDataAccessService.get_by_guid(admin_user_guid)
         user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
 
@@ -141,8 +140,7 @@ class UserOperatorServiceV2:
         updated_role = payload.role
 
         if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
-            user_operator.verified_at = datetime.now(ZoneInfo("UTC"))
-            user_operator.verified_by_id = admin_user_guid
+            set_verification_columns(user_operator, admin_user_guid)
 
             if user_operator.status == UserOperator.Statuses.DECLINED:
                 # Set role to pending for now but we may want to add a new role for declined
