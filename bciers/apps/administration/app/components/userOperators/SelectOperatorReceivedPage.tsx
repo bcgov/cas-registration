@@ -1,4 +1,4 @@
-import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilledIcon";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 
 import { notFound } from "next/navigation";
 import { Operator } from "../userOperators/types";
