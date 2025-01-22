@@ -23,16 +23,12 @@ export default async function TransferPage({
   transferId?: UUID;
 }) {
   let transferFormData: { [key: string]: any } | { error: string } = {};
-
-  // 🛠️ Fetch the operators data
-  const operators: {
+  let operators: {
     rows: OperatorRow[];
     row_count: number;
-  } = await fetchOperatorsPageData({ paginate_result: "False" });
-  if (!operators || "error" in operators || !operators.rows)
-    throw new Error("Failed to fetch operators data");
-
+  } = { rows: [], row_count: 0 }; // Initialize operators with a default value
   if (transferId) {
+    // to show the transfer detail form
     if (!isValidUUID(transferId))
       throw new Error(`Invalid transfer id: ${transferId}`);
 
@@ -40,6 +36,19 @@ export default async function TransferPage({
     if (!transferFormData || "error" in transferFormData) {
       throw new Error("Error fetching transfer information.");
     }
+  } else {
+    // to show the new transfer form
+    const fetchedOperators = await fetchOperatorsPageData({
+      paginate_result: "False",
+    });
+    if (
+      !fetchedOperators ||
+      "error" in fetchedOperators ||
+      !fetchedOperators.rows
+    )
+      throw new Error("Failed to fetch operators data");
+
+    operators = fetchedOperators; // Populate operators
   }
 
   return (

@@ -3,6 +3,7 @@ import { UUID } from "crypto";
 import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectRadio from "@bciers/testConfig/helpers/expectRadio";
+import expectComboBox from "@bciers/testConfig/helpers/expectComboBox";
 import { actionHandler } from "@bciers/testConfig/mocks";
 import { fetchOperationsPageData } from "@/administration/tests/components/operations/mocks";
 import { fetchFacilitiesPageData } from "@/administration/tests/components/facilities/mocks";
@@ -41,11 +42,6 @@ const mockOperations = {
 
 const renderTransferForm = () => {
   render(<TransferForm formData={{} as any} operators={mockOperators} />);
-};
-
-const checkComboBoxExists = (label: RegExp) => {
-  expect(screen.getByLabelText(label)).toBeVisible();
-  expect(screen.getByRole("combobox", { name: label })).toBeVisible();
 };
 
 const selectOperator = (label: RegExp, operatorName: string) => {
@@ -132,8 +128,8 @@ describe("The TransferForm component", () => {
       "Transfer Entity",
     );
     expect(screen.getByText(/select the operators involved/i)).toBeVisible();
-    checkComboBoxExists(/current operator/i);
-    checkComboBoxExists(/select the new operator/i);
+    expectComboBox(/current operator/i);
+    expectComboBox(/select the new operator/i);
     expect(screen.getByText(/what is being transferred?/i)).toBeVisible();
     expectRadio(/operation/i);
     expectRadio(/facility/i);
