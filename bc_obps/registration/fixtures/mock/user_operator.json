@@ -350,18 +350,6 @@
   {
     "model": "registration.useroperator",
     "fields": {
-      "user": "00000000-0000-0000-0000-000000000029",
-      "operator": "7e8b72dc-4196-427f-a553-7879748139e1",
-      "role": "admin",
-      "status": "Approved",
-      "verified_at": "2024-02-26 06:24:57.293242-08",
-      "verified_by": "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
-      "user_friendly_id": 30
-    }
-  },
-  {
-    "model": "registration.useroperator",
-    "fields": {
       "user": "00000000-0000-0000-0000-000000000030",
       "operator": "5c847c75-3b17-414c-97f8-88ba81cb3821",
       "role": "admin",
