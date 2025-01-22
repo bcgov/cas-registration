@@ -1,6 +1,7 @@
 {
   "type": "object",
   "title": "Cover gas from electrolysis",
+  "default": { "emissions": [{}] },
   "properties": {
     "emissions": {
       "title": "Emission Data",
@@ -8,20 +9,21 @@
       "items": {
         "type": "object",
         "properties": {
-          "gasType": {
-            "title": "Gas type",
-            "type": "string",
-            "enum": []
-          },
           "emission": {
             "title": "Emissions (tonnes)",
             "type": "number",
             "minimum": 0
           },
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
           "equivalentEmission": {
             "title": "Equivalent emissions (tC02e)",
-            "type": "number",
-            "readOnly": true
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
           }
         }
       }
