@@ -72,6 +72,7 @@ operation_designated_operator_timeline
 report_attachment
 report_new_entrant_emission
 report_new_entrant_production
+report_operation_representative
 report_raw_activity_data
 report_verification
 report_methodology

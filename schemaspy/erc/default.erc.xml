@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><database name="default" schema="erc" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
    <tables>
-      <table name="activity" remarks="Table containing activity definitions for reporting. If facilities carry out these activities, in many cases they are required to report. Some activities can only be carried out by certain types of facilities. Reporting activities are listed in column 2 of Table 1 of Schedule A of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015." schema="erc" type="TABLE">
+      <table name="activity" numRows="36" remarks="Table containing activity definitions for reporting. If facilities carry out these activities, in many cases they are required to report. Some activities can only be carried out by certain types of facilities. Reporting activities are listed in column 2 of Table 1 of Schedule A of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="activity_id" foreignKey="activity_json_schema_activity_id_ea2bfad2_fk_activity_id" implied="false" onDeleteCascade="false" schema="erc" table="activity_json_schema"/>
             <child column="activity_id" foreignKey="activity_source_type_activity_id_60dbcf53_fk_activity_" implied="false" onDeleteCascade="false" schema="erc" table="activity_source_type_json_schema"/>
@@ -206,6 +206,7 @@
             <child column="operation_name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="report_operation"/>
             <child column="operator_legal_name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="report_operation"/>
             <child column="operator_trade_name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="report_operation"/>
+            <child column="representative_name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="report_operation_representative"/>
             <child column="first_name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>
             <child column="last_name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>
             <child column="verification_body_name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="report_verification"/>
@@ -311,7 +312,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="276" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="315" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -362,7 +363,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="514" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -826,7 +827,7 @@
             <column ascending="true" name="facility_id"/>
          </index>
       </table>
-      <table name="fuel_type" remarks="This table contains the list of fuel types that can be reported." schema="erc" type="TABLE">
+      <table name="fuel_type" numRows="64" remarks="This table contains the list of fuel types that can be reported." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="fuel_type_id" foreignKey="report_fuel_fuel_type_id_561d24d5_fk_fuel_type_id" implied="false" onDeleteCascade="false" schema="erc" table="report_fuel"/>
          </column>
@@ -1567,7 +1568,7 @@
             <column ascending="true" name="product_id"/>
          </index>
       </table>
-      <table name="regulated_product" remarks="Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis." schema="erc" type="TABLE">
+      <table name="regulated_product" numRows="39" remarks="Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="regulatedproduct_id" foreignKey="operation_regulated__regulatedproduct_id_5e0156ca_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="operation_regulated_products"/>
             <child column="product_id" foreignKey="product_emission_int_product_id_05c2d355_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="product_emission_intensity"/>
@@ -2180,17 +2181,16 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="operation_type" nullable="false" remarks="The type of the operation, LFO or SFO" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="operation_bcghgid" nullable="true" remarks="The BCGHGH ID of the operation" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="bc_obps_regulated_operation_id" nullable="true" remarks="The BC OBPS Regulated Operation ID (BORO ID) for this operation" size="255" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="operation_representative_name" nullable="false" remarks="The full name of the operation representative" size="10000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_operation_archived_by_id_e986b8f9_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_operation_created_by_id_33c87828_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_operation_updated_by_id_57ed8f50_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="report_version_id" nullable="false" remarks="The report this operation information relates to" size="19" type="int8" typeCode="-5">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="report_version_id" nullable="false" remarks="The report this operation information relates to" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="report_operation_report_version_id_9eb4269b_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
          </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
@@ -2254,6 +2254,44 @@
          </index>
          <index name="report_operation_regulated_regulatedproduct_id_10ce22ab" unique="false">
             <column ascending="true" name="regulatedproduct_id"/>
+         </index>
+      </table>
+      <table name="report_operation_representative" remarks="Stores information about operation representatives linked to report versions, including their selection status for reports." schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="representative_name" nullable="false" remarks="The name of the operation representative." size="1000" type="varchar" typeCode="12">
+            <parent column="name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="business_structure"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="selected_for_report" nullable="false" remarks="Indicates whether this representative is selected for reporting." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_operation_rep_archived_by_id_b5133b53_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_operation_rep_created_by_id_06409fff_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="report_version_id" nullable="false" remarks="The report version associated with this operation representative." size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_operation_rep_report_version_id_b7b9534c_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_operation_rep_updated_by_id_85875b2c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_operation_representative_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_operation_representative_archived_by_id_b5133b53" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_operation_representative_created_by_id_06409fff" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_operation_representative_report_version_id_b7b9534c" unique="false">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+         <index name="report_operation_representative_updated_by_id_85875b2c" unique="false">
+            <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
       <table name="report_person_responsible" remarks="A table to store the data about the person responsible for the report" schema="erc" type="TABLE">
@@ -2621,6 +2659,7 @@
             <child column="report_version_id" foreignKey="report_new_entrant_report_version_id_1d8cd9f9_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant"/>
             <child column="report_version_id" foreignKey="report_non_attributa_report_version_id_426dd0ab_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_non_attributable_emissions"/>
             <child column="report_version_id" foreignKey="report_operation_report_version_id_9eb4269b_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_operation"/>
+            <child column="report_version_id" foreignKey="report_operation_rep_report_version_id_b7b9534c_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_operation_representative"/>
             <child column="report_version_id" foreignKey="report_person_respon_report_version_id_0d6ee4de_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>
             <child column="report_version_id" foreignKey="report_product_report_version_id_0b6a26ae_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_product"/>
             <child column="report_version_id" foreignKey="report_product_emiss_report_version_id_5511d2d0_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_product_emission_allocation"/>
@@ -2662,8 +2701,11 @@
          <index name="report_version_updated_by_id_1a053202" unique="false">
             <column ascending="true" name="updated_by_id"/>
          </index>
+         <index name="unique_report_version_with_draft_status_per_report" unique="true">
+            <column ascending="true" name="report_id"/>
+         </index>
       </table>
-      <table name="reporting_field" remarks="A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration" schema="erc" type="TABLE">
+      <table name="reporting_field" numRows="72" remarks="A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="reportingfield_id" foreignKey="configuration_elemen_reportingfield_id_89a926f0_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -2756,7 +2798,7 @@
             <column ascending="true" name="facility_id"/>
          </index>
       </table>
-      <table name="source_type" remarks="Source types" schema="erc" type="TABLE">
+      <table name="source_type" numRows="86" remarks="Source types" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="source_type_id" foreignKey="activity_source_type_source_type_id_71126d54_fk_source_ty" implied="false" onDeleteCascade="false" schema="erc" table="activity_source_type_json_schema"/>
             <child column="source_type_id" foreignKey="configuration_element_source_type_id_13693929_fk_source_type_id" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -3013,6 +3055,9 @@
             <child column="archived_by_id" foreignKey="report_operation_archived_by_id_e986b8f9_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_operation"/>
             <child column="created_by_id" foreignKey="report_operation_created_by_id_33c87828_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_operation"/>
             <child column="updated_by_id" foreignKey="report_operation_updated_by_id_57ed8f50_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_operation"/>
+            <child column="archived_by_id" foreignKey="report_operation_rep_archived_by_id_b5133b53_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_operation_representative"/>
+            <child column="created_by_id" foreignKey="report_operation_rep_created_by_id_06409fff_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_operation_representative"/>
+            <child column="updated_by_id" foreignKey="report_operation_rep_updated_by_id_85875b2c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_operation_representative"/>
             <child column="archived_by_id" foreignKey="report_person_respon_archived_by_id_5fe2929f_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>
             <child column="created_by_id" foreignKey="report_person_respon_created_by_id_058a54da_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>
             <child column="updated_by_id" foreignKey="report_person_respon_updated_by_id_3a2b90a2_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>

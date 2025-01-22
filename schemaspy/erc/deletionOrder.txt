@@ -7,6 +7,7 @@ report_person_responsible
 report_methodology
 report_verification
 report_raw_activity_data
+report_operation_representative
 report_new_entrant_production
 report_new_entrant_emission
 report_attachment
