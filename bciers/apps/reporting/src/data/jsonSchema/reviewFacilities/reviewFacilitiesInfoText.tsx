@@ -1,5 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Paper, Typography, Button } from "@mui/material";
+import { Box, Paper, Typography, Button, Link } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
@@ -11,10 +11,18 @@ export const infoNote = (
       <InfoIcon sx={{ mr: 1 }} />
       <Typography variant="body2">
         Linear Facilities Operations must register and report for all large and
-        medium facilities, as well as a small aggregate, if applicable.{" "}
-        <b>Don’t see a facility?</b> Add it under Facilities information and
-        click on the ‘Sync latest data from registration’ here button to pull
-        the latest information.
+        medium facilities, as well as a small aggregate, if applicable.
+        <b>Don’t see a facility?</b> Add it under{" "}
+        <Link
+          href="/administration/operations"
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ color: "inherit", textDecoration: "none" }}
+        >
+          Facilities information.
+        </Link>{" "}
+        and then click on the ‘Sync latest data from Administration’ button to
+        update this list of facilities.
       </Typography>
     </Box>
   </Paper>
