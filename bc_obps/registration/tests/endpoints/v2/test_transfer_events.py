@@ -4,7 +4,6 @@ from uuid import uuid4
 from django.utils import timezone
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from model_bakery import baker
-
 from registration.models import TransferEvent
 from registration.schema.v2.transfer_event import TransferEventCreateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
