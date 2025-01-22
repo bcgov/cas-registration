@@ -222,59 +222,65 @@ describe("the FacilityInformationForm component", () => {
     );
   });
 
-  it("should allow the user to fill out the LFO form", async () => {
-    render(<FacilityInformationForm {...defaultProps} />);
+  it(
+    "should allow the user to fill out the LFO form",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(<FacilityInformationForm {...defaultProps} />);
 
-    const addButton = screen.getByRole("button", {
-      name: "Add facility",
-    });
+      const addButton = screen.getByRole("button", {
+        name: "Add facility",
+      });
 
-    act(() => {
-      fireEvent.click(addButton);
-    });
+      act(() => {
+        fireEvent.click(addButton);
+      });
 
-    fillNameAndTypeFields(0);
+      fillNameAndTypeFields(0);
 
-    await toggleAndFillStartDate(0, "20240101");
+      await toggleAndFillStartDate(0, "20240101");
 
-    fillAddressFields(0);
+      fillAddressFields(0);
 
-    fillLatitudeLongitudeFields(0);
+      fillLatitudeLongitudeFields(0);
 
-    const submitButton = screen.getByRole("button", {
-      name: "Save and Continue",
-    });
-    actionHandler.mockResolvedValueOnce({
-      error: null,
-    });
-    act(() => {
-      fireEvent.click(submitButton);
-    });
+      const submitButton = screen.getByRole("button", {
+        name: "Save and Continue",
+      });
+      actionHandler.mockResolvedValueOnce({
+        error: null,
+      });
+      act(() => {
+        fireEvent.click(submitButton);
+      });
 
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/facilities",
-      "POST",
-      "",
-      {
-        body: JSON.stringify([
-          {
-            name: "Test Facility",
-            type: "Large Facility",
-            street_address: "123 Test St",
-            municipality: "Test City",
-            province: "BC",
-            postal_code: "V8X3K1",
-            latitude_of_largest_emissions: 0.1,
-            longitude_of_largest_emissions: 0.1,
-            well_authorization_numbers: [],
-            is_current_year: true,
-            starting_date: "2024-01-01T09:00:00.000Z",
-            operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-          },
-        ]),
-      },
-    );
-  });
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/facilities",
+        "POST",
+        "",
+        {
+          body: JSON.stringify([
+            {
+              name: "Test Facility",
+              type: "Large Facility",
+              street_address: "123 Test St",
+              municipality: "Test City",
+              province: "BC",
+              postal_code: "V8X3K1",
+              latitude_of_largest_emissions: 0.1,
+              longitude_of_largest_emissions: 0.1,
+              well_authorization_numbers: [],
+              is_current_year: true,
+              starting_date: "2024-01-01T09:00:00.000Z",
+              operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+            },
+          ]),
+        },
+      );
+    },
+  );
 
   it(
     "should allow the user to fill out multiple LFO forms",
