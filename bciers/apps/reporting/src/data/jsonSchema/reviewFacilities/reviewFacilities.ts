@@ -65,7 +65,7 @@ export const buildReviewFacilitiesSchema = (
               enum: past_facilities.map((facility) => facility.facility__name),
             },
             uniqueItems: true,
-            default: current_facilities
+            default: past_facilities
               .filter((facility) => facility.is_selected)
               .map((facility) => facility.facility__name),
           },

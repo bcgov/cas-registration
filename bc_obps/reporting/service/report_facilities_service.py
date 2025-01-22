@@ -77,6 +77,7 @@ class ReportFacilitiesService:
         selected_facilities = set(
             FacilityReport.objects.filter(report_version_id=version_id).values_list('facility_id', flat=True)
         )
+
         report_version = ReportVersion.objects.select_related('report__operation').get(id=version_id)
 
         available_facilities = (
@@ -88,14 +89,25 @@ class ReportFacilitiesService:
         current_facilities: list = []
         past_facilities: list = []
 
+        # Determine if all current facilities should be considered selected
+        all_selected_for_current = not selected_facilities
+
         for facility in available_facilities:
             facility_data = {
                 "facility_id": facility['facility_id'],
                 "facility__name": facility['facility__name'],
-                "is_selected": facility['facility_id'] in selected_facilities,
             }
 
-            (current_facilities if not facility['end_date'] else past_facilities).append(facility_data)
+            if facility['end_date']:
+                # Past facilities should only be selected if explicitly present in selected_facilities
+                facility_data["is_selected"] = facility['facility_id'] in selected_facilities
+                past_facilities.append(facility_data)
+            else:
+                # Apply 'all_selected' condition only for current facilities
+                facility_data["is_selected"] = all_selected_for_current or (
+                    facility['facility_id'] in selected_facilities
+                )
+                current_facilities.append(facility_data)
 
         return {
             "current_facilities": current_facilities,
