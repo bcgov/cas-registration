@@ -15,7 +15,7 @@ def suppress_django_request_logs(caplog):
 class TestEndpointPermissions(TestCase):
     client = Client()
     mock_uuid = "e1300fd7-2dee-47d1-b655-2ad3fd10f052"
-    mock_version = '1'
+    mock_version = "1"
     mock_int = 1
     endpoints_to_test = {
         "authorized_roles": [
@@ -23,8 +23,15 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "v1_list_naics_codes"},
             {"method": "get", "endpoint_name": "v1_list_regulated_products"},
             {"method": "get", "endpoint_name": "v1_list_reporting_activities"},
-            {"method": "get", "endpoint_name": "v1_get_operators_by_cra_number_or_legal_name"},
-            {"method": "get", "endpoint_name": "v1_get_operator", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_operators_by_cra_number_or_legal_name",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_operator",
+                "kwargs": {"operator_id": mock_uuid},
+            },
             {
                 "method": "get",
                 "endpoint_name": "v1_get_user_operator_has_admin",
@@ -33,8 +40,15 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "list_dashboard_data"},
             {"method": "get", "endpoint_name": "list_business_structures"},
             {"method": "get", "endpoint_name": "list_naics_codes"},
-            {"method": "get", "endpoint_name": "get_operators_by_cra_number_or_legal_name"},
-            {"method": "get", "endpoint_name": "get_operator_confirm", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "get_operators_by_cra_number_or_legal_name",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_operator_confirm",
+                "kwargs": {"operator_id": mock_uuid},
+            },
             {"method": "get", "endpoint_name": "list_regulated_products"},
             {"method": "get", "endpoint_name": "list_reporting_activities"},
             {
@@ -46,7 +60,11 @@ class TestEndpointPermissions(TestCase):
         "approved_industry_user": [
             {"method": "post", "endpoint_name": "v1_create_operation"},
             {"method": "post", "endpoint_name": "v1_create_contact"},
-            {"method": "put", "endpoint_name": "v1_update_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_operation",
+                "kwargs": {"operation_id": mock_uuid},
+            },
             {
                 "method": "put",
                 "endpoint_name": "v1_update_operator_and_user_operator",
@@ -54,18 +72,36 @@ class TestEndpointPermissions(TestCase):
             },
             {"method": "get", "endpoint_name": "v1_is_current_user_approved_admin"},
             {"method": "get", "endpoint_name": "v1_get_operator_users"},
-            {"method": "put", "endpoint_name": "v1_update_contact", "kwargs": {"contact_id": mock_uuid}},
-            {"method": "get", "endpoint_name": "v1_get_user", "kwargs": {"user_id": mock_uuid}},
-            {"method": "get", "endpoint_name": "get_current_operator_and_user_operator"},
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_contact",
+                "kwargs": {"contact_id": mock_uuid},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_user",
+                "kwargs": {"user_id": mock_uuid},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_current_operator_and_user_operator",
+            },
             {"method": "get", "endpoint_name": "is_current_user_approved_admin"},
             {"method": "get", "endpoint_name": "get_operator_users"},
-            {"method": "get", "endpoint_name": "get_user", "kwargs": {"user_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "get_user",
+                "kwargs": {"user_id": mock_uuid},
+            },
             {
                 "method": "get",
                 "endpoint_name": "operation_registration_get_opted_in_operation_detail",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "v1_get_current_operator_from_user_operator"},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_current_operator_from_user_operator",
+            },
             {"method": "get", "endpoint_name": "list_current_users_operations"},
             {
                 "method": "get",
@@ -117,7 +153,11 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "get",
                 "endpoint_name": "load_report_activity_data",
-                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
+                "kwargs": {
+                    "report_version_id": mock_int,
+                    "facility_id": mock_uuid,
+                    "activity_id": mock_int,
+                },
             },
             {
                 "method": "get",
@@ -129,9 +169,20 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "register_get_operation_information",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
-            {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
-            {"method": "get", "endpoint_name": "get_report_attachments", "kwargs": {"report_version_id": mock_int}},
+            {
+                "method": "get",
+                "endpoint_name": "get_report_type_by_version",
+                "kwargs": {"version_id": mock_version},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_current_operator_from_user_operator",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_report_attachments",
+                "kwargs": {"report_version_id": mock_int},
+            },
             {
                 "method": "get",
                 "endpoint_name": "get_emission_allocations",
@@ -154,9 +205,16 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "save_new_entrant_data",
                 "kwargs": {"report_version_id": mock_int},
             },
-            {"method": "post", "endpoint_name": "register_create_operation_information"},
+            {
+                "method": "post",
+                "endpoint_name": "register_create_operation_information",
+            },
             {"method": "post", "endpoint_name": "start_report"},
-            {"method": "post", "endpoint_name": "save_report", "kwargs": {"version_id": mock_int}},
+            {
+                "method": "post",
+                "endpoint_name": "save_report",
+                "kwargs": {"version_id": mock_int},
+            },
             {
                 "method": "post",
                 "endpoint_name": "save_facility_report",
@@ -172,11 +230,19 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "save_report_verification",
                 "kwargs": {"report_version_id": mock_int},
             },
-            {"method": "post", "endpoint_name": "save_report_contact", "kwargs": {"version_id": mock_int}},
+            {
+                "method": "post",
+                "endpoint_name": "save_report_contact",
+                "kwargs": {"version_id": mock_int},
+            },
             {
                 "method": "post",
                 "endpoint_name": "save_report_activity_data",
-                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid, "activity_id": mock_int},
+                "kwargs": {
+                    "report_version_id": mock_int,
+                    "facility_id": mock_uuid,
+                    "activity_id": mock_int,
+                },
             },
             {
                 "method": "post",
@@ -188,7 +254,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "save_emission_allocation_data",
                 "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
             },
-            {"method": "post", "endpoint_name": "save_report_attachments", "kwargs": {"report_version_id": mock_int}},
+            {
+                "method": "post",
+                "endpoint_name": "save_report_attachments",
+                "kwargs": {"report_version_id": mock_int},
+            },
             {
                 "method": "put",
                 "endpoint_name": "register_edit_operation_information",
@@ -199,14 +269,31 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "submit_report_version",
                 "kwargs": {"version_id": mock_int},
             },
-            {"method": "put", "endpoint_name": "update_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "post",
+                "endpoint_name": "change_report_version_type",
+                "kwargs": {"version_id": mock_int},
+            },
+            {
+                "method": "put",
+                "endpoint_name": "update_operation",
+                "kwargs": {"operation_id": mock_uuid},
+            },
             {
                 "method": "put",
                 "endpoint_name": "update_operator_and_user_operator",
                 "kwargs": {"user_operator_id": mock_uuid},
             },
-            {"method": "put", "endpoint_name": "update_facility", "kwargs": {"facility_id": mock_uuid}},
-            {"method": "put", "endpoint_name": "update_contact", "kwargs": {"contact_id": mock_uuid}},
+            {
+                "method": "put",
+                "endpoint_name": "update_facility",
+                "kwargs": {"facility_id": mock_uuid},
+            },
+            {
+                "method": "put",
+                "endpoint_name": "update_contact",
+                "kwargs": {"contact_id": mock_uuid},
+            },
             {
                 "method": "put",
                 "endpoint_name": "operation_registration_update_opted_in_operation_detail",
@@ -217,7 +304,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "create_or_replace_new_entrant_application",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "put", "endpoint_name": "update_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "put",
+                "endpoint_name": "update_operation",
+                "kwargs": {"operation_id": mock_uuid},
+            },
             {
                 "method": "patch",
                 "endpoint_name": "operation_registration_submission",
@@ -241,31 +332,71 @@ class TestEndpointPermissions(TestCase):
         ],
         "industry_user": [
             {"method": "post", "endpoint_name": "v1_create_operator_and_user_operator"},
-            {"method": "post", "endpoint_name": "v1_request_access", "kwargs": {"operator_id": mock_uuid}},
-            {"method": "post", "endpoint_name": "v1_request_admin_access", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "post",
+                "endpoint_name": "v1_request_access",
+                "kwargs": {"operator_id": mock_uuid},
+            },
+            {
+                "method": "post",
+                "endpoint_name": "v1_request_admin_access",
+                "kwargs": {"operator_id": mock_uuid},
+            },
             {
                 "method": "get",
                 "endpoint_name": "v1_get_user_operator_access_declined",
                 "kwargs": {"operator_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "v1_get_pending_operator_and_user_operator"},
-            {"method": "get", "endpoint_name": "v1_get_current_user_operator_has_registered_operation"},
-            {"method": "get", "endpoint_name": "v1_get_current_user_operator_has_required_fields"},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_pending_operator_and_user_operator",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_current_user_operator_has_registered_operation",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_current_user_operator_has_required_fields",
+            },
             {
                 "method": "get",
                 "endpoint_name": "get_user_operator_access_declined",
                 "kwargs": {"operator_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_pending_operator_and_user_operator"},
-            {"method": "get", "endpoint_name": "get_current_user_operator_has_registered_operation"},
-            {"method": "get", "endpoint_name": "get_current_user_operator_has_required_fields"},
-            {"method": "post", "endpoint_name": "request_access", "kwargs": {"operator_id": mock_uuid}},
-            {"method": "post", "endpoint_name": "request_admin_access", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "get_pending_operator_and_user_operator",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_current_user_operator_has_registered_operation",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_current_user_operator_has_required_fields",
+            },
+            {
+                "method": "post",
+                "endpoint_name": "request_access",
+                "kwargs": {"operator_id": mock_uuid},
+            },
+            {
+                "method": "post",
+                "endpoint_name": "request_admin_access",
+                "kwargs": {"operator_id": mock_uuid},
+            },
             {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
         ],
         "approved_industry_admin_user": [
-            {"method": "get", "endpoint_name": "v1_get_current_user_operator_access_requests"},
-            {"method": "get", "endpoint_name": "get_current_user_operator_access_requests"},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_current_user_operator_access_requests",
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_current_user_operator_access_requests",
+            },
         ],
         "authorized_irc_user": [
             {"method": "get", "endpoint_name": "v1_list_user_operators"},
@@ -274,19 +405,35 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "list_transfer_events"},
         ],
         "approved_authorized_roles": [
-            {"method": "get", "endpoint_name": "get_operator", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "get_operator",
+                "kwargs": {"operator_id": mock_uuid},
+            },
             {"method": "get", "endpoint_name": "v1_list_operations"},
-            {"method": "get", "endpoint_name": "v1_get_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_operation",
+                "kwargs": {"operation_id": mock_uuid},
+            },
             {
                 "method": "get",
                 "endpoint_name": "v1_get_user_operator_by_id",
                 "kwargs": {"user_operator_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "v1_get_contact", "kwargs": {"contact_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "v1_get_contact",
+                "kwargs": {"contact_id": mock_uuid},
+            },
             {"method": "get", "endpoint_name": "v1_list_contacts"},
             {"method": "get", "endpoint_name": "list_operations"},
             {"method": "get", "endpoint_name": "list_contacts"},
-            {"method": "get", "endpoint_name": "get_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "get_operation",
+                "kwargs": {"operation_id": mock_uuid},
+            },
             {
                 "method": "get",
                 "endpoint_name": "list_facilities_by_operation_id",
@@ -302,15 +449,27 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "get_user_operator_by_id",
                 "kwargs": {"user_operator_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_facility", "kwargs": {"facility_id": mock_uuid}},
-            {"method": "get", "endpoint_name": "get_contact", "kwargs": {"contact_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "get_facility",
+                "kwargs": {"facility_id": mock_uuid},
+            },
+            {
+                "method": "get",
+                "endpoint_name": "get_contact",
+                "kwargs": {"contact_id": mock_uuid},
+            },
             {"method": "get", "endpoint_name": "get_registration_purposes"},
             {
                 "method": "get",
                 "endpoint_name": "get_operation_new_entrant_application",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "get", "endpoint_name": "get_operation", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "get",
+                "endpoint_name": "get_operation",
+                "kwargs": {"operation_id": mock_uuid},
+            },
             {
                 "method": "get",
                 "endpoint_name": "get_operation_with_documents",
@@ -348,9 +507,21 @@ class TestEndpointPermissions(TestCase):
         ],
         "authorized_irc_user_and_industry_admin_user": [],
         "cas_director": [
-            {"method": "patch", "endpoint_name": "facility_bcghg_id", "kwargs": {"facility_id": mock_uuid}},
-            {"method": "patch", "endpoint_name": "operation_boro_id", "kwargs": {"operation_id": mock_uuid}},
-            {"method": "patch", "endpoint_name": "operation_bcghg_id", "kwargs": {"operation_id": mock_uuid}},
+            {
+                "method": "patch",
+                "endpoint_name": "facility_bcghg_id",
+                "kwargs": {"facility_id": mock_uuid},
+            },
+            {
+                "method": "patch",
+                "endpoint_name": "operation_boro_id",
+                "kwargs": {"operation_id": mock_uuid},
+            },
+            {
+                "method": "patch",
+                "endpoint_name": "operation_bcghg_id",
+                "kwargs": {"operation_id": mock_uuid},
+            },
         ],
         "cas_director_analyst_and_industry_admin_user": [
             {
@@ -365,7 +536,11 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "v1_update_operation_status",
                 "kwargs": {"operation_id": mock_uuid},
             },
-            {"method": "put", "endpoint_name": "v1_update_operator_status", "kwargs": {"operator_id": mock_uuid}},
+            {
+                "method": "put",
+                "endpoint_name": "v1_update_operator_status",
+                "kwargs": {"operator_id": mock_uuid},
+            },
         ],
         "v1_authorized_irc_user_and_industry_admin_user_write": [
             {
@@ -383,7 +558,7 @@ class TestEndpointPermissions(TestCase):
     def _call_endpoint(cls, method, endpoint):
         client_method = getattr(cls.client, method)
 
-        if method.lower() == 'get':
+        if method.lower() == "get":
             return client_method(endpoint)
 
         # For methods that require content_type and data

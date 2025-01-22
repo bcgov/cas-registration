@@ -16,8 +16,6 @@ from service.report_service import ReportService
 
 
 class TestReportService(TestCase):
-    from service.report_service import ReportService
-
     def test_throws_if_operation_doesnt_exist(self):
         baker.make(ReportingYear, reporting_year=2000)
 
@@ -33,7 +31,10 @@ class TestReportService(TestCase):
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
             ReportService.create_report(operation.id, reporting_year=2000)
 
-        self.assertEqual(str(exception_context.exception), "ReportingYear matching query does not exist.")
+        self.assertEqual(
+            str(exception_context.exception),
+            "ReportingYear matching query does not exist.",
+        )
 
     def test_throws_if_report_already_exists(self):
         operation = operation_baker(type="lfo")
@@ -66,15 +67,18 @@ class TestReportService(TestCase):
             mock_report_data_access_service_report_exists.return_value = False
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
 
-            operation = operation_baker(type="lfo", bc_obps_regulated_operation=bc_obps_regulated_operation_baker())
+            operation = operation_baker(
+                type="lfo",
+                bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
+            )
             operation.activities.add(
-                Activity.objects.get(name='Magnesium production'),
-                Activity.objects.get(name='Hydrogen production'),
+                Activity.objects.get(name="Magnesium production"),
+                Activity.objects.get(name="Hydrogen production"),
             )
             operation.regulated_products.add(
-                RegulatedProduct.objects.get(name='Cement equivalent'),
-                RegulatedProduct.objects.get(name='Mining: gold-equivalent'),
-                RegulatedProduct.objects.get(name='Liquefied natural gas'),
+                RegulatedProduct.objects.get(name="Cement equivalent"),
+                RegulatedProduct.objects.get(name="Mining: gold-equivalent"),
+                RegulatedProduct.objects.get(name="Liquefied natural gas"),
             )
             reporting_year = reporting_year_baker(reporting_year=2101)
             # Calling the method under test
@@ -92,6 +96,7 @@ class TestReportService(TestCase):
             self.assertEqual(report_version.report, report)
             self.assertFalse(report_version.is_latest_submitted)
             self.assertEqual(report_version.status, 'Draft')
+
             # Testing the report_operation data
             self.assertSequenceEqual(
                 (
