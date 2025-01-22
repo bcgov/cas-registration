@@ -18,10 +18,14 @@ class ReportOperation(TimeStampedModel):
     )
 
     operator_legal_name = models.CharField(
-        max_length=1000, db_comment="The legal name of the operator operating this operation"
+        max_length=1000,
+        db_comment="The legal name of the operator operating this operation",
     )
     operator_trade_name = models.CharField(
-        max_length=1000, db_comment="The trade name of the operator operating this operation", blank=True, null=True
+        max_length=1000,
+        db_comment="The trade name of the operator operating this operation",
+        blank=True,
+        null=True,
     )
     operation_name = models.CharField(
         max_length=1000,
@@ -32,7 +36,10 @@ class ReportOperation(TimeStampedModel):
         db_comment="The type of the operation, LFO or SFO",
     )
     operation_bcghgid = models.CharField(
-        max_length=1000, db_comment="The BCGHGH ID of the operation", blank=True, null=True
+        max_length=1000,
+        db_comment="The BCGHGH ID of the operation",
+        blank=True,
+        null=True,
     )
     bc_obps_regulated_operation_id = models.CharField(
         max_length=255,
@@ -48,4 +55,4 @@ class ReportOperation(TimeStampedModel):
     class Meta:
         db_table_comment = "A table to store operation information as part of a report"
         db_table = 'erc"."report_operation'
-        app_label = 'reporting'
+        app_label = "reporting"

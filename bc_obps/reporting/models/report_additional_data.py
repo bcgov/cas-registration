@@ -6,7 +6,7 @@ from reporting.models.report_version import ReportVersion
 class ReportAdditionalData(TimeStampedModel):
     report_version = models.OneToOneField(
         ReportVersion,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="report_additional_data",
         db_comment="The report version this report additional data applies to",
         primary_key=True,

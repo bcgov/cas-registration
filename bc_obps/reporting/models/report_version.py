@@ -4,6 +4,9 @@ from reporting.models.report import Report
 
 
 class ReportVersion(TimeStampedModel):
+    class ReportType(models.TextChoices):
+        ANNUAL_REPORT = "Annual Report"
+        SIMPLE_REPORT = "Simple Report"
 
     report = models.ForeignKey(
         Report,
@@ -18,12 +21,13 @@ class ReportVersion(TimeStampedModel):
     report_type = models.CharField(
         max_length=1000,
         db_comment="Report type",
-        default="Annual Report",
+        default=ReportType.ANNUAL_REPORT,
+        choices=ReportType.choices,
     )
 
     class ReportVersionStatus(models.TextChoices):
-        Draft = 'Draft'
-        Submitted = 'Submitted'
+        Draft = "Draft"
+        Submitted = "Submitted"
 
     status = models.CharField(
         max_length=1000,
@@ -35,4 +39,12 @@ class ReportVersion(TimeStampedModel):
     class Meta:
         db_table_comment = "A table representing the multiple versions that a single report can have."
         db_table = 'erc"."report_version'
-        app_label = 'reporting'
+        app_label = "reporting"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["report"],
+                condition=models.Q(status="Draft"),
+                name="unique_report_version_with_draft_status_per_report",
+                violation_error_message="Only one draft report version can exist on a report.",
+            )
+        ]

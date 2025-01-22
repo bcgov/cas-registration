@@ -24,15 +24,19 @@ class ProductEmissionIntensity(BaseModel):
         db_comment="Foreign key to the product record that the emission intensity values in this record relate to",
     )
     product_weighted_average_emission_intensity = models.DecimalField(
-        db_comment='The published B.C. productionweighted average emission intensity (PWAEI) for that product found in Schedule A.1 of the GGERR. https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA',
+        db_comment="The published B.C. productionweighted average emission intensity (PWAEI) for that product found in Schedule A.1 of the GGERR. https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA",
         decimal_places=4,
         max_digits=10,
     )
     valid_from = models.DateField(
-        blank=True, null=True, db_comment="Date from which the emission intensity value is applicable to a product"
+        blank=True,
+        null=True,
+        db_comment="Date from which the emission intensity value is applicable to a product",
     )
     valid_to = models.DateField(
-        blank=True, null=True, db_comment="Date until which the emission intensity value is applicable to a product"
+        blank=True,
+        null=True,
+        db_comment="Date until which the emission intensity value is applicable to a product",
     )
 
     class Meta:
@@ -42,7 +46,10 @@ class ProductEmissionIntensity(BaseModel):
             ExclusionConstraint(
                 name="exclude_overlapping_emission_intensity_records_by_date_range",
                 expressions=[
-                    (TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS),
+                    (
+                        TsTzRange("valid_from", "valid_to", RangeBoundary()),
+                        RangeOperators.OVERLAPS,
+                    ),
                     ("product", RangeOperators.EQUAL),
                 ],
             ),
