@@ -303,7 +303,7 @@ class TransferEventService:
         if not user.is_cas_analyst():
             raise Exception(UNAUTHORIZED_MESSAGE)
         if transfer_event.status != TransferEvent.Statuses.TO_BE_TRANSFERRED:
-            raise Exception("Only transfer events with status 'To be transferred' can be updated.")
+            raise Exception("Only transfer events with status 'To be transferred' can be modified.")
         return transfer_event
 
     @classmethod
