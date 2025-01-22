@@ -52,7 +52,6 @@ describe("The Breadcrumb component", () => {
         "Administration",
         "Operations",
         "Operation 2",
-        "Facilities",
       ],
     },
     {
@@ -62,7 +61,6 @@ describe("The Breadcrumb component", () => {
         "Administration",
         "Operations",
         "Operation 2",
-        "Facilities",
         "Facility 1",
       ],
     },
