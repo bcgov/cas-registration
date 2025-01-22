@@ -56,6 +56,7 @@ export default function TransferDetailForm({
   };
 
   const submitHandler = async (e: IChangeEvent) => {
+    setError(undefined);
     setIsSubmitting(true);
     const endpoint = `registration/transfer-events/${transferId}`;
     const pathToRevalidate = `/transfers/${transferId}`;
