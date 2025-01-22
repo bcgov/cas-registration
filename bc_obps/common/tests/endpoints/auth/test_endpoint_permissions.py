@@ -647,3 +647,45 @@ class TestEndpointPermissions(TestCase):
             f"The following endpoints (COUNT:{len(untested_endpoints)}) are not covered by permission tests:\n"
             + "\n".join(f"- {endpoint}" for endpoint in untested_endpoints)
         )
+
+    @classmethod
+    @patch("common.permissions.check_permission_for_role")
+    def test_role_access_restrictions(cls, mock_check_permission_for_role: MagicMock):
+        """This test verifies that roles have no access to endpoints outside of their list"""
+        # Create a mapping of endpoints to their required roles
+        endpoint_role_mapping = {}
+        for role, configs in cls.endpoints_to_test.items():
+            for config in configs:
+                key = (config["endpoint_name"], config["method"], tuple(sorted(config.get("kwargs", {}).items())))
+                endpoint_role_mapping[key] = role
+
+        # Test each role's access restrictions
+        for current_role, configs in cls.endpoints_to_test.items():
+            # Set of allowed endpoints for this role
+            allowed_endpoints = {
+                (config["endpoint_name"], config["method"], tuple(sorted(config.get("kwargs", {}).items())))
+                for config in configs
+            }
+
+            # Endpoints this role should NOT have access to
+            all_endpoints = set(endpoint_role_mapping.keys())
+            forbidden_endpoints = all_endpoints - allowed_endpoints
+
+            for endpoint_key in forbidden_endpoints:
+                endpoint_name, method, kwargs_items = endpoint_key
+                kwargs = dict(kwargs_items)
+                endpoint = custom_reverse_lazy(endpoint_name, kwargs=kwargs)
+                required_role = endpoint_role_mapping[endpoint_key]
+
+                # Deny forbidden endpoint
+                def check_permission_side_effect(request, role):
+                    return False
+
+                mock_check_permission_for_role.side_effect = check_permission_side_effect
+
+            cls._call_endpoint(method, endpoint)
+
+            # Assert that permission check was called with the correct role
+            mock_check_permission_for_role.assert_called_once_with(ANY, required_role)
+            # Reset mock
+            mock_check_permission_for_role.reset_mock()
