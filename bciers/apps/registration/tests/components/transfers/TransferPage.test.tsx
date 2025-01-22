@@ -1,6 +1,9 @@
+import { randomUUID } from "crypto";
 import { render, screen } from "@testing-library/react";
-import { fetchOperatorsPageData } from "apps/administration/tests/components/operators/mocks";
+import { getTransferEvent } from "@/registration/tests/components/transfers/mocks";
+import { fetchOperatorsPageData } from "@/administration/tests/components/operators/mocks";
 import TransferPage from "@/registration/app/components/transfers/TransferPage";
+import { operationEntitySchema } from "@/registration/app/data/jsonSchema/transfer/transferDetail";
 
 describe("Transfer page", () => {
   beforeEach(async () => {
@@ -33,5 +36,52 @@ describe("Transfer page", () => {
     expect(
       screen.getByText(/select the operators involved/i),
     ).toBeInTheDocument();
+  });
+  it("throws an error when transferId is not a valid UUID", async () => {
+    await expect(async () => {
+      const transferId = "invalid-uuid";
+      // @ts-ignore
+      render(await TransferPage({ transferId }));
+    }).rejects.toThrow("Invalid transfer id: invalid-uuid");
+  });
+  it("throws an error when there's a problem fetching transfer information", async () => {
+    getTransferEvent.mockResolvedValue({ error: "error" });
+    await expect(async () => {
+      render(await TransferPage({ transferId: randomUUID() }));
+    }).rejects.toThrow("Error fetching transfer information.");
+  });
+  it("renders the TransferDetailForm if transferId is provided", async () => {
+    // Mocking the TransferDetailForm component
+    vi.mock(
+      "apps/registration/app/components/transfers/TransferDetailForm",
+      () => ({
+        default: () => <div>Mocked TransferDetailForm</div>,
+      }),
+    );
+
+    // Mocking the operationEntitySchema function
+    vi.mock(
+      "apps/registration/app/data/jsonSchema/transfer/transferDetail",
+      () => ({
+        operationEntitySchema: vi.fn(),
+      }),
+    );
+    const mockOperationEntitySchema = operationEntitySchema as ReturnType<
+      typeof vi.fn
+    >;
+    const [operationId, fromOperatorId] = [randomUUID(), randomUUID()];
+    getTransferEvent.mockResolvedValue({
+      transfer_entity: "Operation",
+      operation: operationId,
+      operation_name: "Operation name",
+      from_operator_id: fromOperatorId,
+    });
+    render(await TransferPage({ transferId: randomUUID() }));
+    expect(screen.getByText("Mocked TransferDetailForm")).toBeInTheDocument();
+    expect(mockOperationEntitySchema).toHaveBeenCalledWith(
+      operationId,
+      "Operation name",
+      fromOperatorId,
+    );
   });
 });
