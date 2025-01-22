@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { TransferEventStatus } from "@/registration/app/components/transfers/enums";
 
 export interface TransferRow {
   id: number; // random ID to avoid duplicate key error in the UI when rendering the table
@@ -54,4 +55,5 @@ export interface TransferDetailFormData {
   existing_facilities: ExistingFacilities[];
   to_operation?: string;
   effective_date: string;
+  status: TransferEventStatus;
 }
