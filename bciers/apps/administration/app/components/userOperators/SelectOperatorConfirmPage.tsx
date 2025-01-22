@@ -1,4 +1,4 @@
-import CancelIcon from "@mui/icons-material/Cancel";
+import WarningIcon from "@mui/icons-material/Warning";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
@@ -42,7 +42,7 @@ export default async function SelectOperatorConfirmPage({
           </p>
           <p className="text-center">
             If you believe this is an error and you should be granted access,
-            please email us at <br />
+            please email us at{" "}
             <a
               href="mailto:GHGRegulator@gov.bc.ca"
               className="text-black font-bold no-underline"
@@ -53,9 +53,9 @@ export default async function SelectOperatorConfirmPage({
         </div>
       );
       return (
-        <section className="text-center my-auto text-2xl flex flex-col gap-3">
+        <section className="text-center my-auto flex flex-col gap-3">
           <span>
-            <CancelIcon sx={{ color: "#FF0000", fontSize: 50 }} />
+            <WarningIcon sx={{ color: "#D8292F", fontSize: 50 }} />
           </span>
           {hasAdmin ? declinedHasAdminJSX : declinedNoAdminJSX}
           <span className="text-sm">

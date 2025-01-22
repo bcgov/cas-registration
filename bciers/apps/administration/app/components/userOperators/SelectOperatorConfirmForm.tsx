@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { useState } from "react";
-import WarningIcon from "@mui/icons-material/Warning";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import RequestAccessButton from "../buttons/RequestAccessButton";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
@@ -45,7 +45,7 @@ export default function SelectOperatorConfirmForm({
   );
 
   const operatorHasNoAdmin: JSX.Element = (
-    <div data-testid="has-no-admin-message" style={{ fontSize: "16px" }}>
+    <div data-testid="has-no-admin-message">
       <p>
         The operator <b>{operator.legal_name}</b> does not have an administrator
         yet.
@@ -71,11 +71,11 @@ export default function SelectOperatorConfirmForm({
   );
 
   return (
-    <section className="text-center my-auto text-2xl flex flex-col gap-3">
+    <section className="text-center my-auto flex flex-col gap-3">
       {hasConfirmedOperator ? (
         <>
           <span>
-            <WarningIcon sx={{ color: "#fcba19", fontSize: "40px" }} />
+            <WarningRoundedIcon sx={{ color: "#fcba19", fontSize: "40px" }} />
           </span>
           <div>{hasAdmin ? operatorHasAdminJSX : operatorHasNoAdmin}</div>
           <Link
