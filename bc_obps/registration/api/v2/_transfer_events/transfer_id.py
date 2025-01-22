@@ -2,7 +2,6 @@ from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from ninja.types import DictStrAny
-
 from registration.constants import TRANSFER_EVENT_TAGS
 from registration.models import TransferEvent
 from common.api.utils import get_current_user_guid
