@@ -79,9 +79,9 @@ class ReportFacilitiesService:
         )
 
         report_version = ReportVersion.objects.select_related('report__operation').get(id=version_id)
-
+        operation_id = report_version.report.operation.id
         available_facilities = (
-            FacilityDesignatedOperationTimeline.objects.filter(operation_id=report_version.report.operation.id)
+            FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id)
             .distinct()
             .values('facility_id', 'facility__name', 'end_date')
         )
@@ -112,4 +112,5 @@ class ReportFacilitiesService:
         return {
             "current_facilities": current_facilities,
             "past_facilities": past_facilities,
+            "operation_id": operation_id,
         }
