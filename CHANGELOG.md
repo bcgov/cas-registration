@@ -1,3 +1,16 @@
+# [1.19.0](https://github.com/bcgov/cas-registration/compare/v1.18.0...v1.19.0) (2025-01-22)
+
+### Bug Fixes
+
+- Add previously missed default emissions to alumina source types ([9568534](https://github.com/bcgov/cas-registration/commit/9568534f11ecb4940c550ab80b4df5760ace6630))
+- Block start button from redirecting if async doesn't return operation number ([aa99553](https://github.com/bcgov/cas-registration/commit/aa99553c399ef3c6643aae5c4cad332ffed1da7b))
+- filter out the Facilities crumb from the breadcrumb component and update tests ([a920690](https://github.com/bcgov/cas-registration/commit/a9206904d92adf9f7e9a645871728c9b4cf68b4c))
+
+### Features
+
+- api endpoint to change a report version's report type ([83ee6dd](https://github.com/bcgov/cas-registration/commit/83ee6ddf8cf7562caf99c112da061bb1336d1577))
+- create external transfers pages ([42f138e](https://github.com/bcgov/cas-registration/commit/42f138e98d170f62852ce84689d622dc6a44c622))
+
 # [1.18.0](https://github.com/bcgov/cas-registration/compare/v1.17.1...v1.18.0) (2025-01-14)
 
 ### Bug Fixes
