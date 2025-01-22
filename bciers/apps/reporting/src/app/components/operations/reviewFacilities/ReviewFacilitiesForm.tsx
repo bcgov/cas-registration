@@ -5,7 +5,7 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 
 import {
   buildReviewFacilitiesSchema,
-  reviewFacilitiesUiSchema,
+  buildReviewFacilitiesUiSchema,
 } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 import { actionHandler } from "@bciers/actions";
 import {
@@ -32,6 +32,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     initialData.current_facilities,
     initialData.past_facilities,
   );
+  const uiSchema: any = buildReviewFacilitiesUiSchema(initialData.operation_id);
 
   const taskListElements = getOperationInformationTaskList(
     version_id,
@@ -39,54 +40,54 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     "Linear Facility Operation",
   );
 
-    const checkIfFacilityReportWillBeDeleted = () => {
-      if (
-        !formData ||
-        !formData.current_facilities_section ||
-        !formData.current_facilities_section.current_facilities
-      ){
-        console.log("NO FORM DATA");
-        return null;
-      }
-        
-      const presentFacilities =
-        formData.current_facilities_section.current_facilities.concat(
-          formData.past_facilities_section.past_facilities,
-        );
-      const previousFacilities = formData.current_facilities.concat(
-        initialData.past_facilities,
-      );
-      // first check if a facility has been deselected
-      if (presentFacilities.length >= previousFacilities.length) {
-        console.log("NO FACILITY DESELECTED");
-        return null;
-      }
+  const checkIfFacilityReportWillBeDeleted = () => {
+    if (
+      !formData ||
+      !formData.current_facilities_section ||
+      !formData.current_facilities_section.current_facilities
+    ) {
+      console.log("NO FORM DATA");
+      return null;
+    }
 
-      const deselectedFacilities = previousFacilities.filter(
-        (facility) => !presentFacilities.includes(facility),
+    const presentFacilities =
+      formData.current_facilities_section.current_facilities.concat(
+        formData.past_facilities_section.past_facilities,
       );
-      console.log("***********deselectedFacilities", deselectedFacilities);
-      return deselectedFacilities;
-    };
+    const previousFacilities = formData.current_facilities.concat(
+      initialData.past_facilities,
+    );
+    // first check if a facility has been deselected
+    if (presentFacilities.length >= previousFacilities.length) {
+      console.log("NO FACILITY DESELECTED");
+      return null;
+    }
+
+    const deselectedFacilities = previousFacilities.filter(
+      (facility: any) => !presentFacilities.includes(facility),
+    );
+    console.log("***********deselectedFacilities", deselectedFacilities);
+    return deselectedFacilities;
+  };
 
   const handleChange = (e: any) => {
     console.log("*******handleChange event", e);
     checkIfFacilityReportWillBeDeleted();
     setModalOpen(true);
-    
+
     setFormData({ ...e.formData });
   };
 
   const handleModalCancel = () => {
     setConfirmedToChange(false);
     setModalOpen(false);
-  }
+  };
 
   const handleModalConfirm = () => {
     setConfirmedToChange(true);
     setModalOpen(false);
     //setFormData({ ...formData });
-  }
+  };
 
   const handleSubmit = async (data: any) => {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
@@ -115,18 +116,20 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       <SimpleModal
         title="Confirmation"
         open={modalOpen}
-        onCancel={ handleModalCancel }
-        onConfirm={ handleModalConfirm }
+        onCancel={handleModalCancel}
+        onConfirm={handleModalConfirm}
         confirmText="Deselect Facility"
       >
         <p>
-          This facility has an existing report. Deselecting this facility will delete this facility&apos;s report on Save. Are you sure you want to deselect?
+          This facility has an existing report. Deselecting this facility will
+          delete this facility&apos;s report on Save. Are you sure you want to
+          deselect?
         </p>
       </SimpleModal>
       <MultiStepFormWithTaskList
         formData={formData}
         schema={schema}
-        uiSchema={reviewFacilitiesUiSchema}
+        uiSchema={uiSchema}
         taskListElements={taskListElements}
         steps={multiStepHeaderSteps}
         errors={errors}
