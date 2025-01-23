@@ -17,12 +17,12 @@ describe("The Breadcrumb component", () => {
   const testCases = [
     {
       url: "http://localhost:3000/administration/contacts",
-      expectedBreadcrumbs: ["Home", "Administration", "Contacts"],
+      expectedBreadcrumbs: ["Dashboard", "Administration", "Contacts"],
     },
     {
       url: "http://localhost:3000/administration/contacts/add-contact",
       expectedBreadcrumbs: [
-        "Home",
+        "Dashboard",
         "Administration",
         "Contacts",
         "Add Contact",
@@ -30,16 +30,21 @@ describe("The Breadcrumb component", () => {
     },
     {
       url: "http://localhost:3000/administration/contacts/10?contacts_title=Henry%20Ives",
-      expectedBreadcrumbs: ["Home", "Administration", "Contacts", "Henry Ives"],
+      expectedBreadcrumbs: [
+        "Dashboard",
+        "Administration",
+        "Contacts",
+        "Henry Ives",
+      ],
     },
     {
       url: "http://localhost:3000/administration/operations",
-      expectedBreadcrumbs: ["Home", "Administration", "Operations"],
+      expectedBreadcrumbs: ["Dashboard", "Administration", "Operations"],
     },
     {
       url: "http://localhost:3000/administration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d?operations_title=Operation+2",
       expectedBreadcrumbs: [
-        "Home",
+        "Dashboard",
         "Administration",
         "Operations",
         "Operation 2",
@@ -48,29 +53,56 @@ describe("The Breadcrumb component", () => {
     {
       url: "http://localhost:3000/administration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/facilities?operations_title=Operation+2",
       expectedBreadcrumbs: [
-        "Home",
+        "Dashboard",
         "Administration",
         "Operations",
         "Operation 2",
+        "Facilities",
       ],
     },
     {
       url: "http://localhost:3000/administration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/facilities/f486f2fb-62ed-438d-bb3e-0819b51e3aeb?operations_title=Operation%202&facilities_title=Facility%201",
       expectedBreadcrumbs: [
-        "Home",
+        "Dashboard",
         "Administration",
         "Operations",
         "Operation 2",
+        "Facilities",
         "Facility 1",
       ],
     },
     {
       url: "http://localhost:3000/registration/register-an-operation",
-      expectedBreadcrumbs: ["Home", "Registration", "Register An Operation"],
+      expectedBreadcrumbs: [
+        "Dashboard",
+        "Registration",
+        "Register An Operation",
+      ],
     },
     {
       url: "http://localhost:3000/registration/register-an-operation/2",
-      expectedBreadcrumbs: ["Home", "Registration", "Register An Operation"],
+      expectedBreadcrumbs: [
+        "Dashboard",
+        "Registration",
+        "Register An Operation",
+      ],
+    },
+    {
+      url: "http://localhost:3000/reporting/reports",
+      expectedBreadcrumbs: ["Dashboard", "Reporting", "Reports"],
+    },
+    {
+      url: "http://localhost:3000/reporting/reports/1/review-operator-data",
+      expectedBreadcrumbs: [
+        "Dashboard",
+        "Reporting",
+        "Reports",
+        "Review Operator Data",
+      ],
+    },
+    {
+      url: "http://localhost:3000/reporting/reports/1/facilities/f486f2fb-62ed-438d-bb3e-0819b51e3aff/activities",
+      expectedBreadcrumbs: ["Dashboard", "Reporting", "Reports", "Activities"],
     },
   ];
 
@@ -82,7 +114,7 @@ describe("The Breadcrumb component", () => {
         <Bread
           separator=">"
           capitalizeLinks={true}
-          defaultLinks={[{ label: "Home", href: "/" }]}
+          defaultLinks={[{ label: "Dashboard", href: "/" }]}
         />,
       );
 
