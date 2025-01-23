@@ -45,18 +45,14 @@ class TestCurrentUserMiddleware(TestCase):
         request = self.factory.get('/', HTTP_AUTHORIZATION=json.dumps(auth_header))
         response = middleware(request)
         assert response.status_code == 400
-        self.assertEqual(
-            json.loads(response.content.decode())["error"], "Invalid Authorization header"
-        )
+        self.assertEqual(json.loads(response.content.decode())["error"], "Invalid Authorization header")
 
     def test_malformed_json_in_authorization_header(self):
         middleware = self.middleware
         request = self.factory.get('/', HTTP_AUTHORIZATION="invalid_json")
         response = middleware(request)
         assert response.status_code == 400
-        self.assertEqual(
-            json.loads(response.content.decode())["error"], "Invalid Authorization header"
-        )
+        self.assertEqual(json.loads(response.content.decode())["error"], "Invalid Authorization header")
 
     def test_invalid_uuid_format_in_authorization_header(self):
         middleware = self.middleware
@@ -64,6 +60,4 @@ class TestCurrentUserMiddleware(TestCase):
         request = self.factory.get('/', HTTP_AUTHORIZATION=json.dumps(auth_header))
         response = middleware(request)
         assert response.status_code == 400
-        self.assertEqual(
-            json.loads(response.content.decode())["error"], "Invalid Authorization header"
-        )
+        self.assertEqual(json.loads(response.content.decode())["error"], "Invalid Authorization header")

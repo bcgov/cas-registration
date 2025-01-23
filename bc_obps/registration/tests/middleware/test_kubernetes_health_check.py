@@ -4,7 +4,6 @@ from registration.middleware.kubernetes_health_check import KubernetesHealthChec
 
 
 class TestKubernetesHealthCheckMiddleware(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.middleware = KubernetesHealthCheckMiddleware(lambda request: MagicMock(status_code=200))
