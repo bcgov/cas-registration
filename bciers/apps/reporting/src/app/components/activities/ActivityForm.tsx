@@ -14,6 +14,7 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
+import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -74,6 +75,7 @@ export default function ActivityForm({
   }, [currentActivity]);
 
   const customValidate = (formData: { [key: string]: any }, errors: any) => {
+    // Negative numbers
     const results = findPathsWithNegativeNumbers(formData);
     results.forEach((result) => {
       setNestedErrorForCustomValidate(errors, result, "must be >= 0");
@@ -105,6 +107,10 @@ export default function ActivityForm({
       setJsonSchema(safeJsonParse(schemaData).schema);
       setSelectedSourceTypeIds(selectedSourceTypes);
     }
+
+    // Add together quarterly amounts for Fuel Combustion by Mobile Equipment
+    if (c.formData?.sourceTypes?.mobileFuelCombustionPartOfFacility)
+      calculateMobileAnnualAmount(c.formData);
 
     setFormState(c.formData);
   };

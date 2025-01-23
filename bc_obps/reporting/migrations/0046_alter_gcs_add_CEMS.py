@@ -41,7 +41,6 @@ def add_configuration_element_data(apps, schema_monitor):
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
-
             # General stationary combustion solely for the purpose of line tracing
             # CO2 - with production of useful energy
             ConfigurationElement(
@@ -69,7 +68,6 @@ def add_configuration_element_data(apps, schema_monitor):
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
-
             # General stationary combustion, other than non-compression and non-processing combustion
             # CO2 - with production of useful energy
             ConfigurationElement(
@@ -110,7 +108,6 @@ def add_configuration_element_data(apps, schema_monitor):
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
-
             # General stationary non-compression and non-processing combustion
             # CO2 - with production of useful energy
             ConfigurationElement(
@@ -151,15 +148,14 @@ def add_configuration_element_data(apps, schema_monitor):
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
-
         ]
     )
 
+
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0044_remove_reportoperation_operation_representative_name_and_more')]
+    dependencies = [('reporting', '0045_fix_incorrect_fkey_on_deletes')]
 
     operations = [
         migrations.RunPython(add_configuration_element_data),
-
     ]
