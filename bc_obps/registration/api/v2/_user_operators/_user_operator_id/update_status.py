@@ -3,7 +3,6 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from uuid import UUID
 from registration.constants import USER_OPERATOR_TAGS
-from service.user_operator_service import UserOperatorService
 from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.schema.v1 import (
@@ -14,6 +13,7 @@ from registration.schema.generic import Message
 from registration.models import UserOperator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.router import router
+from service.user_operator_service_v2 import UserOperatorServiceV2
 
 
 @router.put(
@@ -29,4 +29,6 @@ from registration.api.router import router
 def update_user_operator_status(
     request: HttpRequest, user_operator_id: UUID, payload: UserOperatorStatusUpdate
 ) -> Tuple[Literal[200], UserOperator]:
-    return 200, UserOperatorService.update_status(user_operator_id, payload, get_current_user_guid(request))
+    return 200, UserOperatorServiceV2.update_status_and_create_contact(
+        user_operator_id, payload, get_current_user_guid(request)
+    )
