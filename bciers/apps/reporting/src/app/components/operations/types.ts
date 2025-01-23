@@ -5,10 +5,25 @@ export interface OperationRow {
   operator: string;
 }
 
+export interface FacilityRow {
+  id: number;
+  bcghg_id: string;
+  name: string;
+  operator: string;
+}
 export interface OperationsSearchParams {
   [key: string]: string | number | undefined;
   bcghg_id?: string;
   name?: string;
+  page?: number;
+  sort_field?: string;
+  sort_order?: string;
+}
+
+export interface FacilitiesSearchParams {
+  [key: string]: string | number | undefined;
+  facility_bcghgid?: string;
+  facility_name?: string;
   page?: number;
   sort_field?: string;
   sort_order?: string;
