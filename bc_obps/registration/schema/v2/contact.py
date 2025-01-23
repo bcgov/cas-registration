@@ -2,6 +2,21 @@ from typing import Optional
 from ninja import ModelSchema, Field
 from registration.models import Contact
 from ninja import FilterSchema
+from uuid import UUID
+
+
+from registration.schema.v1.contact import ContactOut
+from ninja import Schema
+
+
+class PlacesAssigned(Schema):
+    role_name: str
+    operation_name: str
+    operation_id: UUID
+
+
+class ContactWithPlacesAssigned(ContactOut):
+    places_assigned: Optional[list[PlacesAssigned]]
 
 
 class ContactListOutV2(ModelSchema):

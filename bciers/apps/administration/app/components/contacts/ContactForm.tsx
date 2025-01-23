@@ -7,6 +7,7 @@ import { actionHandler } from "@bciers/actions";
 import { ContactFormData } from "./types";
 import { FormMode } from "@bciers/utils/src/enums";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
   schema: any;
@@ -32,6 +33,7 @@ export default function ContactForm({
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const [key, setKey] = useState(Math.random());
+  const role = useSessionRole();
 
   return (
     <SingleStepTaskListForm
@@ -40,9 +42,12 @@ export default function ContactForm({
       schema={schema}
       uiSchema={contactsUiSchema}
       formData={formState}
+      formContext={{ userRole: role }}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       allowEdit={allowEdit}
-      inlineMessage={isCreatingState && <NewOperationMessage />}
+      inlineMessage={
+        isCreatingState && !role.includes("cas") && <NewOperationMessage />
+      }
       onSubmit={async (data: { formData?: any }) => {
         const updatedFormData = { ...formState, ...data.formData };
         setFormState(updatedFormData);

@@ -1,6 +1,6 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
+import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
 import {
   contactsSchema,
   contactsUiSchema,
@@ -26,7 +26,13 @@ const contactFormData = {
   municipality: "Cityville",
   province: "ON",
   postal_code: "A1B 2C3",
-  places_assigned: ["Operation Representative - Operation 1"],
+  places_assigned: [
+    {
+      role_name: "Operation Representative",
+      operation_name: "Operation 1",
+      operation_id: "c0743c09-82fa-4186-91aa-4b5412e3415c",
+    },
+  ],
 };
 
 export const checkEmptyContactForm = () => {
@@ -92,6 +98,13 @@ export const fillContactForm = async () => {
 describe("ContactForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
   });
 
   it("renders the empty contact form when creating a new contact", async () => {
@@ -117,7 +130,14 @@ describe("ContactForm component", () => {
     expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
   });
-  it("loads existing readonly contact form data", async () => {
+  it("loads existing readonly contact form data for an internal user", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     const { container } = render(
       <ContactForm
@@ -126,11 +146,13 @@ describe("ContactForm component", () => {
         isCreating={false}
       />,
     );
-    // form fields
+
+    // Inline message
     expect(
-      screen.queryByText(/Is this contact a user in BCIERS/i),
+      screen.queryByText(
+        /To assign this representative to an operation, go to the operation information form/i,
+      ),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText(/Select the user/i)).not.toBeInTheDocument();
 
     expect(
       container.querySelector("#root_section1_first_name"),
@@ -141,9 +163,11 @@ describe("ContactForm component", () => {
     ).toHaveTextContent("Doe");
 
     expect(screen.getByText(/Places Assigned/i)).toBeVisible();
-    expect(
-      screen.getByText(/Operation Representative - Operation 1/i),
-    ).toBeVisible();
+    expect(screen.getByText(/Operation Representative/i)).toBeVisible();
+    expect(screen.getByRole("link")).toHaveAttribute(
+      "href",
+      "/operations/c0743c09-82fa-4186-91aa-4b5412e3415c?operations_title=Operation 1&from_contacts=true",
+    );
 
     expect(
       container.querySelector("#root_section2_position_title"),
@@ -407,7 +431,13 @@ describe("ContactForm component", () => {
         body: JSON.stringify({
           first_name: "John updated",
           last_name: "Doe updated",
-          places_assigned: ["Operation Representative - Operation 1"],
+          places_assigned: [
+            {
+              role_name: "Operation Representative",
+              operation_name: "Operation 1",
+              operation_id: "c0743c09-82fa-4186-91aa-4b5412e3415c",
+            },
+          ],
           position_title: "Senior Officer",
           email: "john.doe@example.com",
           phone_number: "+16044011234",
