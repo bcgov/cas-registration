@@ -121,7 +121,7 @@ describe("NewEntrantInformationForm Component", () => {
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
     expect(mockPush).toHaveBeenCalledWith(
-      `/reports/${versionId}/compliance-summary`,
+      `/reports/${versionId}/emission-summary`,
     );
   });
 });

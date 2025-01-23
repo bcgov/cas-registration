@@ -1,121 +1,101 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 
-export const facilityEmissionSummarySchema: RJSFSchema = {
+export const operationEmissionSummarySchema: RJSFSchema = {
   type: "object",
-  title: "Emissions Summary (in tCO2e)",
+  title: "Operation Emission Summary (in tCO2e)",
   properties: {
-    attributableForReporting: {
+    attributable_for_reporting: {
       type: "number",
       title: "Emissions attributable for reporting",
-      minimum: 0,
     },
-    attributableForReportingThreshold: {
+    attributable_for_reporting_threshold: {
       type: "number",
       title: "Emissions attributable for reporting threshold",
-      minimum: 0,
     },
-    reportingOnlyEmission: {
+    reporting_only_emission: {
       type: "number",
       title: "Reporting-only emissions",
-      minimum: 0,
     },
-    emissionCategories: {
+    emission_categories: {
       type: "object",
       title: "Emission Categories",
       properties: {
-        flaring: { type: "number", title: "Flaring emissions", minimum: 0 },
-        fugitive: { type: "number", title: "Fugitive emissions", minimum: 0 },
-        industrialProcess: {
+        flaring: { type: "number", title: "Flaring emissions" },
+        fugitive: { type: "number", title: "Fugitive emissions" },
+        industrial_process: {
           type: "number",
           title: "Industrial process emissions",
-          minimum: 0,
         },
-        onSiteTransportation: {
+        onsite: {
           type: "number",
           title: "On-site transportation emissions",
-          minimum: 0,
         },
-        stationaryCombustion: {
+        stationary_combustion: {
           type: "number",
           title: "Stationary fuel combustion emissions",
-          minimum: 0,
         },
-        ventingUseful: {
-          type: "number",
-          title: "Venting emissions - useful",
-          minimum: 0,
-        },
-        ventingNonUseful: {
+        venting_useful: { type: "number", title: "Venting emissions - useful" },
+        venting_non_useful: {
           type: "number",
           title: "Venting emissions - non-useful",
-          minimum: 0,
         },
-        waste: { type: "number", title: "Emissions from waste", minimum: 0 },
-        wastewater: {
-          type: "number",
-          title: "Emissions from wastewater",
-          minimum: 0,
-        },
+        waste: { type: "number", title: "Emissions from waste" },
+        wastewater: { type: "number", title: "Emissions from wastewater" },
       },
     },
-    fuelExcluded: {
+    fuel_excluded: {
       type: "object",
       title: "Emissions excluded by fuel type",
       properties: {
-        woodyBiomass: {
+        woody_biomass: {
           type: "number",
           title: "CO2 emissions from excluded woody biomass",
-          minimum: 0,
         },
-        excludedBiomass: {
+        excluded_biomass: {
           type: "number",
           title: "Other emissions from excluded biomass",
-          minimum: 0,
         },
-        excludedNonBiomass: {
+        excluded_non_biomass: {
           type: "number",
           title: "Emissions from excluded non-biomass",
-          minimum: 0,
         },
       },
     },
-    otherExcluded: {
+    other_excluded: {
       type: "object",
       title: "Other excluded emissions",
       properties: {
-        lfoExcluded: {
+        lfo_excluded: {
           type: "number",
           title:
             "Emissions from line tracing and non-processing and non-compression activities",
-          minimum: 0,
         },
-        fogExcluded: {
+        fog_excluded: {
           type: "number",
           title:
             "Emissions from fat, oil and grease collection, refining and storage",
-          minimum: 0,
         },
       },
     },
   },
 };
 
-export const facilityEmissionSummaryUiSchema = {
+export const operationEmissionSummaryUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:disabled": true,
-  emissionCategories: {
+  emission_categories: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
-  fuelExcluded: {
+  fuel_excluded: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,
   },
-  otherExcluded: {
+  other_excluded: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "section-heading-label",
     "ui:disabled": true,

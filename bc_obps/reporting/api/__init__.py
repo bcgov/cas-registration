@@ -13,7 +13,7 @@ from .report_additional_data import get_registration_purpose_by_version_id
 from .reports import get_regulated_products_by_version_id
 from .reports import get_report_type_by_version
 from .gas_type import get_gas_type
-from .emission_category import get_emission_category
+from .emission_category import get_emission_category, get_operation_emission_summary_totals
 from .production_data import save_production_data
 from .report_new_entrant_data import save_new_entrant_data
 from .report_new_entrant_data import get_new_entrant_data

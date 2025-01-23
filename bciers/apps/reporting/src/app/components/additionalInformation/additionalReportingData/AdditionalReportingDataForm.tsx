@@ -52,7 +52,7 @@ export default function AdditionalReportingDataForm({
   const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
   const saveAndContinueUrl = isNewEntrant
     ? `new-entrant-information`
-    : `compliance-summary`;
+    : `emission-summary`;
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
