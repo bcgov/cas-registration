@@ -59,7 +59,12 @@ const uiSchema = {
               title: "Fuel",
             },
             items: {
-              "ui:order": ["fuelType", "fuelDescription", "annualFuelAmount", "emissions"],
+              "ui:order": [
+                "fuelType",
+                "fuelDescription",
+                "annualFuelAmount",
+                "emissions",
+              ],
               fuelType: {
                 "ui:field": "fuelType",
                 "ui:FieldTemplate": FieldTemplate,
@@ -141,7 +146,12 @@ const uiSchema = {
               title: "Fuel",
             },
             items: {
-              "ui:order": ["fuelType", "fuelDescription", "annualFuelAmount", "emissions"],
+              "ui:order": [
+                "fuelType",
+                "fuelDescription",
+                "annualFuelAmount",
+                "emissions",
+              ],
               fuelType: {
                 "ui:field": "fuelType",
                 "ui:FieldTemplate": FieldTemplate,
