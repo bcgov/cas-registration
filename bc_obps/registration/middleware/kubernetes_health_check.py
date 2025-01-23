@@ -1,30 +1,32 @@
 import logging
-
-from django.http import HttpResponse, HttpResponseServerError
+from typing import Callable
+from django.http import HttpResponse, HttpResponseServerError, HttpRequest
 
 logger = logging.getLogger("liveness")
 
 
 class KubernetesHealthCheckMiddleware(object):
-    def __init__(self, get_response):
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]):
         self.get_response = get_response
         # One-time configuration and initialization.
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest) -> HttpResponse:
         if request.method == "GET":
             if request.path == "/readiness":
-                return self.readiness(request)
+                return self.readiness()
             elif request.path == "/liveness":
-                return self.liveness(request)
+                return self.liveness()
         return self.get_response(request)
 
-    def liveness(self, request):
+    @staticmethod
+    def liveness() -> HttpResponse:
         """
         Returns that the server is alive.
         """
         return HttpResponse("OK. Server is running.")
 
-    def readiness(self, request):
+    @staticmethod
+    def readiness() -> HttpResponse:
         # Connect to each database and do a generic standard SQL query
         # that doesn't write any data and doesn't depend on any tables
         # being present.
@@ -49,8 +51,8 @@ class KubernetesHealthCheckMiddleware(object):
 
             for cache in caches.all():
                 if isinstance(cache, BaseMemcachedCache):
-                    stats = cache._cache.get_stats()
-                    if len(stats) != len(cache._servers):
+                    stats = cache._cache.get_stats()  # type: ignore[attr-defined]
+                    if len(stats) != len(cache._servers):  # type: ignore[attr-defined]
                         return HttpResponseServerError("cache: cannot connect to cache.")
         except Exception as e:
             logger.exception(e)
