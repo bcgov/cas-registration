@@ -52,7 +52,7 @@ describe("Select Operator Confirm Form", () => {
 
     expectButton("Yes this is my operator");
     expect(screen.getByText(/This is not my operator./)).toBeInTheDocument();
-    expectLink("Return.", "/select-operator");
+    expectLink("Go back", "/select-operator");
   });
   it("confirms the operator with admin when confirm button is clicked", async () => {
     render(
@@ -61,7 +61,7 @@ describe("Select Operator Confirm Form", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /Yes this is my operator/i }),
     );
-    expectIcon("WarningIcon", {
+    expectIcon("WarningRoundedIcon", {
       color: "#FF0E0E",
       fontSize: "50px",
     });
@@ -79,7 +79,7 @@ describe("Select Operator Confirm Form", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /Yes this is my operator/i }),
     );
-    expectIcon("WarningIcon", {
+    expectIcon("WarningRoundedIcon", {
       color: "#FF0E0E",
       fontSize: "50px",
     });
