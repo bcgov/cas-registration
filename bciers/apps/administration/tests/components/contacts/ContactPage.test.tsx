@@ -3,10 +3,6 @@ import { useSession, useRouter } from "@bciers/testConfig/mocks";
 import { getContact, getUserOperatorUsers } from "./mocks";
 import ContactPage from "apps/administration/app/components/contacts/ContactPage";
 
-useSession.mockReturnValue({
-  get: vi.fn(),
-});
-
 useRouter.mockReturnValue({
   query: {},
   replace: vi.fn(),
@@ -29,6 +25,14 @@ const contactFormData = {
 describe("Contact component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
+    useSession.mockReturnValue({
+      get: vi.fn(),
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
   });
 
   it("renders the appropriate error component when getContact fails", async () => {

@@ -15,7 +15,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 @router.get(
     "/contacts/{contact_id}",
-    response={200: ContactOut, custom_codes_4xx: Message},
+    response={200: ContactWithPlacesAssigned, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves the details of a specific contact by its ID. The endpoint checks if the current user is authorized to access the contact.
     Industry users can only access contacts that are associated with their own operator. If an unauthorized user attempts to access the contact, an error is raised.""",
@@ -24,7 +24,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @handle_http_errors()
 def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Optional[ContactWithPlacesAssigned]]:
-    return 200, ContactServiceV2.get_with_places_assigned_v2(get_current_user_guid(request), contact_id)
+    return 200, ContactServiceV2.get_with_places_assigned_v2(contact_id)
 
 
 @router.put(

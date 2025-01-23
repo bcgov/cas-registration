@@ -194,7 +194,7 @@ class OperationOutV2(ModelSchema):
             'status',
             'activities',
             'opted_in_operation',
-            'contacts',
+            # 'contacts',
         ]
         from_attributes = True
 

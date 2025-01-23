@@ -65,3 +65,36 @@ class TestContactService:
 
         result = ContactServiceV2.get_with_places_assigned_v2(approved_user_operator.user.user_guid, contact.id)
         assert not hasattr(result, 'places_assigned')
+
+    @staticmethod
+    def test_raises_exception_if_contact_missing_address():
+        contact = baker.make_recipe('utils.contact', address=None)
+
+        with pytest.raises(
+            Exception,
+            match=f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
+        ):
+            ContactServiceV2.raise_exception_if_contact_missing_address_information(contact.id)
+
+    @staticmethod
+    def test_raises_exception_if_operation_rep_missing_required_fields():
+        contacts = baker.make_recipe(
+            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=5
+        )
+        contacts[0].address = None
+        contacts[0].save()
+        contacts[1].address.street_address = None
+        contacts[1].address.save()
+        contacts[2].address.municipality = None
+        contacts[2].address.save()
+        contacts[3].address.province = None
+        contacts[3].address.save()
+        contacts[4].address.postal_code = None
+        contacts[4].address.save()
+
+        for contact in contacts:
+            with pytest.raises(
+                Exception,
+                match=f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
+            ):
+                ContactServiceV2.raise_exception_if_contact_missing_address_information(contact.id)
