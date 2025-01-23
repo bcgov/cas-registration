@@ -1,9 +1,9 @@
 export const calculateMobileAnnualAmount = (formData: any) => {
   const mobileUnit = formData?.sourceTypes?.mobileFuelCombustionPartOfFacility;
-  if (!mobileUnit) return;
+  if (!mobileUnit || !mobileUnit.fuels) return;
 
   // For each fuel, calculate annual amount if all quarters are present
-  for (const fuel of mobileUnit?.fuels) {
+  for (const fuel of mobileUnit.fuels) {
     if (
       !fuel?.q1FuelAmount ||
       !fuel?.q2FuelAmount ||
