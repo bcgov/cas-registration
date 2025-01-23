@@ -1,7 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
-import { ArrayFieldTemplate } from "@bciers/components/form/fields";
+import { PlacesAssignedFieldTemplate } from "@bciers/components/form/fields";
 
 const section1: RJSFSchema = {
   type: "object",
@@ -18,11 +18,15 @@ const section1: RJSFSchema = {
     },
     places_assigned: {
       type: "array",
-      default: ["None"],
       title: "Places assigned",
       readOnly: true,
       items: {
-        type: "string",
+        type: "object",
+        properties: {
+          role_name: { type: "string" },
+          operation_name: { type: "string" },
+          operation_id: { type: "string" },
+        },
       },
     },
   },
@@ -104,15 +108,27 @@ export const contactsUiSchema = {
     "ui:FieldTemplate": SectionFieldTemplate,
     "ui:order": ["selected_user", "first_name", "last_name", "places_assigned"],
     places_assigned: {
-      "ui:ArrayFieldTemplate": ArrayFieldTemplate,
-      "ui:options": {
-        note: "You cannot delete this contact unless you replace them with other contact(s) in the place(s) above.",
-        addable: false,
-        removable: false,
-      },
+      "ui:ArrayFieldTemplate": PlacesAssignedFieldTemplate,
       "ui:classNames": "[&>div:last-child]:w-2/3",
       items: {
         "ui:widget": "ReadOnlyWidget",
+        "ui:options": {
+          label: false,
+          inline: true,
+        },
+        role_name: {
+          "ui:options": {
+            label: false,
+          },
+        },
+        operation_name: {
+          "ui:options": {
+            label: false,
+          },
+        },
+        operation_id: {
+          "ui:widget": "hidden",
+        },
       },
     },
   },

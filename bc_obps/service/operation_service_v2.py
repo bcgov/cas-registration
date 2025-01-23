@@ -1,6 +1,7 @@
-from typing import Optional, Tuple, Callable, Generator
+from typing import Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
+from service.contact_service_v2 import ContactServiceV2
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
@@ -29,6 +30,7 @@ from service.data_access_service.opted_in_operation_detail_service import OptedI
 from service.operation_service import OperationService
 from registration.schema.v2.operation import (
     OperationInformationIn,
+    OperationInformationInUpdate,
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
@@ -194,7 +196,7 @@ class OperationServiceV2:
     def create_or_update_operation_v2(
         cls,
         user_guid: UUID,
-        payload: OperationInformationIn,
+        payload: Union[OperationInformationIn, OperationInformationInUpdate],
         operation_id: UUID | None = None,
     ) -> Operation:
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
@@ -224,9 +226,18 @@ class OperationServiceV2:
 
         # set m2m relationships
         operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
-        operation.regulated_products.set(
-            payload.regulated_products
-        ) if payload.regulated_products else operation.regulated_products.clear()
+
+        (
+            operation.regulated_products.set(payload.regulated_products)
+            if payload.regulated_products
+            else operation.regulated_products.clear()
+        )
+
+        if isinstance(payload, OperationInformationInUpdate):
+            for contact_id in payload.operation_representatives:
+                ContactServiceV2.raise_exception_if_contact_missing_address_information(contact_id)
+
+            operation.contacts.set(payload.operation_representatives)
 
         # create or replace documents
         operation_documents = [
@@ -362,20 +373,20 @@ class OperationServiceV2:
         payload: OperationInformationIn,
         operation_id: UUID,
     ) -> Operation:
-        OperationService.get_if_authorized(user_guid, operation_id)
+        """
+        This service is used for updating an operation after it's been registered. During registration, we use the endpoints in cas-registration/bc_obps/registration/api/v2/_operations/_operation_id/_registration
+        """
+        operation = OperationService.get_if_authorized(user_guid, operation_id)
 
-        operation: Operation = cls.create_or_update_operation_v2(
+        if not operation.status == Operation.Statuses.REGISTERED:
+            raise Exception('Operation must be registered')
+
+        updated_operation: Operation = cls.create_or_update_operation_v2(
             user_guid,
             payload,
             operation_id,
         )
-
-        if payload.regulated_products:
-            # We should add a conditional to check registration_purpose type here
-            # At the time of implementation there are some changes to registration_purpose coming from the business area
-            operation.regulated_products.set(payload.regulated_products)
-            operation.set_create_or_update(user_guid)
-        return operation
+        return updated_operation
 
     @classmethod
     def is_operation_opt_in_information_complete(cls, operation: Operation) -> bool:

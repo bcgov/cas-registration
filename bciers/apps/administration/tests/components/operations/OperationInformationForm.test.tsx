@@ -1,7 +1,11 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import OperationInformationForm from "@/administration/app/components/operations/OperationInformationForm";
-import { actionHandler, useSession } from "@bciers/testConfig/mocks";
+import {
+  actionHandler,
+  useSearchParams,
+  useSession,
+} from "@bciers/testConfig/mocks";
 import {
   getBusinessStructures,
   getNaicsCodes,
@@ -14,6 +18,7 @@ import { FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { getContacts } from "../contacts/mocks";
 
 useSession.mockReturnValue({
   data: {
@@ -22,6 +27,10 @@ useSession.mockReturnValue({
     },
   },
 });
+useSearchParams.mockReturnValue({
+  get: vi.fn(),
+});
+
 const mockDataUri = "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
 
 export const fetchFormEnums = () => {
@@ -63,6 +72,25 @@ export const fetchFormEnums = () => {
     { id: 1, name: "BC-specific refinery complexity throughput" },
     { id: 2, name: "Cement equivalent" },
   ]);
+
+  // Contacts
+  getContacts.mockResolvedValue({
+    items: [
+      {
+        id: 1,
+        first_name: "Ivy",
+        last_name: "Jones",
+        email: "ivy.jones@example.com",
+      },
+      {
+        id: 2,
+        first_name: "Jack",
+        last_name: "King",
+        email: "jack.king@example.com",
+      },
+    ],
+    count: 2,
+  });
 
   // Registration purposes
   actionHandler.mockResolvedValue(["Potential Reporting Operation"]);
@@ -162,7 +190,7 @@ const formData = {
   naics_code_id: 1,
   secondary_naics_code_id: 2,
   operation_has_multiple_operators: true,
-  activities: [1, 2, 3, 4, 5],
+  activities: [1, 2],
   multiple_operators_array: [
     {
       mo_is_extraprovincial_company: false,
@@ -178,7 +206,7 @@ const formData = {
     },
   ],
   registration_purpose: "Reporting Operation",
-  regulated_products: [6],
+  regulated_products: [2],
   opt_in: false,
 };
 
@@ -800,5 +828,153 @@ describe("the OperationInformationForm component", () => {
         }),
       },
     );
+  });
+
+  it("should not allow external users to remove their operation rep", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
+
+    fetchFormEnums();
+    const createdFormSchema =
+      await createAdministrationOperationInformationSchema(
+        formData.registration_purpose,
+        OperationStatus.REGISTERED,
+      );
+
+    render(
+      <OperationInformationForm
+        formData={formData}
+        schema={createdFormSchema}
+        operationId={operationId}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const cancelChipIcon = screen.getAllByTestId("CancelIcon");
+    await userEvent.click(cancelChipIcon[2]); // 0-1 are activities
+    expect(screen.queryByText(/ivy/i)).not.toBeInTheDocument();
+
+    const submitButton = screen.getByRole("button", {
+      name: "Submit",
+    });
+    await userEvent.click(submitButton);
+    expect(actionHandler).toHaveBeenCalledTimes(0);
+    expect(screen.getByText(/Must not have fewer than 1 items/i)).toBeVisible();
+  });
+
+  it("should allow external users to replace their operation rep", async () => {
+    const testFormData = {
+      name: "Operation 3",
+      type: "Single Facility Operation",
+      naics_code_id: 1,
+      secondary_naics_code_id: 2,
+      operation_has_multiple_operators: false,
+      activities: [1, 2],
+      registration_purpose: "Reporting Operation",
+      regulated_products: [1],
+      opt_in: false,
+      operation_representatives: [1],
+      boundary_map: mockDataUri,
+      process_flow_diagram: mockDataUri,
+    };
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
+
+    fetchFormEnums();
+    const createdFormSchema =
+      await createAdministrationOperationInformationSchema(
+        testFormData.registration_purpose,
+        OperationStatus.REGISTERED,
+      );
+
+    render(
+      <OperationInformationForm
+        formData={testFormData}
+        schema={createdFormSchema}
+        operationId={operationId}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    const cancelChipIcon = screen.getAllByTestId("CancelIcon");
+    await userEvent.click(cancelChipIcon[2]); // 0-1 are activities
+    expect(screen.queryByText(/ivy/i)).not.toBeInTheDocument();
+    const operationRepresentativesComboBoxInput = screen.getByRole("combobox", {
+      name: /Operation Representative(s)*/i,
+    });
+    const openOperationReps = operationRepresentativesComboBoxInput
+      .parentElement?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openOperationReps);
+    await userEvent.type(
+      operationRepresentativesComboBoxInput,
+      "Jack King{enter}",
+    );
+
+    const submitButton = screen.getByRole("button", {
+      name: "Submit",
+    });
+    await userEvent.click(submitButton);
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operations/${operationId}`,
+      "PUT",
+      "",
+      {
+        body: JSON.stringify({
+          name: "Operation 3",
+          type: "Single Facility Operation",
+          naics_code_id: 1,
+          secondary_naics_code_id: 2,
+          activities: [1, 2],
+          process_flow_diagram: mockDataUri,
+          boundary_map: mockDataUri,
+          operation_has_multiple_operators: false,
+          registration_purpose: "Reporting Operation",
+          operation_representatives: [2],
+        }),
+      },
+    );
+  });
+
+  it("should show a note if user navigated to operation from the contacts form", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
+    const mockGet = vi.fn();
+    useSearchParams.mockReturnValue({
+      get: mockGet,
+    });
+    mockGet.mockReturnValue("true");
+    fetchFormEnums();
+    const createdFormSchema =
+      await createAdministrationOperationInformationSchema(
+        formData.registration_purpose,
+        OperationStatus.REGISTERED,
+      );
+
+    render(
+      <OperationInformationForm
+        formData={{}}
+        schema={createdFormSchema}
+        operationId={operationId}
+      />,
+    );
+    expect(
+      screen.getByText(
+        /To remove the current operation representative, please select a new contact to replace them./i,
+      ),
+    ).toBeVisible();
   });
 });

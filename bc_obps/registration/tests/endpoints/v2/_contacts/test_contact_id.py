@@ -36,7 +36,7 @@ class TestContactIdEndpoint(CommonTestSetup):
 
         response = TestUtils.mock_get_with_auth_role(
             self,
-            endpoint=custom_reverse_lazy("v1_get_contact", kwargs={"contact_id": contact.id}),
+            endpoint=custom_reverse_lazy("get_contact", kwargs={"contact_id": contact.id}),
             role_name="industry_user",
         )
         assert response.status_code == 200
@@ -44,7 +44,13 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert response_json.get('first_name') == contact.first_name
         assert response_json.get('last_name') == contact.last_name
         assert response_json.get('email') == contact.email
-        assert response_json.get('places_assigned') == [f"Operation Representative - {operation.name}"]
+        assert response_json.get('places_assigned') == [
+            {
+                'role_name': 'Operation Representative',
+                'operation_name': operation.name,
+                'operation_id': str(operation.id),
+            }
+        ]
 
     def test_industry_users_cannot_get_contacts_not_associated_with_their_operator(self):
         contact = contact_baker()

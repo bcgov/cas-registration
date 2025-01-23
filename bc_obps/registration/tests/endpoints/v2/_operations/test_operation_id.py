@@ -2,6 +2,7 @@ from model_bakery import baker
 from registration.models import (
     UserOperator,
 )
+from registration.models.operation import Operation
 from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import operation_baker, operator_baker
@@ -106,7 +107,11 @@ class TestOperationIdEndpoint(CommonTestSetup):
 
     def test_operations_endpoint_put_success(self):
         approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.REGISTERED
+        )
+        contact = baker.make_recipe('utils.contact')
+        self.test_payload["operation_representatives"] = [contact.id]
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
