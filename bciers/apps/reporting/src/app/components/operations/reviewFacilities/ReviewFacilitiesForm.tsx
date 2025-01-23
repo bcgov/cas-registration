@@ -20,6 +20,21 @@ interface Props {
   version_id: number;
 }
 
+interface SubmissionData {
+  current_facilities_section: {
+    current_facilities: string[];
+  };
+  past_facilities_section: {
+    past_facilities: string[];
+  };
+}
+
+interface Facility {
+  facility_id: string;
+  facility__name: string;
+  is_selected: boolean;
+}
+
 export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [errors, setErrors] = useState<string[] | undefined>(undefined);
@@ -42,6 +57,40 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     "Linear Facility Operation",
   );
 
+  // takes the form data and returns an array of facility_ids that are being selected. uses the intial form data as source of id-name mapping
+  const getFacilityIdsForSubmission = (data: SubmissionData) => {
+    const facilityIds: string[] = [];
+
+    // Helper function to find facility_id by facility__name
+    const findFacilityId = (name: string, facilities: Facility[]) => {
+      const facility = facilities.find(
+        (fac: any) => fac.facility__name === name,
+      );
+      return facility ? facility.facility_id : null;
+    };
+
+    // Get current facilities
+    data.current_facilities_section.current_facilities.forEach(
+      (name: string) => {
+        const facilityId = findFacilityId(name, initialData.current_facilities);
+        if (facilityId) {
+          facilityIds.push(facilityId);
+        }
+      },
+    );
+
+    // Get past facilities
+    data.past_facilities_section.past_facilities.forEach((name: string) => {
+      const facilityId = findFacilityId(name, initialData.past_facilities);
+      if (facilityId) {
+        facilityIds.push(facilityId);
+      }
+    });
+
+    return facilityIds;
+  };
+
+  // returns an array of facility names that were previously selected but are not currently selected
   const getListOfRemovedFacilities = () => {
     // get the array of currently selected facilities
     const selectedFacilities =
@@ -50,17 +99,17 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       );
     // get the array of initially selected facilities
     const previouslySelectedFacilities = initialData.current_facilities
-      .filter((curr_facility) => curr_facility.is_selected) // filter out the unselected facilities
-      .map((curr_facility) => curr_facility.facility__name) // flatten the array to just the facility names
+      .filter((curr_facility: Facility) => curr_facility.is_selected) // filter out the unselected facilities
+      .map((curr_facility: Facility) => curr_facility.facility__name) // flatten the array to just the facility names
       .concat(
         // join the current and past facilities
         initialData.past_facilities
-          .filter((past_facility) => past_facility.is_selected)
-          .map((past_facility) => past_facility.facility__name),
+          .filter((past_facility: Facility) => past_facility.is_selected)
+          .map((past_facility: Facility) => past_facility.facility__name),
       );
     // return the facilities that were previously selected but are not currently selected
     return previouslySelectedFacilities.filter(
-      (facility) => !selectedFacilities.includes(facility),
+      (facility: any) => !selectedFacilities.includes(facility),
     );
   };
 
@@ -74,7 +123,9 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
 
     try {
       const response = await actionHandler(endpoint, method, endpoint, {
-        body: JSON.stringify(data),
+        body: JSON.stringify(
+          getFacilityIdsForSubmission(data.formData ? data.formData : formData),
+        ),
       });
 
       if (response?.error) {
@@ -85,7 +136,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       setErrors(undefined);
       return true;
     } catch (err) {
-      console.log("Error submitting review facilities form: ", err);
+      console.error("Error submitting review facilities form: ", err);
       setErrors(["An unexpected error occurred."]);
       return false;
     }
@@ -109,6 +160,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     const deselected = getListOfRemovedFacilities();
     setDeselectedFacilities(deselected);
 
+    // if there are deselected facilities, open the confrimation modal
     if (deselected.length > 0) {
       return handleModalOpen();
     } else {
@@ -124,6 +176,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         onCancel={handleModalCancel}
         onConfirm={handleModalConfirm}
         confirmText="Continue"
+        textComponentType="div"
       >
         <p>You have deselected the following facilities.</p>
         <ul>
