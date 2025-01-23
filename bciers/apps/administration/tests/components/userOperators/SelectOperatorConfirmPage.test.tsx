@@ -44,7 +44,7 @@ describe("Select Operator Confirm Page", () => {
   it("renders message for access declined, has admin", async () => {
     mockOperatorState(true, true);
     await renderSelectOperatorConfirmPage();
-    expectIcon("CancelIcon");
+    expectIcon("WarningIcon");
     expectMessage(
       "access-declined-admin-message",
       `Your access request was declined by an Administrator of ${operatorJSON.legal_name}If you believe this is an error and you should be granted access, please contact the administrator of ${operatorJSON.legal_name}`,
@@ -54,7 +54,7 @@ describe("Select Operator Confirm Page", () => {
   it("renders message for access declined, has no admin", async () => {
     mockOperatorState(false, true);
     await renderSelectOperatorConfirmPage();
-    expectIcon("CancelIcon");
+    expectIcon("WarningIcon");
     expectMessage(
       "access-declined-no-admin-message",
       `Your Administrator access request to be the Operation Representative of ${operatorJSON.legal_name} was declined.If you believe this is an error and you should be granted access, please email us at GHGRegulator@gov.bc.ca`,

@@ -29,7 +29,7 @@ export default async function SelectOperatorReceivedPage({
         </p>
         <p>
           Once approved, you will receive a confirmation email. You can then log
-          back in using our Business BCeID.
+          back in using your Business BCeID.
         </p>
       </div>
     );
