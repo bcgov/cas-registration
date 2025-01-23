@@ -14,6 +14,7 @@ import {
 } from "@reporting/src/app/components/taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
+import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 
 interface Props {
   initialData: any;
@@ -42,13 +43,15 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
     [],
   );
+  const [schema, setSchema] = useState<any>(
+    buildReviewFacilitiesSchema(
+      initialData.current_facilities,
+      initialData.past_facilities,
+    ),
+  );
   const saveAndContinueUrl = `/reports/${version_id}/report-information`;
   const backUrl = `/reports/${version_id}/person-responsible`;
 
-  const schema: any = buildReviewFacilitiesSchema(
-    initialData.current_facilities,
-    initialData.past_facilities,
-  );
   const uiSchema: any = buildReviewFacilitiesUiSchema(initialData.operation_id);
 
   const taskListElements = getOperationInformationTaskList(
@@ -98,12 +101,12 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         formData.past_facilities_section.past_facilities,
       );
     // get the array of initially selected facilities
-    const previouslySelectedFacilities = initialData.current_facilities
+    const previouslySelectedFacilities = formData.current_facilities
       .filter((curr_facility: Facility) => curr_facility.is_selected) // filter out the unselected facilities
       .map((curr_facility: Facility) => curr_facility.facility__name) // flatten the array to just the facility names
       .concat(
         // join the current and past facilities
-        initialData.past_facilities
+        formData.past_facilities
           .filter((past_facility: Facility) => past_facility.is_selected)
           .map((past_facility: Facility) => past_facility.facility__name),
       );
@@ -168,6 +171,16 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     }
   };
 
+  const handleSync = async () => {
+    const newData = await getOperationFacilitiesList(version_id);
+    setSchema(
+      buildReviewFacilitiesSchema(
+        newData.current_facilities,
+        newData.past_facilities,
+      ),
+    );
+  };
+
   return (
     <>
       <SimpleModal
@@ -196,7 +209,15 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       <MultiStepFormWithTaskList
         formData={formData}
         schema={schema}
-        uiSchema={uiSchema}
+        uiSchema={{
+          ...uiSchema,
+          sync_button: {
+            ...uiSchema.sync_button,
+            "ui:options": {
+              onSync: handleSync,
+            },
+          },
+        }}
         taskListElements={taskListElements}
         steps={multiStepHeaderSteps}
         errors={errors}
