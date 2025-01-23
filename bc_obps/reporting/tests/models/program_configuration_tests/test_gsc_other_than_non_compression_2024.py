@@ -25,6 +25,7 @@ class TestGSCOtherThanNonCompression2024(TestCase):
                 'Measured Steam/Default EF': 3,
                 'Measured CC': 1,
                 'Measured Steam/Measured EF': 2,
+                'CEMS': 0,
                 'Alternative Parameter Measurement': 1,
                 'Replacement Methodology': 1,
             },
@@ -82,4 +83,4 @@ class TestGSCOtherThanNonCompression2024(TestCase):
                     msg=f'{source_type_name}:{gas_name} contains config for the proper methods and field counts',
                 )
 
-        assert len(config_elements) == 72
+        assert len(config_elements) == 75
