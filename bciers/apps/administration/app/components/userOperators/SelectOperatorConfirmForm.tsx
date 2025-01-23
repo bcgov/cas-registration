@@ -57,7 +57,7 @@ export default function SelectOperatorConfirmForm({
         operator. Ministry staff will review your request.
       </p>
       <p>
-        As an administrator, you can approve any additional users requested
+        As an administrator, you can approve any additional users requesting
         access to
         <br />
         the operator and assign additional administrators.

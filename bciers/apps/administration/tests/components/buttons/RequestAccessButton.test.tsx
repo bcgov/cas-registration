@@ -25,21 +25,21 @@ describe("RequestAccessButton", () => {
       />,
     );
     expect(
-      screen.getByRole("button", { name: "Request Administrator Access" }),
+      screen.getByRole("button", { name: "Request administrator access" }),
     ).toBeInTheDocument();
   });
 
   it("renders the button with correct label for non-admin request", () => {
     render(<RequestAccessButton operatorId={1} operatorName="Test Operator" />);
     expect(
-      screen.getByRole("button", { name: "Request Access" }),
+      screen.getByRole("button", { name: "Request access" }),
     ).toBeInTheDocument();
   });
 
   it("calls actionHandler and redirects on successful access request", async () => {
     actionHandler.mockResolvedValueOnce({});
     render(<RequestAccessButton operatorId={1} operatorName="Test Operator" />);
-    fireEvent.click(screen.getByRole("button", { name: "Request Access" }));
+    fireEvent.click(screen.getByRole("button", { name: "Request access" }));
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
@@ -54,7 +54,7 @@ describe("RequestAccessButton", () => {
     actionHandler.mockResolvedValueOnce({ error: "Access request failed" });
 
     render(<RequestAccessButton operatorId={1} operatorName="Test Operator" />);
-    fireEvent.click(screen.getByRole("button", { name: "Request Access" }));
+    fireEvent.click(screen.getByRole("button", { name: "Request access" }));
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
