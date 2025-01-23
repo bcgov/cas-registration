@@ -66,31 +66,37 @@ CHES_API_URL = os.environ.get("CHES_API_URL")
 # Application definition
 
 INSTALLED_APPS = [
+    # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third-party apps
     'simple_history',
     "corsheaders",
     "localflavor",
+    # Local apps
     "registration.apps.RegistrationConfig",
     "reporting.apps.ReportingConfig",
     "common.apps.CommonConfig",
+    "rls.apps.RlsConfig",
 ]
 
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    "registration.middleware.kubernetes_middleware.KubernetesHealthCheckMiddleware",
+    "registration.middleware.kubernetes_health_check.KubernetesHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "registration.middleware.current_user_middleware.CurrentUserMiddleware",
+    "registration.middleware.current_user.CurrentUserMiddleware",
+    # RlsMiddleware must be after CurrentUserMiddleware(it depends on current_user attribute)
+    "rls.middleware.rls.RlsMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
