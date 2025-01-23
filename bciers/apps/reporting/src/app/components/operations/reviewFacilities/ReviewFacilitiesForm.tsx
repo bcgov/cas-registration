@@ -24,7 +24,9 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [errors, setErrors] = useState<string[] | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmedToChange, setConfirmedToChange] = useState(true);
+  const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
+    [],
+  );
   const saveAndContinueUrl = `/reports/${version_id}/report-information`;
   const backUrl = `/reports/${version_id}/person-responsible`;
 
@@ -40,56 +42,33 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     "Linear Facility Operation",
   );
 
-  const checkIfFacilityReportWillBeDeleted = () => {
-    if (
-      !formData ||
-      !formData.current_facilities_section ||
-      !formData.current_facilities_section.current_facilities
-    ) {
-      console.log("NO FORM DATA");
-      return null;
-    }
-
-    const presentFacilities =
+  const getListOfRemovedFacilities = () => {
+    // get the array of currently selected facilities
+    const selectedFacilities =
       formData.current_facilities_section.current_facilities.concat(
         formData.past_facilities_section.past_facilities,
       );
-    const previousFacilities = formData.current_facilities.concat(
-      initialData.past_facilities,
+    // get the array of initially selected facilities
+    const previouslySelectedFacilities = initialData.current_facilities
+      .filter((curr_facility) => curr_facility.is_selected) // filter out the unselected facilities
+      .map((curr_facility) => curr_facility.facility__name) // flatten the array to just the facility names
+      .concat(
+        // join the current and past facilities
+        initialData.past_facilities
+          .filter((past_facility) => past_facility.is_selected)
+          .map((past_facility) => past_facility.facility__name),
+      );
+    // return the facilities that were previously selected but are not currently selected
+    return previouslySelectedFacilities.filter(
+      (facility) => !selectedFacilities.includes(facility),
     );
-    // first check if a facility has been deselected
-    if (presentFacilities.length >= previousFacilities.length) {
-      console.log("NO FACILITY DESELECTED");
-      return null;
-    }
-
-    const deselectedFacilities = previousFacilities.filter(
-      (facility: any) => !presentFacilities.includes(facility),
-    );
-    console.log("***********deselectedFacilities", deselectedFacilities);
-    return deselectedFacilities;
   };
 
   const handleChange = (e: any) => {
-    console.log("*******handleChange event", e);
-    checkIfFacilityReportWillBeDeleted();
-    setModalOpen(true);
-
     setFormData({ ...e.formData });
   };
 
-  const handleModalCancel = () => {
-    setConfirmedToChange(false);
-    setModalOpen(false);
-  };
-
-  const handleModalConfirm = () => {
-    setConfirmedToChange(true);
-    setModalOpen(false);
-    //setFormData({ ...formData });
-  };
-
-  const handleSubmit = async (data: any) => {
+  const submit = async (data: any) => {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
 
@@ -106,8 +85,34 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       setErrors(undefined);
       return true;
     } catch (err) {
+      console.log("Error submitting review facilities form: ", err);
       setErrors(["An unexpected error occurred."]);
       return false;
+    }
+  };
+
+  const handleModalOpen = async () => {
+    setModalOpen(true);
+    return false;
+  };
+
+  const handleModalCancel = () => {
+    setModalOpen(false);
+  };
+
+  const handleModalConfirm = () => {
+    setModalOpen(false);
+    submit(formData);
+  };
+
+  const handleSubmit = async (data: any) => {
+    const deselected = getListOfRemovedFacilities();
+    setDeselectedFacilities(deselected);
+
+    if (deselected.length > 0) {
+      return handleModalOpen();
+    } else {
+      return submit(data);
     }
   };
 
@@ -118,12 +123,21 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         open={modalOpen}
         onCancel={handleModalCancel}
         onConfirm={handleModalConfirm}
-        confirmText="Deselect Facility"
+        confirmText="Continue"
       >
+        <p>You have deselected the following facilities.</p>
+        <ul>
+          {deselectedFacilities.map((facility: any) => (
+            <li key={facility}>{facility}</li>
+          ))}
+        </ul>
         <p>
-          This facility has an existing report. Deselecting this facility will
-          delete this facility&apos;s report on Save. Are you sure you want to
-          deselect?
+          If any of these faclities have an existing report, saving will delete
+          the facility{"'"}s report and any data previously entered will be
+          lost.
+          <br />
+          Click <b>Cancel</b> to go back without saving the changes, or{" "}
+          <b>Continue</b> to proceed.
         </p>
       </SimpleModal>
       <MultiStepFormWithTaskList
@@ -134,9 +148,9 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         steps={multiStepHeaderSteps}
         errors={errors}
         continueUrl={saveAndContinueUrl}
-        initialStep={1}
+        initialStep={0}
         onChange={handleChange}
-        onSubmit={handleSubmit}
+        onSubmit={async (data) => handleSubmit(data)}
         backUrl={backUrl}
       />
     </>
