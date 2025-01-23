@@ -59,8 +59,17 @@ export default function Bread({
   const slicedPathNames =
     lastLinkIndex !== -1 ? pathNames.slice(0, lastLinkIndex + 1) : pathNames;
 
-  // 🛠️ Function to translate an uuid or number segment using querystring value
-  function translateNumericPart(segment: string, index: number): string | null {
+  // 🛠️ Function to transform path segment crumb content based on conditions: segmant paths; uuid; number
+  function transformPathSegment(segment: string, index: number): string | null {
+    // Check if "reports" is in the pathNames and the current segment is "Facilities"
+    if (
+      pathNames.some((path) => path.toLowerCase() === "reports") &&
+      segment.toLowerCase() === "facilities"
+    ) {
+      return null;
+    }
+
+    // Check if the current segment is an ID
     if (isValidUUID(segment) || isNumeric(segment)) {
       const precedingSegment = pathNames[index - 1]
         ? unslugifyAndCapitalize(pathNames[index - 1])
@@ -78,7 +87,7 @@ export default function Bread({
       return crumbTitles?.title || null;
     }
 
-    // If the segment is not a UUID or numeric value, return it as-is
+    // Return segment as-is
     return segment;
   }
 
@@ -111,11 +120,11 @@ export default function Bread({
             {slicedPathNames.map((link, index) => {
               const isLastItem = index === slicedPathNames.length - 1;
               const content = capitalizeLinks
-                ? translateNumericPart(unslugifyAndCapitalize(link), index)
-                : translateNumericPart(link, index);
+                ? transformPathSegment(unslugifyAndCapitalize(link), index)
+                : transformPathSegment(link, index);
 
-              // 🚨 Skip rendering if content is null (segment should be omitted) or if content is facilities
-              if (!content || content === "Facilities") {
+              // 🚨 Skip rendering if content is null (segment should be omitted)
+              if (!content) {
                 return null;
               }
 
