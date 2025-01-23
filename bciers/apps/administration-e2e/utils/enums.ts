@@ -90,7 +90,7 @@ export enum MessageTextOperatorSelect {
   REQUEST_ACCESS_CONFIRMED = "Your access request has been sent to the Administrator(s) of Operator 1 Legal Name for review.",
   REQUEST_ACCESS_ADMIN_CONFIRMED = "Your access request as administrator for Operator 1 Legal Name has been received by ministry staff and will be reviewed shortly.",
   REQUEST_ACCESS_DECLINED = "Your access request was declined by an Administrator of Existing Operator 2 Legal Name", //"Your access request was declined by an Administrator",
-  REQUEST_ACCESS_ADMIN_DECLINED = "Your Administrator access request to be the Operation Representative of New Operator 13 Legal Name was declined",
+  REQUEST_ACCESS_ADMIN_DECLINED = "Your administrator access request for New Operator 13 Legal Name was declined",
   SELECT_OPERATOR = "Which operator would you like to log in to?",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
   SEARCH_BY_LEGAL_NAME = "Search by Canada Revenue Agency (CRA) Business Number",
