@@ -22,7 +22,7 @@ export const getOperationInformationTaskList: (
           {
             type: "Page",
             title: "Review facilities",
-            link: `/reports/${versionId}/facilities/lfo-facilities`,
+            link: `/reports/${versionId}/review-facilities-list`,
             isActive: activeIndex === ActivePage.ReviewFacilities,
           },
         ];
