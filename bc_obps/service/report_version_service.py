@@ -48,6 +48,7 @@ class ReportVersionService:
                 facility_type=f.type,
                 facility_bcghgid=f.bcghg_id.id if f.bcghg_id else None,
                 report_version=report_version,
+                is_completed=False
             )
             facility_report.activities.add(*list(operation.activities.all()))
 
