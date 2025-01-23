@@ -12,13 +12,13 @@ import {
   getOperationWithDocuments,
   getRegulatedProducts,
   getReportingActivities,
-  getContacts,
 } from "./mocks";
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
 import { FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { getContacts } from "../contacts/mocks";
 
 useSession.mockReturnValue({
   data: {

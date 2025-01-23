@@ -51,6 +51,7 @@ const OperationInformationForm = ({
     );
 
     if (response?.error) {
+      // Users get this error when they select a contact that's missing address information. We include a link to the Contacts page because the user has to fix the error from there, not here in the operation form.
       if (response.error.includes("Please return to Contacts")) {
         const splitError = response.error.split("Contacts");
         response.error = (
@@ -81,7 +82,7 @@ const OperationInformationForm = ({
   };
   return (
     <>
-      {isRedirectedFromContacts && (
+      {isRedirectedFromContacts && !role.includes("cas_") && (
         <Note variant="important">
           To remove the current operation representative, please select a new
           contact to replace them.

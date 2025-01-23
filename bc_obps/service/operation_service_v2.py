@@ -1,6 +1,7 @@
 from typing import Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
+from service.contact_service_v2 import ContactServiceV2
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
@@ -234,18 +235,7 @@ class OperationServiceV2:
 
         if isinstance(payload, OperationInformationInUpdate):
             for contact_id in payload.operation_representatives:
-                contact = Contact.objects.get(id=contact_id)
-                address = contact.address
-                if (
-                    not address
-                    or not address.street_address
-                    or not address.municipality
-                    or not address.province
-                    or not address.postal_code
-                ):
-                    raise Exception(
-                        f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.'
-                    )
+                ContactServiceV2.raise_exception_if_contact_missing_address_information(contact_id)
 
             operation.contacts.set(payload.operation_representatives)
 

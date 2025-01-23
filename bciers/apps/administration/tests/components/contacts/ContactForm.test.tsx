@@ -1,6 +1,6 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
+import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
 import {
   contactsSchema,
   contactsUiSchema,
@@ -98,6 +98,13 @@ export const fillContactForm = async () => {
 describe("ContactForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
   });
 
   it("renders the empty contact form when creating a new contact", async () => {
@@ -123,7 +130,14 @@ describe("ContactForm component", () => {
     expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
   });
-  it("loads existing readonly contact form data", async () => {
+  it("loads existing readonly contact form data for an internal user", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    });
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     const { container } = render(
       <ContactForm
@@ -132,11 +146,13 @@ describe("ContactForm component", () => {
         isCreating={false}
       />,
     );
-    // form fields
+
+    // Inline message
     expect(
-      screen.queryByText(/Is this contact a user in BCIERS/i),
+      screen.queryByText(
+        /To assign this representative to an operation, go to the operation information form/i,
+      ),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText(/Select the user/i)).not.toBeInTheDocument();
 
     expect(
       container.querySelector("#root_section1_first_name"),

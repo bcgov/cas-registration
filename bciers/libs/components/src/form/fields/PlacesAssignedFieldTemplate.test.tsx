@@ -62,16 +62,22 @@ const mockFormData = {
 describe("RJSF PlacesAssignedFieldTemplate", () => {
   it("should render the field template when there are no places assigned", async () => {
     render(
-      <FormBase schema={mockSchema} uiSchema={mockUiSchema} formData={{}} />,
+      <FormBase
+        schema={mockSchema}
+        uiSchema={mockUiSchema}
+        formData={{}}
+        formContext={{ userRole: "industry_user" }}
+      />,
     );
     expect(screen.getByText("None")).toBeVisible();
   });
-  it("should render the field template when formData is provided", async () => {
+  it("should render the field template when formData is provided for an external user", async () => {
     render(
       <FormBase
         schema={mockSchema}
         uiSchema={mockUiSchema}
         formData={mockFormData}
+        formContext={{ userRole: "industry_user" }}
       />,
     );
     expect(screen.getByText("testrole -")).toBeVisible();
@@ -87,6 +93,23 @@ describe("RJSF PlacesAssignedFieldTemplate", () => {
     ).toBeVisible();
   });
 
+  it("should render the field template when formData is provided for an internal user (no note)", async () => {
+    render(
+      <FormBase
+        schema={mockSchema}
+        uiSchema={mockUiSchema}
+        formData={mockFormData}
+        formContext={{ userRole: "cas_director" }}
+      />,
+    );
+
+    expect(
+      screen.queryByText(
+        "You cannot delete this contact unless you replace them with other contact(s) in the place(s) above.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("should throw an error if given bad formData", async () => {
     expect(() =>
       render(
@@ -94,6 +117,7 @@ describe("RJSF PlacesAssignedFieldTemplate", () => {
           schema={mockSchema}
           uiSchema={mockUiSchema}
           formData={{ places_assigned: ["garbage"] }}
+          formContext={{ userRole: "industry_user" }}
         />,
       ),
     ).toThrow("Invalid places assigned data");

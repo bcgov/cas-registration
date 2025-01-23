@@ -6,7 +6,6 @@ const getRegulatedProducts = vi.fn();
 const getRegistrationPurposes = vi.fn();
 const getBusinessStructures = vi.fn();
 const fetchOperationsPageData = vi.fn();
-const getContacts = vi.fn();
 
 vi.mock("libs/actions/src/api/getOperation", () => ({
   default: getOperation,
@@ -35,9 +34,6 @@ vi.mock("libs/actions/src/api/getRegistrationPurposes", () => ({
 vi.mock("libs/actions/src/api/getBusinessStructures", () => ({
   default: getBusinessStructures,
 }));
-vi.mock("libs/actions/src/api/getContacts", () => ({
-  default: getContacts,
-}));
 
 vi.mock("libs/actions/src/api/fetchOperationsPageData", () => ({
   default: fetchOperationsPageData,
@@ -52,5 +48,4 @@ export {
   getRegistrationPurposes,
   getBusinessStructures,
   fetchOperationsPageData,
-  getContacts,
 };

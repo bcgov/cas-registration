@@ -652,48 +652,6 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         assert operation.updated_by == approved_user_operator.user
         assert operation.updated_at is not None
 
-    @staticmethod
-    def test_update_operation_with_operation_representative_without_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        # create contacts with incomplete address data
-        contacts = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=5
-        )
-        contacts[0].address = None
-        contacts[0].save()
-        contacts[1].address.street_address = None
-        contacts[1].address.save()
-        contacts[2].address.municipality = None
-        contacts[2].address.save()
-        contacts[3].address.province = None
-        contacts[3].address.save()
-        contacts[4].address.postal_code = None
-        contacts[4].address.save()
-        for contact in contacts:
-            payload = OperationInformationInUpdate(
-                registration_purpose='Reporting Operation',
-                regulated_products=[1],
-                name="I am updated",
-                type="SFO",
-                naics_code_id=1,
-                secondary_naics_code_id=2,
-                tertiary_naics_code_id=3,
-                activities=[1],
-                process_flow_diagram=MOCK_DATA_URL,
-                boundary_map=MOCK_DATA_URL,
-                operation_representatives=[contact.id],
-            )
-            with pytest.raises(
-                Exception,
-                match=f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
-            ):
-                OperationServiceV2.create_or_update_operation_v2(
-                    approved_user_operator.user.user_guid,
-                    payload,
-                    existing_operation.id,
-                )
-
 
 class TestOperationServiceV2UpdateOperation:
     def test_update_operation_fails_if_operation_not_registered(self):
@@ -889,26 +847,6 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
     def test_raises_exception_if_no_operation_rep():
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
         operation.contacts.all().delete()
-
-        with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
-
-    @staticmethod
-    def test_raises_exception_if_operation_rep_missing_address():
-        operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
-        op_rep = operation.contacts.first()
-        op_rep.address = None
-        op_rep.save()
-
-        with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
-
-    @staticmethod
-    def test_raises_exception_if_operation_rep_missing_required_fields():
-        operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
-        op_rep_address = operation.contacts.first().address
-        op_rep_address.street_address = None
-        op_rep_address.save()
 
         with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
             OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)

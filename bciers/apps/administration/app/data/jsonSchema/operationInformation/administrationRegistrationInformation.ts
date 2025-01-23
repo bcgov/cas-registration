@@ -10,9 +10,14 @@ export const createAdministrationRegistrationInformationSchema = async (
   // fetch db values that are dropdown options
   const regulatedProducts: { id: number; name: string }[] =
     await getRegulatedProducts();
+  if (regulatedProducts && "error" in regulatedProducts)
+    throw new Error("Failed to retrieve regulated products information");
   const contacts: {
     items: [{ id: number; first_name: string; last_name: string }];
   } = await getContacts();
+  if (contacts && "error" in contacts)
+    throw new Error("Failed to retrieve contacts information");
+
   const isRegulatedProducts =
     registrationPurposeValue ===
     RegistrationPurposes.OBPS_REGULATED_OPERATION.valueOf();
