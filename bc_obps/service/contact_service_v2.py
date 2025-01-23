@@ -33,12 +33,8 @@ class ContactServiceV2:
         return cast(QuerySet[Contact], queryset)
 
     @classmethod
-    def get_by_id(cls, contact_id: int) -> Contact:
-        return Contact.objects.get(id=contact_id)
-
-    @classmethod
     def get_with_places_assigned_v2(cls, contact_id: int) -> Optional[ContactWithPlacesAssigned]:
-        contact = cls.get_by_id(contact_id)
+        contact = ContactDataAccessService.get_by_id(contact_id)
         places_assigned = []
         if contact:
             role_name = contact.business_role.role_name
@@ -58,7 +54,7 @@ class ContactServiceV2:
     @classmethod
     def raise_exception_if_contact_missing_address_information(cls, contact_id: int) -> None:
         """This function checks that a contact has a complete address record (contact.address exists and all fields in the address model have a value). In general in the app, address is not mandatory, but in certain cases (e.g., when a contact is assigned to an operation as the Operation Representative), the business area requires the contact to have an address."""
-        contact = cls.get_by_id(contact_id)
+        contact = ContactDataAccessService.get_by_id(contact_id)
         address = contact.address
         if not address or any(
             not getattr(address, field, None) for field in ['street_address', 'municipality', 'province', 'postal_code']

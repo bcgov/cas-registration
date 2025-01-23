@@ -47,7 +47,7 @@ class TestContactService:
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
         operation.contacts.set([contact])
 
-        result = ContactServiceV2.get_with_places_assigned_v2(approved_user_operator.user.user_guid, contact.id)
+        result = ContactServiceV2.get_with_places_assigned_v2(contact.id)
         assert result.places_assigned == [
             PlacesAssigned(
                 role_name=contact.business_role.role_name, operation_name=operation.name, operation_id=operation.id
@@ -63,7 +63,7 @@ class TestContactService:
         # add contact to operator (they have to be associated with the operator or will throw unauthorized)
         approved_user_operator.operator.contacts.set([contact])
 
-        result = ContactServiceV2.get_with_places_assigned_v2(approved_user_operator.user.user_guid, contact.id)
+        result = ContactServiceV2.get_with_places_assigned_v2(contact.id)
         assert not hasattr(result, 'places_assigned')
 
     @staticmethod
