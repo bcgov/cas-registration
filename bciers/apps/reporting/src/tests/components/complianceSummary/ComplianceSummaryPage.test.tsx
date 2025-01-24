@@ -48,7 +48,6 @@ describe("ComplianceSummaryPage", () => {
     expect(mockComplianceSummaryForm).toHaveBeenCalledWith(
       {
         versionId,
-        needsVerification: false,
         summaryFormData: complianceData,
         taskListElements: getComplianceSummaryTaskList(),
       },
@@ -71,7 +70,6 @@ describe("ComplianceSummaryPage", () => {
     expect(mockComplianceSummaryForm).toHaveBeenCalledWith(
       {
         versionId,
-        needsVerification: true,
         summaryFormData: complianceData,
         taskListElements: getComplianceSummaryTaskList(),
       },
@@ -94,7 +92,6 @@ describe("ComplianceSummaryPage", () => {
     expect(mockComplianceSummaryForm).toHaveBeenCalledWith(
       {
         versionId,
-        needsVerification: true,
         summaryFormData: complianceData,
         taskListElements: getComplianceSummaryTaskList(),
       },
