@@ -36,6 +36,9 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
     reportingOperationData.report_operation_representatives,
   );
 
+  // Purpose note doesn't show up on the final review page
+  delete schema.properties.purpose_note;
+
   const formData = {
     ...reportingOperationData.report_operation,
     operation_representative_name:
