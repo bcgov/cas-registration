@@ -1,8 +1,9 @@
-import uuid
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Dict, Union
 from uuid import UUID
 from ninja import ModelSchema, Field, FilterSchema
-from registration.models import TransferEvent
+
+from common.utils import format_decimal
+from registration.models import TransferEvent, Facility
 from django.db.models import Q
 import re
 
@@ -12,11 +13,10 @@ class TransferEventListOut(ModelSchema):
     operation__name: Optional[str] = Field(None, alias="operation__name")
     facilities__name: Optional[str] = Field(None, alias="facilities__name")
     facility__id: Optional[UUID] = Field(None, alias="facilities__id")
-    id: UUID = Field(default_factory=uuid.uuid4)
 
     class Meta:
         model = TransferEvent
-        fields = ['effective_date', 'status', 'created_at']
+        fields = ['id', 'effective_date', 'status', 'created_at']
 
 
 class TransferEventFilterSchema(FilterSchema):
@@ -55,21 +55,56 @@ class TransferEventCreateIn(ModelSchema):
         fields = ['effective_date']
 
 
+FacilitiesNameType = List[Dict[str, Union[str, UUID]]]
+
+
 class TransferEventOut(ModelSchema):
     transfer_entity: str
+    from_operator: str = Field(alias="from_operator.legal_name")
+    from_operator_id: UUID = Field(alias="from_operator.id")
+    to_operator: str = Field(alias="to_operator.legal_name")
+    operation_name: Optional[str] = Field(None, alias="operation.name")
+    from_operation: Optional[str] = Field(None, alias="from_operation.name")
+    from_operation_id: Optional[UUID] = Field(None, alias="from_operation.id")
+    to_operation: Optional[str] = Field(None, alias="to_operation.name")
+    # This is only required to display the existing facilities in the frontend in the format "Facility (lat, long)"
+    existing_facilities: FacilitiesNameType
 
     class Meta:
         model = TransferEvent
-        fields = [
-            'from_operator',
-            'to_operator',
-            'effective_date',
-            'operation',
-            'from_operation',
-            'to_operation',
-            'facilities',
-        ]
+        fields = ['status', 'effective_date', 'operation', 'facilities']
 
     @staticmethod
     def resolve_transfer_entity(obj: TransferEvent) -> str:
         return "Facility" if obj.facilities.exists() else "Operation"
+
+    @staticmethod
+    def resolve_existing_facilities(obj: TransferEvent) -> FacilitiesNameType:
+        def format_facility_name(facility: Facility) -> str:
+            if (
+                facility.latitude_of_largest_emissions is not None
+                and facility.longitude_of_largest_emissions is not None
+            ):
+                return f"{facility.name} ({format_decimal(facility.latitude_of_largest_emissions)}, {format_decimal(facility.longitude_of_largest_emissions)})"
+            return facility.name
+
+        if not obj.facilities.exists():
+            return []
+
+        return [
+            {
+                "id": facility.id,
+                "name": format_facility_name(facility),
+            }
+            for facility in obj.facilities.all()
+        ]
+
+
+class TransferEventUpdateIn(ModelSchema):
+    transfer_entity: Literal["Operation", "Facility"]
+    operation: Optional[UUID] = None
+    facilities: Optional[List[UUID]] = None
+
+    class Meta:
+        model = TransferEvent
+        fields = ['effective_date']

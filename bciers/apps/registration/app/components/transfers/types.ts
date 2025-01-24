@@ -1,5 +1,8 @@
+import { UUID } from "crypto";
+import { TransferEventStatus } from "@/registration/app/components/transfers/enums";
+
 export interface TransferRow {
-  id: string;
+  transfer_id: UUID; // actual transfer ID
   operation__name?: string;
   facilities__name?: string;
   status: string;
@@ -17,11 +20,39 @@ export interface TransfersSearchParams {
 export interface TransferFormData {
   [key: string]: string | number | undefined | string[];
   from_operator: string;
+  from_operator_id: UUID;
   to_operator: string;
+  to_operator_id: UUID;
   transfer_entity: string;
   operation?: string;
+  operation_id?: UUID;
   from_operation?: string;
+  from_operation_id?: UUID;
   facilities?: string[];
+  facilities_ids?: UUID[];
+  to_operation?: string;
+  to_operation_id?: UUID;
+  effective_date: string;
+}
+
+export interface ExistingFacilities {
+  id: UUID;
+  name: string;
+}
+
+export interface TransferDetailFormData {
+  [key: string]: string | number | undefined | string[] | ExistingFacilities[];
+  from_operator: string;
+  from_operator_id: UUID;
+  to_operator: string;
+  transfer_entity: string;
+  operation?: UUID;
+  operation_name?: string;
+  from_operation?: string;
+  from_operation_id?: UUID;
+  facilities?: UUID[];
+  existing_facilities: ExistingFacilities[];
   to_operation?: string;
   effective_date: string;
+  status: TransferEventStatus;
 }

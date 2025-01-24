@@ -1,15 +1,20 @@
 import logging
 from datetime import datetime
-from typing import cast, List
+from typing import cast, List, Union
 from uuid import UUID
 from zoneinfo import ZoneInfo
 from django.db import transaction
 from django.db.models import QuerySet
-from registration.models import FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline
+from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models import FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline, User
 from registration.models.event.transfer_event import TransferEvent
 from typing import Optional
 from ninja import Query
-from registration.schema.v2.transfer_event import TransferEventCreateIn, TransferEventFilterSchema
+from registration.schema.v2.transfer_event import (
+    TransferEventCreateIn,
+    TransferEventFilterSchema,
+    TransferEventUpdateIn,
+)
 from service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
@@ -38,6 +43,7 @@ class TransferEventService:
         queryset = (
             filters.filter(TransferEvent.objects.order_by(sort_by))
             .values(
+                'id',
                 'effective_date',
                 'status',
                 'created_at',
@@ -51,37 +57,61 @@ class TransferEventService:
         return cast(QuerySet[TransferEvent], queryset)
 
     @classmethod
-    def validate_no_overlapping_transfer_events(
-        cls, operation_id: Optional[UUID] = None, facility_ids: Optional[List[UUID]] = None
+    def _validate_no_overlapping_transfer_events(
+        cls,
+        operation_id: Optional[UUID] = None,
+        facility_ids: Optional[List[UUID]] = None,
+        current_transfer_id: Optional[UUID] = None,
     ) -> None:
         """
         Validates that there are no overlapping active transfer events for the given operation or facilities.
+        If we are updating an existing transfer event, we can exclude it from the check.
         """
         if operation_id:
             # Check for overlapping transfer events with the operation
-            overlapping_operation = TransferEvent.objects.filter(
+            overlapping_operation_query = TransferEvent.objects.filter(
                 operation_id=operation_id,
                 status__in=[
                     TransferEvent.Statuses.TO_BE_TRANSFERRED,
                     TransferEvent.Statuses.COMPLETE,
                 ],
             )
-            if overlapping_operation.exists():
+
+            if current_transfer_id:
+                overlapping_operation_query = overlapping_operation_query.exclude(id=current_transfer_id)
+
+            if overlapping_operation_query.exists():
                 raise Exception("An active transfer event already exists for the selected operation.")
 
         if facility_ids:
             # Check for overlapping transfer events with the facilities
-            overlapping_facilities = TransferEvent.objects.filter(
+            overlapping_facilities_query = TransferEvent.objects.filter(
                 facilities__id__in=facility_ids,
                 status__in=[
                     TransferEvent.Statuses.TO_BE_TRANSFERRED,
                     TransferEvent.Statuses.COMPLETE,
                 ],
             ).distinct()
-            if overlapping_facilities.exists():
+
+            if current_transfer_id:
+                overlapping_facilities_query = overlapping_facilities_query.exclude(id=current_transfer_id)
+
+            if overlapping_facilities_query.exists():
                 raise Exception(
                     "One or more facilities in this transfer event are already part of an active transfer event."
                 )
+
+    @classmethod
+    def _process_event_if_effective(
+        cls,
+        payload: Union[TransferEventCreateIn, TransferEventUpdateIn],
+        transfer_event: TransferEvent,
+        user_guid: UUID,
+    ) -> None:
+        # Check if the effective date is today or in the past and process the event
+        now = datetime.now(ZoneInfo("UTC"))
+        if payload.effective_date <= now:  # type: ignore[union-attr] # mypy not aware of model schema field in TransferEventCreateIn
+            cls._process_single_event(transfer_event, user_guid)
 
     @classmethod
     def create_transfer_event(cls, user_guid: UUID, payload: TransferEventCreateIn) -> TransferEvent:
@@ -92,9 +122,9 @@ class TransferEventService:
 
         # Validate against overlapping transfer events
         if payload.transfer_entity == "Operation":
-            cls.validate_no_overlapping_transfer_events(operation_id=payload.operation)
+            cls._validate_no_overlapping_transfer_events(operation_id=payload.operation)
         elif payload.transfer_entity == "Facility":
-            cls.validate_no_overlapping_transfer_events(facility_ids=payload.facilities)
+            cls._validate_no_overlapping_transfer_events(facility_ids=payload.facilities)
 
         # Prepare the payload for the data access service
         prepared_payload = {
@@ -142,10 +172,7 @@ class TransferEventService:
             if payload_facilities:
                 transfer_event.facilities.set(payload_facilities)
 
-        # Check if the effective date is today or in the past and process the event
-        now = datetime.now(ZoneInfo("UTC"))
-        if payload.effective_date <= now:  # type: ignore[attr-defined] # mypy not aware of model schema field
-            cls._process_single_event(transfer_event, user_guid)
+        cls._process_event_if_effective(payload, transfer_event, user_guid)
 
         return transfer_event
 
@@ -260,3 +287,62 @@ class TransferEventService:
 
         # update the operation's operator
         OperationServiceV2.update_operator(user_guid, event.operation, event.to_operator.id)  # type: ignore # we are sure that operation is not None
+
+    @classmethod
+    def get_if_authorized(cls, user_guid: UUID, transfer_id: UUID) -> TransferEvent:
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if user.is_industry_user():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        transfer_event: TransferEvent = TransferEventDataAccessService.get_by_id(transfer_id)
+        return transfer_event
+
+    @classmethod
+    def _get_and_validate_transfer_event_for_update(cls, transfer_id: UUID, user_guid: UUID) -> TransferEvent:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_analyst():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        transfer_event = TransferEventDataAccessService.get_by_id(transfer_id)
+        if transfer_event.status != TransferEvent.Statuses.TO_BE_TRANSFERRED:
+            raise Exception("Only transfer events with status 'To be transferred' can be modified.")
+        return transfer_event
+
+    @classmethod
+    def delete_transfer_event(cls, user_guid: UUID, transfer_id: UUID) -> None:
+        transfer_event = cls._get_and_validate_transfer_event_for_update(transfer_id, user_guid)
+        transfer_event.delete()
+        return None
+
+    @classmethod
+    def _update_operation_transfer_event(
+        cls, user_guid: UUID, transfer_id: UUID, payload: TransferEventUpdateIn
+    ) -> None:
+        operation_id = payload.operation
+        if not operation_id:
+            raise Exception("Operation is required for operation transfer events.")
+        cls._validate_no_overlapping_transfer_events(operation_id=operation_id, current_transfer_id=transfer_id)
+        TransferEventDataAccessService.update_transfer_event(
+            user_guid, transfer_id, {"operation_id": operation_id, "effective_date": payload.effective_date}  # type: ignore[attr-defined] # mypy not aware of model schema field
+        )
+
+    @classmethod
+    def _update_facility_transfer_event(
+        cls, user_guid: UUID, transfer_id: UUID, payload: TransferEventUpdateIn
+    ) -> None:
+        facility_ids = payload.facilities
+        if not facility_ids:
+            raise Exception("Facilities are required for facility transfer events.")
+        cls._validate_no_overlapping_transfer_events(facility_ids=facility_ids, current_transfer_id=transfer_id)
+        updated_transfer_event = TransferEventDataAccessService.update_transfer_event(
+            user_guid, transfer_id, payload.dict(include=["effective_date"])
+        )
+        updated_transfer_event.facilities.set(facility_ids)  # type: ignore[arg-type] # mypy requires actual Facility objects but passing UUIDs is fine
+
+    @classmethod
+    @transaction.atomic
+    def update_transfer_event(cls, user_guid: UUID, transfer_id: UUID, payload: TransferEventUpdateIn) -> TransferEvent:
+        transfer_event = cls._get_and_validate_transfer_event_for_update(transfer_id, user_guid)
+        {"Operation": cls._update_operation_transfer_event, "Facility": cls._update_facility_transfer_event,}[
+            payload.transfer_entity
+        ](user_guid, transfer_id, payload)
+        cls._process_event_if_effective(payload, transfer_event, user_guid)
+        return transfer_event

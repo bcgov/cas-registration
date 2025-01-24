@@ -161,10 +161,16 @@ export const createTransferSchema = (
     transferSchemaCopy.dependencies.transfer_entity.allOf[1].then.properties.facilities.items.enum =
       facilityOptions.map((facility) => facility.facility__id);
     transferSchemaCopy.dependencies.transfer_entity.allOf[1].then.properties.facilities.items.enumNames =
-      facilityOptions.map(
-        (facility) =>
-          `${facility.facility__name} - (${facility.facility__latitude_of_largest_emissions}, ${facility.facility__longitude_of_largest_emissions})`,
-      );
+      facilityOptions.map((facility: FacilityRow) => {
+        const {
+          facility__name: facilityName,
+          facility__latitude_of_largest_emissions: facilityLatitude,
+          facility__longitude_of_largest_emissions: facilityLongitude,
+        } = facility;
+        return facilityLatitude && facilityLongitude
+          ? `${facilityName} - (${facilityLatitude}, ${facilityLongitude})`
+          : facilityName;
+      });
   }
 
   return transferSchemaCopy;

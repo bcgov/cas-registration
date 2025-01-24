@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 from uuid import uuid4
 from zoneinfo import ZoneInfo
+
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import TransferEvent, FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline
 from registration.schema.v2.transfer_event import TransferEventFilterSchema, TransferEventCreateIn
 from service.transfer_event_service import TransferEventService
@@ -31,12 +33,9 @@ class TestTransferEventService:
         # Scenario 1: No overlapping operation or facility
         new_operation = baker.make_recipe('utils.operation')
         new_facilities = baker.make_recipe('utils.facility', _quantity=2)
-        try:
-            TransferEventService.validate_no_overlapping_transfer_events(
-                operation_id=new_operation.id, facility_ids=[facility.id for facility in new_facilities]
-            )
-        except Exception as e:
-            pytest.fail(f"Unexpected exception raised: {e}")
+        TransferEventService._validate_no_overlapping_transfer_events(
+            operation_id=new_operation.id, facility_ids=[facility.id for facility in new_facilities]
+        )
 
         # Scenario 2: Overlapping operation
         operation = baker.make_recipe('utils.operation')
@@ -46,7 +45,7 @@ class TestTransferEventService:
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
         with pytest.raises(Exception, match="An active transfer event already exists for the selected operation."):
-            TransferEventService.validate_no_overlapping_transfer_events(operation_id=operation.id)
+            TransferEventService._validate_no_overlapping_transfer_events(operation_id=operation.id)
 
         # Scenario 3: Overlapping facilities
         facilities = baker.make_recipe('utils.facility', _quantity=2)
@@ -59,9 +58,33 @@ class TestTransferEventService:
             Exception,
             match="One or more facilities in this transfer event are already part of an active transfer event.",
         ):
-            TransferEventService.validate_no_overlapping_transfer_events(
+            TransferEventService._validate_no_overlapping_transfer_events(
                 facility_ids=[facility.id for facility in facilities]
             )
+
+        # Scenario 4: Overlapping operation but excluded by current_transfer_id
+        overlapping_operation = baker.make_recipe('utils.operation')
+        existing_transfer = baker.make_recipe(
+            'utils.transfer_event',
+            operation=overlapping_operation,
+            status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
+        )
+        TransferEventService._validate_no_overlapping_transfer_events(
+            operation_id=overlapping_operation.id,
+            current_transfer_id=existing_transfer.id,
+        )
+
+        # Scenario 5: Overlapping facilities but excluded by current_transfer_id
+        overlapping_facilities = baker.make_recipe('utils.facility', _quantity=2)
+        existing_transfer = baker.make_recipe(
+            'utils.transfer_event',
+            facilities=overlapping_facilities,
+            status=TransferEvent.Statuses.COMPLETE,
+        )
+        TransferEventService._validate_no_overlapping_transfer_events(
+            facility_ids=[facility.id for facility in overlapping_facilities],
+            current_transfer_id=existing_transfer.id,
+        )
 
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
@@ -90,7 +113,7 @@ class TestTransferEventService:
         )
 
     @classmethod
-    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_operation_missing_operation(cls, mock_get_by_guid, mock_validate_no_overlap):
         cas_analyst = baker.make_recipe("utils.cas_analyst")
@@ -106,7 +129,7 @@ class TestTransferEventService:
             TransferEventService.create_transfer_event(cas_analyst.user_guid, payload)
 
     @classmethod
-    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_operation_using_the_same_operator(cls, mock_get_by_guid, mock_validate_no_overlap):
         cas_analyst = baker.make_recipe("utils.cas_analyst")
@@ -126,11 +149,12 @@ class TestTransferEventService:
             )
 
     @classmethod
-    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventService._process_event_if_effective")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     @patch("service.data_access_service.transfer_event_service.TransferEventDataAccessService.create_transfer_event")
     def test_create_transfer_event_operation(
-        cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap
+        cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap, mock_process_event_if_effective
     ):
         cas_analyst = baker.make_recipe('utils.cas_analyst')
         payload = cls._get_transfer_event_payload_for_operation()
@@ -156,6 +180,7 @@ class TestTransferEventService:
                 "operation_id": payload.operation,
             },
         )
+        mock_process_event_if_effective.assert_called_once_with(payload, mock_transfer_event, cas_analyst.user_guid)
         assert result == mock_transfer_event
 
     @classmethod
@@ -176,7 +201,7 @@ class TestTransferEventService:
         )
 
     @classmethod
-    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_facility_missing_required_fields(cls, mock_get_by_guid, mock_validate_no_overlap):
         cas_analyst = baker.make_recipe("utils.cas_analyst")
@@ -208,7 +233,7 @@ class TestTransferEventService:
             TransferEventService.create_transfer_event(cas_analyst.user_guid, payload_without_to_operation)
 
     @classmethod
-    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_facility_between_the_same_operation(cls, mock_get_by_guid, mock_validate_no_overlap):
         cas_analyst = baker.make_recipe("utils.cas_analyst")
@@ -224,11 +249,12 @@ class TestTransferEventService:
             TransferEventService.create_transfer_event(cas_analyst.user_guid, payload_with_same_from_and_to_operation)
 
     @classmethod
-    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventService._process_event_if_effective")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     @patch("service.data_access_service.transfer_event_service.TransferEventDataAccessService.create_transfer_event")
     def test_create_transfer_event_facility(
-        cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap
+        cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap, mock_process_event_if_effective
     ):
         cas_analyst = baker.make_recipe("utils.cas_analyst")
         payload = cls._get_transfer_event_payload_for_facility()
@@ -255,11 +281,12 @@ class TestTransferEventService:
             },
         )
         mock_transfer_event.facilities.set.assert_called_once_with(payload.facilities)
+        mock_process_event_if_effective.assert_called_once_with(payload, mock_transfer_event, cas_analyst.user_guid)
         assert result == mock_transfer_event
 
     @classmethod
     @patch("service.transfer_event_service.TransferEventService._process_single_event")
-    @patch("service.transfer_event_service.TransferEventService.validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     @patch("service.data_access_service.transfer_event_service.TransferEventDataAccessService.create_transfer_event")
     def test_process_event_on_effective_date(
@@ -543,3 +570,147 @@ class TestTransferEventService:
             transfer_event.operation,
             transfer_event.to_operator.id,
         )
+
+    @staticmethod
+    @patch("service.transfer_event_service.TransferEventDataAccessService.get_by_id")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_get_if_authorized(mock_get_by_guid, mock_get_by_id):
+        # Scenario 1: Unauthorized user
+        mock_get_by_id.return_value = transfer_event = MagicMock(id=uuid4())
+        mock_get_by_guid.return_value = unauthorized_user = MagicMock(user_guid=uuid4())
+        unauthorized_user.is_industry_user.return_value = True
+
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
+            TransferEventService.get_if_authorized(unauthorized_user.user_guid, transfer_event.id)
+
+        # Scenario 2: Authorized user
+        mock_get_by_guid.return_value = cas_admin = baker.make_recipe('utils.cas_admin')
+        result = TransferEventService.get_if_authorized(cas_admin.user_guid, uuid4())
+        assert result == transfer_event
+
+    @staticmethod
+    @patch("service.transfer_event_service.TransferEventDataAccessService.get_by_id")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_get_and_validate_transfer_event_for_update(mock_get_by_guid, mock_get_by_id):
+        # Scenario 1: Unauthorized user
+        mock_get_by_id.return_value = transfer_event = MagicMock(
+            id=uuid4(), status=TransferEvent.Statuses.TO_BE_TRANSFERRED
+        )
+        mock_get_by_guid.return_value = unauthorized_user = MagicMock(user_guid=uuid4())
+        unauthorized_user.is_cas_analyst.return_value = False
+
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
+            TransferEventService._get_and_validate_transfer_event_for_update(
+                transfer_event.id, unauthorized_user.user_guid
+            )
+
+        # Scenario 2: Valid transfer event and authorized user
+        mock_get_by_guid.return_value = authorized_user = MagicMock()
+        authorized_user.is_cas_analyst.return_value = True
+
+        result = TransferEventService._get_and_validate_transfer_event_for_update(
+            transfer_event.id, authorized_user.user_guid
+        )
+        assert result == transfer_event
+
+        # Scenario 3: Invalid transfer event status
+        mock_get_by_id.return_value = invalid_transfer = MagicMock(id=uuid4(), status=TransferEvent.Statuses.COMPLETE)
+        mock_get_by_guid.return_value = authorized_user
+
+        with pytest.raises(Exception, match="Only transfer events with status 'To be transferred' can be modified."):
+            TransferEventService._get_and_validate_transfer_event_for_update(
+                invalid_transfer.id, authorized_user.user_guid
+            )
+
+    @staticmethod
+    @patch("service.transfer_event_service.TransferEventService._get_and_validate_transfer_event_for_update")
+    def test_delete_transfer_event(mock_get_and_validate_transfer_event_for_update):
+        transfer_event_mock = MagicMock(id=uuid4())
+        mock_get_and_validate_transfer_event_for_update.return_value = transfer_event_mock
+        user_guid = uuid4()
+        TransferEventService.delete_transfer_event(user_guid=user_guid, transfer_id=transfer_event_mock.id)
+        mock_get_and_validate_transfer_event_for_update.assert_called_once_with(transfer_event_mock.id, user_guid)
+        transfer_event_mock.delete.assert_called_once()
+
+    @staticmethod
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventDataAccessService.update_transfer_event")
+    def test_update_operation_transfer_event(mock_update_transfer_event, mock_validate_no_overlapping):
+        user_guid = uuid4()
+        transfer_id = uuid4()
+        operation_id = uuid4()
+        payload = MagicMock(operation=operation_id, effective_date=datetime.now(ZoneInfo("UTC")))
+
+        # Test with valid operation ID
+        TransferEventService._update_operation_transfer_event(user_guid, transfer_id, payload)
+
+        mock_validate_no_overlapping.assert_called_once_with(operation_id=operation_id, current_transfer_id=transfer_id)
+        mock_update_transfer_event.assert_called_once_with(
+            user_guid, transfer_id, {"operation_id": operation_id, "effective_date": payload.effective_date}
+        )
+
+        # Test with missing operation ID
+        payload.operation = None
+        with pytest.raises(Exception, match="Operation is required for operation transfer events."):
+            TransferEventService._update_operation_transfer_event(user_guid, transfer_id, payload)
+
+    @staticmethod
+    @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
+    @patch("service.transfer_event_service.TransferEventDataAccessService.update_transfer_event")
+    def test_update_facility_transfer_event(mock_update_transfer_event, mock_validate_no_overlapping):
+        user_guid = uuid4()
+        transfer_id = uuid4()
+        facility_ids = [uuid4(), uuid4()]
+        payload = MagicMock(facilities=facility_ids, effective_date=datetime.now(ZoneInfo("UTC")))
+
+        updated_transfer_event_mock = MagicMock()
+        mock_update_transfer_event.return_value = updated_transfer_event_mock
+
+        # Test with valid facility IDs
+        TransferEventService._update_facility_transfer_event(user_guid, transfer_id, payload)
+
+        mock_validate_no_overlapping.assert_called_once_with(facility_ids=facility_ids, current_transfer_id=transfer_id)
+        mock_update_transfer_event.assert_called_once_with(
+            user_guid, transfer_id, payload.dict(include=["effective_date"])
+        )
+        updated_transfer_event_mock.facilities.set.assert_called_once_with(facility_ids)
+
+        # Test with missing facility IDs
+        payload.facilities = []
+        with pytest.raises(Exception, match="Facilities are required for facility transfer events."):
+            TransferEventService._update_facility_transfer_event(user_guid, transfer_id, payload)
+
+    @staticmethod
+    @patch("service.transfer_event_service.TransferEventService._get_and_validate_transfer_event_for_update")
+    @patch("service.transfer_event_service.TransferEventService._update_operation_transfer_event")
+    @patch("service.transfer_event_service.TransferEventService._update_facility_transfer_event")
+    @patch("service.transfer_event_service.TransferEventService._process_event_if_effective")
+    def test_update_transfer_event(
+        mock_process_event_if_effective,
+        mock_update_facility_transfer_event,
+        mock_update_operation_transfer_event,
+        mock_get_and_validate_transfer_event_for_update,
+    ):
+        user_guid = uuid4()
+        transfer_id = uuid4()
+        transfer_event_mock = MagicMock()
+        mock_get_and_validate_transfer_event_for_update.return_value = transfer_event_mock
+
+        # Scenario 1: Updating an operation transfer event
+        payload_operation = MagicMock(transfer_entity="Operation", operation=uuid4(), effective_date="2025-01-20")
+        TransferEventService.update_transfer_event(user_guid, transfer_id, payload_operation)
+        mock_update_operation_transfer_event.assert_called_once_with(user_guid, transfer_id, payload_operation)
+        mock_process_event_if_effective.assert_called_once_with(payload_operation, transfer_event_mock, user_guid)
+
+        # Scenario 2: Updating a facility transfer event
+        payload_facility = MagicMock(
+            transfer_entity="Facility", facilities=[uuid4(), uuid4()], effective_date="2025-01-20"
+        )
+        TransferEventService.update_transfer_event(user_guid, transfer_id, payload_facility)
+        mock_update_facility_transfer_event.assert_called_once_with(user_guid, transfer_id, payload_facility)
+        mock_process_event_if_effective.assert_called_with(payload_facility, transfer_event_mock, user_guid)
+
+        # Scenario 3: Invalid transfer entity
+        payload_invalid = MagicMock(transfer_entity="Invalid", effective_date="2025-01-20")
+        with pytest.raises(KeyError):
+            TransferEventService.update_transfer_event(user_guid, transfer_id, payload_invalid)

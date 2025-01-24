@@ -403,6 +403,7 @@ class TestEndpointPermissions(TestCase):
             {"method": "get", "endpoint_name": "list_user_operators"},
             {"method": "get", "endpoint_name": "list_user_operators"},
             {"method": "get", "endpoint_name": "list_transfer_events"},
+            {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": mock_uuid}},
         ],
         "approved_authorized_roles": [
             {
@@ -551,6 +552,8 @@ class TestEndpointPermissions(TestCase):
         ],
         "cas_analyst": [
             {"method": "post", "endpoint_name": "create_transfer_event"},
+            {"method": "patch", "endpoint_name": "update_transfer_event", "kwargs": {"transfer_id": mock_uuid}},
+            {"method": "delete", "endpoint_name": "delete_transfer_event", "kwargs": {"transfer_id": mock_uuid}},
         ],
     }
 

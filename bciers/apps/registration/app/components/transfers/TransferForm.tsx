@@ -101,6 +101,8 @@ export default function TransferForm({
     } = await fetchOperationsPageData({
       paginate_results: false,
       operator_id: operatorId,
+      end_date: true, // this indicates that the end_date is not null,
+      status: "Active", // only fetch active facilities
     });
     if (!response || "error" in response || !response.rows) {
       setError("Failed to fetch operations data!" as any);

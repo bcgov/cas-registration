@@ -11,9 +11,9 @@ import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 // 🧩 Main component
 export default async function TransfersDataGridPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: TransfersSearchParams;
-}) {
+}>) {
   // Fetch transfers data
   const transfers: {
     rows: TransferRow[];
@@ -28,21 +28,21 @@ export default async function TransfersDataGridPage({
 
   // Render the DataGrid component
   return (
-    <Suspense fallback={<Loading />}>
-      <div className="mt-5">
-        <h2 className="text-bc-primary-blue">Transfers</h2>
-        {isCasAnalyst && (
-          <div className="text-right mb-4">
-            <Link href={`/transfers/transfer-entity`}>
-              {/* textTransform to remove uppercase text */}
-              <Button variant="contained" sx={{ textTransform: "none" }}>
-                Make a Transfer
-              </Button>
-            </Link>
-          </div>
-        )}
+    <div className="mt-5">
+      <h2 className="text-bc-primary-blue">Transfers</h2>
+      {isCasAnalyst && (
+        <div className="text-right mb-4">
+          <Link href={`/transfers/transfer-entity`}>
+            {/* textTransform to remove uppercase text */}
+            <Button variant="contained" sx={{ textTransform: "none" }}>
+              Make a Transfer
+            </Button>
+          </Link>
+        </div>
+      )}
+      <Suspense fallback={<Loading />}>
         <TransferDataGrid initialData={transfers} />
-      </div>
-    </Suspense>
+      </Suspense>
+    </div>
   );
 }
