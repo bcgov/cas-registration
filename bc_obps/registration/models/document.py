@@ -14,6 +14,14 @@ class Document(TimeStampedModel):
         db_comment="Type of document, e.g., boundary map",
     )
     description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
+    operation = models.ForeignKey(
+        'registration.Operation',
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="documents",
+        db_comment="The operation that the document is about",
+    )
     history = HistoricalRecords(
         table_name='erc_history"."document_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
@@ -32,3 +40,5 @@ class Document(TimeStampedModel):
             default_storage.delete(self.file.name)
 
         super().delete(*args, **kwargs)
+
+    #

@@ -1,6 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
-    Document,
     User,
     AppRole,
 )
@@ -14,7 +13,6 @@ class UserModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
-        cls.test_object.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
         cls.field_data = [
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
@@ -29,7 +27,6 @@ class UserModelTest(BaseTestCase):
             ("user_guid", "user guid", None, None),
             ("business_guid", "business guid", None, None),
             ("bceid_business_name", "bceid business name", None, None),
-            ("documents", "documents", None, 2),
             ("app_role", "app role", None, None),
             ("operators_verified_by", "operator", None, None),
             ("user_operators", "user operator", None, None),
