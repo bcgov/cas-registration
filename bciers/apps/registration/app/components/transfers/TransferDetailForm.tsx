@@ -102,7 +102,8 @@ export default function TransferDetailForm({
               variant="contained"
               onClick={() => {
                 setDisabled(false);
-                setKey(Math.random());
+                // force re-render to clear the form
+                setKey(Math.random()); // NOSONAR
               }}
             >
               Edit Details
