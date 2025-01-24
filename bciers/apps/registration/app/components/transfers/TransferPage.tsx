@@ -19,9 +19,9 @@ import {
 // 🧩 Main component
 export default async function TransferPage({
   transferId,
-}: {
+}: Readonly<{
   transferId?: UUID;
-}) {
+}>) {
   let transferFormData: { [key: string]: any } | { error: string } = {};
   let operators: {
     rows: OperatorRow[];
