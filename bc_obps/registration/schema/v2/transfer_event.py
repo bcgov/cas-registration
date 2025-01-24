@@ -85,7 +85,7 @@ class TransferEventOut(ModelSchema):
                 facility.latitude_of_largest_emissions is not None
                 and facility.longitude_of_largest_emissions is not None
             ):
-                return f"{facility.name} ({format_decimal(facility.latitude_of_largest_emissions, 1)}, {format_decimal(facility.longitude_of_largest_emissions, 1)})"
+                return f"{facility.name} ({format_decimal(facility.latitude_of_largest_emissions)}, {format_decimal(facility.longitude_of_largest_emissions)})"
             return facility.name
 
         if not obj.facilities.exists():

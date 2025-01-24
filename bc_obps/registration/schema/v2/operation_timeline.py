@@ -39,3 +39,4 @@ class OperationTimelineFilterSchema(FilterSchema):
     )
     operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
     operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator__id__exact'})
+    end_date: Optional[bool] = Field(None, json_schema_extra={'q': 'end_date__isnull'})

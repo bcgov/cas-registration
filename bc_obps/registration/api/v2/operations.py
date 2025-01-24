@@ -33,7 +33,7 @@ from registration.schema.v2.operation_timeline import OperationTimelineFilterSch
 def list_operations(
     request: HttpRequest,
     filters: OperationTimelineFilterSchema = Query(...),
-    sort_field: Optional[str] = "created_at",
+    sort_field: Optional[str] = "operation__created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[OperationDesignatedOperatorTimeline]:

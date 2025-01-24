@@ -231,7 +231,7 @@ describe("RJSF DateWidget", () => {
       dateWidgetLabelRequired,
     );
   });
-  it("should trigger validation error when user clicks the clear button", async () => {
+  it("should trigger validation error when user clears the field and tries to submit", async () => {
     render(
       <FormBase
         schema={dateWidgetFieldSchema}
