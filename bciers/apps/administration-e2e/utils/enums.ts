@@ -87,7 +87,7 @@ export enum MessageTextOperatorSelect {
   NO_ACCESS = "You do not currently have access to",
   NO_ADMIN = "does not have Administrator access set up",
   OPERATOR_CONFIRM = "Kindly confirm if this is the operator that you represent.",
-  REQUEST_ACCESS_CONFIRMED = "Your access request has been sent to the Administrator(s) of",
+  REQUEST_ACCESS_CONFIRMED = "Your access request has been sent to the Administrator(s) of Existing Operator 14 Legal Name for review.",
   REQUEST_ACCESS_ADMIN_CONFIRMED = "Your access request as administrator for Operator 1 Legal Name has been received by ministry staff and will be reviewed shortly.",
   REQUEST_ACCESS_DECLINED = "Your access request was declined by an Administrator of Existing Operator 2 Legal Name", //"Your access request was declined by an Administrator",
   REQUEST_ACCESS_ADMIN_DECLINED = "Your administrator access request for New Operator 13 Legal Name was declined",
