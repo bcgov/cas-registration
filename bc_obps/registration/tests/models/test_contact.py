@@ -1,24 +1,22 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
-    Document,
     Contact,
 )
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
+    OPERATOR_FIXTURE,
     CONTACT_FIXTURE,
-    DOCUMENT_FIXTURE,
     USER_FIXTURE,
     TIMESTAMP_COMMON_FIELDS,
 )
 
 
 class ContactModelTest(BaseTestCase):
-    fixtures = [ADDRESS_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, DOCUMENT_FIXTURE]
+    fixtures = [ADDRESS_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
         cls.test_object = Contact.objects.get(id=1)
-        cls.test_object.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
@@ -34,8 +32,8 @@ class ContactModelTest(BaseTestCase):
                 None,
             ),  # Replace None with the actual max length if available
             ("business_role", "business role", None, None),
-            ("documents", "documents", None, None),
-            ("operators", "operator", None, None),
-            ("operations", "operation", None, None),
+            ("operator", "operator", None, None),
+            # operation model has point-of-contact (fk) and contacts (m2m)
             ("operations_contacts", "operation", None, None),
+            ("operations", "operation", None, None),
         ]
