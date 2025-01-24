@@ -50,6 +50,8 @@ export const operationEntitySchema = async (
   const operationsByOperator = await fetchOperationsPageData({
     paginate_results: false,
     operator_id: fromOperatorId,
+    end_date: true, // this indicates that the end_date is not null,
+    status: "Active", // only fetch active facilities
   });
   if (
     !operationsByOperator ||
@@ -80,14 +82,19 @@ export const operationEntitySchema = async (
 
   return {
     type: "object",
-    title: "Transfer Entity",
-    required: ["operation", "effective_date"],
     properties: {
-      ...sharedSchemaProperties.properties,
-      operation: {
-        type: "string",
-        title: "Operation",
-        anyOf: operationOptions,
+      section: {
+        type: "object",
+        title: "Transfer Details",
+        required: ["operation", "effective_date"],
+        properties: {
+          ...sharedSchemaProperties.properties,
+          operation: {
+            type: "string",
+            title: "Operation",
+            anyOf: operationOptions,
+          },
+        },
       },
     },
   };
@@ -152,26 +159,31 @@ export const facilityEntitySchema = async (
 
   return {
     type: "object",
-    title: "Transfer Entity",
-    required: ["facilities", "effective_date"],
     properties: {
-      ...sharedSchemaProperties.properties,
-      from_operation: {
-        type: "string",
-        title: "Current operation",
-      },
-      facilities: {
-        type: "array",
-        title: "Facilities",
-        minItems: 1,
-        items: {
-          type: "string",
-          ...facilityEnum,
+      section: {
+        type: "object",
+        title: "Transfer Details",
+        required: ["facilities", "effective_date"],
+        properties: {
+          ...sharedSchemaProperties.properties,
+          from_operation: {
+            type: "string",
+            title: "Current operation",
+          },
+          facilities: {
+            type: "array",
+            title: "Facilities",
+            minItems: 1,
+            items: {
+              type: "string",
+              ...facilityEnum,
+            },
+          },
+          to_operation: {
+            type: "string",
+            title: "New operation",
+          },
         },
-      },
-      to_operation: {
-        type: "string",
-        title: "New operation",
       },
     },
   };
@@ -179,52 +191,55 @@ export const facilityEntitySchema = async (
 
 export const editTransferUISchema: UiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,
-  "ui:order": [
-    "transfer_header",
-    "from_operator",
-    "to_operator",
-    "transfer_entity",
-    "operation",
-    "from_operation",
-    "facilities",
-    "to_operation",
-    "effective_date",
-  ],
-  "ui:options": {
-    label: false,
-  },
-  transfer_header: {
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "form-heading mb-8",
-  },
-  from_operator: {
-    "ui:widget": "ReadOnlyWidget",
-  },
-  to_operator: {
-    "ui:widget": "ReadOnlyWidget",
-  },
-  transfer_entity: {
-    "ui:widget": "ReadOnlyRadioWidget",
-    "ui:classNames": "md:gap-20",
+  section: {
+    "ui:FieldTemplate": SectionFieldTemplate,
     "ui:options": {
-      inline: true,
+      label: false,
     },
-  },
-  operation: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select the operation",
-  },
-  effective_date: {
-    "ui:widget": "DateWidget",
-  },
-  from_operation: {
-    "ui:widget": "ReadOnlyWidget",
-  },
-  facilities: {
-    "ui:widget": "MultiSelectWidget",
-    "ui:placeholder": "Select facilities",
-  },
-  to_operation: {
-    "ui:widget": "ReadOnlyWidget",
+    "ui:order": [
+      "transfer_header",
+      "from_operator",
+      "to_operator",
+      "transfer_entity",
+      "operation",
+      "from_operation",
+      "facilities",
+      "to_operation",
+      "effective_date",
+    ],
+    transfer_header: {
+      "ui:FieldTemplate": FieldTemplate,
+      "ui:classNames": "form-heading mb-8",
+    },
+    from_operator: {
+      "ui:widget": "ReadOnlyWidget",
+    },
+    to_operator: {
+      "ui:widget": "ReadOnlyWidget",
+    },
+    transfer_entity: {
+      "ui:widget": "ReadOnlyRadioWidget",
+      "ui:classNames": "md:gap-20",
+      "ui:options": {
+        inline: true,
+      },
+    },
+    operation: {
+      "ui:widget": "ComboBox",
+      "ui:placeholder": "Select the operation",
+    },
+    effective_date: {
+      "ui:widget": "DateWidget",
+    },
+    from_operation: {
+      "ui:widget": "ReadOnlyWidget",
+    },
+    facilities: {
+      "ui:widget": "MultiSelectWidget",
+      "ui:placeholder": "Select facilities",
+    },
+    to_operation: {
+      "ui:widget": "ReadOnlyWidget",
+    },
   },
 };

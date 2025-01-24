@@ -57,7 +57,7 @@ class TransferEventService:
         return cast(QuerySet[TransferEvent], queryset)
 
     @classmethod
-    def validate_no_overlapping_transfer_events(
+    def _validate_no_overlapping_transfer_events(
         cls,
         operation_id: Optional[UUID] = None,
         facility_ids: Optional[List[UUID]] = None,
@@ -122,9 +122,9 @@ class TransferEventService:
 
         # Validate against overlapping transfer events
         if payload.transfer_entity == "Operation":
-            cls.validate_no_overlapping_transfer_events(operation_id=payload.operation)
+            cls._validate_no_overlapping_transfer_events(operation_id=payload.operation)
         elif payload.transfer_entity == "Facility":
-            cls.validate_no_overlapping_transfer_events(facility_ids=payload.facilities)
+            cls._validate_no_overlapping_transfer_events(facility_ids=payload.facilities)
 
         # Prepare the payload for the data access service
         prepared_payload = {
@@ -290,25 +290,25 @@ class TransferEventService:
 
     @classmethod
     def get_if_authorized(cls, user_guid: UUID, transfer_id: UUID) -> TransferEvent:
-        transfer_event: TransferEvent = TransferEventDataAccessService.get_by_id(transfer_id)
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
             raise Exception(UNAUTHORIZED_MESSAGE)
+        transfer_event: TransferEvent = TransferEventDataAccessService.get_by_id(transfer_id)
         return transfer_event
 
     @classmethod
-    def _get_and_validate_transfer_event(cls, transfer_id: UUID, user_guid: UUID) -> TransferEvent:
-        transfer_event = TransferEventDataAccessService.get_by_id(transfer_id)
+    def _get_and_validate_transfer_event_for_update(cls, transfer_id: UUID, user_guid: UUID) -> TransferEvent:
         user = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_analyst():
             raise Exception(UNAUTHORIZED_MESSAGE)
+        transfer_event = TransferEventDataAccessService.get_by_id(transfer_id)
         if transfer_event.status != TransferEvent.Statuses.TO_BE_TRANSFERRED:
             raise Exception("Only transfer events with status 'To be transferred' can be modified.")
         return transfer_event
 
     @classmethod
     def delete_transfer_event(cls, user_guid: UUID, transfer_id: UUID) -> None:
-        transfer_event = cls._get_and_validate_transfer_event(transfer_id, user_guid)
+        transfer_event = cls._get_and_validate_transfer_event_for_update(transfer_id, user_guid)
         transfer_event.delete()
         return None
 
@@ -319,7 +319,7 @@ class TransferEventService:
         operation_id = payload.operation
         if not operation_id:
             raise Exception("Operation is required for operation transfer events.")
-        cls.validate_no_overlapping_transfer_events(operation_id=operation_id, current_transfer_id=transfer_id)
+        cls._validate_no_overlapping_transfer_events(operation_id=operation_id, current_transfer_id=transfer_id)
         TransferEventDataAccessService.update_transfer_event(
             user_guid, transfer_id, {"operation_id": operation_id, "effective_date": payload.effective_date}  # type: ignore[attr-defined] # mypy not aware of model schema field
         )
@@ -331,7 +331,7 @@ class TransferEventService:
         facility_ids = payload.facilities
         if not facility_ids:
             raise Exception("Facilities are required for facility transfer events.")
-        cls.validate_no_overlapping_transfer_events(facility_ids=facility_ids, current_transfer_id=transfer_id)
+        cls._validate_no_overlapping_transfer_events(facility_ids=facility_ids, current_transfer_id=transfer_id)
         updated_transfer_event = TransferEventDataAccessService.update_transfer_event(
             user_guid, transfer_id, payload.dict(include=["effective_date"])
         )
@@ -340,7 +340,7 @@ class TransferEventService:
     @classmethod
     @transaction.atomic
     def update_transfer_event(cls, user_guid: UUID, transfer_id: UUID, payload: TransferEventUpdateIn) -> TransferEvent:
-        transfer_event = cls._get_and_validate_transfer_event(transfer_id, user_guid)
+        transfer_event = cls._get_and_validate_transfer_event_for_update(transfer_id, user_guid)
         {"Operation": cls._update_operation_transfer_event, "Facility": cls._update_facility_transfer_event,}[
             payload.transfer_entity
         ](user_guid, transfer_id, payload)

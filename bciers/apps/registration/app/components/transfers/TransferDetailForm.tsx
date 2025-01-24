@@ -1,22 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import FormBase from "@bciers/components/form/FormBase";
-import { Alert, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { useRouter } from "next/navigation";
 import { IChangeEvent } from "@rjsf/core";
 import { TransferDetailFormData } from "@/registration/app/components/transfers/types";
 import { editTransferUISchema } from "@/registration/app/data/jsonSchema/transfer/transferDetail";
-import TaskList from "@bciers/components/form/components/TaskList";
 import { actionHandler } from "@bciers/actions";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { UUID } from "crypto";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-import { FrontendMessages, FrontEndRoles } from "@bciers/utils/src/enums";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 import { TransferEventStatus } from "@/registration/app/components/transfers/enums";
 import { RJSFSchema } from "@rjsf/utils";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 
 interface TransferDetailFormProps {
   formData: TransferDetailFormData;
@@ -40,7 +38,7 @@ export default function TransferDetailForm({
   const [error, setError] = useState(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [key, setKey] = useState(Math.random()); // NOSONAR
 
   const handleCancelTransfer = async () => {
     const endpoint = `registration/transfer-events/${transferId}`;
@@ -69,10 +67,8 @@ export default function TransferDetailForm({
     if (!response || response?.error) {
       setDisabled(false);
       setError(response.error as any);
-      return;
     } else {
       setDisabled(true);
-      setIsSnackbarOpen(true);
     }
   };
 
@@ -86,13 +82,45 @@ export default function TransferDetailForm({
     </Button>
   );
 
+  const customButtonSection = (
+    <>
+      {isEditable ? (
+        <div className="flex justify-between mt-4">
+          <div>
+            {backButton}
+            <Button
+              variant="contained"
+              className="ml-4"
+              type="button"
+              onClick={() => setModalOpen(true)}
+            >
+              Cancel Transfer
+            </Button>
+          </div>
+          {disabled ? (
+            <Button
+              variant="contained"
+              onClick={() => {
+                setDisabled(false);
+                setKey(Math.random());
+              }}
+            >
+              Edit Details
+            </Button>
+          ) : (
+            <SubmitButton disabled={disabled} isSubmitting={isSubmitting}>
+              Transfer Entity
+            </SubmitButton>
+          )}
+        </div>
+      ) : (
+        <div className="text-end">{backButton}</div>
+      )}
+    </>
+  );
+
   return (
     <div className="w-full flex flex-row mt-8">
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message={FrontendMessages.SUBMIT_CONFIRMATION}
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
       <SimpleModal
         title="Confirmation"
         open={modalOpen}
@@ -104,52 +132,18 @@ export default function TransferDetailForm({
       >
         Are you sure you want to cancel this transfer?
       </SimpleModal>
-      <TaskList
-        // Hide the task list on mobile
-        className="hidden sm:block"
-        // hardcoding the task list items because we are not using the SingleStepTaskListForm
-        taskListItems={[{ section: "section", title: "Transfer Details" }]}
+      <SingleStepTaskListForm
+        key={key}
+        disabled={disabled}
+        error={error}
+        schema={schema}
+        uiSchema={editTransferUISchema}
+        formData={formData}
+        allowEdit={isEditable}
+        onSubmit={submitHandler}
+        onCancel={() => router.push("/transfers")}
+        customButtonSection={customButtonSection}
       />
-      <div className="w-full">
-        <FormBase
-          disabled={disabled}
-          schema={schema}
-          uiSchema={editTransferUISchema}
-          formData={formData}
-          onSubmit={submitHandler}
-          omitExtraData={true}
-        >
-          <div className="min-h-6">
-            {error && <Alert severity="error">{error}</Alert>}
-          </div>
-          {isEditable ? (
-            <div className="flex justify-between mt-4">
-              <div>
-                {backButton}
-                <Button
-                  variant="contained"
-                  className="ml-4"
-                  type="button"
-                  onClick={() => setModalOpen(true)}
-                >
-                  Cancel Transfer
-                </Button>
-              </div>
-              {disabled ? (
-                <Button variant="contained" onClick={() => setDisabled(false)}>
-                  Edit Details
-                </Button>
-              ) : (
-                <SubmitButton disabled={disabled} isSubmitting={isSubmitting}>
-                  Transfer Entity
-                </SubmitButton>
-              )}
-            </div>
-          ) : (
-            <div className="text-end">{backButton}</div>
-          )}
-        </FormBase>
-      </div>
     </div>
   );
 }

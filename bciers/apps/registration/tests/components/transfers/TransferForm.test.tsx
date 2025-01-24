@@ -166,12 +166,16 @@ describe("The TransferForm component", () => {
     expect(fetchOperationsPageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
       paginate_results: false,
+      end_date: true,
+      status: "Active",
     });
     selectOperator(/current operator\*/i, "Operator 2");
     expect(fetchOperationsPageData).toHaveBeenCalledTimes(2);
     expect(fetchOperationsPageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
       paginate_results: false,
+      end_date: true,
+      status: "Active",
     });
   });
 

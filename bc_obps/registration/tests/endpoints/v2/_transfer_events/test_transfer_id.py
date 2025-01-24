@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 from uuid import uuid4
+import pytest
 from registration.models import AppRole, TransferEvent
 from registration.schema.v2.transfer_event import TransferEventUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -70,14 +71,19 @@ class TestTransferIdEndpoint(CommonTestSetup):
         assert response_json == {"success": True}
 
     @patch("service.transfer_event_service.TransferEventService.update_transfer_event")
-    def test_cas_analyst_can_update_transfer_event(self, mock_update_transfer_event: MagicMock):
+    @pytest.mark.parametrize("entity", ["Operation", "Facility"])
+    def test_cas_analyst_can_update_transfer_event(self, mock_update_transfer_event: MagicMock, entity):
         transfer_event = baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
         mock_update_transfer_event.return_value = transfer_event
         mock_payload = {
-            "transfer_entity": "Operation",
-            "operation": uuid4(),
+            "transfer_entity": entity,
             "effective_date": "2023-10-13",
         }
+        if entity == "Facility":
+            mock_payload['facilities'] = [uuid4(), uuid4()]
+        elif entity == "Operation":
+            mock_payload['operation'] = uuid4()
+
         response = TestUtils.mock_patch_with_auth_role(
             self,
             "cas_analyst",
@@ -88,10 +94,9 @@ class TestTransferIdEndpoint(CommonTestSetup):
         mock_update_transfer_event.assert_called_once_with(
             self.user.pk,
             transfer_event.id,
+            # override the effective date to match the format of the response
             TransferEventUpdateIn.model_construct(
-                transfer_entity=mock_payload['transfer_entity'],
-                operation=mock_payload['operation'],
-                effective_date=datetime.strptime(mock_payload['effective_date'], "%Y-%m-%d"),
+                **{**mock_payload, "effective_date": datetime.strptime(mock_payload['effective_date'], "%Y-%m-%d")}
             ),
         )
         assert response.status_code == 200

@@ -52,6 +52,8 @@ const TransfersDataGrid = ({
       fetchPageData={fetchTransferEventsPageData}
       paginationMode="server"
       initialData={initialData}
+      // We need to generate a unique id for each row to avoid issues with the DataGrid(MUI requires a unique id for each row)
+      getRowId={(row) => `${row.transfer_id} - ${row.facilities__name}`}
     />
   );
 };
