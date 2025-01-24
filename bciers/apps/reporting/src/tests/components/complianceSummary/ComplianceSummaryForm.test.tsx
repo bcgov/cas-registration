@@ -57,7 +57,6 @@ describe("ComplianceSummaryForm", () => {
   it("should render the calculation summary data", async () => {
     render(
       <ComplianceSummaryForm
-        needsVerification={false}
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
@@ -78,7 +77,6 @@ describe("ComplianceSummaryForm", () => {
   it("should render the regulatory values summary data", async () => {
     render(
       <ComplianceSummaryForm
-        needsVerification={false}
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
@@ -96,7 +94,6 @@ describe("ComplianceSummaryForm", () => {
   it("should render the production summary data", async () => {
     render(
       <ComplianceSummaryForm
-        needsVerification={false}
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
@@ -121,7 +118,6 @@ describe("ComplianceSummaryForm", () => {
     render(
       <ComplianceSummaryForm
         versionId={1}
-        needsVerification={true}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
       />,
@@ -138,11 +134,10 @@ describe("ComplianceSummaryForm", () => {
     );
   });
 
-  it("should render a continue button that navigates to the verification page", async () => {
+  it("should render a continue button that navigates to the final review page", async () => {
     render(
       <ComplianceSummaryForm
         versionId={1}
-        needsVerification={true}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
       />,
@@ -156,14 +151,13 @@ describe("ComplianceSummaryForm", () => {
 
     fireEvent.click(button);
 
-    expect(mockPush).toHaveBeenCalledWith(`/reports/1/verification`);
+    expect(mockPush).toHaveBeenCalledWith(`/reports/1/final-review`);
   });
 
   it("should render a continue button that navigates to the final review page", async () => {
     render(
       <ComplianceSummaryForm
         versionId={1}
-        needsVerification={false}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
       />,
