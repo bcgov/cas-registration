@@ -28,10 +28,10 @@ const contactGroupColumns = (
       children: [{ field: "email" }],
     },
     {
-      groupId: "operators__legal_name",
+      groupId: "operator__legal_name",
       headerName: "Operator Legal Name",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "operators__legal_name" }],
+      children: [{ field: "operator__legal_name" }],
     },
     {
       groupId: "action",
