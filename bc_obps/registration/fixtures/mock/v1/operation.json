@@ -6,7 +6,6 @@
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "verified_at": "2023-10-13T15:27:00.000Z",
       "verified_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "documents": [],
       "point_of_contact": 1,
       "name": "Operation 1",
       "type": "Linear Facility Operation",
@@ -25,7 +24,6 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "point_of_contact": 1,
-      "documents": [],
       "name": "Operation 2",
       "type": "Linear Facility Operation",
       "naics_code": 20,
@@ -35,7 +33,6 @@
       "status": "Not Started",
       "created_at": "2024-2-02T15:27:00.000Z",
       "activities": [1, 5],
-      "contacts": [10],
       "registration_purpose": "OBPS Regulated Operation"
     }
   },
@@ -44,7 +41,6 @@
     "pk": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "point_of_contact": 1,
       "name": "Operation 3",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -57,7 +53,6 @@
       "bc_obps_regulated_operation": "21-0001",
       "created_at": "2024-1-31T15:27:00.000Z",
       "activities": [1, 3],
-      "contacts": [14, 15],
       "registration_purpose": "OBPS Regulated Operation"
     }
   },
@@ -66,7 +61,6 @@
     "pk": "c0743c09-82fa-4186-91aa-4b5412e3415c",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-12T15:27:00.000Z",
       "bc_obps_regulated_operation": "21-0002",
       "point_of_contact": 1,
@@ -79,7 +73,6 @@
       "status": "Approved",
       "created_at": "2024-1-30T15:27:00.000Z",
       "activities": [1, 5],
-      "contacts": [10, 11, 12],
       "registration_purpose": "OBPS Regulated Operation"
     }
   },
@@ -88,7 +81,6 @@
     "pk": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": null,
       "point_of_contact": 1,
       "name": "Operation 5",
@@ -110,7 +102,6 @@
     "pk": "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-14T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 6",
@@ -130,7 +121,6 @@
     "pk": "436dd99a-cb41-4494-91c9-98ab149b557d",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-15T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 7",
@@ -150,7 +140,6 @@
     "pk": "a47b5fb6-1e10-401a-b70e-574bd925db99",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-16T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 8",
@@ -170,7 +159,6 @@
     "pk": "21e70498-c4b0-4525-8443-86faa96206e3",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-17T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 9",
@@ -190,7 +178,6 @@
     "pk": "17550cd8-3e73-4e52-aa91-ab90cb3b62b0",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-18T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 10",
@@ -210,7 +197,6 @@
     "pk": "7d3fc7d1-0504-4ee4-a9c5-447f4b324b57",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-19T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 11",
@@ -230,7 +216,6 @@
     "pk": "acf5811e-d521-43f7-a5c7-a6d6dd47bb31",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-20T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 12",
@@ -250,7 +235,6 @@
     "pk": "8563da83-0762-4d29-9b22-da5b52ef0f24",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-21T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 13",
@@ -270,7 +254,6 @@
     "pk": "df62d793-8cfe-4272-a93e-ea9c9139ff82",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-22T15:27:00.000Z",
       "point_of_contact": 2,
       "name": "Operation 14",
@@ -289,7 +272,6 @@
     "pk": "c5b3643b-c143-42f3-8a2b-03ccc7319cd9",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-23T15:27:00.000Z",
       "point_of_contact": 3,
       "name": "Operation 15",
@@ -309,7 +291,6 @@
     "pk": "954c0382-ff61-4e87-a8a0-873586534b54",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-24T15:27:00.000Z",
       "point_of_contact": 1,
       "name": "Operation 16",
@@ -329,7 +310,6 @@
     "pk": "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-25T15:27:00.000Z",
       "point_of_contact": 4,
       "name": "Operation 17",
@@ -349,7 +329,6 @@
     "pk": "59d95661-c752-489b-9fd1-0c3fa3454dda",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-26T15:27:00.000Z",
       "point_of_contact": 5,
       "name": "Operation 18",
@@ -368,7 +347,6 @@
     "pk": "1bd04128-d070-4d3a-940a-0874c4956181",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-27T15:27:00.000Z",
       "point_of_contact": 6,
       "name": "Operation 19",
@@ -388,7 +366,6 @@
     "pk": "17f13f4d-29b4-45f4-b025-b21f2e126771",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-28T15:27:00.000Z",
       "name": "Operation 20",
       "type": "Single Facility Operation",
@@ -406,7 +383,6 @@
     "pk": "ef9044dd-2a27-4d26-86fe-02e51e0755f7",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Operation 21",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -423,7 +399,6 @@
     "pk": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Operation 22",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -440,7 +415,6 @@
     "pk": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Operation 23",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -457,7 +431,6 @@
     "pk": "0ac72fa9-2636-4f54-b378-af6b1a070787",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Operation 24",
       "type": "Single Facility Operation",
       "naics_code": 21,
