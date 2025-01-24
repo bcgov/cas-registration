@@ -11,10 +11,6 @@ export default async function FacilitiesPage({
 }) {
   return (
     <>
-      <MultiStepHeader
-        stepIndex={1}
-        steps={multiStepHeaderSteps}
-      ></MultiStepHeader>
       <Facilities searchParams={searchParams} />
     </>
   );

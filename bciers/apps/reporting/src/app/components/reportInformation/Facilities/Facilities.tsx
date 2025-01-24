@@ -21,7 +21,7 @@ export default async function Facilities({
   }
   // Render the DataGrid component
   return (
-    <div className="mt-5">
+    <div className="mt-4">
       <FacilitiesDataGrid initialData={operations} />
     </div>
   );
