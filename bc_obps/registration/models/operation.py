@@ -1,5 +1,5 @@
-from typing import Optional
 import re
+from typing import Optional
 from uuid import UUID
 import uuid
 from django.db import models
@@ -9,18 +9,19 @@ from registration.models import (
     Operator,
     NaicsCode,
     User,
-    Document,
     Contact,
     RegulatedProduct,
     Activity,
     BcObpsRegulatedOperation,
-    DocumentType,
     UserOperator,
     OptedInOperationDetail,
 )
+
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from registration.models.document import Document
+from registration.models.document_type import DocumentType
 
 
 class Operation(TimeStampedModel):
@@ -121,11 +122,6 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
     )
-    documents = models.ManyToManyField(
-        Document,
-        blank=True,
-        related_name="operations",
-    )
     point_of_contact = models.ForeignKey(
         Contact,
         on_delete=models.PROTECT,
@@ -187,7 +183,7 @@ class Operation(TimeStampedModel):
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
-        m2m_fields=[regulated_products, activities, documents],
+        m2m_fields=[regulated_products, activities],
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 

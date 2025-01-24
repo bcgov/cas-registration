@@ -1,14 +1,9 @@
 from django.db import models
-from registration.models import Address, BusinessRole, Document, UserAndContactCommonInfo, TimeStampedModel
+from registration.models import Address, BusinessRole, UserAndContactCommonInfo, TimeStampedModel, Operator
 from simple_history.models import HistoricalRecords
 
 
 class Contact(UserAndContactCommonInfo, TimeStampedModel):
-    documents = models.ManyToManyField(
-        Document,
-        blank=True,
-        related_name="contacts",
-    )
     business_role = models.ForeignKey(
         BusinessRole,
         on_delete=models.DO_NOTHING,
@@ -23,10 +18,16 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         db_comment="Foreign key to the address of a user or contact",
         related_name="contacts",
     )
+    operator = models.ForeignKey(
+        Operator,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name="contacts",
+    )
 
     history = HistoricalRecords(
         table_name='erc_history"."contact_history',
-        m2m_fields=[documents],
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 

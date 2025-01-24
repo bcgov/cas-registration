@@ -5,7 +5,7 @@ from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     CRA_BUSINESS_NUMBER_MESSAGE,
 )
-from registration.models import TimeStampedModel, Address, BusinessStructure, Contact, Document, User
+from registration.models import TimeStampedModel, Address, BusinessStructure, User
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator, MaxValueValidator, MinValueValidator
 
@@ -71,17 +71,6 @@ class Operator(TimeStampedModel):
         blank=True,
         null=True,
     )
-
-    documents = models.ManyToManyField(
-        Document,
-        blank=True,
-        related_name="operators",
-    )
-    contacts = models.ManyToManyField(
-        Contact,
-        blank=True,
-        related_name="operators",
-    )
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
@@ -107,7 +96,6 @@ class Operator(TimeStampedModel):
     )
     history = HistoricalRecords(
         table_name='erc_history"."operator_history',
-        m2m_fields=[documents, contacts],
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
