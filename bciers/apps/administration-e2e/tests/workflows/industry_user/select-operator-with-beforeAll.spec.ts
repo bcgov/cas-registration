@@ -130,7 +130,7 @@ test.describe("Test select operator paths with beforeAll", () => {
     // 🔍 Assert operator confirmation message
     await selectOperatorPage.msgConfirmOperatorIsVisible();
     // 👉 Action route return
-    await selectOperatorPage.routeReturn();
+    await selectOperatorPage.routeBack();
     // 🔍 Assert operator confirmation message
     await selectOperatorPage.msgSelectOpertorIsVisible();
   });
