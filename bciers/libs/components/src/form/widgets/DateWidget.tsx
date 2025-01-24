@@ -23,7 +23,9 @@ const DateWidget: React.FC<WidgetProps> = ({
   const simpleDateFormat = options?.simpleDateFormat || false;
 
   const handleChange = (d: Dayjs | null) => {
-    if (!d || !d.isValid()) {
+    if (d === null) return onChange(undefined);
+
+    if (!d.isValid()) {
       return onChange("invalid date");
     }
 

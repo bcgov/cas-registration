@@ -1,9 +1,11 @@
+import { UUID } from "crypto";
+
 export interface FacilityRow {
-  id: number;
+  id: UUID;
   facility__bcghg_id__id: string;
   facility__name: string;
   facility__type: string;
-  facility__id: number;
+  facility__id: UUID;
   status: string;
   facility__latitude_of_largest_emissions: string;
   facility__longitude_of_largest_emissions: string;

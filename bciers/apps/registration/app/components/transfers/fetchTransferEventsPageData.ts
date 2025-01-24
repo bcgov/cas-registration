@@ -15,7 +15,7 @@ export const formatTransferRows = (rows: GridRowsProp) => {
       created_at,
     }) => {
       return {
-        id,
+        transfer_id: id,
         operation__name: operation__name || "N/A",
         facilities__name: facilities__name || "N/A",
         status,

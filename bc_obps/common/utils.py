@@ -1,5 +1,8 @@
+from typing import Optional
+
 from django.apps import apps
 from django.core.management import call_command
+from decimal import Decimal
 
 
 def reset_dashboard_data() -> None:
@@ -26,3 +29,17 @@ def reset_dashboard_data() -> None:
     # Load the fixtures
     for fixture in fixture_files:
         call_command('loaddata', fixture)
+
+
+def format_decimal(value: Decimal, decimal_places: int = 2) -> Optional[Decimal]:
+    """
+    Formats a Decimal or numeric value to the specified number of decimal places
+    without rounding (truncates the extra digits).
+    """
+    if value is None:
+        return None
+    try:
+        quantize_value = Decimal(f"1.{'0' * decimal_places}")
+        return value.quantize(quantize_value)
+    except (ValueError, TypeError):
+        raise ValueError(f"Cannot format the provided value: {value}")

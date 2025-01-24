@@ -239,10 +239,8 @@ export default function OperationReviewForm({
         onConfirm={confirmReportTypeChange}
         confirmText="Change report type"
       >
-        <p>
-          Are you sure you want to change your report type? If you proceed, all
-          of the form data you have entered will be lost.
-        </p>
+        Are you sure you want to change your report type? If you proceed, all of
+        the form data you have entered will be lost.
       </SimpleModal>
       <MultiStepFormWithTaskList
         initialStep={0}
