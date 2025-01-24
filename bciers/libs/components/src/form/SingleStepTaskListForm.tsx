@@ -6,10 +6,12 @@ import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TaskList from "@bciers/components/form/components/TaskList";
-import { createNestedFormData, createUnnestedFormData } from "./formDataUtils";
-import { FormMode } from "@bciers/utils/src/enums";
+import {
+  createNestedFormData,
+  createUnnestedFormData,
+} from "@bciers/components/form/formDataUtils";
+import { FormMode, FrontendMessages } from "@bciers/utils/src/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-import { FrontendMessages } from "@bciers/utils/src/enums";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface SingleStepTaskListFormProps {
@@ -27,6 +29,7 @@ interface SingleStepTaskListFormProps {
   formContext?: { [key: string]: any };
   showTasklist?: boolean;
   showCancelButton?: boolean;
+  customButtonSection?: React.ReactNode;
 }
 
 const SingleStepTaskListForm = ({
@@ -44,6 +47,7 @@ const SingleStepTaskListForm = ({
   formContext,
   showTasklist = true,
   showCancelButton = true,
+  customButtonSection,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -120,40 +124,42 @@ const SingleStepTaskListForm = ({
           <div className="min-h-6">
             {error && <Alert severity="error">{error}</Alert>}
           </div>
-          <div className="w-full flex justify-end mt-8">
-            {allowEdit && (
-              <div>
-                {isDisabled ? (
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      setIsDisabled(false);
-                      setIsSnackbarOpen(false);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                ) : (
-                  <SubmitButton
-                    disabled={isSubmitting}
-                    isSubmitting={isSubmitting}
-                  >
-                    Submit
-                  </SubmitButton>
-                )}
-              </div>
-            )}
-            {showCancelButton && (
-              <Button
-                className="ml-4"
-                variant="outlined"
-                type="button"
-                onClick={onCancel}
-              >
-                Cancel
-              </Button>
-            )}
-          </div>
+          {customButtonSection || (
+            <div className="w-full flex justify-end mt-8">
+              {allowEdit && (
+                <div>
+                  {isDisabled ? (
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        setIsDisabled(false);
+                        setIsSnackbarOpen(false);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  ) : (
+                    <SubmitButton
+                      disabled={isSubmitting}
+                      isSubmitting={isSubmitting}
+                    >
+                      Submit
+                    </SubmitButton>
+                  )}
+                </div>
+              )}
+              {showCancelButton && (
+                <Button
+                  className="ml-4"
+                  variant="outlined"
+                  type="button"
+                  onClick={onCancel}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
+          )}
         </FormBase>
       </div>
     </div>
