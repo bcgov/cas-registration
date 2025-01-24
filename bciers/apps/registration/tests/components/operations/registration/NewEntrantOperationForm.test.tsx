@@ -98,7 +98,10 @@ describe("the NewEntrantOperationForm component", () => {
 
     expect(
       screen.getByRole("link", { name: /application form template/i }),
-    ).toHaveAttribute("href", "url-2-tbd");
+    ).toHaveAttribute(
+      "href",
+      "https://www2.gov.bc.ca/assets/download/751CDDAE4C9A411E974EEA9737CD42C6",
+    );
   });
 
   it("should display the correct url and message for the before March 31 date choice", async () => {
@@ -127,7 +130,10 @@ describe("the NewEntrantOperationForm component", () => {
 
     expect(
       screen.getByRole("link", { name: /application form template/i }),
-    ).toHaveAttribute("href", "url-1-tbd");
+    ).toHaveAttribute(
+      "href",
+      "https://www2.gov.bc.ca/assets/download/F5375D72BE1C450AB52C2E3E6A618959",
+    );
   });
 
   it("should display required field message if the users submits without attaching a file", async () => {
