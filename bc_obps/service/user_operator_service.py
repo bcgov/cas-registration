@@ -277,6 +277,7 @@ class UserOperatorService:
         if user_operator.status == UserOperator.Statuses.DECLINED:
             # Set role to pending for now but we may want to add a new role for declined
             user_operator.role = UserOperator.Roles.PENDING
+            # brianna you're going to have to go deal with thiss
             # hard delete contacts (Senior Officers) associated with the operator and the user who requested access
             user_operator.operator.contacts.filter(
                 created_by=user_operator.user,

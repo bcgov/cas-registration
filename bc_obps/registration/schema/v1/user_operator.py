@@ -151,7 +151,7 @@ class UserOperatorContactIn(ModelSchema):
 
     class Meta:
         model = Contact
-        exclude = ["id", "documents", "business_role", "address", "email", "phone_number", *AUDIT_FIELDS]
+        exclude = ["id", "business_role", "address", "email", "phone_number", *AUDIT_FIELDS]
         # whether an aliased field may be populated by its name as given by the model attribute, as well as the alias
         populate_by_name = True
 
