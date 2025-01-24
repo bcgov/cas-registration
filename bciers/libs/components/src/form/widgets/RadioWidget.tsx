@@ -22,8 +22,10 @@ const RadioWidget = ({
 }: WidgetProps) => {
   const { enumOptions, enumDisabled, emptyValue } = options;
 
-  const onChangeHandler = (_: any, value: any) =>
+  const onChangeHandler = (_: any, value: any) => {
+    if (readonly) return;
     onChange(enumOptionsValueForIndex(value, enumOptions, emptyValue));
+  };
   const onBlurHandler = ({ target: { value } }: FocusEvent<HTMLInputElement>) =>
     onBlur(id, enumOptionsValueForIndex(value, enumOptions, emptyValue));
   const onFocusHandler = ({
@@ -57,7 +59,7 @@ const RadioWidget = ({
               label={option.label}
               value={String(index)}
               key={option.label}
-              disabled={disabled || itemDisabled || readonly}
+              disabled={disabled || itemDisabled}
             />
           );
         })}

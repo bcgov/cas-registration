@@ -246,9 +246,9 @@ describe("VerificationForm component", () => {
       );
     },
   );
-  it("routes to the compliance summary page when the Back button is clicked", () => {
+  it("routes to the final review summary page when the Back button is clicked", () => {
     const queryString = "?"; // Update this based on your query string logic if necessary.
-    const expectedRoute = `/reports/${config.mockVersionId}/compliance-summary${queryString}`;
+    const expectedRoute = `/reports/${config.mockVersionId}/final-review${queryString}`;
 
     renderVerificationForm();
 

@@ -14,7 +14,6 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 
 interface Props {
   versionId: number;
-  needsVerification: boolean;
   summaryFormData: {
     emissions_attributable_for_reporting: string;
     reporting_only_emissions: string;
@@ -43,14 +42,11 @@ interface Props {
 
 const ComplianceSummaryForm: React.FC<Props> = ({
   versionId,
-  needsVerification,
   summaryFormData,
   taskListElements,
 }) => {
   const backUrl = `/reports/${versionId}/additional-reporting-data`;
-  const verificationUrl = `/reports/${versionId}/verification`;
-  const finalReviewUrl = `/reports/${versionId}/final-review`;
-  const continueUrl = needsVerification ? verificationUrl : finalReviewUrl;
+  const continueUrl = `/reports/${versionId}/final-review`;
 
   return (
     <Box sx={{ p: 3 }}>

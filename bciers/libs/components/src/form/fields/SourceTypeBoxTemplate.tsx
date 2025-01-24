@@ -20,20 +20,21 @@ function SourceTypeBoxTemplate({
   description,
   errors,
   children,
+  readonly,
 }: FieldTemplateProps) {
   const [expand, setExpand] = useState(true);
   return (
-    <>
-      <Paper className={classNames} sx={{ marginBottom: "10px" }}>
-        <Card style={{ textAlign: "left" }}>
-          <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
-            <Grid item xs={10}>
-              <CardHeader
-                sx={{ color: "blue" }}
-                titleTypographyProps={{ variant: "h6", color: "#38598A" }}
-                title={label}
-              />
-            </Grid>
+    <Paper className={classNames} sx={{ marginBottom: "10px" }}>
+      <Card style={{ textAlign: "left" }}>
+        <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
+          <Grid item xs={10}>
+            <CardHeader
+              sx={{ color: "blue" }}
+              titleTypographyProps={{ variant: "h6", color: "#38598A" }}
+              title={label}
+            />
+          </Grid>
+          {!readonly && (
             <Grid item xs={1}>
               <CardActions
                 sx={{ justifyContent: "flex-end", marginRight: "30px" }}
@@ -43,24 +44,24 @@ function SourceTypeBoxTemplate({
                 </IconButton>
               </CardActions>
             </Grid>
-          </Grid>
-          <Collapse
-            in={expand}
-            sx={{
-              marginLeft: "30px",
-              marginRight: "30px",
-              marginTop: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            {description}
-            {children}
-            {errors}
-            {help}
-          </Collapse>
-        </Card>
-      </Paper>
-    </>
+          )}
+        </Grid>
+        <Collapse
+          in={expand}
+          sx={{
+            marginLeft: "30px",
+            marginRight: "30px",
+            marginTop: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          {description}
+          {children}
+          {errors}
+          {help}
+        </Collapse>
+      </Card>
+    </Paper>
   );
 }
 

@@ -5,6 +5,7 @@ import {
 } from "@reporting/src/app/components/taskList/5_signOffSubmit";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalReviewForm";
+import reviewDataFactory, { ReviewData } from "./reviewDataFactory/factory";
 
 export default async function FinalReviewPage({
   version_id,
@@ -17,10 +18,13 @@ export default async function FinalReviewPage({
     needsVerification,
   );
 
+  const finalReviewData: ReviewData[] = await reviewDataFactory(version_id);
+
   return (
     <FinalReviewForm
       version_id={version_id}
       taskListElements={taskListElements}
+      data={finalReviewData}
     />
   );
 }

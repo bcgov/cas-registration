@@ -8,6 +8,7 @@ const CheckboxWidgetLeft: React.FC<WidgetProps> = ({
   label,
   value,
   required,
+  readonly,
 }) => {
   return (
     <div className="flex items-center">
@@ -17,7 +18,7 @@ const CheckboxWidgetLeft: React.FC<WidgetProps> = ({
         value={value}
         required={required}
         aria-label={label}
-        disabled={disabled}
+        disabled={disabled || readonly}
         onChange={(event: { target: { checked: any } }) =>
           onChange(event.target.checked)
         }

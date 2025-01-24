@@ -12,6 +12,7 @@ const CheckboxGroupWidget: React.FC<WidgetProps> = ({
   required,
   options,
   uiSchema,
+  readonly,
 }) => {
   const alignment = (uiSchema?.["ui:options"]?.alignment as string) || "center";
   const columns = uiSchema?.["ui:options"]?.columns || 2;
@@ -19,6 +20,8 @@ const CheckboxGroupWidget: React.FC<WidgetProps> = ({
 
   const handleCheckboxChange =
     (option: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (readonly) return;
+
       const newValue = event.target.checked
         ? [...value, option] // add if checked
         : value.filter((v: string) => v !== option);
@@ -45,6 +48,7 @@ const CheckboxGroupWidget: React.FC<WidgetProps> = ({
                 id={`${id}_${index}`}
                 required={required}
                 aria-label={option.label || option.value}
+                readOnly={readonly}
               />
             }
             label={option.label || option.value}

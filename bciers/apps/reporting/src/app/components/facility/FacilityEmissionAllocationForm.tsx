@@ -11,6 +11,8 @@ import {
 import { IChangeEvent } from "@rjsf/core";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { getFacilitiesInformationTaskList } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
+import { EmissionAllocationData, Product } from "./types";
+import { calculateEmissionData } from "./calculateEmissionsData";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -18,19 +20,6 @@ interface Props {
   facility_id: string;
   orderedActivities: any;
   initialData: any;
-}
-
-interface Product {
-  allocated_quantity: number;
-  report_product_id: number;
-  product_name: string;
-}
-
-interface EmissionAllocationData {
-  emission_category: string;
-  emission_total: number;
-  category_type: string;
-  products: Product[];
 }
 
 interface FormData {
@@ -42,38 +31,6 @@ interface FormData {
   allocation_methodology: string;
   allocation_other_methodology_description: string;
 }
-// Function that makes sure the percentage does not show 100 when it is not exactly 100
-const handlePercentageNearHundred = (value: number) => {
-  let res;
-  if (value > 100.0 && value < 100.01) {
-    res = 100.01;
-  } else if (value < 100.0 && value > 99.99) {
-    res = 99.99;
-  } else {
-    res = value;
-  }
-
-  return parseFloat(res.toFixed(4));
-};
-
-// 🛠️ Function to calculate category products allocation sum and set total sum in products_emission_allocation_sum
-const calculateEmissionData = (category: EmissionAllocationData) => {
-  const sum = category.products.reduce(
-    (total, product) =>
-      total + (parseFloat(product.allocated_quantity.toString()) || 0),
-    0,
-  );
-
-  const emissionTotal = Number(category.emission_total) || 1;
-
-  const percentage = handlePercentageNearHundred((sum / emissionTotal) * 100);
-
-  return {
-    ...category,
-    products_emission_allocation_sum: `${percentage.toFixed(2)}%`,
-    emission_total: category.emission_total.toString(),
-  };
-};
 
 // 🛠️ Function to validate that emissions totals equal emissions allocations
 const validateEmissions = (formData: FormData): boolean => {

@@ -14,6 +14,7 @@ const NestedArrayFieldTemplate = ({
   items,
   onAddClick,
   uiSchema,
+  readonly,
 }: ArrayFieldTemplateProps) => {
   const arrayAddLabel =
     (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
@@ -89,7 +90,7 @@ const NestedArrayFieldTemplate = ({
           </div>
         );
       })}
-      {canAdd && !disabled && (
+      {canAdd && !disabled && !readonly && (
         <Button
           disabled={disabled}
           variant="outlined"

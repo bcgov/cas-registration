@@ -4,7 +4,7 @@ import {
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import { TextAreaWidget } from "@bciers/components/form/widgets";
+import TextAreaWidget from "@bciers/components/form/widgets/TextAreaWidget";
 import {
   RJSFSchema,
   UiSchema,

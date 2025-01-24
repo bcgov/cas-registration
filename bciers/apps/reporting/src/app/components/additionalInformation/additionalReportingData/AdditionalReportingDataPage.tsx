@@ -6,7 +6,7 @@ import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTyp
 const REGULATED_OPERATION = "OBPS Regulated Operation";
 const NEW_ENTRANT = "New Entrant Operation";
 
-function transformReportAdditionalData(reportAdditionalData: any) {
+export function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
   if (reportAdditionalData.emissions_on_site_use !== null) {
     captureType.push("On-site use");
