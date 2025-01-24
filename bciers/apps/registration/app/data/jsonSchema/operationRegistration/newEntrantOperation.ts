@@ -83,14 +83,14 @@ export const newEntrantOperationUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": GenerateNewEntrantFormMessage(
       "on or before March 31, 2024",
-      "url-1-tbd",
+      "https://www2.gov.bc.ca/assets/download/F5375D72BE1C450AB52C2E3E6A618959",
     ),
   },
   on_or_after_april_1_section: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": GenerateNewEntrantFormMessage(
       "on or after April 1, 2024",
-      "url-2-tbd",
+      "https://www2.gov.bc.ca/assets/download/751CDDAE4C9A411E974EEA9737CD42C6",
     ),
   },
   new_entrant_application: {
