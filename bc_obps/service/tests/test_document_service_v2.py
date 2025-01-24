@@ -1,24 +1,25 @@
-from service.data_access_service.document_service import DocumentDataAccessService
+from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
 from registration.utils import data_url_to_file
 from registration.models.document import Document
 from registration.models.operation import Operation
 from registration.tests.constants import MOCK_DATA_URL, MOCK_DATA_URL_2
-from service.document_service import DocumentService
+from service.document_service_v2 import DocumentServiceV2
 import pytest
+from service.document_service import DocumentService
 
 from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
 
-class TestDocumentService:
+class TestDocumentServiceV2:
     @staticmethod
     def test_create_operation_document():
         # the value received by the service is a File (transformed into this in the django ninja schema)
         file = data_url_to_file(MOCK_DATA_URL)
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        document, created = DocumentService.create_or_replace_operation_document(
+        document, created = DocumentServiceV2.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, file, 'boundary_map'
         )
 
@@ -30,14 +31,13 @@ class TestDocumentService:
     def test_do_not_update_duplicate_operation_document():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        existing_document = DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map'
+        DocumentDataAccessServiceV2.create_document(
+            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
-        operation.documents.set([existing_document])
         created_at = operation.documents.first().created_at
 
         updated_file = data_url_to_file(MOCK_DATA_URL)
-        document, created = DocumentService.create_or_replace_operation_document(
+        document, created = DocumentServiceV2.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, updated_file, 'boundary_map'
         )
 
@@ -52,13 +52,12 @@ class TestDocumentService:
     def test_update_operation_document():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
         operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        existing_document = DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map'
+        DocumentDataAccessServiceV2.create_document(
+            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
-        operation.documents.set([existing_document])
 
         updated_file = data_url_to_file(MOCK_DATA_URL_2)
-        document, created = DocumentService.create_or_replace_operation_document(
+        document, created = DocumentServiceV2.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, updated_file, 'boundary_map'
         )
 
@@ -74,13 +73,14 @@ class TestDocumentService:
         operation = baker.make_recipe(
             'utils.operation', operator=approved_user_operator.operator, status=registration_status
         )
-        b_map = DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map'
+        # boundary map
+        b_map = DocumentDataAccessServiceV2.create_document(
+            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
-        pfd = DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'process_flow_diagram'
+        # process flow diagram
+        DocumentDataAccessServiceV2.create_document(
+            approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'process_flow_diagram', operation.id
         )
-        operation.documents.set([b_map, pfd])
 
         assert Document.objects.count() == 2
         assert operation.documents.count() == 2

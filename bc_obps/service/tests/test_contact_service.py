@@ -123,18 +123,12 @@ class TestContactService:
 
     @staticmethod
     def test_update_contact_without_address():
-        contact = contact_baker()  # Contact with no address
-        operator = operator_baker()
-        operator.contacts.set([contact])
-        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
-        user_operator_baker(
-            {
-                "user": user,
-                "operator": operator,
-                "status": UserOperator.Statuses.APPROVED,
-                "role": UserOperator.Roles.ADMIN,
-            }
-        )
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+
+        contact = baker.make_recipe(
+            'utils.contact', operator=approved_user_operator.operator, address=None
+        )  # Contact with no address
+
         contact_payload = ContactIn(
             first_name="John",
             last_name="Doe",
@@ -142,7 +136,7 @@ class TestContactService:
             phone_number="+16044011234",
             position_title="Mr.Tester",
         )
-        ContactService.update_contact(user.user_guid, contact.id, contact_payload)
+        ContactService.update_contact(approved_user_operator.user.user_guid, contact.id, contact_payload)
         contact.refresh_from_db()
         assert contact.first_name == contact_payload.first_name
         assert contact.last_name == contact_payload.last_name

@@ -276,11 +276,10 @@ class TestOperationServiceV2:
     @staticmethod
     def test_assign_existing_contacts_to_operation():
         approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        users_operator = approved_user_operator.operator
-        contacts = baker.make_recipe('utils.contact', _quantity=5)
+        contacts = baker.make_recipe('utils.contact', operator=approved_user_operator.operator, _quantity=5)
+        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+
         contact_to_update = contacts[0]
-        users_operator.contacts.set(list(map(lambda c: c.id, contacts)))
-        operation = baker.make_recipe('utils.operation', operator=users_operator)
 
         # bad payload, should not update first_name, last_name and email when existing_contact_id is provided
         bad_payload = OperationRepresentativeIn(
@@ -318,7 +317,6 @@ class TestOperationServiceV2:
             approved_user_operator.user.user_guid, operation.id, good_payload
         )
         operation.refresh_from_db()
-        assert users_operator.contacts.count() == 5
         assert operation.contacts.count() == 1
         assert operation.updated_at is not None
         assert operation.updated_by == approved_user_operator.user

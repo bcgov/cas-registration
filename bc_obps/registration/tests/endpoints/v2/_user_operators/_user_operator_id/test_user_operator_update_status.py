@@ -149,6 +149,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         )
 
     def test_cas_analyst_declines_access_request(self, mocker):
+        # brianna this will be fixed after rebase
         user = baker.make(User)
         operator = operator_baker()
         operator.status = Operator.Statuses.APPROVED

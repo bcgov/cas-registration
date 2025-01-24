@@ -6,7 +6,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy, data_url_to_file
 from model_bakery import baker
 from registration.tests.constants import MOCK_DATA_URL
-from service.document_service import DocumentService
+from service.document_service_v2 import DocumentServiceV2
 
 
 class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
@@ -31,7 +31,7 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
         )
         file = data_url_to_file(MOCK_DATA_URL)
-        new_entrant_application_doc, created = DocumentService.create_or_replace_operation_document(
+        new_entrant_application_doc, created = DocumentServiceV2.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, file, "new_entrant_application"
         )
         operation.documents.add(new_entrant_application_doc)
