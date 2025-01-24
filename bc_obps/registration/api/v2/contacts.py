@@ -9,7 +9,6 @@ from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.models.contact import Contact
 from registration.schema.v1.contact import ContactIn, ContactOut
-from service.contact_service import ContactService
 from service.contact_service_v2 import ContactServiceV2
 from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -49,4 +48,4 @@ def list_contacts(
 )
 @handle_http_errors()
 def create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:
-    return 201, ContactService.create_contact(get_current_user_guid(request), payload)
+    return 201, ContactServiceV2.create_contact(get_current_user_guid(request), payload)

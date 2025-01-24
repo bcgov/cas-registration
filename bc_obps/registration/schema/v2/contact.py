@@ -5,8 +5,24 @@ from ninja import FilterSchema
 from uuid import UUID
 
 
-from registration.schema.v1.contact import ContactOut
 from ninja import Schema
+
+
+class ContactOut(ModelSchema):
+    street_address: Optional[str] = Field(None, alias="address.street_address")
+    municipality: Optional[str] = Field(None, alias="address.municipality")
+    province: Optional[str] = Field(None, alias="address.province")
+    postal_code: Optional[str] = Field(None, alias="address.postal_code")
+    places_assigned: Optional[list] = None
+
+    @staticmethod
+    def resolve_phone_number(obj: Contact) -> str:
+        return str(obj.phone_number)
+
+    class Meta:
+        model = Contact
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
+        populate_by_name = True
 
 
 class PlacesAssigned(Schema):
@@ -16,11 +32,11 @@ class PlacesAssigned(Schema):
 
 
 class ContactWithPlacesAssigned(ContactOut):
-    places_assigned: Optional[list[PlacesAssigned]] = None
+    places_assigned: Optional[list[PlacesAssigned]] = []
 
 
 class ContactListOutV2(ModelSchema):
-    operators__legal_name: Optional[str] = None
+    operator__legal_name: str = Field(..., alias="operator.legal_name")
 
     class Meta:
         model = Contact
@@ -34,4 +50,4 @@ class ContactFilterSchemaV2(FilterSchema):
     first_name: Optional[str] = Field(None, json_schema_extra={'q': 'first_name__icontains'})
     last_name: Optional[str] = Field(None, json_schema_extra={'q': 'last_name__icontains'})
     email: Optional[str] = Field(None, json_schema_extra={'q': 'email__icontains'})
-    operators__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operators__legal_name__icontains'})
+    operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
