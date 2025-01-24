@@ -79,23 +79,30 @@ const facilityColumns = (): GridColDef[] => {
       field: "name",
       headerName: "Facility Name",
       width: 560,
+      sortable: false,
+      flex: 1,
     },
-    { field: "bcghg_id", headerName: "Facility BCGHG ID", width: 160 },
-
+    {
+      field: "bcghg_id",
+      headerName: "Facility BCGHG ID",
+      width: 200,
+      sortable: false,
+    },
     {
       field: "report_status",
       headerName: "Status",
       renderCell: ReportingOperationStatusCell,
       align: "center",
       headerAlign: "center",
-      width: 160,
+      sortable: false,
+      width: 200,
     },
     {
-      field: "report_status",
+      field: "actions",
       headerName: "Actions",
       renderCell: ActionCell,
       sortable: false,
-      width: 120,
+      width: 300,
     },
   ];
 };
