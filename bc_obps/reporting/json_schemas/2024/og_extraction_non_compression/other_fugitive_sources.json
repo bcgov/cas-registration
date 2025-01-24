@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "title": "Other fugitive sources",
+  "default": { "emissions": [{}] },
+  "properties": {
+    "source_sub_type": {
+      "title": "Source Sub-type",
+      "type": "string",
+      "enum": [
+        "Onshore Petroleum and Natural Gas Production - Gathering pipeline fugitive equipment",
+        "Onshore Petroleum and Natural Gas Production - Other fugitive emission sources"
+      ]
+    },
+    "emissions": {
+      "title": "Emission Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emission",
+            "type": "number",
+            "minimum": 0
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
+          }
+        }
+      }
+    }
+  }
+}
