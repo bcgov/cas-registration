@@ -27,6 +27,7 @@ from service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
+from service.document_service_v2 import DocumentServiceV2
 from service.operation_service import OperationService
 from registration.schema.v2.operation import (
     OperationInformationIn,
@@ -35,7 +36,6 @@ from registration.schema.v2.operation import (
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
 )
-from service.contact_service import ContactService
 from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 from datetime import datetime
@@ -112,7 +112,7 @@ class OperationServiceV2:
         (
             new_entrant_application_document,
             new_entrant_application_document_created,
-        ) = DocumentService.create_or_replace_operation_document(
+        ) = DocumentServiceV2.create_or_replace_operation_document(
             user_guid,
             operation_id,
             payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
@@ -144,9 +144,9 @@ class OperationServiceV2:
                 ]
             ):
                 raise Exception("Cannot update first name, last name, or email of existing contact.")
-            contact = ContactService.update_contact(user_guid, existing_contact_id, payload)
+            contact = ContactServiceV2.update_contact(user_guid, existing_contact_id, payload)
         else:
-            contact = ContactService.create_contact(user_guid, payload)
+            contact = ContactServiceV2.create_contact(user_guid, payload)
         operation.contacts.add(contact)
         operation.set_create_or_update(user_guid)
         return contact
@@ -226,7 +226,6 @@ class OperationServiceV2:
 
         # set m2m relationships
         operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
-
         (
             operation.regulated_products.set(payload.regulated_products)
             if payload.regulated_products
@@ -245,7 +244,7 @@ class OperationServiceV2:
             for doc, created in [
                 *(
                     [
-                        DocumentService.create_or_replace_operation_document(
+                        DocumentServiceV2.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
                             payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
@@ -257,7 +256,7 @@ class OperationServiceV2:
                 ),
                 *(
                     [
-                        DocumentService.create_or_replace_operation_document(
+                        DocumentServiceV2.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
                             payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
@@ -269,7 +268,7 @@ class OperationServiceV2:
                 ),
                 *(
                     [
-                        DocumentService.create_or_replace_operation_document(
+                        DocumentServiceV2.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
                             payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
