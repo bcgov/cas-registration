@@ -76,7 +76,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Natural gas pneumatic high bleed device venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -144,7 +144,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Natural gas pneumatic pump venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -212,7 +212,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Natural gas pneumatic low bleed device venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -292,7 +292,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Natural gas pneumatic intermittent bleed device venting'
                 ).id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -360,7 +360,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Dehydrator venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -428,7 +428,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Well venting for liquids unloading').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -508,7 +508,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Gas well venting during well completions and workovers with or without hydraulic fracturing'
                 ).id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -576,7 +576,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Drilling flaring').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -695,7 +695,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Drilling venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -763,7 +763,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Hydraulic fracturing flaring').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -862,7 +862,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Blowdown venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1014,7 +1014,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Releases from tanks used for storage, production or processing'
                 ).id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1082,7 +1082,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Well testing venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1150,7 +1150,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Well testing flaring').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1249,7 +1249,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Associated gas venting').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1317,7 +1317,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Associated gas flaring').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1416,7 +1416,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Flaring stacks').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1527,7 +1527,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Equipment leaks detected using leak detection and leaker emission factor methods'
                 ).id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1615,7 +1615,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Population count sources').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1683,7 +1683,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Transmission storage tanks').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1803,7 +1803,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide'
                 ).id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1891,7 +1891,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Other venting sources').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -1979,7 +1979,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Other fugitive sources').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
@@ -2067,7 +2067,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
                 ).id,
                 source_type_id=SourceType.objects.get(name='Third party line hits with release of gas').id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
