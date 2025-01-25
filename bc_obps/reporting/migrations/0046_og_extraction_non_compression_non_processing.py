@@ -2081,14 +2081,51 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     Remove initial data from erc.configuration_element
     '''
     Configuration = apps.get_model('reporting', 'Configuration')
-    ReportingActivity = apps.get_model('reporting', 'ReportingActivity')
+    Activity = apps.get_model('registration', 'Activity')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
-        reporting_activity_id=ReportingActivity.objects.get(
+        reporting_activity_id=Activity.objects.get(
             name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
         ).id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).delete()
+
+
+def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.activity_source_type_base_schema
+    '''
+    ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    Activity = apps.get_model('registration', 'Activity')
+    Methodology = apps.get_model('reporting', 'Methodology')
+    ReportingField = apps.get_model('reporting', 'ReportingField')
+
+    # Add "Description" fields to all ConfigurationElement records for this activity for methdologies: Replacement Methodology & Alternative Parameter Measurement
+    activity_id = Activity.objects.get(
+        name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
+    ).id
+    methodology_ids = Methodology.objects.filter(
+        name__in=['Replacement Methodology', 'Alternative Parameter Measurement']
+    ).values_list("id", flat=True)
+    activity_configs = ConfigurationElement.objects.filter(activity_id=activity_id, methodology_id__in=methodology_ids)
+    for config in activity_configs:
+        config.reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+
+
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+    '''
+    Remove data from erc.configuration_element_reporting_fields
+    '''
+    ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    Activity = apps.get_model('registration', 'Activity')
+
+    ConfigurationElement.reporting_fields.through.objects.filter(
+        configurationelement_id__in=ConfigurationElement.objects.filter(
+            activity_id=Activity.objects.get(
+                name='Non-compression and non-processing activities that are oil and gas extraction and gas processing activities'
+            ).id
+        ).values_list('id', flat=True)
     ).delete()
 
 
@@ -2535,6 +2572,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
+        migrations.RunPython(
+            init_configuration_element_reporting_fields_data,
+            reverse_init_configuration_element_reporting_fields_data,
+        ),
         migrations.RunPython(init_activity_schema_data, reverse_init_activity_schema_data),
         migrations.RunPython(init_activity_source_type_schema_data, reverse_init_activity_source_type_schema_data),
     ]
