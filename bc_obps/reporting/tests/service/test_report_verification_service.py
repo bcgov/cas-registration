@@ -127,7 +127,7 @@ class TestReportVerificationService(TestCase):
         self, mock_get_registration_purpose, mock_get_emissions
     ):
         """
-        Test that the service returns false for report of Reporting_Operation with attributable emissions exceeding the verification threshold
+        Test that the service returns false for report of Reporting_Operation with attributable emissions below the verification threshold
         """
 
         # Arrange: Simulate a reporting operation
