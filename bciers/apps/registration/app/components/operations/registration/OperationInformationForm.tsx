@@ -17,6 +17,7 @@ import {
   RegistrationPurposeHelpText,
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
+import { eioInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/eioInformation";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -27,14 +28,14 @@ interface OperationInformationFormProps {
 
 const OperationInformationForm = ({
   rawFormData,
-  schema,
+  schema: initialSchema,
   step,
   steps,
 }: OperationInformationFormProps) => {
   const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState("");
   const [error, setError] = useState(undefined);
-
+  const [schema, setSchema] = useState(initialSchema);
   const nestedFormData = rawFormData
     ? createNestedFormData(rawFormData, schema)
     : {};
@@ -127,6 +128,17 @@ const OperationInformationForm = ({
         },
       },
     });
+    if (
+      newSelectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
+    ) {
+      setSchema({
+        ...initialSchema,
+        properties: {
+          ...initialSchema.properties,
+          section2: eioInformationSchema,
+        },
+      });
+    }
     setFormState(data);
   };
 
