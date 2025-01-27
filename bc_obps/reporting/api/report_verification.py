@@ -21,9 +21,13 @@ from reporting.models import ReportVerification
 @handle_http_errors()
 def get_report_verification_by_version_id(
     request: HttpRequest, report_version_id: int
-) -> tuple[Literal[200], ReportVerification]:
-    report_verification = ReportVerificationService.get_report_verification_by_version_id(report_version_id)
-    return 200, report_verification
+) -> tuple[Literal[200], ReportVerificationOut]:
+    try:
+        print(f"Fetching report verification for report_version_id={report_version_id}")
+        return 200, ReportVerificationService.get_report_verification_by_version_id(report_version_id)
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise
 
 
 @router.get(
