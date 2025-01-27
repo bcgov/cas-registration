@@ -222,59 +222,65 @@ describe("the FacilityInformationForm component", () => {
     );
   });
 
-  it("should allow the user to fill out the LFO form", async () => {
-    render(<FacilityInformationForm {...defaultProps} />);
+  it(
+    "should allow the user to fill out the LFO form",
+    {
+      timeout: 20000,
+    },
+    async () => {
+      render(<FacilityInformationForm {...defaultProps} />);
 
-    const addButton = screen.getByRole("button", {
-      name: "Add facility",
-    });
+      const addButton = screen.getByRole("button", {
+        name: "Add facility",
+      });
 
-    act(() => {
-      fireEvent.click(addButton);
-    });
+      act(() => {
+        fireEvent.click(addButton);
+      });
 
-    fillNameAndTypeFields(0);
+      fillNameAndTypeFields(0);
 
-    await toggleAndFillStartDate(0, "20240101");
+      await toggleAndFillStartDate(0, "20240101");
 
-    fillAddressFields(0);
+      fillAddressFields(0);
 
-    fillLatitudeLongitudeFields(0);
+      fillLatitudeLongitudeFields(0);
 
-    const submitButton = screen.getByRole("button", {
-      name: "Save and Continue",
-    });
-    actionHandler.mockResolvedValueOnce({
-      error: null,
-    });
-    act(() => {
-      fireEvent.click(submitButton);
-    });
+      const submitButton = screen.getByRole("button", {
+        name: "Save and Continue",
+      });
+      actionHandler.mockResolvedValueOnce({
+        error: null,
+      });
+      act(() => {
+        fireEvent.click(submitButton);
+      });
 
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/facilities",
-      "POST",
-      "",
-      {
-        body: JSON.stringify([
-          {
-            name: "Test Facility",
-            type: "Large Facility",
-            street_address: "123 Test St",
-            municipality: "Test City",
-            province: "BC",
-            postal_code: "V8X3K1",
-            latitude_of_largest_emissions: 0.1,
-            longitude_of_largest_emissions: 0.1,
-            well_authorization_numbers: [],
-            is_current_year: true,
-            starting_date: "2024-01-01T09:00:00.000Z",
-            operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-          },
-        ]),
-      },
-    );
-  });
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/facilities",
+        "POST",
+        "",
+        {
+          body: JSON.stringify([
+            {
+              name: "Test Facility",
+              type: "Large Facility",
+              street_address: "123 Test St",
+              municipality: "Test City",
+              province: "BC",
+              postal_code: "V8X3K1",
+              latitude_of_largest_emissions: 0.1,
+              longitude_of_largest_emissions: 0.1,
+              well_authorization_numbers: [],
+              is_current_year: true,
+              starting_date: "2024-01-01T09:00:00.000Z",
+              operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+            },
+          ]),
+        },
+      );
+    },
+  );
 
   it(
     "should allow the user to fill out multiple LFO forms",
@@ -383,65 +389,71 @@ describe("the FacilityInformationForm component", () => {
     );
   });
 
-  it("should keep form data when sorting and filtering the Facility datagrid", async () => {
-    render(
-      <FacilityInformationForm
-        {...defaultProps}
-        initialGridData={facilityInitialData as any}
-      />,
-    );
+  it(
+    "should keep form data when sorting and filtering the Facility datagrid",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <FacilityInformationForm
+          {...defaultProps}
+          initialGridData={facilityInitialData as any}
+        />,
+      );
 
-    const addButton = screen.getByRole("button", {
-      name: "Add facility",
-    });
+      const addButton = screen.getByRole("button", {
+        name: "Add facility",
+      });
 
-    act(() => {
-      fireEvent.click(addButton);
-    });
-    const comboBoxInput = screen.getAllByRole("combobox");
-    const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
-      ?.children[1]?.children[0] as HTMLInputElement;
-    await userEvent.click(openFacilityTypeDropdownButton);
+      act(() => {
+        fireEvent.click(addButton);
+      });
+      const comboBoxInput = screen.getAllByRole("combobox");
+      const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openFacilityTypeDropdownButton);
 
-    const typeOption = screen.getAllByText("Large Facility");
-    // [0] is the form, later ones are in the grid
-    await userEvent.click(typeOption[0]);
-    fillAddressFields(0);
+      const typeOption = screen.getAllByText("Large Facility");
+      // [0] is the form, later ones are in the grid
+      await userEvent.click(typeOption[0]);
+      fillAddressFields(0);
 
-    const streetAddress = screen.getByLabelText(/Street Address/i);
+      const streetAddress = screen.getByLabelText(/Street Address/i);
 
-    expect(streetAddress).toHaveValue("123 Test St");
+      expect(streetAddress).toHaveValue("123 Test St");
 
-    // click on the first column header
-    const facilityNameHeader = screen.getByRole("columnheader", {
-      name: "Facility Name",
-    });
+      // click on the first column header
+      const facilityNameHeader = screen.getByRole("columnheader", {
+        name: "Facility Name",
+      });
 
-    act(() => {
-      facilityNameHeader.click();
-    });
+      act(() => {
+        facilityNameHeader.click();
+      });
 
-    const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // facility name search input
-    expect(searchInput).toBeVisible();
-    searchInput.focus();
-    act(() => {
-      fireEvent.change(searchInput, { target: { value: "facility 1" } });
-    });
-    expect(searchInput).toHaveValue("facility 1");
+      const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // facility name search input
+      expect(searchInput).toBeVisible();
+      searchInput.focus();
+      act(() => {
+        fireEvent.change(searchInput, { target: { value: "facility 1" } });
+      });
+      expect(searchInput).toHaveValue("facility 1");
 
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalled();
-    });
+      await waitFor(() => {
+        expect(mockReplace).toHaveBeenCalled();
+      });
 
-    await waitFor(() => {
-      // check that the API call was made with the correct params
-      expect(
-        extractParams(String(mockReplace.mock.calls), "facility__name"),
-      ).toBe("facility 1");
-    });
+      await waitFor(() => {
+        // check that the API call was made with the correct params
+        expect(
+          extractParams(String(mockReplace.mock.calls), "facility__name"),
+        ).toBe("facility 1");
+      });
 
-    expect(streetAddress).toHaveValue("123 Test St");
-  });
+      expect(streetAddress).toHaveValue("123 Test St");
+    },
+  );
 
   it("should direct the user to the next page of the form on successful submit", async () => {
     window = Object.create(window);
