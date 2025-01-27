@@ -10,6 +10,7 @@ const SectionFieldTemplate = ({
   uiSchema,
 }: FieldTemplateProps) => {
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
+  const customMarginBottom = uiSchema?.["ui:options"]?.marginBottom || "mb-12";
 
   return (
     <div
@@ -20,7 +21,7 @@ const SectionFieldTemplate = ({
       {isLabel && label && (
         <h2
           id={id}
-          className="inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 mb-12"
+          className={`inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 ${customMarginBottom}`}
         >
           {label}
         </h2>

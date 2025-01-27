@@ -102,6 +102,9 @@ export const buildReviewFacilitiesUiSchema = (operation_id: string) => ({
   },
   current_facilities_section: {
     "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:options": {
+      marginBottom: "mb-5",
+    },
     "ui:order": ["current_facilities"],
     current_facilities: {
       "ui:widget": "CheckboxGroupWidget",
@@ -114,6 +117,9 @@ export const buildReviewFacilitiesUiSchema = (operation_id: string) => ({
 
   past_facilities_section: {
     "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:options": {
+      marginBottom: "mb-5",
+    },
     "ui:order": ["past_facilities"],
     past_facilities: {
       "ui:widget": "CheckboxGroupWidget",
