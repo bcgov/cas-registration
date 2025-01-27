@@ -2176,83 +2176,61 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     import os
 
     cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/associated_gas_flaring.json') as og_st1:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/associated_gas_flaring.json') as og_st1:
         schema1 = json.load(og_st1)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/associated_gas_venting.json') as og_st2:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/associated_gas_venting.json') as og_st2:
         schema2 = json.load(og_st2)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/blowdown_venting.json') as og_st3:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/blowdown_venting.json') as og_st3:
         schema3 = json.load(og_st3)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/dehydrator_venting.json') as og_st4:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/dehydrator_venting.json') as og_st4:
         schema4 = json.load(og_st4)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/drilling_flaring.json') as og_st5:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/drilling_flaring.json') as og_st5:
         schema5 = json.load(og_st5)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/drilling_venting.json') as og_st6:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/drilling_venting.json') as og_st6:
         schema6 = json.load(og_st6)
     with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/equipment_leaks_using_leak_detection.json'
+        f'{cwd}/reporting/json_schemas/2024/lfo_source_types/equipment_leaks_using_leak_detection.json'
     ) as og_st7:
         schema7 = json.load(og_st7)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/flaring_stacks.json') as og_st8:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/flaring_stacks.json') as og_st8:
         schema8 = json.load(og_st8)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/hydraulic_fracturing_flaring.json'
-    ) as og_st9:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/hydraulic_fracturing_flaring.json') as og_st9:
         schema9 = json.load(og_st9)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_high_bleed_venting.json') as og_st10:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/ng_high_bleed_venting.json') as og_st10:
         schema10 = json.load(og_st10)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_intermittent_venting.json'
-    ) as og_st11:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/ng_intermittent_venting.json') as og_st11:
         schema11 = json.load(og_st11)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_low_bleed_venting.json') as og_st12:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/ng_low_bleed_venting.json') as og_st12:
         schema12 = json.load(og_st12)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/ng_pump_venting.json') as og_st13:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/ng_pump_venting.json') as og_st13:
         schema13 = json.load(og_st13)
     with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/oil_recovery_injection_pump_blowdowns.json'
+        f'{cwd}/reporting/json_schemas/2024/lfo_source_types/oil_recovery_injection_pump_blowdowns.json'
     ) as og_st14:
         schema14 = json.load(og_st14)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/oil_recovery_produced_hydrocarbon.json'
-    ) as og_st15:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/oil_recovery_produced_hydrocarbon.json') as og_st15:
         schema15 = json.load(og_st15)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/other_fugitive_sources.json'
-    ) as og_st16:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/other_fugitive_sources.json') as og_st16:
         schema16 = json.load(og_st16)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/other_fugitive_sources.json'
-    ) as og_st17:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/other_fugitive_sources.json') as og_st17:
         schema17 = json.load(og_st17)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/population_count_sources.json'
-    ) as og_st18:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/population_count_sources.json') as og_st18:
         schema18 = json.load(og_st18)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/produced_water_dissolved_co2.json'
-    ) as og_st19:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/produced_water_dissolved_co2.json') as og_st19:
         schema19 = json.load(og_st19)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/releases_from_tanks_for_storage.json'
-    ) as og_st20:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/releases_from_tanks_for_storage.json') as og_st20:
         schema20 = json.load(og_st20)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/third_party_line_hits.json') as og_st21:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/third_party_line_hits.json') as og_st21:
         schema21 = json.load(og_st21)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/transmission_storage_tanks.json'
-    ) as og_st22:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/transmission_storage_tanks.json') as og_st22:
         schema22 = json.load(og_st22)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_testing_flaring.json') as og_st23:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/well_testing_flaring.json') as og_st23:
         schema23 = json.load(og_st23)
-    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_testing_venting.json') as og_st24:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/well_testing_venting.json') as og_st24:
         schema24 = json.load(og_st24)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_venting_liquid_unloading.json'
-    ) as og_st25:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/well_venting_liquid_unloading.json') as og_st25:
         schema25 = json.load(og_st25)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/well_venting_well_completion.json'
-    ) as og_st26:
+    with open(f'{cwd}/reporting/json_schemas/2024/lfo_source_types/well_venting_well_completion.json') as og_st26:
         schema26 = json.load(og_st26)
 
     ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
