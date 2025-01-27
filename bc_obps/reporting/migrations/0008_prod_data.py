@@ -611,37 +611,7 @@ def reverse_init_methodology_data(apps, schema_monitor):
     Remove initial data from erc.methodology
     '''
     Methodology = apps.get_model('reporting', 'Methodology')
-    Methodology.objects.filter(
-        name__in=[
-            'Default HHV/Default EF',
-            'Default EF',
-            'Measured HHV/Default EF',
-            'Measured Steam/Default EF',
-            'Measured CC',
-            'Measured Steam/Measured EF',
-            'Alternative Parameter Measurement',
-            'Replacement Methodology',
-            'Anode Consumption',
-            'Slope method',
-            'Overvoltage method',
-            'C2F6 anode effects',
-            'Inventory',
-            'Input/output',
-            'Heat Input/Default EF',
-            'Measured EF',
-            'Site-specific EF',
-            'CEMS',
-            'Measured CC and MW',
-            'Feedstock Material Balance',
-            'Emissions Factor Methodology',
-            'WCI.203(f)(1)',
-            'WCI.203(f)(2)',
-            'Anode Consumption - Prebaked',
-            'Anode Consumption - Soderberg',
-            'Anode/Cathode Baking',
-            'Green Coke Calcination',
-        ]
-    ).delete()
+    Methodology.objects.all().delete()
 
 
 def init_reporting_years(apps, schema_editor):
