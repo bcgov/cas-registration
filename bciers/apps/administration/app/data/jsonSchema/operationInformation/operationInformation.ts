@@ -1,119 +1,128 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getNaicsCodes, getReportingActivities } from "@bciers/actions/api";
-import { Apps } from "@bciers/utils/src/enums";
+import { Apps, OperationTypes } from "@bciers/utils/src/enums";
 
 export const createOperationInformationSchema = async (
   app: Apps,
+  operationType: OperationTypes | undefined,
 ): Promise<RJSFSchema> => {
-  const naicsCodes = await getNaicsCodes();
-  const reportingActivities = await getReportingActivities();
+  // This schema contains the basic information required for any operation type
   const operationInformationSchema: RJSFSchema = {
     title: "Operation Information",
     type: "object",
-    required: [
-      "name",
-      "type",
-      "naics_code_id",
-      "activities",
-      "boundary_map",
-      "process_flow_diagram",
-    ],
+    required: ["name", "type"],
     properties: {
       name: { type: "string", title: "Operation Name" },
       type: {
         type: "string",
         title: "Operation Type",
-        enum: ["Single Facility Operation", "Linear Facility Operation"],
+        enum: [OperationTypes],
       },
-      naics_code_id: {
-        type: "number",
-        title: "Primary NAICS Code",
-        anyOf: naicsCodes.map(
-          (code: {
-            id: number;
-            naics_code: string;
-            naics_description: string;
-          }) => ({
-            const: code?.id,
-            title: `${code?.naics_code} - ${code?.naics_description}`,
-          }),
-        ),
-      },
-      secondary_naics_code_id: {
-        type: "number",
-        title: "Secondary NAICS Code",
-        anyOf: naicsCodes.map(
-          (code: {
-            id: number;
-            naics_code: string;
-            naics_description: string;
-          }) => ({
-            const: code?.id,
-            title: `${code?.naics_code} - ${code?.naics_description}`,
-          }),
-        ),
-      },
-      tertiary_naics_code_id: {
-        type: "number",
-        title: "Tertiary NAICS Code",
-        anyOf: naicsCodes.map(
-          (code: {
-            id: number;
-            naics_code: string;
-            naics_description: string;
-          }) => ({
-            const: code?.id,
-            title: `${code?.naics_code} - ${code?.naics_description}`,
-          }),
-        ),
-      },
-
-      activities: {
-        type: "array",
-        minItems: 1,
-        items: {
-          type: "number",
-          enum: reportingActivities.map(
-            (activity: { id: number; applicable_to: string; name: string }) =>
-              activity.id,
-          ),
-          // enumNames is a non-standard field required for the MultiSelectWidget
-          // @ts-ignore
-          enumNames: reportingActivities.map(
-            (activity: { applicable_to: string; name: string }) =>
-              activity.name,
-          ),
-        },
-        title: "Reporting Activities",
-      },
-      process_flow_diagram: {
-        type: "string",
-        title: "Process Flow Diagram",
-        format: "data-url",
-      },
-      boundary_map: {
-        type: "string",
-        title: "Boundary Map",
-        format: "data-url",
-      },
-      ...(app === Apps.ADMINISTRATION
-        ? {
-            bc_obps_regulated_operation: {
-              type: "string",
-              title: "BORO ID",
-            },
-          }
-        : {}),
-      ...(app === Apps.ADMINISTRATION
-        ? {
-            bcghg_id: {
-              type: "string",
-              title: "BCGHGID",
-            },
-          }
-        : {}),
     },
+  };
+
+  if (operationType === OperationTypes.EIO) {
+    return operationInformationSchema;
+  }
+
+  const naicsCodes = await getNaicsCodes();
+  const reportingActivities = await getReportingActivities();
+  operationInformationSchema.required?.push(
+    "naics_code_id",
+    "activities",
+    "boundary_map",
+    "process_flow_diagram",
+  );
+
+  operationInformationSchema.properties = {
+    ...operationInformationSchema.properties,
+    naics_code_id: {
+      type: "number",
+      title: "Primary NAICS Code",
+      anyOf: naicsCodes.map(
+        (code: {
+          id: number;
+          naics_code: string;
+          naics_description: string;
+        }) => ({
+          const: code?.id,
+          title: `${code?.naics_code} - ${code?.naics_description}`,
+        }),
+      ),
+    },
+    secondary_naics_code_id: {
+      type: "number",
+      title: "Secondary NAICS Code",
+      anyOf: naicsCodes.map(
+        (code: {
+          id: number;
+          naics_code: string;
+          naics_description: string;
+        }) => ({
+          const: code?.id,
+          title: `${code?.naics_code} - ${code?.naics_description}`,
+        }),
+      ),
+    },
+    tertiary_naics_code_id: {
+      type: "number",
+      title: "Tertiary NAICS Code",
+      anyOf: naicsCodes.map(
+        (code: {
+          id: number;
+          naics_code: string;
+          naics_description: string;
+        }) => ({
+          const: code?.id,
+          title: `${code?.naics_code} - ${code?.naics_description}`,
+        }),
+      ),
+    },
+
+    activities: {
+      type: "array",
+      minItems: 1,
+      items: {
+        type: "number",
+        enum: reportingActivities.map(
+          (activity: { id: number; applicable_to: string; name: string }) =>
+            activity.id,
+        ),
+        // enumNames is a non-standard field required for the MultiSelectWidget
+        // @ts-ignore
+        enumNames: reportingActivities.map(
+          (activity: { applicable_to: string; name: string }) => activity.name,
+        ),
+      },
+      title: "Reporting Activities",
+    },
+    process_flow_diagram: {
+      type: "string",
+      title: "Process Flow Diagram",
+      format: "data-url",
+    },
+    boundary_map: {
+      type: "string",
+      title: "Boundary Map",
+      format: "data-url",
+    },
+    ...(app === Apps.ADMINISTRATION
+      ? {
+          bc_obps_regulated_operation: {
+            type: "string",
+            title: "BORO ID",
+          },
+        }
+      : {}),
+    ...(app === Apps.ADMINISTRATION
+      ? {
+          bcghg_id: {
+            type: "string",
+            title: "BCGHGID",
+          },
+        }
+      : {}),
   };
   return operationInformationSchema;
 };

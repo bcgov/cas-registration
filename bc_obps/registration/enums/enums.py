@@ -28,3 +28,4 @@ class AccessRequestTypes(Enum):
 class OperationTypes(Enum):
     LFO = "Linear Facility Operation"
     SFO = "Single Facility Operation"
+    EIO = "Electricity Import Operation"
