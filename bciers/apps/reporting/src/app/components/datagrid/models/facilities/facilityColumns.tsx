@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import ReportingOperationStatusCell from "@reporting/src/app/components/operations/cells/ReportingOperationStatusCell";
 import { createReport } from "@reporting/src/app/utils/createReport";
+import AccessTypeColumnCell from "@bciers/components/datagrid/cells/AccessTypeColumnCell";
+import CheckboxColumnCell from "@bciers/components/datagrid/cells/CheckboxColumnCell";
 
 const ActionCell = (params: GridRenderCellParams) => {
   console.log("params in action cell", params);
@@ -91,7 +93,7 @@ const facilityColumns = (): GridColDef[] => {
     {
       field: "report_status",
       headerName: "Status",
-      renderCell: ReportingOperationStatusCell,
+      renderCell: CheckboxColumnCell,
       align: "center",
       headerAlign: "center",
       sortable: false,
