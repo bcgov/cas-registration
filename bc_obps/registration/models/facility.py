@@ -14,6 +14,7 @@ class Facility(TimeStampedModel):
         LARGE_FACILITY = "Large Facility"
         MEDIUM_FACILITY = "Medium Facility"
         SMALL_AGGREGATE = "Small Aggregate"
+        ELECTRICITY_IMPORT = "Electricity Import"
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
