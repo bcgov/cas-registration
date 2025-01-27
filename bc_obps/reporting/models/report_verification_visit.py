@@ -51,7 +51,7 @@ class ReportVerificationVisit(TimeStampedModel):
         constraints = [
             models.CheckConstraint(
                 name="other_facility_must_have_coordinates",
-                check=~Q(is_other_visit=True) | Q(visit_coordinates__isnull=False),
+                check=Q(is_other_visit=False) | Q(visit_coordinates__isnull=False),
                 violation_error_message="Coordinates must be provided for an other facility visit",
             ),
         ]
