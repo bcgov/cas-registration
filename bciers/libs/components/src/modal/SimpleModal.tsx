@@ -1,6 +1,7 @@
 import { Button, DialogActions, DialogContentText } from "@mui/material";
 import Modal from "./Modal";
 import SubmitButton from "@bciers/components/button/SubmitButton";
+import React from "react";
 
 interface Props extends React.PropsWithChildren {
   open: boolean;
@@ -28,7 +29,10 @@ const SimpleModal: React.FC<Props> = ({
 }) => {
   return (
     <Modal open={open} title={title}>
-      <DialogContentText className={`m-4 ${dialogContentClassName}`} component={textComponentType}>
+      <DialogContentText
+        className={`m-4 ${dialogContentClassName}`}
+        component={textComponentType}
+      >
         {children}
       </DialogContentText>
       <DialogActions>
