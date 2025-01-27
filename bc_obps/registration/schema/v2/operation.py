@@ -77,6 +77,7 @@ class OperationRepresentativeRemove(ModelSchema):
 
 
 class OperationInformationIn(ModelSchema):
+    name: str
     registration_purpose: Optional[Operation.Purposes] = None
     regulated_products: Optional[List[int]] = None
     activities: Optional[List[int]] = None

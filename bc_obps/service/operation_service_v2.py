@@ -4,6 +4,7 @@ from registration.models.facility import Facility
 from registration.schema.v1.facility import FacilityIn
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 from service.contact_service_v2 import ContactServiceV2
+from service.data_access_service.facility_service import FacilityDataAccessService
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
@@ -317,11 +318,16 @@ class OperationServiceV2:
             operation = cls.create_opted_in_operation_detail(user_guid, operation.id)
 
         if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-            # When creating EIO operations, we need to also create a facility with the same information
+            # EIO operations have a facility with the same data as the operation
             eio_payload = FacilityIn(
                 name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id
             )
-            FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
+            facility = FacilityDataAccessService.get_current_facilities_by_operation(operation).first()
+
+            if not facility:
+                FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
+            else:
+                FacilityService.update_facility(user_guid, facility.id, eio_payload)
 
         if operation.status == Operation.Statuses.NOT_STARTED:
             cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
