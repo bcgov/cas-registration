@@ -2,6 +2,10 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
 import { GenerateNewEntrantFormMessage } from "apps/registration/app/components/operations/registration/form/titles";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import {
+  newEntrantApril1OrLater,
+  newEntrantBeforeMarch31,
+} from "@bciers/utils/src/urls";
 
 export const newEntrantOperationSchema: RJSFSchema = {
   title: "New Entrant Operation",
@@ -83,14 +87,14 @@ export const newEntrantOperationUiSchema: UiSchema = {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": GenerateNewEntrantFormMessage(
       "on or before March 31, 2024",
-      "url-1-tbd",
+      newEntrantBeforeMarch31,
     ),
   },
   on_or_after_april_1_section: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": GenerateNewEntrantFormMessage(
       "on or after April 1, 2024",
-      "url-2-tbd",
+      newEntrantApril1OrLater,
     ),
   },
   new_entrant_application: {
