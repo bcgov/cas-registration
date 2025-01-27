@@ -207,7 +207,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         confirmText="Continue"
         textComponentType="div"
       >
-        <p>You have deselected the following facilities.</p>
+        <p>You have deselected the following facilities:</p>
         <ul>
           {deselectedFacilities.map((facility: any) => (
             <li key={facility}>{facility}</li>
