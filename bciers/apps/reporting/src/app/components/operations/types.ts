@@ -9,7 +9,7 @@ export interface FacilityRow {
   id: number;
   bcghg_id: string;
   name: string;
-  is_completed: boolean;
+  report_status: boolean;
 }
 export interface OperationsSearchParams {
   [key: string]: string | number | undefined;
