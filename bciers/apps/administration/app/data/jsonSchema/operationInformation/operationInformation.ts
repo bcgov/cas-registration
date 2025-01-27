@@ -17,7 +17,7 @@ export const createOperationInformationSchema = async (
       type: {
         type: "string",
         title: "Operation Type",
-        enum: [OperationTypes],
+        enum: [OperationTypes.EIO, OperationTypes.LFO, OperationTypes.SFO],
       },
     },
   };
