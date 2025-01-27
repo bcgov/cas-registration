@@ -9,7 +9,12 @@ export const eioInformationSchema: RJSFSchema = {
     type: {
       type: "string",
       title: "Operation Type",
-      enum: ["Single Facility Operation", "Linear Facility Operation"],
+      enum: [
+        "Single Facility Operation",
+        "Linear Facility Operation",
+        "Electricity Import Operation",
+      ],
+      default: "Electricity Import Operation",
     },
   },
 };
