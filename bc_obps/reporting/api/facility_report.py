@@ -122,7 +122,6 @@ def get_facility_report_list(request: HttpRequest, version_id: int) -> Tuple[Lit
         )
     )
 
-    # Transform the data into the required format
     transformed_facilities = [
         {
             "report_id": None,
