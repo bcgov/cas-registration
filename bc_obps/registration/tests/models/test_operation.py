@@ -3,7 +3,6 @@ from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
     BcObpsRegulatedOperation,
-    Document,
     NaicsCode,
     Activity,
     RegulatedProduct,
@@ -46,12 +45,6 @@ class OperationModelTest(BaseTestCase):
             'utils.operation', swrs_facility_id=6565, status=Operation.Statuses.REGISTERED
         )
         Operation.objects.filter(swrs_facility_id__isnull=False).first()
-        cls.test_object.documents.set(
-            [
-                Document.objects.get(id=1),
-                Document.objects.get(id=2),
-            ]
-        )
 
         cls.test_object.activities.set(
             [
@@ -84,7 +77,7 @@ class OperationModelTest(BaseTestCase):
             ("verified_by", "verified by", None, None),
             ("submission_date", "submission date", None, None),
             ("point_of_contact", "point of contact", None, None),
-            ("documents", "documents", None, 2),
+            ("documents", "document", None, None),
             ("bc_obps_regulated_operation", "bc obps regulated operation", None, None),
             ("operation_has_multiple_operators", "operation has multiple operators", None, None),
             ("operator", "operator", None, None),

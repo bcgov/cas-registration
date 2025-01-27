@@ -133,6 +133,7 @@ contact = Recipe(
     address=foreign_key(address),
     first_name=seq('Firstname 0'),
     last_name=seq('Lastname 0'),
+    operator=foreign_key(operator),
 )
 
 

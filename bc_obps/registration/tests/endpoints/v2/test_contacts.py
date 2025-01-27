@@ -113,7 +113,7 @@ class TestContactsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {"garbage": "i am bad data"},
-            custom_reverse_lazy("v1_create_contact"),
+            custom_reverse_lazy("create_contact"),
         )
         assert response.status_code == 422
 
@@ -133,7 +133,7 @@ class TestContactsEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             mock_contact,
-            custom_reverse_lazy("v1_create_contact"),
+            custom_reverse_lazy("create_contact"),
         )
         assert post_response.status_code == 201
         response_json = post_response.json()

@@ -1,7 +1,7 @@
 import typing
 from django.db import models
 from registration.constants import USER_CACHE_PREFIX
-from registration.models import UserAndContactCommonInfo, Document, AppRole
+from registration.models import UserAndContactCommonInfo, AppRole
 from simple_history.models import HistoricalRecords
 from django.core.cache import cache
 
@@ -13,11 +13,6 @@ class User(UserAndContactCommonInfo):
         max_length=1000,
         db_comment="The name of the business the user is associated with as per their Business BCeID account",
     )
-    documents = models.ManyToManyField(
-        Document,
-        blank=True,
-        related_name="users",
-    )
     app_role = models.ForeignKey(
         AppRole,
         on_delete=models.DO_NOTHING,
@@ -26,7 +21,6 @@ class User(UserAndContactCommonInfo):
     )
     history = HistoricalRecords(
         table_name='erc_history"."user_history',
-        m2m_fields=[documents],
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 

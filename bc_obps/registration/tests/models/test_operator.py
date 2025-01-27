@@ -3,37 +3,25 @@ from django.utils import timezone
 from registration.models import (
     Address,
     BusinessStructure,
-    Document,
     User,
-    Contact,
     Operator,
     UserOperator,
 )
 from django.core.exceptions import ValidationError
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
-    CONTACT_FIXTURE,
     OPERATOR_FIXTURE,
     TIMESTAMP_COMMON_FIELDS,
     USER_FIXTURE,
-    DOCUMENT_FIXTURE,
 )
 
 
 class OperatorModelTest(BaseTestCase):
-    fixtures = [ADDRESS_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, USER_FIXTURE, DOCUMENT_FIXTURE]
+    fixtures = [ADDRESS_FIXTURE, OPERATOR_FIXTURE, USER_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
         cls.test_object = Operator.objects.first()
-        cls.test_object.documents.set(
-            [
-                Document.objects.get(id=1),
-                Document.objects.get(id=2),
-            ]
-        )
-
-        cls.test_object.contacts.set([Contact.objects.get(id=1), Contact.objects.get(id=2)])
         # Create multiple UserOperators connected with the test Operator
         user_operators_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         user_operators_user_2 = User.objects.get(user_guid="4da70f32-65fd-4137-87c1-111f2daba3dd")
@@ -71,8 +59,6 @@ class OperatorModelTest(BaseTestCase):
             ("physical_address", "physical address", None, None),
             ("mailing_address", "mailing address", None, None),
             ("website", "website", 200, None),
-            ("documents", "documents", None, 2),
-            ("contacts", "contacts", None, 2),
             ("status", "status", 1000, None),
             ("verified_by", "verified by", None, None),
             ("verified_at", "verified at", None, None),
@@ -81,6 +67,7 @@ class OperatorModelTest(BaseTestCase):
             ("user_operators", "user operator", None, 2),
             ("operation_designated_operators", "operation designated operator timeline", None, None),
             ("report", "report", None, None),
+            ("contacts", "contact", None, None),
             ("parent_operators", "parent operator", None, None),
             ("partner_operators", "partner operator", None, None),
             ("transfer_events_from", "transfer event", None, None),

@@ -134,10 +134,8 @@ class TestOperationIdEndpoint(CommonTestSetup):
             status=UserOperator.Statuses.APPROVED,
             operator=the_users_operator,
         )
-
         random_operation = operation_baker(random_operator.id)
         operation_baker(user_operator.operator.id)  # operation that belongs to the user's operator
-
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
@@ -263,13 +261,11 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert response.status_code == 422
 
     def test_industry_user_update_operation_with_updated_point_of_contact(self):
-        contact1 = baker.make(Contact)
+        contact1 = baker.make_recipe('utils.contact')
         # contact2 is a new contact, even though they have the same email as contact1
-        contact2 = baker.make(Contact, email=contact1.email)
-        operator = operator_baker()
-        operation = operation_baker(operator.id)
-        operation.point_of_contact = contact2
-        operation.save(update_fields=['point_of_contact'])
+        contact2 = baker.make_recipe('utils.contact', email=contact1.email)
+        operator = baker.make_recipe('utils.operator')
+        operation = baker.make_recipe('utils.operation', operator=operator, point_of_contact=contact2)
 
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
@@ -303,9 +299,9 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert put_response.status_code == 200
 
         # we should have 2 contacts in the db (contact1 and contact2), where contact2's info has been updated
-        # based on the data provided in update
-        assert Contact.objects.count() == 3  # 2 from baker.make, 1 from the update
-        # this checks that we added a new contact instead of updating the existing one even though they have the same email
+
+        assert Contact.objects.count() == 2
+
         updated_contact2 = Contact.objects.get(id=contact2.id)
         assert updated_contact2.first_name == 'Homer'
         assert updated_contact2.email == 'homer@email.com'

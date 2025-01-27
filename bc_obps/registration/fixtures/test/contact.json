@@ -9,7 +9,8 @@
       "position_title": "Manager",
       "address": 1,
       "email": "john.doe@example.com",
-      "phone_number": "+16044011234"
+      "phone_number": "+16044011234",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f"
     }
   },
   {
@@ -22,7 +23,8 @@
       "position_title": "Manager",
       "address": 2,
       "email": "jane.smith@example.com",
-      "phone_number": "+16044011234"
+      "phone_number": "+16044011234",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f"
     }
   }
 ]

@@ -5,7 +5,6 @@ from registration.models import (
     Address,
     AppRole,
     BusinessStructure,
-    Contact,
     Facility,
     NaicsCode,
     RegulatedProduct,
@@ -26,7 +25,7 @@ from registration.tests.utils.bakers import (
 from registration.constants import BASE_ENDPOINT
 
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
-from registration.tests.utils.bakers import operator_baker, address_baker
+from registration.tests.utils.bakers import address_baker
 
 
 def requires_env(*envs):
@@ -93,11 +92,11 @@ class TestUtils:
             - `operator`: The created operator instance.
             - `owning_operation`: The created operation instance associated with the operator.
         """
-        # Create an operator instance using the operator_baker function
-        operator = operator_baker()
+        # Create an operator instance
+        operator = baker.make_recipe('utils.operator')
 
         # Create an operation instance associated with the operator
-        owning_operation = operation_baker(operator.id)
+        owning_operation = baker.make_recipe('utils.operation', operator=operator)
 
         # Return the created operator and operation instances
         return operator, owning_operation
@@ -225,7 +224,7 @@ class TestUtils:
     @staticmethod
     def mock_update_operation_payload():
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
-        point_of_contact = baker.make(Contact)
+        point_of_contact = baker.make_recipe('utils.contact')
         product = baker.make(RegulatedProduct)
         operation = operation_baker()
         operation.regulated_products.set([product.id])

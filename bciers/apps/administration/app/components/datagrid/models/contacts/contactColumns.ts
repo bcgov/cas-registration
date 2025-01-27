@@ -14,7 +14,7 @@ const contactColumns = (
     { field: "last_name", headerName: "Last Name", flex: 1 },
     { field: "email", headerName: "Business Email Address", flex: 1 },
     {
-      field: "operators__legal_name",
+      field: "operator__legal_name",
       headerName: "Operator Legal Name",
       flex: 1,
     },
@@ -28,7 +28,7 @@ const contactColumns = (
   ];
 
   if (isExternalUser) {
-    // remove operator_legal_name and operation_name columns for external users
+    // remove operator_legal_name columns for external users
     columns.splice(3, 1);
   }
 
