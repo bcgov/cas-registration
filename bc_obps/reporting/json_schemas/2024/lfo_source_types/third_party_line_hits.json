@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "title": "Third party line hits with release of gas",
+  "default": { "emissions": [{}] },
+  "properties": {
+    "emissions": {
+      "title": "Emission Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emission",
+            "type": "number",
+            "minimum": 0
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
+          }
+        }
+      }
+    }
+  }
+}
