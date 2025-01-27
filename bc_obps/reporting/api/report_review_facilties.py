@@ -18,7 +18,7 @@ from ..service.report_facilities_service import ReportFacilitiesService
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the list of selected facilities for a report version""",
     exclude_none=True,
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 def get_selected_facilities(request: HttpRequest, report_version_id: int) -> tuple[int, dict]:

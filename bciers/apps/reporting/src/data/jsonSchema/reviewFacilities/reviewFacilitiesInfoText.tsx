@@ -50,6 +50,7 @@ export const SyncFacilitiesButton: React.FC<FieldTemplateProps> = ({
 
   return (
     <Button
+      className={"mt-5 mb-5"}
       variant="outlined"
       onClick={handleClick}
       aria-label="Sync latest data from Administration"
