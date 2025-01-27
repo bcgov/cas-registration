@@ -18,13 +18,15 @@ const CheckboxColumnCell = (params: FacilityRenderCellParams) => {
   };
 
   return (
-    <FormControl style={{ display: "flex", alignItems: "center" }}>
+    <FormControl
+      style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+    >
       <Checkbox
         checked={Boolean(report_status)}
         onChange={handleCheckboxChange}
         inputProps={{ "aria-label": "Report Status" }}
       />
-      <span>Completed</span>
+      <span style={{ marginLeft: 4 }}>Completed</span>
     </FormControl>
   );
 };

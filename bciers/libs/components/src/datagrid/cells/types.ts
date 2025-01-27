@@ -1,5 +1,6 @@
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import { Status } from "@bciers/utils/src/enums";
+import { FacilityRow } from "@reporting/src/app/components/operations/types";
 
 export interface UserOperatorRenderCellParams extends GridRenderCellParams {
   row: {
@@ -18,5 +19,15 @@ export interface FacilityRenderCellParams extends GridRenderCellParams {
     report_status: string;
     status: Status;
     actions: string;
+    name: any;
+    bcghg_id: any;
   };
+  handleRowUpdate: (updatedRow: {
+    name: any;
+    report_status: boolean;
+    id: string;
+    bcghg_id: any;
+    actions: string;
+    status: Status | string;
+  }) => void;
 }

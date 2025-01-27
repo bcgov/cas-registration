@@ -1,28 +1,24 @@
 // 🧩 Main component
-import {
-  FacilitiesSearchParams,
-  FacilityRow,
-} from "@reporting/src/app/components/operations/types";
+import { FacilityRow } from "@reporting/src/app/components/operations/types";
 import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/Facilities/FetchFacilitiesPageData";
 import FacilitiesDataGrid from "@reporting/src/app/components/reportInformation/Facilities/FacilitiesDataGrid";
 
 export default async function Facilities({
-  searchParams,
+  version_id,
 }: {
-  searchParams: FacilitiesSearchParams;
+  version_id: number;
 }) {
-  // Fetch operations data
-  const operations: {
+  const facilities: {
     rows: FacilityRow[];
     row_count: number;
-  } = await fetchFacilitiesPageData(searchParams);
-  if (!operations) {
-    return <div>No operations data in database.</div>;
+  } = await fetchFacilitiesPageData(version_id);
+  if (!facilities) {
+    return <div>No facilities available.</div>;
   }
   // Render the DataGrid component
   return (
     <div className="mt-4">
-      <FacilitiesDataGrid initialData={operations} />
+      <FacilitiesDataGrid initialData={facilities} />
     </div>
   );
 }
