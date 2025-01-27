@@ -2323,6 +2323,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
                 has_unit=False,
+                has_fuel=False,
             ),
             ActivitySourceTypeSchema(
                 activity_id=Activity.objects.get(
