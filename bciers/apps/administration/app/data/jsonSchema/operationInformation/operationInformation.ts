@@ -3,40 +3,41 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getNaicsCodes, getReportingActivities } from "@bciers/actions/api";
 import { Apps, OperationTypes } from "@bciers/utils/src/enums";
 
+export const baseOperationInformationSchema: RJSFSchema = {
+  title: "Operation Information",
+  type: "object",
+  required: ["name", "type"],
+  properties: {
+    name: { type: "string", title: "Operation Name" },
+    type: {
+      type: "string",
+      title: "Operation Type",
+      enum: [OperationTypes.EIO, OperationTypes.LFO, OperationTypes.SFO],
+    },
+  },
+};
+
 export const createOperationInformationSchema = async (
   app: Apps,
   operationType: OperationTypes | undefined,
 ): Promise<RJSFSchema> => {
-  // This schema contains the basic information required for any operation type
-  const operationInformationSchema: RJSFSchema = {
-    title: "Operation Information",
-    type: "object",
-    required: ["name", "type"],
-    properties: {
-      name: { type: "string", title: "Operation Name" },
-      type: {
-        type: "string",
-        title: "Operation Type",
-        enum: [OperationTypes.EIO, OperationTypes.LFO, OperationTypes.SFO],
-      },
-    },
-  };
-
+  // EIOs only require the base information
   if (operationType === OperationTypes.EIO) {
-    return operationInformationSchema;
+    return baseOperationInformationSchema;
   }
 
+  // SFOs and LFOs require more properties
   const naicsCodes = await getNaicsCodes();
   const reportingActivities = await getReportingActivities();
-  operationInformationSchema.required?.push(
+  baseOperationInformationSchema.required?.push(
     "naics_code_id",
     "activities",
     "boundary_map",
     "process_flow_diagram",
   );
 
-  operationInformationSchema.properties = {
-    ...operationInformationSchema.properties,
+  baseOperationInformationSchema.properties = {
+    ...baseOperationInformationSchema.properties,
     naics_code_id: {
       type: "number",
       title: "Primary NAICS Code",

@@ -17,7 +17,7 @@ import {
   RegistrationPurposeHelpText,
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
-import { eioInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/eioInformation";
+import { baseOperationInformationSchema } from "@/administration/app/data/jsonSchema/operationInformation/operationInformation";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -131,11 +131,12 @@ const OperationInformationForm = ({
     if (
       newSelectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
     ) {
+      // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
       setSchema({
         ...initialSchema,
         properties: {
           ...initialSchema.properties,
-          section2: eioInformationSchema,
+          section2: baseOperationInformationSchema,
         },
       });
     }
