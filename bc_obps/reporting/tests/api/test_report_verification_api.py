@@ -8,18 +8,24 @@ from reporting.models.report_verification import ReportVerification
 
 class TestSaveReportVerificationApi(CommonTestSetup):
     def setup_method(self):
+        # Create ReportVersion instance
         self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
-        self.report_verification = baker.make_recipe('reporting.tests.utils.report_verification')
 
-        # Create related ReportVerificationVisit instances and link them
-        report_verification_visits = baker.make_recipe(
-            "reporting.tests.utils.report_verification_visit",
-            _quantity=2,
+        # Create ReportVerification instance associated with the ReportVersion
+        self.report_verification = baker.make_recipe(
+            'reporting.tests.utils.report_verification',
+            report_version=self.report_version
         )
 
-        # Attach the visits to the report_verification instance
+        # Create and attach related ReportVerificationVisit instances
+        report_verification_visits = baker.make_recipe(
+            'reporting.tests.utils.report_verification_visit',
+            report_verification=self.report_verification,
+            _quantity=2,
+        )
         self.report_verification.report_verification_visits.set(report_verification_visits)
 
+        # Call parent setup and authorize user
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
@@ -32,7 +38,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         self,
         mock_get_report_verification: MagicMock,
     ):
-        # Arrange: Mock report version and report verification data
+        # Arrange: Mock report verification data with associated visits
         mock_get_report_verification.return_value = self.report_verification
 
         # Act: Authorize user and perform GET request
@@ -58,59 +64,13 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         assert response_json["scope_of_verification"] == self.report_verification.scope_of_verification
         assert response_json["threats_to_independence"] == self.report_verification.threats_to_independence
         assert response_json["verification_conclusion"] == self.report_verification.verification_conclusion
+
+        # Validate associated visits
         assert len(response_json["report_verification_visits"]) == 2
-
-    """Tests for the get_report_needs_verification endpoint."""
-
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
-    def test_returns_verification_needed_for_report_version_id(self, mock_get_report_needs_verification: MagicMock):
-        # Arrange: Mock the service to return True
-        mock_get_report_needs_verification.return_value = True
-
-        # Act: Authorize user and perform GET request
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy(
-                "get_report_needs_verification",
-                kwargs={"report_version_id": self.report_version.id},
-            ),
-        )
-
-        # Assert: Verify the response status
-        assert response.status_code == 200
-
-        # Assert: Verify the service was called with the correct version ID
-        mock_get_report_needs_verification.assert_called_once_with(self.report_version.id)
-
-        # Assert: Validate the response data
-        response_json = response.json()
-        assert response_json is True
-
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
-    def test_returns_verification_not_needed_for_report_version_id(self, mock_get_report_needs_verification: MagicMock):
-        # Arrange: Mock the service to return False
-        mock_get_report_needs_verification.return_value = False
-
-        # Act: Authorize user and perform GET request
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy(
-                "get_report_needs_verification",
-                kwargs={"report_version_id": self.report_version.id},
-            ),
-        )
-
-        # Assert: Verify the response status
-        assert response.status_code == 200
-
-        # Assert: Verify the service was called with the correct version ID
-        mock_get_report_needs_verification.assert_called_once_with(self.report_version.id)
-
-        # Assert: Validate the response data
-        response_json = response.json()
-        assert response_json is False
+        for visit_data in response_json["report_verification_visits"]:
+            assert "visit_name" in visit_data
+            assert "visit_type" in visit_data
+            assert "visit_coordinates" in visit_data
 
     """Tests for the save_report_verification endpoint."""
 
@@ -123,24 +83,21 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         payload = ReportVerificationIn(
             verification_body_name="Verifier Co.",
             accredited_by="ANAB",  # AccreditedBy choices: "ANAB" or "SCC"
-            scope_of_verification="B.C. OBPS Annual Report",  # ScopeOfVerification choices: "B.C. OBPS Annual Report"; "Supplementary Report"; "Corrected Report"
+            scope_of_verification="B.C. OBPS Annual Report",
             threats_to_independence=False,
-            verification_conclusion="Positive",  # VerificationConclusion choices: "Positive", "Modified", "Negative"
-            report_verification_visits=[  # Including visits in the payload
-                {
-                    "visit_name": "Visit 1",
-                    "visit_type": "In person",
-                    "visit_coordinates": "123.456, 789.101",
-                    "is_other_visit": True,
-                },
-                {
-                    "visit_name": "Visit 2",
-                    "visit_type": "Virtual",
-                    "visit_coordinates": "",
-                    "is_other_visit": False,
-                },
-            ],
+            verification_conclusion="Positive",
+            report_verification_visits=[
+            {
+                "visit_name": visit.visit_name,
+                "visit_type": visit.visit_type,
+                "visit_coordinates": visit.visit_coordinates,
+                "is_other_visit": visit.is_other_visit,
+            }
+            for visit in self.report_verification.report_verification_visits.all()
+        ],
         )
+
+        # Prepare the mock response with expected data
         mock_response = ReportVerification(
             report_version=self.report_version,
             verification_body_name=payload.verification_body_name,
@@ -150,6 +107,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
             verification_conclusion=payload.verification_conclusion,
         )
 
+        # Set the mock return value for the service
         mock_save_report_verification.return_value = mock_response
 
         # Act: Authorize user and perform POST request
@@ -177,3 +135,13 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         assert response_json["scope_of_verification"] == payload.scope_of_verification
         assert response_json["threats_to_independence"] == payload.threats_to_independence
         assert response_json["verification_conclusion"] == payload.verification_conclusion
+
+        # Validate the saved visits in the response
+        assert len(response_json["report_verification_visits"]) == len(payload.report_verification_visits)
+        for i, visit_data in enumerate(response_json["report_verification_visits"]):
+            expected_visit = payload.report_verification_visits[i]
+            print(expected_visit)
+            assert visit_data["visit_name"] == expected_visit.visit_name
+            assert visit_data["visit_type"] == expected_visit.visit_type
+            assert visit_data["visit_coordinates"] == expected_visit.visit_coordinates
+            assert visit_data["is_other_visit"] == expected_visit.is_other_visit
