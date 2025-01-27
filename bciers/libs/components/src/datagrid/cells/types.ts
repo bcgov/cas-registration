@@ -12,3 +12,11 @@ export interface UserOperatorRenderCellParams extends GridRenderCellParams {
     actions: string;
   };
 }
+export interface FacilityRenderCellParams extends GridRenderCellParams {
+  row: {
+    id: string;
+    report_status: string;
+    status: Status;
+    actions: string;
+  };
+}
