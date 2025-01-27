@@ -40,6 +40,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [errors, setErrors] = useState<string[] | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
+  const [submittingDisabled, setSubmittingDisabled] = useState(false);
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
     [],
   );
@@ -116,8 +117,23 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     );
   };
 
+  const isAnyFacilitySelected = (data: SubmissionData) => {
+    return (
+      data.current_facilities_section.current_facilities.length > 0 ||
+      data.past_facilities_section.past_facilities.length > 0
+    );
+  };
+
   const handleChange = (e: any) => {
     setFormData({ ...e.formData });
+    const anyFacilitySelected = isAnyFacilitySelected(e.formData);
+    if (!anyFacilitySelected) {
+      setErrors(["No facilities selected"]);
+      setSubmittingDisabled(true);
+    } else {
+      setErrors(undefined);
+      setSubmittingDisabled(false);
+    }
   };
 
   const submit = async (data: any) => {
@@ -226,6 +242,8 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         onChange={handleChange}
         onSubmit={async (data) => handleSubmit(data)}
         backUrl={backUrl}
+        saveButtonDisabled={submittingDisabled}
+        submitButtonDisabled={submittingDisabled}
       />
     </>
   );
