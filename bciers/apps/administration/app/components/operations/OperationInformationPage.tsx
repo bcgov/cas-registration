@@ -19,6 +19,7 @@ const OperationInformationPage = async ({
   const formSchema = await createAdministrationOperationInformationSchema(
     operation?.registration_purpose,
     operation.status,
+    operation?.type,
   );
 
   return (
