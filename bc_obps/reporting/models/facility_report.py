@@ -41,6 +41,11 @@ class FacilityReport(TimeStampedModel):
         blank=True,
         null=True,
     )
+    is_completed = models.BooleanField(
+        default=False,
+        db_comment="Indicates whether the facility report has been completed.",
+    )
+
 
     # We don't create a backwards relation since these are registration models
     activities = models.ManyToManyField(Activity, related_name="+")
