@@ -27,7 +27,6 @@ export default async function FacilityEmissionSummaryPage({
   const formData = {
     attributableForReporting: summaryData.attributable_for_reporting,
     attributableForReportingThreshold: summaryData.attributable_for_threshold,
-    reportingOnlyEmission: summaryData.reporting_only,
     emissionCategories: {
       flaring: summaryData.flaring,
       fugitive: summaryData.fugitive,
@@ -46,7 +45,6 @@ export default async function FacilityEmissionSummaryPage({
     },
     otherExcluded: {
       lfoExcluded: summaryData.lfo_excluded,
-      fogExcluded: "0", // To be handled once we implement a way to capture FOG emissions
     },
   };
 

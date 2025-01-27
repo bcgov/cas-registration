@@ -17,7 +17,6 @@ interface Props {
   summaryFormData: {
     attributableForReporting: string;
     attributableForReportingThreshold: string;
-    reportingOnlyEmission: string;
     emissionCategories: {
       flaring: string;
       fugitive: string;
@@ -36,7 +35,6 @@ interface Props {
     };
     otherExcluded: {
       lfoExcluded: string;
-      fogExcluded: string; // To be handled once we implement a way to capture FOG emissions
     };
   };
   taskListElements: TaskListElement[];
