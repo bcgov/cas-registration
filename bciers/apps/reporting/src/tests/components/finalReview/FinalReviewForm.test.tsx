@@ -17,7 +17,12 @@ describe("The FinalReviewForm component", () => {
     const expectedRoute = `/reports/12345/compliance-summary`;
 
     render(
-      <FinalReviewForm taskListElements={[]} version_id={12345} data={[]} />,
+      <FinalReviewForm
+        taskListElements={[]}
+        version_id={12345}
+        data={[]}
+        needsVerification={true}
+      />,
     );
 
     // Click the "Back" button
@@ -34,7 +39,34 @@ describe("The FinalReviewForm component", () => {
     const expectedRoute = `/reports/12345/verification`;
 
     render(
-      <FinalReviewForm taskListElements={[]} version_id={12345} data={[]} />,
+      <FinalReviewForm
+        taskListElements={[]}
+        version_id={12345}
+        data={[]}
+        needsVerification={true}
+      />,
+    );
+
+    // Click the "Save and continue" button
+    const button = screen.getByRole("button", {
+      name: "Continue",
+    });
+    fireEvent.click(button);
+
+    // Assert that the router's push method was called with the expected route
+    expect(mockRouterPush).toHaveBeenCalledTimes(1);
+    expect(mockRouterPush).toHaveBeenCalledWith(expectedRoute);
+  });
+  it("routes to the attachment page when the submit button is clicked", () => {
+    const expectedRoute = `/reports/12345/attachment`;
+
+    render(
+      <FinalReviewForm
+        taskListElements={[]}
+        version_id={12345}
+        data={[]}
+        needsVerification={false}
+      />,
     );
 
     // Click the "Save and continue" button
