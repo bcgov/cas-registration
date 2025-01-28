@@ -63,7 +63,6 @@
       "first_name": "Blair",
       "last_name": "Balloons - no address",
       "position_title": "Manager",
-      "address": 5,
       "email": "blair.balloons@example.com",
       "phone_number": "+16044011237",
       "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"
@@ -77,7 +76,7 @@
       "first_name": "Bart",
       "last_name": "Banker - incomplete address",
       "position_title": "Manager",
-      "address": 6,
+      "address": 21,
       "email": "bart.banker@example.com",
       "phone_number": "+16044011238",
       "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"

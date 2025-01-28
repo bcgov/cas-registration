@@ -9,7 +9,6 @@ class DocumentDataAccessService:
     @classmethod
     def get_operation_document_by_type(cls, operation_id: UUID, document_type: str) -> Document | None:
         operation = OperationDataAccessService.get_by_id(operation_id=operation_id)
-
         try:
             document = operation.documents.get(type=DocumentType.objects.get(name=document_type))
         except Document.DoesNotExist:
