@@ -16,7 +16,7 @@ class PlacesAssigned(Schema):
 
 
 class ContactWithPlacesAssigned(ContactOut):
-    places_assigned: Optional[list[PlacesAssigned]]
+    places_assigned: Optional[list[PlacesAssigned]] = None
 
 
 class ContactListOutV2(ModelSchema):
