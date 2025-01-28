@@ -160,39 +160,52 @@ export const sfoSchema: RJSFSchema = {
   properties: {
     ...sharedSchemaProperties,
     visit_names: {
+      type: "array",
       title: "Sites visited",
-      type: "string",
-      enum: ["Facility X", "Other", "None"], // modified in components/verification/createVerificationSchema.ts
+      uniqueItems: true,
+      minItems: 1,
+      maxItems: 1,
+      items: {
+        type: "string",
+        enum: ["Facility X", "Other", "None"], // modified in components/verification/createVerificationSchema.ts
+      },
+    },
+    visit_types: {
+      type: "array",
+      items: {
+        $ref: "#/definitions/visitTypeItem",
+      },
     },
   },
   dependencies: {
     visit_names: {
       oneOf: [
+        // Rule when "None" is selected
         {
           properties: {
             visit_names: {
-              type: "string",
-              minItems: 1,
-              not: {
-                enum: ["Other", "None"],
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["None"], // Only allow "None"
               },
-            },
-            visit_types: {
-              type: "string",
-              title: "Type of site visit",
-              enum: ["Virtual", "In person"],
+              maxItems: 1,
+              minItems: 1,
             },
           },
-          required: ["visit_types"],
+          required: ["visit_names"],
         },
+        // Rule when "Other" is selected
         {
           properties: {
             visit_names: {
-              enum: ["Other"],
+              type: "array",
+              contains: { const: "Other" },
             },
             visit_others: {
-              title: "Other Visit(s)",
+              title: "Other Visit",
               type: "array",
+              minItems: 1,
               maxItems: 1,
               default: [
                 {
@@ -227,28 +240,59 @@ export const sfoSchema: RJSFSchema = {
       ],
     },
   },
+  definitions: {
+    visitTypeItem: {
+      type: "object",
+      required: ["visit_type"],
+      properties: {
+        visit_name: {
+          title: "Visit Name",
+          type: "string",
+          readOnly: true,
+        },
+        visit_type: {
+          type: "string",
+          enum: ["Virtual", "In person"],
+        },
+      },
+    },
+  },
 };
 
 /**
- * SFO Verfication Form ui schema
+ * SFO Verfication Form ui schemas
  */
-export const sfoUiSchema = {
+export const sfoUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": sharedUIOrder,
   ...sharedUiSchema,
   visit_names: {
+    "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select site visited",
   },
   visit_types: {
-    "ui:widget": "RadioWidget",
-  },
-  visit_others: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       addable: false,
       removable: false,
       label: false,
+    },
+    items: {
+      "ui:order": ["visit_name", "visit_type"],
+      visit_name: {
+        "ui:widget": "hidden",
+      },
+      visit_type: {
+        "ui:title": "Type of site visit",
+        "ui:widget": "RadioWidget",
+      },
+    },
+  },
+  visit_others: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:options": {
+      addable: false,
     },
     items: {
       visit_name: {
@@ -278,7 +322,7 @@ export const lfoSchema: RJSFSchema = {
       title: "Sites visited",
       items: {
         type: "string",
-        enum: ["Facility X", "Other", "None"],
+        enum: ["Facility X", "Other", "None"], // modified in components/verification/createVerificationSchema.ts
       },
       uniqueItems: true,
     },
@@ -397,9 +441,6 @@ export const lfoUiSchema: UiSchema = {
       visit_type: {
         "ui:FieldTemplate": DynamicLabelVisitType,
         "ui:widget": "RadioWidget",
-        "ui:options": {
-          label: "Type of site visit",
-        },
       },
     },
   },
