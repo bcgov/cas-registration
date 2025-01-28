@@ -182,7 +182,8 @@ class TestOperationRegistration(CommonTestSetup):
         #### Operation Information Form ####
         self._set_operation_information(purpose, operation_type)
         #### Facility From ####
-        self._set_facilities()
+        if purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            self._set_facilities()
 
         if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             #### New Entrant Application Form ####
