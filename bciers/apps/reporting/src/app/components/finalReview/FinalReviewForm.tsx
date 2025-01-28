@@ -20,6 +20,7 @@ import { useState } from "react";
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
   data: ReviewData[];
+  needsVerification: boolean;
 }
 
 // These uiSchemas need to be loaded on the client side, they contain interactive, stateful components.
@@ -43,9 +44,14 @@ const FinalReviewForm: React.FC<Props> = ({
   version_id,
   taskListElements,
   data,
+  needsVerification,
 }) => {
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${version_id}/verification`;
+  const verificationUrl = `/reports/${version_id}/verification`;
+  const attachmentUrl = `/reports/${version_id}/attachment`;
+  const saveAndContinueUrl = needsVerification
+    ? verificationUrl
+    : attachmentUrl;
   const backUrl = `/reports/${version_id}/compliance-summary`;
   const [isRedirecting, setIsRedirecting] = useState(false);
 
