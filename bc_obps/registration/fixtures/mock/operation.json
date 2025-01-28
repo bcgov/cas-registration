@@ -457,13 +457,11 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Blight SFO - Draft",
-      "type": "Single Facility Operation",
-      "naics_code": 21,
-      "opt_in": false,
+      "documents": [],
+      "name": "Blight EIO - Draft",
+      "type": "Electricity Import Operation",
       "status": "Draft",
-      "created_at": "2024-1-11T15:27:00.000Z",
-      "activities": [1, 5]
+      "created_at": "2024-1-11T15:27:00.000Z"
     }
   },
   {

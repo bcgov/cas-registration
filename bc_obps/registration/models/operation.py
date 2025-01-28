@@ -65,6 +65,7 @@ class Operation(TimeStampedModel):
         NaicsCode,
         on_delete=models.PROTECT,
         null=True,
+        blank=True,
         db_comment="This column refers to an operation's primary NAICS code.",
         related_name='operations',
     )
