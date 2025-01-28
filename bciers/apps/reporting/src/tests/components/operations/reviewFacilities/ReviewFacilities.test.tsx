@@ -22,6 +22,10 @@ const config = {
     continue: "Continue",
     cancel: "Cancel",
   },
+  urls: {
+    back: "/reports/1/person-responsible",
+    continue: "/reports/1/report-information",
+  },
 };
 
 const mockFacilitiesInitialData = {
@@ -152,6 +156,22 @@ describe("LFOFacilitiesForm", () => {
       // Assert that the confirmation modal is closed
       expect(screen.queryByText("Confirmation")).not.toBeInTheDocument();
     });
+
+    const saveAndContinueButton = screen.getByRole("button", {
+      name: config.buttons.saveAndContinue,
+    });
+    fireEvent.click(saveAndContinueButton);
+    await waitFor(() => {
+      expect(screen.getByText("Confirmation")).toBeInTheDocument();
+    });
+    const continueButton = screen.getByRole("button", {
+      name: config.buttons.continue,
+    });
+    fireEvent.click(continueButton);
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledTimes(1);
+      expect(mockRouterPush).toHaveBeenCalledWith(config.urls.continue);
+    });
   });
 
   it("should route to the Person Responsible page when the Back button is clicked", async () => {
@@ -170,8 +190,6 @@ describe("LFOFacilitiesForm", () => {
     fireEvent.click(backButton);
 
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
-    expect(mockRouterPush).toHaveBeenCalledWith(
-      `/reports/${1}/person-responsible`,
-    );
+    expect(mockRouterPush).toHaveBeenCalledWith(config.urls.back);
   });
 });
