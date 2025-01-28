@@ -40,5 +40,3 @@ class Document(TimeStampedModel):
             default_storage.delete(self.file.name)
 
         super().delete(*args, **kwargs)
-
-    #

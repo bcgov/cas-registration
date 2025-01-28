@@ -51,7 +51,6 @@ const ContactsDataGrid = ({
     const operator = row?.operator__legal_name ? row.operator__legal_name : "";
     return row.id + operator;
   }
-  console.log("initialdata", initialData);
   return (
     <DataGrid
       columns={columns}

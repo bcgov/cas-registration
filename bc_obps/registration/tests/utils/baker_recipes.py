@@ -7,6 +7,7 @@ from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOpera
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.document import Document
+from registration.models.document_type import DocumentType
 from registration.models.event.transfer_event import TransferEvent
 from registration.models.facility import Facility
 from registration.models.multiple_operator import MultipleOperator
@@ -32,7 +33,9 @@ from model_bakery.recipe import Recipe, foreign_key, seq
 
 naics_code = Recipe(NaicsCode, naics_code='486210')
 address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
-document = Recipe(Document, file='test.pdf')
+document = Recipe(
+    Document, file='test.pdf', type=DocumentType.objects.get(name='boundary_map')
+)  # DocumentType records are loaded in the migrations
 bcghg_id = Recipe(BcGreenhouseGasId, id='23219990023')
 boro_id = Recipe(BcObpsRegulatedOperation, id=seq("99-", start=1001))
 
