@@ -15,14 +15,18 @@ import {
 import { Apps, OperationStatus } from "@bciers/utils/src/enums";
 
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
+import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 export const createAdministrationOperationInformationSchema = async (
-  registrationPurposeValue: string,
+  registrationPurposeValue: RegistrationPurposes,
   status: OperationStatus,
 ): Promise<RJSFSchema> => {
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
     properties: {
-      section1: await createOperationInformationSchema(Apps.ADMINISTRATION),
+      section1: await createOperationInformationSchema(
+        Apps.ADMINISTRATION,
+        registrationPurposeValue,
+      ),
       section2: await createMultipleOperatorsInformationSchema(),
       ...(status === OperationStatus.REGISTERED && {
         section3: await createAdministrationRegistrationInformationSchema(
