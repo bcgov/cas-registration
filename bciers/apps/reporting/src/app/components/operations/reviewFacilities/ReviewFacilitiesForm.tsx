@@ -1,8 +1,6 @@
 "use client";
-
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-
 import {
   buildReviewFacilitiesSchema,
   buildReviewFacilitiesUiSchema,
@@ -15,6 +13,7 @@ import {
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
+import { useRouter } from "next/navigation";
 
 interface Props {
   initialData: any;
@@ -54,6 +53,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const backUrl = `/reports/${version_id}/person-responsible`;
 
   const uiSchema: any = buildReviewFacilitiesUiSchema(initialData.operation_id);
+  const router = useRouter();
 
   const taskListElements = getOperationInformationTaskList(
     version_id,
@@ -136,7 +136,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     }
   };
 
-  const submit = async (data: any) => {
+  const submit = async (data: any, navigateAfterSubmit?: boolean) => {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
 
@@ -153,6 +153,9 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       }
 
       setErrors(undefined);
+      if (navigateAfterSubmit) {
+        router.push(saveAndContinueUrl);
+      }
       return true;
     } catch (err) {
       console.error("Error submitting review facilities form: ", err);
@@ -170,9 +173,9 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     setModalOpen(false);
   };
 
-  const handleModalConfirm = () => {
+  const handleModalConfirm = async () => {
     setModalOpen(false);
-    submit(formData);
+    submit(formData, true);
   };
 
   const handleSubmit = async (data: any) => {
