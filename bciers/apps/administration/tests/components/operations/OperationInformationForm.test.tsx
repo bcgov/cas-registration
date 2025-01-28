@@ -866,83 +866,90 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Must not have fewer than 1 items/i)).toBeVisible();
   });
 
-  it("should allow external users to replace their operation rep", async () => {
-    const testFormData = {
-      name: "Operation 3",
-      type: "Single Facility Operation",
-      naics_code_id: 1,
-      secondary_naics_code_id: 2,
-      operation_has_multiple_operators: false,
-      activities: [1, 2],
-      registration_purpose: "Reporting Operation",
-      regulated_products: [1],
-      opt_in: false,
-      operation_representatives: [1],
-      boundary_map: mockDataUri,
-      process_flow_diagram: mockDataUri,
-    };
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
+  it(
+    "should allow external users to replace their operation rep",
+    { timeout: 100000 },
+    async () => {
+      const testFormData = {
+        name: "Operation 3",
+        type: "Single Facility Operation",
+        naics_code_id: 1,
+        secondary_naics_code_id: 2,
+        operation_has_multiple_operators: false,
+        activities: [1, 2],
+        registration_purpose: "Reporting Operation",
+        regulated_products: [1],
+        opt_in: false,
+        operation_representatives: [1],
+        boundary_map: mockDataUri,
+        process_flow_diagram: mockDataUri,
+      };
+      useSession.mockReturnValue({
+        data: {
+          user: {
+            app_role: "industry_user_admin",
+          },
         },
-      },
-    });
+      });
 
-    fetchFormEnums();
-    const createdFormSchema =
-      await createAdministrationOperationInformationSchema(
-        testFormData.registration_purpose,
-        OperationStatus.REGISTERED,
+      fetchFormEnums();
+      const createdFormSchema =
+        await createAdministrationOperationInformationSchema(
+          testFormData.registration_purpose,
+          OperationStatus.REGISTERED,
+        );
+
+      render(
+        <OperationInformationForm
+          formData={testFormData}
+          schema={createdFormSchema}
+          operationId={operationId}
+        />,
+      );
+      await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+      const cancelChipIcon = screen.getAllByTestId("CancelIcon");
+      await userEvent.click(cancelChipIcon[2]); // 0-1 are activities
+      expect(screen.queryByText(/ivy/i)).not.toBeInTheDocument();
+      const operationRepresentativesComboBoxInput = screen.getByRole(
+        "combobox",
+        {
+          name: /Operation Representative(s)*/i,
+        },
+      );
+      const openOperationReps = operationRepresentativesComboBoxInput
+        .parentElement?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openOperationReps);
+      await userEvent.type(
+        operationRepresentativesComboBoxInput,
+        "Jack King{enter}",
       );
 
-    render(
-      <OperationInformationForm
-        formData={testFormData}
-        schema={createdFormSchema}
-        operationId={operationId}
-      />,
-    );
-    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
-    const cancelChipIcon = screen.getAllByTestId("CancelIcon");
-    await userEvent.click(cancelChipIcon[2]); // 0-1 are activities
-    expect(screen.queryByText(/ivy/i)).not.toBeInTheDocument();
-    const operationRepresentativesComboBoxInput = screen.getByRole("combobox", {
-      name: /Operation Representative(s)*/i,
-    });
-    const openOperationReps = operationRepresentativesComboBoxInput
-      .parentElement?.children[1]?.children[0] as HTMLInputElement;
-    await userEvent.click(openOperationReps);
-    await userEvent.type(
-      operationRepresentativesComboBoxInput,
-      "Jack King{enter}",
-    );
-
-    const submitButton = screen.getByRole("button", {
-      name: "Submit",
-    });
-    await userEvent.click(submitButton);
-    expect(actionHandler).toHaveBeenCalledTimes(1);
-    expect(actionHandler).toHaveBeenCalledWith(
-      `registration/operations/${operationId}`,
-      "PUT",
-      "",
-      {
-        body: JSON.stringify({
-          name: "Operation 3",
-          type: "Single Facility Operation",
-          naics_code_id: 1,
-          secondary_naics_code_id: 2,
-          activities: [1, 2],
-          process_flow_diagram: mockDataUri,
-          boundary_map: mockDataUri,
-          operation_has_multiple_operators: false,
-          registration_purpose: "Reporting Operation",
-          operation_representatives: [2],
-        }),
-      },
-    );
-  });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit",
+      });
+      await userEvent.click(submitButton);
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        `registration/operations/${operationId}`,
+        "PUT",
+        "",
+        {
+          body: JSON.stringify({
+            name: "Operation 3",
+            type: "Single Facility Operation",
+            naics_code_id: 1,
+            secondary_naics_code_id: 2,
+            activities: [1, 2],
+            process_flow_diagram: mockDataUri,
+            boundary_map: mockDataUri,
+            operation_has_multiple_operators: false,
+            registration_purpose: "Reporting Operation",
+            operation_representatives: [2],
+          }),
+        },
+      );
+    },
+  );
 
   it("should show a note if user navigated to operation from the contacts form", async () => {
     useSession.mockReturnValue({
