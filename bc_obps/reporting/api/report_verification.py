@@ -22,13 +22,7 @@ from reporting.models import ReportVerification
 def get_report_verification_by_version_id(
     request: HttpRequest, report_version_id: int
 ) -> tuple[Literal[200], ReportVerificationOut]:
-    try:
-        print(f"Fetching report verification for report_version_id={report_version_id}")
-        return 200, ReportVerificationService.get_report_verification_by_version_id(report_version_id)
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        raise
-
+    return 200, ReportVerificationService.get_report_verification_by_version_id(report_version_id)
 
 @router.get(
     "/report-version/{report_version_id}/report-needs-verification",

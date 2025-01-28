@@ -18,6 +18,7 @@ class BaseReportVerification(ModelSchema):
             'verification_conclusion',
         ]
 
+
 class ReportVerificationVisitSchema(ModelSchema):
     """
     Schema for ReportVerificationVisit model
@@ -33,15 +34,12 @@ class ReportVerificationVisitSchema(ModelSchema):
         ]
 
 
-
 class ReportVerificationIn(BaseReportVerification):
     """
     Schema for the input of report verification data
     """
 
-    report_verification_visits: List[ReportVerificationVisitSchema] = Field(
-        default_factory=list
-    )
+    report_verification_visits: List[ReportVerificationVisitSchema] = Field(default_factory=list)
 
 
 class ReportVerificationOut(BaseReportVerification):
@@ -49,7 +47,7 @@ class ReportVerificationOut(BaseReportVerification):
     Schema for the output of report verification data
     """
 
-    report_verification_visits: List[ReportVerificationVisitSchema] = Field(default_factory=list) 
+    report_verification_visits: List[ReportVerificationVisitSchema] = Field(default_factory=list)
 
     class Meta(BaseReportVerification.Meta):
         fields = BaseReportVerification.Meta.fields + ['report_version']
