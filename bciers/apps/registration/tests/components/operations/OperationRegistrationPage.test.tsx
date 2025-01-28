@@ -146,10 +146,10 @@ describe("the OperationRegistrationPage component", () => {
     );
   });
 
-  it("should render the Operation Representative Form and 4 steps", async () => {
+  it("should render the Operation Representative Form and 3 steps if the purpose is Electricity Import Operation", async () => {
     // purpose
     actionHandler.mockResolvedValueOnce({
-      registration_purpose: "OBPS Regulated Operation",
+      registration_purpose: "Electricity Import Operation",
     });
 
     // contacts
@@ -164,7 +164,7 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        step: 3,
+        step: 2,
         searchParams: {},
       }),
     );

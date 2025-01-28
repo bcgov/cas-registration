@@ -257,7 +257,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByRole("button", { name: "Edit" })).toBeVisible();
   });
 
-  it("should render the form with the correct values when formData is provided", async () => {
+  it("should render the form with the correct values for a non-EIO when formData is provided", async () => {
     fetchFormEnums();
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
@@ -308,6 +308,36 @@ describe("the OperationInformationForm component", () => {
       ),
     ).toBeVisible();
     expect(screen.getByText(/Reporting Operation/i)).toBeVisible();
+  });
+
+  it("should render the form with the correct form for an EIO when formData is provided", async () => {
+    fetchFormEnums();
+    const createdFormSchema =
+      await createAdministrationOperationInformationSchema(
+        RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+        OperationStatus.REGISTERED,
+      );
+    render(
+      <OperationInformationForm
+        formData={{ name: "Operation 3", type: "Electricity Import Operation" }}
+        schema={createdFormSchema}
+        operationId={operationId}
+      />,
+    );
+    //name
+    expect(screen.getByText(/Operation 3/i)).toBeVisible();
+    // type
+    expect(screen.getByText(/Electricity Import Operation/i)).toBeVisible();
+    // primary naics code
+    expect(screen.queryByText(/naics/i)).not.toBeInTheDocument();
+
+    // registration info & purpose
+    expect(
+      screen.getByText(
+        /The purpose of this registration is to register as a\:/i,
+      ),
+    ).toBeVisible();
+    expect(screen.getByText(/Electricity Import Operation/i)).toBeVisible();
   });
 
   it("should enable editing when the Edit button is clicked", async () => {
