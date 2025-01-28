@@ -11,21 +11,10 @@ export const createVerificationSchema = (
     schemaType === "SFO" ? { ...sfoSchema } : { ...lfoSchema };
   const defaultVisistValues = ["None", "Other"];
 
-  // Dynamically populate the "visit_names" field's enum with the facilities
-  switch (schemaType) {
-    case "SFO":
-      (localSchema.properties?.visit_names as any).enum = [
-        ...defaultVisistValues,
-        ...facilities,
-      ];
-      break;
-    case "LFO":
-      (localSchema.properties?.visit_names as any).items.enum = [
-        ...defaultVisistValues,
-        ...facilities,
-      ];
-      break;
-  }
+  (localSchema.properties?.visit_names as any).items.enum = [
+    ...defaultVisistValues,
+    ...facilities,
+  ];
 
   // Return the customized schema.
   return localSchema;
