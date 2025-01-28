@@ -10,7 +10,6 @@ from reporting.service.report_additional_data import ReportAdditionalDataService
 from reporting.service.compliance_service import ComplianceService
 
 
-
 class ReportVerificationService:
     @staticmethod
     def get_report_verification_by_version_id(
@@ -25,11 +24,9 @@ class ReportVerificationService:
         Returns:
             ReportVerification instance
         """
-        report_verification = ReportVerification.objects.get(
-            report_version__id=report_version_id
-        )
+        report_verification = ReportVerification.objects.get(report_version__id=report_version_id)
         return report_verification
-   
+
     @staticmethod
     @transaction.atomic
     def save_report_verification(version_id: int, data: ReportVerificationIn) -> ReportVerification:
@@ -80,12 +77,12 @@ class ReportVerificationService:
             visit_ids_to_keep.append(visit.id)
 
         # Delete any visits not included in the current payload
-        ReportVerificationVisit.objects.filter(
-            report_verification=report_verification
-        ).exclude(id__in=visit_ids_to_keep).delete()
+        ReportVerificationVisit.objects.filter(report_verification=report_verification).exclude(
+            id__in=visit_ids_to_keep
+        ).delete()
 
         return report_verification
-    
+
     @staticmethod
     def get_report_needs_verification(version_id: int) -> bool:
         """

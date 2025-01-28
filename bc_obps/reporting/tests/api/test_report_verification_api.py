@@ -13,8 +13,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
 
         # Create ReportVerification instance associated with the ReportVersion
         self.report_verification = baker.make_recipe(
-            'reporting.tests.utils.report_verification',
-            report_version=self.report_version
+            'reporting.tests.utils.report_verification', report_version=self.report_version
         )
 
         # Create and attach related ReportVerificationVisit instances
@@ -87,14 +86,14 @@ class TestSaveReportVerificationApi(CommonTestSetup):
             threats_to_independence=False,
             verification_conclusion="Positive",
             report_verification_visits=[
-            {
-                "visit_name": visit.visit_name,
-                "visit_type": visit.visit_type,
-                "visit_coordinates": visit.visit_coordinates,
-                "is_other_visit": visit.is_other_visit,
-            }
-            for visit in self.report_verification.report_verification_visits.all()
-        ],
+                {
+                    "visit_name": visit.visit_name,
+                    "visit_type": visit.visit_type,
+                    "visit_coordinates": visit.visit_coordinates,
+                    "is_other_visit": visit.is_other_visit,
+                }
+                for visit in self.report_verification.report_verification_visits.all()
+            ],
         )
 
         # Prepare the mock response with expected data
