@@ -6,7 +6,7 @@ const PlacesAssignedFieldTemplate = ({
   formContext,
 }: ArrayFieldTemplateProps) => {
   if (items.length < 1) {
-    return <div>None</div>;
+    return <div className="w-full px-[14px] py-4 items-center">None</div>;
   }
   return (
     <div className="flex min-w-full flex-col">
