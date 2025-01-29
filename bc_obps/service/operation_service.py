@@ -50,10 +50,9 @@ class OperationService:
                     operator.verified_at = datetime.now(ZoneInfo("UTC"))
                     operator.verified_by_id = user_guid
                     operator.save(update_fields=["status", "is_new", "verified_at", "verified_by_id"])
-                    operator.set_create_or_update(user_guid)
+
         operation.status = status
         operation.save(update_fields=['status', 'verified_at', 'verified_by_id', 'bc_obps_regulated_operation'])
-        operation.set_create_or_update(user_guid)
 
         # send email notification to external user (email template depends on operation.status)
         if status in [
@@ -197,7 +196,7 @@ class OperationService:
                     operation_creator=operation.created_by,
                     point_of_contact=operation.point_of_contact,
                 )
-        operation.set_create_or_update(user_guid)
+
         return operation
 
     @classmethod

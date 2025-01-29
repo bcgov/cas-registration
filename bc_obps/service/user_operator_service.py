@@ -74,7 +74,6 @@ class UserOperatorService:
             operator_instance, operator_related_fields, updated_data.dict()
         )
         created_or_updated_operator_instance.save(update_fields=operator_related_fields + ["status"])
-        created_or_updated_operator_instance.set_create_or_update(user_guid)
 
         # Using the import here to avoid circular import
         from service.operator_service import OperatorService
@@ -199,7 +198,6 @@ class UserOperatorService:
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
         if created:
-            user_operator.set_create_or_update(user_guid)
             # Send email to the external user to confirm the creation of the operator and the request for access
             send_operator_access_request_email(
                 AccessRequestStates.CONFIRMATION,
@@ -273,7 +271,6 @@ class UserOperatorService:
             user_operator.role = UserOperator.Roles.PENDING
 
         user_operator.save(update_fields=["status", "verified_at", "verified_by_id", "role"])
-        user_operator.set_create_or_update(admin_user_guid)
         if user_operator.status == UserOperator.Statuses.DECLINED:
             # Set role to pending for now but we may want to add a new role for declined
             user_operator.role = UserOperator.Roles.PENDING
@@ -306,8 +303,6 @@ class UserOperatorService:
         operator: Operator = UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperator.objects.get_or_create(user_id=user_guid, operator=operator)
-        if created:
-            user_operator.set_create_or_update(user_guid)
         return {"user_operator_id": user_operator.id, 'operator_id': operator.id}
 
     @classmethod

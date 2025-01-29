@@ -12,5 +12,5 @@ class PartnerOperatorService:
         partner_operator_instance, _ = PartnerOperator.objects.update_or_create(
             pk=partner_operator_id, defaults={**data, 'bc_obps_operator': bc_obps_operator}
         )
-        partner_operator_instance.set_create_or_update(user_guid)
+
         return partner_operator_instance
