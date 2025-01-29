@@ -3,11 +3,11 @@ from django.db import transaction
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_verification_visit import ReportVerificationVisit
 from reporting.models import ReportVersion
-from reporting.schema.report_verification import ReportVerificationIn
 
 from registration.models import Operation
 from reporting.service.report_additional_data import ReportAdditionalDataService
 from reporting.service.compliance_service import ComplianceService
+from reporting.schema.report_verification import ReportVerificationIn
 
 
 class ReportVerificationService:

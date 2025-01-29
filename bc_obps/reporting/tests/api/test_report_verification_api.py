@@ -139,7 +139,7 @@ class TestSaveReportVerificationApi(CommonTestSetup):
         assert len(response_json["report_verification_visits"]) == len(payload.report_verification_visits)
         for i, visit_data in enumerate(response_json["report_verification_visits"]):
             expected_visit = payload.report_verification_visits[i]
-            print(expected_visit)
+
             assert visit_data["visit_name"] == expected_visit.visit_name
             assert visit_data["visit_type"] == expected_visit.visit_type
             assert visit_data["visit_coordinates"] == expected_visit.visit_coordinates

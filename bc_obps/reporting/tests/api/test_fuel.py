@@ -17,7 +17,6 @@ class TestActivityData:
 
     def test_returns_fuel_data(self):
         response = client.get('/api/reporting/fuel?fuel_name=Acetylene')
-        print(response.json())
         assert response.status_code == 200
         assert response.json().get('name') == 'Acetylene'
         assert response.json().get('classification') == 'Exempted Non-biomass'

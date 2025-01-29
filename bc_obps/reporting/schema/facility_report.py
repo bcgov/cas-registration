@@ -20,7 +20,6 @@ class FacilityReportOut(ModelSchema):
 
     @staticmethod
     def resolve_facility(obj: FacilityReport) -> str:
-        print(obj.facility)
         return str(obj.facility)
 
     class Meta:

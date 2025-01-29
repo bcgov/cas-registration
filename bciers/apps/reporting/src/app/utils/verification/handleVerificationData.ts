@@ -1,6 +1,3 @@
-// 🛠️ Function to manages interaction with the data and form
-// Required(?) when JSON Schema validators struggle with conditional logic based on dynamic enums
-// Required(?) when using an array, visit_names, requiring a MultiSelectWidget but with a maxItem rules
 export function handleVerificationData(
   updatedData: any,
   operationType: string,
@@ -9,12 +6,20 @@ export function handleVerificationData(
 
   if (selectedValues.includes("None")) {
     if (selectedValues.length > 1) {
-      // Remove "None" if other selections are made
-      updatedData.visit_names = selectedValues.filter(
-        (value: string) => value !== "None",
-      );
+      // If "None" is the last selected item, clear everything
+      if (selectedValues[selectedValues.length - 1] === "None") {
+        updatedData.visit_names = ["None"];
+        updatedData.visit_types = [];
+        updatedData.visit_others = [{}];
+        return updatedData;
+      } else {
+        // Otherwise, remove "None"
+        updatedData.visit_names = selectedValues.filter(
+          (value: string) => value !== "None",
+        );
+      }
     } else {
-      // Lock to "None" and clear other fields
+      // If only "None" is selected, lock it and clear other fields
       updatedData.visit_names = ["None"];
       updatedData.visit_types = [];
       updatedData.visit_others = [{}];
@@ -23,15 +28,11 @@ export function handleVerificationData(
   }
 
   if (operationType === "SFO" && selectedValues.length > 1) {
-    // Ensure "SFO" can only have one item, taking the last selected
+    // Ensure "SFO" visit_names maxItem=1
     const lastSelected = selectedValues[selectedValues.length - 1];
-    updatedData.visit_names = [lastSelected];
 
-    if (lastSelected === "None") {
-      // Clear visit types and visit others only if the value is "None"
-      updatedData.visit_types = [];
-      updatedData.visit_others = [{}];
-    }
+    // Set the last selected item as the only value for visit_names
+    updatedData.visit_names = [lastSelected];
   }
 
   // Update `visit_types` for each facility except "Other" and "None"
@@ -45,6 +46,11 @@ export function handleVerificationData(
       );
       return existingVisitType || { visit_name, visit_type: "" };
     });
+
+  // Clear visit_others if "Other" is not selected
+  if (!updatedData.visit_names.includes("Other")) {
+    updatedData.visit_others = [{}];
+  }
 
   return updatedData;
 }
