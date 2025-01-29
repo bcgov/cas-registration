@@ -59,9 +59,6 @@ export const administrationOperationInformationUiSchema: UiSchema = {
       "date_of_first_shipment",
       "new_entrant_application",
     ],
-    registration_purpose: {
-      "ui:widget": "ReadOnlyWidget",
-    },
     ...optedInOperationDetailsUiSchema,
   },
 };

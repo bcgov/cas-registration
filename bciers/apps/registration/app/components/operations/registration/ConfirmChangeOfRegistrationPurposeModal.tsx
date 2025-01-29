@@ -3,20 +3,20 @@
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 
 interface Props {
-  pendingChangeRegistrationPurpose: boolean;
+  open: boolean;
   cancelRegistrationPurposeChange: any;
   confirmRegistrationPurposeChange: any;
 }
 
 export default function ConfirmChangeOfRegistrationPurposeModal({
-  pendingChangeRegistrationPurpose,
+  open,
   cancelRegistrationPurposeChange,
   confirmRegistrationPurposeChange,
 }: Props) {
   return (
     <SimpleModal
       title="Confirmation"
-      open={pendingChangeRegistrationPurpose !== undefined}
+      open={open}
       onCancel={cancelRegistrationPurposeChange}
       onConfirm={confirmRegistrationPurposeChange}
       confirmText="Change registration purpose"

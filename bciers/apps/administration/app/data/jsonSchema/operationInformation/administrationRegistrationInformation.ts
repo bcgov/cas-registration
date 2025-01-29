@@ -1,7 +1,11 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { getRegulatedProducts, getContacts } from "@bciers/actions/api";
+import {
+  getRegulatedProducts,
+  getContacts,
+  getRegistrationPurposes,
+} from "@bciers/actions/api";
 import { RegistrationPurposes } from "apps/registration/app/components/operations/registration/enums";
 
 export const createAdministrationRegistrationInformationSchema = async (
@@ -17,6 +21,10 @@ export const createAdministrationRegistrationInformationSchema = async (
   } = await getContacts();
   if (contacts && "error" in contacts)
     throw new Error("Failed to retrieve contacts information");
+  const registrationPurposes: { id: number; name: string }[] =
+    await getRegistrationPurposes();
+  if (registrationPurposes && "error" in registrationPurposes)
+    throw new Error("Failed to retrieve registration purposes information");
 
   const isRegulatedProducts =
     registrationPurposeValue ===
@@ -38,6 +46,7 @@ export const createAdministrationRegistrationInformationSchema = async (
       registration_purpose: {
         type: "string",
         title: "The purpose of this registration is to register as a:",
+        enum: registrationPurposes,
       },
       ...(isRegulatedProducts && {
         regulated_operation_preface: {
@@ -137,6 +146,9 @@ export const registrationInformationUiSchema: UiSchema = {
     "new_entrant_application",
   ],
   "ui:FieldTemplate": SectionFieldTemplate,
+  registration_purpose: {
+    "ui:widget": "SelectWidget",
+  },
   operation_representatives: {
     "ui:widget": "MultiSelectWidget",
   },

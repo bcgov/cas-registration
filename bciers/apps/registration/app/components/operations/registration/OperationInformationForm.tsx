@@ -4,7 +4,7 @@ import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { OperationInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { getOperationRegistration } from "@bciers/actions/api";
 import {
@@ -18,6 +18,7 @@ import {
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
 import { eioOperationInformationSchema } from "@/administration/app/data/jsonSchema/operationInformation/operationInformation";
+import ConfirmChangeOfRegistrationPurposeModal from "./ConfirmChangeOfRegistrationPurposeModal";
 
 interface OperationInformationFormProps {
   rawFormData: OperationInformationFormData;
@@ -34,6 +35,7 @@ const OperationInformationForm = ({
 }: OperationInformationFormProps) => {
   const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState("");
+
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
   const nestedFormData = rawFormData
@@ -41,10 +43,28 @@ const OperationInformationForm = ({
     : {};
   const [formState, setFormState] = useState(nestedFormData);
   const [key, setKey] = useState(Math.random());
-  const [selectedPurpose, setSelectedPurpose] = useState("");
+  const [selectedPurpose, setSelectedPurpose] = useState(
+    formState.section1?.registration_purpose || "",
+  );
+  const [
+    pendingChangeRegistrationPurpose,
+    setPendingChangeRegistrationPurpose,
+  ] = useState("");
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
+
+  useEffect(() => {
+    if (selectedPurpose) {
+      setFormState((prevState) => ({
+        ...prevState,
+        section1: {
+          ...prevState.section1,
+          registration_purpose: selectedPurpose,
+        },
+      }));
+    }
+  }, [selectedPurpose]);
 
   function customValidate(
     formData: { [key: string]: any },
@@ -111,61 +131,78 @@ const OperationInformationForm = ({
   const handleSelectedPurposeChange = (data: any) => {
     const newSelectedPurpose: RegistrationPurposes =
       data.section1.registration_purpose;
-    setSelectedPurpose(newSelectedPurpose);
-    setCurrentUiSchema({
-      ...registrationOperationInformationUiSchema,
-      section1: {
-        ...registrationOperationInformationUiSchema.section1,
-        registration_purpose: {
-          ...registrationOperationInformationUiSchema.section1
-            .registration_purpose,
-          "ui:help": newSelectedPurpose ? (
-            <small>
-              <b>Note: </b>
-              {RegistrationPurposeHelpText[newSelectedPurpose]}
-            </small>
-          ) : null,
-        },
-      },
-    });
-    if (
-      newSelectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
-    ) {
-      // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
-      setSchema({
-        ...initialSchema,
-        properties: {
-          ...initialSchema.properties,
-          section2: eioOperationInformationSchema,
-        },
-      });
-    } else {
-      setSchema(initialSchema);
+    // if purpose is being selected for the first time, we don't need to show
+    // the ConfirmChangeOfRegistrationPurposeModal. Just need to update
+    // the state for selectedPurpose
+    if (newSelectedPurpose && selectedPurpose == "") {
+      setSelectedPurpose(newSelectedPurpose);
     }
-    setFormState(data);
+    if (newSelectedPurpose && selectedPurpose) {
+      setPendingChangeRegistrationPurpose(newSelectedPurpose);
+    }
+  };
+
+  const cancelRegistrationPurposeChange = () => {
+    setPendingChangeRegistrationPurpose("");
+  };
+
+  const confirmRegistrationPurposeChange = () => {
+    if (pendingChangeRegistrationPurpose !== "") {
+      setSelectedPurpose(pendingChangeRegistrationPurpose);
+      setCurrentUiSchema({
+        ...registrationOperationInformationUiSchema,
+        section1: {
+          ...registrationOperationInformationUiSchema.section1,
+          registration_purpose: {
+            ...registrationOperationInformationUiSchema.section1
+              .registration_purpose,
+            "ui:help": pendingChangeRegistrationPurpose ? (
+              <small>
+                <b>Note: </b>
+                {RegistrationPurposeHelpText[pendingChangeRegistrationPurpose]}
+              </small>
+            ) : null,
+          },
+        },
+    }
+      });
+    }
+
+    setPendingChangeRegistrationPurpose("");
   };
 
   return (
-    <MultiStepBase
-      key={key}
-      cancelUrl="/"
-      formData={formState}
-      onSubmit={handleSubmit}
-      schema={schema}
-      step={step}
-      steps={steps}
-      error={error}
-      onChange={(e: IChangeEvent) => {
-        let newSelectedOperation = e.formData?.section1?.operation;
-        let newSelectedPurpose = e.formData?.section1?.registration_purpose;
-        if (newSelectedOperation && newSelectedOperation !== selectedOperation)
-          handleSelectOperationChange(e.formData);
-        if (newSelectedPurpose !== selectedPurpose)
-          handleSelectedPurposeChange(e.formData);
-      }}
-      uiSchema={currentUiSchema}
-      customValidate={customValidate}
-    />
+    <>
+      <ConfirmChangeOfRegistrationPurposeModal
+        open={pendingChangeRegistrationPurpose !== ""}
+        cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
+        confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
+      />
+      <MultiStepBase
+        key={key}
+        cancelUrl="/"
+        formData={formState}
+        onSubmit={handleSubmit}
+        schema={schema}
+        step={step}
+        steps={steps}
+        error={error}
+        onChange={(e: IChangeEvent) => {
+          let newSelectedOperation = e.formData?.section1?.operation;
+          let newSelectedPurpose = e.formData?.section1?.registration_purpose;
+          if (
+            newSelectedOperation &&
+            newSelectedOperation !== selectedOperation
+          )
+            handleSelectOperationChange(e.formData);
+          if (newSelectedPurpose !== selectedPurpose) {
+            handleSelectedPurposeChange(e.formData);
+          }
+        }}
+        uiSchema={currentUiSchema}
+        customValidate={customValidate}
+      />
+    </>
   );
 };
 
