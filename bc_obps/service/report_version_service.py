@@ -30,6 +30,7 @@ class ReportVersionService:
             ),
             report_version=report_version,
         )
+
         for contact in operation.contacts.all():
             ReportOperationRepresentative.objects.create(
                 report_version=report_version,
@@ -48,7 +49,7 @@ class ReportVersionService:
                 facility_type=f.type,
                 facility_bcghgid=f.bcghg_id.id if f.bcghg_id else None,
                 report_version=report_version,
-                is_completed=False
+                is_completed=False,
             )
             facility_report.activities.add(*list(operation.activities.all()))
 

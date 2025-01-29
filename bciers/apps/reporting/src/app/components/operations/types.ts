@@ -7,9 +7,10 @@ export interface OperationRow {
 
 export interface FacilityRow {
   id: number;
-  bcghg_id: string;
-  name: string;
-  report_status: boolean;
+  facility_id: number;
+  facility_bcghgid: string;
+  facility_name: string;
+  is_completed: boolean;
 }
 export interface OperationsSearchParams {
   [key: string]: string | number | undefined;

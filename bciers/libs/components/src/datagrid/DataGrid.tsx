@@ -27,6 +27,7 @@ interface Props {
   paginationMode?: "client" | "server";
   sx?: { [key: string]: any };
   getRowId?: GridRowIdGetter<any> | undefined;
+  pageSize?: number;
 }
 
 const AscendingIcon = () => {
@@ -54,8 +55,6 @@ const experimentalFeatures = {
   ariaV7: true,
 };
 
-const PAGE_SIZE = 20;
-
 const DataGrid: React.FC<Props> = ({
   columns,
   columnGroupModel,
@@ -65,7 +64,9 @@ const DataGrid: React.FC<Props> = ({
   initialData,
   getRowId,
   sx,
+  pageSize,
 }) => {
+  const PAGE_SIZE = pageSize ? pageSize : 20;
   const [rows, setRows] = useState(initialData.rows ?? []);
   const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
   const [loading, setLoading] = useState(false);

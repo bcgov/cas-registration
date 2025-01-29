@@ -7,7 +7,9 @@ export default async function fetchOperationsPageData(
   searchParams: OperationsSearchParams,
 ) {
   try {
+    console.log("searchParams", searchParams);
     const queryParams = buildQueryParams(searchParams);
+    console.log("queryParams", queryParams);
     // fetch data from server
     const pageData = await actionHandler(
       `registration/operations${queryParams}`,
