@@ -99,7 +99,7 @@ class Operator(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         constraints = [
             models.UniqueConstraint(
                 fields=["cra_business_number"],
