@@ -7,7 +7,9 @@
   "build-args": ["application_path=compliance"],
   "targets": {
     "dev": {
+      "executor": "@nx/next:server",
       "options": {
+        "buildTarget": "compliance:build",
         "port": 7000
       }
     },
