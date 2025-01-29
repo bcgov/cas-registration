@@ -5,7 +5,6 @@ from django.apps import apps
 from django.core.management import call_command
 from decimal import Decimal
 
-
 def reset_dashboard_data() -> None:
     """
     Reset the DashboardData objects to the initial state by deleting all existing objects and reloading the fixtures.
