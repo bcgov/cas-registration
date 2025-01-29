@@ -8,13 +8,13 @@ const tiles = [
     title: "Registry",
     icon: "File",
     content: "TBD here.",
-    href: "/coam/tbd",
+    href: "/compliance/tbd",
   },
   {
     title: "Compensation Obligation",
     icon: "File",
     content: "TBD here.",
-    href: "/coam/tbd",
+    href: "/compliance/tbd",
   },
 ];
 
@@ -22,7 +22,7 @@ vi.mock("@bciers/actions", () => ({
   fetchDashboardData: vi.fn(() => tiles),
 }));
 
-describe("COAM dashboard page", () => {
+describe("Compliance dashboard page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

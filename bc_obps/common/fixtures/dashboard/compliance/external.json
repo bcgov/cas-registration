@@ -2,22 +2,22 @@
   {
     "model": "common.dashboarddata",
     "fields": {
-      "name": "External coam Dashboard",
+      "name": "External Compliance Dashboard",
       "data": {
-        "dashboard": "coam",
+        "dashboard": "compliance",
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
             "title": "Registry",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/coam/tbd"
+            "href": "/compliance/tbd"
           },
           {
             "title": "Compensation Obligation",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/coam/tbd"
+            "href": "/compliance/tbd"
           }
         ]
       }

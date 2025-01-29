@@ -10,7 +10,7 @@
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/coam/pages"]
+        "@next/next/no-html-link-for-pages": ["error", "apps/compliance/pages"]
       }
     },
     {
@@ -23,7 +23,7 @@
     }
   ],
   "parserOptions": {
-    "project": ["apps/coam/tsconfig(.*)?.json"],
+    "project": ["apps/compliance/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"
   }
 }

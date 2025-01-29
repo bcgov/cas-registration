@@ -1,4 +1,4 @@
-name: Build COAM Docker container
+name: Build Compliance Docker container
 
 on:
   workflow_call:
@@ -11,9 +11,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Build coam container
+      - name: Build compliance container
         uses: ./.github/actions/nx-app-build
         with:
-          project: coam
-          image_url: ghcr.io/bcgov/cas-coam-frontend
+          project: compliance
+          image_url: ghcr.io/bcgov/cas-compliance-frontend
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -14,8 +14,8 @@ inputs:
   host_administration:
     description: "Host for administration - only used for e2e CI builds"
     required: false
-  host_coam:
-    description: "Host for COAM - only used for e2e CI builds"
+  host_compliance:
+    description: "Host for compliance - only used for e2e CI builds"
     required: false
   host_registration:
     description: "Host for registration - only used for e2e CI builds"
@@ -72,7 +72,7 @@ runs:
         INPUT_CACHE_FROM: type=local,src=/tmp/.buildx-cache
         INPUT_CACHE_TO: type=local,dest=/tmp/.buildx-cache-new
         HOST_ADMINISTRATION: ${{ inputs.host_administration }}
-        HOST_COAM: ${{ inputs.host_coam }}
+        HOST_COMPLIANCE: ${{ inputs.host_compliance }}
         HOST_REGISTRATION: ${{ inputs.host_registration }}
         HOST_REPORTING: ${{ inputs.host_reporting }}
 

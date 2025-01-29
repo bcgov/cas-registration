@@ -69,22 +69,22 @@
             ]
           },
           {
-            "title": "COAM",
-            "href": "/coam",
+            "title": "Compliance",
+            "href": "/compliance",
             "icon": "Pulse",
             "content": "View payments for compliance obligations here.",
             "links": [
               {
                 "title": "TBD",
-                "href": "/coam/"
+                "href": "/compliance/"
               },
               {
                 "title": "TBD",
-                "href": "/coam/"
+                "href": "/compliance/"
               },
               {
                 "title": "TBD",
-                "href": "/coam/"
+                "href": "/compliance/"
               }
             ]
           },

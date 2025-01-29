@@ -22,11 +22,11 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "../../apps/coam/.next/types/**/*.ts",
-    "../../dist/apps/coam/.next/types/**/*.ts",
+    "../../apps/compliance/.next/types/**/*.ts",
+    "../../dist/apps/compliance/.next/types/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "../../dist/coam/.next/types/**/*.ts"
+    "../../dist/compliance/.next/types/**/*.ts"
   ],
   "exclude": [".next", "node_modules"]
 }

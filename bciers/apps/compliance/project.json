@@ -1,10 +1,10 @@
 {
-  "name": "coam",
+  "name": "compliance",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/coam",
+  "sourceRoot": "apps/compliance",
   "projectType": "application",
   "tags": ["layer:frontend"],
-  "build-args": ["application_path=coam"],
+  "build-args": ["application_path=compliance"],
   "targets": {
     "dev": {
       "options": {
@@ -16,7 +16,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/coam",
+        "outputPath": "dist/compliance",
         "generateLockfile": true
       }
     },
@@ -26,10 +26,10 @@
       "defaultConfiguration": "dev",
       "options": {
         "engine": "docker",
-        "context": "dist/coam",
+        "context": "dist/compliance",
         "file": "Dockerfile",
-        "build-args": ["application_path=coam"],
-        "tags": ["cas-coam:latest"]
+        "build-args": ["application_path=compliance"],
+        "tags": ["cas-compliance:latest"]
       }
     },
     "lint": {
@@ -39,7 +39,7 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/coam-e2e",
+        "cwd": "apps/compliance-e2e",
         "command": "happo-e2e -- playwright test"
       }
     },
@@ -50,14 +50,14 @@
     "e2e:ui": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/coam-e2e",
+        "cwd": "apps/compliance-e2e",
         "command": "happo-e2e -- playwright test --ui"
       }
     },
     "e2e:report": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/coam-e2e",
+        "cwd": "apps/compliance-e2e",
         "command": "playwright show-report"
       }
     }

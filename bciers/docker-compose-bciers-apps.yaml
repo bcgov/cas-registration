@@ -67,8 +67,8 @@ services:
       - backend
     network_mode: host
 
-  coam:
-    image: ghcr.io/bcgov/cas-coam-frontend:${GITHUB_SHA}
+  compliance:
+    image: ghcr.io/bcgov/cas-compliance-frontend:${GITHUB_SHA}
     environment:
       PORT: 7000
       HOSTNAME: localhost
