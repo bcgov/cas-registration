@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, List
+from typing import Literal, Tuple, List, Optional
 from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -8,11 +8,19 @@ from reporting.schema.generic import Message
 from service.facility_report_service import FacilityReportService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
-from reporting.schema.facility_report import FacilityReportOut, FacilityReportIn
+from reporting.schema.facility_report import (
+    FacilityReportOut,
+    FacilityReportIn,
+    FacilityReportListSchema,
+    FacilityReportListInSchema,
+    FacilityReportFilterSchema,
+)
 from reporting.schema.activity import FacilityReportActivityDataOut
 from common.api.utils import get_current_user_guid
 from registration.models import Activity, Operation
 from reporting.models import FacilityReport, ReportVersion, Report
+from ninja.pagination import paginate, PageNumberPagination
+from ninja import Query
 from django.db.models import QuerySet
 
 
@@ -26,7 +34,7 @@ from django.db.models import QuerySet
 )
 @handle_http_errors()
 def get_facility_report_form_data(
-        request: HttpRequest, version_id: int, facility_id: UUID
+    request: HttpRequest, version_id: int, facility_id: UUID
 ) -> Tuple[Literal[200], FacilityReport]:
     facility_report = FacilityReportService.get_facility_report_by_version_and_id(version_id, facility_id)
     return 200, facility_report
@@ -41,7 +49,7 @@ def get_facility_report_form_data(
 )
 @handle_http_errors()
 def get_ordered_facility_report_activities(
-        request: HttpRequest, version_id: int, facility_id: UUID
+    request: HttpRequest, version_id: int, facility_id: UUID
 ) -> Tuple[Literal[200], QuerySet[Activity]]:
     facility_report_activities = FacilityReportService.get_activity_ids_for_facility(version_id, facility_id)
     response = Activity.objects.filter(pk__in=facility_report_activities).order_by("weight", "name")
@@ -60,7 +68,7 @@ def get_ordered_facility_report_activities(
 )
 @handle_http_errors()
 def save_facility_report(
-        request: HttpRequest, version_id: int, facility_id: UUID, payload: FacilityReportIn
+    request: HttpRequest, version_id: int, facility_id: UUID, payload: FacilityReportIn
 ) -> Tuple[Literal[201], FacilityReport]:
     """
     Save or update a report facility and its related activities.
@@ -108,31 +116,35 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
 
 @router.get(
     "/report-version/{version_id}/facility-report-list",
-    response={200: dict, custom_codes_4xx: Message},
+    response={200: list[FacilityReportListSchema], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes version_id (primary key of Report_Version model) and returns a list of facilities with their details.""",
-    # auth=authorize("approved_authorized_roles"),
+    description="""Takes version_id (primary key of Report_Version model) and returns a list of facilities with their
+    details.""",
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
-def get_facility_report_list(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
-    # Fetch the facilities with the desired fields
-    selected_facilities = list(
-        FacilityReport.objects.filter(report_version_id=version_id).values(
-            'facility_id', 'facility__name', 'facility_bcghgid', 'is_completed'
-        )
-    )
+@paginate(PageNumberPagination, page_size=10)
+def get_facility_report_list(
+    request: HttpRequest,
+    version_id: int,
+    filters: FacilityReportFilterSchema = Query(...),
+    sort_field: Optional[str] = "created_at",
+    sort_order: Optional[Literal["desc", "asc"]] = "asc",
+) -> QuerySet[FacilityReport]:
+    return FacilityReportService.get_facility_report_list(version_id, sort_field, sort_order, filters)
 
-    transformed_facilities = [
-        {
-            "report_id": None,
-            "report_version_id": None,
-            "report_status": facility['is_completed'],
-            "bcghg_id": facility['facility_bcghgid'],
-            "id": facility['facility_id'],
-            "name": facility['facility__name']
-        }
-        for facility in selected_facilities
-    ]
 
-    # Return the response with the list of facilities and a count
-    return 200, {'items': transformed_facilities, 'count': len(transformed_facilities)}
+@router.patch(
+    "/report-version/{version_id}/facility-report-list",
+    response={200: int, custom_codes_4xx: Message},
+    tags=["Emissions Report"],
+    description="""Updates facility report details by version_id. The request body should include fields
+    to be updated for the respective facility reports.""",
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def save_facility_report_list(
+    request: HttpRequest, version_id: int, payload: List[FacilityReportListInSchema]
+) -> Literal[200]:
+    FacilityReportService.save_facility_report_list(version_id, payload)
+    return 200

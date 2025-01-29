@@ -4,21 +4,38 @@ import {
 } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 
-import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
-
-const OPERATOR_COLUMN_INDEX = 1;
-const facilityGroupColumns = (
-  isOperatorColumn: boolean,
+const facilityTableGroupColumns = (
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
-  const columnGroupModel = [
-    createColumnGroup("bcghg_id", "BC GHG ID", SearchCell),
-    createColumnGroup("name", "Operation", SearchCell),
-    createColumnGroup("report_status", "Status", EmptyGroupCell),
-    createColumnGroup("actions", "Actions", EmptyGroupCell),
-  ] as GridColumnGroupingModel;
+  {
+    const columnGroupModel: GridColumnGroupingModel = [
+      {
+        groupId: "facility_bcghgid",
+        headerName: "Facility BCGHG ID",
+        renderHeaderGroup: SearchCell,
+        children: [{ field: "facility_bcghgid" }],
+      },
+      {
+        groupId: "facility_name",
+        headerName: "Facility Name",
+        renderHeaderGroup: SearchCell,
+        children: [{ field: "facility_name" }],
+      },
+      {
+        groupId: "is_completed",
+        headerName: "Status",
+        renderHeaderGroup: EmptyGroupCell,
+        children: [{ field: "is_completed" }],
+      },
+      {
+        groupId: "actions",
+        headerName: "Actions",
+        renderHeaderGroup: EmptyGroupCell,
+        children: [{ field: "actions" }],
+      },
+    ];
 
-  return columnGroupModel;
+    return columnGroupModel;
+  }
 };
-
-export default facilityGroupColumns;
+export default facilityTableGroupColumns;
