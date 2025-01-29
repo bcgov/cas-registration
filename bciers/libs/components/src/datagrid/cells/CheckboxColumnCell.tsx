@@ -1,34 +1,45 @@
 import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
-import { FacilityRenderCellParams } from "@bciers/components/datagrid/cells/types";
-import { Status } from "@bciers/utils/src/enums";
+import { Box } from "@mui/material";
+import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
+import { FacilityRow } from "@reporting/src/app/components/operations/types";
 
-const CheckboxColumnCell = (params: FacilityRenderCellParams) => {
-  const {
-    row: { report_status, id, status },
-  } = params;
+const getCheckboxColumnCell = (
+  onCheckBoxChange: (rowIndex: number, checked: boolean) => void,
+) => {
+  return (params: GridRenderCellParams<FacilityRow>) => {
+    const handleCheckboxChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      const isCompleted = event.target.checked;
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    params.api.updateRows([
-      {
-        ...params.row,
-        report_status: event.target.checked,
-      },
-    ]);
+      // update the UI
+      params.api.updateRows([
+        {
+          ...params.row,
+          is_completed: isCompleted,
+        },
+      ]);
+
+      const rowIndex = params.api.getRowIndexRelativeToVisibleRows(
+        params.row.id,
+      );
+      onCheckBoxChange(rowIndex, isCompleted);
+    };
+
+    return (
+      <FormControl
+        sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+      >
+        <Checkbox
+          checked={Boolean(params.row.is_completed)}
+          onChange={handleCheckboxChange}
+          inputProps={{ "aria-label": "Report Status" }}
+        />
+        <Box>Completed</Box>
+      </FormControl>
+    );
   };
-
-  return (
-    <FormControl
-      style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
-    >
-      <Checkbox
-        checked={Boolean(report_status)}
-        onChange={handleCheckboxChange}
-        inputProps={{ "aria-label": "Report Status" }}
-      />
-      <span style={{ marginLeft: 4 }}>Completed</span>
-    </FormControl>
-  );
 };
 
-export default CheckboxColumnCell;
+export default getCheckboxColumnCell;

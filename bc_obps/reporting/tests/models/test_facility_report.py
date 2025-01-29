@@ -17,6 +17,7 @@ class FacilityReportModelTest(BaseTestCase):
             facility_type=f.type,
             facility_bcghgid=f.bcghg_id,
             report_version=report_version_baker(),
+            is_completed=False,
         )
         cls.test_object.activities.add(Activity.objects.first())
         cls.field_data = [
@@ -27,6 +28,7 @@ class FacilityReportModelTest(BaseTestCase):
             ("facility_name", "facility name", 1000, None),
             ("facility_type", "facility type", 1000, None),
             ("facility_bcghgid", "facility bcghgid", 1000, None),
+            ("is_completed", "is completed", None, None),
             ("activities", "activities", None, 1),
             ("reportactivity_records", "report activity", None, 0),
             ("reportrawactivitydata_records", "report raw activity data", None, 0),

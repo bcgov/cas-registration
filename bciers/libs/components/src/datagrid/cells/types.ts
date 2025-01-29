@@ -17,17 +17,7 @@ export interface FacilityRenderCellParams extends GridRenderCellParams {
   row: {
     id: string;
     report_status: string;
-    status: Status;
-    actions: string;
     name: any;
     bcghg_id: any;
   };
-  handleRowUpdate: (updatedRow: {
-    name: any;
-    report_status: boolean;
-    id: string;
-    bcghg_id: any;
-    actions: string;
-    status: Status | string;
-  }) => void;
 }
