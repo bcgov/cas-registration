@@ -54,7 +54,7 @@ export default function VerificationForm({
   const handleSubmit = async () => {
     // 📷 Clone formData as payload
     const payload = { ...formData };
-    debugger;
+
     // ➕ Update report_verification_visits property based on visit_types and visit_others
     mergeVerificationData(payload);
 
@@ -70,8 +70,7 @@ export default function VerificationForm({
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(payload),
     });
-    console.log(JSON.stringify(payload));
-    console.log(response);
+
     // 🐜 Check for errors
     if (response?.error) {
       setErrors([response.error]);

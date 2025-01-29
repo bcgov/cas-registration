@@ -1,6 +1,5 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
-import userEvent from "@testing-library/user-event";
+import { render } from "@testing-library/react";
+import { useRouter } from "@bciers/testConfig/mocks";
 import {
   sfoUiSchema,
   lfoUiSchema,
@@ -8,8 +7,6 @@ import {
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
-import { fillMandatoryFields } from "@bciers/testConfig/helpers/fillMandatoryFields";
-
 // ✨ Mocks
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -61,26 +58,6 @@ const commonMandatoryFormFields = [
     key: "verification_conclusion",
   },
 ];
-
-// Test data for mandatory fields
-const formDataSets = {
-  SFO: {
-    verification_body_name: "SFO Test",
-    accredited_by: "SCC",
-    scope_of_verification: "Primary Report",
-    visit_name: "None",
-    threats_to_independence: "No",
-    verification_conclusion: "Positive",
-  },
-  LFO: {
-    verification_body_name: "LFO Test",
-    accredited_by: "SCC",
-    scope_of_verification: "Detailed Report",
-    visit_name: "Facility A",
-    threats_to_independence: "No",
-    verification_conclusion: "Modified",
-  },
-};
 
 // ⛏️ Helper function to render the form
 const renderVerificationForm = (operationType: string) => {

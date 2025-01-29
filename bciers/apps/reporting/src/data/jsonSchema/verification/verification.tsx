@@ -129,27 +129,56 @@ const getAssociatedVisitName = (
  * @param {FieldTemplateProps} props - Props including id, classNames, children, and formContext
  * @returns {JSX.Element} - Rendered label and input field
  */
+
 const DynamicLabelVisitType: React.FC<FieldTemplateProps> = ({
   id,
   classNames,
   children,
   formContext,
+  rawErrors = [],
 }: FieldTemplateProps): JSX.Element => {
   const visitName = getAssociatedVisitName(id, formContext);
+
   return (
     <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
       <div className="flex flex-col md:flex-row items-start md:items-center w-full">
         <div className="w-full md:w-3/12 mb-2 md:mb-0">
           <label htmlFor={id} className="font-bold">
-            {visitName || "Visit Type"}
+            {visitName + "*" || "Visit Type"}
           </label>
         </div>
-        <div className="w-full md:w-4/12">{children}</div>
+
+        <div className="relative flex items-center w-full lg:w-4/12">
+          {children}
+        </div>
+
+        {/* Error display to the side */}
+        {rawErrors.length > 0 && (
+          <div
+            className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+            role="alert"
+          >
+            <div className="hidden md:block mr-3">
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 26 26"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M24.9933 20.6584C25.8033 22.0234 24.7865 23.7298 23.1687 23.7298H2.10886C0.487882 23.7298 -0.524194 22.0208 0.284256 20.6584L10.8143 2.90811C11.6247 1.54241 13.6545 1.54489 14.4635 2.90811L24.9933 20.6584ZM12.6389 16.9885C11.524 16.9885 10.6202 17.8672 10.6202 18.9512C10.6202 20.0351 11.524 20.9138 12.6389 20.9138C13.7538 20.9138 14.6576 20.0351 14.6576 18.9512C14.6576 17.8672 13.7538 16.9885 12.6389 16.9885ZM10.7223 9.93388L11.0478 15.7364C11.0631 16.008 11.294 16.2205 11.5737 16.2205H13.7041C13.9838 16.2205 14.2147 16.008 14.2299 15.7364L14.5555 9.93388C14.5719 9.64059 14.3318 9.39398 14.0297 9.39398H11.2481C10.946 9.39398 10.7058 9.64059 10.7223 9.93388Z"
+                  fill="#D8292F"
+                />
+              </svg>
+            </div>
+            <span>Required field</span>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
 /**
  * SFO Verfication Form schema
  */
@@ -161,7 +190,7 @@ export const sfoSchema: RJSFSchema = {
     ...sharedSchemaProperties,
     visit_names: {
       type: "array",
-      title: "Sites visited",
+      title: "Site visited",
       uniqueItems: true,
       minItems: 1,
       maxItems: 1,
@@ -207,13 +236,6 @@ export const sfoSchema: RJSFSchema = {
               type: "array",
               minItems: 1,
               maxItems: 1,
-              default: [
-                {
-                  visit_name: "",
-                  visit_coordinates: "",
-                  visit_type: "",
-                },
-              ],
               items: {
                 type: "object",
                 required: ["visit_name", "visit_coordinates", "visit_type"],
@@ -362,13 +384,6 @@ export const lfoSchema: RJSFSchema = {
               title: "Other Visit(s)",
               type: "array",
               minItems: 1,
-              default: [
-                {
-                  visit_name: "",
-                  visit_coordinates: "",
-                  visit_type: "",
-                },
-              ],
               items: {
                 type: "object",
                 required: ["visit_name", "visit_coordinates", "visit_type"],
@@ -390,7 +405,6 @@ export const lfoSchema: RJSFSchema = {
               },
             },
           },
-          required: ["visit_others"],
         },
       ],
     },
@@ -448,7 +462,7 @@ export const lfoUiSchema: UiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       arrayAddLabel: "Add Other Visit",
-      addable: true, // Ensure users can add more visits manually
+      addable: true,
     },
     items: {
       visit_name: {

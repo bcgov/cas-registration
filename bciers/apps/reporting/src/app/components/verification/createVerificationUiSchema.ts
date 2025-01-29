@@ -5,11 +5,10 @@ import { sfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verific
 export const createVerificationUiSchema = (
   schemaType: "SFO" | "LFO",
 ): RJSFSchema => {
-  // Retrieve a local copy of the base verification ui schema based
-  switch (schemaType) {
-    case "SFO":
-      return { ...sfoUiSchema };
-    case "LFO":
-      return { ...lfoUiSchema };
-  }
+  // Determine the schema based on the schemaType
+  const localUiSchema: RJSFSchema =
+    schemaType === "SFO" ? { ...sfoUiSchema } : { ...lfoUiSchema };
+
+  // Return the customized schema.
+  return localUiSchema;
 };
