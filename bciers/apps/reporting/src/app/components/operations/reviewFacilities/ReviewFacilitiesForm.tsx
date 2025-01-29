@@ -43,6 +43,8 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
     [],
   );
+  const [continueAfterSubmit, setContinueAfterSubmit] =
+    useState<boolean>(false);
   const [schema, setSchema] = useState<any>(
     buildReviewFacilitiesSchema(
       initialData.current_facilities,
@@ -136,7 +138,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     }
   };
 
-  const submit = async (data: any, navigateAfterSubmit?: boolean) => {
+  const submit = async (data: any) => {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
 
@@ -153,7 +155,8 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       }
 
       setErrors(undefined);
-      if (navigateAfterSubmit) {
+      // this check uses a state variable because this function can be called by a modal which is disconnected from the child component that bubbles up this value
+      if (continueAfterSubmit !== undefined && continueAfterSubmit) {
         router.push(saveAndContinueUrl);
       }
       return true;
@@ -175,18 +178,20 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
 
   const handleModalConfirm = async () => {
     setModalOpen(false);
-    submit(formData, true);
+    submit(formData);
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: any, navigateAfterSubmit: boolean) => {
     const deselected = getListOfRemovedFacilities();
     setDeselectedFacilities(deselected);
 
-    // if there are deselected facilities, open the confrimation modal
+    // if there are deselected facilities, open the confirmation modal
     if (deselected.length > 0) {
+      setContinueAfterSubmit(navigateAfterSubmit);
       return handleModalOpen();
     } else {
-      return submit(data);
+      const response = await submit(data);
+      return response;
     }
   };
 
@@ -243,7 +248,9 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         continueUrl={saveAndContinueUrl}
         initialStep={0}
         onChange={handleChange}
-        onSubmit={async (data) => handleSubmit(data)}
+        onSubmit={async (data, navigateAfterSubmit) =>
+          handleSubmit(data, navigateAfterSubmit)
+        }
         backUrl={backUrl}
         saveButtonDisabled={submittingDisabled}
         submitButtonDisabled={submittingDisabled}
