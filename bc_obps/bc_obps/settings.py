@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'simple_history',
     "corsheaders",
     "localflavor",
+    "pgtrigger",
     # Local apps
     "registration.apps.RegistrationConfig",
     "reporting.apps.ReportingConfig",
