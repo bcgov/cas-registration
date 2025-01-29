@@ -36,7 +36,7 @@ When running commands, Nx has two patterns you can use
 | `reporting`      | `/bciers/apps/reporting`          | application |
 | `registration1`  | `/bciers/apps/registration1`      | application |
 | `administration` | `/bciers/apps/administration`     | application |
-| `coam`           | `/bciers/apps/coam`               | application |
+| `compliance`     | `/bciers/apps/compliance`         | application |
 | `actions`        | `/bciers/libs/shared/actions`     | library     |
 | `components`     | `/bciers/libs/shared/components`  | library     |
 | `img`            | `/bciers/libs/shared/img`         | library     |

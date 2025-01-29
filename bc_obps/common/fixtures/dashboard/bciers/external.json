@@ -184,6 +184,30 @@
             ]
           },
           {
+            "title": "Compliance",
+            "href": "/compliance",
+            "icon": "File",
+            "content": "View compliance summaries, manage obligations, pay penalties, request issuance of earned credits.",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/has_registered_operation",
+                "field": "has_registered_operation",
+                "operator": "equals",
+                "value": true
+              }
+            ],
+            "links": [
+              {
+                "title": "My Compliance",
+                "href": "/compliance/summaries"
+              },
+              {
+                "title": "B.C. Carbon Registry",
+                "href": "/compliance/bc-carbon-registry"
+              }
+            ]
+          },
+          {
             "title": "Report a Problem",
             "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Wrench",

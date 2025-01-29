@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cas-bciers.fullname" . }}-coam-frontend
+  name: {{ include "cas-bciers.fullname" . }}-compliance-frontend
   labels:
-    component: coam-frontend
+    component: compliance-frontend
     layer: frontend
 {{- include "cas-bciers.labels" . | nindent 4 }}
 spec:
-{{- if not .Values.coamFrontend.autoscaling.enabled }}
-  replicas: {{ .Values.coamFrontend.replicaCount }}
+{{- if not .Values.complianceFrontend.autoscaling.enabled }}
+  replicas: {{ .Values.complianceFrontend.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
-      component: coam-frontend
+      component: compliance-frontend
   strategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
 {{- include "cas-bciers.selectorLabels" . | nindent 8 }}
-        component: coam-frontend
+        component: compliance-frontend
         layer: frontend
     spec:
       automountServiceAccountToken: false
       containers:
-        - name: {{ template "cas-bciers.fullname" . }}-coam-frontend
+        - name: {{ template "cas-bciers.fullname" . }}-compliance-frontend
           envFrom:
             - configMapRef:
                 name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
@@ -40,11 +40,11 @@ spec:
                   secretKeyRef:
                     name: cas-bciers-nextauth
                     key: nextauth-secret
-          image: "{{ .Values.coamFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.coamFrontend.image.tag }}"
-          imagePullPolicy: {{ .Values.coamFrontend.image.pullPolicy }}
+          image: "{{ .Values.complianceFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.complianceFrontend.image.tag }}"
+          imagePullPolicy: {{ .Values.complianceFrontend.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.coamFrontend.service.port }}
+            - containerPort: {{ .Values.complianceFrontend.service.port }}
               protocol: TCP
           resources:
-            {{- toYaml .Values.coamFrontend.resources | nindent 12 }}
+            {{- toYaml .Values.complianceFrontend.resources | nindent 12 }}
       restartPolicy: Always

@@ -7,7 +7,7 @@
   ],
   "ignorePatterns": ["!**/*"],
   "parserOptions": {
-    "project": ["apps/coam-e2e/tsconfig(.*)?.json"],
+    "project": ["apps/compliance-e2e/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"
   },
   "overrides": [

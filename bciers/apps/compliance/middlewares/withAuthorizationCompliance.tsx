@@ -16,7 +16,7 @@ to the appropriate folder structure.
  */
 
 // Middleware for authorization
-export const withAuthorizationCOAM: MiddlewareFactory = (
+export const withAuthorizationCompliance: MiddlewareFactory = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextMiddleware,
 ) => {
@@ -30,7 +30,7 @@ export const withAuthorizationCOAM: MiddlewareFactory = (
       // build rewrite to physical folder path which enforces authorization by IdP and role
       request.nextUrl.pathname = `${token.identity_provider}/${
         token.app_role
-      }${pathname.replace("coam/", "")}`;
+      }${pathname.replace("compliance/", "")}`;
       return NextResponse.rewrite(request.nextUrl);
     } else {
       // Handle unauthenticated requests

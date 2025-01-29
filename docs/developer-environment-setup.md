@@ -99,7 +99,7 @@ In the `bciers` directory:
 | yarn dash    | [http://localhost:3000](http://localhost:3000)                                                                                               |
 | yarn reg     | [http://localhost:4000](http://localhost:4000)                                                                                               |
 | yarn report  | [http://localhost:5000](http://localhost:5000)                                                                                               |
-| yarn coam    | [http://localhost:7000](http://localhost:7000)                                                                                               |
+| yarn compliance    | [http://localhost:7000](http://localhost:7000)                                                                                               |
 | yarn dev-all | Runs target dev for all multi-zone projects defined in `bciers/apps/dashboard/next.config.js` [http://localhost:3000](http://localhost:3000) |
 
 ### Testing

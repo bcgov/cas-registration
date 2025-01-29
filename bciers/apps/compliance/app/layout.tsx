@@ -9,16 +9,16 @@ import RootLayout, {
   generateMetadata,
 } from "@bciers/components/layout/RootLayout";
 
-const title = "COAM";
+const title = "Compliance";
 
 const defaultLinks = [
   { label: "Dashboard", href: "/" },
-  { label: title, href: "/coam" },
+  { label: title, href: "/compliance" },
 ];
 
 export const metadata = generateMetadata(title);
 
-export default function COAMLayout({
+export default function ComplianceLayout({
   children,
 }: {
   children: React.ReactNode;

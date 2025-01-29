@@ -18,8 +18,8 @@ def reset_dashboard_data() -> None:
         'common/fixtures/dashboard/registration/external.json',
         'common/fixtures/dashboard/reporting/external.json',
         'common/fixtures/dashboard/reporting/internal.json',
-        'common/fixtures/dashboard/coam/external.json',
-        'common/fixtures/dashboard/coam/internal.json',
+        'common/fixtures/dashboard/compliance/external.json',
+        'common/fixtures/dashboard/compliance/internal.json',
     ]
 
     # Delete all existing DashboardData objects

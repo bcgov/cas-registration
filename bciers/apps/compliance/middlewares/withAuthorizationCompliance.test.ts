@@ -13,7 +13,7 @@ vi.spyOn(NextResponse, "rewrite");
 
 const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
-describe("withAuthorizationCOAM middleware", () => {
+describe("withAuthorizationCompliance middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -22,7 +22,7 @@ describe("withAuthorizationCOAM middleware", () => {
   });
 
   it("redirects to the onboarding page if the user is not authenticated", async () => {
-    const nextUrl = new NextURL(`${domain}/coam`);
+    const nextUrl = new NextURL(`${domain}/compliance`);
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
@@ -40,7 +40,7 @@ describe("withAuthorizationCOAM middleware", () => {
 
   it("builds the correct URL for authenticated users", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
-    const nextUrl = new NextURL(`${domain}/coam`);
+    const nextUrl = new NextURL(`${domain}/compliance`);
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
@@ -50,7 +50,7 @@ describe("withAuthorizationCOAM middleware", () => {
       mockNextFetchEvent,
     );
     const responseUrl = new NextURL(
-      `${domain}/${mockCasUserToken.identity_provider}/${mockCasUserToken.app_role}/coam`,
+      `${domain}/${mockCasUserToken.identity_provider}/${mockCasUserToken.app_role}/compliance`,
     );
     expect(NextResponse.rewrite).toHaveBeenCalledOnce();
     expect(NextResponse.rewrite).toHaveBeenCalledWith(responseUrl);
