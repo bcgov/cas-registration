@@ -13,5 +13,5 @@ class MultipleOperatorService:
             pk=multiple_operator_id,
             defaults={**data, 'operation': operation},
         )
-        mo_operator_instance.set_create_or_update(user_guid)
+
         return mo_operator_instance

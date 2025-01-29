@@ -36,7 +36,6 @@ class ReportAttachmentService:
             attachment_name=attachment_file.name or "attachment",
         )
         attachment.save()
-        attachment.set_create_or_update(user_guid)
 
     @classmethod
     def get_attachments(cls, report_version_id: int) -> QuerySet[ReportAttachment]:

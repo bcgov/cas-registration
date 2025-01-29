@@ -9,5 +9,5 @@ class WellAuthorizationNumberDataAccessService:
             well_authorization_number=number,
             created_by_id=user_guid,
         )
-        well_authorization_number.set_create_or_update(user_guid)
+
         return well_authorization_number

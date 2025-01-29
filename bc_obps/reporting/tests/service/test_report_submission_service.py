@@ -64,7 +64,6 @@ class TestReportSubmissionService:
         # Assert
         mock_validate_report.assert_called_once_with(version_id)
         mock_get_report_version.assert_called_once_with(id=version_id)
-        mock_report_version.set_create_or_update.assert_called_once_with(user_guid)
         assert mock_report_version.status == ReportVersion.ReportVersionStatus.Submitted
         mock_report_version.save.assert_called_once()
         assert result == mock_report_version

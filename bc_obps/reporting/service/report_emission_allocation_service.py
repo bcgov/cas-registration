@@ -139,7 +139,6 @@ class ReportEmissionAllocationService:
                         "allocation_other_methodology_description": allocation_other_methodology_description,
                     },
                 )
-                report_emission_allocation_record.set_create_or_update(user_guid)
 
     @staticmethod
     def check_if_products_are_allowed(report_version_id: int, product_ids: List[int]) -> bool:

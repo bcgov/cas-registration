@@ -13,5 +13,5 @@ class ParentOperatorService:
             pk=parent_operator_id,
             defaults={**data, 'child_operator': operator},
         )
-        po_operator_instance.set_create_or_update(user_guid)
+
         return po_operator_instance

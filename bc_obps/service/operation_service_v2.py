@@ -79,7 +79,6 @@ class OperationServiceV2:
             fields_to_update.append('submission_date')
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=fields_to_update)
-        operation.set_create_or_update(user_guid)
         return operation
 
     @classmethod
@@ -122,7 +121,6 @@ class OperationServiceV2:
             operation.documents.add(new_entrant_application_document)
         operation.date_of_first_shipment = payload.date_of_first_shipment
         operation.save(update_fields=['date_of_first_shipment'])
-        operation.set_create_or_update(user_guid)
         return operation
 
     @classmethod
@@ -148,7 +146,6 @@ class OperationServiceV2:
         else:
             contact = ContactServiceV2.create_contact(user_guid, payload)
         operation.contacts.add(contact)
-        operation.set_create_or_update(user_guid)
         return contact
 
     @classmethod
@@ -177,7 +174,7 @@ class OperationServiceV2:
     ) -> OperationRepresentativeRemove:
         operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
         operation.contacts.remove(payload.id)
-        operation.set_create_or_update(user_guid)
+
         return OperationRepresentativeRemove(id=payload.id)
 
     @classmethod
@@ -314,7 +311,6 @@ class OperationServiceV2:
 
         if operation.status == Operation.Statuses.NOT_STARTED:
             cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
-        operation.set_create_or_update(user_guid)
 
         return operation
 
@@ -529,7 +525,7 @@ class OperationServiceV2:
             raise Exception(UNAUTHORIZED_MESSAGE)
         operation.operator_id = operator_id
         operation.save(update_fields=["operator_id"])
-        operation.set_create_or_update(user_guid)
+
         return operation
 
     @classmethod

@@ -14,5 +14,4 @@ class FacilityDesignatedOperationTimelineDataAccessService:
             **facility_designated_operation_timeline_data,
             created_by_id=user_guid,
         )
-        facility_designated_operation_timeline.set_create_or_update(user_guid)
         return facility_designated_operation_timeline

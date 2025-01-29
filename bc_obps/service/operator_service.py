@@ -114,7 +114,7 @@ class OperatorService:
                 ).values()
 
                 # create or update the parent operator
-                po_operator_instance, _ = ParentOperator.objects.update_or_create(
+                ParentOperator.objects.update_or_create(
                     child_operator=operator_instance,
                     operator_index=po_operator.operator_index,
                     defaults={
@@ -128,7 +128,6 @@ class OperatorService:
                         "mailing_address": mailing_address,
                     },
                 )
-                po_operator_instance.set_create_or_update(user_guid)
 
     @classmethod
     def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn) -> Operator:
@@ -156,7 +155,6 @@ class OperatorService:
                 )
                 for user_operator in user_operators_to_decline:
                     user_operator.refresh_from_db()
-                    user_operator.set_create_or_update(user_guid)
                     user: User = user_operator.user
                     # Send email to all declined user operators to notify them of the decline of the operator and their access request
                     send_operator_access_request_email(
@@ -175,7 +173,6 @@ class OperatorService:
                 set_verification_columns(operator, user_guid)
 
             operator.save()
-            operator.set_create_or_update(user_guid)
             return operator
 
     # Function to save multiple operators so we can reuse it in put/post routes
@@ -241,7 +238,6 @@ class OperatorService:
 
             # check if there is a multiple_operator with that operation id and number
             # if there is, update it, if not, create it
-            multiple_operator, _ = MultipleOperator.objects.update_or_create(
+            MultipleOperator.objects.update_or_create(
                 operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
             )
-            multiple_operator.set_create_or_update(user.pk)

@@ -1154,14 +1154,12 @@ class TestUpdateOperationsOperator:
 
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
-    @patch("registration.models.Operation.set_create_or_update")
-    def test_update_operations_operator_success(mock_get_by_guid, mock_set_create_or_update):
+    def test_update_operations_operator_success(mock_get_by_guid):
         cas_analyst = baker.make_recipe('utils.cas_analyst')
         mock_get_by_guid.return_value = cas_analyst
         operation = baker.make_recipe('utils.operation')
         operator = baker.make_recipe('utils.operator')
         OperationServiceV2.update_operator(cas_analyst.user_guid, operation, operator.id)
-        mock_set_create_or_update.assert_called_once()
         assert operation.operator == operator
 
 

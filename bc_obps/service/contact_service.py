@@ -86,11 +86,9 @@ class ContactService:
         if address_data:
             address = AddressDataAccessService.create_address(address_data)
             contact.address = address
-            # not calling `set_create_or_update` because we are updating the contact in the same transaction
             contact.save(update_fields=['address_id'])
         operator: Operator = UserDataAccessService.get_user_operator_by_user(user_guid).operator
         operator.contacts.add(contact)
-        operator.set_create_or_update(user_guid)
         return contact
 
     @classmethod
