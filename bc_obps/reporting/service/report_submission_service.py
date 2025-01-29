@@ -35,7 +35,6 @@ class ReportSubmissionService:
 
         ReportSubmissionService.validate_report(version_id)
 
-        report_version.set_create_or_update(user_guid)
         report_version.status = ReportVersion.ReportVersionStatus.Submitted
         report_version.save()
         return report_version

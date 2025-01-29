@@ -24,7 +24,7 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             **operation_designated_operator_timeline_data,
             created_by_id=user_guid,
         )
-        operation_designated_operator_timeline.set_create_or_update(user_guid)
+
         return operation_designated_operator_timeline
 
     @classmethod

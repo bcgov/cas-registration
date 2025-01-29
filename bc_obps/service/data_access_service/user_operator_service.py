@@ -45,8 +45,7 @@ class UserOperatorDataAccessService:
             status=UserOperator.Statuses.PENDING,
             role=UserOperator.Roles.PENDING,
         )
-        if created:
-            user_operator.set_create_or_update(user_guid)
+
         return user_operator, created
 
     @classmethod

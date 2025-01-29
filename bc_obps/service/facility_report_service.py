@@ -54,6 +54,5 @@ class FacilityReportService:
 
         # Save the updated FacilityReport instance
         facility_report.save()
-        facility_report.set_create_or_update(user_guid)
 
         return facility_report

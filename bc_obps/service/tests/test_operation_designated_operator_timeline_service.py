@@ -1,4 +1,3 @@
-from unittest.mock import patch, MagicMock
 from zoneinfo import ZoneInfo
 import pytest
 from datetime import datetime
@@ -28,8 +27,7 @@ class TestOperationDesignatedOperatorTimelineService:
         assert result_not_found is None
 
     @staticmethod
-    @patch("registration.models.OperationDesignatedOperatorTimeline.set_create_or_update")
-    def test_set_timeline_status_and_end_date(mock_set_create_or_update: MagicMock):
+    def test_set_timeline_status_and_end_date():
         timeline = baker.make_recipe(
             'utils.operation_designated_operator_timeline', status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE
         )
@@ -45,9 +43,6 @@ class TestOperationDesignatedOperatorTimelineService:
         assert updated_timeline.end_date == end_date
         assert updated_timeline.operator_id == timeline.operator_id
         assert updated_timeline.operation_id == timeline.operation_id
-
-        # Verify set_create_or_update is called with the correct user_guid
-        mock_set_create_or_update.assert_called_once_with(user_guid)
 
         # Verify the changes are saved in the database
         timeline.refresh_from_db()

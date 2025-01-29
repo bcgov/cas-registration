@@ -44,10 +44,4 @@ class BaseModel(models.Model):
             # If identifier is provided, update or create the instance
             instance, created = self.objects.update_or_create(pk=identifier, defaults=kwargs)
 
-        # If the model has audit columns, set them
-        from registration.models.time_stamped_model import TimeStampedModel
-
-        if isinstance(instance, TimeStampedModel):
-            instance.set_create_or_update(user_guid)
-
         return instance, created

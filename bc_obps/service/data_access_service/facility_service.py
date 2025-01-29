@@ -26,7 +26,7 @@ class FacilityDataAccessService:
             **facility_data,
             created_by_id=user_guid,
         )
-        facility.set_create_or_update(user_guid)
+
         return facility
 
     @classmethod
@@ -39,6 +39,6 @@ class FacilityDataAccessService:
         facility = cls.get_by_id(facility_id)
         for key, value in facility_data.items():
             setattr(facility, key, value)
-        facility.set_create_or_update(user_guid)
+
         facility.save()
         return facility
