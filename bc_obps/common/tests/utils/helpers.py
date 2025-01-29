@@ -1,6 +1,21 @@
 from django.db import models
 from django.test import TestCase
+from registration.models import User, AppRole
+import uuid
 
+def set_db_user_guid_for_tests(cursor):
+    user = User.objects.create(
+        user_guid=uuid.uuid4(),
+        business_guid=uuid.uuid4(),
+        bceid_business_name='Default User Business',
+        app_role=AppRole.objects.get(role_name='industry_user'),
+        first_name='Default',
+        last_name='Test User',
+        email='defaultuser@example.com',
+        position_title='Default User',
+        phone_number='+16044011234'
+    )
+    cursor.execute('set my.guid = %s', [str(user.user_guid)])
 
 class BaseTestCase(TestCase):
     field_data = []  # Override this in the child class
