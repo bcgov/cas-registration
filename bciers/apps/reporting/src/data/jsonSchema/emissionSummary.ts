@@ -38,12 +38,12 @@ const properties: RJSFSchema = {
         title: "Stationary fuel combustion emissions",
         minimum: 0,
       },
-      ventingUseful: {
+      venting_useful: {
         type: "number",
         title: "Venting emissions - useful",
         minimum: 0,
       },
-      ventingNonUseful: {
+      venting_non_useful: {
         type: "number",
         title: "Venting emissions - non-useful",
         minimum: 0,
