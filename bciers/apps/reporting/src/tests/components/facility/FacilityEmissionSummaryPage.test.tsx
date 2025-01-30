@@ -15,18 +15,18 @@ const mockSummaryData = {
   emissionCategories: {
     flaring: "500",
     fugitive: "1000",
-    industrialProcess: "1500",
-    onSiteTransportation: "2000",
-    stationaryCombustion: "2500",
-    ventingUseful: "3000",
-    ventingNonUseful: "3500",
+    industrial_process: "1500",
+    onsite_transportation: "2000",
+    stationary_combustion: "2500",
+    venting_useful: "3000",
+    venting_non_useful: "3500",
     waste: "4000",
     wastewater: "4500",
   },
-  fuelExcluded: {
-    woodyBiomass: "100",
-    excludedBiomass: "200",
-    excludedNonBiomass: "300",
+  fuel_excluded: {
+    woody_biomass: "100",
+    excluded_biomass: "200",
+    excluded_non_biomass: "300",
   },
   otherExcluded: {
     lfoExcluded: "400",
