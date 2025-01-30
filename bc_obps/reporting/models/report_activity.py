@@ -27,7 +27,7 @@ class ReportActivity(ReportDataBaseModel):
         db_comment="The reporting activity this data applies to",
     )
 
-    class Meta:
+    class Meta(ReportDataBaseModel.Meta):
         db_table_comment = "A table to store the reported activity-specific data, in a JSON format"
         db_table = 'erc"."report_activity'
         app_label = 'reporting'

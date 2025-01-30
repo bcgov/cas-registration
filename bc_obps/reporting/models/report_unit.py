@@ -22,7 +22,7 @@ class ReportUnit(ReportDataBaseModel):
         choices=ReportUnitType.choices,
     )
 
-    class Meta:
+    class Meta(ReportDataBaseModel.Meta):
         db_table_comment = "A table to store the reported unit-specific data, in a JSON format"
         db_table = 'erc"."report_unit'
         app_label = "reporting"

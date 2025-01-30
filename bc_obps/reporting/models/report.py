@@ -28,7 +28,7 @@ class Report(TimeStampedModel):
         db_comment="The reporting year, for which this report is filled",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store report instances. Each operation has at most one report per year."
         db_table = 'erc"."report'
         app_label = 'reporting'

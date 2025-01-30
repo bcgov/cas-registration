@@ -26,7 +26,7 @@ class ReportNewEntrantEmission(TimeStampedModel):
         db_comment="The amount of production associated with this report",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_new_entrant_emission'
         app_label = 'reporting'
         db_table_comment = 'Table for storing emission data related to new entrant'
