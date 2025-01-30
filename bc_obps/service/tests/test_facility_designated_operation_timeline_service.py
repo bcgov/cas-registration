@@ -1,5 +1,4 @@
 from datetime import datetime
-from unittest.mock import MagicMock, patch
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.models import FacilityDesignatedOperationTimeline
