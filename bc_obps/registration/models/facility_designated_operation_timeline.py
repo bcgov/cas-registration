@@ -32,7 +32,7 @@ class FacilityDesignatedOperationTimeline(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to connect facilities and operations"
         db_table = 'erc"."facility_designated_operation_timeline'
         constraints = [
