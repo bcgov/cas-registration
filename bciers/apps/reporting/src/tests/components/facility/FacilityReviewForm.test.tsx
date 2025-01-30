@@ -13,7 +13,7 @@ const mockFacilityData = {
   id: "00000000-0000-0000-0000-000000000000",
   bcghg_id: "12111130002",
   name: "Facility1",
-  facility_type: "SFO",
+  facility_type: "Small Aggregate",
   activities: [7, 10],
   products: [],
 };
@@ -55,6 +55,7 @@ describe("FacilityReviewForm", () => {
       <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
+        taskListElements={[]}
       />,
     );
 
@@ -78,6 +79,7 @@ describe("FacilityReviewForm", () => {
       <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
+        taskListElements={[]}
       />,
     );
 
@@ -98,6 +100,7 @@ describe("FacilityReviewForm", () => {
       <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
+        taskListElements={[]}
       />,
     );
 
@@ -132,6 +135,7 @@ describe("FacilityReviewForm", () => {
       <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
+        taskListElements={[]}
       />,
     );
 
@@ -161,6 +165,7 @@ describe("FacilityReviewForm", () => {
       <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
+        taskListElements={[]}
       />,
     );
 
@@ -182,6 +187,7 @@ describe("FacilityReviewForm", () => {
       <FacilityReviewForm
         version_id={1}
         facility_id={"00000000-0000-0000-0000-000000000000"}
+        taskListElements={[]}
       />,
     );
 
