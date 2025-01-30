@@ -68,7 +68,7 @@ class UserOperator(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "Through table to connect Users and Operators and track access requests"
         db_table = 'erc"."user_operator'
         constraints = [
