@@ -1,7 +1,7 @@
 from reporting.models import EmissionCategory
 from reporting.models.report_emission import ReportEmission
 from decimal import Decimal
-from django.db.models import Sum, OuterRef
+from django.db.models import Sum, OuterRef, Subquery
 from typing import Dict, List
 
 
@@ -127,11 +127,14 @@ class EmissionCategoryService:
     @staticmethod
     def get_all_category_totals_by_version(version_id: int) -> Dict[str, Decimal | int]:
         totals = EmissionCategory.objects.annotate(
-            total=ReportEmission.objects_with_decimal_emissions.filter(
-                report_version_id=version_id, emission_categories__id=OuterRef("id")
+            total=Subquery(
+                ReportEmission.objects_with_decimal_emissions.filter(
+                    report_version_id=version_id, emission_categories__id=OuterRef("id")
+                )
+                .values("emission_categories__id")
+                .annotate(emission_sum=Sum("emission"))
+                .values("emission_sum")[:1]
             )
-            .annotate(emission_sum=Sum("emission"))
-            .values("emission_sum")
         ).values("id", "total")
         totals_dict = {t["id"]: t["total"] or Decimal(0) for t in list(totals)}
 
