@@ -112,8 +112,8 @@ class TestSaveReportUnit(TestCase):
 
         mock_save_emission.assert_has_calls(
             [
-                call(report_source_type, return_value, {"em": 1}),
-                call(report_source_type, return_value, {"em2": 2}),
+                call(report_source_type, return_value, None, {"em": 1}),
+                call(report_source_type, return_value, None, {"em2": 2}),
             ]
         )
         mock_save_fuel.assert_not_called()
