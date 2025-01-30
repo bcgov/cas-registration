@@ -59,7 +59,7 @@ class ReportEmission(ReportDataBaseModel):
         related_name="+",
     )
 
-    class Meta:
+    class Meta(ReportDataBaseModel.Meta):
         db_table_comment = "A table to store the reported emission-specific data, in a JSON format"
         db_table = 'erc"."report_emission'
         app_label = "reporting"

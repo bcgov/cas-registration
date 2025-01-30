@@ -73,7 +73,7 @@ class ReportProduct(TimeStampedModel):
         blank=True,
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = (
             "A table storing the production information for a single product, as part of a facility report"
         )

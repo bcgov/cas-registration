@@ -20,7 +20,7 @@ class ReportMethodology(ReportDataBaseModel):
         db_comment="The emission data this methodology applies to",
     )
 
-    class Meta:
+    class Meta(ReportDataBaseModel.Meta):
         db_table_comment = "A table to store the reported methodology-specific data, in a JSON format"
         db_table = 'erc"."report_methodology'
         app_label = 'reporting'

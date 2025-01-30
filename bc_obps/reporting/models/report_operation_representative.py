@@ -23,7 +23,7 @@ class ReportOperationRepresentative(TimeStampedModel):
         db_comment="Indicates whether this representative is selected for reporting.",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_operation_representative'
         app_label = 'reporting'
         db_table_comment = (

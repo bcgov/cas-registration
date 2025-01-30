@@ -25,7 +25,7 @@ class ReportSourceType(ReportDataBaseModel):
         db_comment="The activity data record this source type data belongs to",
     )
 
-    class Meta:
+    class Meta(ReportDataBaseModel.Meta):
         db_table_comment = "A table to store the reported source type-specific data, in a JSON format"
         db_table = 'erc"."report_source_type'
         app_label = 'reporting'
