@@ -160,7 +160,7 @@ class ReportActivitySaveService:
 
         if report_source_type.activity_source_type_base_schema.has_fuel and "fuels" not in unit_data:
             raise ValueError("Unit is expecting fuel data")
-        elif "emissions" not in unit_data:
+        elif not report_source_type.activity_source_type_base_schema.has_fuel and "emissions" not in unit_data:
             raise ValueError("Unit is expecting emissions data")
 
         # Update record if id was provided, create otherwise

@@ -146,8 +146,12 @@ class TestReportActivityDataSerializers(SimpleTestCase):
         mock_fuels_reverse_manager: MagicMock,
         mock_emissions_reverse_manager: MagicMock,
     ):
-        mock_fuels_serializer.return_value = "serialized!"
-        mock_fuels_serializer.ass
+        mock_fuels_serializer.return_value = "fuels serialized!"
+        mock_fuels_reverse_manager.all.return_value = "allfuels"
+
+        mock_emissions_serializer.return_value = "emissions serialized!"
+        mock_emissions_reverse_manager.all.return_value = "allemissions"
+
         report_units = [
             prepare(
                 ReportUnit,
@@ -165,16 +169,17 @@ class TestReportActivityDataSerializers(SimpleTestCase):
 
         serialized = ReportUnitIterableSerializer.serialize(report_units)
 
-        assert mock_fuels_serializer.call_count == 2
-        assert mock_fuels_reverse_manager.all.call_count == 2
+        mock_fuels_serializer.assert_called_once_with("allfuels")
+        mock_emissions_serializer.assert_called_once_with("allemissions")
+
         assert serialized == [
             {
-                "fuels": "serialized!",
+                "fuels": "fuels serialized!",
                 "id": 8971,
                 "mock_json_prop": True,
             },
             {
-                "fuels": "serialized!",
+                "emissions": "emissions serialized!",
                 "id": 999999,
                 "real_json_prop": False,
             },
