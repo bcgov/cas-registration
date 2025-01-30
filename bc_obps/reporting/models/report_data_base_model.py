@@ -20,5 +20,5 @@ class ReportDataBaseModel(TimeStampedModel):
         db_comment="The report version this data belongs to",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         abstract = True

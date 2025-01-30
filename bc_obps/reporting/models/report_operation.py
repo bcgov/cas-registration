@@ -52,7 +52,7 @@ class ReportOperation(TimeStampedModel):
     activities = models.ManyToManyField(Activity, related_name="+")
     regulated_products = models.ManyToManyField(RegulatedProduct, related_name="+")
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store operation information as part of a report"
         db_table = 'erc"."report_operation'
         app_label = "reporting"
