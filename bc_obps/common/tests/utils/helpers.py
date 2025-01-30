@@ -3,6 +3,7 @@ from django.test import TestCase
 from registration.models import User, AppRole
 import uuid
 
+
 def set_db_user_guid_for_tests(cursor):
     user = User.objects.create(
         user_guid=uuid.uuid4(),
@@ -13,9 +14,10 @@ def set_db_user_guid_for_tests(cursor):
         last_name='Test User',
         email='defaultuser@example.com',
         position_title='Default User',
-        phone_number='+16044011234'
+        phone_number='+16044011234',
     )
     cursor.execute('set my.guid = %s', [str(user.user_guid)])
+
 
 class BaseTestCase(TestCase):
     field_data = []  # Override this in the child class
