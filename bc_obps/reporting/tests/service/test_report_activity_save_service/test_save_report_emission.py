@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, call, patch
 from django.test import TestCase
 import pytest
-from reporting.models import report_version
 from reporting.models.gas_type import GasType
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.emission_category_mapping import EmissionCategoryMapping
@@ -36,7 +35,7 @@ class TestSaveReportEmission(TestCase):
         report_unit = make(
             ReportUnit,
             report_source_type=report_source_type,
-            report_version=report_version,
+            report_version=test_infrastructure.report_version,
             json_data={"test_report_unit": "report_unit"},
         )
         report_fuel = make(
@@ -64,10 +63,16 @@ class TestSaveReportEmission(TestCase):
         )
 
         with pytest.raises(KeyError, match="gasType"):
-            service_under_test.save_emission(report_source_type, report_fuel, {"no_gas_type": True, "emission": 1})
+            service_under_test.save_emission(
+                report_source_type,
+                None,
+                report_fuel,
+                {"no_gas_type": True, "emission": 1},
+            )
         with pytest.raises(GasType.DoesNotExist):
             service_under_test.save_emission(
                 report_source_type,
+                None,
                 report_fuel,
                 {"gasType": "gasTypeThatDoesntExist", "emission": 1},
             )
