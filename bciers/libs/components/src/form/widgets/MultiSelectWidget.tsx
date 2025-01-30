@@ -109,10 +109,17 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
             <Chip
               {...getTagProps}
               key={option.id}
-              label={option.label}
+              label={
+                <div style={{ whiteSpace: "normal", padding: ".5rem 0" }}>
+                  {option.label}
+                </div>
+              }
               {...getTagProps({
                 index,
               })}
+              style={{
+                height: "100%",
+              }}
             />
           );
         });
