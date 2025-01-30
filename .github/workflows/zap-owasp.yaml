@@ -29,6 +29,7 @@ jobs:
           issue_title: OWASP Baseline - Frontend
           fail_action: false
           allow_issue_writing: false
+          artifact_name: frontend_zap_scan
       - name: ZAP Backend Scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
@@ -40,6 +41,7 @@ jobs:
           issue_title: OWASP Baseline - Backend
           fail_action: false
           allow_issue_writing: false
+          artifact_name: backend_zap_scan
 
   # Retry the workflow due to secondary rate limiting errors causing frequent failures
   retry-on-failure:
