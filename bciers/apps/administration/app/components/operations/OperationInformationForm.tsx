@@ -46,6 +46,15 @@ const OperationInformationForm = ({
   const searchParams = useSearchParams();
   const isRedirectedFromContacts = searchParams.get("from_contacts") as string;
 
+  useEffect(() => {
+    if (selectedPurpose) {
+      console.log(formData)
+      formData.registration_purpose = selectedPurpose
+      
+      console.log(formData)
+    }
+  }, [selectedPurpose])
+
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
@@ -94,14 +103,19 @@ const OperationInformationForm = ({
     setPendingChangeRegistrationPurpose("");
   };
 
-  const confirmRegistrationPurposeChange = () => {
+  const confirmRegistrationPurposeChange = (data: any) => {
+    console.log(data)
+    consoleLogRPs()
+    console.log("change confirmed")
     if (pendingChangeRegistrationPurpose !== "") {
       setSelectedPurpose(pendingChangeRegistrationPurpose);
     }
     setPendingChangeRegistrationPurpose("");
+    consoleLogRPs()
   };
 
   const handleSelectedPurposeChange = (newSelectedPurpose: string) => {
+    console.log("handling selected purpose change")
     consoleLogRPs();
     if (newSelectedPurpose && selectedPurpose) {
       setPendingChangeRegistrationPurpose(newSelectedPurpose);
