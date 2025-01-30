@@ -2,19 +2,17 @@ from common.tests.utils.helpers import BaseTestCase
 from registration.models import Activity
 from reporting.models import ActivitySourceTypeJsonSchema, SourceType
 from reporting.tests.utils.bakers import configuration_baker
-from model_bakery.baker import make_recipe
 import pytest
-from django.core.exceptions import ValidationError
 
 
 class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        config = configuration_baker({'slug': '5025', 'valid_from': '5025-01-01', 'valid_to': '5025-12-31'})
+        config = configuration_baker({"slug": "5025", "valid_from": "5025-01-01", "valid_to": "5025-12-31"})
         cls.test_object = ActivitySourceTypeJsonSchema.objects.create(
             activity=Activity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
-            json_schema='{}',
+            json_schema="{}",
             has_unit=True,
             has_fuel=True,
             valid_from=config,
@@ -37,7 +35,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
         invalid_record = ActivitySourceTypeJsonSchema(
             activity=self.test_object.activity,
             source_type=self.test_object.source_type,
-            json_schema='{}',
+            json_schema="{}",
             has_unit=True,
             has_fuel=True,
             valid_from=self.test_object.valid_from,
@@ -49,28 +47,14 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
         assert exc.match(r"^This record will result in duplicate json schemas")
 
     def test_valid_insert(self):
-        config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})
+        config = configuration_baker({"slug": "5026", "valid_from": "5026-01-01", "valid_to": "5026-12-31"})
         valid_record = ActivitySourceTypeJsonSchema(
             activity=self.test_object.activity,
             source_type=self.test_object.source_type,
-            json_schema='{}',
+            json_schema="{}",
             has_unit=True,
             has_fuel=True,
             valid_from=config,
             valid_to=config,
         )
         valid_record.save()
-
-    def test_condition_on_fuel_unit_configuration(self):
-        config = make_recipe('reporting.tests.utils.configuration', valid_from='5026-01-01', valid_to='5026-12-31')
-        invalid_record = ActivitySourceTypeJsonSchema(
-            activity=self.test_object.activity,
-            source_type=self.test_object.source_type,
-            json_schema='{}',
-            has_unit=True,
-            has_fuel=False,
-            valid_from=config,
-            valid_to=config,
-        )
-        with pytest.raises(ValidationError, match='A Source Type configuration cannot specify a unit without a fuel'):
-            invalid_record.save()

@@ -13,4 +13,6 @@ class ReportUnitModelTest(BaseTestCase):
             *REPORT_DATA_MODELS_COMMON_FIELDS,
             ("report_source_type", "report source type", None, None),
             ("reportfuel_records", "report fuel", None, 0),
+            ("reportemission_records", "report emission", None, 0),
+            ("type", "type", None, None),
         ]

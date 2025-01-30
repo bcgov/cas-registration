@@ -6,7 +6,9 @@ from reporting.models.report_emission import ReportEmission
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.service.report_activity_save_service import ReportActivitySaveService
-from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
+from reporting.tests.service.test_report_activity_save_service.infrastructure import (
+    TestInfrastructure,
+)
 from model_bakery.baker import make_recipe, make
 
 
@@ -47,15 +49,21 @@ class TestSaveReportFuel(TestCase):
             service_under_test.save_fuel(report_source_type, report_unit, {"no_fuel_type": True})
         with pytest.raises(FuelType.DoesNotExist):
             service_under_test.save_fuel(
-                report_source_type, report_unit, {"fuelType": {"fuelName": "fuelThatDoesntExist"}}
+                report_source_type,
+                report_unit,
+                {"fuelType": {"fuelName": "fuelThatDoesntExist"}},
             )
         with pytest.raises(ValueError, match="Fuel is expecting emission data"):
             service_under_test.save_fuel(
-                report_source_type, report_unit, {"fuelType": {"fuelName": "Test Fuel Type"}, "no_emission_data": True}
+                report_source_type,
+                report_unit,
+                {"fuelType": {"fuelName": "Test Fuel Type"}, "no_emission_data": True},
             )
 
         with_none_report_unit = service_under_test.save_fuel(
-            report_source_type, None, {"fuelType": {"fuelName": fuel_type.name}, "emissions": []}
+            report_source_type,
+            None,
+            {"fuelType": {"fuelName": fuel_type.name}, "emissions": []},
         )
 
         assert with_none_report_unit.report_unit is None
@@ -81,8 +89,8 @@ class TestSaveReportFuel(TestCase):
 
         mock_save_emission.assert_has_calls(
             [
-                call(report_source_type, return_value, {"small_emission": 1}),
-                call(report_source_type, return_value, {"large_emission": 2}),
+                call(report_source_type, None, return_value, {"small_emission": 1}),
+                call(report_source_type, None, return_value, {"large_emission": 2}),
             ]
         )
 
@@ -178,7 +186,7 @@ class TestSaveReportFuel(TestCase):
             report_activity.report_version.id,
             report_activity.facility_report.facility.id,
             report_activity.activity.id,
-            make_recipe('registration.tests.utils.industry_operator_user'),
+            make_recipe("registration.tests.utils.industry_operator_user"),
         )
 
         report_fuel = service_under_test.save_fuel(

@@ -64,14 +64,22 @@ class ReportFuelIterableSerializer(BaseSerializer[Iterable[ReportFuel]]):
 class ReportUnitIterableSerializer(BaseSerializer[Iterable[ReportUnit]]):
     @classmethod
     def serialize(cls, obj: Iterable[ReportUnit]) -> list[dict]:
-        return [
-            {
-                "id": unit.id,
-                **unit.json_data,
-                "fuels": ReportFuelIterableSerializer.serialize(unit.reportfuel_records.all()),
+        return [cls.serialize_unit(unit) for unit in obj]
+
+    @classmethod
+    def serialize_unit(cls, obj: ReportUnit) -> dict:
+        if obj.report_source_type.activity_source_type_base_schema.has_fuel:
+            return {
+                "id": obj.id,
+                **obj.json_data,
+                "fuels": ReportFuelIterableSerializer.serialize(obj.reportfuel_records.all()),
             }
-            for unit in obj
-        ]
+
+        return {
+            "id": obj.id,
+            **obj.json_data,
+            "emissions": ReportEmissionIterableSerializer.serialize(obj.reportemission_records.all()),
+        }
 
 
 class ReportSourceTypeIterableSerializer(BaseSerializer[Iterable[ReportSourceType]]):
@@ -89,10 +97,19 @@ class ReportSourceTypeIterableSerializer(BaseSerializer[Iterable[ReportSourceTyp
             **obj.json_data,
         }
         if obj.activity_source_type_base_schema.has_unit:
-            return {**serialized, "units": ReportUnitIterableSerializer.serialize(obj.reportunit_records.all())}
+            return {
+                **serialized,
+                "units": ReportUnitIterableSerializer.serialize(obj.reportunit_records.all()),
+            }
         if obj.activity_source_type_base_schema.has_fuel:
-            return {**serialized, "fuels": ReportFuelIterableSerializer.serialize(obj.reportfuel_records.all())}
-        return {**serialized, "emissions": ReportEmissionIterableSerializer.serialize(obj.reportemission_records.all())}
+            return {
+                **serialized,
+                "fuels": ReportFuelIterableSerializer.serialize(obj.reportfuel_records.all()),
+            }
+        return {
+            **serialized,
+            "emissions": ReportEmissionIterableSerializer.serialize(obj.reportemission_records.all()),
+        }
 
 
 class ReportActivitySerializer(BaseSerializer[ReportActivity]):
