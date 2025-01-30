@@ -16,7 +16,7 @@ export interface NavigationFormProps extends FormPropsWithTheme<any> {
   cancelUrl?: string;
   backUrl?: string;
   continueUrl: string;
-  onSubmit: (data: any) => Promise<boolean>;
+  onSubmit?: (data: any) => Promise<boolean>;
   buttonText?: string;
   onChange?: (data: any) => void;
   errors?: any[];
@@ -58,6 +58,10 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
 
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
     setIsSaving(true);
+    if (!onSubmit) {
+      // This path should never be reached - just here so typescript is happy
+      throw new Error("form handler was called while onSubmit was not defined");
+    }
     const success = await onSubmit(data);
     resetKey();
 
@@ -106,7 +110,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         isRedirecting={isRedirecting}
         saveButtonDisabled={saveButtonDisabled}
         submitButtonDisabled={submitButtonDisabled}
-        saveAndContinue={onSaveAndContinue}
+        saveAndContinue={onSubmit ? onSaveAndContinue : undefined}
         buttonText={buttonText}
       />
       {errors && errors.length > 0 && (
