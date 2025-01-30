@@ -158,7 +158,7 @@ const OperationInformationForm = ({
             "ui:help": pendingChangeRegistrationPurpose ? (
               <small>
                 <b>Note: </b>
-                {RegistrationPurposeHelpText[pendingChangeRegistrationPurpose]}
+                {RegistrationPurposeHelpText[Object.keys(RegistrationPurposes).find((key) => (RegistrationPurposes as any)[key] === pendingChangeRegistrationPurpose)]}
               </small>
             ) : null,
           },
