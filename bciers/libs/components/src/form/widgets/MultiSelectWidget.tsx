@@ -75,6 +75,18 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
     },
   };
 
+  const chipStyle = {
+    height: "auto",
+    maxWidth: "150px",
+    "& .MuiChip-label": {
+      whiteSpace: "normal", // Allows text wrapping
+      wordBreak: "break-word", // Breaks long words if needed
+      overflowWrap: "break-word", // Ensures proper word breaks
+      display: "block", // Forces multiline wrapping
+      padding: ".5rem", // Spaces to match the design document
+    },
+  };
+
   return (
     <Autocomplete
       id={id}
@@ -113,6 +125,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
               {...getTagProps({
                 index,
               })}
+              sx={chipStyle}
             />
           );
         });
