@@ -5,8 +5,7 @@ from registration.models import Operator
 
 pytestmark = pytest.mark.django_db
 
-
-class TestTimeStamedModel:
+class TestTimeStampedModel:
     @staticmethod
     def test_create_update_audit_fields():
         # Create a timestamped table (operator)
