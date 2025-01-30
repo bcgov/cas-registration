@@ -6,8 +6,15 @@ export const facilitySchema: RJSFSchema = {
   title: "Review facility information",
   properties: {
     facility_name: { type: "string", title: "Facility name" },
-    facility_type: { type: "string", title: "Facility type" },
-    facility_bcghgid: { type: "string", title: "Facility BCGHG ID" },
+    facility_type: {
+      type: "string",
+      title: "Facility type",
+      enum: ["Small Aggregate", "Large Facility", "Medium Facility"],
+    },
+    facility_bcghgid: {
+      type: "string",
+      title: "Facility BCGHG ID",
+    },
   },
 };
 
@@ -16,9 +23,11 @@ export const facilityReviewUiSchema = {
   "ui:classNames": "form-heading-label",
 
   facility_name: {
+    "ui:readonly": true,
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
   facility_type: {
+    "ui:widget": "SelectWidget",
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
   facility_bcghgid: {

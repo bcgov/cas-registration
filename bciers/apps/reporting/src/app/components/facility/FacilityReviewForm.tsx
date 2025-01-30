@@ -10,7 +10,6 @@ import {
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { tasklistData } from "@reporting/src/app/components/facility/TaskListElements";
 import {
   facilityReviewUiSchema,
   facilitySchema,
@@ -22,10 +21,13 @@ import { useSearchParams } from "next/navigation";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { useRouter } from "next/navigation";
+import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 interface Props {
   version_id: number;
   facility_id: string;
+  taskListElements: TaskListElement[];
 }
 
 interface Activity {
@@ -45,7 +47,11 @@ const getAllActivities = async () => {
   return actionHandler(`reporting/activities`, "GET", `reporting/activities`);
 };
 
-const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
+const FacilityReview: React.FC<Props> = ({
+  version_id,
+  facility_id,
+  taskListElements,
+}) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorList, setErrorList] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -63,14 +69,6 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   const continueURL = `activities${queryString}`;
   const router = useRouter();
   const formRef = useRef<FormContext>(null);
-
-  const customStepNames = [
-    "Operation Information",
-    "Facilities Information",
-    "Compliance Summary",
-    "Sign-off & Submit",
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,7 +90,6 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
         setActivities(activityMap);
         setActivityList(validActivitiesData);
       } catch (error: any) {
-        console.error("Error fetching data:", error);
         setErrorList([error.message || "An error occurred"]);
       }
     };
@@ -172,10 +169,10 @@ const FacilityReview: React.FC<Props> = ({ version_id, facility_id }) => {
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
-        <MultiStepHeader stepIndex={1} steps={customStepNames} />
+        <MultiStepHeader stepIndex={1} steps={multiStepHeaderSteps} />
       </div>
       <div className="w-full flex">
-        <ReportingTaskList elements={tasklistData} />
+        <ReportingTaskList elements={taskListElements} />
         <div className="w-full md:max-w-[60%]">
           <FormBase
             formRef={formRef}
