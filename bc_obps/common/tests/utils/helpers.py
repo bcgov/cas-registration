@@ -68,3 +68,17 @@ class BaseTestCase(TestCase):
                 len(self.test_object._meta.get_fields()),
                 f'EXPECTED FIELDS: {self.field_data}, FIELDS FOUND: {self.test_object._meta.get_fields()}',
             )
+
+    def test_audit_column_triggers(self):
+        if hasattr(self, "test_object"):
+            all_fields = [f.name for f in self.test_object._meta.get_fields()]
+            if 'created_at' in all_fields:
+                # Has triggers
+                self.assertTrue(hasattr(self.test_object._meta, "triggers"))
+                triggers = [t.name for t in self.test_object._meta.triggers]
+                # Has created_at/by trigger
+                self.assertIn('set_created_audit_columns', triggers)
+                # Has updated_at/by trigger
+                self.assertIn('set_updated_audit_columns', triggers)
+            else:
+                pass
