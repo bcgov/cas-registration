@@ -35,7 +35,7 @@ class OperationDesignatedOperatorTimeline(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to connect operations and their designated operators throughout their lifetimes"
         db_table = 'erc"."operation_designated_operator_timeline'
         constraints = [
