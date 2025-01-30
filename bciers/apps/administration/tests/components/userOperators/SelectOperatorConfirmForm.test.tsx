@@ -85,7 +85,7 @@ describe("Select Operator Confirm Form", () => {
     });
     expectMessage(
       "has-no-admin-message",
-      `The operator ${operatorJSON.legal_name} does not have an administrator yet.Request administrator access if you would like to be the administrator for thisoperator. Ministry staff will review your request.As an administrator, you can approve any additional users requesting access tothe operator and assign additional administrators.Request administrator access`,
+      `The operator ${operatorJSON.legal_name} does not have an administrator yet.Request administrator access if you would like to be the administrator for this operator. Ministry staff will review your request.As an administrator, you can approve any additional users requesting access to the operator and assign additional administrators.Request administrator access`,
     );
     expectButton("Request administrator access");
     expectLink("Go Back", "#");
