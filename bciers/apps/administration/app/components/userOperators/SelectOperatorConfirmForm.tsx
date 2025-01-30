@@ -52,15 +52,11 @@ export default function SelectOperatorConfirmForm({
       </p>
       <p>
         Request administrator access if you would like to be the administrator
-        for this
-        <br />
-        operator. Ministry staff will review your request.
+        for this operator. Ministry staff will review your request.
       </p>
       <p>
         As an administrator, you can approve any additional users requesting
-        access to
-        <br />
-        the operator and assign additional administrators.
+        access to the operator and assign additional administrators.
       </p>
       <RequestAccessButton
         operatorId={operator.id}
