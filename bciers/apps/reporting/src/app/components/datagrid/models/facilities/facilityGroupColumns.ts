@@ -8,7 +8,7 @@ const facilityTableGroupColumns = (
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
   {
-    const columnGroupModel: GridColumnGroupingModel = [
+    const facilityTableColumnGroupModel: GridColumnGroupingModel = [
       {
         groupId: "facility_bcghgid",
         headerName: "Facility BCGHG ID",
@@ -35,7 +35,7 @@ const facilityTableGroupColumns = (
       },
     ];
 
-    return columnGroupModel;
+    return facilityTableColumnGroupModel;
   }
 };
 export default facilityTableGroupColumns;
