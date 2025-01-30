@@ -1,3 +1,12 @@
+# [1.20.0](https://github.com/bcgov/cas-registration/compare/v1.19.0...v1.20.0) (2025-01-30)
+
+### Features
+
+- add rls app and middleware to set user guid ([1e468a5](https://github.com/bcgov/cas-registration/commit/1e468a53d1922dd7c33e6e1c92294bbded6dd284))
+- final review page displays the report version data ([dc96a2b](https://github.com/bcgov/cas-registration/commit/dc96a2bd096936e04893224006da7b751ffd9b27))
+- replace operation rep ([2366369](https://github.com/bcgov/cas-registration/commit/23663695c38c44e3438f5aedad4d1a75292f7e6d))
+- update and delete transfer events ([bfc88d7](https://github.com/bcgov/cas-registration/commit/bfc88d7340a239a29d3b9471b317cc0a0f5ffb44))
+
 # [1.19.0](https://github.com/bcgov/cas-registration/compare/v1.18.0...v1.19.0) (2025-01-22)
 
 ### Bug Fixes
