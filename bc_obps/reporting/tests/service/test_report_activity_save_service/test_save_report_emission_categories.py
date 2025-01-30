@@ -4,7 +4,9 @@ from reporting.models.report_source_type import ReportSourceType
 from reporting.models.source_type import SourceType
 from reporting.models.fuel_type import FuelType
 from reporting.service.report_activity_save_service import ReportActivitySaveService
-from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
+from reporting.tests.service.test_report_activity_save_service.infrastructure import (
+    TestInfrastructure,
+)
 from model_bakery.baker import make_recipe, make
 
 
@@ -45,6 +47,7 @@ class TestSaveReportEmission(TestCase):
 
         return_value = service_under_test.save_emission(
             report_source_type,
+            None,
             report_fuel,
             {
                 "test_emission_prop": "something",
@@ -56,12 +59,12 @@ class TestSaveReportEmission(TestCase):
 
         assert len(return_value.emission_categories.all()) == 2
         assert (
-            return_value.emission_categories.get(category_type='basic').category_name
-            == 'Stationary fuel combustion emissions'
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Stationary fuel combustion emissions"
         )
         assert (
-            return_value.emission_categories.get(category_type='fuel_excluded').category_name
-            == 'CO2 emissions from excluded woody biomass'
+            return_value.emission_categories.get(category_type="fuel_excluded").category_name
+            == "CO2 emissions from excluded woody biomass"
         )
 
     def test_update_emission_categories(self):
@@ -100,6 +103,7 @@ class TestSaveReportEmission(TestCase):
 
         return_value = service_under_test.save_emission(
             report_source_type,
+            None,
             report_fuel,
             {
                 "test_emission_prop": "something",
@@ -111,12 +115,12 @@ class TestSaveReportEmission(TestCase):
 
         assert len(return_value.emission_categories.all()) == 2
         assert (
-            return_value.emission_categories.get(category_type='basic').category_name
-            == 'Stationary fuel combustion emissions'
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Stationary fuel combustion emissions"
         )
         assert (
-            return_value.emission_categories.get(category_type='fuel_excluded').category_name
-            == 'CO2 emissions from excluded woody biomass'
+            return_value.emission_categories.get(category_type="fuel_excluded").category_name
+            == "CO2 emissions from excluded woody biomass"
         )
 
         updated_report_fuel = make(
@@ -131,6 +135,7 @@ class TestSaveReportEmission(TestCase):
 
         updated_value = service_under_test.save_emission(
             report_source_type,
+            None,
             updated_report_fuel,
             {
                 "test_emission_prop": "something",
@@ -143,12 +148,12 @@ class TestSaveReportEmission(TestCase):
         # Categories were properly updated
         assert len(updated_value.emission_categories.all()) == 2
         assert (
-            updated_value.emission_categories.get(category_type='basic').category_name
-            == 'Stationary fuel combustion emissions'
+            updated_value.emission_categories.get(category_type="basic").category_name
+            == "Stationary fuel combustion emissions"
         )
         assert (
-            updated_value.emission_categories.get(category_type='fuel_excluded').category_name
-            == 'Other emissions from excluded biomass'
+            updated_value.emission_categories.get(category_type="fuel_excluded").category_name
+            == "Other emissions from excluded biomass"
         )
 
     def test_flaring_category(self):
@@ -179,6 +184,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -188,7 +194,7 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type='basic').category_name == 'Flaring emissions'
+        assert return_value.emission_categories.get(category_type="basic").category_name == "Flaring emissions"
 
     def test_fugitive_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -218,6 +224,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -227,7 +234,7 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type='basic').category_name == 'Fugitive emissions'
+        assert return_value.emission_categories.get(category_type="basic").category_name == "Fugitive emissions"
 
     def test_industrial_process_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -257,6 +264,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -267,7 +275,7 @@ class TestSaveReportEmission(TestCase):
 
         assert len(return_value.emission_categories.all()) == 1
         assert (
-            return_value.emission_categories.get(category_type='basic').category_name == 'Industrial process emissions'
+            return_value.emission_categories.get(category_type="basic").category_name == "Industrial process emissions"
         )
 
     def test_onsite_transportation_category(self):
@@ -298,6 +306,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -308,8 +317,8 @@ class TestSaveReportEmission(TestCase):
 
         assert len(return_value.emission_categories.all()) == 1
         assert (
-            return_value.emission_categories.get(category_type='basic').category_name
-            == 'On-site transportation emissions'
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "On-site transportation emissions"
         )
 
     def test_venting_useful_category(self):
@@ -340,6 +349,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -349,7 +359,7 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type='basic').category_name == 'Venting emissions — useful'
+        assert return_value.emission_categories.get(category_type="basic").category_name == "Venting emissions — useful"
 
     def test_venting_non_useful_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -379,6 +389,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -389,8 +400,8 @@ class TestSaveReportEmission(TestCase):
 
         assert len(return_value.emission_categories.all()) == 1
         assert (
-            return_value.emission_categories.get(category_type='basic').category_name
-            == 'Venting emissions — non-useful'
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Venting emissions — non-useful"
         )
 
     def test_waste_category(self):
@@ -421,6 +432,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -430,7 +442,7 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type='basic').category_name == 'Emissions from waste'
+        assert return_value.emission_categories.get(category_type="basic").category_name == "Emissions from waste"
 
     def test_wastewater_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -460,6 +472,7 @@ class TestSaveReportEmission(TestCase):
         return_value = service_under_test.save_emission(
             report_source_type,
             None,
+            None,
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
@@ -469,4 +482,4 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type='basic').category_name == 'Emissions from wastewater'
+        assert return_value.emission_categories.get(category_type="basic").category_name == "Emissions from wastewater"

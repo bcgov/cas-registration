@@ -1,13 +1,17 @@
 from unittest.mock import MagicMock, call, patch
 from django.test import TestCase
 import pytest
+from reporting.models import report_version
 from reporting.models.gas_type import GasType
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.emission_category_mapping import EmissionCategoryMapping
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_source_type import ReportSourceType
+from reporting.models.report_unit import ReportUnit
 from reporting.service.report_activity_save_service import ReportActivitySaveService
-from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
+from reporting.tests.service.test_report_activity_save_service.infrastructure import (
+    TestInfrastructure,
+)
 from model_bakery.baker import make_recipe, make
 
 
@@ -28,6 +32,12 @@ class TestSaveReportEmission(TestCase):
             report_activity=report_activity,
             report_version=test_infrastructure.report_version,
             json_data={"test_report_source_type": "yes"},
+        )
+        report_unit = make(
+            ReportUnit,
+            report_source_type=report_source_type,
+            report_version=report_version,
+            json_data={"test_report_unit": "report_unit"},
         )
         report_fuel = make(
             ReportFuel,
@@ -57,18 +67,43 @@ class TestSaveReportEmission(TestCase):
             service_under_test.save_emission(report_source_type, report_fuel, {"no_gas_type": True, "emission": 1})
         with pytest.raises(GasType.DoesNotExist):
             service_under_test.save_emission(
-                report_source_type, report_fuel, {"gasType": "gasTypeThatDoesntExist", "emission": 1}
+                report_source_type,
+                report_fuel,
+                {"gasType": "gasTypeThatDoesntExist", "emission": 1},
             )
 
         with_none_report_fuel = service_under_test.save_emission(
             report_source_type,
             None,
-            {"gasType": "GGIRCA", "emission": 1, "methodology": {"methodology": "Default HHV/Default EF"}},
+            None,
+            {
+                "gasType": "GGIRCA",
+                "emission": 1,
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
         )
         assert with_none_report_fuel.report_fuel is None
+        assert with_none_report_fuel.report_unit is None
+
+        with_report_unit = service_under_test.save_emission(
+            report_source_type,
+            report_unit,
+            None,
+            {
+                "gasType": "GGIRCA",
+                "emission": 1,
+                "methodology": {"methodology": "Default HHV/Default EF"},
+            },
+        )
+
+        assert with_report_unit.report_fuel is None
+        assert with_report_unit.report_unit == report_unit
+
+        # With full data and methodology
 
         return_value = service_under_test.save_emission(
             report_source_type,
+            None,
             report_fuel,
             {
                 "test_emission_prop": "something",
@@ -86,7 +121,7 @@ class TestSaveReportEmission(TestCase):
         assert return_value.json_data == {
             "test_emission_prop": "something",
             "emission": 1,
-            "equivalentEmission": '100.0000',
+            "equivalentEmission": "100.0000",
         }
         assert return_value.report_source_type == report_source_type
         assert return_value.report_fuel == report_fuel
@@ -152,6 +187,7 @@ class TestSaveReportEmission(TestCase):
 
         report_emission = service_under_test.save_emission(
             report_source_type,
+            None,
             report_fuel,
             {
                 "test_emission_prop": "something",
@@ -163,6 +199,7 @@ class TestSaveReportEmission(TestCase):
         make_recipe("reporting.tests.utils.gas_type", chemical_formula="BCOBPS", gwp=100)
         updated_return_value = service_under_test.save_emission(
             report_source_type,
+            None,
             report_fuel,
             {
                 "id": report_emission.id,
@@ -181,7 +218,7 @@ class TestSaveReportEmission(TestCase):
         assert updated_return_value.json_data == {
             "test_emission_prop": "new something",
             "emission": 2,
-            "equivalentEmission": '200.0000',
+            "equivalentEmission": "200.0000",
         }
         assert updated_return_value.gas_type == GasType.objects.get(chemical_formula="BCOBPS")
 
@@ -231,6 +268,7 @@ class TestSaveReportEmission(TestCase):
 
         return_value = service_under_test.save_emission(
             report_source_type,
+            None,
             report_fuel,
             {
                 "test_emission_prop": "something",
@@ -246,4 +284,4 @@ class TestSaveReportEmission(TestCase):
         )
 
         # Rounds to 4 decimal places and returns correct equivalentEmission value
-        assert return_value.json_data['equivalentEmission'] == '100.1234'
+        assert return_value.json_data["equivalentEmission"] == "100.1234"
