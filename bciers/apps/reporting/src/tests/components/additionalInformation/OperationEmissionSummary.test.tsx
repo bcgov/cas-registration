@@ -10,28 +10,28 @@ vi.mock("@bciers/actions", () => ({
 }));
 
 const mockSummaryData = {
-  attributableForReporting: "777",
-  attributableForReportingThreshold: "888",
-  reportingOnlyEmission: "999",
-  emissionCategories: {
+  attributable_for_reporting: "777",
+  attributable_for_reporting_threshold: "888",
+  reporting_only_emission: "999",
+  emission_categories: {
     flaring: "500",
     fugitive: "1000",
-    industrialProcess: "1500",
-    onSiteTransportation: "2000",
-    stationaryCombustion: "2500",
-    ventingUseful: "3000",
-    ventingNonUseful: "3500",
+    industrial_process: "1500",
+    onsite_transportation: "2000",
+    stationary_combustion: "2500",
+    venting_useful: "3000",
+    venting_non_useful: "3500",
     waste: "4000",
     wastewater: "4500",
   },
-  fuelExcluded: {
-    woodyBiomass: "100",
-    excludedBiomass: "200",
-    excludedNonBiomass: "300",
+  fuel_excluded: {
+    woody_biomass: "100",
+    excluded_biomass: "200",
+    excluded_non_biomass: "300",
   },
-  otherExcluded: {
-    lfoExcluded: "400",
-    fogExcluded: "0",
+  other_excluded: {
+    lfo_excluded: "400",
+    fog_excluded: "0",
   },
 };
 
