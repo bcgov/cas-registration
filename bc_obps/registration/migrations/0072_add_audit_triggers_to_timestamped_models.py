@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0070_V1_20_0'),
+        ('registration', '0071_remove_historicaloperation_documents_document_and_more'),
     ]
 
     operations = [

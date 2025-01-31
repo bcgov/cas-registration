@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0045_fix_incorrect_fkey_on_deletes'),
+        ('reporting', '0048_remove_activitysourcetypejsonschema_invalid_if_has_unit_and_no_fuel'),
     ]
 
     operations = [
