@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { useState } from "react";
-import WarningIcon from "@mui/icons-material/Warning";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import RequestAccessButton from "../buttons/RequestAccessButton";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
@@ -31,13 +31,12 @@ export default function SelectOperatorConfirmForm({
   const operatorHasAdminJSX: JSX.Element = (
     <div data-testid="has-admin-message">
       <p>
-        Looks like you do not have access to <b>{operator.legal_name}</b>.
+        You do not currently have access to <b>{operator.legal_name}</b>.
       </p>
       <p>
-        An Operation Representative with Administrator access will need to
-        approve your access request.
+        Please request access below. An administrator will need to approve your
+        access request.
       </p>
-      <p>Please confirm below if you would like to submit an access request.</p>
       <RequestAccessButton
         operatorId={operator.id}
         operatorName={operator.legal_name}
@@ -48,16 +47,16 @@ export default function SelectOperatorConfirmForm({
   const operatorHasNoAdmin: JSX.Element = (
     <div data-testid="has-no-admin-message">
       <p>
-        Looks like operator <b>{operator.legal_name}</b> does not have
-        Administrator access set up.
+        The operator <b>{operator.legal_name}</b> does not have an administrator
+        yet.
       </p>
       <p>
-        Would you like to request Administrator access as an Operation
-        Representative?
+        Request administrator access if you would like to be the administrator
+        for this operator. Ministry staff will review your request.
       </p>
       <p>
-        Please note that you will be responsible for approving any additional
-        users requesting access to the operator.
+        As an administrator, you can approve any additional users requesting
+        access to the operator and assign additional administrators.
       </p>
       <RequestAccessButton
         operatorId={operator.id}
@@ -68,17 +67,17 @@ export default function SelectOperatorConfirmForm({
   );
 
   return (
-    <section className="text-center my-auto text-2xl flex flex-col gap-3">
+    <section className="text-center my-auto flex flex-col gap-3">
       {hasConfirmedOperator ? (
         <>
           <span>
-            <WarningIcon sx={{ color: "#ff0e0e", fontSize: 50 }} />
+            <WarningRoundedIcon sx={{ color: "#fcba19", fontSize: "40px" }} />
           </span>
           <div>{hasAdmin ? operatorHasAdminJSX : operatorHasNoAdmin}</div>
           <Link
             href="#"
             className="underline hover:no-underline"
-            style={{ color: BC_GOV_LINKS_COLOR }}
+            style={{ color: BC_GOV_LINKS_COLOR, fontSize: "16px" }}
             onClick={() => setHasConfirmedOperator(false)}
           >
             Go Back
@@ -139,7 +138,7 @@ export default function SelectOperatorConfirmForm({
               type="button"
               onClick={() => setHasConfirmedOperator(true)}
             >
-              Yes, this is my operator.
+              Yes this is my operator
             </Button>
             <span className="text-sm">
               This is not my operator.{" "}
@@ -149,7 +148,7 @@ export default function SelectOperatorConfirmForm({
                 style={{ color: BC_GOV_LINKS_COLOR }}
                 onClick={() => setHasConfirmedOperator(false)}
               >
-                Return.
+                Go back
               </Link>
             </span>
           </div>

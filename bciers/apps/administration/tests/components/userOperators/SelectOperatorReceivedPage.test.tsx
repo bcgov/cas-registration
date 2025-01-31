@@ -25,19 +25,19 @@ describe("Select Operator Received Page", () => {
   it("renders the selected operator received page, admin access request correctly", async () => {
     mockOperatorState(false);
     render(await SelectOperatorReceivedPage({ step: "request-access", id }));
-    expectIcon("AccessTimeIcon", {
+    expectIcon("AccessTimeFilledIcon", {
       color: "#FFCC00",
       fontSize: "50px",
     });
     expectMessage(
       "access-request-message",
-      `Your access request for ${operatorJSON.legal_name} as its Operation Representative has been received and will be reviewed.Once approved, you will receive an email.You can then log back in using your Business BCeID with Administrator access.`,
+      `Your access request as administrator for ${operatorJSON.legal_name} has been received by ministry staff and will be reviewed shortly.Once approved, you will receive a confirmation email. You can then log back in using your Business BCeID.`,
     );
   });
   it("renders the selected operator received page, subsequent access request correctly", async () => {
     mockOperatorState(true);
     render(await SelectOperatorReceivedPage({ step: "request-access", id }));
-    expectIcon("AccessTimeIcon", {
+    expectIcon("AccessTimeFilledIcon", {
       color: "#FFCC00",
       fontSize: "50px",
     });
@@ -49,13 +49,13 @@ describe("Select Operator Received Page", () => {
   it("renders the selected operator received page, add operator correctly", async () => {
     mockOperatorState(false);
     render(await SelectOperatorReceivedPage({ step: "add-operator", id }));
-    expectIcon("AccessTimeIcon", {
+    expectIcon("AccessTimeFilledIcon", {
       color: "#FFCC00",
       fontSize: "50px",
     });
     expectMessage(
       "add-operator-message",
-      `Your request to add ${operatorJSON.legal_name} and become its Operation Representative has been received and will be reviewed.Once approved, you will receive an email.You can then log back in using your Business BCeID with Administrator access.`,
+      `Your request to add ${operatorJSON.legal_name} and become its Operation Representative has been received and will be reviewed.Your access request as administrator for ${operatorJSON.legal_name} has been received by ministry staff and will be reviewed shortly.Once approved, you will receive a confirmation email. You can then log back in using your Business BCeID.`,
     );
   });
   it("renders error when getOperator fails", async () => {

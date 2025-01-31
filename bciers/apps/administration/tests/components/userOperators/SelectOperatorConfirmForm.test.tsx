@@ -52,7 +52,7 @@ describe("Select Operator Confirm Form", () => {
 
     expectButton("Yes this is my operator");
     expect(screen.getByText(/This is not my operator./)).toBeInTheDocument();
-    expectLink("Return.", "/select-operator");
+    expectLink("Go back", "/select-operator");
   });
   it("confirms the operator with admin when confirm button is clicked", async () => {
     render(
@@ -61,15 +61,15 @@ describe("Select Operator Confirm Form", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /Yes this is my operator/i }),
     );
-    expectIcon("WarningIcon", {
-      color: "#FF0E0E",
-      fontSize: "50px",
+    expectIcon("WarningRoundedIcon", {
+      color: "#FCBA19",
+      fontSize: "40px",
     });
     expectMessage(
       "has-admin-message",
-      `Looks like you do not have access to ${operatorJSON.legal_name}.An Operation Representative with Administrator access will need to approve your access request.Please confirm below if you would like to submit an access request.Request Access`,
+      `You do not currently have access to ${operatorJSON.legal_name}.Please request access below. An administrator will need to approve your access request.Request access`,
     );
-    expectButton("Request Access");
+    expectButton("Request access");
     expectLink("Go Back", "#");
   });
   it("confirms the operator with no admin when confirm button is clicked", async () => {
@@ -79,15 +79,15 @@ describe("Select Operator Confirm Form", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /Yes this is my operator/i }),
     );
-    expectIcon("WarningIcon", {
-      color: "#FF0E0E",
-      fontSize: "50px",
+    expectIcon("WarningRoundedIcon", {
+      color: "#FCBA19",
+      fontSize: "40px",
     });
     expectMessage(
       "has-no-admin-message",
-      `Looks like operator ${operatorJSON.legal_name} does not have Administrator access set up.Would you like to request Administrator access as an Operation Representative?Please note that you will be responsible for approving any additional users requesting access to the operator.Request Administrator Access`,
+      `The operator ${operatorJSON.legal_name} does not have an administrator yet.Request administrator access if you would like to be the administrator for this operator. Ministry staff will review your request.As an administrator, you can approve any additional users requesting access to the operator and assign additional administrators.Request administrator access`,
     );
-    expectButton("Request Administrator Access");
+    expectButton("Request administrator access");
     expectLink("Go Back", "#");
   });
 });
