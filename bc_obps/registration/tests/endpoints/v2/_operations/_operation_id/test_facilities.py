@@ -2,21 +2,23 @@ from registration.models.facility_designated_operation_timeline import FacilityD
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models import Facility
 from registration.tests.utils.bakers import (
-    facility_baker,
-    facility_designated_operation_timeline_baker,
     operation_baker,
     operator_baker,
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from model_bakery import baker
 
 
 class TestFacilitiesEndpoint(CommonTestSetup):
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
-        operation = operation_baker()
-        facility_designated_operation_timeline_baker(operation_id=operation.id, _quantity=45)
-        facilities_url = custom_reverse_lazy('list_facilities_by_operation_id', kwargs={'operation_id': operation.id})
+
+        timeline = baker.make_recipe('utils.facility_designated_operation_timeline', _quantity=45)
+
+        facilities_url = custom_reverse_lazy(
+            'list_facilities_by_operation_id', kwargs={'operation_id': timeline[0].operation.id}
+        )
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", facilities_url)
         assert response.status_code == 200
@@ -75,16 +77,25 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert page_2_first_facility.id > page_2_first_facility_reverse.id
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
-        operation = operation_baker()
-        facility_designated_operation_timeline_baker(operation_id=operation.id, _quantity=25)
-        facilities_url = custom_reverse_lazy('list_facilities_by_operation_id', kwargs={'operation_id': operation.id})
+        timeline = baker.make_recipe('utils.facility_designated_operation_timeline', _quantity=25)
+        named_facility = baker.make_recipe('utils.facility', name='Mynameis', type=Facility.Types.MEDIUM_FACILITY)
+        baker.make_recipe(
+            'utils.facility_designated_operation_timeline', facility=named_facility, operation=timeline[0].operation
+        )
+
+        facilities_url = custom_reverse_lazy(
+            'list_facilities_by_operation_id', kwargs={'operation_id': timeline[0].operation.id}
+        )
 
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", facilities_url + "?facility__type=Large"
         )  # filtering Large Facility
         assert response.status_code == 200
+
         response_items_1 = response.json().get('items')
+        assert len(response_items_1) == 25
+
         for item in response_items_1:
             assert item.get('facility__type') == Facility.Types.LARGE_FACILITY
 
@@ -96,17 +107,12 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert response.json().get('count') == 0
 
         # Test with a name filter
-        name_to_filter = response_items_1[0].get(
-            'facility__name'
-        )  # get the name of the first item in the response to test with
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", facilities_url + f"?facility__name={name_to_filter}"
-        )
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", facilities_url + "?facility__name=Myname")
         assert response.status_code == 200
         response_items_2 = response.json().get('items')
         assert len(response_items_2) == 1
         assert response.json().get('count') == 1
-        assert response_items_2[0].get('facility__name') == name_to_filter
+        assert response_items_2[0].get('facility__name') == "Mynameis"
 
         # Test with a name filter that doesn't exist
         response = TestUtils.mock_get_with_auth_role(
@@ -117,14 +123,14 @@ class TestFacilitiesEndpoint(CommonTestSetup):
 
         # Test with multiple filters
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", facilities_url + f"?facility__type=Large&facility__name={name_to_filter}"
+            self, "cas_admin", facilities_url + "?facility__type=Medium Facility&facility__name=Mynameis"
         )
         assert response.status_code == 200
         response_items_3 = response.json().get('items')
         assert len(response_items_3) == 1
         assert response.json().get('count') == 1
-        assert response_items_3[0].get('facility__name') == name_to_filter
-        assert response_items_3[0].get('facility__type') == Facility.Types.LARGE_FACILITY
+        assert response_items_3[0].get('facility__name') == 'Mynameis'
+        assert response_items_3[0].get('facility__type') == Facility.Types.MEDIUM_FACILITY
 
     # POST
     def test_post_new_malformed_facility(self):
@@ -143,7 +149,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         owning_operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, owning_operator)
         owning_operation = operation_baker(owning_operator.id)
-        facility_instance = facility_baker()
+        facility_instance = baker.make_recipe('utils.facility')
         mock_facility = {
             'name': facility_instance.name,
             'type': 'Large Facility',

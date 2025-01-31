@@ -7,13 +7,16 @@ from registration.tests.utils.bakers import (
     facility_designated_operation_timeline_baker,
     facility_baker,
 )
+from model_bakery import baker
 
 
 class TestReportFacilitiesService(TestCase):
     def setUp(self):
         self.report_version = report_version_baker()
         self.operation = self.report_version.report.operation
-        self.facilities = facility_designated_operation_timeline_baker(operation_id=self.operation.id, _quantity=3)
+        self.facilities = baker.make_recipe(
+            'utils.facility_designated_operation_timeline', operation_id=operation.id, _quantity=1
+        )
 
     def test_get_report_facility_list_by_version_id(self):
         facilities = ReportFacilitiesService.get_report_facility_list_by_version_id(self.report_version.id)

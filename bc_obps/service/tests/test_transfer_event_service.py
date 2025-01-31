@@ -443,17 +443,23 @@ class TestTransferEventService:
     @patch(
         "service.transfer_event_service.FacilityDesignatedOperationTimelineDataAccessService.create_facility_designated_operation_timeline"
     )
+    @patch("service.facility_service.FacilityService.update_operation_for_facility")
     def test_process_facilities_transfer(
-        mock_create_timeline: MagicMock, mock_set_timeline: MagicMock, mock_get_current_timeline: MagicMock
+        mock_update_operation_for_facility: MagicMock,
+        mock_create_timeline: MagicMock,
+        mock_set_timeline: MagicMock,
+        mock_get_current_timeline: MagicMock,
     ):
         facility_1 = baker.make_recipe("utils.facility")
         facility_2 = baker.make_recipe("utils.facility")
+        from_operation = baker.make_recipe("utils.operation")
+        to_operation = baker.make_recipe("utils.operation")
         transfer_event = baker.make_recipe(
             "utils.transfer_event",
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
             facilities=[facility_1, facility_2],
-            from_operation=baker.make_recipe("utils.operation"),
-            to_operation=baker.make_recipe("utils.operation"),
+            from_operation=from_operation,
+            to_operation=to_operation,
         )
 
         user_guid = uuid4()
@@ -500,6 +506,13 @@ class TestTransferEventService:
                 "start_date": transfer_event.effective_date,
                 "status": FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
             },
+        )
+        # Verify that update_operation_for_facility was called twice, once for each facility
+        mock_update_operation_for_facility.assert_any_call(
+            user_guid=user_guid, facility=facility_1, operation_id=to_operation.id
+        )
+        mock_update_operation_for_facility.assert_any_call(
+            user_guid=user_guid, facility=facility_2, operation_id=to_operation.id
         )
 
     @patch("service.transfer_event_service.OperationDesignatedOperatorTimelineService.get_current_timeline")
