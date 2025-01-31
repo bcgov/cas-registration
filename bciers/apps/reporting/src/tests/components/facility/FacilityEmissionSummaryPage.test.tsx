@@ -12,7 +12,6 @@ vi.mock("@bciers/actions", () => ({
 const mockSummaryData = {
   attributableForReporting: "777",
   attributableForReportingThreshold: "888",
-  reportingOnlyEmission: "999",
   emissionCategories: {
     flaring: "500",
     fugitive: "1000",
@@ -31,7 +30,6 @@ const mockSummaryData = {
   },
   otherExcluded: {
     lfoExcluded: "400",
-    fogExcluded: "0",
   },
 };
 
@@ -126,11 +124,6 @@ describe("FacilityEmissionSummaryForm", () => {
         "Emissions from line tracing and non-processing and non-compression activities",
       ).value,
     ).toBe("400");
-    expect(
-      screen.getByLabelText(
-        "Emissions from fat, oil and grease collection, refining and storage",
-      ).value,
-    ).toBe("0");
   });
 
   it("should render the attributable summary data", async () => {
@@ -150,6 +143,5 @@ describe("FacilityEmissionSummaryForm", () => {
       screen.getByLabelText("Emissions attributable for reporting threshold")
         .value,
     ).toBe("888");
-    expect(screen.getByLabelText("Reporting-only emissions").value).toBe("999");
   });
 });
