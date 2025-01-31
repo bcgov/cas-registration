@@ -76,7 +76,7 @@ class ReportService:
         report_operation.save()
 
         facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(report_version__id=report_version_id)
-        if activities.exists():
+        if activities:
             for f in facility_reports:
                 f.activities.set(activities)
                 f.save()
