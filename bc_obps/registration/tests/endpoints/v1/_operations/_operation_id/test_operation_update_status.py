@@ -56,6 +56,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         assert operator.is_new is False
         assert operator.verified_by == self.user
         assert operator.verified_at.strftime("%Y-%m-%d") == now.strftime("%Y-%m-%d")
+        operation.refresh_from_db()
 
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.APPROVED,
@@ -116,6 +117,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         assert operation_after_put.verified_by == self.user
         assert operation_after_put.bc_obps_regulated_operation is None
 
+        operation.refresh_from_db()
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.DECLINED,
             operator_legal_name=operation.operator.legal_name,
@@ -154,6 +156,7 @@ class TestUpdateOperationStatusEndpoint(CommonTestSetup):
         assert operation_after_put.verified_by is None
         assert operation_after_put.bc_obps_regulated_operation is None
 
+        operation.refresh_from_db()
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.CHANGES_REQUESTED,
             operator_legal_name=operation.operator.legal_name,

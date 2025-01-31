@@ -229,6 +229,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}
 
+        operation.refresh_from_db()
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.CONFIRMATION,
             operator_legal_name=operation.operator.legal_name,
@@ -306,6 +307,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert updated_contact2.first_name == 'Homer'
         assert updated_contact2.email == 'homer@email.com'
 
+        operation.refresh_from_db()
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.CONFIRMATION,
             operator_legal_name=operation.operator.legal_name,
@@ -521,6 +523,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
 
+        operation.refresh_from_db()
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.CONFIRMATION,
             operator_legal_name=retrieved_operation.operator.legal_name,
@@ -569,6 +572,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
 
+        operation.refresh_from_db()
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.CONFIRMATION,
             operator_legal_name=retrieved_operation.operator.legal_name,
@@ -617,6 +621,8 @@ class TestOperationIdEndpoint(CommonTestSetup):
         # assert that operation's submission_date has been updated to the current time (approximately)
         assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
+
+        operation.refresh_from_db()
         self.mock_send_boro_id_application_email.assert_called_once_with(
             application_state=BoroIdApplicationStates.CONFIRMATION,
             operator_legal_name=retrieved_operation.operator.legal_name,
