@@ -12,7 +12,7 @@ export const facilitySchema: RJSFSchema = {
       enum: ["Small Aggregate", "Large Facility", "Medium Facility"],
     },
     facility_bcghgid: {
-      type: "string",
+      type: ["string", "null"],
       title: "Facility BCGHG ID",
     },
   },
