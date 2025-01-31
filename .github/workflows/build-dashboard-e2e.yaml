@@ -18,6 +18,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           project: dashboard
           host_administration: http://localhost:4001
-          host_coam: http://localhost:7000
+          host_compliance: http://localhost:7000
           host_registration: http://localhost:4000
           host_reporting: http://localhost:5000

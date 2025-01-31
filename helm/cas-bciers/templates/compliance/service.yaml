@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-compliance-frontend
+  labels:
+    layer: frontend
+    {{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.complianceFrontend.service.type }}
+  ports:
+    - port: {{ .Values.complianceFrontend.service.port }}
+      targetPort: 3000
+      protocol: TCP
+      name: {{ include "cas-bciers.fullname" . }}-compliance-frontend
+  selector:
+    {{- include "cas-bciers.selectorLabels" . | nindent 4 }}
+    component: compliance-frontend

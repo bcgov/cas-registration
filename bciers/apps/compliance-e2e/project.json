@@ -1,0 +1,13 @@
+{
+  "name": "compliance-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/compliance-e2e",
+  "implicitDependencies": ["compliance"],
+  "// targets": "to see all targets run: nx show project compliance-e2e --web",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    }
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "External Compliance Dashboard",
+      "data": {
+        "dashboard": "compliance",
+        "access_roles": ["industry_user", "industry_user_admin"],
+        "tiles": [
+          {
+            "title": "My Compliance",
+            "href": "/compliance/summaries",
+            "icon": "File",
+            "content": "Request issuance of earned credits, manage compliance obligations, pay penalties, and track monetary payment summaries here.",
+            "links": [
+              {
+                "title": "Compliance Summaries",
+                "href": "/compliance/summaries"
+              },
+              {
+                "title": "Payment Summaries",
+                "href": "/compliance/payments"
+              }
+            ]
+          },
+          {
+            "title": "B.C. Carbon Registry",
+            "href": "/compliance/bc-carbon-registry",
+            "icon": "File",
+            "content": "Receive, trade, or apply compliance units (earned credits, offset units) towards compliance obligation here.",
+            "links": [
+              {
+                "title": "Go to B.C. Carbon Registry",
+                "href": "/compliance/bc-carbon-registry"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

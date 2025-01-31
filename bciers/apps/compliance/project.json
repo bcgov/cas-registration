@@ -1,0 +1,67 @@
+{
+  "name": "compliance",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/compliance",
+  "projectType": "application",
+  "tags": ["layer:frontend"],
+  "build-args": ["application_path=compliance"],
+  "targets": {
+    "dev": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "compliance:build",
+        "port": 7000
+      }
+    },
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "outputPath": "dist/compliance",
+        "generateLockfile": true
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": "dist/compliance",
+        "file": "Dockerfile",
+        "build-args": ["application_path=compliance"],
+        "tags": ["cas-compliance:latest"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/compliance-e2e",
+        "command": "happo-e2e -- playwright test"
+      }
+    },
+    "e2e:ci": {
+      "executor": "nx:run-commands",
+      "//": "This target is used by the CI pipeline to detect NX affected apps that we want to run e2e on"
+    },
+    "e2e:ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/compliance-e2e",
+        "command": "happo-e2e -- playwright test --ui"
+      }
+    },
+    "e2e:report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/compliance-e2e",
+        "command": "playwright show-report"
+      }
+    }
+  }
+}

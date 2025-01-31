@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from django.apps import apps
@@ -10,17 +11,31 @@ def reset_dashboard_data() -> None:
     Reset the DashboardData objects to the initial state by deleting all existing objects and reloading the fixtures.
     """
     fixture_files = [
-        'common/fixtures/dashboard/bciers/external.json',
-        'common/fixtures/dashboard/bciers/internal.json',
         'common/fixtures/dashboard/administration/external.json',
         'common/fixtures/dashboard/administration/internal.json',
         'common/fixtures/dashboard/operators/internal.json',
         'common/fixtures/dashboard/registration/external.json',
         'common/fixtures/dashboard/reporting/external.json',
         'common/fixtures/dashboard/reporting/internal.json',
-        'common/fixtures/dashboard/coam/external.json',
-        'common/fixtures/dashboard/coam/internal.json',
     ]
+
+    if os.environ.get('ENVIRONMENT') == 'prod':
+        fixture_files.extend(
+            [
+                'common/fixtures/dashboard/bciers/prod/external.json',
+                'common/fixtures/dashboard/bciers/prod/internal.json',
+            ]
+        )
+    else:
+        fixture_files.extend(
+            [
+                'common/fixtures/dashboard/bciers/dev/external.json',
+                'common/fixtures/dashboard/bciers/dev/internal.json',
+                'common/fixtures/dashboard/compliance/external.json',
+                'common/fixtures/dashboard/compliance/internal.json',
+            ]
+        )
+    print(f"Loading fixtures: {fixture_files}")
 
     # Delete all existing DashboardData objects
     DashboardData = apps.get_model('common', 'DashboardData')

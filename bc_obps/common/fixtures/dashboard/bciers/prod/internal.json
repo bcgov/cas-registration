@@ -1,0 +1,123 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "Internal BCiers Dashboard",
+      "data": {
+        "dashboard": "bciers",
+        "access_roles": [
+          "cas_admin",
+          "cas_analyst",
+          "cas_director",
+          "cas_view_only"
+        ],
+        "tiles": [
+          {
+            "title": "Administration",
+            "href": "/administration",
+            "icon": "Layers",
+            "content": "View information of any operator, operation, facility, contact.",
+            "links": [
+              {
+                "title": "Operators",
+                "href": "/administration/operators"
+              },
+              {
+                "title": "Operations",
+                "href": "/administration/operations"
+              },
+              {
+                "title": "Operator Administrators and Access Requests",
+                "href": "/administration/operator-administrators-and-access-requests"
+              },
+              {
+                "title": "Contacts",
+                "href": "/administration/contacts"
+              }
+            ]
+          },
+          {
+            "title": "Transfers",
+            "icon": "Layers",
+            "content": "Transfer operations and facilities between Operators and view transfers.",
+            "links": [
+              {
+                "title": "Transfers",
+                "href": "/registration/transfers"
+              },
+              {
+                "title": "Transfer an operation or facility",
+                "href": "/registration/transfers/transfer-entity",
+                "allowedRoles": ["cas_analyst"]
+              }
+            ]
+          },
+          {
+            "title": "Reporting",
+            "href": "/reporting/reports",
+            "icon": "File",
+            "content": "View Annual Reports for any operation here.",
+            "links": [
+              {
+                "title": "Annual Reports",
+                "href": "/reporting/reports"
+              },
+              {
+                "title": "Previous Years Reports",
+                "href": "/reporting/reports/previous-years"
+              }
+            ]
+          },
+          {
+            "title": "Compliance",
+            "href": "/compliance",
+            "icon": "Pulse",
+            "content": "View payments for compliance obligations here.",
+            "links": [
+              {
+                "title": "TBD",
+                "href": "/compliance/"
+              },
+              {
+                "title": "TBD",
+                "href": "/compliance/"
+              },
+              {
+                "title": "TBD",
+                "href": "/compliance/"
+              }
+            ]
+          },
+          {
+            "title": "Clean Growth User Access Management",
+            "href": "mailto:GHGRegulator@gov.bc.ca",
+            "icon": "Users",
+            "content": "View, approve or decline IDIR user access requests, or to assign access type to users here.",
+            "links": [
+              {
+                "title": "Access Requests",
+                "href": "/tbd/"
+              },
+              {
+                "title": "Invite User (by Email)",
+                "href": "/tbd/"
+              }
+            ]
+          },
+          {
+            "title": "Report a Problem",
+            "href": "mailto:GHGRegulator@gov.bc.ca",
+            "icon": "Wrench",
+            "content": "Report a problem to the Clean Growth Digital Services Team here.",
+            "links": [
+              {
+                "title": "Report problems to GHGRegulator@gov.bc.ca",
+                "href": "mailto:GHGRegulator@gov.bc.ca"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

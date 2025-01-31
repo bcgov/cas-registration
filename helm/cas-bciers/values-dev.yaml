@@ -81,7 +81,7 @@ reportingFrontend:
       cpu: 60m
       memory: 128Mi
 
-coamFrontend:
+complianceFrontend:
   replicaCount: 1
 
   image:
@@ -89,7 +89,7 @@ coamFrontend:
 
   route:
     host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
-    path: "/coam"
+    path: "/compliance"
 
   environment: dev
 

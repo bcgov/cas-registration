@@ -1,0 +1,226 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "External BCiers Dashboard",
+      "data": {
+        "dashboard": "bciers",
+        "access_roles": ["industry_user", "industry_user_admin"],
+        "tiles": [
+          {
+            "title": "Administration",
+            "href": "/administration",
+            "icon": "Layers",
+            "content": "View or update information of your operator, operations, facilities.",
+            "links": [
+              {
+                "title": "Select an Operator",
+                "href": "/administration/select-operator",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/operator",
+                    "field": "error",
+                    "operator": "exists",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "title": "My Operator",
+                "href": "/administration/my-operator",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/operator",
+                    "field": "error",
+                    "operator": "notExists",
+                    "value": true
+                  },
+                  {
+                    "api": "registration/user-operators/current/has-required-fields",
+                    "field": "has_required_fields",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "title": "My Operator<sup style='color: red;'>*</sup><small> (action required)</small>",
+                "href": "/administration/my-operator",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/operator",
+                    "field": "error",
+                    "operator": "notExists",
+                    "value": true
+                  },
+                  {
+                    "api": "registration/user-operators/current/has-required-fields",
+                    "field": "has_required_fields",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
+              {
+                "title": "Operations",
+                "href": "/administration/operations",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/operator",
+                    "field": "error",
+                    "operator": "notExists",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "title": "Report transfer of operation or facility",
+                "href": "/administration/transfers",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/operator",
+                    "field": "error",
+                    "operator": "notExists",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "title": "Contacts",
+                "href": "/administration/contacts",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/operator",
+                    "field": "error",
+                    "operator": "notExists",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "title": "Users and Access Requests",
+                "icon": "Users",
+                "content": "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
+                "href": "/administration/users-and-access-requests",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/is-current-user-approved-admin",
+                    "field": "approved",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Registration",
+            "href": "/registration",
+            "icon": "Entrance",
+            "content": "Submit BORO ID applications",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/operator",
+                "field": "error",
+                "operator": "notExists",
+                "value": true
+              },
+              {
+                "api": "registration/user-operators/current/has-required-fields",
+                "field": "has_required_fields",
+                "operator": "equals",
+                "value": true
+              }
+            ],
+            "links": [
+              {
+                "title": "Register an Operation",
+                "href": "/registration/register-an-operation",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/has_registered_operation",
+                    "field": "has_registered_operation",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "title": "Register an Operation<sup style='color: red;'>*</sup><small> (action required)</small>",
+                "href": "/registration/register-an-operation",
+                "conditions": [
+                  {
+                    "api": "registration/user-operators/current/has_registered_operation",
+                    "field": "has_registered_operation",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Reporting",
+            "href": "/reporting",
+            "icon": "File",
+            "content": "Submit, view and edit your annual reports or previous years’ reports.",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/has_registered_operation",
+                "field": "has_registered_operation",
+                "operator": "equals",
+                "value": true
+              }
+            ],
+            "links": [
+              {
+                "title": "Submit Annual Report(s)",
+                "href": "/reporting/reports"
+              },
+              {
+                "title": "View Past Submissions",
+                "href": "/reporting/reports/previous-years"
+              }
+            ]
+          },
+          {
+            "title": "Compliance",
+            "href": "/compliance",
+            "icon": "File",
+            "content": "View compliance summaries, manage obligations, pay penalties, request issuance of earned credits.",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/has_registered_operation",
+                "field": "has_registered_operation",
+                "operator": "equals",
+                "value": true
+              }
+            ],
+            "links": [
+              {
+                "title": "My Compliance",
+                "href": "/compliance/summaries"
+              },
+              {
+                "title": "B.C. Carbon Registry",
+                "href": "/compliance/bc-carbon-registry"
+              }
+            ]
+          },
+          {
+            "title": "Report a Problem",
+            "href": "mailto:GHGRegulator@gov.bc.ca",
+            "icon": "Wrench",
+            "content": "Something wrong?",
+            "links": [
+              {
+                "title": "Report problems to GHGRegulator@gov.bc.ca",
+                "href": "mailto:GHGRegulator@gov.bc.ca"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
