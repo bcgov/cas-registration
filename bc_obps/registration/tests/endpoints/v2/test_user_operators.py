@@ -274,7 +274,9 @@ class TestListUserOperators(CommonTestSetup):
     def test_list_user_operators_v2_paginated(self):
         for _ in range(50):
             baker.make_recipe(
-                'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+                'registration.tests.utils.user_operator',
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.APPROVED,
             )
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.url)
@@ -322,28 +324,36 @@ class TestListUserOperators(CommonTestSetup):
 
     def test_list_user_operators_v2_with_filter(self):
         baker.make_recipe(
-            'utils.user_operator',
+            'registration.tests.utils.user_operator',
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
-            user=baker.make_recipe('utils.industry_operator_user', first_name="Jane", last_name="Doe"),
+            user=baker.make_recipe(
+                'registration.tests.utils.industry_operator_user', first_name="Jane", last_name="Doe"
+            ),
         )
         baker.make_recipe(
-            'utils.user_operator',
+            'registration.tests.utils.user_operator',
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
-            user=baker.make_recipe('utils.industry_operator_user', first_name="Bob", last_name="Smith"),
+            user=baker.make_recipe(
+                'registration.tests.utils.industry_operator_user', first_name="Bob", last_name="Smith"
+            ),
         )
         baker.make_recipe(
-            'utils.user_operator',
+            'registration.tests.utils.user_operator',
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.DECLINED,
-            user=baker.make_recipe('utils.industry_operator_user', first_name="John", last_name="Doe"),
+            user=baker.make_recipe(
+                'registration.tests.utils.industry_operator_user', first_name="John", last_name="Doe"
+            ),
         )
         baker.make_recipe(
-            'utils.user_operator',
+            'registration.tests.utils.user_operator',
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.DECLINED,
-            user=baker.make_recipe('utils.industry_operator_user', first_name="Henry", last_name="Ives"),
+            user=baker.make_recipe(
+                'registration.tests.utils.industry_operator_user', first_name="Henry", last_name="Ives"
+            ),
         )
 
         # Get the default page 1 response
@@ -381,7 +391,9 @@ class TestListUserOperators(CommonTestSetup):
             # add 2 approved admin user operators to test the endpoint
             approved_admin_user_operators.append(
                 baker.make_recipe(
-                    'utils.user_operator', role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+                    'registration.tests.utils.user_operator',
+                    role=UserOperator.Roles.ADMIN,
+                    status=UserOperator.Statuses.APPROVED,
                 )
             )
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.url)

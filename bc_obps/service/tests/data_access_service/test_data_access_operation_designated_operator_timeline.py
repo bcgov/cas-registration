@@ -15,23 +15,23 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
     def test_unapproved_user_exception():
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
-                baker.make_recipe('utils.industry_operator_user')
+                baker.make_recipe('registration.tests.utils.industry_operator_user')
             )
 
     @staticmethod
     def test_get_operations_for_industry_user():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         # transferred operation - should not be returned
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
             operator=approved_user_operator.operator,
         )
 
         # closed operations
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
             operator=approved_user_operator.operator,
             _quantity=20,
@@ -39,7 +39,7 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
         # someone else's operations - should not be returned
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
             _quantity=5,
         )
@@ -55,27 +55,27 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
         # non-registered operation - should not be returned
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT),
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.DRAFT),
         )
 
         # transferred operation
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('utils.operation', status=Operation.Statuses.REGISTERED),
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
             status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
         )
 
         # closed operations
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('utils.operation', status=Operation.Statuses.REGISTERED),
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
             status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
             _quantity=20,
         )
 
         timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
-            baker.make_recipe('utils.cas_admin')
+            baker.make_recipe('registration.tests.utils.cas_admin')
         )
 
         assert timeline.count() == 21

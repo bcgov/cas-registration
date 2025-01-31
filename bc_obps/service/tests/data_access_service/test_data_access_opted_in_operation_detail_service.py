@@ -10,13 +10,13 @@ pytestmark = pytest.mark.django_db
 class TestDataAccessOptedInOperationService:
     @staticmethod
     def test_update_opted_in_operation_detail():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             created_by=approved_user_operator.user,
             opted_in_operation=baker.make_recipe(
-                'utils.opted_in_operation_detail', created_by=approved_user_operator.user
+                'registration.tests.utils.opted_in_operation_detail', created_by=approved_user_operator.user
             ),
             operator=approved_user_operator.operator,
             opt_in=True,
@@ -56,13 +56,13 @@ class TestDataAccessOptedInOperationService:
 
     @staticmethod
     def test_archive_or_delete_opted_in_operation_detail():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             created_by=approved_user_operator.user,
             opted_in_operation=baker.make_recipe(
-                'utils.opted_in_operation_detail', created_by=approved_user_operator.user
+                'registration.tests.utils.opted_in_operation_detail', created_by=approved_user_operator.user
             ),
             operator=approved_user_operator.operator,
             opt_in=True,

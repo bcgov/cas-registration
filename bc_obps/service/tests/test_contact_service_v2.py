@@ -11,14 +11,14 @@ class TestListContactService:
     @staticmethod
     def test_list_contacts():
 
-        user = baker.make_recipe('utils.cas_admin')
-        contact1 = baker.make_recipe('utils.contact')
-        contact2 = baker.make_recipe('utils.contact')
+        user = baker.make_recipe('registration.tests.utils.cas_admin')
+        contact1 = baker.make_recipe('registration.tests.utils.contact')
+        contact2 = baker.make_recipe('registration.tests.utils.contact')
 
-        operator1 = baker.make_recipe('utils.operator')
+        operator1 = baker.make_recipe('registration.tests.utils.operator')
 
-        operator2a = baker.make_recipe('utils.operator')
-        operator2b = baker.make_recipe('utils.operator')
+        operator2a = baker.make_recipe('registration.tests.utils.operator')
+        operator2b = baker.make_recipe('registration.tests.utils.operator')
 
         # contact 1 is associated with one operator, count = 1
         operator1.contacts.set([contact1])
@@ -38,13 +38,14 @@ class TestContactService:
     @staticmethod
     def test_get_with_places_assigned_with_contacts():
         contact = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative')
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         # add contact to operator (they have to be associated with the operator or will throw unauthorized)
         approved_user_operator.operator.contacts.set([contact])
         # add contact to operation
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         operation.contacts.set([contact])
 
         result = ContactServiceV2.get_with_places_assigned_v2(contact.id)
@@ -57,9 +58,10 @@ class TestContactService:
     @staticmethod
     def test_get_with_places_assigned_with_no_contacts():
         contact = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative')
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         # add contact to operator (they have to be associated with the operator or will throw unauthorized)
         approved_user_operator.operator.contacts.set([contact])
 
@@ -68,7 +70,7 @@ class TestContactService:
 
     @staticmethod
     def test_raises_exception_if_contact_missing_address():
-        contact = baker.make_recipe('utils.contact', address=None)
+        contact = baker.make_recipe('registration.tests.utils.contact', address=None)
 
         with pytest.raises(
             Exception,
@@ -79,7 +81,9 @@ class TestContactService:
     @staticmethod
     def test_raises_exception_if_operation_rep_missing_required_fields():
         contacts = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=5
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+            _quantity=5,
         )
         contacts[0].address = None
         contacts[0].save()

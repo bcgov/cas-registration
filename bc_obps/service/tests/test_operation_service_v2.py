@@ -38,25 +38,31 @@ pytestmark = pytest.mark.django_db
 
 def set_up_valid_mock_operation(purpose: Operation.Purposes):
     # create operation and purpose
-    operation = baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT, registration_purpose=purpose)
+    operation = baker.make_recipe(
+        'registration.tests.utils.operation', status=Operation.Statuses.DRAFT, registration_purpose=purpose
+    )
 
     # create mock valid operation rep
-    address = baker.make_recipe('utils.address')
+    address = baker.make_recipe('registration.tests.utils.address')
     operation_representative = baker.make_recipe(
-        'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), address=address
+        'registration.tests.utils.contact',
+        business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+        address=address,
     )
     operation.contacts.set([operation_representative])
 
     # create facility for operation
-    baker.make_recipe('utils.facility_designated_operation_timeline', operation=operation)
+    baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', operation=operation)
 
     # activity
     operation.activities.set([baker.make(Activity)])
 
     # docs
-    boundary_map = baker.make_recipe('utils.document', type=DocumentType.objects.get(name='boundary_map'))
+    boundary_map = baker.make_recipe(
+        'registration.tests.utils.document', type=DocumentType.objects.get(name='boundary_map')
+    )
     process_flow_diagram = baker.make_recipe(
-        'utils.document', type=DocumentType.objects.get(name='process_flow_diagram')
+        'registration.tests.utils.document', type=DocumentType.objects.get(name='process_flow_diagram')
     )
 
     operation.documents.set([boundary_map, process_flow_diagram])
@@ -64,14 +70,14 @@ def set_up_valid_mock_operation(purpose: Operation.Purposes):
     if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
         # statutory dec if new entrant
         new_entrant_application = baker.make_recipe(
-            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
+            'registration.tests.utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
         operation.documents.add(new_entrant_application)
         operation.date_of_first_shipment = "On or after April 1, 2024"
 
     if purpose == Operation.Purposes.OPTED_IN_OPERATION:
         # opt in record
-        opted_in_operation_detail = baker.make_recipe('utils.opted_in_operation_detail')
+        opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
         operation.opted_in_operation = opted_in_operation_detail
         operation.save()
     return operation
@@ -81,15 +87,19 @@ class TestOperationServiceV2:
     @staticmethod
     def test_raises_error_if_operation_does_not_belong_to_user():
         user = baker.make_recipe(
-            'utils.industry_operator_user',
+            'registration.tests.utils.industry_operator_user',
         )
-        baker.make_recipe('utils.approved_user_operator', user=user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=user)
 
         random_operator = baker.make_recipe(
-            'utils.operator', cra_business_number=123456789, bc_corporate_registry_number='abc1234567'
+            'registration.tests.utils.operator',
+            cra_business_number=123456789,
+            bc_corporate_registry_number='abc1234567',
         )
         operation = baker.make_recipe(
-            'utils.operation', operator=random_operator, registration_purpose='Potential Reporting Operation'
+            'registration.tests.utils.operation',
+            operator=random_operator,
+            registration_purpose='Potential Reporting Operation',
         )
 
         payload = OperationInformationIn(
@@ -106,9 +116,9 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_assigns_single_selected_purpose():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose='Potential Reporting Operation',
         )
@@ -130,10 +140,10 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_remove_opted_in_operation_detail():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        opted_in_operation_detail = baker.make_recipe('utils.opted_in_operation_detail')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             opt_in=True,
@@ -155,9 +165,9 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_assigning_opted_in_operation_will_create_and_opted_in_operation_detail():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
         )
@@ -178,16 +188,20 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_list_current_users_unregistered_operations():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_unregistered_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.PENDING
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.PENDING,
         )
         # operation with a registered status
         baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.REGISTERED
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
         )
         # operation for a different user_operator
-        baker.make_recipe('utils.operation', status=Operation.Statuses.PENDING)
+        baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.PENDING)
 
         result = OperationServiceV2.list_current_users_unregistered_operations(approved_user_operator.user.user_guid)
         assert Operation.objects.count() == 3
@@ -196,7 +210,7 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_update_operation_status_success():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
         users_operation.operator = approved_user_operator.operator
         users_operation.save()
@@ -216,9 +230,11 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_update_operation_status_fail():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
         )
         users_operation.contacts.set([])
 
@@ -230,14 +246,16 @@ class TestOperationServiceV2:
     @staticmethod
     def test_raises_error_if_operation_does_not_belong_to_user_when_updating_status():
         user = baker.make_recipe(
-            'utils.industry_operator_user',
+            'registration.tests.utils.industry_operator_user',
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=user)
 
         random_operator = baker.make_recipe(
-            'utils.operator', cra_business_number=123456789, bc_corporate_registry_number='abc1234567'
+            'registration.tests.utils.operator',
+            cra_business_number=123456789,
+            bc_corporate_registry_number='abc1234567',
         )
-        operation = baker.make_recipe('utils.operation', operator=random_operator)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.update_status(
                 approved_user_operator.user.user_guid, operation.id, Operation.Statuses.REGISTERED
@@ -245,8 +263,8 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_assign_new_contacts_to_operation_and_operator():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         payload = OperationRepresentativeIn(
             first_name="John",
             last_name="Doe",
@@ -275,12 +293,12 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_assign_existing_contacts_to_operation():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operator = approved_user_operator.operator
-        contacts = baker.make_recipe('utils.contact', _quantity=5)
+        contacts = baker.make_recipe('registration.tests.utils.contact', _quantity=5)
         contact_to_update = contacts[0]
         users_operator.contacts.set(list(map(lambda c: c.id, contacts)))
-        operation = baker.make_recipe('utils.operation', operator=users_operator)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=users_operator)
 
         # bad payload, should not update first_name, last_name and email when existing_contact_id is provided
         bad_payload = OperationRepresentativeIn(
@@ -326,22 +344,26 @@ class TestOperationServiceV2:
     @staticmethod
     def test_raises_error_if_operation_does_not_belong_to_user_when_updating_opted_in_operation_detail():
         user = baker.make_recipe(
-            'utils.industry_operator_user',
+            'registration.tests.utils.industry_operator_user',
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=user)
 
         random_operator = baker.make_recipe(
-            'utils.operator', cra_business_number=123456789, bc_corporate_registry_number='abc1234567'
+            'registration.tests.utils.operator',
+            cra_business_number=123456789,
+            bc_corporate_registry_number='abc1234567',
         )
-        operation = baker.make_recipe('utils.operation', operator=random_operator)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
 
     @staticmethod
     def test_create_or_replace_new_entrant_application():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
         )
         payload = OperationNewEntrantApplicationIn(
             new_entrant_application=MOCK_DATA_URL,
@@ -359,7 +381,7 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_register_operation_information_new_operation():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         payload = OperationInformationIn(
             registration_purpose='Electricity Import Operation',
@@ -385,9 +407,11 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_register_operation_information_existing_operation():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, created_by=approved_user_operator.user
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
         )
         payload = OperationInformationIn(
             registration_purpose='Potential Reporting Operation',
@@ -414,15 +438,15 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_true():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
         )
         new_entrant_application = baker.make_recipe(
-            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
+            'registration.tests.utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
         users_operation.documents.add(new_entrant_application)
 
@@ -430,14 +454,14 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_no_date():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
         )
         new_entrant_application = baker.make_recipe(
-            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
+            'registration.tests.utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
         users_operation.documents.add(new_entrant_application)
 
@@ -445,9 +469,9 @@ class TestOperationServiceV2:
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_no_application():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
@@ -458,7 +482,7 @@ class TestOperationServiceV2:
 
 class TestOperationServiceV2CreateOrUpdateOperation:
     def test_create_operation_without_multiple_operators(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         payload = OperationInformationIn(
             registration_purpose='Reporting Operation',
             regulated_products=[1],
@@ -483,7 +507,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
 
     @staticmethod
     def test_create_operation_with_multiple_operators():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         payload = OperationInformationIn(
             registration_purpose='Reporting Operation',
             regulated_products=[1],
@@ -531,9 +555,13 @@ class TestOperationServiceV2CreateOrUpdateOperation:
 
     @staticmethod
     def test_update_operation_with_multiple_operators():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        multiple_operators = baker.make_recipe('utils.multiple_operator', operation=existing_operation, _quantity=3)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
+        multiple_operators = baker.make_recipe(
+            'registration.tests.utils.multiple_operator', operation=existing_operation, _quantity=3
+        )
         existing_operation.multiple_operators.set(multiple_operators)
 
         payload = OperationInformationIn(
@@ -590,9 +618,13 @@ class TestOperationServiceV2CreateOrUpdateOperation:
 
     @staticmethod
     def test_update_operation_archive_multiple_operators():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        multiple_operators = baker.make_recipe('utils.multiple_operator', operation=existing_operation, _quantity=3)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
+        multiple_operators = baker.make_recipe(
+            'registration.tests.utils.multiple_operator', operation=existing_operation, _quantity=3
+        )
         existing_operation.multiple_operators.set(multiple_operators)
 
         payload = OperationInformationIn(
@@ -621,10 +653,14 @@ class TestOperationServiceV2CreateOrUpdateOperation:
 
     @staticmethod
     def test_update_operation_with_operation_representatives_with_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        existing_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
         contacts = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative'), _quantity=3
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+            _quantity=3,
         )
 
         payload = OperationInformationInUpdate(
@@ -655,9 +691,9 @@ class TestOperationServiceV2CreateOrUpdateOperation:
 
 class TestOperationServiceV2UpdateOperation:
     def test_update_operation_fails_if_operation_not_registered(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status=Operation.Statuses.DRAFT,
@@ -678,9 +714,9 @@ class TestOperationServiceV2UpdateOperation:
             OperationServiceV2.update_operation(approved_user_operator.user.user_guid, payload, existing_operation.id)
 
     def test_update_operation(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
@@ -709,9 +745,9 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
 
     def test_update_operation_with_no_regulated_products(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
@@ -741,9 +777,9 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
 
     def test_update_operation_with_new_entrant_application_data(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
@@ -780,11 +816,11 @@ class TestOperationServiceV2UpdateOperation:
 class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
     def test_check_current_users_registered_operation_returns_true(self):
         # Create a user operator and a registered operation
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         # Create an operation with status 'Registered'
         baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status="Registered",
@@ -799,7 +835,7 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
 
         # Create an operation with a different status
         baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status="Draft",
@@ -814,11 +850,11 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
 
     def test_check_current_users_registered_operation_returns_false(self):
         # Create a user operator and an operation with a non-registered status
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         # Create an operation with a non-registered status
         baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status="Draft",
@@ -835,7 +871,7 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
 class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
     @staticmethod
     def test_raises_exception_if_no_purpose():
-        operation = baker.make_recipe('utils.operation', status=Operation.Statuses.DRAFT)
+        operation = baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.DRAFT)
         # the only way to not have a registration purpose on an operation is to first set one when creating the operation,
         # then manually remove it
         operation.registration_purpose = None
@@ -936,14 +972,14 @@ class TestHandleChangeOfRegistrationPurpose:
 
     @staticmethod
     def test_old_purpose_opted_in():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             opt_in=True,
         )
-        opted_in_operation_detail = baker.make_recipe('utils.opted_in_operation_detail')
+        opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
         operation.opted_in_operation = opted_in_operation_detail
         operation.save()
 
@@ -968,19 +1004,21 @@ class TestHandleChangeOfRegistrationPurpose:
 
     @staticmethod
     def test_old_purpose_new_entrant():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
         )
-        boundary_map = baker.make_recipe('utils.document', type=DocumentType.objects.get(name='boundary_map'))
+        boundary_map = baker.make_recipe(
+            'registration.tests.utils.document', type=DocumentType.objects.get(name='boundary_map')
+        )
         process_flow_diagram = baker.make_recipe(
-            'utils.document', type=DocumentType.objects.get(name='process_flow_diagram')
+            'registration.tests.utils.document', type=DocumentType.objects.get(name='process_flow_diagram')
         )
         new_entrant_application = baker.make_recipe(
-            'utils.document', type=DocumentType.objects.get(name='new_entrant_application')
+            'registration.tests.utils.document', type=DocumentType.objects.get(name='new_entrant_application')
         )
         operation.documents.set([new_entrant_application, boundary_map, process_flow_diagram])
 
@@ -1007,9 +1045,9 @@ class TestHandleChangeOfRegistrationPurpose:
 
     @staticmethod
     def test_new_purpose_eio():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
         )
@@ -1040,12 +1078,12 @@ class TestHandleChangeOfRegistrationPurpose:
 
     @staticmethod
     def test_new_purpose_reporting():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        products = baker.make_recipe('utils.regulated_product', _quantity=3)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        products = baker.make_recipe('registration.tests.utils.regulated_product', _quantity=3)
         activities = baker.make(Activity, _quantity=3)
         activity_pks = [activity.id for activity in activities]
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             regulated_products=products,
         )
@@ -1070,9 +1108,9 @@ class TestHandleChangeOfRegistrationPurpose:
 class TestGenerateBoroId:
     @staticmethod
     def test_generates_boro_id():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
@@ -1083,9 +1121,9 @@ class TestGenerateBoroId:
 
     @staticmethod
     def test_raises_exception_if_operation_is_non_regulated():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
             registration_purpose=Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
@@ -1096,9 +1134,9 @@ class TestGenerateBoroId:
 
     @staticmethod
     def test_raises_exception_if_operation_is_not_registered():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             status=Operation.Statuses.DRAFT,
             registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
@@ -1111,12 +1149,12 @@ class TestGenerateBoroId:
 class TestRemoveOperationRepresentative:
     @staticmethod
     def test_cannot_remove_anything_from_other_users_operations():
-        user = baker.make_recipe('utils.industry_operator_user')
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
-        contact1 = baker.make_recipe('utils.contact', id=1)
-        contact2 = baker.make_recipe('utils.contact', id=2)
+        contact1 = baker.make_recipe('registration.tests.utils.contact', id=1)
+        contact2 = baker.make_recipe('registration.tests.utils.contact', id=2)
         operation.contacts.add(contact1, contact2)
         operation.save()
         with pytest.raises(Exception, match="Unauthorized."):
@@ -1124,10 +1162,10 @@ class TestRemoveOperationRepresentative:
 
     @staticmethod
     def test_removes_operation_representative():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        contact1 = baker.make_recipe('utils.contact', id=1)
-        contact2 = baker.make_recipe('utils.contact', id=2)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        contact1 = baker.make_recipe('registration.tests.utils.contact', id=1)
+        contact2 = baker.make_recipe('registration.tests.utils.contact', id=2)
         operation.contacts.add(contact1, contact2)
         operation.save()
 
@@ -1147,7 +1185,7 @@ class TestUpdateOperationsOperator:
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_unauthorized_user_cannot_update_operations_operator(mock_get_by_guid):
-        cas_admin = baker.make_recipe('utils.cas_admin')
+        cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
         mock_get_by_guid.return_value = cas_admin
         operation = MagicMock()
         operator_id = uuid4()
@@ -1158,10 +1196,10 @@ class TestUpdateOperationsOperator:
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     @patch("registration.models.Operation.set_create_or_update")
     def test_update_operations_operator_success(mock_get_by_guid, mock_set_create_or_update):
-        cas_analyst = baker.make_recipe('utils.cas_analyst')
+        cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
         mock_get_by_guid.return_value = cas_analyst
-        operation = baker.make_recipe('utils.operation')
-        operator = baker.make_recipe('utils.operator')
+        operation = baker.make_recipe('registration.tests.utils.operation')
+        operator = baker.make_recipe('registration.tests.utils.operator')
         OperationServiceV2.update_operator(cas_analyst.user_guid, operation, operator.id)
         mock_set_create_or_update.assert_called_once()
         assert operation.operator == operator
@@ -1170,7 +1208,7 @@ class TestUpdateOperationsOperator:
 class TestListOperationTimeline:
     @staticmethod
     def test_raise_exception_if_user_unapproved():
-        user = baker.make_recipe('utils.industry_operator_user')
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         with pytest.raises(Exception, match="Unauthorized."):
             OperationServiceV2.list_operations_timeline(
                 user.user_guid,
@@ -1180,20 +1218,20 @@ class TestListOperationTimeline:
 
     @staticmethod
     def test_gets_unfiltered_sorted_list_for_industry_user():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
             status=OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN,
         )
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
             status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
         )
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
             status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
         )
@@ -1214,22 +1252,28 @@ class TestListOperationTimeline:
         filters = OperationTimelineFilterSchema(
             operation__bcghg_id='1',
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='11111111111'))),
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='11111111111'))
+            ),
         )
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='15555555555'))),
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='15555555555'))
+            ),
         )
         baker.make_recipe(
-            'utils.operation_designated_operator_timeline',
+            'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            operation=baker.make_recipe('utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='29999999999'))),
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='29999999999'))
+            ),
         )
 
         timeline = OperationServiceV2.list_operations_timeline(

@@ -6,7 +6,7 @@ from model_bakery import baker
 
 class TestOperationBcghgIdEndpoint(CommonTestSetup):
     def test_authorized_role_can_issue_id(self):
-        operation = baker.make_recipe('utils.operation')
+        operation = baker.make_recipe('registration.tests.utils.operation')
 
         response = TestUtils.mock_patch_with_auth_role(
             self,
