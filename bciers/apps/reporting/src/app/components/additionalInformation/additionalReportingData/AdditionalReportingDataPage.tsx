@@ -2,9 +2,10 @@ import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistration
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-
-const REGULATED_OPERATION = "OBPS Regulated Operation";
-const NEW_ENTRANT = "New Entrant Operation";
+import {
+  REGULATED_OPERATION_REGISTRATION_PURPOSE,
+  NEW_ENTRANT_REGISTRATION_PURPOSE,
+} from "@reporting/src/app/utils/constants";
 
 export function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
@@ -46,8 +47,10 @@ export default async function AdditionalReportingDataPage({
   return (
     <AdditionalReportingDataForm
       versionId={version_id}
-      includeElectricityGenerated={registrationPurpose === REGULATED_OPERATION}
-      isNewEntrant={registrationPurpose === NEW_ENTRANT}
+      includeElectricityGenerated={
+        registrationPurpose === REGULATED_OPERATION_REGISTRATION_PURPOSE
+      }
+      isNewEntrant={registrationPurpose === NEW_ENTRANT_REGISTRATION_PURPOSE}
       initialFormData={transformedData}
     />
   );

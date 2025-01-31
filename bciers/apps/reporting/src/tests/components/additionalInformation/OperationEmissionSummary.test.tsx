@@ -1,9 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import FacilityEmissionSummaryForm from "@reporting/src/app/components/facility/FacilityEmissionSummaryForm";
 import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
+import OperationEmissionSummary from "@reporting/src/app/components/additionalInformation/operationEmissionSummary/OperationEmissionSummaryForm";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -50,18 +50,18 @@ beforeEach(() => {
   });
 });
 
-describe("FacilityEmissionSummaryForm", () => {
+describe("OperationEmissionSummary", () => {
   beforeEach(() => {
     (actionHandler as Mock).mockClear();
   });
 
   it("should render the basic category summary data", async () => {
     render(
-      <FacilityEmissionSummaryForm
+      <OperationEmissionSummary
         versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 
@@ -90,11 +90,11 @@ describe("FacilityEmissionSummaryForm", () => {
 
   it("should render the fuel excluded category summary data", async () => {
     render(
-      <FacilityEmissionSummaryForm
+      <OperationEmissionSummary
         versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 
@@ -111,11 +111,11 @@ describe("FacilityEmissionSummaryForm", () => {
 
   it("should render the other excluded category summary data", async () => {
     render(
-      <FacilityEmissionSummaryForm
+      <OperationEmissionSummary
         versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 
@@ -128,11 +128,11 @@ describe("FacilityEmissionSummaryForm", () => {
 
   it("should render the attributable summary data", async () => {
     render(
-      <FacilityEmissionSummaryForm
+      <OperationEmissionSummary
         versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 

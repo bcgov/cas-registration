@@ -32,7 +32,7 @@ export default function NewEntrantInformationForm({
     !initialFormData.assertion_statement,
   );
 
-  const saveAndContinueUrl = `/reports/${version_id}/compliance-summary`;
+  const saveAndContinueUrl = `/reports/${version_id}/emission-summary`;
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
