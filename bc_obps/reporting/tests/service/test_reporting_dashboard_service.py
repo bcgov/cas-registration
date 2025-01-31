@@ -23,7 +23,7 @@ class TestReportingDashboardService:
 
         year = reporting_year_baker(reporting_year=5091)
         operator = operator_baker()
-        operations = operation_baker(operator_id=operator.id, _quantity=3)
+        operations = operation_baker(operator_id=operator.id, _quantity=4)
 
         # Create reports for first two operations
         r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
@@ -36,6 +36,13 @@ class TestReportingDashboardService:
 
         r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
         r1 = ReportVersion.objects.get(pk=r1_version1_id).report
+
+        operations[0].status = Operation.Statuses.REGISTERED
+        operations[1].status = Operation.Statuses.REGISTERED
+        operations[2].status = Operation.Statuses.REGISTERED
+        operations[3].status = Operation.Statuses.NOT_STARTED
+        for op in operations:
+            op.save()
 
         result = ReportingDashboardService.get_operations_for_reporting_dashboard(user.user_guid, 5091).values()
         result_list = list(result)
