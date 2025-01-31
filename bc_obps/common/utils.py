@@ -20,17 +20,21 @@ def reset_dashboard_data() -> None:
     ]
 
     if os.environ.get('ENVIRONMENT') == 'prod':
-        fixture_files.extend([
-            'common/fixtures/dashboard/bciers/prod/external.json',
-            'common/fixtures/dashboard/bciers/prod/internal.json',
-        ])
+        fixture_files.extend(
+            [
+                'common/fixtures/dashboard/bciers/prod/external.json',
+                'common/fixtures/dashboard/bciers/prod/internal.json',
+            ]
+        )
     else:
-        fixture_files.extend([
-            'common/fixtures/dashboard/bciers/dev/external.json',
-            'common/fixtures/dashboard/bciers/dev/internal.json',
-            'common/fixtures/dashboard/compliance/external.json',
-            'common/fixtures/dashboard/compliance/internal.json',
-        ])
+        fixture_files.extend(
+            [
+                'common/fixtures/dashboard/bciers/dev/external.json',
+                'common/fixtures/dashboard/bciers/dev/internal.json',
+                'common/fixtures/dashboard/compliance/external.json',
+                'common/fixtures/dashboard/compliance/internal.json',
+            ]
+        )
     print(f"Loading fixtures: {fixture_files}")
 
     # Delete all existing DashboardData objects

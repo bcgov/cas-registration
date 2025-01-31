@@ -204,7 +204,9 @@ describe("The Tiles component", () => {
     ).toHaveAttribute("href", "/reporting/tbd");
 
     // Compliance tile
-    expect(screen.getByRole("heading", { name: "Compliance" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Compliance" }),
+    ).toBeInTheDocument();
 
     // Compliance tile content
     expect(
