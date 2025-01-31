@@ -4,7 +4,6 @@
     "pk": "ebc45617-ae4c-4c76-ab36-5a59c3aef407",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 1",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -25,7 +24,6 @@
     "pk": "2e36a496-3f66-408f-b2b9-69f4fa7bba0e",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 2",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -46,7 +44,6 @@
     "pk": "d046cdec-554d-4c54-9160-fcd6c20e3566",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 3",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -67,7 +64,6 @@
     "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb8",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 4",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -88,7 +84,6 @@
     "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb0",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 5 - unregistered",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -108,7 +103,6 @@
     "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb1",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 6 - unregistered",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -128,7 +122,6 @@
     "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb2",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 7 - unregistered",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -148,7 +141,6 @@
     "pk": "460102aa-e275-46fe-a38e-1e5a3c7badb3",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "SFO Operation 8 - unregistered",
       "submission_date": "2023-12-16T15:27:00.000Z",
