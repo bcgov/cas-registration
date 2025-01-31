@@ -134,18 +134,27 @@ export default function ActivityForm({
   const submitHandler = async () => {
     setErrorList([]);
 
-    const selectedSourceTypeData = Object.keys(formState.sourceTypes)
-      // Only filter the keys where the checkBox for that source type is checked
-      .filter((slug) => formState[slug])
-      // Only for selected source types we grab the form data
-      .reduce((filteredSourceTypeData, slug) => {
+    const sourceTypeCount = Object.keys(sourceTypeMap).length;
+    const selectedSourceTypeData = Object.keys(formState.sourceTypes);
+
+    // Only filter the keys where the checkBox for that source type is checked IF there is more than one source type
+    const selectedSourceTypeDataFiltered =
+      sourceTypeCount > 1
+        ? selectedSourceTypeData.filter((slug) => formState[slug])
+        : selectedSourceTypeData;
+
+    // Only for selected source types we grab the form data
+    const selectedSourceTypeDataReduced = selectedSourceTypeDataFiltered.reduce(
+      (filteredSourceTypeData, slug) => {
         filteredSourceTypeData[slug] = formState.sourceTypes[slug];
         return filteredSourceTypeData;
-      }, {} as any);
+      },
+      {} as any,
+    );
 
     const submittedData = {
       ...formState,
-      sourceTypes: selectedSourceTypeData,
+      sourceTypes: selectedSourceTypeDataReduced,
     };
 
     const response = await actionHandler(
