@@ -1,7 +1,6 @@
 export interface EmissionSummaryFormData {
   attributable_for_reporting: string;
   attributable_for_reporting_threshold: string;
-  reporting_only_emission: string;
   emission_categories: {
     flaring: string;
     fugitive: string;
@@ -20,6 +19,5 @@ export interface EmissionSummaryFormData {
   };
   other_excluded: {
     lfo_excluded: string;
-    fog_excluded: string; // To be handled once we implement a way to capture FOG emissions
   };
 }

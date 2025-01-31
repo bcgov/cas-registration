@@ -10,9 +10,9 @@ vi.mock("@bciers/actions", () => ({
 }));
 
 const mockSummaryData = {
-  attributableForReporting: "777",
-  attributableForReportingThreshold: "888",
-  emissionCategories: {
+  attributable_for_reporting: "777",
+  attributable_for_reporting_threshold: "888",
+  emission_categories: {
     flaring: "500",
     fugitive: "1000",
     industrial_process: "1500",
@@ -28,8 +28,8 @@ const mockSummaryData = {
     excluded_biomass: "200",
     excluded_non_biomass: "300",
   },
-  otherExcluded: {
-    lfoExcluded: "400",
+  other_excluded: {
+    lfo_excluded: "400",
   },
 };
 

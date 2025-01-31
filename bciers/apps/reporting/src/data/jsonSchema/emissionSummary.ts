@@ -12,11 +12,6 @@ const properties: RJSFSchema = {
     title: "Emissions attributable for reporting threshold",
     minimum: 0,
   },
-  reporting_only_emission: {
-    type: "number",
-    title: "Reporting-only emissions",
-    minimum: 0,
-  },
   emission_categories: {
     type: "object",
     title: "Emission Categories",
@@ -85,12 +80,6 @@ const properties: RJSFSchema = {
         type: "number",
         title:
           "Emissions from line tracing and non-processing and non-compression activities",
-        minimum: 0,
-      },
-      fog_excluded: {
-        type: "number",
-        title:
-          "Emissions from fat, oil and grease collection, refining and storage",
         minimum: 0,
       },
     },

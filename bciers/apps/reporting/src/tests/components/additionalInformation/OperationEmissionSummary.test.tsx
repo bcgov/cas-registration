@@ -12,7 +12,6 @@ vi.mock("@bciers/actions", () => ({
 const mockSummaryData = {
   attributable_for_reporting: "777",
   attributable_for_reporting_threshold: "888",
-  reporting_only_emission: "999",
   emission_categories: {
     flaring: "500",
     fugitive: "1000",
@@ -31,7 +30,6 @@ const mockSummaryData = {
   },
   other_excluded: {
     lfo_excluded: "400",
-    fog_excluded: "0",
   },
 };
 
@@ -63,6 +61,7 @@ describe("OperationEmissionSummary", () => {
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 
@@ -95,6 +94,7 @@ describe("OperationEmissionSummary", () => {
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 
@@ -115,6 +115,7 @@ describe("OperationEmissionSummary", () => {
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 
@@ -123,11 +124,6 @@ describe("OperationEmissionSummary", () => {
         "Emissions from line tracing and non-processing and non-compression activities",
       ).value,
     ).toBe("400");
-    expect(
-      screen.getByLabelText(
-        "Emissions from fat, oil and grease collection, refining and storage",
-      ).value,
-    ).toBe("0");
   });
 
   it("should render the attributable summary data", async () => {
@@ -136,6 +132,7 @@ describe("OperationEmissionSummary", () => {
         versionId={1}
         summaryFormData={mockSummaryData}
         taskListElements={[]}
+        isNewEntrant={false}
       />,
     );
 
@@ -146,6 +143,5 @@ describe("OperationEmissionSummary", () => {
       screen.getByLabelText("Emissions attributable for reporting threshold")
         .value,
     ).toBe("888");
-    expect(screen.getByLabelText("Reporting-only emissions").value).toBe("999");
   });
 });
