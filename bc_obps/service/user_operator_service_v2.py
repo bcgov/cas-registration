@@ -154,10 +154,11 @@ class UserOperatorServiceV2:
                     phone_number=str(user_operator.user.phone_number),  # ContactIn expects a string,
                     position_title=user_operator.user.position_title,
                 )
-                contact = ContactService.create_contact(admin_user_guid, contact_payload)
+                contact = ContactService.create_contact(user_operator.user_id, contact_payload)
                 user_operator.operator.contacts.add(contact)
 
             access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
+
             if admin_user.is_irc_user():
                 if user_operator.status == UserOperator.Statuses.DECLINED:
                     access_request_type = AccessRequestTypes.ADMIN
