@@ -16,46 +16,64 @@ const nextConfigBase = require("../../next.config.base");
 const nextConfig = {
   ...nextConfigBase,
   async rewrites() {
-    const localRoutes =
-      HOST_ADMINISTRATION &&
-      HOST_REGISTRATION &&
-      HOST_REPORTING &&
-      HOST_COMPLIANCE
-        ? [
-            {
-              source: "/administration",
-              destination: `${HOST_ADMINISTRATION}/administration`,
-            },
-            {
-              source: "/administration/:path*",
-              destination: `${HOST_ADMINISTRATION}/administration/:path*`,
-            },
-            {
-              source: "/registration",
-              destination: `${HOST_REGISTRATION}/registration`,
-            },
-            {
-              source: "/registration/:path*",
-              destination: `${HOST_REGISTRATION}/registration/:path*`,
-            },
-            {
-              source: "/reporting",
-              destination: `${HOST_REPORTING}/reporting`,
-            },
-            {
-              source: "/reporting/:path*",
-              destination: `${HOST_REPORTING}/reporting/:path*`,
-            },
-            {
-              source: "/compliance",
-              destination: `${HOST_COMPLIANCE}/compliance`,
-            },
-            {
-              source: "/compliance/:path*",
-              destination: `${HOST_COMPLIANCE}/compliance/:path*`,
-            },
-          ]
-        : [];
+    const adminRoutes = HOST_ADMINISTRATION
+      ? [
+          {
+            source: "/administration",
+            destination: `${HOST_ADMINISTRATION}/administration`,
+          },
+          {
+            source: "/administration/:path*",
+            destination: `${HOST_ADMINISTRATION}/administration/:path*`,
+          },
+        ]
+      : [];
+
+    const registrationRoutes = HOST_REGISTRATION
+      ? [
+          {
+            source: "/registration",
+            destination: `${HOST_REGISTRATION}/registration`,
+          },
+          {
+            source: "/registration/:path*",
+            destination: `${HOST_REGISTRATION}/registration/:path*`,
+          },
+        ]
+      : [];
+
+    const reportingRoutes = HOST_REPORTING
+      ? [
+          {
+            source: "/reporting",
+            destination: `${HOST_REPORTING}/reporting`,
+          },
+          {
+            source: "/reporting/:path*",
+            destination: `${HOST_REPORTING}/reporting/:path*`,
+          },
+        ]
+      : [];
+
+    const complianceRoutes = HOST_COMPLIANCE
+      ? [
+          {
+            source: "/compliance",
+            destination: `${HOST_COMPLIANCE}/compliance`,
+          },
+          {
+            source: "/compliance/:path*",
+            destination: `${HOST_COMPLIANCE}/compliance/:path*`,
+          },
+        ]
+      : [];
+
+    const localRoutes = {
+      ...adminRoutes,
+      ...registrationRoutes,
+      ...reportingRoutes,
+      ...complianceRoutes,
+    };
 
     return [
       {
