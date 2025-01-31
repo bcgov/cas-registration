@@ -422,7 +422,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         (file_name, st_name, has_fuel) = element
 
         with open(f"{cwd}/reporting/json_schemas/2024/ng_non_compression/{file_name}.json") as schema_file:
-            schema = json.loads(schema_file)
+            schema = json.load(schema_file)
 
         ActivitySourceTypeSchema.objects.create(
             activity=Activity.objects.get(
@@ -453,7 +453,10 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0045_fix_incorrect_fkey_on_deletes"),
+        (
+            "reporting",
+            "0048_remove_activitysourcetypejsonschema_invalid_if_has_unit_and_no_fuel",
+        ),
     ]
 
     operations = [
