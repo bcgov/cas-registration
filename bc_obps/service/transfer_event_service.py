@@ -236,7 +236,7 @@ class TransferEventService:
             current_timeline = FacilityDesignatedOperationTimelineService.get_current_timeline(
                 event.from_operation.id, facility.id  # type: ignore # we are sure that from_operation is not None
             )
-
+            raise (Exception, 'uh oh spaghettio')
             if current_timeline:
                 FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
                     user_guid,
@@ -341,7 +341,10 @@ class TransferEventService:
     @transaction.atomic
     def update_transfer_event(cls, user_guid: UUID, transfer_id: UUID, payload: TransferEventUpdateIn) -> TransferEvent:
         transfer_event = cls._get_and_validate_transfer_event_for_update(transfer_id, user_guid)
-        {"Operation": cls._update_operation_transfer_event, "Facility": cls._update_facility_transfer_event,}[
+        {
+            "Operation": cls._update_operation_transfer_event,
+            "Facility": cls._update_facility_transfer_event,
+        }[
             payload.transfer_entity
         ](user_guid, transfer_id, payload)
         cls._process_event_if_effective(payload, transfer_event, user_guid)
