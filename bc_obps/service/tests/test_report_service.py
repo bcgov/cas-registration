@@ -10,7 +10,8 @@ from registration.tests.utils.bakers import (
     operator_baker,
     facility_baker,
 )
-from reporting.models import ReportingYear, ReportVersion
+from reporting.models import ReportingYear, ReportVersion, ReportOperation, FacilityReport
+from reporting.schema.report_operation import ReportOperationIn
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from service.report_service import ReportService
 
@@ -143,3 +144,67 @@ class TestReportService(TestCase):
                         2,
                     ),
                 )
+
+    def test_save_report_operation_updates_fields_and_relationships(self):
+        operation = operation_baker(type="lfo")
+        reporting_year = reporting_year_baker(reporting_year=2101)
+        report_version = report_baker(operation=operation, reporting_year=reporting_year)
+
+        # Create input data for the ReportOperationIn object
+        data = ReportOperationIn(
+            operator_legal_name="Updated Legal Name",
+            operator_trade_name="Updated Trade Name",
+            operation_name="Updated Operation Name",
+            operation_type="Updated Operation Type",
+            operation_bcghgid="Updated BC GHID",
+            bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+            activities=["Magnesium production", "Hydrogen production"],
+            regulated_products=["Cement equivalent", "Mining: gold-equivalent"],
+            operation_representative_name=[1, 2],
+            operation_report_type="New Report Type",
+        )
+
+        with mock.patch('service.report_service.ReportOperation.objects.get') as mock_get, mock.patch(
+            'service.report_service.ReportOperationRepresentative.objects.filter'
+        ) as mock_filter, mock.patch(
+            'service.report_service.FacilityReport.objects.filter'
+        ) as mock_facility_filter, mock.patch(
+            'service.report_service.Activity.objects.filter'
+        ) as mock_activity_filter, mock.patch(
+            'service.report_service.RegulatedProduct.objects.filter'
+        ) as mock_regulated_product_filter:
+            mock_report_operation = mock.MagicMock(spec=ReportOperation)
+            mock_get.return_value = mock_report_operation
+
+            mock_filter.return_value.update.return_value = None
+
+            # Mock FacilityReport behavior
+            mock_facility_reports = [mock.MagicMock(spec=FacilityReport) for _ in range(3)]
+            mock_facility_filter.return_value = mock_facility_reports
+
+            # Mock Activity filtering
+            mock_activity_1 = mock.MagicMock(spec=Activity, name="Hydrogen production")
+            mock_activity_2 = mock.MagicMock(spec=Activity, name="Magnesium production")
+            mock_activity_filter.return_value = [mock_activity_1, mock_activity_2]
+
+            # Mock RegulatedProduct filtering
+            mock_regulated_product_1 = mock.MagicMock(spec=RegulatedProduct, name="Cement equivalent")
+            mock_regulated_product_2 = mock.MagicMock(spec=RegulatedProduct, name="Mining: gold-equivalent")
+            mock_regulated_product_filter.return_value = [mock_regulated_product_1, mock_regulated_product_2]
+
+            ReportService.save_report_operation(report_version.id, data)
+
+            mock_report_operation.activities.set.assert_called_once_with([mock_activity_1, mock_activity_2])
+
+            mock_report_operation.regulated_products.set.assert_called_once_with(
+                [mock_regulated_product_1, mock_regulated_product_2]
+            )
+
+            # Verify that other fields were updated correctly
+            mock_report_operation.operator_legal_name = data.operator_legal_name
+            mock_report_operation.operator_trade_name = data.operator_trade_name
+            mock_report_operation.operation_name = data.operation_name
+            mock_report_operation.operation_type = data.operation_type
+            mock_report_operation.operation_bcghgid = data.operation_bcghgid
+            mock_report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
+            mock_report_operation.operation_report_type = data.operation_report_type
