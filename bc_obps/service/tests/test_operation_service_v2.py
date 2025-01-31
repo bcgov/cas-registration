@@ -468,6 +468,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
         )
+        # check operation
         operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -476,6 +477,14 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert operation.created_at is not None
         assert operation.updated_at is None
+
+        # check timeline model
+        assert OperationDesignatedOperatorTimeline.objects.count() == 1
+        timeline_record = OperationDesignatedOperatorTimeline.objects.first()
+        assert timeline_record.operation == operation
+        assert timeline_record.operator == approved_user_operator.operator
+        assert timeline_record.start_date is not None
+        assert timeline_record.status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
 
     @staticmethod
     def test_create_operation_with_multiple_operators():
