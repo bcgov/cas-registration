@@ -28,7 +28,7 @@ const uiSchema = {
         "ui:options": {
           arrayAddLabel: "Add Unit",
           label: false,
-          title: "Source Sub-type",
+          title: "Source sub-type",
           padding: "p-2",
         },
         items: {
