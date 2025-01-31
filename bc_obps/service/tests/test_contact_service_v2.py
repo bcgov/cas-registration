@@ -12,20 +12,12 @@ class TestListContactService:
     def test_list_contacts():
 
         user = baker.make_recipe('utils.cas_admin')
-        contact1 = baker.make_recipe('utils.contact')
-        contact2 = baker.make_recipe('utils.contact')
 
-        operator1 = baker.make_recipe('utils.operator')
+        operators = baker.make_recipe('utils.operator', _quantity=2)
 
-        operator2a = baker.make_recipe('utils.operator')
-        operator2b = baker.make_recipe('utils.operator')
+        baker.make_recipe('utils.contact', operator=operators[0])
+        baker.make_recipe('utils.contact', operator=operators[1], _quantity=2)  # one operator has two contacts
 
-        # contact 1 is associated with one operator, count = 1
-        operator1.contacts.set([contact1])
-
-        # contact 2 belongs to two operators count = 3
-        operator2a.contacts.set([contact2])
-        operator2b.contacts.set([contact2])
         assert (
             ContactServiceV2.list_contacts_v2(
                 user_guid=user.user_guid, sort_field="created_at", sort_order="desc", filters=ContactFilterSchema()

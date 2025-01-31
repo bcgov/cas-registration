@@ -9,7 +9,8 @@
       "position_title": "Manager",
       "address": 1,
       "email": "alice.art@example.com",
-      "phone_number": "+16044011234"
+      "phone_number": "+16044011234",
+      "operator_id": "685d581b-5698-411f-ae00-de1d97334a71"
     }
   },
   {
@@ -22,7 +23,8 @@
       "position_title": "Manager",
       "address": 2,
       "email": "althea.ark@example.com",
-      "phone_number": "+16044011234"
+      "phone_number": "+16044011234",
+      "operator_id": "685d581b-5698-411f-ae00-de1d97334a71"
     }
   },
   {
@@ -35,7 +37,8 @@
       "position_title": "Manager",
       "address": 3,
       "email": "bill.blue@example.com",
-      "phone_number": "+16044011235"
+      "phone_number": "+16044011235",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"
     }
   },
   {
@@ -48,7 +51,8 @@
       "position_title": "Manager",
       "address": 4,
       "email": "bob.brown@example.com",
-      "phone_number": "+16044011236"
+      "phone_number": "+16044011236",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"
     }
   },
   {
@@ -60,7 +64,8 @@
       "last_name": "Balloons - no address",
       "position_title": "Manager",
       "email": "blair.balloons@example.com",
-      "phone_number": "+16044011237"
+      "phone_number": "+16044011237",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"
     }
   },
   {
@@ -73,7 +78,8 @@
       "position_title": "Manager",
       "address": 21,
       "email": "bart.banker@example.com",
-      "phone_number": "+16044011238"
+      "phone_number": "+16044011238",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"
     }
   },
   {
@@ -86,7 +92,8 @@
       "position_title": "Manager",
       "address": 7,
       "email": "eve.foster@example.com",
-      "phone_number": "+16044011239"
+      "phone_number": "+16044011239",
+      "operator_id": "4c1010c1-55ca-485d-84bd-6d975fd0af90"
     }
   },
   {
@@ -99,7 +106,8 @@
       "position_title": "Manager",
       "address": 8,
       "email": "frank.garcia@example.com",
-      "phone_number": "+16044011240"
+      "phone_number": "+16044011240",
+      "operator_id": "5712ee05-5f3b-4822-825d-6fffddafda4c"
     }
   },
   {
@@ -112,7 +120,8 @@
       "position_title": "Manager",
       "address": 9,
       "email": "grace.harris@example.com",
-      "phone_number": "+16044011241"
+      "phone_number": "+16044011241",
+      "operator_id": "edb1aff1-f888-4199-ab88-068364496347"
     }
   },
   {
@@ -125,7 +134,8 @@
       "position_title": "Manager",
       "address": 10,
       "email": "henry.ives@example.com",
-      "phone_number": "+16044011242"
+      "phone_number": "+16044011242",
+      "operator_id": "ea4314ea-1974-465a-a851-278c8f9c8daa"
     }
   },
   {
@@ -137,7 +147,8 @@
       "last_name": "Jones - no address",
       "position_title": "Manager",
       "email": "ivy.jones@example.com",
-      "phone_number": "+16044011243"
+      "phone_number": "+16044011243",
+      "operator_id": "04384911-264a-4510-b582-11ee704b8e41"
     }
   },
   {
@@ -150,7 +161,8 @@
       "position_title": "Manager",
       "address": 21,
       "email": "jack.king@example.com",
-      "phone_number": "+16044011244"
+      "phone_number": "+16044011244",
+      "operator_id": "f209ef09-dfe6-42a1-ac4c-7689897f1b51"
     }
   },
   {
@@ -163,7 +175,8 @@
       "position_title": "Manager",
       "address": 13,
       "email": "karen.lewis@example.com",
-      "phone_number": "+16044011245"
+      "phone_number": "+16044011245",
+      "operator_id": "bb979661-0782-49b2-9c64-acd8424b692b"
     }
   },
   {
@@ -176,7 +189,8 @@
       "position_title": "Manager",
       "address": 14,
       "email": "leo.martinez@example.com",
-      "phone_number": "+16044011246"
+      "phone_number": "+16044011246",
+      "operator_id": "bb702949-e303-4788-9ba9-806232a5f711"
     }
   },
   {
@@ -189,7 +203,8 @@
       "position_title": "Manager",
       "address": 15,
       "email": "mia.nelson@example.com",
-      "phone_number": "+16044011247"
+      "phone_number": "+16044011247",
+      "operator_id": "a35fb5ad-edd9-4465-982e-81b824644d07"
     }
   },
   {
@@ -202,7 +217,8 @@
       "position_title": "Manager",
       "address": 16,
       "email": "nina.owens@example.com",
-      "phone_number": "+16044011248"
+      "phone_number": "+16044011248",
+      "operator_id": "5c847c75-3b17-414c-97f8-88ba81cb3821"
     }
   },
   {
@@ -215,7 +231,8 @@
       "position_title": "Manager",
       "address": 17,
       "email": "oscar.perez@example.com",
-      "phone_number": "+16044011249"
+      "phone_number": "+16044011249",
+      "operator_id": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12"
     }
   },
   {
@@ -228,58 +245,8 @@
       "position_title": "Manager",
       "address": 18,
       "email": "paula.quinn@example.com",
-      "phone_number": "+16044011250"
-    }
-  },
-  {
-    "model": "registration.contact",
-    "pk": 19,
-    "fields": {
-      "business_role": "Operation Representative",
-      "first_name": "Quincy",
-      "last_name": "Roberts",
-      "position_title": "Manager",
-      "address": 19,
-      "email": "quincy.roberts@example.com",
-      "phone_number": "+16044011251"
-    }
-  },
-  {
-    "model": "registration.contact",
-    "pk": 20,
-    "fields": {
-      "business_role": "Operation Representative",
-      "first_name": "Rachel",
-      "last_name": "Stewart",
-      "position_title": "Manager",
-      "address": 20,
-      "email": "rachel.stewart@example.com",
-      "phone_number": "+16044011252"
-    }
-  },
-  {
-    "model": "registration.contact",
-    "pk": 21,
-    "fields": {
-      "business_role": "Operation Representative",
-      "first_name": "Sam",
-      "last_name": "Taylor",
-      "position_title": "Manager",
-      "address": 21,
-      "email": "sam.taylor@example.com",
-      "phone_number": "+16044011253"
-    }
-  },
-  {
-    "model": "registration.contact",
-    "pk": 22,
-    "fields": {
-      "business_role": "Operation Representative",
-      "first_name": "Tina",
-      "last_name": "Upton",
-      "position_title": "Manager",
-      "email": "tina.upton@example.com",
-      "phone_number": "+16044011254"
+      "phone_number": "+16044011250",
+      "operator_id": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12"
     }
   }
 ]

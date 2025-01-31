@@ -13,10 +13,10 @@ class Command(BaseCommand):
         fixtures_base = [  # Order of fixtures is important
             f'{fixture_base_dir}/address.json',
             f'{fixture_base_dir}/user.json',
-            f'{fixture_base_dir}/contact.json',
             f'{fixture_base_dir}/bc_obps_regulated_operation.json',
             f'{fixture_base_dir}/bc_greenhouse_gas_id.json',
             f'{fixture_base_dir}/operator.json',
+            f'{fixture_base_dir}/contact.json',
             f'{fixture_base_dir}/operation.json',
             f'{fixture_base_dir}/multiple_operator.json',
             f'{fixture_base_dir}/document.json',

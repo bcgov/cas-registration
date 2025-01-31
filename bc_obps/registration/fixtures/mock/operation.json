@@ -5,7 +5,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "name": "Apple LFO - Registered",
       "type": "Linear Facility Operation",
       "naics_code": 19,
@@ -24,7 +23,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Banana LFO - Registered",
       "type": "Linear Facility Operation",
       "naics_code": 20,
@@ -45,7 +43,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Charlie LFO - Draft -- no facility",
       "type": "Linear Facility Operation",
       "naics_code": 20,
@@ -63,7 +60,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Bugle SFO - Registered",
       "submission_date": "2023-12-16T15:27:00.000Z",
       "type": "Single Facility Operation",
@@ -85,7 +81,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-12T15:27:00.000Z",
       "name": "Alien SFO - Registered",
       "type": "Single Facility Operation",
@@ -107,7 +102,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": null,
       "name": "Bangles SFO - Registered - has Multiple Operators",
       "type": "Single Facility Operation",
@@ -130,7 +124,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-14T15:27:00.000Z",
       "name": "Alligator SFO - Registered",
       "type": "Single Facility Operation",
@@ -152,7 +145,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-15T15:27:00.000Z",
       "name": "Anteater SFO - Registered",
       "type": "Single Facility Operation",
@@ -173,7 +165,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-16T15:27:00.000Z",
       "name": "Arctic SFO - Registered",
       "type": "Single Facility Operation",
@@ -194,9 +185,8 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-17T15:27:00.000Z",
-      "name": "Arguement SFO - Registered",
+      "name": "Argument SFO - Registered",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "opt_in": false,
@@ -216,7 +206,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-18T15:27:00.000Z",
       "name": "Art SFO - Registered",
       "type": "Single Facility Operation",
@@ -236,7 +225,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-19T15:27:00.000Z",
       "name": "SFO 11 - Registered",
       "type": "Single Facility Operation",
@@ -258,7 +246,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-20T15:27:00.000Z",
       "name": "SFO 12 - Registered",
       "type": "Single Facility Operation",
@@ -279,7 +266,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "documents": [],
       "submission_date": "2024-01-21T15:27:00.000Z",
       "name": "SFO 13 - Registered",
       "type": "Single Facility Operation",
@@ -300,7 +286,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-22T15:27:00.000Z",
       "name": "Bojangles SFO - Not Started",
       "type": "Single Facility Operation",
@@ -318,7 +303,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-23T15:27:00.000Z",
       "name": "Brine SFO - Not Started",
       "type": "Single Facility Operation",
@@ -338,7 +322,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-24T15:27:00.000Z",
       "name": "Bling SFO - Draft",
       "type": "Single Facility Operation",
@@ -357,7 +340,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-25T15:27:00.000Z",
       "name": "Bees SFO - Registered",
       "type": "Single Facility Operation",
@@ -379,7 +361,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-26T15:27:00.000Z",
       "name": "Blue SFO - Draft",
       "type": "Single Facility Operation",
@@ -397,7 +378,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-27T15:27:00.000Z",
       "name": "Bullet SFO - Registered",
       "type": "Single Facility Operation",
@@ -419,7 +399,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "submission_date": "2024-01-28T15:27:00.000Z",
       "name": "Bat SFO - Registered",
       "type": "Single Facility Operation",
@@ -440,7 +419,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Bin SFO - Registered",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -460,7 +438,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Bark SFO - Registered",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -480,7 +457,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Blight SFO - Draft",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -496,7 +472,6 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "documents": [],
       "name": "Brown SFO - Draft -- no facility",
       "type": "Single Facility Operation",
       "naics_code": 21,

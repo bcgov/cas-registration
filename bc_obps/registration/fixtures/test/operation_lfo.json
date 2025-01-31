@@ -4,7 +4,6 @@
     "pk": "1f045617-ae4c-4c76-ab36-5a59c3aef407",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "LFO Operation 1",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -25,7 +24,6 @@
     "pk": "1f06a496-3f66-408f-b2b9-69f4fa7bba0e",
     "fields": {
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
-      "documents": [],
       "point_of_contact": 1,
       "name": "LFO Operation 2",
       "submission_date": "2023-12-16T15:27:00.000Z",

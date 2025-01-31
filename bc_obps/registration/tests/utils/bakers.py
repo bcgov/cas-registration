@@ -64,7 +64,7 @@ def document_baker() -> Document:
 
 
 def contact_baker(*args, **kwargs) -> Union[Contact, List[Contact]]:
-    return baker.make(Contact, *args, **kwargs)
+    return baker.make(Contact, *args, **kwargs, operator=operator_baker())
 
 
 def bc_obps_regulated_operation_baker() -> BcObpsRegulatedOperation:
