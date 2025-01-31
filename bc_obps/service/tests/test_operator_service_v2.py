@@ -20,7 +20,7 @@ class TestUpdateOperatorV2:
     def test_update_operator_no_address_change():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
         baker.make(
             UserOperator,
@@ -53,7 +53,7 @@ class TestUpdateOperatorV2:
     def test_update_operator_address_change():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
         baker.make(
             UserOperator,
@@ -87,9 +87,9 @@ class TestUpdateOperatorV2:
     def test_update_operator_with_partner_operators():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
-        baker.make_recipe('utils.partner_operator', bc_obps_operator=operator, _quantity=3)
+        baker.make_recipe('registration.tests.utils.partner_operator', bc_obps_operator=operator, _quantity=3)
         assert PartnerOperator.objects.count() == 3
         baker.make(
             UserOperator,
@@ -139,9 +139,9 @@ class TestUpdateOperatorV2:
     def test_update_operator_archive_all_partner_operators():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
-        baker.make_recipe('utils.partner_operator', bc_obps_operator=operator, _quantity=3)
+        baker.make_recipe('registration.tests.utils.partner_operator', bc_obps_operator=operator, _quantity=3)
         baker.make(
             UserOperator,
             user_id=user.user_guid,
@@ -172,11 +172,11 @@ class TestUpdateOperatorV2:
     def test_update_operator_with_parent_operators():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
-        baker.make_recipe('utils.canadian_parent_operator', child_operator=operator, _quantity=2)
+        baker.make_recipe('registration.tests.utils.canadian_parent_operator', child_operator=operator, _quantity=2)
 
-        baker.make_recipe('utils.foreign_parent_operator', child_operator=operator, _quantity=2)
+        baker.make_recipe('registration.tests.utils.foreign_parent_operator', child_operator=operator, _quantity=2)
 
         assert ParentOperator.objects.count() == 4
         baker.make(
@@ -237,10 +237,10 @@ class TestUpdateOperatorV2:
     def test_update_operator_delete_parent_operator_address():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
         baker.make_recipe(
-            'utils.canadian_parent_operator',
+            'registration.tests.utils.canadian_parent_operator',
             child_operator=operator,
         )
 
@@ -280,11 +280,11 @@ class TestUpdateOperatorV2:
     def test_update_operator_archive_all_parent_operators():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
-        baker.make_recipe('utils.canadian_parent_operator', child_operator=operator, _quantity=2)
+        baker.make_recipe('registration.tests.utils.canadian_parent_operator', child_operator=operator, _quantity=2)
 
-        baker.make_recipe('utils.foreign_parent_operator', child_operator=operator, _quantity=2)
+        baker.make_recipe('registration.tests.utils.foreign_parent_operator', child_operator=operator, _quantity=2)
 
         baker.make(
             UserOperator,
@@ -316,11 +316,13 @@ class TestUpdateOperatorV2:
 class TestOperatorHasRequiredFields:
     @staticmethod
     def test_operator_has_all_required_fields():
-        operator = baker.make_recipe('utils.operator')
+        operator = baker.make_recipe('registration.tests.utils.operator')
         assert OperatorServiceV2.has_required_fields(operator) is True
 
     @staticmethod
     def test_operator_does_not_have_all_required_fields():
         # Create an operator with the required fields, but set legal_name to an empty string
-        operator = baker.make_recipe('utils.operator', legal_name=' ')  # Set legal_name to an empty string
+        operator = baker.make_recipe(
+            'registration.tests.utils.operator', legal_name=' '
+        )  # Set legal_name to an empty string
         assert OperatorServiceV2.has_required_fields(operator) is False

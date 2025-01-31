@@ -127,9 +127,15 @@ class TestOperationsEndpoint(CommonTestSetup):
         # Endpoint ignores user_operator records with a 'DECLINED' status
         operator1 = operator_baker()
         operator2 = operator_baker()
-        baker.make_recipe('utils.operation', operator_id=operator1.id, status=Operation.Statuses.PENDING)
-        baker.make_recipe('utils.operation', operator_id=operator2.id, status=Operation.Statuses.APPROVED)
-        baker.make_recipe('utils.operation', operator_id=operator2.id, status=Operation.Statuses.NOT_STARTED)
+        baker.make_recipe(
+            'registration.tests.utils.operation', operator_id=operator1.id, status=Operation.Statuses.PENDING
+        )
+        baker.make_recipe(
+            'registration.tests.utils.operation', operator_id=operator2.id, status=Operation.Statuses.APPROVED
+        )
+        baker.make_recipe(
+            'registration.tests.utils.operation', operator_id=operator2.id, status=Operation.Statuses.NOT_STARTED
+        )
         baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.DECLINED, operator_id=operator1.id
         )
@@ -143,7 +149,12 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_operations_endpoint_get_method_paginated(self):
         operator1 = operator_baker()
-        baker.make_recipe('utils.operation', operator_id=operator1.id, status=Operation.Statuses.PENDING, _quantity=60)
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator_id=operator1.id,
+            status=Operation.Statuses.PENDING,
+            _quantity=60,
+        )
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
@@ -187,25 +198,25 @@ class TestOperationsEndpoint(CommonTestSetup):
             id='21-0001',
         )
         baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator_id=operator1.id,
             name='Springfield Nuclear Power Plant',
             status=Operation.Statuses.PENDING,
             _quantity=10,
         )
         baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator_id=operator2.id,
             name='Krusty Burger',
             status=Operation.Statuses.APPROVED,
             _quantity=10,
         )
         baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator_id=operator2.id,
             name='Kwik-E-Mart',
             status=Operation.Statuses.DECLINED,
-            bcghg_id=baker.make_recipe('utils.bcghg_id'),
+            bcghg_id=baker.make_recipe('registration.tests.utils.bcghg_id'),
             bc_obps_regulated_operation_id='21-0001',
         )
 
@@ -310,7 +321,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_existing_operation_with_same_bcghg_id(self):
         operation_instance = operation_baker()
-        bcghg_id = baker.make_recipe('utils.bcghg_id')
+        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
         operation_instance.bcghg_id = bcghg_id
         operation_instance.save(update_fields=['bcghg_id'])
         mock_operation2 = TestUtils.mock_create_operation_v1_payload()

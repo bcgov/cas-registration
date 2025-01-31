@@ -26,12 +26,13 @@ class TestContactIdEndpoint(CommonTestSetup):
 
     def test_industry_users_can_get_contacts_associated_with_their_operator(self):
         contact = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative')
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         # add contact to operator and operation
         approved_user_operator.operator.contacts.set([contact])
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         operation.contacts.set([contact])
 
         response = TestUtils.mock_get_with_auth_role(

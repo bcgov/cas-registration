@@ -11,9 +11,9 @@ from service.document_service_v2 import DocumentServiceV2
 
 class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
     def test_get_register_operation_new_entrant_application_endpoint_users_can_only_get_their_operation(self):
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation: Operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -24,9 +24,9 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
         assert response.json()['message'] == "Unauthorized."
 
     def test_get_register_operation_new_entrant_application_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
         )
@@ -61,7 +61,7 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         self,
     ):
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         response = TestUtils.mock_put_with_auth_role(
@@ -81,8 +81,8 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         reason="This test passes locally but will fail in CI since we don't have Google Cloud Storage set up for CI"
     )
     def test_put_register_operation_new_entrant_application_submission_endpoint(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
 
         # Act
         payload_with_no_date_of_first_shipment = {

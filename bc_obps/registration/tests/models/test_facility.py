@@ -59,9 +59,11 @@ class FacilityModelTest(BaseTestCase):
     def test_generate_unique_bcghg_id_multiple_existing_ids_facility(self):
         existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002', '14862100001']
         for existing_id in existing_ids:
-            baker.make_recipe('utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id))
+            baker.make_recipe(
+                'registration.tests.utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id)
+            )
         facility_designated_operation_timeline = baker.make_recipe(
-            'utils.facility_designated_operation_timeline', facility=self.test_object, end_date=None
+            'registration.tests.utils.facility_designated_operation_timeline', facility=self.test_object, end_date=None
         )
         facility_designated_operation_timeline.operation.type = 'Single Facility Operation'
         facility_designated_operation_timeline.operation.naics_code = baker.make(NaicsCode, naics_code='322121')

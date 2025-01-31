@@ -282,7 +282,7 @@ class TestCreateUserOperator(CommonTestSetup):
 
 class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
     def test_get_an_operators_user_operators_by_users_list(self):
-        operator = baker.make_recipe('utils.operator')
+        operator = baker.make_recipe('registration.tests.utils.operator')
         # two UserOperator with the same operator
         user_operator_1 = baker.make(
             UserOperator,
@@ -293,7 +293,9 @@ class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
         )
         user_operator_2 = baker.make(
             UserOperator,
-            user=baker.make_recipe('utils.industry_operator_user', business_guid=self.user.business_guid),
+            user=baker.make_recipe(
+                'registration.tests.utils.industry_operator_user', business_guid=self.user.business_guid
+            ),
             operator=operator,
             role=UserOperator.Roles.PENDING,
             status=UserOperator.Statuses.PENDING,
@@ -301,8 +303,8 @@ class TestUserOperatorListFromUserEndpoint(CommonTestSetup):
         # a UserOperator with a different operator and business_guid
         baker.make(
             UserOperator,
-            user=baker.make_recipe('utils.industry_operator_user'),
-            operator=baker.make_recipe('utils.operator'),
+            user=baker.make_recipe('registration.tests.utils.industry_operator_user'),
+            operator=baker.make_recipe('registration.tests.utils.operator'),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )

@@ -6,9 +6,9 @@ from model_bakery import baker
 
 class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
     def test_opted_in_operation_detail_endpoint_users_can_only_get_their_operation(self):
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation: Operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -21,12 +21,14 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
         assert response.json()['message'] == "Unauthorized."
 
     def test_get_opted_in_operation_detail_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         opted_in_operation = baker.make_recipe(
-            'utils.opted_in_operation_detail',
+            'registration.tests.utils.opted_in_operation_detail',
         )
         operation: Operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, opted_in_operation=opted_in_operation
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            opted_in_operation=opted_in_operation,
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -50,9 +52,9 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
     # PUT
     def test_opted_in_operation_detail_endpoint_users_can_only_update_their_operation(self):
         # authorize current user
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -76,13 +78,15 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
         assert response.json()['message'] == "Unauthorized."
 
     def test_update_opted_in_operation_detail_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         opted_in_operation = baker.make_recipe(
-            'utils.opted_in_operation_detail',
+            'registration.tests.utils.opted_in_operation_detail',
             created_by=self.user,
         )
         operation: Operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, opted_in_operation=opted_in_operation
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            opted_in_operation=opted_in_operation,
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -119,13 +123,15 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
         assert updated_operation.opted_in_operation.updated_at is not None
 
     def test_update_opted_in_operation_detail_endpoint_malformed_data(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         opted_in_operation = baker.make_recipe(
-            'utils.opted_in_operation_detail',
+            'registration.tests.utils.opted_in_operation_detail',
             created_by=self.user,
         )
         operation: Operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, opted_in_operation=opted_in_operation
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            opted_in_operation=opted_in_operation,
         )
         response = TestUtils.mock_put_with_auth_role(
             self,

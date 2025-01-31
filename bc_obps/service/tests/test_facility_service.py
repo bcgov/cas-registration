@@ -499,8 +499,8 @@ class TestUpdateFacility:
 class TestGenerateBcghgId:
     @staticmethod
     def test_generates_bcghg_id():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
         timeline.operation.operator = approved_user_operator.operator
         timeline.operation.save()
         timeline.end_date = None

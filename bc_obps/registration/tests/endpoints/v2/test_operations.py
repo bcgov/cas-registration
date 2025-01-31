@@ -21,11 +21,13 @@ class TestOperationsEndpoint(CommonTestSetup):
         """
 
         # Arrange: Mock facilities returned by the service
-        timeline = make_recipe('utils.operation_designated_operator_timeline', _quantity=2)
+        timeline = make_recipe('registration.tests.utils.operation_designated_operator_timeline', _quantity=2)
         mock_list_operations_timeline.return_value = timeline
 
         # Act: Mock the authorization and perform the request
-        TestUtils.authorize_current_user_as_operator_user(self, operator=make_recipe('utils.operator'))
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=make_recipe('registration.tests.utils.operator')
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -73,7 +75,7 @@ class TestPostOperationsEndpoint(CommonTestSetup):
 
     # GET
     def test_user_can_post_operation_success(self):
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",

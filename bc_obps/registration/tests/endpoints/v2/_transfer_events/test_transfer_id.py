@@ -12,7 +12,9 @@ from datetime import datetime
 class TestTransferIdEndpoint(CommonTestSetup):
     @patch("service.transfer_event_service.TransferEventService.get_if_authorized")
     def test_authorized_users_can_get_transfer_event(self, mock_get_if_authorized: MagicMock):
-        transfer_event = baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
+        transfer_event = baker.make_recipe(
+            'registration.tests.utils.transfer_event', operation=baker.make_recipe('registration.tests.utils.operation')
+        )
         mock_get_if_authorized.return_value = transfer_event
         for role in AppRole.get_authorized_irc_roles():
             response = TestUtils.mock_get_with_auth_role(
@@ -73,7 +75,9 @@ class TestTransferIdEndpoint(CommonTestSetup):
     @patch("service.transfer_event_service.TransferEventService.update_transfer_event")
     @pytest.mark.parametrize("entity", ["Operation", "Facility"])
     def test_cas_analyst_can_update_transfer_event(self, mock_update_transfer_event: MagicMock, entity):
-        transfer_event = baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
+        transfer_event = baker.make_recipe(
+            'registration.tests.utils.transfer_event', operation=baker.make_recipe('registration.tests.utils.operation')
+        )
         mock_update_transfer_event.return_value = transfer_event
         mock_payload = {
             "transfer_entity": entity,
