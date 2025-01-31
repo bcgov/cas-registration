@@ -451,11 +451,18 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
 
     cwd = os.getcwd()
 
+    # (json schema file name, source type name, has_unit, has_fuel)
     st_schema_config = [
-        # (json schema file name, source type name, has_fuel)
         (
             "ng_pneumatic_high_bleed_device_venting",
             "Natural gas pneumatic high bleed device venting",
+            True,
+            True,
+        ),
+        (
+            "ng_pneumatic_pump_venting",
+            "Natural gas pneumatic pump venting",
+            True,
             True,
         ),
     ]
@@ -466,7 +473,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     Configuration = apps.get_model("reporting", "Configuration")
 
     for element in st_schema_config:
-        (file_name, st_name, has_fuel) = element
+        (file_name, st_name, has_unit, has_fuel) = element
 
         with open(f"{cwd}/reporting/json_schemas/2024/ng_non_compression/{file_name}.json") as schema_file:
             schema = json.load(schema_file)
@@ -476,7 +483,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
             ),
             source_type=SourceType.objects.get(name=st_name),
-            has_unit=True,
+            has_unit=has_unit,
             has_fuel=has_fuel,
             json_schema=schema,
             valid_from=Configuration.objects.get(valid_from="2023-01-01"),
