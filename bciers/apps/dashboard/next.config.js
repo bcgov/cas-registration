@@ -68,12 +68,12 @@ const nextConfig = {
         ]
       : [];
 
-    const localRoutes = {
+    const localRoutes = [
       ...adminRoutes,
       ...registrationRoutes,
       ...reportingRoutes,
       ...complianceRoutes,
-    };
+    ];
 
     return [
       {
