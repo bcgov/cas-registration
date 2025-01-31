@@ -71,10 +71,12 @@ class ReportService:
         # Fetch and set ManyToMany fields
         activities = Activity.objects.filter(name__in=data.activities)
         report_operation.activities.set(activities)
+        regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
+        report_operation.regulated_products.set(regulated_products)
         report_operation.save()
 
         facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(report_version__id=report_version_id)
-        if activities.exists():
+        if activities:
             for f in facility_reports:
                 f.activities.set(activities)
                 f.save()
