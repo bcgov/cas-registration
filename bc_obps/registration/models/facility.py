@@ -18,6 +18,12 @@ class Facility(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
     )
+    operation = models.ForeignKey(
+        Operation,
+        on_delete=models.PROTECT,
+        db_comment="The operation who currently owns the facility (see the FacilityDesignatedOperationTimeline for past and upcoming ownership)",
+        related_name="facilities",
+    )
     name = models.CharField(
         max_length=1000,
         db_comment="The name of the facility when the operation owned it",
