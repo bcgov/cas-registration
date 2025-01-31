@@ -33,8 +33,12 @@ class ReportingDashboardService:
             )
         )
 
-        return OperationDataAccessService.get_all_operations_for_user(user).annotate(
-            report_id=report_subquery.values("id"),
-            report_version_id=report_subquery.values("latest_version_id"),
-            report_status=report_subquery.values("latest_version_status"),
+        return (
+            OperationDataAccessService.get_all_operations_for_user(user)
+            .filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
+            .annotate(
+                report_id=report_subquery.values("id"),
+                report_version_id=report_subquery.values("latest_version_id"),
+                report_status=report_subquery.values("latest_version_status"),
+            )
         )
