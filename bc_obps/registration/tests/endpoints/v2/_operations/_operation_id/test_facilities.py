@@ -77,7 +77,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert page_2_first_facility.id > page_2_first_facility_reverse.id
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline', _quantity=25)
+        timeline = baker.make_recipe('utils.facility_designated_operation_timeline', _quantity=15)
         named_facility = baker.make_recipe('utils.facility', name='Mynameis', type=Facility.Types.MEDIUM_FACILITY)
         baker.make_recipe(
             'utils.facility_designated_operation_timeline', facility=named_facility, operation=timeline[0].operation
@@ -94,7 +94,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert response.status_code == 200
 
         response_items_1 = response.json().get('items')
-        assert len(response_items_1) == 25
+        assert len(response_items_1) == 15
 
         for item in response_items_1:
             assert item.get('facility__type') == Facility.Types.LARGE_FACILITY
