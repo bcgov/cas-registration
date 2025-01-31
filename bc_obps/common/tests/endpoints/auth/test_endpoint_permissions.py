@@ -169,6 +169,14 @@ class TestEndpointPermissions(TestCase):
                 "endpoint_name": "register_get_operation_information",
                 "kwargs": {"operation_id": mock_uuid},
             },
+            {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
+            {
+                "method": "get",
+                "endpoint_name": "get_selected_facilities",
+                "kwargs": {'report_version_id': mock_version},
+            },
+            {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
+            {"method": "get", "endpoint_name": "get_report_attachments", "kwargs": {"report_version_id": mock_int}},
             {
                 "method": "get",
                 "endpoint_name": "get_report_type_by_version",
@@ -219,6 +227,11 @@ class TestEndpointPermissions(TestCase):
                 "method": "post",
                 "endpoint_name": "save_facility_report",
                 "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
+            },
+            {
+                "method": "post",
+                "endpoint_name": "save_selected_facilities",
+                "kwargs": {"report_version_id": mock_int},
             },
             {
                 "method": "post",

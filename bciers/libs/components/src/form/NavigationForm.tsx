@@ -8,7 +8,8 @@ import ReportingStepButtons from "./components/ReportingStepButtons";
 import { Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 
-export interface NavigationFormProps extends FormPropsWithTheme<any> {
+export interface NavigationFormProps
+  extends Omit<FormPropsWithTheme<any>, "onSubmit"> {
   schema: RJSFSchema;
   uiSchema: UiSchema;
   formData: any;
@@ -16,7 +17,7 @@ export interface NavigationFormProps extends FormPropsWithTheme<any> {
   cancelUrl?: string;
   backUrl?: string;
   continueUrl: string;
-  onSubmit: (data: any) => Promise<boolean>;
+  onSubmit: (data: any, navigateAfterSubmit: boolean) => Promise<boolean>;
   buttonText?: string;
   onChange?: (data: any) => void;
   errors?: any[];
@@ -58,7 +59,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
 
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
     setIsSaving(true);
-    const success = await onSubmit(data);
+    const success = await onSubmit(data, navigateAfterSubmit);
     resetKey();
 
     if (success) {
