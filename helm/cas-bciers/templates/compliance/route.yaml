@@ -1,0 +1,22 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ template "cas-bciers.fullname" . }}-compliance-frontend
+  labels:
+{{ include "cas-bciers.labels" . | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+    haproxy.router.openshift.io/rewrite-target: {{ .Values.complianceFrontend.route.path }}
+
+spec:
+  host: {{ .Values.complianceFrontend.route.host }}
+  path: {{ .Values.complianceFrontend.route.path }}
+  port:
+    targetPort: {{ template "cas-bciers.fullname" . }}-compliance-frontend
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ template "cas-bciers.fullname" . }}-compliance-frontend
+    weight: 100

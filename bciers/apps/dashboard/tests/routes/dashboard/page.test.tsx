@@ -66,22 +66,22 @@ const tiles = [
     ],
   },
   {
-    title: "COAM",
-    href: "/coam/",
+    title: "Compliance",
+    href: "/compliance/",
     icon: "Pulse",
     content: "View and pay compliance obligations here.",
     links: [
       {
-        title: "COAM TBD 1",
-        href: "/coam/",
+        title: "Compliance TBD 1",
+        href: "/compliance/",
       },
       {
-        title: "COAM TBD 2",
-        href: "/coam/",
+        title: "Compliance TBD 2",
+        href: "/compliance/",
       },
       {
-        title: "COAM TBD 3",
-        href: "/coam/",
+        title: "Compliance TBD 3",
+        href: "/compliance/",
       },
     ],
   },
@@ -122,7 +122,7 @@ describe("Registration dashboard page", () => {
       screen.getByRole("heading", { name: /registration/i }),
     ).toBeVisible();
     expect(screen.getByRole("heading", { name: /reporting/i })).toBeVisible();
-    expect(screen.getByRole("heading", { name: /coam/i })).toBeVisible();
+    expect(screen.getByRole("heading", { name: /compliance/i })).toBeVisible();
     expect(
       screen.getByRole("heading", { name: /report a problem/i }),
     ).toBeVisible();
@@ -187,17 +187,17 @@ describe("Registration dashboard page", () => {
     expect(reportingLink2).toBeVisible();
     expect(reportingLink2).toHaveAttribute("href", "/reporting/tbd");
 
-    // COAM tile
-    const coamTitleLink = screen.getByRole("link", {
+    // Compliance tile
+    const complianceTitleLink = screen.getByRole("link", {
       name: /View and pay compliance obligations here./i,
     });
-    expect(coamTitleLink).toBeVisible();
-    expect(coamTitleLink).toHaveAttribute("href", "/coam/");
-    const coamLinks = screen.getAllByRole("link", { name: /COAM TBD/i });
-    expect(coamLinks).toHaveLength(3);
-    expect(coamLinks[0]).toHaveAttribute("href", "/coam/");
-    expect(coamLinks[1]).toHaveAttribute("href", "/coam/");
-    expect(coamLinks[2]).toHaveAttribute("href", "/coam/");
+    expect(complianceTitleLink).toBeVisible();
+    expect(complianceTitleLink).toHaveAttribute("href", "/compliance/");
+    const complianceLinks = screen.getAllByRole("link", {
+      name: /Compliance TBD/i,
+    });
+    expect(complianceLinks).toHaveLength(3);
+    expect(complianceLinks[2]).toHaveAttribute("href", "/compliance/");
 
     expect(
       screen.getByRole("link", { name: /report problems to/i }),

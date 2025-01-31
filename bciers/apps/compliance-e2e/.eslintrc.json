@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "plugin:@nx/react-typescript",
+    "next",
+    "plugin:playwright/recommended",
+    "../../.eslintrc.json"
+  ],
+  "ignorePatterns": ["!**/*"],
+  "parserOptions": {
+    "project": ["apps/compliance-e2e/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["src/**/*.{ts,js,tsx,jsx}"],
+      "rules": {}
+    }
+  ]
+}

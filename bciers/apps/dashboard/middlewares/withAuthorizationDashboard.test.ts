@@ -204,11 +204,11 @@ describe("withAuthorizationDashboard middleware", () => {
     }
   });
 
-  it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /administration, /coam, /onboarding, /registration, /reporting", async () => {
+  it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /administration, /compliance, /onboarding, /registration, /reporting", async () => {
     getToken.mockResolvedValue(mockCasPendingToken);
     const paths = [
       "/administration",
-      "/coam",
+      "/compliance",
       "/onboarding",
       "/registration",
       "/reporting",

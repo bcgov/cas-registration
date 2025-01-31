@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-compliance-frontend
+  labels:
+    component: compliance-frontend
+    layer: frontend
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.complianceFrontend.autoscaling.enabled }}
+  replicas: {{ .Values.complianceFrontend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: compliance-frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: compliance-frontend
+        layer: frontend
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ template "cas-bciers.fullname" . }}-compliance-frontend
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
+          env:
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                  secretKeyRef:
+                    name: cas-bciers-nextauth
+                    key: nextauth-secret
+          image: "{{ .Values.complianceFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.complianceFrontend.image.tag }}"
+          imagePullPolicy: {{ .Values.complianceFrontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.complianceFrontend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.complianceFrontend.resources | nindent 12 }}
+      restartPolicy: Always

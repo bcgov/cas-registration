@@ -19,7 +19,7 @@
       "@/*": ["apps/registration1/*"],
       "@/administration/*": ["apps/administration/*"],
       "@/administration-e2e/*": ["apps/administration-e2e/*"],
-      "@/coam/*": ["apps/coam/*"],
+      "@/compliance/*": ["apps/compliance/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/registration/*": ["apps/registration/*"],
       "@bciers/actions": ["libs/actions/src/index.ts"],

@@ -54,21 +54,21 @@ const mockTilesWithLinks = [
     ],
   },
   {
-    title: "COAM",
-    href: "/coam/tbd",
+    title: "Compliance",
+    href: "/compliance/tbd",
     icon: "Pulse",
     content: "View payments for compliance obligations here",
     links: [
       {
-        href: "/coam/tbd",
+        href: "/compliance/tbd",
         title: "TBD",
       },
       {
-        href: "/coam/tbd",
+        href: "/compliance/tbd",
         title: "TBD",
       },
       {
-        href: "/coam/tbd",
+        href: "/compliance/tbd",
         title: "TBD",
       },
     ],
@@ -203,19 +203,21 @@ describe("The Tiles component", () => {
       screen.getByRole("link", { name: "View Past Submissions" }),
     ).toHaveAttribute("href", "/reporting/tbd");
 
-    // COAM tile
-    expect(screen.getByRole("heading", { name: "COAM" })).toBeInTheDocument();
+    // Compliance tile
+    expect(
+      screen.getByRole("heading", { name: "Compliance" }),
+    ).toBeInTheDocument();
 
-    // COAM tile content
+    // Compliance tile content
     expect(
       screen.getByText("View payments for compliance obligations here"),
     ).toBeInTheDocument();
 
-    // COAM tile links
+    // Compliance tile links
     expect(screen.getAllByRole("link", { name: "TBD" })).toHaveLength(3);
     expect(screen.getAllByRole("link", { name: "TBD" })[0]).toHaveAttribute(
       "href",
-      "/coam/tbd",
+      "/compliance/tbd",
     );
 
     // Report a Problem tile

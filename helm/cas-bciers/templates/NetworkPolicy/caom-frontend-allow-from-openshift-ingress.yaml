@@ -1,13 +1,13 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: {{ include "cas-bciers.fullname" . }}-coam-frontend-allow-from-openshift-ingress
+  name: {{ include "cas-bciers.fullname" . }}-compliance-frontend-allow-from-openshift-ingress
   labels: {{ include "cas-bciers.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
       app.kubernetes.io/name: {{ include "cas-bciers.fullname" . }}
-      component: coam-frontend
+      component: compliance-frontend
   ingress:
     - from:
         - namespaceSelector:

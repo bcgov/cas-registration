@@ -34,7 +34,7 @@ def list_dashboard_data(
         'registration-operation-detail',
         'registration',
         'reporting',
-        'coam',
+        'compliance',
         'operators',
         'cas_director',
     ],

@@ -13,7 +13,7 @@ ci:
   allow_failures:
     - "test-code / yarn-audit"
     - "Happo (cas-administration)"
-    - "Happo (cas-coam)"
+    - "Happo (cas-compliance)"
     - "Happo (cas-registration)"
     - "Happo (cas-registration1)"
     - "Happo (cas-reporting)"

@@ -143,11 +143,11 @@ administrationFrontend:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
-coamFrontend:
+complianceFrontend:
   replicaCount: 1
 
   image:
-    repository: ghcr.io/bcgov/cas-coam-frontend
+    repository: ghcr.io/bcgov/cas-compliance-frontend
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
