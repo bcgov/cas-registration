@@ -74,7 +74,8 @@ jobs:
       nx_project: administration
     secrets: inherit
   test-compliance-e2e:
-    needs: [build-backend, build-dashboard-e2e, build-compliance, check-nx-affected]
+    needs:
+      [build-backend, build-dashboard-e2e, build-compliance, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       image_url: "ghcr.io/bcgov/cas-compliance-frontend"
