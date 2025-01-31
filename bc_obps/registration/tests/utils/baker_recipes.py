@@ -146,12 +146,22 @@ transfer_event = Recipe(
     to_operator=foreign_key(operator),
 )
 
-facility = Recipe(Facility, address=foreign_key(address), name=seq('Facility 0'))
+
+facility = Recipe(
+    Facility,
+    address=foreign_key(address),
+    name=seq('Facility 0'),
+    operation=foreign_key(operation),
+    type=Facility.Types.LARGE_FACILITY,
+)
+
 
 facility_designated_operation_timeline = Recipe(
     FacilityDesignatedOperationTimeline,
     operation=foreign_key(operation),
-    facility=foreign_key(facility),
+    facility=foreign_key(
+        facility
+    ),  # note: you have to manually assign the correct operation_id to this facility in each test if desired
     status=cycle([status for status in FacilityDesignatedOperationTimeline.Statuses]),
     end_date=datetime.now(ZoneInfo("UTC")),
 )

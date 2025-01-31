@@ -1,7 +1,6 @@
 from model_bakery import baker
 
 from registration.models import RegulatedProduct
-from registration.tests.utils.bakers import facility_baker
 from reporting.models import ReportNewEntrant, ReportNewEntrantProduction
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
@@ -21,7 +20,7 @@ from reporting.tests.utils.bakers import report_version_baker, activity_baker, s
 def facility_report_baker(**props):
     report_version = props.get('report_version') or report_version_baker()
     default_props = {
-        "facility": facility_baker(),
+        "facility": baker.make_recipe('utils.facility'),
         "report_version": report_version,
     }
     return baker.make(FacilityReport, **(default_props | props))
@@ -29,7 +28,6 @@ def facility_report_baker(**props):
 
 def report_activity_baker(**props):
     report_version = props.get('report_version') or report_version_baker()
-
     default_props = {
         "activity": activity_baker(),
         "activity_base_schema": ActivityJsonSchema.objects.first(),
@@ -42,10 +40,10 @@ def report_activity_baker(**props):
 
 def report_source_type_baker(**props):
     report_version = props.get('report_version') or report_version_baker()
-
     default_props = {
         "activity_source_type_base_schema": ActivitySourceTypeJsonSchema.objects.first(),
         "source_type": source_type_baker(),
+        # brianna here
         "report_activity": report_activity_baker(report_version=report_version),
         "report_version": report_version,
         "json_data": "{'test':'report_source_type'}",
