@@ -3,6 +3,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3aff",
     "fields": {
+      "operation": "ebc45617-ae4c-4c76-ab36-5a59c3aef407",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 1",
@@ -18,6 +19,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afa",
     "fields": {
+      "operation": "2e36a496-3f66-408f-b2b9-69f4fa7bba0e",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 2",
@@ -33,6 +35,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afb",
     "fields": {
+      "operation": "d046cdec-554d-4c54-9160-fcd6c20e3566",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 3",
@@ -48,6 +51,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afc",
     "fields": {
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb8",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 4",
@@ -63,6 +67,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afd",
     "fields": {
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb0",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 5",
@@ -78,6 +83,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3afe",
     "fields": {
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb1",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 6",
@@ -93,6 +99,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3af0",
     "fields": {
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb2",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 7",
@@ -108,6 +115,7 @@
     "model": "registration.facility",
     "pk": "f486f2fb-62ed-438d-bb3e-0819b51e3af1",
     "fields": {
+      "operation": "460102aa-e275-46fe-a38e-1e5a3c7badb3",
       "created_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "SFO Facility 8",
