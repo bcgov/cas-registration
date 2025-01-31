@@ -353,6 +353,53 @@ def reverse_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
+#### METHODOLOGY REPORTING FIELDS DATA ####
+
+
+def init_methodology_reporting_fields_data(apps, schema_monitor):
+    ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
+    Configuration = apps.get_model("reporting", "Configuration")
+    Activity = apps.get_model("registration", "Activity")
+    ReportingField = apps.get_model("reporting", "ReportingField")
+
+    # All configuration elements for methodologies "Alternative Parameter Measurement" and "Replacement Methodology"
+    # have a description field.
+
+    # If performance issues arise, this could be optimized by batch-inserts in the through model of the m2m relationship
+
+    for element in ConfigurationElement.objects.filter(
+        activity=Activity.objects.get(
+            name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
+        ),
+        methodology__name__in=[
+            "Alternative Parameter Measurement",
+            "Replacement Methodology",
+        ],
+        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
+        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
+    ):
+        element.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
+
+
+def reverse_methodology_reporting_fields_data(apps, schema_monitor):
+    ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
+    Configuration = apps.get_model("reporting", "Configuration")
+    Activity = apps.get_model("registration", "Activity")
+
+    for element in ConfigurationElement.objects.filter(
+        activity=Activity.objects.get(
+            name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
+        ),
+        methodology__name__in=[
+            "Alternative Parameter Measurement",
+            "Replacement Methodology",
+        ],
+        valid_from=Configuration.objects.get(valid_from="2023-01-01"),
+        valid_to=Configuration.objects.get(valid_to="2099-12-31"),
+    ):
+        element.reporting_fields.clear()
+
+
 #### ACTIVITY SCHEMA ####
 
 
@@ -467,6 +514,10 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             init_configuration_element_data,
             reverse_configuration_element_data,
+        ),
+        migrations.RunPython(
+            init_methodology_reporting_fields_data,
+            reverse_methodology_reporting_fields_data,
         ),
         migrations.RunPython(init_activity_schema_data, reverse_activity_schema_data),
         migrations.RunPython(
