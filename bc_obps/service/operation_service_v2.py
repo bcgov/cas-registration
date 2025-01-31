@@ -39,6 +39,7 @@ from registration.schema.v2.operation import (
 from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 from datetime import datetime
+from django.utils import timezone
 from zoneinfo import ZoneInfo
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
@@ -219,7 +220,12 @@ class OperationServiceV2:
         operation_data['pk'] = operation_id if operation_id else None
         operation_data['operator_id'] = user_operator.operator_id
 
-        operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
+        operation, created = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
+
+        if created:
+            OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline(
+                user_guid, {'operator': user_operator.operator, 'operation': operation, 'start_date': timezone.now()}
+            )
 
         # set m2m relationships
         operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
@@ -294,6 +300,7 @@ class OperationServiceV2:
     def register_operation_information(
         cls, user_guid: UUID, operation_id: UUID | None, payload: OperationInformationIn
     ) -> Operation:
+
         if operation_id:
             existing_operation = OperationDataAccessService.get_by_id(operation_id)
 
@@ -311,7 +318,6 @@ class OperationServiceV2:
 
         if operation.status == Operation.Statuses.NOT_STARTED:
             cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
-
         return operation
 
     @classmethod
