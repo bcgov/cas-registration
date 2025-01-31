@@ -14,7 +14,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
 
     class AllocationMethodologyChoices(models.TextChoices):
         CALCULATOR = ("Calculator",)
-        OTHER = "other"
+        OTHER = "Other"
 
     report_version = models.ForeignKey(
         report_version.ReportVersion,

@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 (
                     'allocation_methodology',
                     models.CharField(
-                        choices=[('Calculator', 'Calculator'), ('other', 'Other')],
+                        choices=[('Calculator', 'Calculator'), ('Other', 'Other')],
                         default='Calculator',
                         db_comment='The methodology used to calculate the allocated emissions',
                         max_length=255,
@@ -126,12 +126,12 @@ class Migration(migrations.Migration):
             model_name='reportproductemissionallocation',
             constraint=models.CheckConstraint(
                 check=models.Q(
-                    ('allocation_methodology', 'other'),
+                    ('allocation_methodology', 'Other'),
                     ('allocation_other_methodology_description__isnull', True),
                     _negated=True,
                 ),
                 name='allocation_other_methodology_must_have_description',
-                violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'other'",
+                violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'Other'",
             ),
         ),
     ]
