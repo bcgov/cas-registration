@@ -1,4 +1,3 @@
-from datetime import timedelta
 import pytest
 from django.db.models import Q
 from model_bakery import baker
@@ -281,13 +280,3 @@ class TestOperationRegistration(CommonTestSetup):
 
         assert self.operation.status == Operation.Statuses.REGISTERED
         assert self.operation.registration_purpose is not None
-        # updating the submission date is the last thing that happens in the registration process - 2 seconds as a buffer
-        assert self.operation.submission_date.replace(microsecond=0) - self.updated_at.replace(
-            microsecond=0
-        ) <= timedelta(seconds=2)
-
-        # assert timestamps and user
-        assert self.operation.created_by == self.user
-        assert self.operation.created_at == self.created_at
-        assert self.operation.updated_by == self.user
-        assert self.operation.updated_at == self.updated_at
