@@ -36,7 +36,7 @@ class ReportVersion(TimeStampedModel):
         default=ReportVersionStatus.Draft,
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table representing the multiple versions that a single report can have."
         db_table = 'erc"."report_version'
         app_label = "reporting"

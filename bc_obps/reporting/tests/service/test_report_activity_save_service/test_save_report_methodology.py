@@ -40,10 +40,6 @@ class TestSaveReportMethodology(TestCase):
         assert return_value.report_emission_id == report_emission.id
         assert return_value.report_version == test_infrastructure.report_version
 
-        return_value.refresh_from_db()
-        assert return_value.created_by == test_infrastructure.user
-        assert return_value.updated_by is None
-
     def test_update_emission(self):
         test_infrastructure = TestInfrastructure.build()
         report_activity = test_infrastructure.make_report_activity()
@@ -82,7 +78,3 @@ class TestSaveReportMethodology(TestCase):
             "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
         }
         assert updated_return_value.methodology_id == Methodology.objects.get(name="Default HHV/Default EF").id
-
-        updated_return_value.refresh_from_db()
-        assert updated_return_value.created_by == test_infrastructure.user
-        assert updated_return_value.updated_by == test_infrastructure.user

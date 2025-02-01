@@ -28,7 +28,7 @@ class ReportFuel(ReportDataBaseModel):
         db_comment="The fuel type this data applies to",
     )
 
-    class Meta:
+    class Meta(ReportDataBaseModel.Meta):
         db_table_comment = "A table to store the reported fuel-specific data, in a JSON format"
         db_table = 'erc"."report_fuel'
         app_label = 'reporting'

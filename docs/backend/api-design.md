@@ -53,7 +53,6 @@ The only things these services do are:
 
 - access the database (query, create, etc.)
 - ensure transactions are atomic using the @transaction.atomic() decorator when required (not needed for GET)
-- set audit columns
 - return exceptions (rarely; usually we allow the default django error to be caught and handled in the endpoint by the @handle_http_errors decorator)
 
 For example:
@@ -67,8 +66,6 @@ For example:
         user_operator, created = UserOperator.objects.get_or_create(
             user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.PENDING
         )
-        if created:
-            user_operator.set_create_or_update(user.pk)
         return user_operator, created
 ```
 

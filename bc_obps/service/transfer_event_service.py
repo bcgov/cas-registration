@@ -224,7 +224,6 @@ class TransferEventService:
         # Mark the transfer event as 'Transferred'
         event.status = TransferEvent.Statuses.TRANSFERRED
         event.save(update_fields=["status"])
-        event.set_create_or_update(processed_by_id)
 
     @classmethod
     def _process_facilities_transfer(cls, event: TransferEvent, user_guid: UUID) -> None:

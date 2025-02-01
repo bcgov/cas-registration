@@ -36,7 +36,7 @@ class ReportAdditionalData(TimeStampedModel):
         null=True,
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store the additional data for the report"
         db_table = 'erc"."report_additional_data'
         app_label = 'reporting'

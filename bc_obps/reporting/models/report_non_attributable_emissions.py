@@ -35,7 +35,7 @@ class ReportNonAttributableEmissions(TimeStampedModel):
 
     gas_type = models.ManyToManyField(GasType, related_name="+")
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_non_attributable_emissions'
         db_table_comment = "A table to store non-attributable emissions data."
         app_label = 'reporting'

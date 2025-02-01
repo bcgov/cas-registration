@@ -22,7 +22,7 @@ class TemporaryShutdownEvent(EventBaseModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(EventBaseModel.Meta):
         db_table_comment = "Temporary shutdown events for operations and/or facilities."
         db_table = 'erc"."temporary_shutdown_event'
         default_related_name = "temporary_shutdown_events"

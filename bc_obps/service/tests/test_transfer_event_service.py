@@ -354,13 +354,11 @@ class TestTransferEventService:
         mock_logger.error.assert_called_once_with(f"Failed to process event {due_event_2.id}: Processing failed")
 
     @staticmethod
-    @patch("registration.models.TransferEvent.set_create_or_update")
     @patch("service.transfer_event_service.TransferEventService._process_facilities_transfer")
     @patch("service.transfer_event_service.TransferEventService._process_operation_transfer")
     def test_process_single_event_success(
         mock_process_operation_transfer: MagicMock,
         mock_process_facilities_transfer: MagicMock,
-        mock_set_create_or_update: MagicMock,
     ):
         user_guid = uuid4()
         # Scenario 1: Transfer event with facilities
@@ -380,7 +378,6 @@ class TestTransferEventService:
         # Verify transfer event is marked as transferred
         transfer_event_facilities.refresh_from_db()
         assert transfer_event_facilities.status == TransferEvent.Statuses.TRANSFERRED
-        mock_set_create_or_update.assert_called_once()
 
         # Scenario 2: Transfer event with an operation
         transfer_event_operation = baker.make_recipe(

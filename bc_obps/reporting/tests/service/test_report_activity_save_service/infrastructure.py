@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from registration.models.activity import Activity
 from registration.models.user import User
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -45,14 +44,12 @@ class TestInfrastructure:
         t = TestInfrastructure()
         t.facility_report = make_recipe(
             'reporting.tests.utils.facility_report',
-            report_version__report__created_at=datetime(1999, 9, 1, tzinfo=timezone.utc),
         )
+        t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        t.configuration = make_recipe(
-            "reporting.tests.utils.configuration",
-            valid_from=datetime(1999, 1, 1, tzinfo=timezone.utc),
-            valid_to=datetime(1999, 12, 31, tzinfo=timezone.utc),
+        t.configuration = Configuration.objects.get(
+            valid_from__lte=t.facility_report.created_at, valid_to__gte=t.facility_report.created_at
         )
         t.activity = make_recipe("reporting.tests.utils.activity")
         t.activity_json_schema = make_recipe(
@@ -67,24 +64,23 @@ class TestInfrastructure:
             valid_from=t.configuration,
             valid_to=t.configuration,
         )
+
         return t
 
     @classmethod
     def build_from_real_config(cls, activity_slug="gsc_non_compression"):
         t = TestInfrastructure()
-        t.facility_report = make_recipe(
-            'reporting.tests.utils.facility_report',
-            report_version__report__created_at=datetime(2024, 9, 1, tzinfo=timezone.utc),
-        )
+        t.facility_report = make_recipe('reporting.tests.utils.facility_report')
         t.report_version = t.facility_report.report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        t.configuration = Configuration.objects.get(slug='2024')
+        t.configuration = Configuration.objects.get(slug='2025')
         t.activity = Activity.objects.get(slug=activity_slug)
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
             valid_from=t.configuration,
             valid_to=t.configuration,
         )
+
         return t
 
     @classmethod

@@ -54,7 +54,6 @@ class ReportProductService:
                     "product_id": product_id,
                 },
             )
-            report_product_record.set_create_or_update(user_guid)
 
     @classmethod
     def get_production_data(cls, report_version_id: int, facility_id: UUID) -> QuerySet[ReportProduct]:

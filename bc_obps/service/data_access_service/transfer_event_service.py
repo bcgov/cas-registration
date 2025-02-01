@@ -27,5 +27,4 @@ class TransferEventDataAccessService:
         for key, value in transfer_event_data.items():
             setattr(transfer_event, key, value)
         transfer_event.save(update_fields=transfer_event_data.keys())
-        transfer_event.set_create_or_update(user_guid)
         return transfer_event

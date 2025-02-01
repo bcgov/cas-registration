@@ -140,8 +140,10 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
     def test_cas_admin_approves_admin_access_request_with_new_operator(self, mocker):
         # In this test we are testing the user operator status change and not the operator change,
         # so we have to mark the operator as is_new=False and status=APPROVED so we can bypass the below part and can get to the email sending part
-        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False, 'created_by': self.user})
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        operator.refresh_from_db()
         user_operator = user_operator_baker({'operator': operator, 'user': operator.created_by})
+
         mock_send_operator_access_request_email = mocker.patch(
             "service.user_operator_service.send_operator_access_request_email"
         )
@@ -175,13 +177,13 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         )
 
     def test_cas_admin_declines_access_request(self, mocker):
-        user = baker.make(User)
         operator = operator_baker()
         operator.status = Operator.Statuses.APPROVED
         operator.is_new = False
         operator.save(update_fields=["status", "is_new"])
         user_operator = user_operator_baker()
-        user_operator.user_id = user.user_guid
+        user_operator.refresh_from_db()
+        user_operator.user_id = user_operator.created_by_id
         user_operator.operator = operator
         user_operator.save(update_fields=["user_id", "operator_id"])
         # Assigning contacts to the operator of the user_operator

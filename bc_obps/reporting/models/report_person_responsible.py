@@ -34,7 +34,7 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
         db_comment="The business role of the contact.",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store the data about the person responsible for the report"
         db_table = 'erc"."report_person_responsible'
         app_label = "reporting"
