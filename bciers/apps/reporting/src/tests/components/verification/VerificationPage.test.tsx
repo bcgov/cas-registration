@@ -5,6 +5,8 @@ import { getReportVerification } from "@reporting/src/app/utils/getReportVerific
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
 import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 
 vi.mock("@reporting/src/app/components/verification/VerificationForm", () => ({
   default: vi.fn(),
@@ -26,7 +28,11 @@ vi.mock(
 );
 
 vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
-  getReportNeedsVerification: vi.fn(() => Promise.resolve(true)), // Mocking to return true
+  getReportNeedsVerification: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/utils/getReportingOperation", () => ({
+  getReportingOperation: vi.fn(),
 }));
 
 vi.mock("@reporting/src/app/components/taskList/5_signOffSubmit", () => ({
@@ -49,6 +55,12 @@ const mockCreateVerificationSchema = createVerificationSchema as ReturnType<
 const mockGetSignOffAndSubmitSteps = getSignOffAndSubmitSteps as ReturnType<
   typeof vi.fn
 >;
+const mockGetReportNeedsVerification = getReportNeedsVerification as ReturnType<
+  typeof vi.fn
+>;
+const mockGetReportingOperation = getReportingOperation as ReturnType<
+  typeof vi.fn
+>;
 
 describe("VerificationPage component", () => {
   it("renders the VerificationForm component with the correct data", async () => {
@@ -64,18 +76,25 @@ describe("VerificationPage component", () => {
     const mockTaskListElements = [
       { type: "Page", title: "Verification", isActive: true },
     ];
+    const mockReportOperation = {
+      report_operation: { operation_type: "Single Facility Operation" },
+    };
 
     mockGetReportVerification.mockResolvedValue(mockInitialData);
     mockGetReportFacilityList.mockResolvedValue(mockFacilityList);
     mockCreateVerificationSchema.mockReturnValue(mockVerificationSchema);
     mockGetSignOffAndSubmitSteps.mockResolvedValue(mockTaskListElements);
+    mockGetReportNeedsVerification.mockResolvedValue(true);
+    mockGetReportingOperation.mockResolvedValue(mockReportOperation);
 
     render(await VerificationPage({ version_id: mockVersionId }));
 
+    expect(mockGetReportingOperation).toHaveBeenCalledWith(mockVersionId);
     expect(mockGetReportVerification).toHaveBeenCalledWith(mockVersionId);
     expect(mockGetReportFacilityList).toHaveBeenCalledWith(mockVersionId);
     expect(mockCreateVerificationSchema).toHaveBeenCalledWith(
       mockFacilityList.facilities,
+      "SFO",
     );
     expect(mockGetSignOffAndSubmitSteps).toHaveBeenCalledWith(
       mockVersionId,
@@ -86,8 +105,8 @@ describe("VerificationPage component", () => {
     expect(mockVerificationForm).toHaveBeenCalledWith(
       {
         version_id: mockVersionId,
+        operationType: "SFO",
         verificationSchema: mockVerificationSchema,
-        verificationUiSchema: expect.any(Object),
         initialData: mockInitialData,
         taskListElements: mockTaskListElements,
       },
