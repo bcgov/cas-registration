@@ -13,7 +13,7 @@ class RestartEvent(EventBaseModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(EventBaseModel.Meta):
         db_table_comment = (
             "Restart events for operations and/or facilities after they have been closed or temporarily shutdown."
         )
