@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "title": "Equipment leaks detected using leak detection and leaker emission factor methods",
+  "default": { "units": [{ "emissions": [{}] }] },
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Source sub-type",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sourceSubType": {
+            "title": "Source sub-type",
+            "default": "",
+            "type": "string",
+            "enum": [
+              "Onshore Natural Gas Transmission Compression and Pipelines - Above grade meters and regulators and associated equipment at custody transfer meter regulating stations, including fugitive equipment leaks from connectors, block valves, control valves, pressure relief valves, orifice meters, regulators, and open ended lines",
+              "Onshore Natural Gas Transmission Compression and Pipelines - Pipeline belowground meters and regulators and valve fugitives",
+              "Underground Natural Gas Storage - Fugitive equipment leaks from valves, connectors, open ended lines, pressure relief valves and meters",
+              "Natural Gas Distribution-Meters, regulators, and associated equipment at above grade custody transfer meteringregulating stations, including fugitive equipment leaks from connectors, block valves, control valves, pressure relief valves, orifice meters, regulators, and open- ended lines"
+            ]
+          },
+          "emissions": {
+            "title": "Emission Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "gasType": {
+                  "title": "Gas Type",
+                  "type": "string",
+                  "enum": []
+                },
+                "emission": {
+                  "title": "Emission",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "equivalentEmission": {
+                  "title": "Equivalent Emission",
+                  "type": "string",
+                  "readOnly": true,
+                  "default": "Value will be computed upon saving"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

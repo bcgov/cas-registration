@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "title": "Population count sources",
+  "default": { "units": [{ "emissions": [{}] }] },
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Source sub-type",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sourceSubType": {
+            "title": "Source sub-type",
+            "default": "",
+            "type": "string",
+            "enum": [
+              "Onshore Natural Gas Transmission Compression and Pipelines-Above grade meters and regulators and associated equipment at non-custody transfer meter-regulating stations, including station equipment leaks",
+              "Onshore Natural Gas Transmission Compression and Pipelines-Pipeline belowground meters and regulators and valve fugitives",
+              "Underground Natural Gas Storage-Fugitive equipment leaks from valves, connectors, open ended lines, pressure relief valves and meters",
+              "Natural Gas Distribution - Meters, regulators, and associated equipment at above grade non custody transfer metering-regulating stations, including fugitive equipment leaks from connectors, block valves, control valves, pressure relief valves, orifice meters, regulators, and open- ended lines",
+              "Natural Gas Distribution - Equipment leaks from vaults at below grade metering-regulating stations",
+              "Natural Gas Distribution - Meters, regulators, and associated equipment at above grade metering-regulating stations",
+              "Natural Gas Distribution - Pipeline main fugitive equipment leaks",
+              "Natural Gas Distribution - Service line fugitive equipment leaks"
+            ]
+          },
+          "emissions": {
+            "title": "Emission Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "gasType": {
+                  "title": "Gas Type",
+                  "type": "string",
+                  "enum": []
+                },
+                "emission": {
+                  "title": "Emission",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "equivalentEmission": {
+                  "title": "Equivalent Emission",
+                  "type": "string",
+                  "readOnly": true,
+                  "default": "Value will be computed upon saving"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
