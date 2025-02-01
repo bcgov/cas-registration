@@ -14,8 +14,6 @@ from registration.models import (
     ParentOperator,
     User,
     UserOperator,
-    Facility,
-    FacilityDesignatedOperationTimeline,
 )
 import uuid
 import random
@@ -151,22 +149,4 @@ def parent_operator_baker() -> ParentOperator:
         physical_address=Address.objects.first(),
         mailing_address=Address.objects.first(),
         website='https://www.example-po.com',
-    )
-
-
-def facility_designated_operation_timeline_baker(
-    operation_id: uuid.UUID = None, *args, **kwargs
-) -> FacilityDesignatedOperationTimeline:
-    operation_id = operation_id or operation_baker().id
-    return baker.make(
-        FacilityDesignatedOperationTimeline,
-        operation_id=operation_id,
-        *args,
-        **kwargs,
-    )
-
-
-def facility_baker(*args, **kwargs):
-    return baker.make(
-        Facility, latitude_of_largest_emissions=48.407326, longitude_of_largest_emissions=-123.329773, *args, **kwargs
     )
