@@ -454,16 +454,46 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     # (json schema file name, source type name, has_unit, has_fuel)
     st_schema_config = [
         (
-            "ng_pneumatic_high_bleed_device_venting",
+            "1_ng_pneumatic_high_bleed_device_venting",
             "Natural gas pneumatic high bleed device venting",
             True,
             True,
         ),
         (
-            "ng_pneumatic_pump_venting",
+            "2_ng_pneumatic_pump_venting",
             "Natural gas pneumatic pump venting",
             True,
             True,
+        ),
+        (
+            "3_ng_pneumatic_low_bleed_device_venting",
+            "Natural gas pneumatic low bleed device venting",
+            True,
+            True,
+        ),
+        (
+            "4_ng_pneumatic_intermittent_device_venting",
+            "Natural gas pneumatic intermittent bleed device venting",
+            True,
+            True,
+        ),
+        ("5_blowdown_venting", "Blowdown venting", False, False),
+        ("6_flare_stacks", "Flaring stacks", True, True),
+        (
+            "7_equipment_leaks_detected_using_leak_detection",
+            "Equipment leaks detected using leak detection and leaker emission factor methods",
+            True,
+            False,
+        ),
+        ("8_population_count_sources", "Population count sources", True, False),
+        ("9_transmission_storage_tanks", "Transmission storage tanks", False, False),
+        ("10_other_venting_sources", "Other venting sources", True, False),
+        ("11_other_fugitive_sources", "Other fugitive sources", True, False),
+        (
+            "12_third_party_line_hits_with_release_of_gas",
+            "Third party line hits with release of gas",
+            True,
+            False,
         ),
     ]
 

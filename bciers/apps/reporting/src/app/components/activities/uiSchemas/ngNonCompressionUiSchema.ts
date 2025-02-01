@@ -1,124 +1,103 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import {
+  emissionsFieldsUiSchema,
+  emissionsOnlyUiSchema,
+  sourceSubTypeWithFuelUiSchema,
+  sourceSubTypeWithoutFuelUiSchema,
+  sourceTypeBoxUiSchema,
+} from "./common";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
-import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
-import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
-
-const emissionsUiSchema = {
-  "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-  "ui:FieldTemplate": FieldTemplate,
-  "ui:options": {
-    arrayAddLabel: "Add Emission",
-    title: "Emission",
-    label: false,
-    verticalBorder: true,
-  },
-  items: {
-    methodology: {
-      "ui:FieldTemplate": FieldTemplate,
-      "ui:options": {
-        label: false,
-      },
-      methodology: {
-        "ui:FieldTemplate": InlineFieldTemplate,
-      },
-    },
-  },
-};
-
-const withFuel = {
-  "ui:FieldTemplate": SourceTypeBoxTemplate,
-  units: {
-    "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:title": "Unit Data",
-    "ui:options": {
-      arrayAddLabel: "Add Unit",
-      label: false,
-      title: "Source sub-type",
-      padding: "p-2",
-    },
-    items: {
-      "ui:order": ["sourceSubType", "fuels"],
-      sourceSubType: {
-        "ui:FieldTemplate": InlineFieldTemplate,
-      },
-      fuels: {
-        "ui:title": "Fuel Data",
-        "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-        "ui:FieldTemplate": FieldTemplate,
-        "ui:options": {
-          arrayAddLabel: "Add Fuel",
-          label: false,
-          title: "Fuel",
-        },
-        items: {
-          "ui:order": ["fuelType", "annualFuelAmount", "emissions"],
-          fuelType: {
-            "ui:field": "fuelType",
-            "ui:FieldTemplate": FieldTemplate,
-            "ui:options": {
-              label: false,
-            },
-            fuelName: {
-              "ui:FieldTemplate": InlineFieldTemplate,
-            },
-            fuelUnit: {
-              "ui:FieldTemplate": InlineFieldTemplate,
-            },
-            fuelClassification: {
-              "ui:FieldTemplate": InlineFieldTemplate,
-            },
-          },
-          annualFuelAmount: {
-            "ui:FieldTemplate": InlineFieldTemplate,
-          },
-          emissions: emissionsUiSchema,
-        },
-      },
-    },
-  },
-};
-
-const withoutFuel = {
-  "ui:FieldTemplate": SourceTypeBoxTemplate,
-  units: {
-    "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:title": "Unit Data",
-    "ui:options": {
-      arrayAddLabel: "Add Unit",
-      label: false,
-      title: "Source sub-type",
-      padding: "p-2",
-    },
-    items: {
-      "ui:order": ["sourceSubType", "fuels"],
-      sourceSubType: {
-        "ui:FieldTemplate": InlineFieldTemplate,
-
-        emissions: emissionsUiSchema,
-      },
-    },
-  },
-};
+import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import { InlineFieldTemplate } from "@bciers/components/form/fields";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  naturalGasPneumatciHighBleedDeviceVenting: {
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:widget": CheckboxWidgetLeft,
-    "ui:options": {
-      label: false,
-    },
-  },
+  naturalGasPneumatciHighBleedDeviceVenting: sourceTypeBoxUiSchema,
+  naturalGasPneumaticPumpVenting: sourceTypeBoxUiSchema,
+  naturalGasPneumaticLowBleedDeviceVenting: sourceTypeBoxUiSchema,
+  naturalGasPneumaticIntermittentBleedDeviceVenting: sourceTypeBoxUiSchema,
+  blowdownVenting: sourceTypeBoxUiSchema,
+  flaringStacks: sourceTypeBoxUiSchema,
+  equipmentLeaksDetectedLearkerEmissionFactorMethods: sourceTypeBoxUiSchema,
+  populationCountSources: sourceTypeBoxUiSchema,
+  transmissionStorageTanks: sourceTypeBoxUiSchema,
+  otherVentingSources: sourceTypeBoxUiSchema,
+  otherFugitiveSources: sourceTypeBoxUiSchema,
+  thirdPartyLineHitsWithReleaseOfGas: sourceTypeBoxUiSchema,
   sourceTypes: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       label: false,
     },
-    naturalGasPneumatciHighBleedDeviceVenting: withFuel,
+    naturalGasPneumatciHighBleedDeviceVenting: sourceSubTypeWithFuelUiSchema,
+    naturalGasPneumaticPumpVenting: sourceSubTypeWithFuelUiSchema,
+    naturalGasPneumaticLowBleedDeviceVenting: sourceSubTypeWithFuelUiSchema,
+    naturalGasPneumaticIntermittentBleedDeviceVenting:
+      sourceSubTypeWithFuelUiSchema,
+    blowdownVenting: emissionsOnlyUiSchema,
+    flaringStacks: sourceSubTypeWithFuelUiSchema,
+    equipmentLeaksDetectedLearkerEmissionFactorMethods:
+      sourceSubTypeWithoutFuelUiSchema,
+    populationCountSources: sourceSubTypeWithoutFuelUiSchema,
+    transmissionStorageTanks: emissionsOnlyUiSchema,
+    otherVentingSources: {
+      "ui:FieldTemplate": SourceTypeBoxTemplate,
+      units: {
+        "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:title": "Source sub-type data",
+        "ui:options": {
+          arrayAddLabel: "Add source sub-type",
+          label: false,
+          title: "Source sub-type",
+          padding: "p-2",
+        },
+        items: {
+          "ui:order": [
+            "sourceSubType",
+            "descriptionOfOtherSources",
+            "emissions",
+          ],
+          sourceSubType: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          descriptionOfOtherSources: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          emissions: emissionsFieldsUiSchema,
+        },
+      },
+    },
+    otherFugitiveSources: {
+      "ui:FieldTemplate": SourceTypeBoxTemplate,
+      units: {
+        "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:title": "Source sub-type data",
+        "ui:options": {
+          arrayAddLabel: "Add source sub-type",
+          label: false,
+          title: "Source sub-type",
+          padding: "p-2",
+        },
+        items: {
+          "ui:order": [
+            "sourceSubType",
+            "descriptionOfOtherSources",
+            "emissions",
+          ],
+          sourceSubType: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          descriptionOfOtherSources: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          emissions: emissionsFieldsUiSchema,
+        },
+      },
+    },
+    thirdPartyLineHitsWithReleaseOfGas: sourceSubTypeWithoutFuelUiSchema,
   },
 };
 
