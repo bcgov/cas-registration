@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0045_fix_incorrect_fkey_on_deletes'),
+        ('reporting', '0049_alter_gcs_add_CEMS'),
     ]
 
     operations = [
