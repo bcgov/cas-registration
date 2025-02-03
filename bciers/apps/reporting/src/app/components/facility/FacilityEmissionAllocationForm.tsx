@@ -52,6 +52,43 @@ const validateEmissions = (formData: FormData): boolean => {
   });
 };
 
+const validateMethodology = (formData: FormData): boolean => {
+  return (
+    formData.allocation_methodology !== undefined &&
+    formData.allocation_methodology !== ""
+  );
+};
+
+const validateMethodologyOther = (formData: FormData): boolean => {
+  return formData.allocation_methodology !== "Other"
+    ? true
+    : formData.allocation_other_methodology_description !== undefined &&
+        formData.allocation_other_methodology_description !== "";
+};
+
+const validateFormData = (formData: FormData) => {
+  const errorMismatch =
+    "All emissions must be allocated to 100% before saving and continuing";
+  const errorMethodology =
+    "A methodology must be selected before saving and continuing";
+  const errorMethodologyOther =
+    "A description must be provided for the selected methodology";
+
+  const newErrors: string[] = [];
+
+  if (!validateEmissions(formData)) {
+    newErrors.push(errorMismatch);
+  }
+  if (!validateMethodology(formData)) {
+    newErrors.push(errorMethodology);
+  }
+  if (!validateMethodologyOther(formData)) {
+    newErrors.push(errorMethodologyOther);
+  }
+
+  return newErrors;
+};
+
 export default function FacilityEmissionAllocationForm({
   version_id,
   facility_id,
@@ -78,8 +115,7 @@ export default function FacilityEmissionAllocationForm({
   }));
 
   // State for submit button disable
-  const errorMismatch =
-    "All emissions must be allocated to 100% before saving and continuing";
+
   const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
@@ -97,10 +133,9 @@ export default function FacilityEmissionAllocationForm({
 
   // 🔄 Check for allocation mismatch on page load to prevent submit
   useEffect(() => {
-    if (!validateEmissions(formData)) {
-      setErrors([errorMismatch]);
-    }
-    setSubmitButtonDisabled(!validateEmissions(formData));
+    const newErrors = validateFormData(formData);
+    setErrors(newErrors);
+    setSubmitButtonDisabled(newErrors.length > 0);
   }, [formData]);
 
   // 🛠️ Handle changes to the form data, validates emissions, and updates the error state and submit button state.
@@ -151,14 +186,10 @@ export default function FacilityEmissionAllocationForm({
           }),
         );
     }
-
     // Validate the updated form data and set an error message if validation fails
-    if (!validateEmissions(updatedFormData)) {
-      setErrors([errorMismatch]);
-      setSubmitButtonDisabled(true);
-    } else {
-      setSubmitButtonDisabled(false);
-    }
+    const newErrors = validateFormData(updatedFormData);
+    setErrors(newErrors);
+    setSubmitButtonDisabled(newErrors.length > 0);
 
     // Update the form data state
     setFormData(updatedFormData);
@@ -205,7 +236,6 @@ export default function FacilityEmissionAllocationForm({
       return false;
     }
 
-    setErrors(undefined);
     return true;
   };
 
