@@ -149,7 +149,7 @@ describe("the OptedInOperationForm component", () => {
 
     // Questions - 6
     const meetsProducingGgerScheduleA1RegulatedProductView = screen.getByText(
-      /does this operation produce a regulated product listed in table 1 of schedule a\.1 of \?/i,
+      /does this operation produce a regulated product listed in table 2 of schedule a\.1 of \?/i,
     );
     within(meetsProducingGgerScheduleA1RegulatedProductView).getByRole("link", {
       name: /the ggerr/i,
