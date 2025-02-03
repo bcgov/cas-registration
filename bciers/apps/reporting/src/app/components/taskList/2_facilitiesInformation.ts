@@ -53,7 +53,7 @@ export const getFacilitiesInformationTaskList = (
         {
           type: "Section",
           title: "Activities information",
-          isExpanded: true,
+          isExpanded: false,
           elements: orderedActivities.map(
             (activity: ActivityData, index) =>
               ({

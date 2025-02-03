@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 export interface NavigationFormProps
   extends Omit<FormPropsWithTheme<any>, "onSubmit"> {
   schema: RJSFSchema;
-  uiSchema: UiSchema;
+  uiSchema?: UiSchema;
   formData: any;
   baseUrl?: string;
   cancelUrl?: string;
@@ -23,6 +23,7 @@ export interface NavigationFormProps
   errors?: any[];
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
+  noSaveButton?: boolean;
   formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
 }
 
@@ -48,6 +49,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
     submitButtonDisabled,
     buttonText,
     errors,
+    noSaveButton,
   } = props;
 
   const [isSaving, setIsSaving] = useState(false);
@@ -113,6 +115,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         submitButtonDisabled={submitButtonDisabled}
         saveAndContinue={onSubmit ? onSaveAndContinue : undefined}
         buttonText={buttonText}
+        noSaveButton={noSaveButton}
       />
       {errors && errors.length > 0 && (
         <div key="form-alerts" className="min-h-[48px] box-border mt-4">
