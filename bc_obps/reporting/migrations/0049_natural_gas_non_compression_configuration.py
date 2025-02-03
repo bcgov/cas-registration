@@ -372,6 +372,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
         ),
         methodology__name__in=[
+            "Other CGA Methodology",
             "Alternative Parameter Measurement",
             "Replacement Methodology",
         ],
@@ -391,6 +392,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
             name="Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
         ),
         methodology__name__in=[
+            "Other CGA Methodology",
             "Alternative Parameter Measurement",
             "Replacement Methodology",
         ],

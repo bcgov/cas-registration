@@ -133,13 +133,13 @@ class NaturalGasNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest
             "Other venting sources": {
                 "CO2": {
                     "CEPEI Methodology Manual": 0,
-                    "Other CGA Methodology": 0,
+                    "Other CGA Methodology": 1,
                     "Alternative Parameter Measurement": 1,
                     "Replacement Methodology": 1,
                 },
                 "CH4": {
                     "CEPEI Methodology Manual": 0,
-                    "Other CGA Methodology": 0,
+                    "Other CGA Methodology": 1,
                     "Alternative Parameter Measurement": 1,
                     "Replacement Methodology": 1,
                 },
@@ -147,13 +147,13 @@ class NaturalGasNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest
             "Other fugitive sources": {
                 "CO2": {
                     "CEPEI Methodology Manual": 0,
-                    "Other CGA Methodology": 0,
+                    "Other CGA Methodology": 1,
                     "Alternative Parameter Measurement": 1,
                     "Replacement Methodology": 1,
                 },
                 "CH4": {
                     "CEPEI Methodology Manual": 0,
-                    "Other CGA Methodology": 0,
+                    "Other CGA Methodology": 1,
                     "Alternative Parameter Measurement": 1,
                     "Replacement Methodology": 1,
                 },
