@@ -6,11 +6,11 @@ import { actionHandler } from "@bciers/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Typography } from "@mui/material";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
-import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/Facilities/FetchFacilitiesPageData";
+import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/facilities/fetchFacilitiesPageData";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
-import { FacilityRow } from "@reporting/src/app/components/operations/types";
+import { FacilityRow } from "@reporting/src/app/components/reportInformation/facilities/types";
 import getFacilityColumns from "@reporting/src/app/components/datagrid/models/facilities/getFacilityColumns";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import facilityTableGroupColumns from "@reporting/src/app/components/datagrid/models/facilities/facilityGroupColumns";
@@ -78,7 +78,6 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       await actionHandler(endpoint, "PATCH", endpoint, {
         body: JSON.stringify(rows.rows),
       });
-
       if (redirect) {
         setIsRedirecting(true);
         router.push(saveAndContinueUrl);
@@ -93,13 +92,16 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
     }
   };
 
-  const fetchPageData = useCallback(() => {
+  const fetchPageData = useCallback(async () => {
     const searchParams = Object.fromEntries(browserSearchParams.entries());
 
-    return fetchFacilitiesPageData({
+    const newRows = await fetchFacilitiesPageData({
       version_id,
       searchParams,
     });
+
+    setRows(newRows);
+    return newRows;
   }, [version_id, browserSearchParams]);
 
   return (

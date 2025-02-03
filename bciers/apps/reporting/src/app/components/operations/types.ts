@@ -5,13 +5,6 @@ export interface OperationRow {
   operator: string;
 }
 
-export interface FacilityRow {
-  id: number;
-  facility_id: number;
-  facility_bcghgid: string;
-  facility_name: string;
-  is_completed: boolean;
-}
 export interface OperationsSearchParams {
   [key: string]: string | number | undefined;
   bcghg_id?: string;
@@ -20,16 +13,6 @@ export interface OperationsSearchParams {
   sort_field?: string;
   sort_order?: string;
 }
-
-export interface FacilitiesSearchParams {
-  [key: string]: string | number | undefined;
-  facility_bcghgid?: string;
-  facility_name?: string;
-  page?: number;
-  sort_field?: string;
-  sort_order?: string;
-}
-
 export interface Contact {
   id?: number;
   first_name?: string;
