@@ -353,10 +353,10 @@ def reverse_configuration_element_data(apps, schema_monitor):
     ).delete()
 
 
-#### METHODOLOGY REPORTING FIELDS DATA ####
+#### CONFIGURATION ELEMENTS REPORTING FIELDS DATA ####
 
 
-def init_methodology_reporting_fields_data(apps, schema_monitor):
+def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -381,7 +381,7 @@ def init_methodology_reporting_fields_data(apps, schema_monitor):
         element.reporting_fields.add(ReportingField.objects.get(field_name="Description", field_units__isnull=True))
 
 
-def reverse_methodology_reporting_fields_data(apps, schema_monitor):
+def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     Configuration = apps.get_model("reporting", "Configuration")
     Activity = apps.get_model("registration", "Activity")
@@ -553,8 +553,8 @@ class Migration(migrations.Migration):
             reverse_configuration_element_data,
         ),
         migrations.RunPython(
-            init_methodology_reporting_fields_data,
-            reverse_methodology_reporting_fields_data,
+            init_configuration_element_reporting_fields_data,
+            reverse_configuration_element_reporting_fields_data,
         ),
         migrations.RunPython(init_activity_schema_data, reverse_activity_schema_data),
         migrations.RunPython(
