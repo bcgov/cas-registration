@@ -64,7 +64,7 @@ const meetsNaicsCode1122562ClassificationRequirementsText = (
 
 const meetsProducingGgerScheduleA1RegulatedProductText = (
   <span>
-    Does this operation produce a regulated product listed in Table 1 of
+    Does this operation produce a regulated product listed in Table 2 of
     Schedule A.1 of{" "}
     <a href={ggerrLink} target="_blank">
       the GGERR
