@@ -160,7 +160,7 @@ class TestReportEmissionAllocationService(TestCase):
                     "allocated_quantity": self.ALLOCATION_AMOUNT_2,
                 },
             ],
-            "allocation_methodology": "other",
+            "allocation_methodology": "Other",
             "allocation_other_methodology_description": "test",
         }
 
@@ -168,7 +168,7 @@ class TestReportEmissionAllocationService(TestCase):
             report_product_emission_allocations=self.create_mock_allocation_array(
                 report_product1=report_product_1, report_product2=report_product_2, test_stage=2
             ),
-            allocation_methodology="other",
+            allocation_methodology="Other",
             allocation_other_methodology_description="test",
         )
 
@@ -176,7 +176,7 @@ class TestReportEmissionAllocationService(TestCase):
             report_product_emission_allocations=self.create_mock_allocation_array(
                 report_product1=report_product_1, report_product2=report_product_2, test_stage=3
             ),
-            allocation_methodology="other",
+            allocation_methodology="Other",
             allocation_other_methodology_description="test",
         )
 
@@ -200,7 +200,7 @@ class TestReportEmissionAllocationService(TestCase):
                 report_product=product,
                 emission_category_id=data["category"],
                 allocated_quantity=data["quantity"],
-                allocation_methodology="other",
+                allocation_methodology="Other",
                 allocation_other_methodology_description="test",
             )
         # Arrange: Create an emission allocation to an excluded category
@@ -211,7 +211,7 @@ class TestReportEmissionAllocationService(TestCase):
             report_product=report_products[1],
             emission_category_id=self.WOODY_BIOMASS_CATEGORY_ID,
             allocated_quantity=self.ALLOCATION_AMOUNT_3,
-            allocation_methodology="other",
+            allocation_methodology="Other",
             allocation_other_methodology_description="test",
         )
 
@@ -345,7 +345,6 @@ class TestReportEmissionAllocationService(TestCase):
             )
 
     def test_save_emission_allocation(self):
-
         # Act:  Use the service to save some emission allocation data (payload includes data for 2 allocations)
         ReportEmissionAllocationService.save_emission_allocation_data(
             self.test_infrastructure.report_version.pk,

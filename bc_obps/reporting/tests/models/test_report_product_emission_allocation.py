@@ -28,7 +28,7 @@ class ReportProductEmissionAllocationModelTest(BaseTestCase):
             report_product=report_product,
             emission_category=emission_category,
             allocated_quantity=Decimal('300.4151'),
-            allocation_methodology='other',
+            allocation_methodology='Other',
             allocation_other_methodology_description='Test description',
         )
         cls.field_data = [
@@ -56,7 +56,7 @@ class ReportProductEmissionAllocationModelTest(BaseTestCase):
 
         with pytest.raises(
             ValidationError,
-            match="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'other'",
+            match="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'Other'",
         ):
             make(
                 ReportProductEmissionAllocation,
@@ -67,6 +67,21 @@ class ReportProductEmissionAllocationModelTest(BaseTestCase):
                 allocated_quantity=Decimal('300.4151'),
                 allocation_methodology=ReportProductEmissionAllocation.AllocationMethodologyChoices.OTHER,
                 allocation_other_methodology_description=None,
+            )
+
+        with pytest.raises(
+            ValidationError,
+            match="Value 'other' is not a valid choice.",
+        ):
+            make(
+                ReportProductEmissionAllocation,
+                report_version=facility_report.report_version,
+                facility_report=facility_report,
+                report_product=report_product,
+                emission_category=emission_category,
+                allocated_quantity=Decimal('300.4151'),
+                allocation_methodology='other',
+                allocation_other_methodology_description='test',
             )
 
         # This should not raise
