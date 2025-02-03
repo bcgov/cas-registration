@@ -93,10 +93,10 @@ complianceFrontend:
   resources:
     limits:
       cpu: 200m
-      memory: 64Mi
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 32Mi
+      memory: 128Mi
 
 dashboardFrontend:
   replicaCount: 1
