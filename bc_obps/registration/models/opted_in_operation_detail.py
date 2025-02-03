@@ -30,7 +30,7 @@ class OptedInOperationDetail(TimeStampedModel):
     meets_producing_gger_schedule_a1_regulated_product = models.BooleanField(
         blank=True,
         null=True,
-        db_comment="Does this operation produce a regulated product listed in Table 1 of Schedule A.1 of the GGERR?",
+        db_comment="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR?",
     )
     meets_reporting_and_regulated_obligations = models.BooleanField(
         blank=True,
