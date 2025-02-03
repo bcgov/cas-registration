@@ -4,7 +4,7 @@ import {
   emissionsOnlyUiSchema,
   sourceSubTypeWithFuelUiSchema,
   sourceSubTypeWithoutFuelUiSchema,
-  sourceTypeBoxUiSchema,
+  sourceTypeCheckboxUiSchema,
 } from "./common";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
@@ -13,18 +13,19 @@ import { InlineFieldTemplate } from "@bciers/components/form/fields";
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  naturalGasPneumatciHighBleedDeviceVenting: sourceTypeBoxUiSchema,
-  naturalGasPneumaticPumpVenting: sourceTypeBoxUiSchema,
-  naturalGasPneumaticLowBleedDeviceVenting: sourceTypeBoxUiSchema,
-  naturalGasPneumaticIntermittentBleedDeviceVenting: sourceTypeBoxUiSchema,
-  blowdownVenting: sourceTypeBoxUiSchema,
-  flaringStacks: sourceTypeBoxUiSchema,
-  equipmentLeaksDetectedLearkerEmissionFactorMethods: sourceTypeBoxUiSchema,
-  populationCountSources: sourceTypeBoxUiSchema,
-  transmissionStorageTanks: sourceTypeBoxUiSchema,
-  otherVentingSources: sourceTypeBoxUiSchema,
-  otherFugitiveSources: sourceTypeBoxUiSchema,
-  thirdPartyLineHitsWithReleaseOfGas: sourceTypeBoxUiSchema,
+  naturalGasPneumatciHighBleedDeviceVenting: sourceTypeCheckboxUiSchema,
+  naturalGasPneumaticPumpVenting: sourceTypeCheckboxUiSchema,
+  naturalGasPneumaticLowBleedDeviceVenting: sourceTypeCheckboxUiSchema,
+  naturalGasPneumaticIntermittentBleedDeviceVenting: sourceTypeCheckboxUiSchema,
+  blowdownVenting: sourceTypeCheckboxUiSchema,
+  flaringStacks: sourceTypeCheckboxUiSchema,
+  equipmentLeaksDetectedLearkerEmissionFactorMethods:
+    sourceTypeCheckboxUiSchema,
+  populationCountSources: sourceTypeCheckboxUiSchema,
+  transmissionStorageTanks: sourceTypeCheckboxUiSchema,
+  otherVentingSources: sourceTypeCheckboxUiSchema,
+  otherFugitiveSources: sourceTypeCheckboxUiSchema,
+  thirdPartyLineHitsWithReleaseOfGas: sourceTypeCheckboxUiSchema,
   sourceTypes: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {

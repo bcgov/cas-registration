@@ -6,6 +6,11 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 
+/**
+ * Common Ui Schema fragments for building an activity's Ui Schema.
+ * Mostly applicable to O&G activities as these have a lot of source types with similar requirements.
+ */
+
 export const emissionsFieldsUiSchema = {
   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
   "ui:FieldTemplate": FieldTemplate,
@@ -63,7 +68,7 @@ export const fuelsFieldsUiSchema = {
   },
 };
 
-export const sourceTypeBoxUiSchema = {
+export const sourceTypeCheckboxUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:widget": CheckboxWidgetLeft,
   "ui:options": {
