@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "title": "Reciprocal compressor venting",
+  "default": { "units": [{ "emissions": [{}] }] },
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Source sub-type",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sourceSubType": {
+            "title": "Source sub-type",
+            "default": "",
+            "type": "string",
+            "enum": [
+              "Onshore Natural Gas Transmission Compression and Pipelines",
+              "Underground Natural Gas Storage"
+            ]
+          },
+          "emissions": {
+            "title": "Emission Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "gasType": {
+                  "title": "Gas Type",
+                  "type": "string",
+                  "enum": []
+                },
+                "emission": {
+                  "title": "Emission",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "equivalentEmission": {
+                  "title": "Equivalent Emission",
+                  "type": "string",
+                  "readOnly": true,
+                  "default": "Value will be computed upon saving"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
