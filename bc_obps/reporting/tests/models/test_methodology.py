@@ -55,6 +55,8 @@ class TestInitialData(TestCase):
                 "Other CGA Methodology",
                 "WCI.353 (c.1)(i)",
                 "WCI.353 (c.1)(ii)",
+                "WCI.353 (e)",
+                "WCI.353 (f)",
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
