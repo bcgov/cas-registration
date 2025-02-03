@@ -1,6 +1,4 @@
-from abc import ABC, abstractmethod
 from django.db.models import Count
-from django.test import TestCase
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import (
@@ -10,14 +8,34 @@ from reporting.models.configuration import Configuration
 from reporting.models.configuration_element import ConfigurationElement
 
 
-class BaseProgramConfigurationTest(ABC, TestCase):
-    activity_name = ""
-    year = 0
-    config = {}
-    config_element_count = 0
+class BaseProgramConfigurationTest:
+    """
+    Base test class for testing the configuration of activities.
+
+    Usage:
+    - make a test class that extends this one, and django's TestCase class
+    - override the setUpTestData class method to set the proper class attributes
+      as described in the documentation below.
+
+    Example:
+    ```
+    from django.test import TestCase
+
+    def MyActivityTest(BaseProgramConfigurationTest, TestCase)
+        @classmethod
+        def setUpTestData(cls):
+            cls.activity_name="My Activity"
+            ...
+    ```
+
+    """
+
+    activity_name = None
+    year = None
+    config = None
+    config_element_count = None
 
     @classmethod
-    @abstractmethod
     def setUpTestData(cls):
         """
         This function is to be implementated by the test.
@@ -46,7 +64,13 @@ class BaseProgramConfigurationTest(ABC, TestCase):
 
 
         """
-        pass
+        raise NotImplementedError
+
+    def test_class_is_configured(self):
+        assert self.activity_name is not None
+        assert self.year is not None
+        assert self.config is not None
+        assert self.config_element_count is not None
 
     def test_config_elements_are_setup(self):
         activity = Activity.objects.get(name=self.activity_name)

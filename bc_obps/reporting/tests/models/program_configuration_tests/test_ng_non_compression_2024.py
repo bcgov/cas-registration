@@ -1,9 +1,8 @@
-from reporting.tests.models.program_configuration_tests.base_program_configuration_test import (
-    BaseProgramConfigurationTest,
-)
+from django.test import TestCase
+from .base_program_configuration_test import BaseProgramConfigurationTest
 
 
-class NaturalGasNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest):
+class NaturalGasNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.activity_name = "Non-compression and non-processing activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission"
