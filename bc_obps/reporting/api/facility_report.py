@@ -3,7 +3,6 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
-from registration.utils import CustomPagination
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.facility_report_service import FacilityReportService
@@ -20,7 +19,7 @@ from reporting.schema.activity import FacilityReportActivityDataOut
 from common.api.utils import get_current_user_guid
 from registration.models import Activity, Operation
 from reporting.models import FacilityReport, ReportVersion, Report
-from ninja.pagination import paginate, PageNumberPagination
+from ninja.pagination import paginate
 from ninja import Query
 from django.db.models import QuerySet
 
@@ -123,7 +122,7 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns a list of facilities with their
     details.""",
-    # auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user"),
 )
 @handle_http_errors()
 @paginate(ReportingCustomPagination, page_size=10)
@@ -133,7 +132,7 @@ def get_facility_report_list(
     filters: FacilityReportFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "asc",
-    paginate_result: bool = Query(True, description="Whether to paginate the results")
+    paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[FacilityReport]:
     return FacilityReportService.get_facility_report_list(version_id, sort_field, sort_order, filters)
 

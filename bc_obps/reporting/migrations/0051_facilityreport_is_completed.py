@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0049_alter_gcs_add_CEMS'),
+        ('reporting', '0050_remove_reportverification_other_facility_coordinates_and_more'),
     ]
 
     operations = [
