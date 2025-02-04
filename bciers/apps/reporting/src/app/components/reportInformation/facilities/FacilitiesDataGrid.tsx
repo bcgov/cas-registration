@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { actionHandler } from "@bciers/actions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,6 +19,7 @@ interface FacilitiesDataGridProps {
   initialData: {
     rows: FacilityRow[];
     row_count: number;
+    is_completed_count: number;
   };
   version_id: number;
 }
@@ -29,21 +30,20 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
 }) => {
   const [rows, setRows] = useState(initialData);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [allCompleted, setAllCompleted] = useState(
+    initialData.row_count === initialData.is_completed_count,
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [updatedFacilities, setUpdatedFacilities] = useState<
+    Record<string, FacilityRow>
+  >({});
 
   const router = useRouter();
 
   const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data`;
-
-  // Disable the button unless all rows are marked as completed.
-  useEffect(() => {
-    const isEveryRowChecked = rows.rows.every((row) => row.is_completed);
-    setIsButtonDisabled(!isEveryRowChecked);
-  }, [rows.rows]);
 
   const browserSearchParams = useSearchParams();
 
@@ -65,6 +65,19 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         is_completed: checked,
       };
       setRows({ ...rows, rows: updatedRows });
+
+      // Disable the button unless all rows are marked as completed.
+      let allLocalCompleted = updatedRows.every((r) => r.is_completed);
+      const globalIncompleteCount = rows.row_count - rows.is_completed_count;
+      const shouldEnableButton =
+        allLocalCompleted && globalIncompleteCount - updatedRows.length <= 0;
+      setAllCompleted(shouldEnableButton);
+
+      //stores the changes made to the facility rows' `is_completed` status
+      setUpdatedFacilities((prevState) => ({
+        ...prevState,
+        [updatedRows[rowIndex].facility]: updatedRows[rowIndex],
+      }));
     };
 
     return getFacilityColumns(handleCheckboxChange, version_id);
@@ -76,7 +89,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
     try {
       const endpoint = `reporting/report-version/${version_id}/facility-report-list`;
       await actionHandler(endpoint, "PATCH", endpoint, {
-        body: JSON.stringify(rows.rows),
+        body: JSON.stringify(Object.values(updatedFacilities)),
       });
       if (redirect) {
         setIsRedirecting(true);
@@ -98,6 +111,12 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
     const newRows = await fetchFacilitiesPageData({
       version_id,
       searchParams,
+    });
+
+    (newRows.rows as FacilityRow[]).forEach((r) => {
+      if (r.facility in updatedFacilities) {
+        r.is_completed = updatedFacilities[r.facility].is_completed;
+      }
     });
 
     setRows(newRows);
@@ -150,7 +169,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         isSuccess={isSuccess}
         isRedirecting={isRedirecting}
         saveButtonDisabled={isSaving}
-        submitButtonDisabled={isButtonDisabled}
+        submitButtonDisabled={!allCompleted || isSaving}
         saveAndContinue={() => saveData(true)}
         noFormSave={() => saveData(false)}
       />
