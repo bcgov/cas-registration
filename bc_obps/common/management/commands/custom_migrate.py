@@ -3,6 +3,7 @@ import re
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.apps import apps
+from rls.utils.manager import RlsManager
 
 
 class Command(BaseCommand):
@@ -11,9 +12,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Only running the custom command in the test and production environments
         # Otherwise, run the default migrate command for all apps
-        if os.environ.get('ENVIRONMENT') not in ['prod']:
+        if os.environ.get('ENVIRONMENT') not in ['test', 'prod']:
             self.stdout.write('Running default migrate command for all apps...')
             call_command('migrate')
+            # Revoke all RLS grants & policies for all roles
+            # Re-apply all RLS grants & policies for all roles
+            RlsManager.re_apply_rls()
             return
         # Run the default migrate command for all apps except the reporting app
         self.stdout.write('Running default migrations for all apps except reporting...')
@@ -37,6 +41,10 @@ class Command(BaseCommand):
 
         # Run custom migrations for the reporting app
         self.migrate_app_to_latest('reporting')
+
+        # Revoke all RLS grants & policies for all roles
+        # Re-apply all RLS grants & policies for all roles
+        RlsManager.re_apply_rls()
 
     def migrate_app_to_latest(self, app_label):
         """
