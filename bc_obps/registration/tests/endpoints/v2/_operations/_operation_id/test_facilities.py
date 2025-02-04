@@ -42,7 +42,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            facilities_url + "?page=2&sort_field=created_at&sort_order=desc",
+            facilities_url + "?page=2&sort_field=id&sort_order=desc",
         )
         assert response.status_code == 200
         response_items_2 = response.json().get('items')
@@ -59,7 +59,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            facilities_url + "?page=2&sort_field=created_at&sort_order=asc",
+            facilities_url + "?page=2&sort_field=id&sort_order=asc",
         )
         assert response.status_code == 200
         response_items_2_reverse = response.json().get('items')
@@ -72,7 +72,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         # make sure sorting is working
         page_2_first_facility = FacilityDesignatedOperationTimeline.objects.get(pk=page_2_response_id)
         page_2_first_facility_reverse = FacilityDesignatedOperationTimeline.objects.get(pk=page_2_response_id_reverse)
-        assert page_2_first_facility.created_at > page_2_first_facility_reverse.created_at
+        assert page_2_first_facility.id > page_2_first_facility_reverse.id
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
         operation = operation_baker()
