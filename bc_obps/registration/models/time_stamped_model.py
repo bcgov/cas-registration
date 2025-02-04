@@ -47,14 +47,14 @@ class TimeStampedModel(BaseModel):
                 name="set_created_audit_columns",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Insert,
-                func="new.created_by_id = (select current_setting('my.guid')); new.created_at = now(); return new;",
+                func="new.created_by_id = (select current_setting('my.guid', true)); new.created_at = now(); return new;",
             ),
             # On Update
             pgtrigger.Trigger(
                 name="set_updated_audit_columns",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Update,
-                func="new.updated_by_id = (select current_setting('my.guid')); new.updated_at = now(); return new;",
+                func="new.updated_by_id = (select current_setting('my.guid', true)); new.updated_at = now(); return new;",
             ),
         ]
 
