@@ -12,6 +12,7 @@ export default async function FacilitiesPage({
   const facilities: {
     rows: FacilityRow[];
     row_count: number;
+    is_completed_count: number;
   } = await fetchFacilitiesPageData({ version_id, searchParams });
   if (!facilities) {
     return <div>No facilities available.</div>;

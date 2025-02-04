@@ -1,19 +1,18 @@
-from typing import Any
+from typing import Any, Dict
 
 from django.core.paginator import Paginator
 from ninja import Schema, Query
-from ninja.pagination import PageNumberPagination, PaginationBase
-from django.db.models import QuerySet, Sum
-from typing import List, Optional, Literal, Any
+from ninja.pagination import PaginationBase
+from django.db.models import Sum, QuerySet
+from typing import List
 
-from django.db.models import QuerySet, Count, Case, When, IntegerField
-from ninja.types import DictStrAny
+from django.db.models import Count, Case, When, IntegerField
 
 
 def validate_overlapping_records(
-        object_class: Any,
-        save_self: Any,
-        exception_message: str,
+    object_class: Any,
+    save_self: Any,
+    exception_message: str,
 ) -> None:
     if hasattr(object_class, "source_type"):
         all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(
@@ -23,11 +22,11 @@ def validate_overlapping_records(
         all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(activity=save_self.activity)
     for y in all_ranges:
         if (
-                (save_self.valid_from.valid_from >= y.valid_from.valid_from)
-                and (save_self.valid_from.valid_from <= y.valid_to.valid_to)
+            (save_self.valid_from.valid_from >= y.valid_from.valid_from)
+            and (save_self.valid_from.valid_from <= y.valid_to.valid_to)
         ) or (
-                (save_self.valid_to.valid_to <= y.valid_to.valid_to)
-                and (save_self.valid_to.valid_to >= y.valid_from.valid_from)
+            (save_self.valid_to.valid_to <= y.valid_to.valid_to)
+            and (save_self.valid_to.valid_to >= y.valid_from.valid_from)
         ):
             raise Exception(exception_message)
 
@@ -43,17 +42,14 @@ class ReportingCustomPagination(PaginationBase):
         count: int  # Total count of all items
         is_completed_count: int  # Count of completed items
 
-    def paginate_queryset(self, queryset, pagination: Input, **params):
+    def paginate_queryset(self, queryset: QuerySet[Any], pagination: Input, **params: Any) -> Dict[str, Any]:
         page = pagination.page
-        page_size = 10  # Or use settings.PAGINATION_PER_PAGE
+        page_size = 10
 
         # Calculate total count and complete_count
         results = queryset.aggregate(
-            total_count=Count('*'),  # Total count of all items
+            total_count=Count('*'),
             completed_count=Sum(Case(When(is_completed=True, then=1), default=0, output_field=IntegerField())),
-            # Count of completed items
-            not_completed_count=Sum(Case(When(is_completed=False, then=1), default=0, output_field=IntegerField()))
-            # Count of items not completed
         )
 
         # Paginate the queryset using Django's Paginator
@@ -63,5 +59,5 @@ class ReportingCustomPagination(PaginationBase):
         return {
             "items": list(page_obj.object_list),  # Items for the current page
             "count": results['total_count'],  # Total count of items
-            "is_completed_count":  queryset.filter(is_completed=True).count(),  # Number of completed items
+            "is_completed_count": results['completed_count'],
         }
