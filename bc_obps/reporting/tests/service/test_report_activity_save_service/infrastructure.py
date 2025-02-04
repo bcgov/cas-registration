@@ -93,6 +93,7 @@ class TestInfrastructure:
             'reporting.tests.utils.facility_report',
             report_version=report_version,
         )
+        t.facility_report.refresh_from_db()
         t.report_version = report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
         t.configuration = Configuration.objects.get(
