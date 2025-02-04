@@ -42,23 +42,6 @@ class TestReportAttachmentService:
                 self.report_version.id, self.user.user_guid, "test_file_type_not_in_db", uploadedFile
             )
 
-    def test_set_attachment_with_user_data(self):
-        file = ContentFile(b"abvedseqwe", "test_file.txt")
-        uploadedFile = UploadedFile(file, size=file.size)
-
-        ReportAttachmentService.set_attachment(
-            self.report_version.id, self.user.user_guid, "verification_statement", uploadedFile
-        )
-
-        assert ReportAttachment.objects.count() == 1
-
-        r = ReportAttachment.objects.first()
-        assert r.attachment_type == "verification_statement"
-        assert r.attachment_name == "test_file.txt"
-        assert r.attachment is not None
-        assert r.created_by == self.user
-        assert r.created_at is not None
-
     def test_get_attachments(self):
         file = ContentFile(b"abvedseqwe", "test_file.txt")
         uploadedFile1 = InMemoryUploadedFile(

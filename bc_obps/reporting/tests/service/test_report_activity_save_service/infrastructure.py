@@ -71,9 +71,12 @@ class TestInfrastructure:
     def build_from_real_config(cls, activity_slug="gsc_non_compression"):
         t = TestInfrastructure()
         t.facility_report = make_recipe('reporting.tests.utils.facility_report')
+        t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        t.configuration = Configuration.objects.get(slug='2025')
+        t.configuration = Configuration.objects.get(
+            valid_from__lte=t.facility_report.created_at, valid_to__gte=t.facility_report.created_at
+        )
         t.activity = Activity.objects.get(slug=activity_slug)
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
@@ -92,7 +95,9 @@ class TestInfrastructure:
         )
         t.report_version = report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        t.configuration = Configuration.objects.get(slug='2024')
+        t.configuration = Configuration.objects.get(
+            valid_from__lte=t.facility_report.created_at, valid_to__gte=t.facility_report.created_at
+        )
         t.activity = Activity.objects.get(slug="gsc_non_compression")
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,

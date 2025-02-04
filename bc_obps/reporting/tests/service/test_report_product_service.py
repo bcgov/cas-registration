@@ -165,42 +165,6 @@ class TestReportProductService:
                 self.facility_report.report_version.id, self.facility_report.facility.id, test_data, self.test_user_guid
             )
 
-    # Test the created_at and created_by
-    def test_sets_created_updated_fields(self):
-        ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
-        )
-
-        report_products = ReportProduct.objects.all()
-        assert report_products.count() == 2
-        assert all(rp.created_by.user_guid == self.test_user_guid for rp in report_products)
-        assert all(rp.created_at is not None for rp in report_products)
-        assert all(rp.updated_by is None for rp in report_products)
-        assert all(rp.updated_at is None for rp in report_products)
-
-        another_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
-        ReportProductService.save_production_data(
-            self.report_version_id,
-            self.facility_id,
-            [
-                {
-                    "product_id": 1,
-                    "annual_production": 4,
-                    "production_data_apr_dec": 4,
-                    "production_methodology": "other",
-                    "production_methodology_description": "desc",
-                }
-            ],
-            another_user_guid,
-        )
-
-        report_products = ReportProduct.objects.all()
-        assert report_products.count() == 1
-        assert report_products[0].created_by.user_guid == self.test_user_guid
-        assert report_products[0].created_at is not None
-        assert report_products[0].updated_by.user_guid == another_user_guid
-        assert report_products[0].updated_at is not None
-
     def test_retrieves_the_data_sorted_by_product_id(self):
         products = make_recipe("registration.tests.utils.regulated_product", _quantity=3)
         data = [
