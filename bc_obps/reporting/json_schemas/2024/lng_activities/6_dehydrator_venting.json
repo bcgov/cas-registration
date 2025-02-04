@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "title": "Dehydrator venting",
+  "default": { "units": [{ "emissions": [{}] }] },
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Source sub-type",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sourceSubType": {
+            "title": "Source sub-type",
+            "default": "",
+            "type": "string",
+            "enum": [
+              "Onshore Petroleum and Natural Gas Production",
+              "Onshore Natural Gas Processing"
+            ]
+          },
+          "emissions": {
+            "title": "Emission Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "gasType": {
+                  "title": "Gas Type",
+                  "type": "string",
+                  "enum": []
+                },
+                "emission": {
+                  "title": "Emission",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "equivalentEmission": {
+                  "title": "Equivalent Emission",
+                  "type": "string",
+                  "readOnly": true,
+                  "default": "Value will be computed upon saving"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
