@@ -23,13 +23,11 @@ sudo apt-get install -y libbz2-dev libsqlite3-dev tk-dev liblzma-dev
 ## Installation Steps
 
 1. Install development tools using make:
-
 ```bash
 make install_dev_tools
 ```
 
 This command will:
-
 - Install Python 3.12.3 via asdf
 - Install Poetry 1.8.1
 - Install and configure PostgreSQL 16.2
@@ -54,13 +52,11 @@ sudo systemctl stop postgresql
 ```
 
 Then restart the asdf-managed PostgreSQL:
-
 ```bash
 make start_pg
 ```
 
 ### PostgreSQL User Errors
-
 If you see "role your_username does not exist" when running database commands, make sure you've completed step 2 of the Installation Steps to create your PostgreSQL user.
 
 ## Managing the Development Environment
@@ -87,7 +83,6 @@ poetry shell
 > ```
 
 2. Direct activation (alternative):
-
 ```bash
 source $(poetry env info --path)/bin/activate
 ```
@@ -95,13 +90,11 @@ source $(poetry env info --path)/bin/activate
 ### PostgreSQL Management
 
 - Start PostgreSQL:
-
 ```bash
 make start_pg
 ```
 
 - Stop PostgreSQL:
-
 ```bash
 make stop_pg
 ```
