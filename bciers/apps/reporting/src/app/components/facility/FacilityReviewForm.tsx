@@ -14,7 +14,6 @@ import {
   facilityReviewUiSchema,
   facilitySchema,
 } from "@reporting/src/data/jsonSchema/facilities";
-import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import FormContext, { IChangeEvent } from "@rjsf/core";
 import { useSearchParams } from "next/navigation";
@@ -27,6 +26,14 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 interface Props {
   version_id: number;
   facility_id: string;
+  operationType: string;
+  activitiesData: [];
+  facilityData: {
+    facility_name: string;
+    facility_type: string;
+    facility_bcghgid: string;
+    activities: [number];
+  };
   taskListElements: TaskListElement[];
 }
 
@@ -35,21 +42,11 @@ interface Activity {
   id: number;
 }
 
-const getFacilityReport = async (version_id: number, facility_id: string) => {
-  return actionHandler(
-    `reporting/report-version/${version_id}/facility-report/${facility_id}`,
-    "GET",
-    `reporting/report-version/${version_id}/facility-report/${facility_id}`,
-  );
-};
-
-const getAllActivities = async () => {
-  return actionHandler(`reporting/activities`, "GET", `reporting/activities`);
-};
-
 const FacilityReview: React.FC<Props> = ({
   version_id,
   facility_id,
+  activitiesData,
+  facilityData,
   taskListElements,
 }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -57,12 +54,8 @@ const FacilityReview: React.FC<Props> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [canContinue, setCanContinue] = useState(false);
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<any>(facilityData);
   const [activities, setActivities] = useState<Record<number, boolean>>({});
-  const [facilityReviewSchema, setFacilityReviewSchema] = useState<RJSFSchema>({
-    type: "object",
-    properties: {},
-  });
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const queryString = serializeSearchParams(useSearchParams());
   const backUrl = `/reports/${version_id}/person-responsible`;
@@ -70,32 +63,17 @@ const FacilityReview: React.FC<Props> = ({
   const router = useRouter();
   const formRef = useRef<FormContext>(null);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const facilityData = await getFacilityReport(version_id, facility_id);
-        const activitiesData = await getAllActivities();
-        const validActivitiesData = Array.isArray(activitiesData)
-          ? activitiesData
-          : [];
-
-        setFormData(facilityData);
-        setFacilityReviewSchema(facilitySchema);
-
-        const activityMap: Record<number, boolean> = {};
-        validActivitiesData.forEach((activity: Activity) => {
-          activityMap[activity.id] = facilityData.activities?.includes(
-            activity.id,
-          );
-        });
-        setActivities(activityMap);
-        setActivityList(validActivitiesData);
-      } catch (error: any) {
-        setErrorList([error.message || "An error occurred"]);
-      }
-    };
-
-    fetchData().then(() => console.log());
-  }, [version_id, facility_id]);
+    if (Array.isArray(activitiesData)) {
+      const newActivityMap: Record<number, boolean> = {};
+      activitiesData.forEach((activity: Activity) => {
+        newActivityMap[activity.id] = facilityData.activities?.includes(
+          activity.id,
+        );
+      });
+      setActivities(newActivityMap);
+      setActivityList(activitiesData);
+    }
+  }, [facilityData.activities, activitiesData]);
 
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -176,7 +154,7 @@ const FacilityReview: React.FC<Props> = ({
         <div className="w-full md:max-w-[60%]">
           <FormBase
             formRef={formRef}
-            schema={facilityReviewSchema}
+            schema={facilitySchema}
             uiSchema={facilityReviewUiSchema}
             formData={formData}
             onSubmit={handleSave}

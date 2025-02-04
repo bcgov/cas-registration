@@ -1,5 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import checkboxWidget from "@bciers/components/form/widgets/CheckboxWidget";
 
 export const facilitySchema: RJSFSchema = {
   type: "object",
@@ -14,6 +15,10 @@ export const facilitySchema: RJSFSchema = {
     facility_bcghgid: {
       type: ["string", "null"],
       title: "Facility BCGHG ID",
+    },
+    activities: {
+      type: "array",
+      title: "Activities",
     },
   },
 };
@@ -33,5 +38,9 @@ export const facilityReviewUiSchema = {
   facility_bcghgid: {
     "ui:readonly": true,
     "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  activities: {
+    "ui:widget": checkboxWidget,
+    default: [],
   },
 };

@@ -3,56 +3,69 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 export type ActivityData = { id: number; name: string; slug: string };
 
 export enum ActivePage {
-  "NonAttributableEmission" = 1,
-  "EmissionSummary",
-  "ProductionData",
-  "AllocationOfEmissions",
+  ReviewInformation,
+  NonAttributableEmission = 1,
+  EmissionSummary,
+  ProductionData,
+  AllocationOfEmissions,
 }
 
 export const getFacilitiesInformationTaskList = (
   versionId: number,
   facilityId: string,
-  orderedActivities: any[],
+  orderedActivities: ReadonlyArray<ActivityData>,
   activeIndex?: ActivePage | number,
-) => {
-  const taskListData: TaskListElement[] = [
+  facilityName?: string,
+  operationType = "Single Facility Operation",
+): TaskListElement[] => {
+  return [
     {
       type: "Section",
-      title: "Activities Information",
+      title: `${facilityName} Information`,
       isExpanded: true,
-      elements: orderedActivities.map(
-        (activity: ActivityData, index) =>
-          ({
+      elements: [
+        {
+          type: "Page",
+          title: "Review Information",
+          isActive: activeIndex === ActivePage.ReviewInformation,
+          link: `/reports/${versionId}/facilities/${facilityId}/review`,
+        },
+
+        {
+          type: "Section",
+          title: "Activities Information",
+          isExpanded: true,
+          elements: orderedActivities.map((activity, index) => ({
             type: "Page",
             title: activity.name,
             link: `/reports/${versionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
-          }) as TaskListElement,
-      ),
-    },
-    {
-      type: "Page",
-      title: "Non-attributable Emissions",
-      isActive: activeIndex === ActivePage.NonAttributableEmission,
-      link: `/reports/${versionId}/facilities/${facilityId}/non-attributable`,
-    },
-    {
-      type: "Page",
-      title: "Emissions Summary",
-      isActive: activeIndex === ActivePage.EmissionSummary,
-      link: `/reports/${versionId}/facilities/${facilityId}/emission-summary`,
-    },
-    {
-      type: "Page",
-      title: "Production Data",
-      link: `/reports/${versionId}/facilities/${facilityId}/production-data`,
-      isActive: activeIndex === ActivePage.ProductionData,
-    },
-    {
-      type: "Page",
-      title: "Allocation of Emissions",
-      isActive: activeIndex === ActivePage.AllocationOfEmissions,
+          })),
+        },
+        {
+          type: "Page",
+          title: "Non-attributable Emissions",
+          isActive: activeIndex === ActivePage.NonAttributableEmission,
+          link: `/reports/${versionId}/facilities/${facilityId}/non-attributable`,
+        },
+        {
+          type: "Page",
+          title: "Emissions Summary",
+          isActive: activeIndex === ActivePage.EmissionSummary,
+          link: `/reports/${versionId}/facilities/${facilityId}/emission-summary`,
+        },
+        {
+          type: "Page",
+          title: "Production Data",
+          isActive: activeIndex === ActivePage.ProductionData,
+          link: `/reports/${versionId}/facilities/${facilityId}/production-data`,
+        },
+        {
+          type: "Page",
+          title: "Allocation of Emissions",
+          isActive: activeIndex === ActivePage.AllocationOfEmissions,
+          link: `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`,
+        },
+      ],
     },
   ];
-
-  return taskListData;
 };
