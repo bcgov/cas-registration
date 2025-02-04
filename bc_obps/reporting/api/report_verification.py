@@ -1,4 +1,5 @@
 from typing import Literal
+from reporting.models.report_verification import ReportVerification
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.decorators import handle_http_errors
@@ -8,7 +9,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.schema.report_verification import ReportVerificationIn, ReportVerificationOut
 from reporting.service.report_verification_service import ReportVerificationService
-from reporting.models import ReportVerification
 
 
 @router.get(
@@ -22,8 +22,7 @@ from reporting.models import ReportVerification
 def get_report_verification_by_version_id(
     request: HttpRequest, report_version_id: int
 ) -> tuple[Literal[200], ReportVerification]:
-    report_verification = ReportVerificationService.get_report_verification_by_version_id(report_version_id)
-    return 200, report_verification
+    return 200, ReportVerificationService.get_report_verification_by_version_id(report_version_id)
 
 
 @router.get(

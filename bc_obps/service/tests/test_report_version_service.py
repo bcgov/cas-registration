@@ -82,5 +82,6 @@ class TestReportVersionService:
             "ReportOperationRepresentative",
             "ReportAdditionalData",
             "ReportVerification",
+            "ReportVerificationVisit",
             "ReportProductEmissionAllocation",
         }

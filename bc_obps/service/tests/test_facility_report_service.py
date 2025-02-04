@@ -58,7 +58,7 @@ class TestFacilityReportService(TestCase):
     @staticmethod
     def test_saves_facility_report_form_data():
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report', facility_bcghgid='abc')
-        print(facility_report.facility_bcghgid)
+
         data = FacilityReportIn(
             facility_name="CHANGED",
             facility_type=facility_report.facility_type,
