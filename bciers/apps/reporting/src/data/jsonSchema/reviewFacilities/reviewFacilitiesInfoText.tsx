@@ -11,15 +11,15 @@ export const getInfoNote = (operationId: string) => (
       <InfoIcon sx={{ mr: 1 }} />
       <Typography variant="body2">
         Linear Facilities Operations must register and report for all large and
-        medium facilities, as well as a small aggregate, if applicable.
-        <b>Don’t see a facility?</b> Add it under{" "}
+        medium facilities, as well as a small aggregate, if applicable.{" "}
+        <b>Don’t see a facility?</b>{" "}
         <Link
-          href={`/administration/operations/${operationId}/facilities`}
+          href={`/administration/operations/${operationId}/facilities/add-facility`}
           target="_blank"
           rel="noopener noreferrer"
           sx={{ color: "inherit", textDecoration: "none" }}
         >
-          Facilities information.
+          <u>Add it here</u>
         </Link>{" "}
         and then click on the ‘Sync latest data from Administration’ button to
         update this list of facilities.
