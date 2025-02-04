@@ -103,8 +103,7 @@ const OperationInformationForm = ({
     setPendingChangeRegistrationPurpose("");
   };
 
-  const confirmRegistrationPurposeChange = (data: any) => {
-    console.log(data)
+  const confirmRegistrationPurposeChange = () => {
     consoleLogRPs()
     console.log("change confirmed")
     if (pendingChangeRegistrationPurpose !== "") {
@@ -151,16 +150,16 @@ const OperationInformationForm = ({
         uiSchema={administrationOperationInformationUiSchema}
         formData={formData ?? {}}
         onSubmit={handleSubmit}
-        onChange={(e: IChangeEvent) => {
-          console.log(e);
-          console.log(formData);
-          let newSelectedPurpose = e.formData?.section3?.registration_purpose;
-          consoleLogRPs();
-          console.log("new selected purpose ", newSelectedPurpose);
-          if (newSelectedPurpose !== selectedPurpose) {
-            handleSelectedPurposeChange(newSelectedPurpose);
-          }
-        }}
+        // onChange={(e: IChangeEvent) => {
+        //   console.log(e);
+        //   console.log(formData);
+        //   let newSelectedPurpose = e.formData?.section3?.registration_purpose;
+        //   consoleLogRPs();
+        //   console.log("new selected purpose ", newSelectedPurpose);
+        //   if (newSelectedPurpose !== selectedPurpose) {
+        //     handleSelectedPurposeChange(newSelectedPurpose);
+        //   }
+        // }}
         onCancel={() => router.push("/operations")}
         formContext={{
           operationId,
