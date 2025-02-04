@@ -52,36 +52,6 @@ class ReportVerification(TimeStampedModel):
         db_comment="The conclusion of the verification",
     )
 
-    visit_name = models.CharField(
-        max_length=100, db_comment="The name of the site visited (Facility X, Other, or None)"
-    )
-
-    class VisitType(models.TextChoices):
-        IN_PERSON = "In person"
-        VIRTUAL = "Virtual"
-
-    visit_type = models.CharField(
-        max_length=10,
-        choices=VisitType.choices,
-        null=True,
-        blank=True,
-        db_comment="The type of visit conducted (Virtual or In Person)",
-    )
-
-    other_facility_name = models.CharField(
-        max_length=100,
-        null=True,
-        blank=True,
-        db_comment="Name of the other facility visited if 'Other' is selected",
-    )
-
-    other_facility_coordinates = models.CharField(
-        max_length=100,
-        null=True,
-        blank=True,
-        db_comment="Geographic location of the other facility visited",
-    )
-
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_verification'
         db_table_comment = "Table to store verification information associated with a report version"
