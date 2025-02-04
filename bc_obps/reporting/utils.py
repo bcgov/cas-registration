@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from django.core.paginator import Paginator
 from ninja import Schema, Query
@@ -40,7 +40,7 @@ class ReportingCustomPagination(PaginationBase):
     class Output(Schema):
         items: List[Any]  # `items` is a default attribute
         count: int  # Total count of all items
-        is_completed_count: int  # Count of completed items
+        is_completed_count: Optional[int]  # Count of completed items
 
     def paginate_queryset(self, queryset: QuerySet[Any], pagination: Input, **params: Any) -> Dict[str, Any]:
         page = pagination.page
@@ -52,7 +52,6 @@ class ReportingCustomPagination(PaginationBase):
             completed_count=Sum(Case(When(is_completed=True, then=1), default=0, output_field=IntegerField())),
         )
 
-        # Paginate the queryset using Django's Paginator
         paginator = Paginator(queryset, page_size)
         page_obj = paginator.get_page(page)
 

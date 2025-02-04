@@ -2,7 +2,7 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
 import { Box } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
-import { FacilityRow } from "@reporting/src/app/components/operations/types";
+import { FacilityRow } from "@reporting/src/app/components/reportInformation/facilities/types";
 
 const getCheckboxColumnCell = (
   onCheckBoxChange: (rowIndex: number, checked: boolean) => void,
