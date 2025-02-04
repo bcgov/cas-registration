@@ -24,6 +24,8 @@ Within our Django application, we employ the `TimeStampedModel` abstract data mo
 `archived_at`: Documents the timestamp when an object is archived.
 `archived_by`: Registers the user who initiated the archiving process.
 
+The pg-triggers to set the created_at/by & updated_at/by values are defined in the Meta object of the `TimestampedModel`. The Meta object must also be inherited in order for these triggers to be applied to the child models. This can be done like so in the child model definition: `Meta(TimestampedModel.Meta):`.
+
 This data model is equipped with an archive method:
 
 `set_archive`: Specifically designed for archiving objects, this method captures the archival details and requires the user initiating the archival process as a parameter.
