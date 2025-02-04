@@ -192,4 +192,43 @@ describe("LFOFacilitiesForm", () => {
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledWith(config.urls.back);
   });
+
+  it("should not route to the next page when Save & Continue is click and then canceled and then Save is clicked", async () => {
+    (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);
+
+    render(
+      <LFOFacilitiesForm
+        initialData={mockFacilitiesInitialData}
+        version_id={1}
+      />,
+    );
+
+    const checkbox1 = screen.getByRole("checkbox", {
+      name: "Facility 1 Facility 1",
+    });
+    fireEvent.click(checkbox1);
+
+    const saveAndContinueButton = screen.getByRole("button", {
+      name: config.buttons.saveAndContinue,
+    });
+    fireEvent.click(saveAndContinueButton);
+    await waitFor(() => {
+      expect(screen.getByText("Confirmation")).toBeInTheDocument();
+    });
+
+    const cancelButton = screen.getByRole("button", {
+      name: config.buttons.cancel,
+    });
+    fireEvent.click(cancelButton);
+    await waitFor(() => {
+      expect(screen.queryByText("Confirmation")).not.toBeInTheDocument();
+    });
+
+    const saveButton = screen.getByRole("button", {
+      name: config.buttons.save,
+    });
+    fireEvent.click(saveButton);
+
+    expect(mockRouterPush).toHaveBeenCalledTimes(0);
+  });
 });
