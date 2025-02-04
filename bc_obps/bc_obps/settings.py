@@ -65,6 +65,14 @@ CHES_API_URL = os.environ.get("CHES_API_URL")
 
 # Application definition
 
+
+LOCAL_APPS = [
+    "registration",
+    "reporting",
+    "common",
+    "rls",
+]
+
 INSTALLED_APPS = [
     # Django apps
     "django.contrib.admin",
@@ -78,12 +86,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "localflavor",
     "pgtrigger",
-    # Local apps
-    "registration.apps.RegistrationConfig",
-    "reporting.apps.ReportingConfig",
-    "common.apps.CommonConfig",
-    "rls.apps.RlsConfig",
 ]
+INSTALLED_APPS += LOCAL_APPS
 
 
 MIDDLEWARE = [
