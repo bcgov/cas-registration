@@ -715,7 +715,7 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0050_natural_gas_other_than_non_compression_configuration"),
+        ("reporting", "0052_natural_gas_other_than_non_compression_configuration"),
     ]
 
     operations = [
