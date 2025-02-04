@@ -155,7 +155,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('v1_list_operations') + "?page=2&sort_field=created_at&sort_order=desc",
+            custom_reverse_lazy('v1_list_operations') + "?page=2&sort_field=id&sort_order=desc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -169,7 +169,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy('v1_list_operations') + "?page=2&sort_field=created_at&sort_order=asc",
+            custom_reverse_lazy('v1_list_operations') + "?page=2&sort_field=id&sort_order=asc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')

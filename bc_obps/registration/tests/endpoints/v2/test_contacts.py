@@ -35,7 +35,7 @@ class TestContactsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            contacts_url + "?page=2&sort_field=created_at&sort_order=desc",
+            contacts_url + "?page=2&sort_field=id&sort_order=desc",
         )
         assert response.status_code == 200
         response_items_2 = response.json().get('items')
@@ -51,7 +51,7 @@ class TestContactsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            contacts_url + "?page=2&sort_field=created_at&sort_order=asc",
+            contacts_url + "?page=2&sort_field=id&sort_order=asc",
         )
         assert response.status_code == 200
         response_items_2_reverse = response.json().get('items')
@@ -64,7 +64,7 @@ class TestContactsEndpoint(CommonTestSetup):
         # make sure sorting is working
         page_2_first_contact = Contact.objects.get(pk=page_2_response_id)
         page_2_first_contact_reverse = Contact.objects.get(pk=page_2_response_id_reverse)
-        assert page_2_first_contact.created_at > page_2_first_contact_reverse.created_at
+        assert page_2_first_contact.id > page_2_first_contact_reverse.id
 
     def test_contacts_endpoint_list_contacts_with_filter(self):
         contacts_url = custom_reverse_lazy('v1_list_contacts')
@@ -92,9 +92,9 @@ class TestContactsEndpoint(CommonTestSetup):
         assert response.json().get('count') == 0
 
         # Test with a first_name and last_name filter
-        first_name_to_filter, last_name_to_filter = response_items_1[0].get('first_name'), response_items_1[0].get(
-            'last_name'
-        )
+        first_name_to_filter, last_name_to_filter = response_items_1[len(response_items_1) - 1].get(
+            'first_name'
+        ), response_items_1[len(response_items_1) - 1].get('last_name')
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", contacts_url + f"?first_name={first_name_to_filter}&last_name={last_name_to_filter}"
         )

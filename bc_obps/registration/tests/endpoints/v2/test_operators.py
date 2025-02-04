@@ -22,7 +22,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            self.endpoint + "?page=2&sort_field=created_at&sort_order=desc",
+            self.endpoint + "?page=2&sort_field=id&sort_order=desc",
         )
         assert response.status_code == 200
         response_data = response.json().get('items')
@@ -36,7 +36,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            self.endpoint + "?page=2&sort_field=created_at&sort_order=asc",
+            self.endpoint + "?page=2&sort_field=id&sort_order=asc",
         )
         assert response.status_code == 200
         response_data = response.json().get('items')
