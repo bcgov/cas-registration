@@ -52,6 +52,7 @@ Directory structure:
 ### Backend Technologies
 - **Framework**:
   - Django (Python web framework)
+  - Django-Ninja (Fast and type-safe REST API framework)
   - Python
 
 - **Development & Build**:
