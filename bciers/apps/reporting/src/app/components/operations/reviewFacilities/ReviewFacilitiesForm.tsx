@@ -37,6 +37,10 @@ interface Facility {
 
 export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
+  const [facilitiesData, setFacilitiesData] = useState(() => ({
+    // a store of the facilities data that can be updated without changing the form data
+    ...initialData,
+  }));
   const [errors, setErrors] = useState<string[] | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
   const [submittingDisabled, setSubmittingDisabled] = useState(false);
@@ -78,7 +82,10 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     // Get current facilities
     data.current_facilities_section.current_facilities.forEach(
       (name: string) => {
-        const facilityId = findFacilityId(name, initialData.current_facilities);
+        const facilityId = findFacilityId(
+          name,
+          facilitiesData.current_facilities,
+        );
         if (facilityId) {
           facilityIds.push(facilityId);
         }
@@ -87,7 +94,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
 
     // Get past facilities
     data.past_facilities_section.past_facilities.forEach((name: string) => {
-      const facilityId = findFacilityId(name, initialData.past_facilities);
+      const facilityId = findFacilityId(name, facilitiesData.past_facilities);
       if (facilityId) {
         facilityIds.push(facilityId);
       }
@@ -141,9 +148,10 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const submit = async (data: any) => {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
+    const pathToRevalidate = `reporting/reports/${version_id}/review-facilities-list`;
 
     try {
-      const response = await actionHandler(endpoint, method, endpoint, {
+      const response = await actionHandler(endpoint, method, pathToRevalidate, {
         body: JSON.stringify(
           getFacilityIdsForSubmission(data.formData ? data.formData : formData),
         ),
@@ -161,7 +169,6 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       }
       return true;
     } catch (err) {
-      console.error("Error submitting review facilities form: ", err);
       setErrors(["An unexpected error occurred."]);
       return false;
     }
@@ -173,6 +180,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   };
 
   const handleModalCancel = () => {
+    setContinueAfterSubmit(false);
     setModalOpen(false);
   };
 
@@ -203,6 +211,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
         newData.past_facilities,
       ),
     );
+    setFacilitiesData(newData);
   };
 
   return (
