@@ -13,5 +13,6 @@ export const fetchFacilitiesPageData = async (params: {
   return {
     rows: pageData.items,
     row_count: pageData.count,
+    is_completed_count: pageData.is_completed_count,
   };
 };
