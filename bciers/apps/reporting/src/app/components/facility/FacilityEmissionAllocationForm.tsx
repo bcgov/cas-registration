@@ -10,9 +10,9 @@ import {
 } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
 import { IChangeEvent } from "@rjsf/core";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import { getFacilitiesInformationTaskList } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -20,6 +20,7 @@ interface Props {
   facility_id: string;
   orderedActivities: any;
   initialData: any;
+  taskListElements: TaskListElement[];
 }
 
 interface FormData {
@@ -92,8 +93,8 @@ const validateFormData = (formData: FormData) => {
 export default function FacilityEmissionAllocationForm({
   version_id,
   facility_id,
-  orderedActivities,
   initialData,
+  taskListElements,
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
@@ -124,12 +125,6 @@ export default function FacilityEmissionAllocationForm({
   const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;
 
   // 📋 Get the task list elements for the form
-  const taskListElements = getFacilitiesInformationTaskList(
-    version_id,
-    facility_id,
-    orderedActivities,
-    4,
-  );
 
   // 🔄 Check for allocation mismatch on page load to prevent submit
   useEffect(() => {

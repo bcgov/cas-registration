@@ -16,22 +16,37 @@ export default async function FacilityReviewPage({
 }: HasFacilityId) {
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const operationType = await getFacilityReport(version_id);
+
+  const facilityData = await getFacilityReportDetails(version_id, facility_id);
+  const activitiesData = await getAllActivities();
+  const selectedActivities = activitiesData.filter((item: { id: any }) =>
+    facilityData.activities.includes(item.id),
+  );
   const taskListElements: TaskListElement[] = getFacilitiesInformationTaskList(
     version_id,
     facility_id,
     orderedActivities,
-    ActivePage.ProductionData,
+    ActivePage.ReviewInformation,
+    facilityData?.facility_name,
+    operationType?.operation_type,
   );
-  const facilityData = await getFacilityReportDetails(version_id, facility_id);
-  const activitiesData = await getAllActivities();
+
+  const formData = {
+    ...facilityData,
+    activities: selectedActivities.map(
+      (activity: { name: any }) => activity.name,
+    ),
+  };
+
   return (
     <FacilityReviewForm
       version_id={version_id}
       facility_id={facility_id}
       operationType={operationType?.operation_type}
-      facilityData={facilityData}
+      selectedActivities={selectedActivities}
       activitiesData={activitiesData}
       taskListElements={taskListElements}
+      formsData={formData}
     />
   );
 }

@@ -37,7 +37,7 @@ class FacilityReportIn(ModelSchema):
 
     facility_name: str
     facility_type: str
-    facility_bcghgid: str
+    facility_bcghgid: Optional[str]
     activities: List[str]
 
     class Meta:
