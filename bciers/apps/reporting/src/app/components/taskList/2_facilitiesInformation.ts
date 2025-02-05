@@ -18,7 +18,7 @@ export const getFacilitiesInformationTaskList = (
   facilityName?: string,
   operationType = "Single Facility Operation",
 ): TaskListElement[] => {
-  const name = facilityName ? facilityName : "";
+  const name = facilityName ? facilityName : "Facility";
   const facilityItem: TaskListElement[] =
     operationType !== "Linear Facility Operation"
       ? []
