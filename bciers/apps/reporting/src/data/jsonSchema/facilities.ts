@@ -1,7 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import CheckboxGroupWidget from "@bciers/components/form/widgets/CheckboxGroupWidget";
-import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 
 interface ActivityData {
   name: string;
@@ -26,6 +25,7 @@ export const buildFacilitySchema = (activities: ActivityData[]) =>
 
       activities: {
         type: "array",
+        title: "Activities",
         items: {
           type: "string",
           enum: activities.map((activitiy) => activitiy.name),
@@ -52,7 +52,7 @@ export const facilityReviewUiSchema = {
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
   activities: {
-    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxGroupWidget,
     "ui:options": {
       label: false,
