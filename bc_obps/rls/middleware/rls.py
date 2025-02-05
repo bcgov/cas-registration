@@ -1,8 +1,8 @@
 import logging
 from typing import Callable, Optional
 from django.db import connection
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse
-from bc_obps import settings
 from registration.models import User
 
 logger = logging.getLogger(__name__)
