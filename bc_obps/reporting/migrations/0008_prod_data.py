@@ -578,30 +578,6 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Anode Consumption - Soderberg'),
             Methodology(name='Anode/Cathode Baking'),
             Methodology(name='Green Coke Calcination'),
-            Methodology(name='WCI.363(a)(1)'),
-            Methodology(name='WCI.363(a.1)(1)'),
-            Methodology(name='WCI.363(b)'),
-            Methodology(name='WCI.363(b.1)'),
-            Methodology(name='WCI.363(d)'),
-            Methodology(name='WCI.363(e)'),
-            Methodology(name='WCI.363(f)(1)'),
-            Methodology(name='WCI.363(f)(2)'),
-            Methodology(name='WCI.363(k)'),
-            Methodology(name='WCI.363(o)'),
-            Methodology(name='2009 API Compendium'),
-            Methodology(name='WCI.363(g)'),
-            Methodology(name='WCI.363(h.1)'),
-            Methodology(name='WCI.363(h)(1)'),
-            Methodology(name='WCI.363(h)(2)'),
-            Methodology(name='WCI.363(h)(3)'),
-            Methodology(name='WCI.363(h)(4)'),
-            Methodology(name='WCI.363(i)'),
-            Methodology(name='WCI.363(j)'),
-            Methodology(name='WCI.363(n)'),
-            Methodology(name='WCI.363(t)'),
-            Methodology(name='Other Methodology'),
-            Methodology(name='WCI.363(g.1)(i)'),
-            Methodology(name='WCI.363(g.1)(ii)'),
         ]
     )
 
@@ -611,7 +587,37 @@ def reverse_init_methodology_data(apps, schema_monitor):
     Remove initial data from erc.methodology
     '''
     Methodology = apps.get_model('reporting', 'Methodology')
-    Methodology.objects.all().delete()
+    Methodology.objects.filter(
+        name__in=[
+            'Default HHV/Default EF',
+            'Default EF',
+            'Measured HHV/Default EF',
+            'Measured Steam/Default EF',
+            'Measured CC',
+            'Measured Steam/Measured EF',
+            'Alternative Parameter Measurement',
+            'Replacement Methodology',
+            'Anode Consumption',
+            'Slope method',
+            'Overvoltage method',
+            'C2F6 anode effects',
+            'Inventory',
+            'Input/output',
+            'Heat Input/Default EF',
+            'Measured EF',
+            'Site-specific EF',
+            'CEMS',
+            'Measured CC and MW',
+            'Feedstock Material Balance',
+            'Emissions Factor Methodology',
+            'WCI.203(f)(1)',
+            'WCI.203(f)(2)',
+            'Anode Consumption - Prebaked',
+            'Anode Consumption - Soderberg',
+            'Anode/Cathode Baking',
+            'Green Coke Calcination',
+        ]
+    ).delete()
 
 
 def init_reporting_years(apps, schema_editor):
