@@ -23,7 +23,7 @@ const uiSchema = {
   blowdownVenting: sourceTypeCheckboxUiSchema,
   releasesFromTanksUsedForStorageProductionProcessing:
     sourceTypeCheckboxUiSchema,
-  flaringStacks: sourceTypeCheckboxUiSchema,
+  flareStacks: sourceTypeCheckboxUiSchema,
   centrifugalCompressorVenting: sourceTypeCheckboxUiSchema,
   reciprocatingCompressorVenting: sourceTypeCheckboxUiSchema,
   equipmentLeaksDetectedLearkerEmissionFactorMethods:
@@ -50,7 +50,7 @@ const uiSchema = {
     blowdownVenting: emissionsOnlyUiSchema,
     releasesFromTanksUsedForStorageProductionProcessing:
       sourceSubTypeWithoutFuelUiSchema,
-    flaringStacks: sourceSubTypeWithFuelUiSchema,
+    flareStacks: sourceSubTypeWithFuelUiSchema,
     centrifugalCompressorVenting: sourceSubTypeWithoutFuelUiSchema,
     reciprocatingCompressorVenting: sourceSubTypeWithoutFuelUiSchema,
     equipmentLeaksDetectedLearkerEmissionFactorMethods:
