@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "title": "Reciprocal compressor venting",
+  "title": "Reciprocating compressor venting",
   "default": { "units": [{ "emissions": [{}] }] },
   "properties": {
     "units": {
