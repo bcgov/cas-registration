@@ -80,7 +80,7 @@ const FacilityReview: React.FC<Props> = ({
         }));
       }}
       continueUrl={continueURL}
-      initialStep={3}
+      initialStep={1}
       steps={multiStepHeaderSteps}
       backUrl={backUrl}
       saveButtonDisabled={false}
