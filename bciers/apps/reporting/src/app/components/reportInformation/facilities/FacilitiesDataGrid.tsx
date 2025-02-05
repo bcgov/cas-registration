@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { actionHandler } from "@bciers/actions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -40,12 +40,43 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   const [updatedFacilities, setUpdatedFacilities] = useState<
     Record<string, FacilityRow>
   >({});
+  const browserSearchParams = useSearchParams();
+
+  const currentPage = Number(browserSearchParams.get("page")) || 1;
+
+  // to check if all facilities are completed
+  const [tablesData, setTablesData] = useState<Record<number, FacilityRow[]>>(
+    {},
+  );
+
+  // total count of all non-completed facilities for the report
+  const [globalIncompleteCount] = useState<number>(() => {
+    return initialData.row_count - initialData.is_completed_count;
+  });
+
+  // to keep track of the # of uncompleted facilities in a page
+  const [incompleteCountForPage, setIncompleteCountForPage] = useState<
+    Record<number, number>
+  >({});
+
+  useEffect(() => {
+    if (!(currentPage in tablesData)) {
+      setTablesData((prev) => ({
+        ...prev,
+        [currentPage]: initialData.rows,
+      }));
+      setIncompleteCountForPage((prev) => ({
+        ...prev,
+        [currentPage]: initialData.rows.filter(
+          (facilityRow) => !facilityRow.is_completed,
+        ).length,
+      }));
+    }
+  }, [initialData, currentPage]);
 
   const router = useRouter();
 
   const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data`;
-
-  const browserSearchParams = useSearchParams();
 
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
@@ -66,22 +97,48 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       };
       setRows({ ...rows, rows: updatedRows });
 
-      // Disable the button unless all rows are marked as completed.
-      let allLocalCompleted = updatedRows.every((r) => r.is_completed);
-      const globalIncompleteCount = rows.row_count - rows.is_completed_count;
-      const shouldEnableButton =
-        allLocalCompleted && globalIncompleteCount - updatedRows.length <= 0;
-      setAllCompleted(shouldEnableButton);
-
       //stores the changes made to the facility rows' `is_completed` status
       setUpdatedFacilities((prevState) => ({
         ...prevState,
         [updatedRows[rowIndex].facility]: updatedRows[rowIndex],
       }));
+
+      setTablesData((prev) => {
+        const updatedPage = [...(prev[currentPage] || [])];
+        updatedPage[rowIndex] = {
+          ...updatedPage[rowIndex],
+          is_completed: checked,
+        };
+        const updatedTablesData = {
+          ...prev,
+          [currentPage]: updatedPage,
+        };
+        const allRows = Object.values(updatedTablesData).flat();
+        const allPagesCompleted = allRows.every(
+          (facilityRow) => facilityRow.is_completed,
+        );
+
+        const localIncompleteCount = Object.values(incompleteCountForPage)
+          .flat()
+          .reduce((acc, curr) => acc + curr);
+
+        const shouldEnableButton =
+          allPagesCompleted &&
+          globalIncompleteCount - localIncompleteCount <= 0;
+        setAllCompleted(shouldEnableButton);
+
+        return updatedTablesData;
+      });
     };
 
     return getFacilityColumns(handleCheckboxChange, version_id);
-  }, [rows, version_id]);
+  }, [
+    rows,
+    version_id,
+    tablesData,
+    incompleteCountForPage,
+    globalIncompleteCount,
+  ]);
 
   const saveData = async (redirect: boolean) => {
     setIsSaving(true);
@@ -120,8 +177,25 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
     });
 
     setRows(newRows);
+
+    const pageNumber = searchParams.page;
+    if (!(pageNumber in tablesData)) {
+      setTablesData((prev) => {
+        return {
+          ...prev,
+          [pageNumber]: newRows.rows,
+        };
+      });
+
+      setIncompleteCountForPage((prev) => ({
+        ...prev,
+        [pageNumber]: newRows.rows.filter(
+          (facilityRow: FacilityRow) => !facilityRow.is_completed,
+        ).length,
+      }));
+    }
     return newRows;
-  }, [version_id, browserSearchParams]);
+  }, [version_id, browserSearchParams, tablesData]);
 
   return (
     <form
@@ -152,6 +226,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         paginationMode="server"
         initialData={rows}
         pageSize={10}
+        rowSelection={false}
       />
 
       {errors.length > 0 && (
@@ -169,7 +244,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         isSuccess={isSuccess}
         isRedirecting={isRedirecting}
         saveButtonDisabled={isSaving}
-        submitButtonDisabled={!allCompleted || isSaving}
+        submitButtonDisabled={!allCompleted}
         saveAndContinue={() => saveData(true)}
         noFormSave={() => saveData(false)}
       />
