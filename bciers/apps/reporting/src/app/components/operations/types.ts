@@ -13,7 +13,6 @@ export interface OperationsSearchParams {
   sort_field?: string;
   sort_order?: string;
 }
-
 export interface Contact {
   id?: number;
   first_name?: string;

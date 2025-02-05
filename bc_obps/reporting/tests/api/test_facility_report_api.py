@@ -1,10 +1,17 @@
+from unittest.mock import MagicMock, patch
+from uuid import uuid4
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import FacilityReport
 from registration.models import Activity
 from model_bakery import baker
 
+from reporting.schema.facility_report import FacilityReportListInSchema
+
 
 class TestFacilityReportEndpoints(CommonTestSetup):
+    # Ensure that this part is executed correctly
+    # Create a report version to associate with the facility reports
+
     # GET
     def test_error_if_no_facility_report_exists(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
@@ -74,3 +81,30 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         )
         assert FacilityReport.objects.get(pk=facility_report.id).facility_name == "CHANGED"
         assert FacilityReport.objects.get(pk=facility_report.id).activities.count() == 3
+
+    @patch("service.facility_report_service.FacilityReportService.save_facility_report_list")
+    def test_patch_calls_the_save_service_with_correct_data(self, mock_save: MagicMock):
+        self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
+        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+
+        facility_id_1 = uuid4()
+        facility_id_2 = uuid4()
+
+        payload = [
+            {"facility": facility_id_1, "is_completed": True},
+            {"facility": facility_id_2, "is_completed": False},
+        ]
+
+        endpoint_under_test = f"/api/reporting/report-version/{self.report_version.id}/facility-report-list"
+        response = TestUtils.mock_patch_with_auth_role(
+            self, 'industry_user', 'application/json', payload, endpoint_under_test
+        )
+
+        assert response.status_code == 200
+        mock_save.assert_called_once_with(
+            self.report_version.id,
+            [
+                FacilityReportListInSchema(facility=facility_id_1, is_completed=True),
+                FacilityReportListInSchema(facility=facility_id_2, is_completed=False),
+            ],
+        )
