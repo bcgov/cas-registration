@@ -19,12 +19,14 @@ digraph "twoDegreesRelationshipsDiagram" {
   "report_emission":"gas_type_id":w -> "gas_type":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"report_fuel_id":w -> "report_fuel":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"report_source_type_id":w -> "report_source_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission":"report_unit_id":w -> "report_unit":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"report_version_id":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"updated_by_id":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission_emission_categories":"elipses":w -> "report_emission":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "report_source_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_fuel":"elipses":w -> "report_unit":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_methodology":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -44,6 +46,11 @@ digraph "twoDegreesRelationshipsDiagram" {
   "report_source_type":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_source_type":"elipses":w -> "source_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_source_type":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_unit":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_unit":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_unit":"elipses":w -> "report_source_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_unit":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_unit":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_version":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_version":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_version":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -74,7 +81,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="136" HEIGHT="16"><B>configuration_element</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">315 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">416 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
     URL="configuration_element.html"
     target="_top"
@@ -85,7 +92,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="235" HEIGHT="16"><B>configuration_element_reporting_fields</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">514 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">568 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="configuration_element_reporting_fields.html"
     target="_top"
@@ -140,8 +147,9 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="report_fuel_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="130" HEIGHT="16">report_fuel_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="report_source_type_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="130" HEIGHT="16">report_source_type_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="report_version_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="130" HEIGHT="16">report_version_id</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="report_unit_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="130" HEIGHT="16">report_unit_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 8</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
     </TABLE>>
     URL="report_emission.html"
     target="_top"
@@ -215,6 +223,17 @@ digraph "twoDegreesRelationshipsDiagram" {
     target="_top"
     tooltip="report_source_type"
   ];
+  "report_unit" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="67" HEIGHT="16"><B>report_unit</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
+    </TABLE>>
+    URL="report_unit.html"
+    target="_top"
+    tooltip="report_unit"
+  ];
   "report_version" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -242,7 +261,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="26" HEIGHT="16"><B>user</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">124 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">126 &gt;</TD></TR>
     </TABLE>>
     URL="user.html"
     target="_top"

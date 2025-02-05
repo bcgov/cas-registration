@@ -8,7 +8,12 @@ digraph "twoDegreesRelationshipsDiagram" {
   "closure_event":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "contact":"elipses":w -> "operator":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "document":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "document":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "document":"elipses":w -> "operation":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "document":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_designated_operation_timeline":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_designated_operation_timeline":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_designated_operation_timeline":"elipses":w -> "operation":"id":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -38,7 +43,6 @@ digraph "twoDegreesRelationshipsDiagram" {
   "operation_designated_operator_timeline":"elipses":w -> "operation":"id":e [arrowhead=none dir=back arrowtail=teeodot];
   "operation_designated_operator_timeline":"elipses":w -> "operator":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "operation_designated_operator_timeline":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "operation_documents":"elipses":w -> "operation":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "operation_regulated_products":"elipses":w -> "operation":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "operator":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "operator":"elipses":w -> "user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -106,11 +110,22 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="45" HEIGHT="16"><B>contact</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
     </TABLE>>
     URL="contact.html"
     target="_top"
     tooltip="contact"
+  ];
+  "document" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="61" HEIGHT="16"><B>document</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="document.html"
+    target="_top"
+    tooltip="document"
   ];
   "facility_designated_operation_timeline" [
    label=<
@@ -221,17 +236,6 @@ digraph "twoDegreesRelationshipsDiagram" {
     target="_top"
     tooltip="operation_designated_operator_timeline"
   ];
-  "operation_documents" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="130" HEIGHT="16"><B>operation_documents</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="operation_documents.html"
-    target="_top"
-    tooltip="operation_documents"
-  ];
   "operation_regulated_products" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -248,7 +252,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="52" HEIGHT="16"><B>operator</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">10 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">9 &gt;</TD></TR>
     </TABLE>>
     URL="operator.html"
     target="_top"
@@ -314,7 +318,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="26" HEIGHT="16"><B>user</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">124 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">126 &gt;</TD></TR>
     </TABLE>>
     URL="user.html"
     target="_top"

@@ -224,6 +224,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="business_role_id" nullable="true" remarks="The role assigned to this contact which defines the permissions the contact has." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="operator_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="contact_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -249,6 +250,9 @@
          <index name="contact_history_id_df8a88d8" unique="false">
             <column ascending="true" name="id"/>
          </index>
+         <index name="contact_history_operator_id_5f896a8a" unique="false">
+            <column ascending="true" name="operator_id"/>
+         </index>
          <index name="contact_history_updated_by_id_cc133cd3" unique="false">
             <column ascending="true" name="updated_by_id"/>
          </index>
@@ -269,6 +273,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="type_id" nullable="true" remarks="Type of document, e.g., boundary map" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="operation_id" nullable="true" remarks="The operation that the document is about" size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="document_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -284,6 +289,9 @@
          </index>
          <index name="document_history_id_03fdd69a" unique="false">
             <column ascending="true" name="id"/>
+         </index>
+         <index name="document_history_operation_id_c287bbc9" unique="false">
+            <column ascending="true" name="operation_id"/>
          </index>
          <index name="document_history_type_id_ffb31132" unique="false">
             <column ascending="true" name="type_id"/>
@@ -696,7 +704,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="meets_entire_operation_requirements" nullable="true" remarks="Designation as an opt-in can only be granted to an entire operation (i.e. not a part or certain segment of an operation). Do you confirm that the operation applying for this designation is an entire operation?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="meets_section_6_emissions_requirements" nullable="true" remarks="Does this operation have emissions that are attributable for the purposes of section 6 of the Act?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="meets_naics_code_11_22_562_classification_requirements" nullable="true" remarks="Is this operation's primary economic activity classified by the following NAICS Code - 11, 22, or 562?" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="meets_producing_gger_schedule_a1_regulated_product" nullable="true" remarks="Does this operation produce a regulated product listed in Table 1 of Schedule A.1 of the GGERR?" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="meets_producing_gger_schedule_a1_regulated_product" nullable="true" remarks="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="meets_reporting_and_regulated_obligations" nullable="true" remarks="Is this operation capable of fulfilling the obligations of a reporting operation and a regulated operation under the Act and the regulations?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="meets_notification_to_director_on_criteria_change" nullable="true" remarks="Will the operator notify the Director as soon as possible if this operation ceases to meet any of the criteria for the designation of the operation as a reporting operation and a regulated operation?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>

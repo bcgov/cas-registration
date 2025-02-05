@@ -87,7 +87,6 @@
          <index name="activity_source_type_json_schema_valid_to_id_ccc29f3a" unique="false">
             <column ascending="true" name="valid_to_id"/>
          </index>
-         <checkConstraint constraint="((NOT (has_unit AND (NOT has_fuel))))" name="invalid_if_has_unit_and_no_fuel"/>
       </table>
       <table name="address" remarks="Table containing address data. Only Canadian addresses are supported." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
@@ -312,7 +311,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="315" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="416" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -363,7 +362,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="514" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="568" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -388,10 +387,8 @@
       </table>
       <table name="contact" remarks="Table containing information about contacts. Contacts are people that IRC may need to get in touch with to confirm information about industry. Contacts can be BCIERs app users (in which case they will also have a record in the Users table), but they don't have to be." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <child column="contact_id" foreignKey="contact_documents_contact_id_579309c7_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="contact_documents"/>
             <child column="point_of_contact_id" foreignKey="operation_point_of_contact_id_73f671ce_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="contact_id" foreignKey="operation_contacts_contact_id_ac69cfa9_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="operation_contacts"/>
-            <child column="contact_id" foreignKey="operator_contacts_contact_id_1ff91085_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="operator_contacts"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -420,6 +417,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="contact_updated_by_id_cced0949_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="operator_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="id" foreignKey="contact_operator_id_c1f35c4d_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
+         </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="contact_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -439,34 +439,14 @@
          <index name="contact_created_by_id_8c43a26d" unique="false">
             <column ascending="true" name="created_by_id"/>
          </index>
+         <index name="contact_operator_id_c1f35c4d" unique="false">
+            <column ascending="true" name="operator_id"/>
+         </index>
          <index name="contact_role_idx" unique="false">
             <column ascending="true" name="business_role_id"/>
          </index>
          <index name="contact_updated_by_id_cced0949" unique="false">
             <column ascending="true" name="updated_by_id"/>
-         </index>
-      </table>
-      <table name="contact_documents" remarks="" schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="contact_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <parent column="id" foreignKey="contact_documents_contact_id_579309c7_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="contact"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="document_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <parent column="id" foreignKey="contact_documents_document_id_38e0c794_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
-         </column>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
-         <index name="contact_documents_pkey" unique="true">
-            <column ascending="true" name="id"/>
-         </index>
-         <index name="contact_documents_contact_id_579309c7" unique="false">
-            <column ascending="true" name="contact_id"/>
-         </index>
-         <index name="contact_documents_contact_id_document_id_3cddb690_uniq" unique="true">
-            <column ascending="true" name="contact_id"/>
-            <column ascending="true" name="document_id"/>
-         </index>
-         <index name="contact_documents_document_id_38e0c794" unique="false">
-            <column ascending="true" name="document_id"/>
          </index>
       </table>
       <table name="custom_methodology_schema" remarks="Custom methodology schema used to define additional fields for reporting" schema="erc" type="TABLE">
@@ -516,12 +496,7 @@
          </index>
       </table>
       <table name="document" remarks="Table that contains information about documents such as file metadata, type, and description." schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <child column="document_id" foreignKey="contact_documents_document_id_38e0c794_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="contact_documents"/>
-            <child column="document_id" foreignKey="operation_documents_document_id_78e53c55_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="operation_documents"/>
-            <child column="document_id" foreignKey="operator_documents_document_id_e8098ecf_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="operator_documents"/>
-            <child column="document_id" foreignKey="user_documents_document_id_44dd051e_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="user_documents"/>
-         </column>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -539,6 +514,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="document_updated_by_id_e225f4ce_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="operation_id" nullable="true" remarks="The operation that the document is about" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="id" foreignKey="document_operation_id_341c850d_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
+         </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="document_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -548,6 +526,9 @@
          </index>
          <index name="document_created_by_id_9ca09a36" unique="false">
             <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="document_operation_id_341c850d" unique="false">
+            <column ascending="true" name="operation_id"/>
          </index>
          <index name="document_type_id_2180bf41" unique="false">
             <column ascending="true" name="type_id"/>
@@ -757,6 +738,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="report_version_id" nullable="false" remarks="The report this facility information is related to" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="facility_report_report_version_id_df06fd00_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="is_completed" nullable="false" remarks="Indicates whether the facility report has been completed." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="facility_report_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -979,12 +961,12 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="opt_in" nullable="true" remarks="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="id" nullable="false" remarks="Primary key to identify the operation" size="2147483647" type="uuid" typeCode="1111">
             <child column="operation_id" foreignKey="closure_event_operation_id_5f6fdf6f_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="closure_event"/>
+            <child column="operation_id" foreignKey="document_operation_id_341c850d_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
             <child column="operation_id" foreignKey="facility_designated__operation_id_b2556aa8_fk_operation" implied="false" onDeleteCascade="false" schema="erc" table="facility_designated_operation_timeline"/>
             <child column="operation_id" foreignKey="multiple_operator_operation_id_485a162e_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="multiple_operator"/>
             <child column="operation_id" foreignKey="operation_activities_operation_id_2a2ff562_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation_activities"/>
             <child column="operation_id" foreignKey="operation_contacts_operation_id_71d632a5_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation_contacts"/>
             <child column="operation_id" foreignKey="operation_designated_operation_id_afa846c1_fk_operation" implied="false" onDeleteCascade="false" schema="erc" table="operation_designated_operator_timeline"/>
-            <child column="operation_id" foreignKey="operation_documents_operation_id_28412d19_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation_documents"/>
             <child column="operation_id" foreignKey="operation_regulated__operation_id_f27a97e5_fk_operation" implied="false" onDeleteCascade="false" schema="erc" table="operation_regulated_products"/>
             <child column="operation_id" foreignKey="report_operation_id_cf790552_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="report"/>
             <child column="operation_id" foreignKey="restart_event_operation_id_691382f1_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="restart_event"/>
@@ -1189,29 +1171,6 @@
             <column ascending="true" name="operation_id"/>
          </index>
       </table>
-      <table name="operation_documents" remarks="" schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="operation_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="id" foreignKey="operation_documents_operation_id_28412d19_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="document_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <parent column="id" foreignKey="operation_documents_document_id_78e53c55_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
-         </column>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
-         <index name="operation_documents_pkey" unique="true">
-            <column ascending="true" name="id"/>
-         </index>
-         <index name="operation_documents_document_id_78e53c55" unique="false">
-            <column ascending="true" name="document_id"/>
-         </index>
-         <index name="operation_documents_operation_id_28412d19" unique="false">
-            <column ascending="true" name="operation_id"/>
-         </index>
-         <index name="operation_documents_operation_id_document_id_02a40c54_uniq" unique="true">
-            <column ascending="true" name="operation_id"/>
-            <column ascending="true" name="document_id"/>
-         </index>
-      </table>
       <table name="operation_regulated_products" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="operation_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
@@ -1240,10 +1199,9 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="id" nullable="false" remarks="Primary key to identify the operator" size="2147483647" type="uuid" typeCode="1111">
+            <child column="operator_id" foreignKey="contact_operator_id_c1f35c4d_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="contact"/>
             <child column="operator_id" foreignKey="operation_operator_id_fdf52598_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="operator_id" foreignKey="operation_designated_operator_id_76d4ac88_fk_operator_" implied="false" onDeleteCascade="false" schema="erc" table="operation_designated_operator_timeline"/>
-            <child column="operator_id" foreignKey="operator_contacts_operator_id_11ee1aef_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator_contacts"/>
-            <child column="operator_id" foreignKey="operator_documents_operator_id_fa0b36fb_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator_documents"/>
             <child column="child_operator_id" foreignKey="parent_operator_child_operator_id_66a27872_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="parent_operator"/>
             <child column="bc_obps_operator_id" foreignKey="partner_operator_bc_obps_operator_id_4f1b4361_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="partner_operator"/>
             <child column="operator_id" foreignKey="report_operator_id_9de3d271_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="report"/>
@@ -1329,52 +1287,6 @@
             <column ascending="true" name="verified_by_id"/>
          </index>
       </table>
-      <table name="operator_contacts" remarks="" schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="operator_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="id" foreignKey="operator_contacts_operator_id_11ee1aef_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="contact_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <parent column="id" foreignKey="operator_contacts_contact_id_1ff91085_fk_contact_id" implied="false" onDeleteCascade="false" schema="erc" table="contact"/>
-         </column>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
-         <index name="operator_contacts_pkey" unique="true">
-            <column ascending="true" name="id"/>
-         </index>
-         <index name="operator_contacts_contact_id_1ff91085" unique="false">
-            <column ascending="true" name="contact_id"/>
-         </index>
-         <index name="operator_contacts_operator_id_11ee1aef" unique="false">
-            <column ascending="true" name="operator_id"/>
-         </index>
-         <index name="operator_contacts_operator_id_contact_id_ef2a9260_uniq" unique="true">
-            <column ascending="true" name="operator_id"/>
-            <column ascending="true" name="contact_id"/>
-         </index>
-      </table>
-      <table name="operator_documents" remarks="" schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="operator_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="id" foreignKey="operator_documents_operator_id_fa0b36fb_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="document_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <parent column="id" foreignKey="operator_documents_document_id_e8098ecf_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
-         </column>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
-         <index name="operator_documents_pkey" unique="true">
-            <column ascending="true" name="id"/>
-         </index>
-         <index name="operator_documents_document_id_e8098ecf" unique="false">
-            <column ascending="true" name="document_id"/>
-         </index>
-         <index name="operator_documents_operator_id_document_id_6ec77017_uniq" unique="true">
-            <column ascending="true" name="operator_id"/>
-            <column ascending="true" name="document_id"/>
-         </index>
-         <index name="operator_documents_operator_id_fa0b36fb" unique="false">
-            <column ascending="true" name="operator_id"/>
-         </index>
-      </table>
       <table name="opted_in_operation_detail" remarks="Table containing details about operations that have opted in" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="opted_in_operation_id" foreignKey="operation_opted_in_operation_i_7356556a_fk_opted_in_" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
@@ -1387,7 +1299,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="meets_entire_operation_requirements" nullable="true" remarks="Designation as an opt-in can only be granted to an entire operation (i.e. not a part or certain segment of an operation). Do you confirm that the operation applying for this designation is an entire operation?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="meets_section_6_emissions_requirements" nullable="true" remarks="Does this operation have emissions that are attributable for the purposes of section 6 of the Act?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="meets_naics_code_11_22_562_classification_requirements" nullable="true" remarks="Is this operation's primary economic activity classified by the following NAICS Code - 11, 22, or 562?" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="meets_producing_gger_schedule_a1_regulated_product" nullable="true" remarks="Does this operation produce a regulated product listed in Table 1 of Schedule A.1 of the GGERR?" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="meets_producing_gger_schedule_a1_regulated_product" nullable="true" remarks="Does this operation produce a regulated product listed in Table 2 of Schedule A.1 of the GGERR?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="meets_reporting_and_regulated_obligations" nullable="true" remarks="Is this operation capable of fulfilling the obligations of a reporting operation and a regulated operation under the Act and the regulations?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="meets_notification_to_director_on_criteria_change" nullable="true" remarks="Will the operator notify the Director as soon as possible if this operation ceases to meet any of the criteria for the designation of the operation as a reporting operation and a regulated operation?" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
@@ -1806,6 +1718,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="report_version_id" nullable="false" remarks="The report version this data belongs to" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="report_emission_report_version_id_9731ba04_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="report_unit_id" nullable="true" remarks="The unit/source sub-type this emission data belongs to, if applicable" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_emission_report_unit_id_c2a05f00_fk_report_unit_id" implied="false" onDeleteCascade="false" schema="erc" table="report_unit"/>
+         </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="report_emission_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -1825,12 +1740,16 @@
          <index name="report_emission_report_source_type_id_b0bcf9b2" unique="false">
             <column ascending="true" name="report_source_type_id"/>
          </index>
+         <index name="report_emission_report_unit_id_c2a05f00" unique="false">
+            <column ascending="true" name="report_unit_id"/>
+         </index>
          <index name="report_emission_report_version_id_9731ba04" unique="false">
             <column ascending="true" name="report_version_id"/>
          </index>
          <index name="report_emission_updated_by_id_3392df36" unique="false">
             <column ascending="true" name="updated_by_id"/>
          </index>
+         <checkConstraint constraint="((NOT ((report_fuel_id IS NOT NULL) AND (report_unit_id IS NOT NULL))))" name="fuel_or_unit_but_not_both"/>
       </table>
       <table name="report_emission_emission_categories" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
@@ -2565,6 +2484,7 @@
       </table>
       <table name="report_unit" remarks="A table to store the reported unit-specific data, in a JSON format" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="report_unit_id" foreignKey="report_emission_report_unit_id_c2a05f00_fk_report_unit_id" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="report_unit_id" foreignKey="report_fuel_report_unit_id_8fa7afb8_fk_report_unit_id" implied="false" onDeleteCascade="false" schema="erc" table="report_fuel"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -2586,6 +2506,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="report_version_id" nullable="false" remarks="The report version this data belongs to" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="report_unit_report_version_id_25a4c0c6_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="type" nullable="false" remarks="The data type for this unit record, whether it's a regular `Unit` or a `Source sub-type` for an oil and gas activity." size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="report_unit_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -2611,6 +2532,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="report_version_id" nullable="false" remarks="The report version of this report verification" size="19" type="int8" typeCode="-5">
+            <child column="report_verification_id" foreignKey="verification_visit_report_verification__9c927c00_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="verification_visit"/>
             <parent column="id" foreignKey="report_verification_report_version_id_affb429c_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="verification_body_name" nullable="false" remarks="The name of the verification body conducting the verification" size="1000" type="varchar" typeCode="12">
@@ -2620,17 +2542,13 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="scope_of_verification" nullable="false" remarks="The scope of the verification" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="threats_to_independence" nullable="false" remarks="Indicates whether there were any threats to independence noted" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="verification_conclusion" nullable="false" remarks="The conclusion of the verification" size="8" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="visit_name" nullable="false" remarks="The name of the site visited (Facility X, Other, or None)" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="visit_type" nullable="true" remarks="The type of visit conducted (Virtual or In Person)" size="10" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="other_facility_name" nullable="true" remarks="Name of the other facility visited if 'Other' is selected" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="other_facility_coordinates" nullable="true" remarks="Geographic location of the other facility visited" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_verification_archived_by_id_e48ad3cc_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_verification_created_by_id_feeec302_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_verification_updated_by_id_6164417f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
          <primaryKey column="report_version_id" sequenceNumberInPK="1"/>
@@ -3091,12 +3009,14 @@
             <child column="archived_by_id" foreignKey="transfer_event_archived_by_id_99ed41ca_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
             <child column="created_by_id" foreignKey="transfer_event_created_by_id_2f2c6acc_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
             <child column="updated_by_id" foreignKey="transfer_event_updated_by_id_a65894a8_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
-            <child column="user_id" foreignKey="user_documents_user_id_7bfbd08b_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_documents"/>
             <child column="archived_by_id" foreignKey="user_operator_archived_by_id_ed28db43_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
             <child column="created_by_id" foreignKey="user_operator_created_by_id_561df7f2_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
             <child column="updated_by_id" foreignKey="user_operator_updated_by_id_36b6d082_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
             <child column="user_id" foreignKey="user_operator_user_id_5f245911_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
             <child column="verified_by_id" foreignKey="user_operator_verified_by_id_abba2ab2_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
+            <child column="archived_by_id" foreignKey="verification_visit_archived_by_id_4f80d4f8_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="verification_visit"/>
+            <child column="created_by_id" foreignKey="verification_visit_created_by_id_9008da31_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="verification_visit"/>
+            <child column="updated_by_id" foreignKey="verification_visit_updated_by_id_ab606c9d_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="verification_visit"/>
             <child column="archived_by_id" foreignKey="well_authorization_n_archived_by_id_08527392_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="well_authorization_number"/>
             <child column="created_by_id" foreignKey="well_authorization_n_created_by_id_1e7bc021_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="well_authorization_number"/>
             <child column="updated_by_id" foreignKey="well_authorization_n_updated_by_id_5515cfed_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="well_authorization_number"/>
@@ -3124,29 +3044,6 @@
          <index name="uuid_user_and_business_constraint" unique="true">
             <column ascending="true" name="user_guid"/>
             <column ascending="true" name="business_guid"/>
-         </index>
-      </table>
-      <table name="user_documents" remarks="" schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="user_guid" foreignKey="user_documents_user_id_7bfbd08b_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="document_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
-            <parent column="id" foreignKey="user_documents_document_id_44dd051e_fk_document_id" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
-         </column>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
-         <index name="user_documents_pkey" unique="true">
-            <column ascending="true" name="id"/>
-         </index>
-         <index name="user_documents_document_id_44dd051e" unique="false">
-            <column ascending="true" name="document_id"/>
-         </index>
-         <index name="user_documents_user_id_7bfbd08b" unique="false">
-            <column ascending="true" name="user_id"/>
-         </index>
-         <index name="user_documents_user_id_document_id_9f3ab9a8_uniq" unique="true">
-            <column ascending="true" name="user_id"/>
-            <column ascending="true" name="document_id"/>
          </index>
       </table>
       <table name="user_operator" remarks="Through table to connect Users and Operators and track access requests" schema="erc" type="TABLE">
@@ -3208,6 +3105,45 @@
          <index name="user_operator_verified_by_id_abba2ab2" unique="false">
             <column ascending="true" name="verified_by_id"/>
          </index>
+      </table>
+      <table name="verification_visit" remarks="Table to store individual verification visit information" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="visit_name" nullable="false" remarks="The name of the site visited (Facility X, Other, or None)" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="visit_type" nullable="true" remarks="The type of visit conducted (Virtual or In Person)" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="visit_coordinates" nullable="true" remarks="Geographic location of an other facility visited" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="is_other_visit" nullable="false" remarks="Flag to indicate the visit is an other facility visited" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="verification_visit_archived_by_id_4f80d4f8_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="verification_visit_created_by_id_9008da31_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="report_verification_id" nullable="false" remarks="The report verification associated with this visit" size="19" type="int8" typeCode="-5">
+            <parent column="report_version_id" foreignKey="verification_visit_report_verification__9c927c00_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_verification"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="verification_visit_updated_by_id_ab606c9d_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="verification_visit_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="verification_visit_archived_by_id_4f80d4f8" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="verification_visit_created_by_id_9008da31" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="verification_visit_report_verification_id_9c927c00" unique="false">
+            <column ascending="true" name="report_verification_id"/>
+         </index>
+         <index name="verification_visit_updated_by_id_ab606c9d" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+         <checkConstraint constraint="(((NOT is_other_visit) OR (visit_coordinates IS NOT NULL)))" name="other_facility_must_have_coordinates"/>
       </table>
       <table name="well_authorization_number" remarks="A table containing well authorization numbers. Authorization numbers are assigned by the British Columbia Energy Regulator: https://www.bc-er.ca/what-we-regulate/oil-gas/wells/. Facilities can have multiple well authorization numbers." schema="erc" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
