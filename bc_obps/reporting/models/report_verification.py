@@ -52,7 +52,7 @@ class ReportVerification(TimeStampedModel):
         db_comment="The conclusion of the verification",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_verification'
         db_table_comment = "Table to store verification information associated with a report version"
         app_label = 'reporting'

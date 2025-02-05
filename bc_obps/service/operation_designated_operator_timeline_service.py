@@ -24,5 +24,4 @@ class OperationDesignatedOperatorTimelineService:
         timeline.status = status
         timeline.end_date = end_date
         timeline.save(update_fields=["status", "end_date"])
-        timeline.set_create_or_update(user_guid)
         return timeline

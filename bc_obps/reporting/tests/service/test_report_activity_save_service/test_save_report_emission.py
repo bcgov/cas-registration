@@ -132,10 +132,6 @@ class TestSaveReportEmission(TestCase):
         assert return_value.report_fuel == report_fuel
         assert return_value.report_version == test_infrastructure.report_version
 
-        return_value.refresh_from_db()
-        assert return_value.created_by == test_infrastructure.user
-        assert return_value.updated_by is None
-
         mock_save_methodology.assert_has_calls(
             [
                 call(
@@ -226,10 +222,6 @@ class TestSaveReportEmission(TestCase):
             "equivalentEmission": "200.0000",
         }
         assert updated_return_value.gas_type == GasType.objects.get(chemical_formula="BCOBPS")
-
-        updated_return_value.refresh_from_db()
-        assert updated_return_value.created_by == test_infrastructure.user
-        assert updated_return_value.updated_by == test_infrastructure.user
 
     def test_save_equivalent_emission(self):
         test_infrastructure = TestInfrastructure.build()

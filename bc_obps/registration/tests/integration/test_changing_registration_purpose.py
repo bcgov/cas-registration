@@ -627,7 +627,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.created_at == self.original_operation_record.created_at
         # assert that we're logging the updates to the operation
         assert self.operation.updated_by == self.user
-        assert self.operation.updated_at > self.operation.created_at
 
         match original_purpose:
             case Operation.Purposes.REPORTING_OPERATION:

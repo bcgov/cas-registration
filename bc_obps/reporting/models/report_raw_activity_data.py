@@ -31,7 +31,7 @@ class ReportRawActivityData(TimeStampedModel):
         db_comment="The raw activity JSON data collected from the form before processing",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         """Meta class for ReportRawActivityData."""
 
         db_table = 'erc"."report_raw_activity_data'

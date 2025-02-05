@@ -60,5 +60,4 @@ class OperatorDataAccessService:
             operator_data,
         )
         operator.save()
-        operator.set_create_or_update(user_guid)
         return operator

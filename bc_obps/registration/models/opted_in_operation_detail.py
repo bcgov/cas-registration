@@ -47,6 +47,6 @@ class OptedInOperationDetail(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing details about operations that have opted in"
         db_table = 'erc"."opted_in_operation_detail'

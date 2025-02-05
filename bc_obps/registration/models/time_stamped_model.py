@@ -3,6 +3,7 @@ from uuid import UUID
 from common.models import BaseModel
 from django.db import models
 from django.utils import timezone
+import pgtrigger
 
 
 class TimeStampedModelManager(models.Manager):
@@ -19,7 +20,7 @@ class TimeStampedModel(BaseModel):
         on_delete=models.PROTECT,
         related_name='%(class)s_created',
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_at = models.DateTimeField(null=True, blank=True)
     updated_by = models.ForeignKey(
         'registration.User',
         on_delete=models.PROTECT,
@@ -40,16 +41,22 @@ class TimeStampedModel(BaseModel):
 
     class Meta:
         abstract = True
-
-    def set_create_or_update(self, modifier_pk: UUID) -> None:
-        """
-        Set the created by field if it is not already set.
-        Otherwise, set the updated by field and updated at field.
-        """
-        if not self.created_by_id:  # created_at is automatically set by auto_now_add
-            self.__class__.objects.filter(pk=self.pk).update(created_by_id=modifier_pk)
-        else:
-            self.__class__.objects.filter(pk=self.pk).update(updated_by_id=modifier_pk, updated_at=timezone.now())
+        triggers = [
+            # On Create
+            pgtrigger.Trigger(
+                name="set_created_audit_columns",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert,
+                func="new.created_by_id = (select current_setting('my.guid', true)); new.created_at = now(); return new;",
+            ),
+            # On Update
+            pgtrigger.Trigger(
+                name="set_updated_audit_columns",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Update,
+                func="new.updated_by_id = (select current_setting('my.guid', true)); new.updated_at = now(); return new;",
+            ),
+        ]
 
     def set_archive(self, modifier_pk: UUID) -> None:
         """Set the archived by field and archived at field if they are not already set."""

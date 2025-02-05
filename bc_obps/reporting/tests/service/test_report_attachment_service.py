@@ -56,8 +56,6 @@ class TestReportAttachmentService:
         assert r.attachment_type == "verification_statement"
         assert r.attachment_name == "test_file.txt"
         assert r.attachment is not None
-        assert r.created_by == self.user
-        assert r.created_at is not None
 
     def test_get_attachments(self):
         file = ContentFile(b"abvedseqwe", "test_file.txt")

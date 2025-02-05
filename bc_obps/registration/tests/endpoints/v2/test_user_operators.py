@@ -289,7 +289,7 @@ class TestListUserOperators(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            self.url + "?page=2&sort_field=created_at&sort_order=desc",
+            self.url + "?page=2&sort_field=user_friendly_id&sort_order=desc",
         )
         assert response.status_code == 200
         response_items_2 = response.json().get('items')
@@ -305,7 +305,7 @@ class TestListUserOperators(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            self.url + "?page=2&sort_field=created_at&sort_order=asc",
+            self.url + "?page=2&sort_field=user_friendly_id&sort_order=asc",
         )
         assert response.status_code == 200
         response_items_2_reverse = response.json().get('items')
@@ -318,7 +318,7 @@ class TestListUserOperators(CommonTestSetup):
         # make sure sorting is working
         page_2_first_user_operator = UserOperator.objects.get(pk=page_2_response_id)
         page_2_first_user_operator_reverse = UserOperator.objects.get(pk=page_2_response_id_reverse)
-        assert page_2_first_user_operator.created_at > page_2_first_user_operator_reverse.created_at
+        assert page_2_first_user_operator.user_friendly_id > page_2_first_user_operator_reverse.user_friendly_id
 
     def test_list_user_operators_v2_with_filter(self):
         baker.make_recipe(

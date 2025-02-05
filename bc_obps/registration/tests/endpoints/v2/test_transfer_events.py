@@ -58,7 +58,7 @@ class TestTransferEventEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            self.url + "?page=2&sort_field=created_at&sort_order=desc",
+            self.url + "?page=2&sort_field=id&sort_order=desc",
         )
         assert response.status_code == 200
         response_items_2 = response.json().get('items')
@@ -73,7 +73,7 @@ class TestTransferEventEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            self.url + "?page=2&sort_field=created_at&sort_order=asc",
+            self.url + "?page=2&sort_field=id&sort_order=asc",
         )
         assert response.status_code == 200
         response_items_2_reverse = response.json().get('items')

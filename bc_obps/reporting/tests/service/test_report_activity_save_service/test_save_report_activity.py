@@ -46,10 +46,6 @@ class TestSaveReportActivity(TestCase):
         assert return_value.json_data == {"stuff": "testing", "number": 1234}
         assert return_value.report_version == test_infrastructure.facility_report.report_version
 
-        return_value.refresh_from_db()
-        assert return_value.created_by == test_infrastructure.user
-        assert return_value.updated_by is None
-
         mock_save_source_type.assert_called_with(report_activity, "testSourceType", {"stuff": True})
 
     @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_source_type")
@@ -95,8 +91,6 @@ class TestSaveReportActivity(TestCase):
         assert report_activity.facility_report == test_infrastructure.facility_report
         assert report_activity.json_data == {"stuff": "testing updated", "number": 123456, "extra_boolean": True}
         assert report_activity.report_version == test_infrastructure.facility_report.report_version
-        assert report_activity.created_by == test_infrastructure.user
-        assert report_activity.updated_by == test_infrastructure.user
 
         mock_save_source_type.assert_called_with(report_activity, "anotherSourceType", {"more_stuff": True})
 

@@ -27,7 +27,7 @@ class Document(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = (
             "Table that contains information about documents such as file metadata, type, and description."
         )

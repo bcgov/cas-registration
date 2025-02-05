@@ -24,7 +24,6 @@ class OptedInOperationDataAccessService:
             opted_in_operation_detail_data.dict(),
         )
         updated_opted_in_operation_detail_instance.save()
-        updated_opted_in_operation_detail_instance.set_create_or_update(user_guid)
         return updated_opted_in_operation_detail_instance
 
     @classmethod
