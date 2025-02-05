@@ -18,31 +18,38 @@ export const getFacilitiesInformationTaskList = (
   facilityName?: string,
   operationType = "Single Facility Operation",
 ): TaskListElement[] => {
+  const name = facilityName ? facilityName : "";
+  const facilityItem: TaskListElement[] =
+    operationType !== "Linear Facility Operation"
+      ? []
+      : [
+          {
+            type: "Page",
+            title: "Review Information",
+            link: `/reports/${versionId}/facilities/${facilityId}/review`,
+            isActive: activeIndex === ActivePage.ReviewInformation,
+          },
+        ];
+
   return [
     {
       type: "Section",
-      title: `${facilityName} Information`,
+      title: `${name} Information`,
       isExpanded: true,
       elements: [
-        ...(operationType.toLowerCase().includes("linear facility operation")
-          ? [
-              {
-                type: "Page",
-                title: "Review Information",
-                isActive: activeIndex === ActivePage.ReviewInformation,
-                link: `/reports/${versionId}/facilities/${facilityId}/review`,
-              },
-            ]
-          : []),
+        ...facilityItem,
         {
           type: "Section",
           title: "Activities Information",
           isExpanded: true,
-          elements: orderedActivities.map((activity, index) => ({
-            type: "Page",
-            title: activity.name,
-            link: `/reports/${versionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
-          })),
+          elements: orderedActivities.map(
+            (activity: ActivityData, index) =>
+              ({
+                type: "Page",
+                title: activity.name,
+                link: `/reports/${versionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
+              }) as TaskListElement,
+          ),
         },
         {
           type: "Page",
@@ -59,14 +66,13 @@ export const getFacilitiesInformationTaskList = (
         {
           type: "Page",
           title: "Production Data",
-          isActive: activeIndex === ActivePage.ProductionData,
           link: `/reports/${versionId}/facilities/${facilityId}/production-data`,
+          isActive: activeIndex === ActivePage.ProductionData,
         },
         {
           type: "Page",
           title: "Allocation of Emissions",
           isActive: activeIndex === ActivePage.AllocationOfEmissions,
-          link: `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`,
         },
       ],
     },
