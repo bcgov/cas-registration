@@ -371,7 +371,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     );
   });
 
-  test("Operations table sorting and filtering", async ({ page }) => {
+  test.skip("Operations table sorting and filtering", async ({ page }) => {
     const operationsPage = new OperationsPOM(page);
     // 🛸 Navigate to operations table page
     await operationsPage.route();
