@@ -24,7 +24,7 @@ const config = {
   },
   urls: {
     back: "/reports/1/person-responsible",
-    continue: "/reports/1/report-information",
+    continue: "/reports/1/facilities/report-information",
   },
 };
 
