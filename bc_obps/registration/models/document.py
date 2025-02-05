@@ -6,7 +6,7 @@ from registration.enums.enums import RegistrationTableNames
 from registration.models import DocumentType, TimeStampedModel
 from simple_history.models import HistoricalRecords
 from django.core.files.storage import default_storage
-from rls.rls_configs.registration.document import Rls as DocumentRls
+from registration.models.rls_configs.document import Rls as DocumentRls
 
 
 class Document(TimeStampedModel):

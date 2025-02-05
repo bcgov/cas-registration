@@ -8,7 +8,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from registration.enums.enums import RegistrationTableNames
-from rls.rls_configs.registration.app_role import Rls as AppRoleRls
+from registration.models.rls_configs.app_role import Rls as AppRoleRls
 
 
 class AppRole(BaseModel):

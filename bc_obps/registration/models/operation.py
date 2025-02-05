@@ -24,7 +24,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from registration.models.document import Document
 from registration.models.document_type import DocumentType
-from rls.rls_configs.registration.operation import Rls as OperationRls
+from registration.models.rls_configs.operation import Rls as OperationRls
 
 
 class Operation(TimeStampedModel):

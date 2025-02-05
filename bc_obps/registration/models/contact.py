@@ -3,7 +3,7 @@ from registration.models import Address, BusinessRole, UserAndContactCommonInfo,
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
 from simple_history.models import HistoricalRecords
-from rls.rls_configs.registration.contact import Rls as ContactRls
+from registration.models.rls_configs.contact import Rls as ContactRls
 
 
 class Contact(UserAndContactCommonInfo, TimeStampedModel):
