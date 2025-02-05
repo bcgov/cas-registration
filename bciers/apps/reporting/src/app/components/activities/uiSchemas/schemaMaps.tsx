@@ -10,6 +10,7 @@ import openPitCoalMining from "@reporting/src/app/components/activities/uiSchema
 import storageOfPetroleumProductsUiSchema from "./storageOfPetroleumProductsUiSchema";
 import aluminumUiSchema from "./aluminumUiSchema";
 import ngNonCompressionUiSchema from "./ngNonCompressionUiSchema";
+import ngOtherThanNonCompressionUiSchema from "./ngOtherThanNonCompressionUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -30,6 +31,8 @@ export const uiSchemaMap: UiSchemaMap = {
   storage_petro_products: storageOfPetroleumProductsUiSchema,
   aluminum_production: aluminumUiSchema,
   natural_gas_activities_non_compression: ngNonCompressionUiSchema,
+  natural_gas_activities_other_than_non_compression:
+    ngOtherThanNonCompressionUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
