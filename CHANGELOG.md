@@ -1,3 +1,19 @@
+# [1.21.0](https://github.com/bcgov/cas-registration/compare/v1.20.0...v1.21.0) (2025-02-05)
+
+### Bug Fixes
+
+- Check if sourceMap contains more than 1 sourceType before submitting to fix activity save functionality ([65f6906](https://github.com/bcgov/cas-registration/commit/65f69060d70e9f5e2796309cf243fe02c0555097))
+- ContactService.create_contact was being passed incorrect user_guid ([07ac03e](https://github.com/bcgov/cas-registration/commit/07ac03e9917e61169789b3f234b023df5c5994d1))
+- Disable scrolling behavior on global form number inputs ([7e541a8](https://github.com/bcgov/cas-registration/commit/7e541a8af65ad87ada5eac913163f039dc2497a2))
+
+### Features
+
+- add triggers to timestamped model & remove set_create_or_update ([b896cfc](https://github.com/bcgov/cas-registration/commit/b896cfc6a207d4bed4b4308c647b60ab0bb6996e))
+- Calculate annual fuel amount in Mobile Equipment activity ([49ea481](https://github.com/bcgov/cas-registration/commit/49ea481f8f827e8ff51d689a28f414d763e85cff))
+- facility report table ([d288eab](https://github.com/bcgov/cas-registration/commit/d288eabd4f9efab7f09bfd9bff79d77e98cc1a26))
+- report unit has a type to allow source-sub-type reporting ([6314ccd](https://github.com/bcgov/cas-registration/commit/6314ccd2ad176b46f671ded6472cb2a100c5de2e))
+- report verification for LFO ([5cf16a4](https://github.com/bcgov/cas-registration/commit/5cf16a42d98c2c1fb7bae41c01d4294f601dbe87))
+
 # [1.20.0](https://github.com/bcgov/cas-registration/compare/v1.19.0...v1.20.0) (2025-01-30)
 
 ### Features
