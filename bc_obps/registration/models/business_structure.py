@@ -7,7 +7,7 @@ from simple_history.models import HistoricalRecords
 from django.core.cache import cache
 
 from registration.enums.enums import RegistrationTableNames
-from rls.rls_configs.registration.business_structure import Rls as BusinessStructureRls
+from registration.models.rls_configs.business_structure import Rls as BusinessStructureRls
 
 
 class BusinessStructure(BaseModel):
