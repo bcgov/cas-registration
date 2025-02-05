@@ -1,10 +1,11 @@
 from uuid import UUID
 from django.db import transaction
-from typing import List, Optional, Tuple
-
+from typing import List, Optional, Tuple, cast
+from ninja import Query
 from registration.models import Activity
 from reporting.models.facility_report import FacilityReport
-from reporting.schema.facility_report import FacilityReportIn
+from reporting.schema.facility_report import FacilityReportIn, FacilityReportListInSchema, FacilityReportFilterSchema
+from django.db.models import QuerySet
 
 
 class FacilityReportService:
@@ -56,3 +57,38 @@ class FacilityReportService:
         facility_report.save()
 
         return facility_report
+
+    @classmethod
+    def get_facility_report_list(
+        cls,
+        version_id: int,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: FacilityReportFilterSchema = Query(...),
+    ) -> QuerySet[FacilityReport]:
+        sort_direction = "-" if sort_order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}"
+
+        facilities = FacilityReport.objects.filter(report_version_id=version_id)
+
+        queryset = (
+            filters.filter(facilities)
+            .order_by(sort_by)
+            .values('id', 'facility_name', 'facility_id', 'facility_bcghgid', 'is_completed')
+            .distinct()
+        )
+
+        return cast(QuerySet[FacilityReport], queryset)
+
+    @classmethod
+    @transaction.atomic
+    def save_facility_report_list(cls, version_id: int, data: List[FacilityReportListInSchema]) -> None:
+
+        for facility_data in data:
+            facility_id = facility_data.facility
+            is_completed = facility_data.is_completed
+
+            # Update the facility report
+            FacilityReport.objects.filter(report_version_id=version_id, facility_id=facility_id).update(
+                is_completed=is_completed
+            )

@@ -1,6 +1,8 @@
-from ninja import ModelSchema
+from uuid import UUID
+
+from ninja import ModelSchema, Field, FilterSchema
 from pydantic import alias_generators
-from typing import List
+from typing import List, Optional
 
 from reporting.models import FacilityReport
 
@@ -42,3 +44,25 @@ class FacilityReportIn(ModelSchema):
         alias_generator = to_snake
         model = FacilityReport
         fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities']
+
+
+class FacilityReportListSchema(ModelSchema):
+    class Meta:
+        alias_generator = to_snake
+        model = FacilityReport
+        fields = ['id', 'facility_name', 'facility', 'facility_bcghgid', 'is_completed']
+
+
+class FacilityReportListInSchema(ModelSchema):
+    facility: UUID = Field(alias='facility')
+    is_completed: bool
+
+    class Meta:
+        alias_generator = to_snake
+        model = FacilityReport
+        fields = ['is_completed']
+
+
+class FacilityReportFilterSchema(FilterSchema):
+    facility_name: Optional[str] = Field(None, json_schema_extra={'q': 'facility_name__icontains'})
+    facility_bcghgid: Optional[str] = Field(None, json_schema_extra={'q': 'facility_bcghgid__icontains'})

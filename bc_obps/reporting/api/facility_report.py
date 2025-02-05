@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, List
+from typing import Literal, Tuple, List, Optional
 from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -8,12 +8,22 @@ from reporting.schema.generic import Message
 from service.facility_report_service import FacilityReportService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
-from reporting.schema.facility_report import FacilityReportOut, FacilityReportIn
+from reporting.schema.facility_report import (
+    FacilityReportOut,
+    FacilityReportIn,
+    FacilityReportListSchema,
+    FacilityReportListInSchema,
+    FacilityReportFilterSchema,
+)
 from reporting.schema.activity import FacilityReportActivityDataOut
 from common.api.utils import get_current_user_guid
 from registration.models import Activity, Operation
 from reporting.models import FacilityReport, ReportVersion, Report
+from ninja.pagination import paginate
+from ninja import Query
 from django.db.models import QuerySet
+
+from ..utils import ReportingCustomPagination
 
 
 @router.get(
@@ -104,3 +114,40 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
     }
 
     return 200, response_data
+
+
+@router.get(
+    "/report-version/{version_id}/facility-report-list",
+    response={200: list[FacilityReportListSchema], custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes version_id (primary key of Report_Version model) and returns a list of facilities with their
+    details.""",
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+@paginate(ReportingCustomPagination, page_size=10)
+def get_facility_report_list(
+    request: HttpRequest,
+    version_id: int,
+    filters: FacilityReportFilterSchema = Query(...),
+    sort_field: Optional[str] = "created_at",
+    sort_order: Optional[Literal["desc", "asc"]] = "asc",
+    paginate_result: bool = Query(True, description="Whether to paginate the results"),
+) -> QuerySet[FacilityReport]:
+    return FacilityReportService.get_facility_report_list(version_id, sort_field, sort_order, filters)
+
+
+@router.patch(
+    "/report-version/{version_id}/facility-report-list",
+    response={200: int, custom_codes_4xx: Message},
+    tags=["Emissions Report"],
+    description="""Updates facility report details by version_id. The request body should include fields
+    to be updated for the respective facility reports.""",
+    auth=authorize("approved_industry_user"),
+)
+@handle_http_errors()
+def save_facility_report_list(
+    request: HttpRequest, version_id: int, payload: List[FacilityReportListInSchema]
+) -> Literal[200]:
+    FacilityReportService.save_facility_report_list(version_id, payload)
+    return 200

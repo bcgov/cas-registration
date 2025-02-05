@@ -166,6 +166,11 @@ class TestEndpointPermissions(TestCase):
             },
             {
                 "method": "get",
+                "endpoint_name": "get_facility_report_list",
+                "kwargs": {"version_id": mock_int},
+            },
+            {
+                "method": "get",
                 "endpoint_name": "register_get_operation_information",
                 "kwargs": {"operation_id": mock_uuid},
             },
@@ -267,6 +272,11 @@ class TestEndpointPermissions(TestCase):
             {
                 "method": "post",
                 "endpoint_name": "submit_report_version",
+                "kwargs": {"version_id": mock_int},
+            },
+            {
+                "method": "patch",
+                "endpoint_name": "save_facility_report_list",
                 "kwargs": {"version_id": mock_int},
             },
             {
