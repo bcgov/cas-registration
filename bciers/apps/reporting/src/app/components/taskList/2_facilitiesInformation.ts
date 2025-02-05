@@ -25,7 +25,7 @@ export const getFacilitiesInformationTaskList = (
       : [
           {
             type: "Page",
-            title: "Review Information",
+            title: "Review facility information",
             link: `/reports/${versionId}/facilities/${facilityId}/review`,
             isActive: activeIndex === ActivePage.ReviewInformation,
           },
@@ -73,6 +73,7 @@ export const getFacilitiesInformationTaskList = (
           type: "Page",
           title: "Allocation of Emissions",
           isActive: activeIndex === ActivePage.AllocationOfEmissions,
+          link: `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`,
         },
       ],
     },
