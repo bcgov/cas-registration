@@ -40,6 +40,8 @@ export default async function TransferPage({
     // to show the new transfer form
     const fetchedOperators = await fetchOperatorsPageData({
       paginate_result: "False",
+      sort_field: "legal_name",
+      sort_order: "asc",
     });
     if (
       !fetchedOperators ||
