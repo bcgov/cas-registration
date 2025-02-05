@@ -1,6 +1,9 @@
+from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
 from simple_history.models import HistoricalRecords
+from registration.enums.enums import RegistrationTableNames
+from rls.rls_configs.registration.document_type import Rls as DocumentTypeRls
 
 
 class DocumentType(BaseModel):
@@ -15,4 +18,6 @@ class DocumentType(BaseModel):
 
     class Meta:
         db_table_comment = "Table that contains types of documents."
-        db_table = 'erc"."document_type'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.DOCUMENT_TYPE.value}'
+
+    Rls = DocumentTypeRls
