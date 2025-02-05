@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 from zoneinfo import ZoneInfo
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import FacilityDesignatedOperationTimeline
 from registration.schema.v1.facility_designated_operation_timeline import (
     FacilityDesignatedOperationTimelineFilterSchema,
@@ -33,7 +34,7 @@ class TestGetTimeline:
     def test_get_timeline_by_operation_id_for_unapproved_user_industry_user():
         industry_user = baker.make_recipe('utils.industry_operator_user')
         facility_designated_operation_timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             FacilityDesignatedOperationTimelineService.get_timeline_by_operation_id(
                 industry_user, facility_designated_operation_timeline.operation.id
             )

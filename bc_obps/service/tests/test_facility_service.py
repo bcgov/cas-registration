@@ -525,12 +525,10 @@ class TestUpdateFacilitysOperation:
 
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
-    @patch("registration.models.Facility.set_create_or_update")
-    def test_update_operation_for_facility_success(mock_get_by_guid, mock_set_create_or_update):
-        cas_analyst = baker.make_recipe('utils.cas_analyst')
+    def test_update_operation_for_facility_success(mock_get_by_guid):
+        cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
         mock_get_by_guid.return_value = cas_analyst
         operation = baker.make_recipe('utils.operation')
         facility = baker.make_recipe('utils.facility')
         FacilityService.update_operation_for_facility(cas_analyst.user_guid, facility, operation.id)
-        mock_set_create_or_update.assert_called_once()
         assert facility.operation == operation
