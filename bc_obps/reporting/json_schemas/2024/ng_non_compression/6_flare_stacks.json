@@ -1,0 +1,88 @@
+{
+  "type": "object",
+  "title": "Flare stacks",
+  "default": { "units": [{ "fuels": [{ "emissions": [{}] }] }] },
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Source sub-type",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sourceSubType": {
+            "title": "Source sub-type",
+            "default": "",
+            "type": "string",
+            "enum": [
+              "Onshore Natural Gas Transmission Compression and Pipelines - Pipeline flaring",
+              "Underground Natural Gas Storage - Flares",
+              "Natural Gas Distribution - Pipeline flaring",
+              "Natural Gas Distribution - Flares"
+            ]
+          },
+          "fuels": {
+            "title": "Fuel Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fuelType": {
+                  "type": "object",
+                  "properties": {
+                    "fuelName": {
+                      "title": "Fuel Name",
+                      "type": "string",
+                      "enum": []
+                    },
+                    "fuelClassification": {
+                      "title": "Fuel Classification",
+                      "maxLength": 200,
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "fuelUnit": {
+                      "title": "Fuel Unit",
+                      "maxLength": 200,
+                      "type": "string",
+                      "readOnly": true
+                    }
+                  }
+                },
+                "annualFuelAmount": {
+                  "title": "Annual Fuel Amount",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "emissions": {
+                  "title": "Emission Data",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "gasType": {
+                        "title": "Gas Type",
+                        "type": "string",
+                        "enum": []
+                      },
+                      "emission": {
+                        "title": "Emission",
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "equivalentEmission": {
+                        "title": "Equivalent Emission",
+                        "type": "string",
+                        "readOnly": true,
+                        "default": "Value will be computed upon saving"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
