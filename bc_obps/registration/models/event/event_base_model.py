@@ -9,5 +9,5 @@ class EventBaseModel(TimeStampedModel):
     operation = models.ForeignKey(Operation, null=True, blank=True, on_delete=models.PROTECT)
     facilities = models.ManyToManyField(Facility, blank=True)
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         abstract = True

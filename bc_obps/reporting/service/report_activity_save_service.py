@@ -78,7 +78,6 @@ class ReportActivitySaveService:
             },
             defaults={"json_data": activity_data},
         )
-        report_activity.set_create_or_update(self.user_guid)
 
         # Delete the existing report_source_types with an id not in the form_data (this means they've been deleted on the form)
         ReportSourceType.objects.filter(report_activity=report_activity).exclude(
@@ -124,7 +123,6 @@ class ReportActivitySaveService:
             },
             defaults={"json_data": json_data},
         )
-        report_source_type.set_create_or_update(self.user_guid)
 
         if json_base_schema.has_unit:
             ReportUnit.objects.filter(report_source_type=report_source_type).exclude(
@@ -177,7 +175,6 @@ class ReportActivitySaveService:
                 "type": report_unit_type,
             },
         )
-        report_unit.set_create_or_update(self.user_guid)
 
         if report_source_type.activity_source_type_base_schema.has_fuel:
             ReportFuel.objects.filter(report_source_type=report_source_type, report_unit=report_unit).exclude(
@@ -222,7 +219,6 @@ class ReportActivitySaveService:
             },
             defaults={"json_data": json_data, "fuel_type": fuel_type},
         )
-        report_fuel.set_create_or_update(self.user_guid)
 
         ReportEmission.objects.filter(report_source_type=report_source_type, report_fuel=report_fuel).exclude(
             id__in=retrieve_ids(fuel_data["emissions"])
@@ -262,7 +258,6 @@ class ReportActivitySaveService:
             },
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
-        report_emission.set_create_or_update(self.user_guid)
         EmissionCategoryMappingService.apply_emission_categories(report_source_type, report_fuel, report_emission)
 
         self.save_methodology(report_emission, emission_data["methodology"])
@@ -288,7 +283,6 @@ class ReportActivitySaveService:
             },
             defaults={"json_data": json_data, "methodology": methodology},
         )
-        report_methodology.set_create_or_update(self.user_guid)
 
         return report_methodology
 
@@ -307,6 +301,5 @@ class ReportActivitySaveService:
             activity=self.activity,
             defaults={"json_data": data},
         )
-        report_raw_activity.set_create_or_update(self.user_guid)
 
         return report_raw_activity

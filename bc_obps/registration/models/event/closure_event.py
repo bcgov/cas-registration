@@ -14,7 +14,7 @@ class ClosureEvent(EventBaseModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(EventBaseModel.Meta):
         db_table_comment = "Closure events for operations and/or facilities."
         db_table = 'erc"."closure_event'
         default_related_name = "closure_events"

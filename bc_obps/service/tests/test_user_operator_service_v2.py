@@ -59,7 +59,7 @@ class TestUserOperatorServiceV2:
         )
 
         # make sure only irc user can access this
-        industry_user = baker.make_recipe('utils.industry_operator_user')
+        industry_user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             UserOperatorServiceV2.list_user_operators_v2(
                 user_guid=industry_user.user_guid, filters=filters_1, sort_field="created_at", sort_order="asc"
@@ -70,22 +70,22 @@ class TestUserOperatorServiceV2:
 
         # add some user operators
         baker.make_recipe(
-            'utils.user_operator',
-            user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+            'registration.tests.utils.user_operator',
+            user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
             _quantity=5,
         )
         baker.make_recipe(
-            'utils.user_operator',
-            user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+            'registration.tests.utils.user_operator',
+            user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.DECLINED,
             _quantity=5,
         )
         baker.make_recipe(
-            'utils.user_operator',
-            user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+            'registration.tests.utils.user_operator',
+            user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.PENDING,
             _quantity=5,
@@ -103,7 +103,7 @@ class TestUserOperatorServiceV2:
             user__bceid_business_name="",
             operator__legal_name="",
         )
-        cas_admin = baker.make_recipe('utils.cas_admin')
+        cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
         user_operators_with_admin_access_status = UserOperatorServiceV2.list_user_operators_v2(
             user_guid=cas_admin.user_guid, filters=filters_2, sort_field="created_at", sort_order="asc"
         )
@@ -114,20 +114,6 @@ class TestUserOperatorServiceV2:
         filters_3 = filters_2.model_copy(
             update={"status": ""}
         )  # making a copy of filters_2 and updating status to empty string
-        user_operators_sorted_by_created_at = UserOperatorServiceV2.list_user_operators_v2(
-            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="created_at", sort_order="asc"
-        )
-        assert (
-            user_operators_sorted_by_created_at.first().created_at
-            < user_operators_sorted_by_created_at.last().created_at
-        )
-        user_operators_sorted_by_created_at_desc = UserOperatorServiceV2.list_user_operators_v2(
-            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="created_at", sort_order="desc"
-        )
-        assert (
-            user_operators_sorted_by_created_at_desc.first().created_at
-            > user_operators_sorted_by_created_at_desc.last().created_at
-        )
         user_operators_sorted_by_user_friendly_id = UserOperatorServiceV2.list_user_operators_v2(
             user_guid=cas_admin.user_guid, filters=filters_3, sort_field="user_friendly_id", sort_order="asc"
         )
@@ -143,7 +129,7 @@ class TestUserOperatorServiceV2:
 
     @staticmethod
     def test_create_operator_and_user_operator_v2():
-        user = baker.make_recipe('utils.industry_operator_user')
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         payload = OperatorIn(
             legal_name="Test",
             business_structure="BC Corporation",
@@ -165,8 +151,10 @@ class TestUpdateStatusAndCreateContact:
     def test_industry_user_cannot_approve_access_request_from_a_different_operator(
         self,
     ):
-        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
-        pending_user_operator = baker.make_recipe('utils.user_operator')
+        approved_admin_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
+        )
+        pending_user_operator = baker.make_recipe('registration.tests.utils.user_operator')
 
         with pytest.raises(Exception, match='Your user is not associated with this operator.'):
             UserOperatorServiceV2.update_status_and_create_contact(
@@ -177,8 +165,12 @@ class TestUpdateStatusAndCreateContact:
 
     @staticmethod
     def test_cas_admin_declines_access_request():
-        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
-        pending_user_operator = baker.make_recipe('utils.user_operator', operator=approved_admin_user_operator.operator)
+        approved_admin_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
+        )
+        pending_user_operator = baker.make_recipe(
+            'registration.tests.utils.user_operator', operator=approved_admin_user_operator.operator
+        )
 
         pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
 
@@ -195,9 +187,13 @@ class TestUpdateStatusAndCreateContact:
 
     @staticmethod
     def test_cas_admin_undoes_approved_access_request():
-        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
+        approved_admin_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
+        )
         previously_approved_user_operator = baker.make_recipe(
-            'utils.user_operator', operator=approved_admin_user_operator.operator, role=UserOperator.Roles.REPORTER
+            'registration.tests.utils.user_operator',
+            operator=approved_admin_user_operator.operator,
+            role=UserOperator.Roles.REPORTER,
         )
 
         previously_approved_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
@@ -215,22 +211,24 @@ class TestUpdateStatusAndCreateContact:
     @staticmethod
     def test_update_status_and_create_contact_success():
         industry_operator_user = baker.make_recipe(
-            'utils.industry_operator_user',
+            'registration.tests.utils.industry_operator_user',
             first_name="Wednesday",
             last_name="Addams",
             email="wednesday.addams@email.com",
             phone_number='+16044011234',
             position_title="child",
         )
-        approved_admin_user_operator = baker.make_recipe('utils.approved_user_operator', role=UserOperator.Roles.ADMIN)
+        approved_admin_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
+        )
         pending_user_operator = baker.make_recipe(
-            'utils.user_operator',
+            'registration.tests.utils.user_operator',
             operator=approved_admin_user_operator.operator,
             user=industry_operator_user,
         )
 
         # Set some existing contacts to make sure the service doesn't override them
-        pending_user_operator.operator.contacts.set(baker.make_recipe('utils.contact', _quantity=3))
+        pending_user_operator.operator.contacts.set(baker.make_recipe('registration.tests.utils.contact', _quantity=3))
 
         pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
 

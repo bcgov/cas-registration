@@ -23,7 +23,7 @@ class ReportNewEntrant(TimeStampedModel):
         db_comment="Indicates if the assertion statement is certified",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_new_entrant'
         app_label = 'reporting'
         db_table_comment = "Table storing new entrant emissions data for the reporting system"

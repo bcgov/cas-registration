@@ -30,7 +30,7 @@ class ReportAttachment(TimeStampedModel):
         db_comment="The name of the original file that was uploaded, since django adds a hash to avoid file name collisions",
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing the file information for the report attachments"
         db_table = 'erc"."report_attachment'
         app_label = "reporting"

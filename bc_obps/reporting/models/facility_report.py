@@ -45,7 +45,7 @@ class FacilityReport(TimeStampedModel):
     # We don't create a backwards relation since these are registration models
     activities = models.ManyToManyField(Activity, related_name="+")
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store individual facility information as part of a report"
         db_table = 'erc"."facility_report'
         app_label = 'reporting'

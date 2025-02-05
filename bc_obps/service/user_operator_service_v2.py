@@ -39,7 +39,6 @@ class UserOperatorServiceV2:
             operator_instance, operator_related_fields, updated_data.dict()
         )
         created_operator_instance.save(update_fields=operator_related_fields + ["status"])
-        created_operator_instance.set_create_or_update(user_guid)
 
         return created_operator_instance
 
@@ -75,7 +74,6 @@ class UserOperatorServiceV2:
         # create/save user operator instance as an approved admin
         user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
         if created:
-            user_operator.set_create_or_update(user_guid)
             user_operator.role = UserOperator.Roles.ADMIN
             user_operator.status = UserOperator.Statuses.APPROVED
             user_operator.save()
@@ -156,10 +154,11 @@ class UserOperatorServiceV2:
                     phone_number=str(user_operator.user.phone_number),  # ContactIn expects a string,
                     position_title=user_operator.user.position_title,
                 )
-                contact = ContactService.create_contact(admin_user_guid, contact_payload)
+                contact = ContactService.create_contact(user_operator.user_id, contact_payload)
                 user_operator.operator.contacts.add(contact)
 
             access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
+
             if admin_user.is_irc_user():
                 if user_operator.status == UserOperator.Statuses.DECLINED:
                     access_request_type = AccessRequestTypes.ADMIN
@@ -187,6 +186,5 @@ class UserOperatorServiceV2:
             user_operator.verified_by_id = None
             user_operator.role = UserOperator.Roles.PENDING
         user_operator.save(update_fields=["status", "verified_at", "verified_by_id", "role"])
-        user_operator.set_create_or_update(admin_user_guid)
 
         return user_operator
