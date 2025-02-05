@@ -123,10 +123,10 @@ class TestContactService:
 
     @staticmethod
     def test_update_contact_without_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         contact = baker.make_recipe(
-            'utils.contact', operator=approved_user_operator.operator, address=None
+            'registration.tests.utils.contact', operator=approved_user_operator.operator, address=None
         )  # Contact with no address
 
         contact_payload = ContactIn(

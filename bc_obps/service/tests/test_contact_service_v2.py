@@ -15,7 +15,9 @@ class TestListContactService:
         operators = baker.make_recipe('registration.tests.utils.operator', _quantity=2)
 
         baker.make_recipe('registration.tests.utils.contact', operator=operators[0])
-        baker.make_recipe('registration.tests.utils.contact', operator=operators[1], _quantity=2)  # one operator has two contacts
+        baker.make_recipe(
+            'registration.tests.utils.contact', operator=operators[1], _quantity=2
+        )  # one operator has two contacts
 
         assert (
             ContactServiceV2.list_contacts_v2(

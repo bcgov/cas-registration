@@ -106,8 +106,8 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert response.json().get('message') == 'Email: Enter a valid email address.'
 
     def test_industry_user_admin_update_contact_and_address(self):
-        operator = baker.make_recipe('utils.operator')
-        contact = baker.make_recipe('utils.contact', operator=operator)
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        contact = baker.make_recipe('registration.tests.utils.contact', operator=operator)
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         # Assert that we have only one contact(to make sure we are updating the contact and not creating a new one)
         assert Contact.objects.count() == 1
@@ -140,8 +140,8 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert response_json.get('postal_code') == self.valid_contact_data.get('postal_code')
 
     def test_industry_user_admin_update_contact_and_remove_address(self):
-        operator = baker.make_recipe('utils.operator')
-        contact = baker.make_recipe('utils.contact', operator=operator)
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        contact = baker.make_recipe('registration.tests.utils.contact', operator=operator)
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         # Assert that we have only one contact(to make sure we are updating the contact and not creating a new one)
         assert Contact.objects.count() == 1
@@ -180,8 +180,8 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert Contact.objects.first().address is None
 
     def test_industry_user_admin_update_contact_by_adding_address(self):
-        operator = baker.make_recipe('utils.operator')
-        contact = baker.make_recipe('utils.contact', operator=operator, address=None)
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        contact = baker.make_recipe('registration.tests.utils.contact', operator=operator, address=None)
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         # Assert that we have only one contact(to make sure we are updating the contact and not creating a new one)
         assert Contact.objects.count() == 1

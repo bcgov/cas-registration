@@ -289,7 +289,9 @@ class TestOperationServiceV2:
     @staticmethod
     def test_assign_existing_contacts_to_operation():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        contacts = baker.make_recipe('registration.tests.utils.contact', operator=approved_user_operator.operator, _quantity=5)
+        contacts = baker.make_recipe(
+            'registration.tests.utils.contact', operator=approved_user_operator.operator, _quantity=5
+        )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
 
         contact_to_update = contacts[0]

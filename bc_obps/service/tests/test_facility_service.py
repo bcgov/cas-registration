@@ -134,9 +134,11 @@ class TestGetIfAuthorized:
 class TestCreateFacilityWithDesignatedOperation:
     @staticmethod
     def test_create_sfo_facility_with_designated_operation_without_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        owning_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        owning_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
 
         payload = FacilityIn(
             name='zip',
@@ -154,10 +156,12 @@ class TestCreateFacilityWithDesignatedOperation:
 
     @staticmethod
     def test_create_second_sfo_facility_error():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         owning_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, type='Single Facility Operation'
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            type='Single Facility Operation',
         )
 
         payload = FacilityIn(
@@ -190,9 +194,11 @@ class TestCreateFacilityWithDesignatedOperation:
 
     @staticmethod
     def test_create_lfo_facility_with_designated_operation_with_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        owning_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        owning_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
 
         payload = FacilityIn(
             street_address='123 street',
@@ -241,14 +247,14 @@ class TestUpdateFacility:
         user = baker.make(User, app_role=AppRole.objects.get(role_name=user_role))
 
         # Create a new instance of the Operator model
-        operator = baker.make_recipe('utils.operator')
+        operator = baker.make_recipe('registration.tests.utils.operator')
 
         # Authorize the Operator User if required
         if user_role == "industry_user":
-            baker.make_recipe('utils.approved_user_operator', user=user, operator=operator)
+            baker.make_recipe('registration.tests.utils.approved_user_operator', user=user, operator=operator)
 
         # Create an Owning Operation
-        owning_operation = baker.make_recipe('utils.operation', operator=operator)
+        owning_operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
 
         # Create Well Authorization Numbers if provided
         well_auth_objs = []
