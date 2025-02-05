@@ -4,7 +4,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from registration.enums.enums import RegistrationTableNames
-from rls.rls_configs.registration.business_role import Rls as BusinessRoleRls
+from registration.models.rls_configs.business_role import Rls as BusinessRoleRls
 
 
 class BusinessRole(BaseModel):

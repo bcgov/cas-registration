@@ -11,7 +11,7 @@ from registration.models import TimeStampedModel, Address, BusinessStructure, Us
 from registration.enums.enums import RegistrationTableNames
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator, MaxValueValidator, MinValueValidator
-from rls.rls_configs.registration.operator import Rls as OperatorRls
+from registration.models.rls_configs.operator import Rls as OperatorRls
 
 
 class Operator(TimeStampedModel):

@@ -86,8 +86,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "localflavor",
     "pgtrigger",
+    *LOCAL_APPS,
 ]
-INSTALLED_APPS += LOCAL_APPS
 
 
 MIDDLEWARE = [

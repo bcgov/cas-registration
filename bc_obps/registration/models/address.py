@@ -5,7 +5,7 @@ from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 
 from registration.enums.enums import RegistrationTableNames
-from rls.rls_configs.registration.address import Rls as AddressRls
+from registration.models.rls_configs.address import Rls as AddressRls
 
 
 class Address(BaseModel):
