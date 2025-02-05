@@ -71,11 +71,11 @@ class TestRlsOperations(TestCase):
 
         def raw_delete():
             with connection.cursor() as cursor:
-                cursor.execute(f"delete from {model._meta.db_table.replace('\"','')}")  # Remove quotes from table name
+                cursor.execute(f"delete from {model._meta.db_table.replace('\"','')}")  # NOSONAR
 
         def raw_create():
             with connection.cursor() as cursor:
-                cursor.execute(f"insert into {model._meta.db_table.replace('\"','')} default values")
+                cursor.execute(f"insert into {model._meta.db_table.replace('\"','')} default values")  # NOSONAR
 
         return {
             # We don't care about the actual data, just the permissions (exists will fail if permission is denied)
