@@ -1,6 +1,9 @@
 from django.db import models
 from registration.models import Address, BusinessRole, UserAndContactCommonInfo, TimeStampedModel, Operator
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from simple_history.models import HistoricalRecords
+from rls.rls_configs.registration.contact import Rls as ContactRls
 
 
 class Contact(UserAndContactCommonInfo, TimeStampedModel):
@@ -33,4 +36,6 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing information about contacts. Contacts are people that IRC may need to get in touch with to confirm information about industry. Contacts can be BCIERs app users (in which case they will also have a record in the Users table), but they don't have to be."
-        db_table = 'erc"."contact'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.CONTACT.value}'
+
+    Rls = ContactRls

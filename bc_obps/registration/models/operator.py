@@ -1,13 +1,17 @@
 import uuid
 from django.db import models
+
+from common.enums import Schemas
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     CRA_BUSINESS_NUMBER_MESSAGE,
 )
 from registration.models import TimeStampedModel, Address, BusinessStructure, User
+from registration.enums.enums import RegistrationTableNames
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator, MaxValueValidator, MinValueValidator
+from rls.rls_configs.registration.operator import Rls as OperatorRls
 
 
 class Operator(TimeStampedModel):
@@ -107,7 +111,9 @@ class Operator(TimeStampedModel):
             )
         ]
         db_table_comment = "Table containing operator information. An operator is the person who owns and/or controls and directs industrial operations. An operator can own multiple operations. For more information see definitions in the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1"
-        db_table = 'erc"."operator'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.OPERATOR.value}'
+
+    Rls = OperatorRls
 
     def __str__(self) -> str:
         return f"{self.legal_name} ({self.id})"
