@@ -3,7 +3,9 @@ from typing import Optional
 from uuid import UUID
 import uuid
 from django.db import models
+from common.enums import Schemas
 from registration.constants import BORO_ID_REGEX
+from registration.enums.enums import RegistrationTableNames
 from registration.models import (
     TimeStampedModel,
     Operator,
@@ -22,6 +24,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from registration.models.document import Document
 from registration.models.document_type import DocumentType
+from rls.rls_configs.registration.operation import Rls as OperationRls
 
 
 class Operation(TimeStampedModel):
@@ -190,7 +193,7 @@ class Operation(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing information about operations. 'Industrial operation' means one or more facilities, or a prescribed activity, to which greenhouse gas emissions are attributable, subject to subsection (3)of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1."
-        db_table = 'erc"."operation'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.OPERATION.value}'
         constraints = [
             models.UniqueConstraint(
                 fields=["swrs_facility_id"],
@@ -200,6 +203,8 @@ class Operation(TimeStampedModel):
         indexes = [
             models.Index(fields=["status"], name="operation_status_idx"),
         ]
+
+    Rls = OperationRls
 
     def get_statutory_declaration(self) -> Optional[Document]:
         """

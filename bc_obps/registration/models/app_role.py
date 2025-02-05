@@ -1,11 +1,14 @@
 import typing
 from typing import List
 from django.core.cache import cache
-
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
+from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
 from simple_history.models import HistoricalRecords
+
+from registration.enums.enums import RegistrationTableNames
+from rls.rls_configs.registration.app_role import Rls as AppRoleRls
 
 
 class AppRole(BaseModel):
@@ -23,7 +26,9 @@ class AppRole(BaseModel):
 
     class Meta:
         db_table_comment = "This table contains the definitions for roles within the BCIERs apps. These roles are used to define the permissions a user has within BCIERs apps."
-        db_table = 'erc"."app_role'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.APP_ROLE.value}'
+
+    Rls = AppRoleRls
 
     # We need try/except blocks here because the app_role table may not exist yet when we run migrations
     @staticmethod
