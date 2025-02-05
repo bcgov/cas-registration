@@ -250,7 +250,6 @@ class FacilityService:
 
         return facility.bcghg_id
 
-    # brianna check facility transfer is atomic
     @classmethod
     @transaction.atomic()
     def update_operation_for_facility(cls, user_guid: UUID, facility: Facility, operation_id: UUID) -> Facility:
@@ -265,5 +264,4 @@ class FacilityService:
             raise Exception(UNAUTHORIZED_MESSAGE)
         facility.operation_id = operation_id
         facility.save(update_fields=["operation_id"])
-        facility.set_create_or_update(user_guid)
         return facility

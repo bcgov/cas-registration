@@ -1125,7 +1125,7 @@ class TestRemoveOperationRepresentative:
         contact2 = baker.make_recipe('registration.tests.utils.contact', id=2)
         operation.contacts.add(contact1, contact2)
         operation.save()
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.remove_operation_representative(user.user_guid, operation.id, {id: contact1.id})
 
     @staticmethod
@@ -1156,7 +1156,7 @@ class TestUpdateOperationsOperator:
         mock_get_by_guid.return_value = cas_admin
         operation = MagicMock()
         operator_id = uuid4()
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.update_operator(cas_admin.user_guid, operation, operator_id)
 
     @staticmethod
@@ -1174,7 +1174,7 @@ class TestListOperationTimeline:
     @staticmethod
     def test_raise_exception_if_user_unapproved():
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.list_operations_timeline(
                 user.user_guid,
                 sort_field="created_at",

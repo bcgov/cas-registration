@@ -39,7 +39,6 @@ from registration.schema.v2.operation import (
 from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 from datetime import datetime
-from django.utils import timezone
 from zoneinfo import ZoneInfo
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
@@ -224,7 +223,12 @@ class OperationServiceV2:
 
         if created:
             OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline(
-                user_guid, {'operator': user_operator.operator, 'operation': operation, 'start_date': timezone.now()}
+                user_guid,
+                {
+                    'operator': user_operator.operator,
+                    'operation': operation,
+                    'start_date': datetime.now(ZoneInfo("UTC")),
+                },
             )
 
         # set m2m relationships

@@ -43,7 +43,6 @@ def report_source_type_baker(**props):
     default_props = {
         "activity_source_type_base_schema": ActivitySourceTypeJsonSchema.objects.first(),
         "source_type": source_type_baker(),
-        # brianna here
         "report_activity": report_activity_baker(report_version=report_version),
         "report_version": report_version,
         "json_data": "{'test':'report_source_type'}",
