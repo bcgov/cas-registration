@@ -1,4 +1,5 @@
 import unittest
+from django.conf import settings
 from model_bakery import baker
 from django.test import TestCase
 from django.db import connection, utils, transaction, IntegrityError
@@ -7,7 +8,7 @@ from rls.enums import RlsRoles, RlsOperations
 from rls.tests.helpers import get_models_for_rls
 
 
-@unittest.skip("RLS implementation")
+@unittest.skipIf(not settings.RLS_FLAG, "RLS implementation")
 class TestRlsOperations(TestCase):
     def setUp(self):
         """Setup test users with their respective roles."""

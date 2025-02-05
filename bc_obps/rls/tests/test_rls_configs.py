@@ -1,8 +1,9 @@
 import pytest
+from django.conf import settings
 from rls.tests.helpers import get_models_for_rls
 
 
-@pytest.mark.skip(reason="RLS implementation")
+@pytest.mark.skipif(not settings.RLS_FLAG, reason="RLS implementation")
 class TestRlsConfigs:
     def test_all_models_have_rls(self):
         models = get_models_for_rls()
