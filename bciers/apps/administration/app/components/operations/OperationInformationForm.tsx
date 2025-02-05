@@ -48,12 +48,9 @@ const OperationInformationForm = ({
 
   useEffect(() => {
     if (selectedPurpose) {
-      console.log(formData)
-      formData.registration_purpose = selectedPurpose
-      
-      console.log(formData)
+      formData.registration_purpose = selectedPurpose;
     }
-  }, [selectedPurpose])
+  }, [selectedPurpose]);
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -104,28 +101,17 @@ const OperationInformationForm = ({
   };
 
   const confirmRegistrationPurposeChange = () => {
-    consoleLogRPs()
-    console.log("change confirmed")
     if (pendingChangeRegistrationPurpose !== "") {
       setSelectedPurpose(pendingChangeRegistrationPurpose);
     }
+    formData.registration_purpose = pendingChangeRegistrationPurpose;
     setPendingChangeRegistrationPurpose("");
-    consoleLogRPs()
   };
 
   const handleSelectedPurposeChange = (newSelectedPurpose: string) => {
-    console.log("handling selected purpose change")
-    consoleLogRPs();
     if (newSelectedPurpose && selectedPurpose) {
       setPendingChangeRegistrationPurpose(newSelectedPurpose);
     }
-    consoleLogRPs();
-  };
-
-  const consoleLogRPs = () => {
-    console.log("form data RP ", formData.registration_purpose);
-    console.log("selectedPurpose ", selectedPurpose);
-    console.log("pendingChangeRP ", pendingChangeRegistrationPurpose);
   };
 
   return (
@@ -136,7 +122,6 @@ const OperationInformationForm = ({
           contact to replace them.
         </Note>
       )}
-      {console.log(formData)}
       <ConfirmChangeOfRegistrationPurposeModal
         open={pendingChangeRegistrationPurpose !== ""}
         cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
@@ -150,16 +135,12 @@ const OperationInformationForm = ({
         uiSchema={administrationOperationInformationUiSchema}
         formData={formData ?? {}}
         onSubmit={handleSubmit}
-        // onChange={(e: IChangeEvent) => {
-        //   console.log(e);
-        //   console.log(formData);
-        //   let newSelectedPurpose = e.formData?.section3?.registration_purpose;
-        //   consoleLogRPs();
-        //   console.log("new selected purpose ", newSelectedPurpose);
-        //   if (newSelectedPurpose !== selectedPurpose) {
-        //     handleSelectedPurposeChange(newSelectedPurpose);
-        //   }
-        // }}
+        onChange={(e: IChangeEvent) => {
+          let newSelectedPurpose = e.formData?.section3?.registration_purpose;
+          if (newSelectedPurpose !== selectedPurpose) {
+            handleSelectedPurposeChange(newSelectedPurpose);
+          }
+        }}
         onCancel={() => router.push("/operations")}
         formContext={{
           operationId,
