@@ -10,6 +10,7 @@ import {
 } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
+import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 
 interface Props {
   versionId: number;
@@ -37,11 +38,14 @@ export default async function ActivityInit({
     "GET",
     "",
   );
-
   if (activityData.error) {
     throw new Error("We couldn't find the activity data for this facility.");
   }
   const activityDataObject = safeJsonParse(activityData);
+  const reportInfoTaskListData = await getReportInformationTasklist(
+    versionId,
+    facilityId,
+  );
 
   const formData = await getActivityFormData(
     versionId,
@@ -53,6 +57,9 @@ export default async function ActivityInit({
     versionId,
     facilityId,
     orderedActivities,
+    undefined,
+    reportInfoTaskListData?.facilityName,
+    reportInfoTaskListData?.operationType,
   );
 
   const currentActivityTaskListElement = taskListData[0]?.elements?.find(

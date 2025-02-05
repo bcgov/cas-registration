@@ -24,13 +24,16 @@ export const getFacilitiesInformationTaskList = (
       title: `${facilityName} Information`,
       isExpanded: true,
       elements: [
-        {
-          type: "Page",
-          title: "Review Information",
-          isActive: activeIndex === ActivePage.ReviewInformation,
-          link: `/reports/${versionId}/facilities/${facilityId}/review`,
-        },
-
+        ...(operationType.toLowerCase().includes("linear facility operation")
+          ? [
+              {
+                type: "Page",
+                title: "Review Information",
+                isActive: activeIndex === ActivePage.ReviewInformation,
+                link: `/reports/${versionId}/facilities/${facilityId}/review`,
+              },
+            ]
+          : []),
         {
           type: "Section",
           title: "Activities Information",
