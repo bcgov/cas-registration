@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0052_add_audit_triggers_to_timestamped_models'),
+        ('reporting', '0053_natural_gas_other_than_non_compression_configuration'),
     ]
 
     operations = [
