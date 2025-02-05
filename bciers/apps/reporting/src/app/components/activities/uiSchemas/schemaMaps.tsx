@@ -11,6 +11,7 @@ import storageOfPetroleumProductsUiSchema from "./storageOfPetroleumProductsUiSc
 import aluminumUiSchema from "./aluminumUiSchema";
 import ngNonCompressionUiSchema from "./ngNonCompressionUiSchema";
 import ngOtherThanNonCompressionUiSchema from "./ngOtherThanNonCompressionUiSchema";
+import lngActivitiesUiSchema from "./lngActivities";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -33,6 +34,7 @@ export const uiSchemaMap: UiSchemaMap = {
   natural_gas_activities_non_compression: ngNonCompressionUiSchema,
   natural_gas_activities_other_than_non_compression:
     ngOtherThanNonCompressionUiSchema,
+  lng_activities: lngActivitiesUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
