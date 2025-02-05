@@ -73,7 +73,7 @@ class NaturalGasNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest
                     "Replacement Methodology": 1,
                 },
             },
-            "Flaring stacks": {
+            "Flare stacks": {
                 "CO2": {
                     "WCI.353 (d)": 0,
                     "Alternative Parameter Measurement": 1,

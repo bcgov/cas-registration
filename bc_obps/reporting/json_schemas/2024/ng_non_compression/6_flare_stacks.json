@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "title": "Flaring stacks",
+  "title": "Flare stacks",
   "default": { "units": [{ "fuels": [{ "emissions": [{}] }] }] },
   "properties": {
     "units": {

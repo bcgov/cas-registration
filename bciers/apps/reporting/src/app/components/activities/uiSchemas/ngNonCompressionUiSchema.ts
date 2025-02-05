@@ -18,7 +18,7 @@ const uiSchema = {
   naturalGasPneumaticLowBleedDeviceVenting: sourceTypeCheckboxUiSchema,
   naturalGasPneumaticIntermittentBleedDeviceVenting: sourceTypeCheckboxUiSchema,
   blowdownVenting: sourceTypeCheckboxUiSchema,
-  flaringStacks: sourceTypeCheckboxUiSchema,
+  flareStacks: sourceTypeCheckboxUiSchema,
   equipmentLeaksDetectedLearkerEmissionFactorMethods:
     sourceTypeCheckboxUiSchema,
   populationCountSources: sourceTypeCheckboxUiSchema,
@@ -37,7 +37,7 @@ const uiSchema = {
     naturalGasPneumaticIntermittentBleedDeviceVenting:
       sourceSubTypeWithFuelUiSchema,
     blowdownVenting: emissionsOnlyUiSchema,
-    flaringStacks: sourceSubTypeWithFuelUiSchema,
+    flareStacks: sourceSubTypeWithFuelUiSchema,
     equipmentLeaksDetectedLearkerEmissionFactorMethods:
       sourceSubTypeWithoutFuelUiSchema,
     populationCountSources: sourceSubTypeWithoutFuelUiSchema,
