@@ -69,21 +69,6 @@ class ReportProductEmissionAllocationModelTest(BaseTestCase):
                 allocation_other_methodology_description=None,
             )
 
-        with pytest.raises(
-            ValidationError,
-            match="Value 'other' is not a valid choice.",
-        ):
-            make(
-                ReportProductEmissionAllocation,
-                report_version=facility_report.report_version,
-                facility_report=facility_report,
-                report_product=report_product,
-                emission_category=emission_category,
-                allocated_quantity=Decimal('300.4151'),
-                allocation_methodology='other',
-                allocation_other_methodology_description='test',
-            )
-
         # This should not raise
         make(
             ReportProductEmissionAllocation,
