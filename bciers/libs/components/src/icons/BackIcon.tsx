@@ -3,7 +3,7 @@ interface BackIconProps {
   height?: string;
 }
 
-export const BackIcon = ({ width = "20", height = "20" }: BackIconProps) => (
+export const BackIcon = ({ width = "15", height = "15" }: BackIconProps) => (
   <svg
     width={width}
     height={height}
