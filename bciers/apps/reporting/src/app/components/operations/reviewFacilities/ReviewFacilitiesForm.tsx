@@ -55,7 +55,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       initialData.past_facilities,
     ),
   );
-  const saveAndContinueUrl = `/reports/${version_id}/report-information`;
+  const saveAndContinueUrl = `/reports/${version_id}/facilities/report-information`;
   const backUrl = `/reports/${version_id}/person-responsible`;
 
   const uiSchema: any = buildReviewFacilitiesUiSchema(initialData.operation_id);
