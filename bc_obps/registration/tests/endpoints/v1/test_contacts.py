@@ -92,9 +92,9 @@ class TestContactsEndpoint(CommonTestSetup):
         assert response.json().get('count') == 0
 
         # Test with a first_name and last_name filter
-        first_name_to_filter, last_name_to_filter = response_items_1[len(response_items_1) - 1].get(
-            'first_name'
-        ), response_items_1[len(response_items_1) - 1].get('last_name')
+        first_name_to_filter, last_name_to_filter = response_items_1[-1].get('first_name'), response_items_1[-1].get(
+            'last_name'
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", contacts_url + f"?first_name={first_name_to_filter}&last_name={last_name_to_filter}"
