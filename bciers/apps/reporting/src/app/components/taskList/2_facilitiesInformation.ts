@@ -19,6 +19,18 @@ export const getFacilitiesInformationTaskList = (
   operationType = "Single Facility Operation",
 ): TaskListElement[] => {
   const name = facilityName ? facilityName : "Facility";
+
+  const backToFacilitiesLink: TaskListElement[] =
+    operationType === "Linear Facility Operation"
+      ? [
+          {
+            type: "Link",
+            text: "Back to facilities table",
+            link: `/reporting/reports/${versionId}/facilities/report-information`,
+            title: "Back to facilities table",
+          },
+        ]
+      : [];
   const facilityItem: TaskListElement[] =
     operationType !== "Linear Facility Operation"
       ? []
@@ -26,12 +38,12 @@ export const getFacilitiesInformationTaskList = (
           {
             type: "Page",
             title: "Review facility information",
-            link: `/reports/${versionId}/facilities/${facilityId}/review`,
+            link: `/reports/${versionId}/facilities/${facilityId}/review-facility-information`,
             isActive: activeIndex === ActivePage.ReviewInformation,
           },
         ];
-
   return [
+    ...backToFacilitiesLink,
     {
       type: "Section",
       title: `${name} information`,
