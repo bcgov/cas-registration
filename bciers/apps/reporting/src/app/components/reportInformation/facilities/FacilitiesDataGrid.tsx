@@ -120,7 +120,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
 
         const localIncompleteCount = Object.values(incompleteCountForPage)
           .flat()
-          .reduce((acc, curr) => acc + curr);
+          .reduce((acc, curr) => acc + curr, 0);
 
         const shouldEnableButton =
           allPagesCompleted &&
