@@ -28,6 +28,7 @@ interface Props {
   sx?: { [key: string]: any };
   getRowId?: GridRowIdGetter<any> | undefined;
   pageSize?: number;
+  rowSelection?: boolean;
 }
 
 const AscendingIcon = () => {
@@ -65,6 +66,7 @@ const DataGrid: React.FC<Props> = ({
   getRowId,
   sx,
   pageSize,
+  rowSelection,
 }) => {
   const PAGE_SIZE = pageSize ? pageSize : 20;
   const [rows, setRows] = useState(initialData.rows ?? []);
@@ -227,6 +229,7 @@ const DataGrid: React.FC<Props> = ({
         slots={slots}
         sx={gridStyles}
         disableVirtualization
+        rowSelection={rowSelection}
       />
     </div>
   );
