@@ -18,7 +18,7 @@ const uiSchema = {
   naturalGasPneumaticLowBleedDeviceVenting: sourceTypeCheckboxUiSchema,
   naturalGasPneumaticIntermittentBleedDeviceVenting: sourceTypeCheckboxUiSchema,
   blowdownVenting: sourceTypeCheckboxUiSchema,
-  flaringStacks: sourceTypeCheckboxUiSchema,
+  flareStacks: sourceTypeCheckboxUiSchema,
   centrifugalCompressorVenting: sourceTypeCheckboxUiSchema,
   reciprocatingCompressorVenting: sourceTypeCheckboxUiSchema,
   equipmentLeaksDetectedLearkerEmissionFactorMethods:
@@ -39,7 +39,7 @@ const uiSchema = {
     naturalGasPneumaticIntermittentBleedDeviceVenting:
       sourceSubTypeWithFuelUiSchema,
     blowdownVenting: emissionsOnlyUiSchema,
-    flaringStacks: sourceSubTypeWithFuelUiSchema,
+    flareStacks: sourceSubTypeWithFuelUiSchema,
     centrifugalCompressorVenting: sourceSubTypeWithoutFuelUiSchema,
     reciprocatingCompressorVenting: sourceSubTypeWithoutFuelUiSchema,
     equipmentLeaksDetectedLearkerEmissionFactorMethods:

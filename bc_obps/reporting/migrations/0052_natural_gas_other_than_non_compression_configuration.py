@@ -159,7 +159,7 @@ def init_configuration_element_data(apps, schema_monitor):
     ConfigurationElement.objects.bulk_create(
         ConfigurationElement(
             activity=ng_other_than_non_compression_activity,
-            source_type=SourceType.objects.get(name="Flaring stacks"),
+            source_type=SourceType.objects.get(name="Flare stacks"),
             gas_type=GasType.objects.get(chemical_formula=gas_formula),
             methodology=Methodology.objects.get(name=methodology_name),
             valid_from=Configuration.objects.get(valid_from="2023-01-01"),
@@ -499,7 +499,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
             True,
         ),
         ("5_blowdown_venting", "Blowdown venting", False, False),
-        ("6_flare_stacks", "Flaring stacks", True, True),
+        ("6_flare_stacks", "Flare stacks", True, True),
         (
             "7_centrifugal_compressor_venting",
             "Centrifugal compressor venting",
