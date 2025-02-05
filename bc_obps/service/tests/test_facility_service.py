@@ -520,13 +520,13 @@ class TestUpdateFacilitysOperation:
         mock_get_by_guid.return_value = cas_admin
         operation = MagicMock()
         operation_id = uuid4()
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             FacilityService.update_operation_for_facility(cas_admin.user_guid, operation, operation_id)
 
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     @patch("registration.models.Facility.set_create_or_update")
-    def test_update_operations_operator_success(mock_get_by_guid, mock_set_create_or_update):
+    def test_update_operation_for_facility_success(mock_get_by_guid, mock_set_create_or_update):
         cas_analyst = baker.make_recipe('utils.cas_analyst')
         mock_get_by_guid.return_value = cas_analyst
         operation = baker.make_recipe('utils.operation')
