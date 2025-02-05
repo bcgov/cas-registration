@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0050_remove_reportverification_other_facility_coordinates_and_more'),
+        ('reporting', '0051_natural_gas_non_compression_configuration'),
     ]
 
     operations = [
