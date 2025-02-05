@@ -124,3 +124,8 @@ export const emissionsOnlyUiSchema = {
   "ui:FieldTemplate": SourceTypeBoxTemplate,
   emissions: emissionsFieldsUiSchema,
 };
+
+export const fuelsOnlyUiSchema = {
+  "ui:FieldTemplate": SourceTypeBoxTemplate,
+  fuels: fuelsFieldsUiSchema,
+};
