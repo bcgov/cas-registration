@@ -34,13 +34,13 @@ export const getFacilitiesInformationTaskList = (
   return [
     {
       type: "Section",
-      title: `${name} Information`,
+      title: `${name} information`,
       isExpanded: true,
       elements: [
         ...facilityItem,
         {
           type: "Section",
-          title: "Activities Information",
+          title: "Activities information",
           isExpanded: true,
           elements: orderedActivities.map(
             (activity: ActivityData, index) =>
@@ -53,25 +53,25 @@ export const getFacilitiesInformationTaskList = (
         },
         {
           type: "Page",
-          title: "Non-attributable Emissions",
+          title: "Non-attributable emissions",
           isActive: activeIndex === ActivePage.NonAttributableEmission,
           link: `/reports/${versionId}/facilities/${facilityId}/non-attributable`,
         },
         {
           type: "Page",
-          title: "Emissions Summary",
+          title: "Emissions summary",
           isActive: activeIndex === ActivePage.EmissionSummary,
           link: `/reports/${versionId}/facilities/${facilityId}/emission-summary`,
         },
         {
           type: "Page",
-          title: "Production Data",
+          title: "Production data",
           link: `/reports/${versionId}/facilities/${facilityId}/production-data`,
           isActive: activeIndex === ActivePage.ProductionData,
         },
         {
           type: "Page",
-          title: "Allocation of Emissions",
+          title: "Allocation of emissions",
           isActive: activeIndex === ActivePage.AllocationOfEmissions,
           link: `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`,
         },
