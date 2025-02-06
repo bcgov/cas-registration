@@ -16,9 +16,6 @@ backend:
   deployRoute: true
 
   resources:
-    limits:
-      cpu: 200m
-      memory: 512Mi
     requests:
       cpu: 60m
       memory: 256Mi
@@ -36,9 +33,6 @@ administrationFrontend:
   environment: dev
 
   resources:
-    limits:
-      cpu: 200m
-      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -56,9 +50,6 @@ registrationFrontend:
   environment: dev
 
   resources:
-    limits:
-      cpu: 200m
-      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -74,9 +65,6 @@ reportingFrontend:
     path: "/reporting"
 
   resources:
-    limits:
-      cpu: 200m
-      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -94,9 +82,6 @@ complianceFrontend:
   environment: dev
 
   resources:
-    limits:
-      cpu: 200m
-      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -112,9 +97,6 @@ dashboardFrontend:
     path: "/"
 
   resources:
-    limits:
-      cpu: 200m
-      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
