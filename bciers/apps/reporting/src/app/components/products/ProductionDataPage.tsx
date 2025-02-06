@@ -7,6 +7,7 @@ import {
   getFacilitiesInformationTaskList,
 } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 
 export default async function ProductionDataPage({
   version_id,
@@ -26,13 +27,19 @@ export default async function ProductionDataPage({
     "Dec 31",
     allowedProductNames,
   );
+  const tasklistData = await getReportInformationTasklist(
+    version_id,
+    facility_id,
+  );
 
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
-  const taskListElements = await getFacilitiesInformationTaskList(
+  const taskListElements = getFacilitiesInformationTaskList(
     version_id,
     facility_id,
     orderedActivities,
     ActivePage.ProductionData,
+    tasklistData?.facilityName,
+    tasklistData?.operationType,
   );
 
   return (

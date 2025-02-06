@@ -1,201 +1,151 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import FacilityReviewForm from "@reporting/src/app/components/facility/FacilityReviewForm";
-import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
-
+import { render, act, waitFor } from "@testing-library/react";
 import { actionHandler } from "@bciers/actions";
+import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
+import { vi } from "vitest";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import FacilityReview from "@reporting/src/app/components/facility/FacilityReviewForm";
 
+// Mocks for external dependencies
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
+vi.mock("@bciers/utils/src/serializeSearchParams", () => ({
+  default: vi.fn(),
+}));
+// Mocking MultiStepFormWithTaskList
+vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
+  default: vi.fn(),
+}));
 
-const mockFacilityData = {
-  id: "00000000-0000-0000-0000-000000000000",
-  bcghg_id: "12111130002",
-  name: "Facility1",
-  facility_type: "Small Aggregate",
-  activities: [7, 10],
-  products: [],
-};
-
-const mockActivitiesData = [
-  { id: 7, name: "Activity7" },
-  { id: 10, name: "Activity10" },
-  { id: 12, name: "Activity12" },
-];
-
-beforeEach(() => {
-  window.alert = vi.fn(); // or vi.fn() if using Vitest
-  vi.mock("next/navigation", () => {
-    const actual = vi.importActual("next/navigation");
-    return {
-      ...actual,
-      useRouter: vi.fn(() => ({
-        push: vi.fn(),
-      })),
-      useSearchParams: vi.fn(() => ({
-        get: vi.fn(),
-      })),
-      usePathname: vi.fn(),
-    };
-  });
+// Mocking MultiStepFormWithTaskList
+vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => {
+  return {
+    default: vi.fn(({ errors }: { errors: any[] }) => (
+      <div>
+        {errors && errors.length > 0 && (
+          <ul>
+            {errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )),
+  };
 });
 
-describe("FacilityReviewForm", () => {
+const mockActionHandler = actionHandler as ReturnType<typeof vi.fn>;
+const mockMultiStepFormWithTaskList = MultiStepFormWithTaskList as ReturnType<
+  typeof vi.fn
+>;
+
+describe("The FacilityReview component", () => {
   beforeEach(() => {
-    (actionHandler as Mock).mockClear();
+    vi.resetAllMocks();
   });
 
-  it("should render and display labels correctly for activities", async () => {
-    (actionHandler as Mock)
-      .mockResolvedValueOnce(mockFacilityData) // Mock facility data
-      .mockResolvedValueOnce(mockActivitiesData); // Mock activities data
+  it("calls the actionHandler on form submission", async () => {
+    const mockActivitiesData: {
+      name: string;
+      id: number;
+      applicable_to: string;
+    }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
+    const mockFormData = { activities: ["Activity 1"] };
+    const mockTaskListElements: TaskListElement[] = [];
+    const mockSchema = { testSchema: true };
+
+    mockActionHandler.mockResolvedValue({}); // Mocking successful response
 
     render(
-      <FacilityReviewForm
-        version_id={1}
-        facility_id={"00000000-0000-0000-0000-000000000000"}
-        taskListElements={[]}
+      <FacilityReview
+        version_id={1000}
+        facility_id="abcd"
+        activitiesData={mockActivitiesData}
+        taskListElements={mockTaskListElements}
+        formsData={mockFormData}
+        schema={mockSchema}
       />,
     );
 
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
-    });
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    await act(() => calledProps.onSubmit());
 
-    expect(screen.getByText("Activity7")).toBeInTheDocument();
-    expect(screen.getByText("Activity10")).toBeInTheDocument();
-    expect(screen.getByLabelText("Activity7")).toBeChecked();
-    expect(screen.getByLabelText("Activity10")).toBeChecked();
-    expect(screen.queryByLabelText("Activity12")).not.toBeChecked();
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      "reporting/report-version/1000/facility-report/abcd",
+      "POST",
+      "reporting/report-version/1000/facility-report/abcd",
+      { body: '{"activities":["1"]}' },
+    );
   });
 
-  it("should handle loading state correctly", async () => {
-    (actionHandler as Mock).mockImplementationOnce(
-      () => new Promise(() => {}), // Mock loading indefinitely
-    );
+  it("updates the form data when onChange is called", async () => {
+    const mockActivitiesData: {
+      name: string;
+      id: number;
+      applicable_to: string;
+    }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
+    const mockFormData = { activities: [] };
+    const mockTaskListElements: TaskListElement[] = [];
+    const mockSchema = { testSchema: true };
 
     render(
-      <FacilityReviewForm
-        version_id={1}
-        facility_id={"00000000-0000-0000-0000-000000000000"}
-        taskListElements={[]}
+      <FacilityReview
+        version_id={1000}
+        facility_id="abcd"
+        activitiesData={mockActivitiesData}
+        taskListElements={mockTaskListElements}
+        formsData={mockFormData}
+        schema={mockSchema}
       />,
     );
 
-    fireEvent.click(screen.getByText("Save & Continue"));
-    await waitFor(() => {
-      expect(screen.getByTestId("progressbar")).toBeInTheDocument();
-    });
-    await new Promise((r) => setTimeout(r, 1000));
-  });
+    const changeHandlerUnderTest =
+      mockMultiStepFormWithTaskList.mock.calls[0][0].onChange;
 
-  it("should handle form submission successfully", async () => {
-    (actionHandler as Mock)
-      .mockResolvedValueOnce(mockFacilityData) // Mock facility data
-      .mockResolvedValueOnce(mockActivitiesData) // Mock activities data
-      .mockResolvedValueOnce({}); // Mock successful save
-
-    render(
-      <FacilityReviewForm
-        version_id={1}
-        facility_id={"00000000-0000-0000-0000-000000000000"}
-        taskListElements={[]}
-      />,
+    await act(() =>
+      changeHandlerUnderTest({
+        formData: { activities: ["Activity 1"] },
+      }),
     );
 
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
-    });
-
-    fireEvent.click(screen.getByText("Save & Continue"));
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
-        `reporting/report-version/1/facility-report/00000000-0000-0000-0000-000000000000`,
-        "POST",
-        `reporting/report-version/1/facility-report/00000000-0000-0000-0000-000000000000`,
-        expect.objectContaining({
-          body: JSON.stringify({
-            ...mockFacilityData,
-            activities: ["7", "10"], // Ensure this matches your implementation
-          }),
-        }),
-      );
+    expect(mockMultiStepFormWithTaskList).toHaveBeenCalledTimes(2);
+    expect(
+      mockMultiStepFormWithTaskList.mock.calls[1][0].formData,
+    ).toStrictEqual({
+      activities: ["Activity 1"],
     });
   });
 
-  it("should handle form submission error", async () => {
-    (actionHandler as Mock)
-      .mockResolvedValueOnce(mockFacilityData) // Mock facility data
-      .mockResolvedValueOnce(mockActivitiesData) // Mock activities data
-      .mockRejectedValueOnce(new Error("Failed to save")); // Mock save error
+  it("handles form errors correctly", async () => {
+    const mockActivitiesData: {
+      name: string;
+      id: number;
+      applicable_to: string;
+    }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
+    const mockFormData = { activities: ["Activity 1"] };
+    const mockTaskListElements: TaskListElement[] = [];
+    const mockSchema = { testSchema: true };
 
-    render(
-      <FacilityReviewForm
-        version_id={1}
-        facility_id={"00000000-0000-0000-0000-000000000000"}
-        taskListElements={[]}
+    mockActionHandler.mockResolvedValue({ error: "Some error occurred" });
+
+    const { getByText } = render(
+      <FacilityReview
+        version_id={1000}
+        facility_id="abcd"
+        activitiesData={mockActivitiesData}
+        taskListElements={mockTaskListElements}
+        formsData={mockFormData}
+        schema={mockSchema}
       />,
     );
 
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
-    });
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    await act(() => calledProps.onSubmit());
 
-    fireEvent.click(screen.getByLabelText("Activity7"));
-    fireEvent.click(screen.getByText("Save & Continue"));
+    expect(mockActionHandler).toHaveBeenCalled();
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to save")).toBeInTheDocument();
-    });
-  });
-
-  it("should render with no activities", async () => {
-    const mockFacilityDataNoActivities = {
-      ...mockFacilityData,
-      activities: [], // No activities
-    };
-
-    (actionHandler as Mock)
-      .mockResolvedValueOnce(mockFacilityDataNoActivities) // Mock facility data with no activities
-      .mockResolvedValueOnce([]); // Mock no activities data
-
-    render(
-      <FacilityReviewForm
-        version_id={1}
-        facility_id={"00000000-0000-0000-0000-000000000000"}
-        taskListElements={[]}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(2); // Ensure initial fetches occurred
-    });
-
-    expect(screen.queryByText("Activity7")).not.toBeInTheDocument();
-    expect(screen.queryByText("Activity10")).not.toBeInTheDocument();
-  });
-
-  it("should handle error state correctly", async () => {
-    // Mock the API calls to simulate an error
-    (actionHandler as Mock)
-      .mockRejectedValueOnce(new Error("Failed to fetch facility data")) // Simulate error fetching facility data
-      .mockRejectedValueOnce(new Error("Failed to fetch activities data")); // Simulate error fetching activities data
-
-    render(
-      <FacilityReviewForm
-        version_id={1}
-        facility_id={"00000000-0000-0000-0000-000000000000"}
-        taskListElements={[]}
-      />,
-    );
-
-    // Check if error messages are displayed
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Failed to fetch facility data/),
-      ).toBeInTheDocument();
+      expect(getByText("Some error occurred")).toBeInTheDocument();
     });
   });
 });

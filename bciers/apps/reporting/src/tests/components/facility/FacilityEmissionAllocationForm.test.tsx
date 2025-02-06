@@ -102,6 +102,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
+        taskListElements={[]}
       />,
     );
 
@@ -136,6 +137,7 @@ describe("FacilityEmissionAllocationForm component", () => {
             },
           ],
         }}
+        taskListElements={[]}
       />,
     );
     expect(
@@ -151,6 +153,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
+        taskListElements={[]}
       />,
     );
 
@@ -174,6 +177,7 @@ describe("FacilityEmissionAllocationForm component", () => {
           facility_id={config.mockFacilityId}
           orderedActivities={[]}
           initialData={mockInitialData}
+          taskListElements={[]}
         />,
       );
       // POST submit and assert the result
@@ -187,6 +191,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
+        taskListElements={[]}
       />,
     );
 

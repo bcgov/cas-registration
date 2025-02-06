@@ -11,3 +11,4 @@ export { default as Users } from "./Users";
 export { default as Wrench } from "./Wrench";
 export { default as TimeIcon } from "./TimeIcon";
 export { default as ChangeIcon } from "./ChangeIcon";
+export { default as BackIcon } from "./BackIcon";
