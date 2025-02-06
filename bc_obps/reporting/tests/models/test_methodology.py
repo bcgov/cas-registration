@@ -89,13 +89,6 @@ class TestInitialData(TestCase):
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
-
-        for m in existing_methodologies:
-            if m not in expected_methodologies:
-                print(m)
-
-        n = set([x for x in expected_methodologies if expected_methodologies.count(x) > 1])
-        print(n)
         self.assertEqual(len(existing_methodologies), len(expected_methodologies))
         self.assertEqual(existing_methodologies, expected_methodologies)
 
