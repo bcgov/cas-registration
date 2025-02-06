@@ -1,7 +1,7 @@
 import { TaskListItemProps } from "../types";
 import { ListItem, ListItemButton, Typography } from "@mui/material";
 import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "@bciers/styles";
-import { BackIcon } from "@bciers/components/icons/BackIcon";
+import BackIcon from "@bciers/components/icons/BackIcon";
 
 const LinkTaskListItem: React.FC<TaskListItemProps> = ({ item }) => {
   if (item.type !== "Link" || !item.link || !item.text) {
