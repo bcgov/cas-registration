@@ -92,14 +92,39 @@ const uiSchema = {
     },
     otherVentingSources: {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
-      "ui:order": ["descriptionOfOtherSources", "emissions"],
-      descriptionOfOtherSources: {
-        "ui:FieldTemplate": InlineFieldTemplate,
+      units: {
+        "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:title": "Source sub-type data",
+        "ui:options": {
+          arrayAddLabel: "Add source sub-type",
+          label: false,
+          title: "Source sub-type",
+          padding: "p-2",
+        },
+        items: {
+          "ui:order": [
+            "sourceSubType",
+            "type",
+            "descriptionOfOtherSources",
+            "emissions",
+          ],
+          sourceSubType: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          type: {
+            "ui:widget": "hidden",
+          },
+          descriptionOfOtherSources: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          emissions: emissionsFieldsUiSchema,
+        },
       },
-      emissions: emissionsFieldsUiSchema,
     },
     populationCountSources: sourceSubTypeWithoutFuelUiSchema,
     producedWaterDissolvedCarbonDioxideMethane: emissionsOnlyUiSchema,
+    reciprocatingCompressorVenting: sourceSubTypeWithoutFuelUiSchema,
     releasesFromTanksUsedForStorageProductionProcessing:
       sourceSubTypeWithoutFuelUiSchema,
     thirdPartyLineHitsWithReleaseOfGas: emissionsOnlyUiSchema,
