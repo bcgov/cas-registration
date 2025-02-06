@@ -118,22 +118,16 @@ export const createOperationInformationSchema = async (
       title: "Boundary Map",
       format: "data-url",
     },
-    ...(app === Apps.ADMINISTRATION
-      ? {
-          bc_obps_regulated_operation: {
-            type: "string",
-            title: "BORO ID",
-          },
-        }
-      : {}),
-    ...(app === Apps.ADMINISTRATION
-      ? {
-          bcghg_id: {
-            type: "string",
-            title: "BCGHGID",
-          },
-        }
-      : {}),
+    ...(app === Apps.ADMINISTRATION && {
+      bc_obps_regulated_operation: {
+        type: "string",
+        title: "BORO ID",
+      },
+      bcghg_id: {
+        type: "string",
+        title: "BCGHGID",
+      },
+    }),
   };
   return sfoAndLfoSchema;
 };

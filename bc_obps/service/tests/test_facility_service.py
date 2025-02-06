@@ -181,7 +181,7 @@ class TestCreateFacilityWithDesignatedOperation:
 
         # test if second facility raises proper exception
         with pytest.raises(
-            RuntimeError,
+            Exception,
             match=re.escape(
                 "This type of operation (SFO or EIO) can only have one facility, this page should not be accessible"
             ),

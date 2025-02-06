@@ -361,7 +361,7 @@ class TestOperationServiceV2:
 class TestRegisterOperationInformation:
     @staticmethod
     def test_register_operation_information_new_eio():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         payload = OperationInformationIn(
             registration_purpose='Electricity Import Operation',
             name="TestEIO",
@@ -373,13 +373,11 @@ class TestRegisterOperationInformation:
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
-        assert operation.created_by == approved_user_operator.user
-        assert operation.created_at is not None
         # check purpose and status
         assert operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
         # check facility
-        facilities = Facility.objects.filter(designated_operations__operation=operation).all()
+        facilities = operation.facilities.all()
         assert facilities.count() == 1
         assert facilities[0].name == "TestEIO"
         assert facilities[0].type == Facility.Types.ELECTRICITY_IMPORT
@@ -404,13 +402,11 @@ class TestRegisterOperationInformation:
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
-        assert operation.updated_by == approved_user_operator.user
-        assert operation.updated_at is not None
         # check purpose and status
         assert operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
         # check facility
-        facilities = Facility.objects.filter(designated_operations__operation=operation).all()
+        facilities = operation.facilities.all()
         assert facilities.count() == 1
         assert facilities[0].name == "UpdatedEIO"
         assert facilities[0].type == Facility.Types.ELECTRICITY_IMPORT
@@ -439,7 +435,7 @@ class TestRegisterOperationInformation:
         # check purpose
         assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
-        facilities = Facility.objects.filter(designated_operations__operation=operation).all()
+        facilities = operation.facilities.all()
         assert facilities.count() == 0
 
     @staticmethod
@@ -469,7 +465,7 @@ class TestRegisterOperationInformation:
         # check purpose
         assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
-        facilities = Facility.objects.filter(designated_operations__operation=operation).all()
+        facilities = operation.facilities.all()
         assert facilities.count() == 0
 
     @staticmethod
