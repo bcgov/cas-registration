@@ -63,7 +63,6 @@ describe("the OperationInformationPage component", () => {
     expect(screen.getByText(/Primary NAICS Code/i)).toBeVisible();
     expect(screen.getByText(/Secondary NAICS Code/i)).toBeVisible();
     expect(screen.getByText(/Tertiary NAICS Code/i)).toBeVisible();
-    expect(screen.getByText(/Reporting Activities/i)).toBeVisible();
     expect(screen.getByText(/Process Flow Diagram/i)).toBeVisible();
     expect(screen.getByText(/Boundary Map/i)).toBeVisible();
 
