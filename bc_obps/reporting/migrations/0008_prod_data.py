@@ -767,35 +767,6 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(
                 field_name='Last Date of Overvoltage Emission Factor Measurement', field_type='string', field_units=None
             ),
-            ReportingField(field_name='Month', field_type='string', field_units=None),
-            ReportingField(field_name='Clinker Production (t)', field_type='number', field_units=None),
-            ReportingField(field_name='Emission Factor (t CO2/t clinker)', field_type='number', field_units=None),
-            ReportingField(
-                field_name='Total Calcium Content of Clinker (weight fraction)', field_type='number', field_units=None
-            ),
-            ReportingField(
-                field_name='Total Magnesium Content of Clinker (weight fraction)', field_type='number', field_units=None
-            ),
-            ReportingField(
-                field_name='Non-calcined Calcium oxide content of Clinker (weight fraction)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Non-calcined Magnesium oxide content of Clinker (weight fraction)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(
-                field_name='Quantity of non-carbonate raw materials entering the kiln (tonnes)',
-                field_type='number',
-                field_units=None,
-            ),
-            ReportingField(field_name='Quarter', field_type='string', field_units=None),
-            ReportingField(
-                field_name='Quantity of CKD not recycled back to kilns (t)', field_type='number', field_units=None
-            ),
-            ReportingField(field_name='Emission Factor (t CO2/t CKD)', field_type='number', field_units=None),
             ReportingField(field_name='Amount of raw material consumed (t)', field_type='number', field_units=None),
             ReportingField(
                 field_name='Raw material organic carbon content (weight fraction)',

@@ -10,3 +10,4 @@ export { default as InlineFieldTemplate } from "./InlineFieldTemplate";
 export { default as TitleFieldTemplate } from "./TitleFieldTemplate";
 export { default as TitleOnlyFieldTemplate } from "./TitleOnlyFieldTemplate";
 export { default as SectionFieldTemplate } from "./SectionFieldTemplate";
+export { default as CollapsibleDefinitionFieldTemplate } from "./CollapsibleDefinitionFieldTemplate";

@@ -17,6 +17,7 @@ def init_configuration_element_data(apps, schema_monitor):
     GasType = apps.get_model('reporting', 'GasType')
     Methodology = apps.get_model('reporting', 'Methodology')
     Configuration = apps.get_model('reporting', 'Configuration')
+    CustomMethodologySchema = apps.get_model('reporting', 'CustomMethodologySchema')
     # Cement production
     ConfigurationElement.objects.bulk_create(
         [
@@ -40,6 +41,16 @@ def init_configuration_element_data(apps, schema_monitor):
                 methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+                custom_methodology_schema_id=CustomMethodologySchema.objects.get(
+                    activity_id=Activity.objects.get(name='Cement production').id,
+                    source_type_id=SourceType.objects.get(
+                        name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
+                    ).id,
+                    gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+                    methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
+                    valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+                    valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+                ).id,
             ),
             ConfigurationElement(
                 activity_id=Activity.objects.get(name='Cement production').id,
@@ -102,145 +113,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ReportingField = apps.get_model('reporting', 'ReportingField')
 
     # CEMS - none
-    # Calcination Emissions
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(ReportingField.objects.get(field_name='Month', field_units__isnull=True))
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(ReportingField.objects.get(field_name='Clinker Production (t)', field_units__isnull=True))
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Emission Factor (t CO2/t clinker)', field_units__isnull=True)
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Total Calcium Content of Clinker (weight fraction)', field_units__isnull=True
-        )
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Total Magnesium Content of Clinker (weight fraction)', field_units__isnull=True
-        )
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Non-calcined Calcium oxide content of Clinker (weight fraction)', field_units__isnull=True
-        )
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Non-calcined Magnesium oxide content of Clinker (weight fraction)', field_units__isnull=True
-        )
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Quantity of non-carbonate raw materials entering the kiln (tonnes)', field_units__isnull=True
-        )
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(ReportingField.objects.get(field_name='Quarter', field_units__isnull=True))
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(
-            field_name='Quantity of CKD not recycled back to kilns (t)', field_units__isnull=True
-        )
-    )
-    ConfigurationElement.objects.get(
-        activity_id=Activity.objects.get(name='Cement production').id,
-        source_type_id=SourceType.objects.get(
-            name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
-        ).id,
-        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Calcination Emissions').id,
-        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-    ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Emission Factor (t CO2/t CKD)', field_units__isnull=True)
-    )
+    # Calcination Emissions - custom methodology
     # Oxidation Emissions
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Cement production').id,
@@ -304,6 +177,59 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
             activity_id=Activity.objects.get(name='Cement production').id
         ).values_list('id', flat=True)
     ).delete()
+
+
+#### CUSTOM SCHEMA DATA ####
+def init_custom_schema_data(apps, schema_editor):
+    '''
+    Add initial data to erc.custom_methodology_schema
+    '''
+    import os
+    import json
+
+    cwd = os.getcwd()
+    with open(
+        f'{cwd}/reporting/json_schemas/2024/cement_production/calcination_of_emissions_custom.json'
+    ) as cement_prod:
+        schema = json.load(cement_prod)
+
+    # Get the model classes
+    CustomMethodologySchema = apps.get_model('reporting', 'CustomMethodologySchema')
+    Activity = apps.get_model('registration', 'Activity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    GasType = apps.get_model('reporting', 'GasType')
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Configuration = apps.get_model('reporting', 'Configuration')
+
+    # Fetch or create necessary related objects
+    activity = Activity.objects.get(name='Cement production')
+    source_type = SourceType.objects.get(
+        name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
+    )
+    methodology = Methodology.objects.get(name='Calcination Emissions')
+    gas_type = GasType.objects.get(chemical_formula='CO2')
+    valid_from = Configuration.objects.get(valid_from='2023-01-01')
+    valid_to = Configuration.objects.get(valid_to='2099-12-31')
+
+    # Create a new record in CustomMethodologySchema
+    CustomMethodologySchema.objects.create(
+        activity=activity,
+        source_type=source_type,
+        json_schema=schema,
+        methodology=methodology,
+        gas_type=gas_type,
+        valid_from=valid_from,
+        valid_to=valid_to,
+    )
+
+
+def reverse_init_custom_schema_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.base_schema
+    '''
+    CustomSchema = apps.get_model('reporting', 'CustomMethodologySchema')
+    Activity = apps.get_model('registration', 'Activity')
+    CustomSchema.objects.filter(activity_id=Activity.objects.get(name='Cement production').id).delete()
 
 
 #### SCHEMA DATA ####
@@ -382,9 +308,10 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0031_alter_reportemission_managers')]
+    dependencies = [('reporting', '0050_remove_reportverification_other_facility_coordinates_and_more')]
 
     operations = [
+        migrations.RunPython(init_custom_schema_data, reverse_init_custom_schema_data),
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
         migrations.RunPython(
             init_configuration_element_reporting_fields_data, reverse_init_configuration_element_reporting_fields_data
