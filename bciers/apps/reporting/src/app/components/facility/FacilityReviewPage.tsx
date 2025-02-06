@@ -9,6 +9,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 import { getAllActivities } from "@reporting/src/app/utils/getAllActivities";
+import { buildFacilitySchema } from "@reporting/src/data/jsonSchema/facilities";
 
 export default async function FacilityReviewPage({
   version_id,
@@ -37,16 +38,15 @@ export default async function FacilityReviewPage({
       (activity: { name: any }) => activity.name,
     ),
   };
-
+  const reviewSchema = buildFacilitySchema(activitiesData);
   return (
     <FacilityReviewForm
       version_id={version_id}
       facility_id={facility_id}
-      operationType={operationType?.operation_type}
-      selectedActivities={selectedActivities}
       activitiesData={activitiesData}
       taskListElements={taskListElements}
       formsData={formData}
+      schema={reviewSchema}
     />
   );
 }

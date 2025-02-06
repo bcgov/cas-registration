@@ -3,9 +3,10 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import CheckboxGroupWidget from "@bciers/components/form/widgets/CheckboxGroupWidget";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 
-interface ActivityData {
+export interface ActivityData {
   name: string;
   id: number;
+  applicable_to: string;
 }
 
 export const buildFacilitySchema = (activities: ActivityData[]) =>
