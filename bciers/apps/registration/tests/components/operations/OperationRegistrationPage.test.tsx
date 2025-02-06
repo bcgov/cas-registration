@@ -44,7 +44,7 @@ export const fetchFormEnums = () => {
   ]);
   // Reporting activities
   actionHandler.mockResolvedValueOnce([
-    { id: 1, name: "Amonia production" },
+    { id: 1, name: "Ammonia production" },
     { id: 2, name: "Cement production" },
   ]);
   // Business structures
