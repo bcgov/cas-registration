@@ -85,6 +85,9 @@ class TestInitialData(TestCase):
                 "WCI.363 (g.1)(ii)",
                 "2009 API Compendium",
                 "Other Methodology",
+                "WCI.363 (c)",
+                "WCI.363 (l)",
+                "WCI.363 (m)",
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
