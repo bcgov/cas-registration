@@ -238,7 +238,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       )}
 
       <ReportingStepButtons
-        backUrl={`/reports/${version_id}/previous-step`}
+        backUrl={`/reports/${version_id}/facilities/review-facilities-list`}
         continueUrl={saveAndContinueUrl}
         isSaving={isSaving}
         isSuccess={isSuccess}
