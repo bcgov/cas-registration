@@ -44,7 +44,7 @@ const PersonResponsible = ({ version_id }: Props) => {
 
   const continueUrl =
     operationType === "Linear Facility Operation"
-      ? `/reports/${version_id}/facilities/lfo-facilities`
+      ? `/reports/${version_id}/facilities/review-facilities-list`
       : `/reports/${version_id}/facilities/${facilityId}/activities`;
   const backUrl = `/reports/${version_id}/review-operator-data`;
 
