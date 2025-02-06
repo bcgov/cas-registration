@@ -20,6 +20,10 @@
               "Natural Gas Distribution-Meters, regulators, and associated equipment at above grade custody transfer meteringregulating stations, including fugitive equipment leaks from connectors, block valves, control valves, pressure relief valves, orifice meters, regulators, and open- ended lines"
             ]
           },
+          "type": {
+            "type": "string",
+            "default": "Source sub-type"
+          },
           "emissions": {
             "title": "Emission Data",
             "type": "array",

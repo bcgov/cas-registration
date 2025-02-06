@@ -19,6 +19,10 @@
               "Natural Gas Distribution"
             ]
           },
+          "type": {
+            "type": "string",
+            "default": "Source sub-type"
+          },
           "fuels": {
             "title": "Fuel Data",
             "type": "array",
