@@ -3,10 +3,6 @@ from django.test import TestCase
 from reporting.models import FacilityReport
 from reporting.tests.utils.bakers import report_version_baker
 from reporting.service.report_facilities_service import ReportFacilitiesService
-from registration.tests.utils.bakers import (
-    facility_designated_operation_timeline_baker,
-    facility_baker,
-)
 from model_bakery import baker
 
 
@@ -15,7 +11,10 @@ class TestReportFacilitiesService(TestCase):
         self.report_version = report_version_baker()
         self.operation = self.report_version.report.operation
         self.facilities = baker.make_recipe(
-            'utils.facility_designated_operation_timeline', operation_id=operation.id, _quantity=1
+            'registration.tests.utils.facility_designated_operation_timeline',
+            operation_id=self.operation.id,
+            end_date=None,
+            _quantity=1,
         )
 
     def test_get_report_facility_list_by_version_id(self):
@@ -32,8 +31,12 @@ class TestReportFacilitiesService(TestCase):
         self.assertEqual(len(result["past_facilities"]), 0)
 
     def test_save_selected_facilities(self):
-        facility1 = facility_baker()
-        facility2 = facility_baker()
+        facility1 = baker.make_recipe(
+            'registration.tests.utils.facility',
+        )
+        facility2 = baker.make_recipe(
+            'registration.tests.utils.facility',
+        )
         facility_uuids = [facility1.id, facility2.id]
 
         ReportFacilitiesService.save_selected_facilities(self.report_version.id, facility_uuids)
