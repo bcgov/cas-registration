@@ -1,7 +1,7 @@
 {
   "type": "object",
   "title": "Blowdown venting",
-  "default": { "emissions": [{}] },
+  "default": { "units": [{ "emissions": [{}] }] },
   "properties": {
     "units": {
       "type": "array",
