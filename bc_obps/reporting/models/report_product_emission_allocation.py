@@ -14,7 +14,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
 
     class AllocationMethodologyChoices(models.TextChoices):
         CALCULATOR = ("Calculator",)
-        OTHER = "other"
+        OTHER = "Other"
 
     report_version = models.ForeignKey(
         report_version.ReportVersion,
@@ -69,7 +69,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
             ),
             models.CheckConstraint(
                 name="allocation_other_methodology_must_have_description",
-                check=~Q(allocation_methodology="other", allocation_other_methodology_description__isnull=True),
-                violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'other'",
+                check=~Q(allocation_methodology="Other", allocation_other_methodology_description__isnull=True),
+                violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'Other'",
             ),
         ]
