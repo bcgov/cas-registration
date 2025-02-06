@@ -9,7 +9,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { CheckCircle } from "@bciers/components/icons";
+import CheckCircle from "@bciers/components/icons/CheckCircle";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const SectionTaskListItem: React.FC<TaskListItemProps> = ({
