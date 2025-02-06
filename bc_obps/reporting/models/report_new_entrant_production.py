@@ -2,6 +2,7 @@ from django.db import models
 from registration.models import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_new_entrant import ReportNewEntrant
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportNewEntrantProduction(TimeStampedModel):
@@ -27,12 +28,17 @@ class ReportNewEntrantProduction(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_new_entrant_production'
-        app_label = 'reporting'
+        app_label = "reporting"
         db_table_comment = "Table for storing production data related to new entrant emissions reporting"
         constraints = [
             models.UniqueConstraint(
-                fields=['product', 'report_new_entrant'],
-                name='unique_new_entrant_production',
+                fields=["product", "report_new_entrant"],
+                name="unique_new_entrant_production",
                 violation_error_code="A production record with this product and new entrant report already exists.",
             )
+        ]
+
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger("report_new_entrant__report_version"),
         ]
