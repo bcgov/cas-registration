@@ -9,6 +9,7 @@ import {
 } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 
 export default async function NonAttributableEmissionsPage({
   version_id,
@@ -20,12 +21,19 @@ export default async function NonAttributableEmissionsPage({
     version_id,
     facility_id,
   );
+
+  const tasklistData = await getReportInformationTasklist(
+    version_id,
+    facility_id,
+  );
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const taskListElements = getFacilitiesInformationTaskList(
     version_id,
     facility_id,
     orderedActivities,
     ActivePage.NonAttributableEmission,
+    tasklistData?.facilityName,
+    tasklistData?.operationType,
   );
 
   const gasTypeMap = gasTypes.reduce(
@@ -57,8 +65,8 @@ export default async function NonAttributableEmissionsPage({
       emissionFormData={emissionFormData}
       gasTypes={gasTypes}
       emissionCategories={emissionCategories}
-      gasTypeMap={gasTypeMap} // Pass the map to the form component
-      emissionCategoryMap={emissionCategoryMap} // Pass the map to the form component
+      gasTypeMap={gasTypeMap}
+      emissionCategoryMap={emissionCategoryMap}
       taskListElements={taskListElements}
     />
   );

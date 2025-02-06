@@ -1,4 +1,4 @@
-import { AlertIcon } from "@bciers/components/icons";
+import AlertIcon from "@bciers/components/icons/AlertIcon";
 import { ChangeEvent, MutableRefObject, useRef } from "react";
 
 interface Props {

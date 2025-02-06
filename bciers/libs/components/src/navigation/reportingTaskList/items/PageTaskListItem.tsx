@@ -6,7 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { CheckCircle } from "@bciers/components/icons";
+import CheckCircle from "@bciers/components/icons/CheckCircle";
 
 const PageTaskListItem: React.FC<TaskListItemProps> = ({ item }) => {
   const router = useRouter();
