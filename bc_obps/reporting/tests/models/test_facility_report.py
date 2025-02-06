@@ -1,15 +1,15 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import Activity
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from registration.tests.utils.bakers import facility_baker
 from reporting.models import FacilityReport
 from reporting.tests.utils.bakers import report_version_baker
+from model_bakery import baker
 
 
 class FacilityReportModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        f = facility_baker()
+        f = baker.make_recipe('utils.facility')
 
         cls.test_object = FacilityReport.objects.create(
             facility=f,

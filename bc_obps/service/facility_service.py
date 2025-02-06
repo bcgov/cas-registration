@@ -74,6 +74,7 @@ class FacilityService:
                 'starting_date',
                 'latitude_of_largest_emissions',
                 'longitude_of_largest_emissions',
+                'operation_id',
             }
         )
 
@@ -248,3 +249,19 @@ class FacilityService:
         facility.save(update_fields=['bcghg_id'])
 
         return facility.bcghg_id
+
+    @classmethod
+    @transaction.atomic()
+    def update_operation_for_facility(cls, user_guid: UUID, facility: Facility, operation_id: UUID) -> Facility:
+        """
+        Update the operation for the facility
+        At the time of implementation, this is only used for transferring facilities between operations and,
+        is only available to cas_analyst users
+        """
+
+        user = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_analyst():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        facility.operation_id = operation_id
+        facility.save(update_fields=["operation_id"])
+        return facility

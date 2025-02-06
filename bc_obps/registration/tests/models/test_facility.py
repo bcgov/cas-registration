@@ -45,6 +45,7 @@ class FacilityModelTest(BaseTestCase):
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
             ("designated_operations", "facility designated operation timeline", None, None),
+            ("operation", "operation", None, None),
             ("is_current_year", "is current year", None, None),
             ("starting_date", "starting date", None, None),
             ("facility_reports", "facility report", None, 0),

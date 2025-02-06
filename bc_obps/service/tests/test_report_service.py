@@ -8,7 +8,6 @@ from registration.tests.utils.bakers import (
     bc_obps_regulated_operation_baker,
     operation_baker,
     operator_baker,
-    facility_baker,
 )
 from reporting.models import ReportingYear, ReportVersion, ReportOperation, FacilityReport
 from reporting.schema.report_operation import ReportOperationIn
@@ -59,11 +58,7 @@ class TestReportService(TestCase):
                 "service.data_access_service.facility_service.FacilityDataAccessService.get_current_facilities_by_operation"
             ) as mock_facility_data_access_service_get_current_facilities_by_operation,
         ):
-            mock_facilities = [
-                facility_baker(),
-                facility_baker(),
-                facility_baker(),
-            ]
+            mock_facilities = baker.make_recipe('utils.facility', _quantity=3)
 
             mock_report_data_access_service_report_exists.return_value = False
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities

@@ -4,7 +4,7 @@ from registration.models.facility_designated_operation_timeline import FacilityD
 from model_bakery import baker
 from registration.models import Facility, Operation, WellAuthorizationNumber
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.tests.utils.bakers import facility_baker, operation_baker, operator_baker
+from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 
 
@@ -70,7 +70,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         owning_operation: Operation = operation_baker(operator.id)
-        facility = facility_baker()
+        facility = baker.make_recipe('utils.facility')
 
         baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
         response = TestUtils.mock_get_with_auth_role(
@@ -82,7 +82,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.json().get('name') is not None
 
     def test_industry_users_cannot_get_other_users_facilities(self):
-        facility = facility_baker()
+        facility = baker.make_recipe('utils.facility')
         baker.make(FacilityDesignatedOperationTimeline, operation=operation_baker(), facility=facility)
 
         response = TestUtils.mock_get_with_auth_role(
