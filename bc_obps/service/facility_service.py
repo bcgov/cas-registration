@@ -162,10 +162,11 @@ class FacilityService:
         operation = OperationDataAccessService.get_by_id(payload.operation_id)
         cls.check_user_access(user_guid, operation)
 
-        # Validate that SFO can only make one facility
-        num_facilities = FacilityDataAccessService.get_current_facilities_by_operation(operation).count()
-        if num_facilities > 0 and operation.type == OperationTypes.SFO.value:
-            raise RuntimeError("SFO can only create one facility, this page should not be accessible")
+        # Validate that SFO and EIO can only have one facility
+        if operation.facilities.count() > 0 and operation.type != OperationTypes.LFO.value:
+            raise Exception(
+                "This type of operation (SFO or EIO) can only have one facility, this page should not be accessible"
+            )
 
         facility_data = cls.prepare_facility_data(payload)
         address_data = cls.build_address(payload)

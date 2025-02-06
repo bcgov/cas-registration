@@ -32,12 +32,15 @@ const OperationRegistrationPage = async ({
     const purpose = operationData?.registration_purpose;
     if (
       // Note: the purposes have slightly different names than the step names
-      purpose == RegistrationPurposes.OPTED_IN_OPERATION
+      purpose === RegistrationPurposes.OPTED_IN_OPERATION
     ) {
       steps.splice(2, 0, OperationRegistrationSteps.OPT_IN_APPLICATION);
     }
-    if (purpose == RegistrationPurposes.NEW_ENTRANT_OPERATION)
+    if (purpose === RegistrationPurposes.NEW_ENTRANT_OPERATION)
       steps.splice(2, 0, OperationRegistrationSteps.NEW_ENTRANT_APPLICATION);
+    if (purpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION) {
+      steps.splice(1, 1);
+    }
   } else {
     steps = [...initialOperationRegistrationSteps];
   }

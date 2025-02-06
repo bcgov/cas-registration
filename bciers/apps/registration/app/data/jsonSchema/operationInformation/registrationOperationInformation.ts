@@ -21,7 +21,10 @@ export const createRegistrationOperationInformationSchema =
       type: "object",
       properties: {
         section1: await createRegistrationPurposeSchema(),
-        section2: await createOperationInformationSchema(Apps.REGISTRATION),
+        section2: await createOperationInformationSchema(
+          Apps.REGISTRATION,
+          undefined,
+        ),
         section3: await createMultipleOperatorsInformationSchema(),
       },
     };

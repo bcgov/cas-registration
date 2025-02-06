@@ -183,7 +183,7 @@ describe("the OperationInformationForm component", () => {
   );
 
   it(
-    "should submit a new operation with regulated products and multiple operators",
+    "should submit a new OBPS regulated operation with regulated products and multiple operators",
     {
       timeout: 60000,
     },
@@ -345,6 +345,67 @@ describe("the OperationInformationForm component", () => {
       });
       expect(mockPush).toHaveBeenCalledWith(
         "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=Picklejuice",
+      );
+    },
+  );
+
+  it(
+    "should submit a new EIO operation",
+    {
+      timeout: 60000,
+    },
+    async () => {
+      fetchFormEnums();
+      actionHandler.mockResolvedValueOnce({
+        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        name: "EIO Op Name",
+      }); // mock the POST response from the submit handler
+      render(
+        <OperationInformationForm
+          rawFormData={{}}
+          schema={await createRegistrationOperationInformationSchema()}
+          step={1}
+          steps={allOperationRegistrationSteps}
+        />,
+      );
+
+      const purposeInput = screen.getByRole("combobox", {
+        name: /The purpose of this registration+/i,
+      });
+      await fillComboboxWidgetField(
+        purposeInput,
+        "Electricity Import Operation",
+      );
+
+      await userEvent.type(
+        screen.getByLabelText(/Operation Name/i),
+        "EIO Op Name",
+      );
+
+      // EIO is the default operation type if purpose is EIO so we don't have to fill it in
+
+      // submit
+
+      await userEvent.click(
+        screen.getByRole("button", { name: /save and continue/i }),
+      );
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenLastCalledWith(
+          "registration/operations",
+          "POST",
+          "",
+          {
+            body: JSON.stringify({
+              registration_purpose: "Electricity Import Operation",
+              name: "EIO Op Name",
+              type: "Electricity Import Operation",
+              operation_has_multiple_operators: false,
+            }),
+          },
+        );
+      });
+      expect(mockPush).toHaveBeenCalledWith(
+        "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=EIO%20Op%20Name",
       );
     },
   );

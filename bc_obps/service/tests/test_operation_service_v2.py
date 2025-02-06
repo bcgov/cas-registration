@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from uuid import uuid4
 from zoneinfo import ZoneInfo
+from registration.models.facility import Facility
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 
 from registration.models.contact import Contact
@@ -356,12 +357,66 @@ class TestOperationServiceV2:
         assert operation.date_of_first_shipment == Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024
         assert operation.documents.filter(type=DocumentType.objects.get(name='new_entrant_application')).count() == 1
 
+
+class TestRegisterOperationInformation:
+    @staticmethod
+    def test_register_operation_information_new_eio():
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        payload = OperationInformationIn(
+            registration_purpose='Electricity Import Operation',
+            name="TestEIO",
+            type="Electricity Import Operation",
+        )
+        # check operation
+        operation = OperationServiceV2.register_operation_information(
+            approved_user_operator.user.user_guid, None, payload
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        # check purpose and status
+        assert operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        assert operation.status == Operation.Statuses.DRAFT
+        # check facility
+        facilities = operation.facilities.all()
+        assert facilities.count() == 1
+        assert facilities[0].name == "TestEIO"
+        assert facilities[0].type == Facility.Types.ELECTRICITY_IMPORT
+
+    @staticmethod
+    def test_register_operation_information_existing_eio():
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        users_operation = baker.make_recipe(
+            'utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            type="Electricity Import Operation",
+        )
+        payload = OperationInformationIn(
+            registration_purpose='Electricity Import Operation',
+            name="UpdatedEIO",
+            type="Electricity Import Operation",
+        )
+        # check operation updates
+        operation = OperationServiceV2.register_operation_information(
+            approved_user_operator.user.user_guid, users_operation.id, payload
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        # check purpose and status
+        assert operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        assert operation.status == Operation.Statuses.DRAFT
+        # check facility
+        facilities = operation.facilities.all()
+        assert facilities.count() == 1
+        assert facilities[0].name == "UpdatedEIO"
+        assert facilities[0].type == Facility.Types.ELECTRICITY_IMPORT
+
     @staticmethod
     def test_register_operation_information_new_operation():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         payload = OperationInformationIn(
-            registration_purpose='Electricity Import Operation',
+            registration_purpose='Reporting Operation',
             name="string",
             type="SFO",
             naics_code_id=1,
@@ -378,8 +433,10 @@ class TestOperationServiceV2:
         assert operation.created_at is not None
         assert operation.updated_by is not None  # the operation is created first, and then we add the purpose
         # check purpose
-        assert operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
+        facilities = operation.facilities.all()
+        assert facilities.count() == 0
 
     @staticmethod
     def test_register_operation_information_existing_operation():
@@ -408,6 +465,8 @@ class TestOperationServiceV2:
         # check purpose
         assert operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert operation.status == Operation.Statuses.DRAFT
+        facilities = operation.facilities.all()
+        assert facilities.count() == 0
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_true():

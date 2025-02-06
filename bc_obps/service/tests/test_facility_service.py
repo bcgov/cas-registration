@@ -1,3 +1,4 @@
+import re
 import pytest
 from model_bakery import baker
 from registration.schema.v1.facility import FacilityIn
@@ -92,20 +93,14 @@ class TestGetIfAuthorized:
 
     @staticmethod
     def test_create_facilities_with_designated_operations_create_multiple_facilities():
-        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
-        operator = operator_baker()
-        baker.make(
-            UserOperator,
-            user_id=user.user_guid,
-            status=UserOperator.Statuses.APPROVED,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
+        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        owning_operation: Operation = baker.make_recipe(
+            'utils.operation', operator=approved_user_operator.operator, type="Linear Facility Operation"
         )
-        owning_operation: Operation = operation_baker(operator.id)
         payload = [
             FacilityIn(
                 name='Test Facility 1',
-                type='Single Facility',
+                type='Medium Facility',
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -116,7 +111,7 @@ class TestGetIfAuthorized:
                 province='AB',
                 postal_code='H0H0H0',
                 name='Test Facility 2',
-                type='Large Facility',
+                type='Medium Facility',
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -131,7 +126,7 @@ class TestGetIfAuthorized:
             ),
         ]
 
-        FacilityService.create_facilities_with_designated_operations(user.user_guid, payload)
+        FacilityService.create_facilities_with_designated_operations(approved_user_operator.user.user_guid, payload)
 
         assert len(Facility.objects.all()) == 3
 
@@ -185,7 +180,12 @@ class TestCreateFacilityWithDesignatedOperation:
         assert Facility.objects.get(name="doraemon") is not None
 
         # test if second facility raises proper exception
-        with pytest.raises(RuntimeError, match='SFO can only create one facility, this page should not be accessible'):
+        with pytest.raises(
+            Exception,
+            match=re.escape(
+                "This type of operation (SFO or EIO) can only have one facility, this page should not be accessible"
+            ),
+        ):
             FacilityService.create_facility_with_designated_operation(approved_user_operator.user.user_guid, payload2)
 
     @staticmethod
