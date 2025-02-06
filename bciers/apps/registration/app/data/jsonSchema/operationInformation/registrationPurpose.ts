@@ -91,10 +91,12 @@ export const createRegistrationPurposeSchema = async () => {
             regulatedOperationPurposes.includes(purpose);
           const isReportingActivities =
             reportingOperationPurposes.includes(purpose);
+
+          // have to determine required fields dynamically based on selectedPurpose
+          const requiredFields = [];
+          if (isRegulatedProducts) requiredFields.push("regulated_products");
+          if (isReportingActivities) requiredFields.push("activities");
           return {
-            ...(isRegulatedProducts && {
-              required: ["regulated_products", "activities"],
-            }),
             properties: {
               registration_purpose: {
                 type: "string",
@@ -115,6 +117,7 @@ export const createRegistrationPurposeSchema = async () => {
                 activities: {
                   title: "Reporting Activities",
                   type: "array",
+                  minItems: 1,
                   items: {
                     type: "number",
                     enum: reportingActivities.map(
@@ -132,6 +135,7 @@ export const createRegistrationPurposeSchema = async () => {
                 },
               }),
             },
+            ...(requiredFields.length > 0 ? { required: requiredFields } : {}),
           };
         }),
       },
