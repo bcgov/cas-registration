@@ -4,7 +4,10 @@ import { OperationTypes } from "@bciers/utils/src/enums";
 
 const OperationFacilitiesActionCell = (isInternalUser: boolean) => {
   const renderCell = (params: GridRenderCellParams) => {
-    const operationType = params.row.operation__type;
+    const operationType = params.row.operation__type as OperationTypes;
+
+    if (operationType === OperationTypes.EIO) return <span>N/A</span>;
+
     const isSfo = operationType === OperationTypes.SFO;
     const sfoFacilityId = params.row.sfo_facility_id;
 
