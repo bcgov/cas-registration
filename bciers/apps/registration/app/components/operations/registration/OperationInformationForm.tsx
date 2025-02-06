@@ -54,6 +54,27 @@ const OperationInformationForm = ({
     registrationOperationInformationUiSchema,
   );
 
+  const updateUiSchemaWithHelpText = (
+    registrationPurpose: RegistrationPurposes,
+  ) => {
+    setCurrentUiSchema({
+      ...registrationOperationInformationUiSchema,
+      section1: {
+        ...registrationOperationInformationUiSchema.section1,
+        registration_purpose: {
+          ...registrationOperationInformationUiSchema.section1
+            .registration_purpose,
+          "ui:help": (
+            <small>
+              <b>Note: </b>
+              {RegistrationPurposeHelpText[registrationPurpose]}
+            </small>
+          ),
+        },
+      },
+    });
+  };
+
   useEffect(() => {
     if (selectedPurpose) {
       setFormState((prevState) => ({
@@ -63,6 +84,7 @@ const OperationInformationForm = ({
           registration_purpose: selectedPurpose,
         },
       }));
+      updateUiSchemaWithHelpText(selectedPurpose);
     }
   }, [selectedPurpose]);
 
@@ -133,11 +155,13 @@ const OperationInformationForm = ({
       data.section1.registration_purpose;
     // if purpose is being selected for the first time, we don't need to show
     // the ConfirmChangeOfRegistrationPurposeModal. Just need to update
-    // the state for selectedPurpose
+    // the state for selectedPurpose, and show the RegistrationPurposeHelpText
     if (newSelectedPurpose && selectedPurpose == "") {
       setSelectedPurpose(newSelectedPurpose);
     }
-    if (newSelectedPurpose && selectedPurpose) {
+    // if there was already a purpose selected, we need to confirm the user
+    // wants to change their registration purpose before actioning it.
+    else if (newSelectedPurpose && selectedPurpose) {
       setPendingChangeRegistrationPurpose(newSelectedPurpose);
     }
   };
@@ -164,8 +188,6 @@ const OperationInformationForm = ({
             ) : null,
           },
         },
-    }
-      });
     }
 
     setPendingChangeRegistrationPurpose("");
