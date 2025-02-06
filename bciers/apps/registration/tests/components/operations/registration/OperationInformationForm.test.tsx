@@ -240,6 +240,17 @@ describe("the OperationInformationForm component", () => {
       const product2 = screen.getByText("Cement equivalent");
       await userEvent.click(product2);
 
+      // activities
+      const reportingActivitiesInput = screen.getByPlaceholderText(
+        /select reporting activity.../i,
+      );
+
+      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openActivitiesDropdown);
+      const activityOption = screen.getByText("Cement production");
+      await userEvent.click(activityOption);
+
       // add a new operation
       await userEvent.type(screen.getByLabelText(/Operation Name/i), "Op Name");
 
@@ -263,17 +274,6 @@ describe("the OperationInformationForm component", () => {
         primaryNaicsInput,
         /Oil and gas extraction+/i,
       );
-
-      // activities
-      const reportingActivitiesInput = screen.getByPlaceholderText(
-        /select reporting activity.../i,
-      );
-
-      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
-        ?.children[1]?.children[0] as HTMLInputElement;
-      await userEvent.click(openActivitiesDropdown);
-      const activityOption = screen.getByText("Cement production");
-      await userEvent.click(activityOption);
 
       // upload attachment
       const processFlowDiagramInput = screen.getByLabelText(/process flow+/i);
@@ -455,8 +455,42 @@ describe("the OperationInformationForm component", () => {
         ),
       ).toBeVisible();
     });
+  });
+
+  it("should show the confirmation modal when the selected purpose changes", async () => {
+    fetchFormEnums();
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    const purposeInput = screen.getByRole("combobox", {
+      name: /The purpose of this registration+/i,
+    });
+    await fillComboboxWidgetField(purposeInput, "Reporting Operation");
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(RegistrationPurposeHelpText["Reporting Operation"]),
+      ).toBeVisible();
+    });
     await userEvent.clear(purposeInput);
     await fillComboboxWidgetField(purposeInput, "OBPS Regulated Operation");
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Are you sure you want to change your registration purpose+/i,
+        ),
+      ).toBeVisible();
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: /Change registration purpose/i }),
+    );
+
     await waitFor(() => {
       expect(
         screen.getByText(
