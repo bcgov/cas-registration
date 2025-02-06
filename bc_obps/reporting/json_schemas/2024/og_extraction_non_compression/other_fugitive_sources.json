@@ -18,6 +18,10 @@
               "Onshore Petroleum and Natural Gas Production - Other fugitive emission sources"
             ]
           },
+          "type": {
+            "type": "string",
+            "default": "Source sub-type"
+          },
           "descriptionOfOtherSources": {
             "title": "Description of other sources",
             "default": "",
