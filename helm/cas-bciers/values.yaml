@@ -23,6 +23,8 @@ backend:
     host: ~
 
   resources:
+    limits:
+      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -58,6 +60,8 @@ registrationFrontend:
     path: ~
 
   resources:
+    limits:
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -89,6 +93,8 @@ reportingFrontend:
     path: ~
 
   resources:
+    limits:
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -120,6 +126,8 @@ administrationFrontend:
     path: ~
 
   resources:
+    limits:
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 256Mi
@@ -151,6 +159,8 @@ complianceFrontend:
     path: ~
 
   resources:
+    limits:
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 256Mi
@@ -181,6 +191,8 @@ dashboardFrontend:
     path: ~
 
   resources:
+    limits:
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 256Mi
