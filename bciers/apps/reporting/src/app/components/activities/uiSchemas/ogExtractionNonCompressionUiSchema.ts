@@ -1,10 +1,13 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
   emissionsOnlyUiSchema,
-  sourceSubTypeWithoutFuelUiSchema,
-  fuelsFieldsUiSchema,
+  fuelsOnlyUiSchema,
   sourceTypeCheckboxUiSchema,
+  emissionsFieldsUiSchema,
 } from "./common";
+import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
+import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
+import { InlineFieldTemplate } from "@bciers/components/form/fields";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -43,29 +46,63 @@ const uiSchema = {
     "ui:options": {
       label: false,
     },
-    associatedGasFlaring: fuelsFieldsUiSchema,
+    associatedGasFlaring: fuelsOnlyUiSchema,
     associatedGasVenting: emissionsOnlyUiSchema,
     blowdownVenting: emissionsOnlyUiSchema,
     dehydratorVenting: emissionsOnlyUiSchema,
-    drillingFlaring: fuelsFieldsUiSchema,
+    drillingFlaring: fuelsOnlyUiSchema,
     drillingVenting: emissionsOnlyUiSchema,
     enhancedOilRecoveryHydrocarbonLiquids: emissionsOnlyUiSchema,
     enhancedOilrecoveryInjectionPumpBlowdowns: emissionsOnlyUiSchema,
     equipmentLeaksDetectedLearkerEmissionFactorMethods: emissionsOnlyUiSchema,
-    flaringStacks: fuelsFieldsUiSchema,
-    hydraulicFracturingFlaring: fuelsFieldsUiSchema,
-    naturalGasPneumatciHighBleedDeviceVenting: fuelsFieldsUiSchema,
-    naturalGasPneumaticIntermittentBleedDeviceVenting: fuelsFieldsUiSchema,
-    naturalGasPneumaticLowBleedDeviceVenting: fuelsFieldsUiSchema,
-    naturalGasPneumaticPumpVenting: fuelsFieldsUiSchema,
-    otherFugitiveSources: sourceSubTypeWithoutFuelUiSchema,
-    otherVentingSources: emissionsOnlyUiSchema,
+    flaringStacks: fuelsOnlyUiSchema,
+    hydraulicFracturingFlaring: fuelsOnlyUiSchema,
+    naturalGasPneumatciHighBleedDeviceVenting: fuelsOnlyUiSchema,
+    naturalGasPneumaticIntermittentBleedDeviceVenting: fuelsOnlyUiSchema,
+    naturalGasPneumaticLowBleedDeviceVenting: fuelsOnlyUiSchema,
+    naturalGasPneumaticPumpVenting: fuelsOnlyUiSchema,
+    otherFugitiveSources: {
+      "ui:FieldTemplate": SourceTypeBoxTemplate,
+      units: {
+        "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+        "ui:FieldTemplate": FieldTemplate,
+        "ui:title": "Source sub-type data",
+        "ui:options": {
+          arrayAddLabel: "Add source sub-type",
+          label: false,
+          title: "Source sub-type",
+          padding: "p-2",
+        },
+        items: {
+          "ui:order": [
+            "sourceSubType",
+            "descriptionOfOtherSources",
+            "emissions",
+          ],
+          sourceSubType: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          descriptionOfOtherSources: {
+            "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          emissions: emissionsFieldsUiSchema,
+        },
+      },
+    },
+    otherVentingSources: {
+      "ui:FieldTemplate": SourceTypeBoxTemplate,
+      "ui:order": ["descriptionOfOtherSources", "emissions"],
+      descriptionOfOtherSources: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+      },
+      emissions: emissionsFieldsUiSchema,
+    },
     populationCountSources: emissionsOnlyUiSchema,
     producedWaterDissolvedCarbonDioxideMethane: emissionsOnlyUiSchema,
     releasesFromTanksUsedForStorageProductionProcessing: emissionsOnlyUiSchema,
     thirdPartyLineHitsWithReleaseOfGas: emissionsOnlyUiSchema,
     transmissionStorageTanks: emissionsOnlyUiSchema,
-    wellTestingFlaring: fuelsFieldsUiSchema,
+    wellTestingFlaring: fuelsOnlyUiSchema,
     wellTestingVenting: emissionsOnlyUiSchema,
     wellVentingDuringWellCompletionsHydraulicFracturing: emissionsOnlyUiSchema,
     wellVentingForLiquidsUnloading: emissionsOnlyUiSchema,
