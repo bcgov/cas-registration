@@ -10,6 +10,7 @@ import {
   getBusinessStructures,
   getNaicsCodes,
   getOperationWithDocuments,
+  getRegistrationPurposes,
   getRegulatedProducts,
   getReportingActivities,
 } from "./mocks";
@@ -93,7 +94,10 @@ export const fetchFormEnums = () => {
   });
 
   // Registration purposes
-  actionHandler.mockResolvedValue(["Potential Reporting Operation"]);
+  getRegistrationPurposes.mockResolvedValue([
+    "Potential Reporting Operation",
+    "Reporting Operation",
+  ]);
 };
 
 // Just using a simple schema for testing purposes
@@ -307,7 +311,9 @@ describe("the OperationInformationForm component", () => {
         /The purpose of this registration is to register as a\:/i,
       ),
     ).toBeVisible();
-    expect(screen.getByText(/Reporting Operation/i)).toBeVisible();
+    const reportingOperationLabels =
+      screen.getAllByText(/Reporting Operation/i);
+    expect(reportingOperationLabels.length === 2); // first is the from the Registration Purpose field, second is a section header
   });
 
   it("should render the form with the correct form for an EIO when formData is provided", async () => {
@@ -938,7 +944,7 @@ describe("the OperationInformationForm component", () => {
       );
       await userEvent.click(screen.getByRole("button", { name: "Edit" }));
       const cancelChipIcon = screen.getAllByTestId("CancelIcon");
-      await userEvent.click(cancelChipIcon[2]); // 0-1 are activities
+      await userEvent.click(cancelChipIcon[0]);
       expect(screen.queryByText(/ivy/i)).not.toBeInTheDocument();
       const operationRepresentativesComboBoxInput = screen.getByRole(
         "combobox",
@@ -969,12 +975,12 @@ describe("the OperationInformationForm component", () => {
             type: "Single Facility Operation",
             naics_code_id: 1,
             secondary_naics_code_id: 2,
-            activities: [1, 2],
             process_flow_diagram: mockDataUri,
             boundary_map: mockDataUri,
             operation_has_multiple_operators: false,
             registration_purpose: "Reporting Operation",
             operation_representatives: [2],
+            activities: [1, 2],
           }),
         },
       );
