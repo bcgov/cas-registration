@@ -2332,9 +2332,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/other_fugitive_sources.json'
     ) as og_st16:
         schema16 = json.load(og_st16)
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/other_fugitive_sources.json'
-    ) as og_st17:
+    with open(f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/other_venting_sources.json') as og_st17:
         schema17 = json.load(og_st17)
     with open(
         f'{cwd}/reporting/json_schemas/2024/og_extraction_non_compression/population_count_sources.json'
@@ -2544,7 +2542,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 json_schema=schema16,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-                has_unit=False,
+                has_unit=True,
                 has_fuel=False,
             ),
             ActivitySourceTypeSchema(

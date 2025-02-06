@@ -5,17 +5,23 @@
   "properties": {
     "units": {
       "type": "array",
-      "title": "Units",
+      "title": "Source sub-type",
       "items": {
         "type": "object",
         "properties": {
-          "source_sub_type": {
+          "sourceSubType": {
             "title": "Source Sub-type",
+            "default": "",
             "type": "string",
             "enum": [
               "Onshore Petroleum and Natural Gas Production - Gathering pipeline fugitive equipment",
               "Onshore Petroleum and Natural Gas Production - Other fugitive emission sources"
             ]
+          },
+          "descriptionOfOtherSources": {
+            "title": "Description of other sources",
+            "default": "",
+            "type": "string"
           },
           "emissions": {
             "title": "Emission Data",
