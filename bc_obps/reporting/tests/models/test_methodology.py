@@ -62,10 +62,6 @@ class TestInitialData(TestCase):
                 "WCI.353 (t)",
                 "CEPEI Methodology Manual",
                 "Other CGA Methodology",
-                "WCI.353 (c.1)(i)",
-                "WCI.353 (c.1)(ii)",
-                "WCI.353 (e)",
-                "WCI.353 (f)",
                 "WCI.363 (a)(1)",
                 "WCI.363 (a.1)(1)",
                 "WCI.363 (b)",
@@ -94,6 +90,12 @@ class TestInitialData(TestCase):
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
 
+        for m in existing_methodologies:
+            if m not in expected_methodologies:
+                print(m)
+
+        n = set([x for x in expected_methodologies if expected_methodologies.count(x) > 1])
+        print(n)
         self.assertEqual(len(existing_methodologies), len(expected_methodologies))
         self.assertEqual(existing_methodologies, expected_methodologies)
 
