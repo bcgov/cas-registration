@@ -17,8 +17,11 @@ export const getFacilitiesInformationTaskList = (
   activeIndex?: ActivePage | number,
   facilityName?: string,
   operationType = "Single Facility Operation",
+  expandActivities?: boolean, //to disable activity
 ): TaskListElement[] => {
   const name = facilityName ? facilityName : "Facility";
+
+  const isActivityListExpanded = expandActivities ?? true;
 
   const backToFacilitiesLink: TaskListElement[] =
     operationType === "Linear Facility Operation"
@@ -53,7 +56,7 @@ export const getFacilitiesInformationTaskList = (
         {
           type: "Section",
           title: "Activities information",
-          isExpanded: false,
+          isExpanded: isActivityListExpanded,
           elements: orderedActivities.map(
             (activity: ActivityData, index) =>
               ({

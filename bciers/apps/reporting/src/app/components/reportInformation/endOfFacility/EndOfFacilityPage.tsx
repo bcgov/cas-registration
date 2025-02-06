@@ -22,7 +22,10 @@ export default async function EndOfFacilityPage({
     undefined,
     reportInfoTaskListData?.facilityName,
     reportInfoTaskListData?.operationType,
+    false,
   );
+  // added expand Activities 'false' so that the activities list is not expanded on this page
+
   const facilityName = reportInfoTaskListData?.facilityName
     ? reportInfoTaskListData.facilityName
     : "Facility";

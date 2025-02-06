@@ -21,6 +21,7 @@ interface Props {
   orderedActivities: any;
   initialData: any;
   taskListElements: TaskListElement[];
+  operationType: string;
 }
 
 interface FormData {
@@ -95,6 +96,7 @@ export default function FacilityEmissionAllocationForm({
   facility_id,
   initialData,
   taskListElements,
+  operationType,
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
@@ -122,7 +124,10 @@ export default function FacilityEmissionAllocationForm({
 
   // 🛸 Set up routing urls
   const backUrl = `/reports/${version_id}/facilities/${facility_id}/production-data`;
-  const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;
+  const isLinearOperation = operationType === "Linear Facility Operation";
+  const saveAndContinueUrl = isLinearOperation
+    ? `/reports/${version_id}/facilities/${facility_id}/end-of-facility`
+    : `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;
 
   // 📋 Get the task list elements for the form
 
