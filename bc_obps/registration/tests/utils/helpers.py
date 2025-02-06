@@ -19,13 +19,11 @@ from phonenumber_field.modelfields import PhoneNumberField
 from registration.tests.utils.bakers import (
     contact_baker,
     operation_baker,
-    facility_baker,
     select_random_registration_purpose,
 )
 from registration.constants import BASE_ENDPOINT
 
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
-from registration.tests.utils.bakers import address_baker
 
 
 def requires_env(*envs):
@@ -133,7 +131,11 @@ class TestUtils:
             TestUtils.authorize_current_user_as_operator_user(self, operator)
 
         # Create a facility, optionally with an address
-        facility = facility_baker(address=address_baker() if with_address else None)
+        facility = baker.make_recipe(
+            'utils.facility',
+            operation=owning_operation,
+            address=baker.make_recipe('utils.address') if with_address else None,
+        )
 
         # Link the created facility with the operation
         baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
@@ -163,6 +165,7 @@ class TestUtils:
         Raises:
             AssertionError: If any of the assertions fail.
         """
+
         assert facility.address == expect_address
         assert facility.well_authorization_numbers.count() == (
             expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0

@@ -101,6 +101,8 @@ export default function TransferForm({
     } = await fetchOperationsPageData({
       paginate_results: false,
       operator_id: operatorId,
+      sort_field: "operation__name",
+      sort_order: "asc",
       end_date: true, // this indicates that the end_date is not null,
       status: "Active", // only fetch active facilities
     });
@@ -121,6 +123,7 @@ export default function TransferForm({
     const getFromOperatorOperations = await fetchOperatorOperations(
       formState?.from_operator,
     );
+
     const getByOperatorOperations = await fetchOperatorOperations(
       formState?.to_operator,
     );

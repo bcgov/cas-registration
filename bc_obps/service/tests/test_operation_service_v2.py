@@ -468,6 +468,7 @@ class TestOperationServiceV2CreateOrUpdateOperation:
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
         )
+        # check operation
         operation = OperationServiceV2.create_or_update_operation_v2(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -476,6 +477,14 @@ class TestOperationServiceV2CreateOrUpdateOperation:
         assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert operation.created_at is not None
         assert operation.updated_at is None
+
+        # check timeline model
+        assert OperationDesignatedOperatorTimeline.objects.count() == 1
+        timeline_record = OperationDesignatedOperatorTimeline.objects.first()
+        assert timeline_record.operation == operation
+        assert timeline_record.operator == approved_user_operator.operator
+        assert timeline_record.start_date is not None
+        assert timeline_record.status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
 
     @staticmethod
     def test_create_operation_with_multiple_operators():
@@ -1116,7 +1125,7 @@ class TestRemoveOperationRepresentative:
         contact2 = baker.make_recipe('registration.tests.utils.contact', id=2)
         operation.contacts.add(contact1, contact2)
         operation.save()
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.remove_operation_representative(user.user_guid, operation.id, {id: contact1.id})
 
     @staticmethod
@@ -1147,7 +1156,7 @@ class TestUpdateOperationsOperator:
         mock_get_by_guid.return_value = cas_admin
         operation = MagicMock()
         operator_id = uuid4()
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.update_operator(cas_admin.user_guid, operation, operator_id)
 
     @staticmethod
@@ -1165,7 +1174,7 @@ class TestListOperationTimeline:
     @staticmethod
     def test_raise_exception_if_user_unapproved():
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
-        with pytest.raises(Exception, match="Unauthorized."):
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.list_operations_timeline(
                 user.user_guid,
                 sort_field="created_at",

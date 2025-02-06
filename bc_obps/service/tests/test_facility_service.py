@@ -15,11 +15,13 @@ from registration.tests.utils.helpers import TestUtils
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.tests.utils.bakers import (
     address_baker,
-    facility_baker,
     operation_baker,
     operator_baker,
 )
 from service.facility_service import FacilityService
+from unittest.mock import patch, MagicMock
+from uuid import uuid4
+
 
 pytestmark = pytest.mark.django_db
 
@@ -29,7 +31,7 @@ class TestGetIfAuthorized:
     def test_get_if_authorized_cas_user_success():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 
-        facility = facility_baker()
+        facility = baker.make_recipe('utils.facility')
         baker.make(FacilityDesignatedOperationTimeline, operation=operation_baker(), facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
@@ -47,7 +49,7 @@ class TestGetIfAuthorized:
             role=UserOperator.Roles.ADMIN,
         )
         owning_operation: Operation = operation_baker(operator.id)
-        facility = facility_baker()
+        facility = baker.make_recipe('utils.facility')
         baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
@@ -56,21 +58,11 @@ class TestGetIfAuthorized:
     @staticmethod
     def test_get_if_authorized_industry_user_fail():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
-        owning_operator = operator_baker()
-        random_operator = operator_baker()
-        baker.make(
-            UserOperator,
-            user_id=user.user_guid,
-            status=UserOperator.Statuses.APPROVED,
-            operator=random_operator,
-            role=UserOperator.Roles.ADMIN,
-        )
-        owning_operation: Operation = operation_baker(owning_operator.id)
-        facility = baker.make(Facility, latitude_of_largest_emissions=5, longitude_of_largest_emissions=5)
-        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
-
+        timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
+        timeline.end_date = None
+        timeline.save()
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            FacilityService.get_if_authorized(user.user_guid, facility.id)
+            FacilityService.get_if_authorized(user.user_guid, timeline.facility.id)
 
     @staticmethod
     def test_create_facilities_with_designated_operations_create_single_facility():
@@ -268,7 +260,7 @@ class TestUpdateFacility:
 
         # Create a new instance of the Facility model
         address = address_baker() if with_address else None
-        facility = facility_baker(address=address)
+        facility = baker.make_recipe('utils.facility', address=address, operation=owning_operation)
 
         # Set Well Authorization Numbers if they were created
         if well_auth_objs:
@@ -518,3 +510,25 @@ class TestGenerateBcghgId:
         timeline.facility.refresh_from_db()
         assert timeline.facility.bcghg_id is not None
         assert timeline.facility.bcghg_id.issued_by == approved_user_operator.user
+
+
+class TestUpdateFacilitysOperation:
+    @staticmethod
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_unauthorized_user_cannot_update(mock_get_by_guid):
+        cas_admin = baker.make_recipe('utils.cas_admin')
+        mock_get_by_guid.return_value = cas_admin
+        operation = MagicMock()
+        operation_id = uuid4()
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
+            FacilityService.update_operation_for_facility(cas_admin.user_guid, operation, operation_id)
+
+    @staticmethod
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_update_operation_for_facility_success(mock_get_by_guid):
+        cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
+        mock_get_by_guid.return_value = cas_analyst
+        operation = baker.make_recipe('utils.operation')
+        facility = baker.make_recipe('utils.facility')
+        FacilityService.update_operation_for_facility(cas_analyst.user_guid, facility, operation.id)
+        assert facility.operation == operation

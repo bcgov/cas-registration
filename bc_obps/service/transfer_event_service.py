@@ -24,6 +24,7 @@ from service.data_access_service.operation_designated_operator_timeline_service 
 from service.data_access_service.transfer_event_service import TransferEventDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
+from service.facility_service import FacilityService
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 from service.operation_service_v2 import OperationServiceV2
 
@@ -254,6 +255,8 @@ class TransferEventService:
                     "status": FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
                 },
             )
+            # update the facility's operation
+            FacilityService.update_operation_for_facility(user_guid=user_guid, facility=facility, operation_id=event.to_operation.id)  # type: ignore # we are sure that operation is not None
 
     @classmethod
     def _process_operation_transfer(cls, event: TransferEvent, user_guid: UUID) -> None:
