@@ -69,7 +69,7 @@ def immutable_report_version_trigger(
                 limit 1;
 
                 if status='Submitted' then
-                    raise exception 'ReportVersion record is immutable after a report version has been submitted';
+                    raise exception '{meta.model_name} record is immutable after a report version has been submitted';
                 end if;
 
                 return new;
