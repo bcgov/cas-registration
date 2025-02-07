@@ -30,8 +30,12 @@ class Migration(migrations.Migration):
                 (
                     'allocation_methodology',
                     models.CharField(
-                        choices=[('Calculator', 'Calculator'), ('Other', 'Other')],
-                        default='Calculator',
+                        choices=[
+                            ('Not Applicable', 'Not Applicable'),
+                            ('OBPS Allocation Calculator', 'Calculator'),
+                            ('Other', 'Other'),
+                        ],
+                        default='OBPS Allocation Calculator',
                         db_comment='The methodology used to calculate the allocated emissions',
                         max_length=255,
                     ),
