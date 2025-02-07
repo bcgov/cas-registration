@@ -11,6 +11,7 @@ class ReportAdditionalDataTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_object = report_additional_data_baker()
         cls.field_data = [
+            ("id", "ID", None, None),
             *TIMESTAMP_COMMON_FIELDS,
             ("report_version", "report version", None, None),
             ("capture_emissions", "capture emissions", None, None),
