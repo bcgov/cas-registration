@@ -32,7 +32,7 @@ def assert_immutable_report_version(
 
     with pytest.raises(
         ProgrammingError,
-        match="reportactivity record is immutable after a report version has been submitted",
+        match=r".* record is immutable after a report version has been submitted",
     ):
         setattr(model_under_test, str_field_to_update, "{'test': 'forbid change'}")
         model_under_test.save()
