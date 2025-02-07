@@ -5,16 +5,23 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
-import { regulatedOperationPurposes } from "@/registration/app/components/operations/registration/enums";
+import {
+  fetchOperationsPageData,
+  getBusinessStructures,
+  getNaicsCodes,
+  getRegistrationPurposes,
+  getRegulatedProducts,
+  getReportingActivities,
+} from "@/administration/tests/components/operations/mocks";
 
 export const fetchFormEnums = () => {
   // Regulated products
-  actionHandler.mockResolvedValueOnce([
+  getRegulatedProducts.mockResolvedValueOnce([
     { id: 1, name: "BC-specific refinery complexity throughput" },
     { id: 2, name: "Cement equivalent" },
   ]);
   // Operations
-  actionHandler.mockResolvedValueOnce([
+  fetchOperationsPageData.mockResolvedValueOnce([
     { id: "uuid1", name: "Operation 1" },
     { id: "uuid2", name: "Operation 2" },
     {
@@ -23,14 +30,16 @@ export const fetchFormEnums = () => {
     },
   ]);
   // Purposes
-  actionHandler.mockResolvedValueOnce([
-    ...regulatedOperationPurposes,
+  getRegistrationPurposes.mockResolvedValueOnce([
     "Reporting Operation",
     "Potential Reporting Operation",
+    "OBPS Regulated Operation",
+    "Opted-in Operation",
+    "New Entrant Operation",
     "Electricity Import Operation",
   ]);
   // Naics codes
-  actionHandler.mockResolvedValueOnce([
+  getNaicsCodes.mockResolvedValueOnce([
     {
       id: 1,
       naics_code: "211110",
@@ -43,12 +52,12 @@ export const fetchFormEnums = () => {
     },
   ]);
   // Reporting activities
-  actionHandler.mockResolvedValueOnce([
+  getReportingActivities.mockResolvedValueOnce([
     { id: 1, name: "Ammonia production" },
     { id: 2, name: "Cement production" },
   ]);
   // Business structures
-  actionHandler.mockResolvedValueOnce([
+  getBusinessStructures.mockResolvedValueOnce([
     { name: "General Partnership" },
     { name: "BC Corporation" },
   ]);
