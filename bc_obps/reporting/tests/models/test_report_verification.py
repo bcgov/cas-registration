@@ -17,6 +17,7 @@ class ReportVerificationTest(BaseTestCase):
         cls.test_object = make_recipe("reporting.tests.utils.report_verification")
         # Define the field data to validate in tests
         cls.field_data = [
+            ("id", "ID", None, None),
             *TIMESTAMP_COMMON_FIELDS,
             ("report_version", "report version", None, None),
             ("verification_body_name", "verification body name", None, None),

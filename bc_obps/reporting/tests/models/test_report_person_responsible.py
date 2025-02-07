@@ -11,6 +11,7 @@ class ReportPersonResponsibleTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_object = report_person_responsible_baker()
         cls.field_data = [
+            ("id", "ID", None, None),
             *TIMESTAMP_COMMON_FIELDS,
             ("report_version", "report version", None, None),
             ("first_name", "first name", None, None),
