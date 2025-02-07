@@ -59,5 +59,5 @@ class ReportVerificationVisit(TimeStampedModel):
         ]
         triggers = [
             *TimeStampedModel.Meta.triggers,
-            immutable_report_version_trigger(),
+            immutable_report_version_trigger("report_verification__report_version"),
         ]

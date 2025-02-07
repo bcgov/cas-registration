@@ -12,7 +12,6 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="report_person_responsible",
         db_comment="The report version this person responsible applies to",
-        primary_key=True,
     )
     street_address = models.CharField(
         max_length=255,

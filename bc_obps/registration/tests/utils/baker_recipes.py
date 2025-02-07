@@ -5,7 +5,9 @@ from zoneinfo import ZoneInfo
 from registration.models import OperationDesignatedOperatorTimeline
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+from registration.models.facility_designated_operation_timeline import (
+    FacilityDesignatedOperationTimeline,
+)
 from registration.models.document import Document
 from registration.models.document_type import DocumentType
 from registration.models.event.transfer_event import TransferEvent
@@ -31,18 +33,24 @@ from registration.tests.utils.bakers import (
 from registration.models.operator import Operator
 from model_bakery.recipe import Recipe, foreign_key, seq
 
-naics_code = Recipe(NaicsCode, naics_code='486210')
-address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
+naics_code = Recipe(NaicsCode, naics_code="486210")
+address = Recipe(
+    Address,
+    street_address="Dreary Lane",
+    municipality="Candyland",
+    province="BC",
+    postal_code="HOHOHO",
+)
 document = Recipe(
-    Document, file='test.pdf', type=DocumentType.objects.get(name='boundary_map')
+    Document, file="test.pdf", type=DocumentType.objects.get(name="boundary_map")
 )  # DocumentType records are loaded in the migrations
-bcghg_id = Recipe(BcGreenhouseGasId, id='23219990023')
+bcghg_id = Recipe(BcGreenhouseGasId, id="23219990023")
 boro_id = Recipe(BcObpsRegulatedOperation, id=seq("99-", start=1001))
 
 
 operator = Recipe(
     Operator,
-    legal_name=seq('Operator 0'),
+    legal_name=seq("Operator 0"),
     bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
     business_structure=BusinessStructure.objects.first(),
     mailing_address=foreign_key(address),
@@ -89,11 +97,11 @@ cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst")
 
 operation = Recipe(
     Operation,
-    name=seq('Operation 0'),
+    name=seq("Operation 0"),
     naics_code=foreign_key(naics_code),
     operator=foreign_key(operator_for_operation),
     created_by=foreign_key(industry_operator_user),
-    type='Single Facility Operation',
+    type="Single Facility Operation",
     registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
 )
 
@@ -134,8 +142,8 @@ contact = Recipe(
     Contact,
     business_role=BusinessRole.objects.first(),
     address=foreign_key(address),
-    first_name=seq('Firstname 0'),
-    last_name=seq('Lastname 0'),
+    first_name=seq("Firstname 0"),
+    last_name=seq("Lastname 0"),
     operator=foreign_key(operator),
 )
 
@@ -150,7 +158,7 @@ transfer_event = Recipe(
 facility = Recipe(
     Facility,
     address=foreign_key(address),
-    name=seq('Facility 0'),
+    name=seq("Facility 0"),
     operation=foreign_key(operation),
     type=Facility.Types.LARGE_FACILITY,
 )

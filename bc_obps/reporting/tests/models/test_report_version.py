@@ -1,6 +1,7 @@
 from common.tests.utils.helpers import BaseTestCase
 from common.tests.utils.model_inspection import get_cascading_models
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.utils import ProgrammingError
 from model_bakery import baker
 import pytest
@@ -84,12 +85,13 @@ class ReportVersionTest(BaseTestCase):
         # Succeeds
         self.test_object.save()
 
-        with pytest.raises(
-            ProgrammingError,
-            match="pgtrigger: Cannot update rows from report_version table",
-        ):
-            self.test_object.status = "Draft"
-            self.test_object.save()
+        with transaction.atomic():
+            with pytest.raises(
+                ProgrammingError,
+                match="pgtrigger: Cannot update rows from report_version table",
+            ):
+                self.test_object.status = "Draft"
+                self.test_object.save()
 
     def test_all_report_version_models_have_the_immutability_trigger(self):
         report_version_models = get_cascading_models(ReportVersion)

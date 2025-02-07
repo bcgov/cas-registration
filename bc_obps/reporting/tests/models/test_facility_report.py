@@ -51,4 +51,4 @@ class FacilityReportModelTest(BaseTestCase):
         ]
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.facility_report")
+        assert_immutable_report_version("reporting.tests.utils.facility_report", "facility_name")
