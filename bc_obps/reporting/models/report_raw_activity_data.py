@@ -47,7 +47,7 @@ class ReportRawActivityData(TimeStampedModel):
         ]
         triggers = [
             *TimeStampedModel.Meta.triggers,
-            immutable_report_version_trigger(),
+            immutable_report_version_trigger("facility_report__report_version"),
         ]
 
     def __str__(self) -> str:
