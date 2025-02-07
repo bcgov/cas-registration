@@ -14,6 +14,21 @@ class Command(BaseCommand):
             "activity",
             "reporting_year",
             "user",  # This table has some seeded data (for e2e tests) that should not be truncated
+            # reporting program configuration tables
+            "configuration",
+            "configuration_element",
+            "activity_json_schema",
+            "activity_source_type_json_schema",
+            "custom_methodology_schema",
+            "emission_category",
+            "emission_category_mapping",
+            "fuel_type",
+            "gas_type",
+            "methodology",
+            "naics_regulatory_values",
+            "product_emission_intensity",
+            "reporting_field",
+            "source_type",
         ]
         schemas = ["erc", "erc_history"]
         for schema in schemas:
@@ -26,4 +41,4 @@ class Command(BaseCommand):
                         full_truncate_statement = truncate_statement % table_name
                         cursor.execute(full_truncate_statement)
 
-        self.stdout.write(self.style.SUCCESS('All tables have been truncated.'))
+        self.stdout.write(self.style.SUCCESS("All tables have been truncated."))
