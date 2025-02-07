@@ -28,8 +28,7 @@ class ReportNewEntrant(TimeStampedModel):
         db_table = 'erc"."report_new_entrant'
         app_label = "reporting"
         db_table_comment = "Table storing new entrant emissions data for the reporting system"
-
         triggers = [
             *TimeStampedModel.Meta.triggers,
-            immutable_report_version_trigger("report_new_entrant__report_version"),
+            immutable_report_version_trigger(),
         ]

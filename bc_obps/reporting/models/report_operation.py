@@ -2,6 +2,7 @@ from django.db import models
 from registration.models import Activity, RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportOperation(TimeStampedModel):
@@ -56,3 +57,7 @@ class ReportOperation(TimeStampedModel):
         db_table_comment = "A table to store operation information as part of a report"
         db_table = 'erc"."report_operation'
         app_label = "reporting"
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]

@@ -3,6 +3,7 @@ from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from registration.models.user_and_contact_common_info import UserAndContactCommonInfo
 from reporting.models.report_version import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
@@ -38,3 +39,7 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
         db_table_comment = "A table to store the data about the person responsible for the report"
         db_table = 'erc"."report_person_responsible'
         app_label = "reporting"
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]

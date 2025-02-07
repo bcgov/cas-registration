@@ -1,6 +1,7 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportVerification(TimeStampedModel):
@@ -17,7 +18,8 @@ class ReportVerification(TimeStampedModel):
     )
 
     verification_body_name = models.CharField(
-        max_length=1000, db_comment="The name of the verification body conducting the verification"
+        max_length=1000,
+        db_comment="The name of the verification body conducting the verification",
     )
 
     class AccreditedBy(models.TextChoices):
@@ -25,7 +27,9 @@ class ReportVerification(TimeStampedModel):
         SCC = "SCC"
 
     accredited_by = models.CharField(
-        max_length=10, choices=AccreditedBy.choices, db_comment="The verification accreditation body"
+        max_length=10,
+        choices=AccreditedBy.choices,
+        db_comment="The verification accreditation body",
     )
 
     class ScopeOfVerification(models.TextChoices):
@@ -34,7 +38,9 @@ class ReportVerification(TimeStampedModel):
         CORRECTED = "Corrected Report"
 
     scope_of_verification = models.CharField(
-        max_length=50, choices=ScopeOfVerification.choices, db_comment="The scope of the verification"
+        max_length=50,
+        choices=ScopeOfVerification.choices,
+        db_comment="The scope of the verification",
     )
 
     threats_to_independence = models.BooleanField(
@@ -55,4 +61,8 @@ class ReportVerification(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_verification'
         db_table_comment = "Table to store verification information associated with a report version"
-        app_label = 'reporting'
+        app_label = "reporting"
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]

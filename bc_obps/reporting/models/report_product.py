@@ -4,6 +4,7 @@ from registration.models.regulated_product import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportProduct(TimeStampedModel):
@@ -26,14 +27,14 @@ class ReportProduct(TimeStampedModel):
     facility_report = models.ForeignKey(
         FacilityReport,
         on_delete=models.CASCADE,
-        related_name='report_products',
+        related_name="report_products",
         db_comment="The facility report this production information belongs to",
     )
 
     product = models.ForeignKey(
         RegulatedProduct,
         on_delete=models.PROTECT,
-        related_name='report_products',
+        related_name="report_products",
         db_comment="The product this production information is about",
     )
     annual_production = models.FloatField(
@@ -65,7 +66,9 @@ class ReportProduct(TimeStampedModel):
         blank=True,
     )
     quantity_sold_during_period = models.FloatField(
-        db_comment="The quantity of product sold during the compliance period, if applicable", null=True, blank=True
+        db_comment="The quantity of product sold during the compliance period, if applicable",
+        null=True,
+        blank=True,
     )
     quantity_throughput_during_period = models.FloatField(
         db_comment="The quantity of throughput at point of sale during the compliance period, if applicable",
@@ -78,16 +81,23 @@ class ReportProduct(TimeStampedModel):
             "A table storing the production information for a single product, as part of a facility report"
         )
         db_table = 'erc"."report_product'
-        app_label = 'reporting'
+        app_label = "reporting"
         constraints = [
             models.UniqueConstraint(
-                fields=['facility_report', 'product'],
+                fields=["facility_report", "product"],
                 name="unique_report_product_per_product_and_facility_report",
                 violation_error_message="A FacilityReport can only have one ReportProduct per product",
             ),
             models.CheckConstraint(
                 name="other_methodology_must_have_description",
-                check=~Q(production_methodology="other", production_methodology_description__isnull=True),
+                check=~Q(
+                    production_methodology="other",
+                    production_methodology_description__isnull=True,
+                ),
                 violation_error_message="A value for production_methodology_description should be provided if the production_methodology is 'other'",
             ),
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
         ]

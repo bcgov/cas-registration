@@ -1,8 +1,11 @@
 from common.tests.utils.helpers import BaseTestCase
+from common.tests.utils.model_inspection import get_cascading_models
 from django.core.exceptions import ValidationError
+from django.db.utils import ProgrammingError
 from model_bakery import baker
 import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models.report_version import ReportVersion
 from reporting.tests.utils.bakers import report_version_baker
 
 
@@ -37,8 +40,18 @@ class ReportVersionTest(BaseTestCase):
             ("report_verification", "report verification", None, None),
             ("report_new_entrant", "report new entrant", None, None),
             ("report_attachments", "report attachment", None, 0),
-            ("reportproductemissionallocation_records", "report product emission allocation", None, 0),
-            ('report_operation_representatives', 'report operation representative', None, None),
+            (
+                "reportproductemissionallocation_records",
+                "report product emission allocation",
+                None,
+                0,
+            ),
+            (
+                "report_operation_representatives",
+                "report operation representative",
+                None,
+                None,
+            ),
         ]
 
     def test_unique_draft_version_per_report(self):
@@ -65,3 +78,28 @@ class ReportVersionTest(BaseTestCase):
             status="Draft",
             report_id=report.id,
         )
+
+    def test_submitted_report_version_is_immutable(self):
+        self.test_object.status = "Submitted"
+        # Succeeds
+        self.test_object.save()
+
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: Cannot update rows from report_version table",
+        ):
+            self.test_object.status = "Draft"
+            self.test_object.save()
+
+    def test_all_report_version_models_have_the_immutability_trigger(self):
+        report_version_models = get_cascading_models(ReportVersion)
+
+        missing_triggers = [
+            m.__name__
+            for m in report_version_models
+            if not any(trigger.name == "immutable_report_version" for trigger in m._meta.triggers)
+        ]
+
+        assert (
+            missing_triggers == []
+        ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"
