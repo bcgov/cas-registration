@@ -11,6 +11,8 @@ backend:
   environment: test
 
   resources:
+    limits:
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 256Mi
@@ -28,6 +30,8 @@ administrationFrontend:
   environment: test
 
   resources:
+    limits:
+      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -45,6 +49,8 @@ registrationFrontend:
   environment: test
 
   resources:
+    limits:
+      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -62,6 +68,8 @@ reportingFrontend:
   environment: test
 
   resources:
+    limits:
+      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -79,6 +87,8 @@ complianceFrontend:
   environment: test
 
   resources:
+    limits:
+      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -100,6 +110,8 @@ dashboardFrontend:
     siteminderAuthUrl: https://logontest7.gov.bc.ca
 
   resources:
+    limits:
+      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
