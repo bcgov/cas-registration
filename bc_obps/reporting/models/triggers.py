@@ -37,8 +37,7 @@ def immutable_report_version_trigger(
         if index == 0:
             sql += f"""
                 select {rel_id}.status into status
-                from "erc"."{table}" {rel_id}
-            """
+                from "erc"."{table}" {rel_id}"""
         elif index == len(relations) - 1:
             # Leaving {meta.db_table} in the func template will let django-pgtrigger reflect which one is the current table
             # when building the trigger, instead of having the user need to specify it
@@ -47,12 +46,10 @@ def immutable_report_version_trigger(
 
             sql += f"""
                 join "{{meta.db_table}}" {rel_id} on {rel_id}.{prev_table}_id={prev_rel_id}.id
-                where {rel_id}.id=new.id
-            """
+                where {rel_id}.id=new.id"""
         else:
             sql += f"""
-                join "erc"."{table}" {rel_id} on {rel_id}.{prev_table}_id={prev_rel_id}.id
-            """
+                join "erc"."{table}" {rel_id} on {rel_id}.{prev_table}_id={prev_rel_id}.id"""
 
     return pgtrigger.Trigger(
         name="immutable_report_version",
@@ -62,8 +59,7 @@ def immutable_report_version_trigger(
             """
             declare
                 status text;
-            begin
-            """
+            begin"""
             + sql
             + """
                 limit 1;
