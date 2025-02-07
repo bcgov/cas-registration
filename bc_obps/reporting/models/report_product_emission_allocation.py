@@ -13,7 +13,8 @@ class ReportProductEmissionAllocation(TimeStampedModel):
     """
 
     class AllocationMethodologyChoices(models.TextChoices):
-        CALCULATOR = ("Calculator",)
+        NOT_APPLICABLE = "Not Applicable"
+        CALCULATOR = ("OBPS Allocation Calculator",)
         OTHER = "Other"
 
     report_version = models.ForeignKey(

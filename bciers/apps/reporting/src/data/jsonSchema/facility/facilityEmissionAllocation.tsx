@@ -170,7 +170,7 @@ export const emissionAllocationSchema: RJSFSchema = {
     allocation_methodology: {
       type: "string",
       title: "Methodology",
-      enum: ["Calculator", "Other"],
+      enum: ["Not Applicable", "OBPS Allocation Calculator", "Other"],
     },
     basic_emission_allocation_data_title: {
       title:
