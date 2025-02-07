@@ -9,7 +9,6 @@ def assert_immutable_report_version(
     str_field_to_update: str = "json_data",
     path_to_report_version: str = "report_version",
 ):
-    return
     """
     A default test that asserts a model is immutable after its report_version is submitted.
 

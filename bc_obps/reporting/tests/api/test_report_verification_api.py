@@ -9,16 +9,17 @@ from reporting.models.report_verification import ReportVerification
 class TestSaveReportVerificationApi(CommonTestSetup):
     def setup_method(self):
         # Create ReportVersion instance
-        self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
+        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
 
         # Create ReportVerification instance associated with the ReportVersion
         self.report_verification = baker.make_recipe(
-            'reporting.tests.utils.report_verification', report_version=self.report_version
+            "reporting.tests.utils.report_verification",
+            report_version=self.report_version,
         )
 
         # Create and attach related ReportVerificationVisit instances
         report_verification_visits = baker.make_recipe(
-            'reporting.tests.utils.report_verification_visit',
+            "reporting.tests.utils.report_verification_visit",
             report_verification=self.report_verification,
             _quantity=2,
         )
@@ -96,15 +97,19 @@ class TestSaveReportVerificationApi(CommonTestSetup):
             ],
         )
 
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+
         # Prepare the mock response with expected data
         mock_response = ReportVerification(
-            report_version=self.report_version,
+            report_version=report_version,
             verification_body_name=payload.verification_body_name,
             accredited_by=payload.accredited_by,
             scope_of_verification=payload.scope_of_verification,
             threats_to_independence=payload.threats_to_independence,
             verification_conclusion=payload.verification_conclusion,
         )
+        mock_response.save()
+        mock_response.report_verification_visits.set(self.report_verification.report_verification_visits.all())
 
         # Set the mock return value for the service
         mock_save_report_verification.return_value = mock_response
