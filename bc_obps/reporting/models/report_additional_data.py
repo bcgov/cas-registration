@@ -10,7 +10,6 @@ class ReportAdditionalData(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="report_additional_data",
         db_comment="The report version this report additional data applies to",
-        primary_key=True,
     )
     capture_emissions = models.BooleanField(
         db_comment="Whether or not capture emissions was selected",
