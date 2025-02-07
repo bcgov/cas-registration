@@ -1,10 +1,12 @@
 """
 Model for storing raw activity data before processing.
 """
+
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from registration.models.activity import Activity
 from reporting.models.facility_report import FacilityReport
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportRawActivityData(TimeStampedModel):
@@ -23,7 +25,7 @@ class ReportRawActivityData(TimeStampedModel):
     activity = models.ForeignKey(
         Activity,
         on_delete=models.PROTECT,
-        related_name='%(class)s_records',
+        related_name="%(class)s_records",
         db_comment="The reporting activity this raw activity JSON data applies to",
     )
 
@@ -35,12 +37,18 @@ class ReportRawActivityData(TimeStampedModel):
         """Meta class for ReportRawActivityData."""
 
         db_table = 'erc"."report_raw_activity_data'
-        app_label = 'reporting'
+        app_label = "reporting"
         db_table_comment = "Stores raw activity JSON data before processing into report activities"
-
-    constraints = [
-        models.UniqueConstraint(name="unique_raw_data_facility_report_activity", fields=['facility_report', 'activity'])
-    ]
+        constraints = [
+            models.UniqueConstraint(
+                name="unique_raw_data_facility_report_activity",
+                fields=["facility_report", "activity"],
+            )
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]
 
     def __str__(self) -> str:
         """String representation of the ReportRawActivityData instance."""

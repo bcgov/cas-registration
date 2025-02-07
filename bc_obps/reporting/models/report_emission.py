@@ -8,6 +8,7 @@ from django.db.models import Q, DecimalField
 from django.db.models.fields.json import KeyTextTransform
 from django.db.models.functions import Cast
 from reporting.models.report_unit import ReportUnit
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class AnnotateEmissionsManager(models.Manager):
@@ -69,4 +70,8 @@ class ReportEmission(ReportDataBaseModel):
                 name="fuel_or_unit_but_not_both",
                 violation_error_message="An emission record must belong to either a fuel, a unit, or none, but not both",
             )
+        ]
+        triggers = [
+            *ReportDataBaseModel.Meta.triggers,
+            immutable_report_version_trigger(),
         ]

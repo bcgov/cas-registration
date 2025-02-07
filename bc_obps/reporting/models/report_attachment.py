@@ -2,8 +2,9 @@ from django.db import models
 from django.db.models import CharField, FileField, ForeignKey
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
-FOLDER_NAME = 'report_attachments/%Y/'
+FOLDER_NAME = "report_attachments/%Y/"
 
 
 class ReportAttachment(TimeStampedModel):
@@ -38,6 +39,10 @@ class ReportAttachment(TimeStampedModel):
             # Check that only one attachment type is present per report version
             models.UniqueConstraint(
                 name="unique_attachment_type_per_report_version",
-                fields=['report_version', 'attachment_type'],
+                fields=["report_version", "attachment_type"],
             )
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
         ]
