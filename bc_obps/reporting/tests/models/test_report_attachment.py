@@ -6,7 +6,7 @@ from reporting.tests.utils.immutable_report_version import (
 )
 
 
-class ReportAdditionalDataTest(BaseTestCase):
+class ReportAttachmentTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = ReportAttachment()
