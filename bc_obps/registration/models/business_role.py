@@ -2,7 +2,6 @@ from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
 from simple_history.models import HistoricalRecords
-
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.business_role import Rls as BusinessRoleRls
 

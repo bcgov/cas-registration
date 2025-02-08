@@ -53,7 +53,7 @@ class OperatorServiceV2:
 
         # Otherwise, create or update the partner operators
         new_partner_operators = [
-            PartnerOperatorService.create_or_update(partner.id, operator, user_guid, partner.dict())  # type: ignore[attr-defined]
+            PartnerOperatorService.create_or_update(partner.id, operator, partner.dict())  # type: ignore[attr-defined]
             for partner in partner_operator_data
         ]
 
@@ -92,7 +92,7 @@ class OperatorServiceV2:
                 po_operator_data['mailing_address'] = updated_mailing_address
 
             new_parent_operators.append(
-                ParentOperatorService.create_or_update(po_data.id, operator, user_guid, po_operator_data)
+                ParentOperatorService.create_or_update(po_data.id, operator, po_operator_data)
             )
 
         for old_parent in old_parent_operators:

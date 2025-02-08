@@ -3,7 +3,6 @@ from common.models import BaseModel
 from django.db import models
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
-
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.address import Rls as AddressRls
 
