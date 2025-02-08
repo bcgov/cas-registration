@@ -1,3 +1,5 @@
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models.user import User
 import re
 import typing
@@ -7,6 +9,7 @@ from registration.constants import BORO_ID_REGEX
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from registration.models.rls_configs.bc_obps_regulated_operation import Rls as BcObpsRegulatedOperationRls
 
 
 class BcObpsRegulatedOperation(BaseModel):
@@ -48,7 +51,9 @@ class BcObpsRegulatedOperation(BaseModel):
 
     class Meta:
         db_table_comment = "Table to store BC OBPS Regulated Operation metadata. Once an operation has been approved as a BC OBPS Regulated Operations (IRC has determined the operation meets certain criteria and should be included in the program), then it is issued an ID."
-        db_table = 'erc"."bc_obps_regulated_operation'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.BC_OBPS_REGULATED_OPERATION.value}'
+
+    Rls = BcObpsRegulatedOperationRls
 
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:

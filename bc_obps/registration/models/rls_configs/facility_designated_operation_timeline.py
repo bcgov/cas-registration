@@ -5,10 +5,11 @@ from rls.utils.helpers import generate_rls_grants
 
 class Rls:
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
+        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
-        RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
+        # CAS_ANALYST can do Transfers
+        RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.OPERATOR)
+    grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.FACILITY_DESIGNATED_OPERATION_TIMELINE)

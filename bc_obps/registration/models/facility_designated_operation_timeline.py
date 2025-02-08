@@ -1,6 +1,9 @@
 from django.db import models
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models import Facility, Operation, TimeStampedModel
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.facility_designated_operation_timeline import Rls as FacilityDesignatedOperationRls
 
 
 class FacilityDesignatedOperationTimeline(TimeStampedModel):
@@ -34,7 +37,8 @@ class FacilityDesignatedOperationTimeline(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to connect facilities and operations"
-        db_table = 'erc"."facility_designated_operation_timeline'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.FACILITY_DESIGNATED_OPERATION_TIMELINE.value}'
+
         constraints = [
             models.UniqueConstraint(
                 fields=['facility'],
@@ -42,3 +46,5 @@ class FacilityDesignatedOperationTimeline(TimeStampedModel):
                 name='unique_active_designated_operation_per_facility',
             )
         ]
+
+    Rls = FacilityDesignatedOperationRls
