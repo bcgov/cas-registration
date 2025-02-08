@@ -5,10 +5,10 @@ from rls.utils.helpers import generate_rls_grants
 
 class Rls:
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
-        RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
+        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT],
+        RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.INSERT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.OPERATOR)
+    grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.BC_GREENHOUSE_GAS_ID)

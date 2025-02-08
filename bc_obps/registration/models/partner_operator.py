@@ -1,4 +1,6 @@
 from django.db import models
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models.operator import Operator
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
@@ -7,6 +9,7 @@ from registration.constants import (
 from registration.models import TimeStampedModel, BusinessStructure
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
+from registration.models.rls_configs.partner_operator import Rls as PartnerOperatorRls
 
 
 class PartnerOperator(TimeStampedModel):
@@ -37,4 +40,6 @@ class PartnerOperator(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing data about operators' partner operators. Partner operators may have a record in the Operator table. If so, that record is controlled by someone who works for that partner operator. The information in this table is controlled by BCOBPS operators who should not have access to other operator's records."
-        db_table = 'erc"."partner_operator'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.PARTNER_OPERATOR.value}'
+
+    Rls = PartnerOperatorRls

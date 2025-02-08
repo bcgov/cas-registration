@@ -1,6 +1,9 @@
 from django.db import models
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models import TimeStampedModel
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.well_authorization_number import Rls as WellAuthorizationNumberRls
 
 
 class WellAuthorizationNumber(TimeStampedModel):
@@ -15,4 +18,6 @@ class WellAuthorizationNumber(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table containing well authorization numbers. Authorization numbers are assigned by the British Columbia Energy Regulator: https://www.bc-er.ca/what-we-regulate/oil-gas/wells/. Facilities can have multiple well authorization numbers."
-        db_table = 'erc"."well_authorization_number'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.WELL_AUTHORIZATION_NUMBER.value}'
+
+    Rls = WellAuthorizationNumberRls
