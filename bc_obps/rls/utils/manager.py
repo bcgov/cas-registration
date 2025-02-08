@@ -24,6 +24,10 @@ class RlsManager:
             # Grant usage and select privileges on all tables in schema common to public
             cursor.execute("grant usage on schema common to public")
             cursor.execute("grant select on all tables in schema common to public")
+            if settings.DEBUG:
+                # We need to grant all privileges on all tables in schema public to public in DEBUG mode to be able to run silk profiler
+                cursor.execute("grant usage on schema public to public")
+                cursor.execute("grant all privileges on all tables in schema public to public")
 
     @classmethod
     def apply_rls(cls) -> None:
