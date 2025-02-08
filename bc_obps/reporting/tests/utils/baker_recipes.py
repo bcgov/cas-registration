@@ -1,6 +1,9 @@
 from datetime import date, timedelta, datetime
 from typing import Any
+from model_bakery import baker
 from reporting.models.report_attachment import ReportAttachment
+from reporting.models.report_methodology import ReportMethodology
+from reporting.models.report_person_responsible import ReportPersonResponsible
 from reporting.models.report_product_emission_allocation import (
     ReportProductEmissionAllocation,
 )
@@ -26,6 +29,7 @@ from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.reporting_year import ReportingYear
@@ -183,7 +187,7 @@ report_non_attributable_emissions = Recipe(
     activity="Test Activity",
     source_type="Test Source Type",
     emission_category=foreign_key(emission_category),
-    gas_type=[foreign_key(gas_type)],
+    gas_type=baker.prepare_recipe("reporting.tests.utils.gas_type", _quantity=2),
 )
 
 report_verification = Recipe(
@@ -261,4 +265,23 @@ report_attachment = Recipe(
     ReportAttachment,
     report_version=foreign_key(report_version),
     attachment="test",
+)
+report_methodology = Recipe(
+    ReportMethodology,
+    report_version=foreign_key(report_version),
+    report_emission=foreign_key(report_emission),
+    methodology=foreign_key(methodology),
+    json_data=json_seq(json_value="generated report methodology"),
+)
+
+report_person_responsible = Recipe(
+    ReportPersonResponsible,
+    report_version=foreign_key(report_version),
+)
+
+report_raw_activity_data = Recipe(
+    ReportRawActivityData,
+    facility_report=foreign_key(facility_report),
+    activity=foreign_key(activity),
+    json_data=json_seq(json_value="generated raw activity data"),
 )

@@ -19,4 +19,7 @@ class ReportNewEntrantProductionModelTest(BaseTestCase):
         ]
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.report_new_entrant_production")
+        assert_immutable_report_version(
+            "reporting.tests.utils.report_new_entrant_production",
+            path_to_report_version="report_new_entrant__report_version",
+        )

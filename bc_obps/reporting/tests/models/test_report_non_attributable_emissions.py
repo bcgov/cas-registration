@@ -36,4 +36,7 @@ class ReportNonAttributableEmissionsModelTest(BaseTestCase):
         ]
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.report_non_attributable_emissions")
+        assert_immutable_report_version(
+            "reporting.tests.utils.report_non_attributable_emissions",
+            str_field_to_update="source_type",
+        )
