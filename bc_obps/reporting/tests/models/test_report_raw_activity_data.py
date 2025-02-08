@@ -20,4 +20,7 @@ class ReportRawActivityDataModelTest(BaseTestCase):
         ]
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.report_raw_activity_data")
+        assert_immutable_report_version(
+            "reporting.tests.utils.report_raw_activity_data",
+            path_to_report_version="facility_report__report_version",
+        )
