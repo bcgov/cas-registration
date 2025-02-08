@@ -1,6 +1,10 @@
 from django.db import models
+
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models.event.event_base_model import EventBaseModel
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.event.temporary_shutdown_event import Rls as TemporaryShutdownEventRls
 
 
 class TemporaryShutdownEvent(EventBaseModel):
@@ -24,8 +28,10 @@ class TemporaryShutdownEvent(EventBaseModel):
 
     class Meta(EventBaseModel.Meta):
         db_table_comment = "Temporary shutdown events for operations and/or facilities."
-        db_table = 'erc"."temporary_shutdown_event'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.TEMPORARY_SHUTDOWN_EVENT.value}'
         default_related_name = "temporary_shutdown_events"
+
+    Rls = TemporaryShutdownEventRls
 
     def __str__(self) -> str:
         return f"Temporary shutdown event - Effective date:{self.effective_date}, status:{self.status}"

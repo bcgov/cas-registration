@@ -5,7 +5,6 @@ from rls.utils.helpers import generate_rls_grants
 
 class Rls:
     role_grants_mapping = {
-        # External users can delete when they update their address when updating Contact or Facility Information or ...
         RlsRoles.INDUSTRY_USER: [
             RlsOperations.SELECT,
             RlsOperations.INSERT,
@@ -17,4 +16,4 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.ADDRESS)
+    grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.WELL_AUTHORIZATION_NUMBER)
