@@ -13,6 +13,7 @@ import ngNonCompressionUiSchema from "./ngNonCompressionUiSchema";
 import ngOtherThanNonCompressionUiSchema from "./ngOtherThanNonCompressionUiSchema";
 import lngActivitiesUiSchema from "./lngActivities";
 import ogExtractionNonCompressionUiSchema from "./ogExtractionNonCompressionUiSchema";
+import electricityGenerationUiSchema from "./electricityGenerationUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -37,6 +38,7 @@ export const uiSchemaMap: UiSchemaMap = {
     ngOtherThanNonCompressionUiSchema,
   lng_activities: lngActivitiesUiSchema,
   og_activities_non_compression: ogExtractionNonCompressionUiSchema,
+  electricity_generation: electricityGenerationUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {

@@ -1,0 +1,118 @@
+{
+  "type": "object",
+  "title": "Fuel combustion for electricity generation",
+  "default": { "units": [{ "fuels": [{}] }] },
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Units",
+      "items": {
+        "type": "object",
+        "properties": {
+          "unitName": {
+            "title": "Unit Name",
+            "type": "string",
+            "maxLength": 200
+          },
+          "unitType": {
+            "title": "Unit Type",
+            "type": "string",
+            "enum": ["Boiler", "Kiln", "TBD"]
+          },
+          "generationType": {
+            "title": "Generation Type",
+            "type": "string",
+            "enum": ["Cogeneration", "Non-Cogeneration"]
+          },
+          "nameplateCapacity": {
+            "title": "Nameplate Capacity",
+            "type": "number",
+            "minimum": 0
+          },
+          "netPower": {
+            "title": "Net Power",
+            "type": "number",
+            "minimum": 0
+          },
+          "fuels": {
+            "title": "Fuel Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fuelName": {
+                  "title": "Fuel Name",
+                  "type": "string",
+                  "enum": []
+                },
+                "fuelClassification": {
+                  "title": "Fuel Classification",
+                  "type": "string",
+                  "enum": [
+                    "Woody biomass",
+                    "Other exempted biomass",
+                    "Exempted non-biomass",
+                    "Non-exempted biomass",
+                    "Non-biomass"
+                  ]
+                },
+                "fuelDescription": {
+                  "title": "Fuel Description",
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "fuelUnit": {
+                  "title": "Fuel Unit",
+                  "type": "string",
+                  "enum": []
+                },
+                "annualFuelAmount": {
+                  "title": "Annual Fuel Amount",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "gasType": {
+                  "title": "Gas Type",
+                  "type": "string",
+                  "enum": []
+                }
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "generationType": { "const": "Cogeneration" }
+          }
+        },
+        "then": {
+          "properties": {
+            "cycleType": {
+              "title": "Cycle Type",
+              "type": "string",
+              "enum": ["Topping", "Bottoming"]
+            },
+            "thermalOutput": {
+              "title": "Thermal Output",
+              "type": "number"
+            },
+            "steamHeatAcquisitionProvider": {
+              "title": "Steam/Heat Acquisition Provider",
+              "type": "string"
+            },
+            "steamHeatAcquisitionAmountAcquired": {
+              "title": "Steam/Heat Acquisition Amount Acquired",
+              "type": "number"
+            },
+            "supplementalFiringPurpose": {
+              "title": "Supplemental Firing Purpose",
+              "type": "string",
+              "enum": ["Industrial output", "Electricity Generation"]
+            }
+          },
+          "required": ["cycleType", "thermalOutput"]
+        }
+      }
+    }
+  }
+}
