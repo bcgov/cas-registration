@@ -216,7 +216,8 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         fontSize={16}
         className="mb-5"
       >
-        All facility reports must be marked complete before continuing.
+        All facility reports in the Facilities table below must be marked as
+        complete before you can continue.
       </Typography>
 
       <DataGrid

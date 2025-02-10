@@ -15,13 +15,15 @@ export default async function FacilityEmissionAllocationPage({
   );
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const initialData = await getEmissionAllocations(version_id, facility_id);
+  const operationType = tasklistData?.operationType;
+
   const taskListElements = getFacilitiesInformationTaskList(
     version_id,
     facility_id,
     orderedActivities,
     4,
     tasklistData?.facilityName,
-    tasklistData?.operationType,
+    operationType,
   );
   return (
     <FacilityEmissionAllocationForm
@@ -30,6 +32,7 @@ export default async function FacilityEmissionAllocationPage({
       orderedActivities={orderedActivities}
       initialData={initialData}
       taskListElements={taskListElements}
+      operationType={operationType}
     />
   );
 }
