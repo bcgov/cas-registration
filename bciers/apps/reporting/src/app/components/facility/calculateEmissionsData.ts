@@ -22,9 +22,14 @@ export const calculateEmissionData = (category: EmissionAllocationData) => {
     0,
   );
 
-  const emissionTotal = Number(category.emission_total) || 1;
+  const emissionTotal = Number(category.emission_total);
+  let percentage;
 
-  const percentage = handlePercentageNearHundred((sum / emissionTotal) * 100);
+  if (emissionTotal) {
+    percentage = handlePercentageNearHundred((sum / emissionTotal) * 100);
+  } else {
+    percentage = sum ? -99.99 : 100;
+  }
 
   return {
     ...category,
