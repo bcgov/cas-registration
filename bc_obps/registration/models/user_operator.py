@@ -3,10 +3,12 @@ import typing
 import uuid
 from django.core.cache import cache
 from django.db import models
-
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models import TimeStampedModel, User, Operator, Contact, BusinessRole
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.user_operator import Rls as UserOperatorRls
 
 
 class UserOperator(TimeStampedModel):
@@ -70,13 +72,16 @@ class UserOperator(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Through table to connect Users and Operators and track access requests"
-        db_table = 'erc"."user_operator'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.USER_OPERATOR.value}'
+
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "operator"],
                 name="user_and_operator_unique_constraint",
             )
         ]
+
+    Rls = UserOperatorRls
 
     def get_senior_officer(self) -> Optional[Contact]:
         """

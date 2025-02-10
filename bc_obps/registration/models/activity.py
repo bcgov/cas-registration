@@ -1,6 +1,9 @@
+from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.activity import Rls as ActivityRls
+from registration.enums.enums import RegistrationTableNames
 
 
 class Activity(BaseModel):
@@ -32,7 +35,9 @@ class Activity(BaseModel):
 
     class Meta:
         db_table_comment = "Table containing activity definitions for reporting. If facilities carry out these activities, in many cases they are required to report. Some activities can only be carried out by certain types of facilities. Reporting activities are listed in column 2 of Table 1 of Schedule A of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015."
-        db_table = 'erc"."activity'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.ACTIVITY.value}'
+
+    Rls = ActivityRls
 
     def __str__(self) -> str:
         return f"{self.name} ({self.applicable_to})"

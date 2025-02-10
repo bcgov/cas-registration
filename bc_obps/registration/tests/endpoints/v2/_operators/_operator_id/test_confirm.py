@@ -14,7 +14,7 @@ class TestOperatorIdConfirmEndpoint(CommonTestSetup):
         Testing that the API endpoint fetches the operator for the given ID.
         """
 
-        operator = baker.make_recipe('utils.operator')
+        operator = baker.make_recipe('registration.tests.utils.operator')
         mock_get_operator_confirm.return_value = operator
         response = TestUtils.mock_get_with_auth_role(
             self,

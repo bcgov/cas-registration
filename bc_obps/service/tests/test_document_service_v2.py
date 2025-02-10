@@ -15,9 +15,9 @@ pytestmark = pytest.mark.django_db
 class TestDocumentServiceV2:
     @staticmethod
     def test_get_operation_document_by_type_if_authorized():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        document = baker.make_recipe('utils.document', operation=operation)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        document = baker.make_recipe('registration.tests.utils.document', operation=operation)
         retrieved_document = DocumentServiceV2.get_operation_document_by_type_if_authorized(
             approved_user_operator.user.user_guid, operation.id, 'boundary_map'
         )
@@ -25,9 +25,9 @@ class TestDocumentServiceV2:
 
     @staticmethod
     def test_cannot_get_operation_document_by_type_if_unauthorized():
-        user = baker.make_recipe('utils.industry_operator_user')
-        operation = baker.make_recipe('utils.operation')
-        baker.make_recipe('utils.document')
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
+        operation = baker.make_recipe('registration.tests.utils.operation')
+        baker.make_recipe('registration.tests.utils.document')
         with pytest.raises(Exception, match='Unauthorized.'):
             DocumentServiceV2.get_operation_document_by_type_if_authorized(user.user_guid, operation.id, 'boundary_map')
 
@@ -35,8 +35,8 @@ class TestDocumentServiceV2:
     def test_create_operation_document():
         # the value received by the service is a File (transformed into this in the django ninja schema)
         file = data_url_to_file(MOCK_DATA_URL)
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         document, created = DocumentServiceV2.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, file, 'boundary_map'
         )
@@ -47,8 +47,8 @@ class TestDocumentServiceV2:
 
     @staticmethod
     def test_do_not_update_duplicate_operation_document():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         DocumentDataAccessServiceV2.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
@@ -68,8 +68,8 @@ class TestDocumentServiceV2:
 
     @staticmethod
     def test_update_operation_document():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         DocumentDataAccessServiceV2.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
@@ -87,9 +87,9 @@ class TestDocumentServiceV2:
 
     @pytest.mark.parametrize("registration_status", [Operation.Statuses.REGISTERED, Operation.Statuses.DRAFT])
     def test_archive_or_delete_operation_document(self, registration_status):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, status=registration_status
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status=registration_status
         )
         # boundary map
         b_map = DocumentDataAccessServiceV2.create_document(

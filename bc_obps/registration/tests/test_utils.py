@@ -328,33 +328,33 @@ class TestFileHashComparison(TestCase):
 class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
     def test_cannot_create_operation_with_duplicate_bcghg_id(self):
         bcghg_id_instance = baker.make(BcGreenhouseGasId, id='14121100001')
-        operation_instance: Operation = baker.make_recipe('utils.operation')
+        operation_instance: Operation = baker.make_recipe('registration.tests.utils.operation')
         operation_instance.bcghg_id = bcghg_id_instance
         operation_instance.save(update_fields=['bcghg_id'])
         with pytest.raises(ValidationError, match='Operation with this Bcghg id already exists.'):
-            baker.make_recipe('utils.operation', bcghg_id=bcghg_id_instance)
+            baker.make_recipe('registration.tests.utils.operation', bcghg_id=bcghg_id_instance)
 
     def test_cannot_create_facility_with_duplicate_bcghg_id(self):
         bcghg_id_instance = baker.make(BcGreenhouseGasId, id='14121100001')
-        facility_instance: Facility = baker.make_recipe('utils.facility')
+        facility_instance: Facility = baker.make_recipe('registration.tests.utils.facility')
         facility_instance.bcghg_id = bcghg_id_instance
         facility_instance.save(update_fields=['bcghg_id'])
         with pytest.raises(ValidationError, match='Facility with this Bcghg id already exists.'):
-            baker.make_recipe('utils.facility', bcghg_id=bcghg_id_instance)
+            baker.make_recipe('registration.tests.utils.facility', bcghg_id=bcghg_id_instance)
 
     def test_does_not_generate_if_record_has_existing_bcghg_id(self):
         existing_id = baker.make(BcGreenhouseGasId, id='14121100001')
-        operation: Operation = baker.make_recipe('utils.operation', bcghg_id=existing_id)
+        operation: Operation = baker.make_recipe('registration.tests.utils.operation', bcghg_id=existing_id)
         operation.generate_unique_bcghg_id()
         assert operation.bcghg_id == existing_id
 
     def test_does_not_generate_for_operation_if_type_is_invalid(self):
-        operation: Operation = baker.make_recipe('utils.operation', type='Not my type')
+        operation: Operation = baker.make_recipe('registration.tests.utils.operation', type='Not my type')
         with pytest.raises(ValueError, match='Invalid operation type: Not my type'):
             operation.generate_unique_bcghg_id()
 
     def test_does_not_generate_for_facility_if_type_is_invalid(self):
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
         timeline.end_date = None
         timeline.save()
         timeline.operation.type = 'Not my type'
@@ -363,13 +363,13 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
             timeline.facility.generate_unique_bcghg_id()
 
     def test_generate_unique_bcghg_id_for_operation(self):
-        operation: Operation = baker.make_recipe('utils.operation', type='Linear Facility Operation')
+        operation: Operation = baker.make_recipe('registration.tests.utils.operation', type='Linear Facility Operation')
         operation.generate_unique_bcghg_id()
         expected_id = f'2{operation.naics_code.naics_code}0001'
         assert operation.bcghg_id.pk == expected_id
 
     def test_generate_unique_bcghg_id_for_facility(self):
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
         timeline.end_date = None
         timeline.save()
         timeline.operation.type = 'Linear Facility Operation'

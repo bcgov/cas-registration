@@ -1,10 +1,14 @@
 from django.db import models
+
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models import (
     Operation,
     Operator,
     TimeStampedModel,
 )
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.operation_designated_operator_timeline import Rls as OperationDesignatedOperatorRls
 
 
 class OperationDesignatedOperatorTimeline(TimeStampedModel):
@@ -37,7 +41,7 @@ class OperationDesignatedOperatorTimeline(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to connect operations and their designated operators throughout their lifetimes"
-        db_table = 'erc"."operation_designated_operator_timeline'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.OPERATION_DESIGNATED_OPERATOR_TIMELINE.value}'
         constraints = [
             models.UniqueConstraint(
                 fields=['operation'],
@@ -45,3 +49,5 @@ class OperationDesignatedOperatorTimeline(TimeStampedModel):
                 name='unique_active_designated_operator_per_operation',
             )
         ]
+
+    Rls = OperationDesignatedOperatorRls

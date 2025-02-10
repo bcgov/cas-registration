@@ -65,6 +65,14 @@ CHES_API_URL = os.environ.get("CHES_API_URL")
 
 # Application definition
 
+
+LOCAL_APPS = [
+    "registration",
+    "reporting",
+    "common",
+    "rls",
+]
+
 INSTALLED_APPS = [
     # Django apps
     "django.contrib.admin",
@@ -78,11 +86,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "localflavor",
     "pgtrigger",
-    # Local apps
-    "registration.apps.RegistrationConfig",
-    "reporting.apps.ReportingConfig",
-    "common.apps.CommonConfig",
-    "rls.apps.RlsConfig",
+    *LOCAL_APPS,
 ]
 
 
@@ -205,3 +209,6 @@ NINJA_PAGINATION_PER_PAGE = 20
 # Bypass CSRF protection in development(for admin login page only)
 if not DEBUG and ENVIRONMENT == "dev":
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BACKEND_HOST')}"]
+
+
+RLS_FLAG = False

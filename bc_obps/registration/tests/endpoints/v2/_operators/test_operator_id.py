@@ -14,7 +14,7 @@ class TestOperatorIdEndpoint(CommonTestSetup):
         Testing that the API endpoint fetches the operator for the given ID.
         """
 
-        operator = baker.make_recipe('utils.operator')
+        operator = baker.make_recipe('registration.tests.utils.operator')
         mock_get_operator.return_value = operator
         # Act: Mock the authorization and perform the request
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)

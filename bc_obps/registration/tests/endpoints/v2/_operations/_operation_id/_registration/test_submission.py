@@ -9,7 +9,7 @@ from model_bakery import baker
 class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
     def test_submission_endpoint_users_can_only_update_their_operations(self):
         # user is approved to access endpoint
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
 
         # create operation that does not belong to user
         operation = set_up_valid_mock_operation(Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
@@ -29,7 +29,7 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
 
     def test_submission_endpoint_raises_exception_if_not_all_checkboxes_are_checked(self):
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         response = TestUtils.mock_patch_with_auth_role(
@@ -47,7 +47,7 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
         assert response.json()['message'] == "All checkboxes must be checked to submit the registration."
 
     def test_submission_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = set_up_valid_mock_operation(Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
         operation.operator = approved_user_operator.operator
         operation.save()
@@ -69,8 +69,8 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
         assert response_operation.status == Operation.Statuses.REGISTERED
 
     def test_submission_endpoint_malformed_data(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
