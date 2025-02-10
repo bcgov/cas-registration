@@ -47,92 +47,6 @@ export const createOperationInformationSchema = async (
       type: "string",
       title: "Operation Type",
       enum: [OperationTypes.SFO, OperationTypes.LFO],
-  const operationInformationSchema: RJSFSchema = {
-    title: "Operation Information",
-    type: "object",
-    required: [
-      "name",
-      "type",
-      "naics_code_id",
-      "activities",
-      "boundary_map",
-      "process_flow_diagram",
-    ],
-    properties: {
-      name: { type: "string", title: "Operation Name" },
-      type: {
-        type: "string",
-        title: "Operation Type",
-        enum: ["Single Facility Operation", "Linear Facility Operation"],
-      },
-      naics_code_id: {
-        type: "number",
-        title: "Primary NAICS Code",
-        anyOf: naicsCodes.map(
-          (code: {
-            id: number;
-            naics_code: string;
-            naics_description: string;
-          }) => ({
-            const: code?.id,
-            title: `${code?.naics_code} - ${code?.naics_description}`,
-          }),
-        ),
-      },
-      secondary_naics_code_id: {
-        type: "number",
-        title: "Secondary NAICS Code",
-        anyOf: naicsCodes.map(
-          (code: {
-            id: number;
-            naics_code: string;
-            naics_description: string;
-          }) => ({
-            const: code?.id,
-            title: `${code?.naics_code} - ${code?.naics_description}`,
-          }),
-        ),
-      },
-      tertiary_naics_code_id: {
-        type: "number",
-        title: "Tertiary NAICS Code",
-        anyOf: naicsCodes.map(
-          (code: {
-            id: number;
-            naics_code: string;
-            naics_description: string;
-          }) => ({
-            const: code?.id,
-            title: `${code?.naics_code} - ${code?.naics_description}`,
-          }),
-        ),
-      },
-      process_flow_diagram: {
-        type: "string",
-        title: "Process Flow Diagram",
-        format: "data-url",
-      },
-      boundary_map: {
-        type: "string",
-        title: "Boundary Map",
-        format: "data-url",
-      },
-      ...(app === Apps.ADMINISTRATION
-        ? {
-            bc_obps_regulated_operation: {
-              type: "string",
-              title: "BORO ID",
-            },
-          }
-        : {}),
-      ...(app === Apps.ADMINISTRATION
-        ? {
-            bcghg_id: {
-              type: "string",
-              title: "BCGHGID",
-            },
-          }
-        : {}),
     },
     naics_code_id: {
       type: "number",
@@ -235,6 +149,10 @@ export const operationInformationUISchema: UiSchema = {
   tertiary_naics_code_id: {
     "ui:widget": "ComboBox",
     "ui:placeholder": "Select Tertiary NAICS code",
+  },
+  activities: {
+    "ui:widget": "MultiSelectWidget",
+    "ui:placeholder": "Select Reporting Activity",
   },
   process_flow_diagram: {
     "ui:widget": "FileWidget",

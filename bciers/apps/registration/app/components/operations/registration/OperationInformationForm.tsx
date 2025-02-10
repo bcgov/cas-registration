@@ -42,6 +42,7 @@ const OperationInformationForm = ({
     ? createNestedFormData(rawFormData, schema)
     : {};
   const [formState, setFormState] = useState(nestedFormData);
+  const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] = useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
   const [selectedPurpose, setSelectedPurpose] = useState(
     formState.section1?.registration_purpose || "",
@@ -49,7 +50,8 @@ const OperationInformationForm = ({
   const [
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
-  ] = useState("");
+  ]= useState<
+  RegistrationPurposes | "">("");
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
@@ -77,6 +79,20 @@ const OperationInformationForm = ({
 
   useEffect(() => {
     if (selectedPurpose) {
+      if (
+        selectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
+      ) {
+        // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
+        setSchema({
+          ...initialSchema,
+          properties: {
+            ...initialSchema.properties,
+            section2: eioOperationInformationSchema,
+          },
+        });
+      } else {
+        setSchema(initialSchema);
+      }
       setFormState((prevState) => ({
         ...prevState,
         section1: {
@@ -85,6 +101,7 @@ const OperationInformationForm = ({
         },
       }));
       updateUiSchemaWithHelpText(selectedPurpose);
+      setIsConfirmPurposeChangeModalOpen(false);
     }
   }, [selectedPurpose]);
 
@@ -163,40 +180,27 @@ const OperationInformationForm = ({
     // wants to change their registration purpose before actioning it.
     else if (newSelectedPurpose && selectedPurpose) {
       setPendingChangeRegistrationPurpose(newSelectedPurpose);
+      setIsConfirmPurposeChangeModalOpen(true);
     }
   };
 
   const cancelRegistrationPurposeChange = () => {
     setPendingChangeRegistrationPurpose("");
+    setIsConfirmPurposeChangeModalOpen(false);
   };
 
   const confirmRegistrationPurposeChange = () => {
     if (pendingChangeRegistrationPurpose !== "") {
       setSelectedPurpose(pendingChangeRegistrationPurpose);
-      setCurrentUiSchema({
-        ...registrationOperationInformationUiSchema,
-        section1: {
-          ...registrationOperationInformationUiSchema.section1,
-          registration_purpose: {
-            ...registrationOperationInformationUiSchema.section1
-              .registration_purpose,
-            "ui:help": pendingChangeRegistrationPurpose ? (
-              <small>
-                <b>Note: </b>
-                {RegistrationPurposeHelpText[Object.keys(RegistrationPurposes).find((key) => (RegistrationPurposes as any)[key] === pendingChangeRegistrationPurpose)]}
-              </small>
-            ) : null,
-          },
-        },
     }
-
     setPendingChangeRegistrationPurpose("");
+    setIsConfirmPurposeChangeModalOpen(false);
   };
 
   return (
     <>
       <ConfirmChangeOfRegistrationPurposeModal
-        open={pendingChangeRegistrationPurpose !== ""}
+        open={isConfirmPurposeChangeModalOpen}
         cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
         confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
       />
