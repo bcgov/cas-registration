@@ -50,7 +50,8 @@ class TestReportSubmissionService:
 
     @patch("reporting.models.report_version.ReportVersion.objects.get")
     @patch("reporting.service.report_submission_service.ReportSubmissionService.validate_report")
-    def test_submit_report(self, mock_validate_report, mock_get_report_version):
+    @patch("reporting.service.report_submission_service.ComplianceService.create_compliance_summary")
+    def test_submit_report(self, mock_create_compliance_summary, mock_validate_report, mock_get_report_version):
         # Arrange
         version_id = 1
         user_guid = UUID("12345678-1234-5678-1234-567812345678")
@@ -66,4 +67,5 @@ class TestReportSubmissionService:
         mock_get_report_version.assert_called_once_with(id=version_id)
         assert mock_report_version.status == ReportVersion.ReportVersionStatus.Submitted
         mock_report_version.save.assert_called_once()
+        mock_create_compliance_summary.assert_called_once_with(version_id, user_guid)
         assert result == mock_report_version
