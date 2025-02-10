@@ -87,6 +87,12 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
     },
   };
 
+  const menuItemStyle = {
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+  };
+
   return (
     <Autocomplete
       id={id}
@@ -132,7 +138,12 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       }}
       renderOption={(renderProps, option: Option) => {
         return (
-          <MenuItem {...renderProps} key={option.id} value={option.id}>
+          <MenuItem
+            {...renderProps}
+            key={option.id}
+            value={option.id}
+            sx={menuItemStyle}
+          >
             {option.label}
           </MenuItem>
         );
