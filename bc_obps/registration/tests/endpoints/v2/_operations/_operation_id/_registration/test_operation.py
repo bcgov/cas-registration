@@ -21,9 +21,9 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
 
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -35,8 +35,8 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_register_edit_operation_information_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
@@ -52,8 +52,8 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
         assert response_json['id'] == str(operation.id)
 
     def test_register_edit_operation_information_endpoint_fail(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
@@ -71,9 +71,9 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
 class TestGetOperationRegistrationInformationEndpoint(CommonTestSetup):
     def test_users_cannot_get_other_users_operations(self):
         # authorize current user
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -83,9 +83,9 @@ class TestGetOperationRegistrationInformationEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_register_get_operation_information_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
-        baker.make_recipe('utils.multiple_operator', operation=operation)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        baker.make_recipe('registration.tests.utils.multiple_operator', operation=operation)
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",

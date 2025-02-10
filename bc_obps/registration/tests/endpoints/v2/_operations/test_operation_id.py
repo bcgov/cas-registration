@@ -79,9 +79,9 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert response_2.status_code == 401
 
     def test_operations_endpoint_get_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose='Potential Reporting Operation',
         )
@@ -94,8 +94,8 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert response_data.get("registration_purpose") == 'Potential Reporting Operation'
 
     def test_operations_with_documents_endpoint_get_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
@@ -106,11 +106,13 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert response_data.get("id") == str(operation.id)
 
     def test_operations_endpoint_put_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, status=Operation.Statuses.REGISTERED
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
         )
-        contact = baker.make_recipe('utils.contact')
+        contact = baker.make_recipe('registration.tests.utils.contact')
         self.test_payload["operation_representatives"] = [contact.id]
         response = TestUtils.mock_put_with_auth_role(
             self,

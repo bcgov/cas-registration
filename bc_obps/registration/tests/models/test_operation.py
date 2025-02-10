@@ -42,7 +42,7 @@ class OperationModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = baker.make_recipe(
-            'utils.operation', swrs_facility_id=6565, status=Operation.Statuses.REGISTERED
+            'registration.tests.utils.operation', swrs_facility_id=6565, status=Operation.Statuses.REGISTERED
         )
         Operation.objects.filter(swrs_facility_id__isnull=False).first()
 
@@ -196,7 +196,9 @@ class OperationModelTest(BaseTestCase):
     def test_generate_unique_bcghg_id_multiple_existing_ids(self):
         existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002', '14862100001']
         for existing_id in existing_ids:
-            baker.make_recipe('utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id))
+            baker.make_recipe(
+                'registration.tests.utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id)
+            )
 
         self.test_object.bcghg_id = None
         self.test_object.type = 'Single Facility Operation'
@@ -206,13 +208,15 @@ class OperationModelTest(BaseTestCase):
         assert self.test_object.bcghg_id.pk == expected_id
 
     def test_user_has_access_to_operation(self):
-        random_user_operator = baker.make_recipe('utils.user_operator')
+        random_user_operator = baker.make_recipe('registration.tests.utils.user_operator')
         operation_for_random_user_operator = baker.make_recipe(
-            'utils.operation', operator=random_user_operator.operator
+            'registration.tests.utils.operation', operator=random_user_operator.operator
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=User.objects.first())
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', user=User.objects.first()
+        )
         operation_for_approved_user_operator = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
         )
         self.assertFalse(
             operation_for_random_user_operator.user_has_access(approved_user_operator.user.user_guid),

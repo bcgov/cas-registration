@@ -12,12 +12,18 @@ from registration.utils import custom_reverse_lazy
 
 class TestTransferEventEndpoint(CommonTestSetup):
     url = custom_reverse_lazy('list_transfer_events')
+
     # GET
     def test_list_transfer_events_unpaginated(self):
         # transfer of an operation
-        baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
+        baker.make_recipe(
+            'registration.tests.utils.transfer_event', operation=baker.make_recipe('registration.tests.utils.operation')
+        )
         # transfer of 50 facilities
-        baker.make_recipe('utils.transfer_event', facilities=baker.make_recipe('utils.facility', _quantity=50))
+        baker.make_recipe(
+            'registration.tests.utils.transfer_event',
+            facilities=baker.make_recipe('registration.tests.utils.facility', _quantity=50),
+        )
         for role in ['cas_admin', 'cas_analyst']:
             response = TestUtils.mock_get_with_auth_role(self, role, self.url + "?paginate_result=False")
             assert response.status_code == 200
@@ -41,9 +47,15 @@ class TestTransferEventEndpoint(CommonTestSetup):
 
         for _ in range(20):
             # transfer of an operation
-            baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'))
+            baker.make_recipe(
+                'registration.tests.utils.transfer_event',
+                operation=baker.make_recipe('registration.tests.utils.operation'),
+            )
             # transfer of 50 facilities
-            baker.make_recipe('utils.transfer_event', facilities=baker.make_recipe('utils.facility', _quantity=2))
+            baker.make_recipe(
+                'registration.tests.utils.transfer_event',
+                facilities=baker.make_recipe('registration.tests.utils.facility', _quantity=2),
+            )
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("list_transfer_events"))
         assert response.status_code == 200
@@ -87,12 +99,16 @@ class TestTransferEventEndpoint(CommonTestSetup):
         today = timezone.make_aware(datetime.now())
         yesterday = today - timedelta(days=1)
         # transfer of an operation
-        baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'), effective_date=today)
+        baker.make_recipe(
+            'registration.tests.utils.transfer_event',
+            operation=baker.make_recipe('registration.tests.utils.operation'),
+            effective_date=today,
+        )
         # transfer of 50 facilities
         baker.make_recipe(
-            'utils.transfer_event',
+            'registration.tests.utils.transfer_event',
             effective_date=yesterday,
-            facilities=baker.make_recipe('utils.facility', _quantity=50),
+            facilities=baker.make_recipe('registration.tests.utils.facility', _quantity=50),
         )
 
         response_ascending = TestUtils.mock_get_with_auth_role(
@@ -110,9 +126,15 @@ class TestTransferEventEndpoint(CommonTestSetup):
 
     def test_transfer_events_endpoint_list_transfer_events_with_filter(self):
         # transfer of an operation
-        baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation', name='Test Operation'))
+        baker.make_recipe(
+            'registration.tests.utils.transfer_event',
+            operation=baker.make_recipe('registration.tests.utils.operation', name='Test Operation'),
+        )
         # transfer of 50 facilities
-        baker.make_recipe('utils.transfer_event', facilities=baker.make_recipe('utils.facility', _quantity=50))
+        baker.make_recipe(
+            'registration.tests.utils.transfer_event',
+            facilities=baker.make_recipe('registration.tests.utils.facility', _quantity=50),
+        )
 
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(
@@ -154,8 +176,8 @@ class TestTransferEventEndpoint(CommonTestSetup):
         }
 
         mock_transfer_event = baker.make_recipe(
-            'utils.transfer_event',
-            operation=baker.make_recipe('utils.operation'),
+            'registration.tests.utils.transfer_event',
+            operation=baker.make_recipe('registration.tests.utils.operation'),
             status=TransferEvent.Statuses.TRANSFERRED,
         )
         mock_create_transfer_event.return_value = mock_transfer_event

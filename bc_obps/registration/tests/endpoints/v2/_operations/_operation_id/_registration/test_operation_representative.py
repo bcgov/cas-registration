@@ -6,9 +6,9 @@ from model_bakery import baker
 class TestOperationRepresentativePostEndpoint(CommonTestSetup):
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
 
         response = TestUtils.mock_post_with_auth_role(
@@ -33,10 +33,10 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
         assert response.json().get('message') == 'Unauthorized.'
 
     def test_operation_representative_endpoint_existing_contact_changing_prohibited_fields(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         users_operator = approved_user_operator.operator
-        operation = baker.make_recipe('utils.operation', operator=users_operator)
-        contact = baker.make_recipe('utils.contact', address=None)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=users_operator)
+        contact = baker.make_recipe('registration.tests.utils.contact', address=None)
         users_operator.contacts.add(contact)
         data = {
             'existing_contact_id': contact.id,
@@ -62,10 +62,10 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
         assert response.json().get('message') == "Cannot update first name, last name, or email of existing contact."
 
     def test_operation_representative_endpoint_existing_contact_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         users_operator = approved_user_operator.operator
-        operation = baker.make_recipe('utils.operation', operator=users_operator)
-        contact = baker.make_recipe('utils.contact', address=None)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=users_operator)
+        contact = baker.make_recipe('registration.tests.utils.contact', address=None)
         users_operator.contacts.add(contact)
         data = {
             'existing_contact_id': contact.id,
@@ -102,8 +102,8 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
         assert operation_contact_address.postal_code == "H0H 0H0"
 
     def test_operation_representative_endpoint_new_contact_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -142,8 +142,8 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
         assert approved_user_operator.operator.contacts.filter(id=new_contact_id).exists()
 
     def test_register_operation_operation_representative_endpoint_bad_data(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -159,10 +159,10 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
 class TestOperationRepresentativePutEndpoint(CommonTestSetup):
     def test_users_cannot_update_other_users_operations(self):
         # authorize current user
-        baker.make_recipe('utils.approved_user_operator', user=self.user)
+        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         # create operation not belonging to current user
         operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
         )
 
         response = TestUtils.mock_put_with_auth_role(
@@ -176,10 +176,10 @@ class TestOperationRepresentativePutEndpoint(CommonTestSetup):
         assert response.json().get('message') == 'Unauthorized.'
 
     def test_remove_operation_representative_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         users_operator = approved_user_operator.operator
-        operation = baker.make_recipe('utils.operation', operator=users_operator)
-        contact = baker.make_recipe('utils.contact')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=users_operator)
+        contact = baker.make_recipe('registration.tests.utils.contact')
         users_operator.contacts.add(contact)
         data = {
             'id': contact.id,
@@ -196,8 +196,8 @@ class TestOperationRepresentativePutEndpoint(CommonTestSetup):
         assert operation.contacts.count() == 0
 
     def test_remove_operation_representative_endpoint_bad_data(self):
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
