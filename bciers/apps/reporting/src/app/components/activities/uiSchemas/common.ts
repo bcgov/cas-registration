@@ -44,25 +44,35 @@ export const fuelsFieldsUiSchema = {
     title: "Fuel",
   },
   items: {
-    "ui:order": ["fuelType", "annualFuelAmount", "emissions"],
+    "ui:order": ["fuelType", "emissions"],
     fuelType: {
       "ui:field": "fuelType",
       "ui:FieldTemplate": FieldTemplate,
       "ui:options": {
         label: false,
       },
+      "ui:order": [
+        "fuelName",
+        "fuelClassification",
+        "fuelDescription",
+        "fuelUnit",
+        "annualFuelAmount",
+      ],
       fuelName: {
-        "ui:FieldTemplate": InlineFieldTemplate,
-      },
-      fuelUnit: {
         "ui:FieldTemplate": InlineFieldTemplate,
       },
       fuelClassification: {
         "ui:FieldTemplate": InlineFieldTemplate,
       },
-    },
-    annualFuelAmount: {
-      "ui:FieldTemplate": InlineFieldTemplate,
+      fuelDescription: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+      },
+      fuelUnit: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+      },
+      annualFuelAmount: {
+        "ui:FieldTemplate": InlineFieldTemplate,
+      },
     },
     emissions: emissionsFieldsUiSchema,
   },

@@ -1,9 +1,7 @@
 import { actionHandler } from "@bciers/actions";
-import { Suspense } from "react";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import ActivityForm from "./ActivityForm";
 import { UUID } from "crypto";
-import Loading from "@bciers/components/loading/SkeletonForm";
 import {
   ActivityData,
   getFacilitiesInformationTaskList,
@@ -90,17 +88,15 @@ export default async function ActivityInit({
   const jsonSchema = await fetchSchema();
 
   return (
-    <Suspense fallback={<Loading />}>
-      <ActivityForm
-        activityData={activityDataObject}
-        activityFormData={formData}
-        currentActivity={currentActivity}
-        taskListData={taskListData}
-        reportVersionId={versionId}
-        facilityId={facilityId}
-        initialJsonSchema={safeJsonParse(jsonSchema).schema}
-        initialSelectedSourceTypeIds={sourceTypeIds}
-      />
-    </Suspense>
+    <ActivityForm
+      activityData={activityDataObject}
+      activityFormData={formData}
+      currentActivity={currentActivity}
+      taskListData={taskListData}
+      reportVersionId={versionId}
+      facilityId={facilityId}
+      initialJsonSchema={safeJsonParse(jsonSchema).schema}
+      initialSelectedSourceTypeIds={sourceTypeIds}
+    />
   );
 }

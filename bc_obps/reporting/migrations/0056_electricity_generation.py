@@ -10,7 +10,6 @@ from django.db import migrations
 ACTIVITY = "Electricity generation"
 VALID_FROM= "2023-01-01"
 VALID_TO= "2099-12-31"
-JSON_SCHEMAS_PATH = "reporting/json_schemas/2024/electricity_generation"
 
 # Configuration of valid combinations of the models
 CONFIG_VALID_RELATIONSHIPS = [
@@ -31,21 +30,22 @@ CONFIG_VALID_RELATIONSHIPS = [
         # Cooling units
         {
             "activity": ACTIVITY,
-            "source_type": "Cooling units",
-            # "gas_types": [
-            #     "CHF3", 
-            #     "CH2F2", 
-            #     "CH3F", 
-            #     "C5H2F10", 
-            #     "C2HF5", 
-            #     "C2H2F4", 
-            #     "C2H3F3", 
-            #     "C2H4F2", 
-            #     "C3HF7", 
-            #     "C3H2F6", 
-            #     "C3H3F5"
-            # ],
-            "gas_types": ["CO2"],
+            "source_type": "Cooling units",            
+            "gas_types": [
+                "HFC-23 (CHF3)",
+                "HFC-32 (CH2F2)",
+                "HFC-41 (CH3F)",
+                "HFC-43-10mee (C5H2F10)",
+                "HFC-125 (C2HF5)",
+                "HFC-134 (C2H2F4)",
+                "HFC-134a (C2H2F4)",
+                "HFC-143 (C2H3F3)",
+                "HFC-143a (C2H3F3)",
+                "HFC-152a (C2H4F2)",
+                "HFC-227ea (C3HF7)",
+                "HFC-236fa (C3H2F6)",
+                "HFC-245ca (C3H3F5)"
+            ],      
             "methodologies": ["Mass balance", "Alternative Parameter Measurement", "Replacement Methodology"],
         },
         # Geothermal geyser steam or fluids
@@ -90,23 +90,25 @@ CONFIG_REPORTING_FIELDS = [
         # Cooling units
         {
             "source_type": "Cooling units",
-            # "gas_types": [
-            #     "CHF3", 
-            #     "CH2F2", 
-            #     "CH3F", 
-            #     "C5H2F10", 
-            #     "C2HF5", 
-            #     "C2H2F4", 
-            #     "C2H3F3", 
-            #     "C2H4F2", 
-            #     "C3HF7", 
-            #     "C3H2F6", 
-            #     "C3H3F5"
-            # ],
-            "gas_types": ["CO2"],
+            "gas_types": [
+                "HFC-23 (CHF3)",
+                "HFC-32 (CH2F2)",
+                "HFC-41 (CH3F)",
+                "HFC-43-10mee (C5H2F10)",
+                "HFC-125 (C2HF5)",
+                "HFC-134 (C2H2F4)",
+                "HFC-134a (C2H2F4)",
+                "HFC-143 (C2H3F3)",
+                "HFC-143a (C2H3F3)",
+                "HFC-152a (C2H4F2)",
+                "HFC-227ea (C3HF7)",
+                "HFC-236fa (C3H2F6)",
+                "HFC-245ca (C3H3F5)"
+            ],      
             "methodologies": [
-                "Alternative Parameter Methodology",
-                "Replacement Methodology",
+                "Mass balance",
+                "Alternative Parameter Measurement",
+                "Replacement Methodology"
             ],
             "reporting_fields": ["Description"],
         },
@@ -144,31 +146,33 @@ CONFIG_SOURCE_TYPE_SCHEMA =[
             True,
             True,
         ),
-        # (
-        #     "2_acid_gas_scrubbers_reagents",
-        #     "Acid gas scrubbers and acid gas reagents",
-        #     False,
-        #     True,
-        # ),
-        # (
-        #     "3_cooling_units",
-        #     "Cooling units",
-        #     False,
-        #     True,
-        # ),
-        # (
-        #     "4_geothermal_geyser_steam_fluids",
-        #     "Geothermal geyser steam or fluids",
-        #     False,
-        #     True,
-        # ),
-        # (
-        #     "5_electrical_equipment_install_maint_decom",
-        #     "Installation, maintenance, operation and decommissioning of electrical equipment",
-        #     True,
-        #     False,
-        # ),
+        (
+            "2_acid_gas_scrubbers_reagents",
+            "Acid gas scrubbers and acid gas reagents",
+            False,
+            True,
+        ),
+        (
+            "3_cooling_units",
+            "Cooling units",
+            False,
+            True,
+        ),
+        (
+            "4_geothermal_geyser_steam_fluids",
+            "Geothermal geyser steam or fluids",
+            False,
+            True,
+        ),
+        (
+            "5_electrical_equipment_install_maint_decom",
+            "Installation, maintenance, operation and decommissioning of electrical equipment",
+            True,
+            False,
+        ),
     ]
+
+JSON_SCHEMAS_PATH = "reporting/json_schemas/2024/electricity_generation"
 
 #### ADDITIONAL DATA: GAS TYPES ####
 
@@ -176,32 +180,70 @@ def init_additional_gas_type_data(apps, schema_editor):
     """
     Add additional gas types to erc.gas_type
     """
+    # Retrieve models from the app registry to interact with the database
     GasType = apps.get_model('reporting', 'GasType')
+
+    # List of gas types with their respective details
+    gas_types_data = [
+        {"name": "Trifluoromethane", "chemical_formula": "HFC-23 (CHF3)", "cas_number": "75-46-7", "gwp": 12400},
+        {"name": "Fluoromethane", "chemical_formula": "HFC-41 (CH3F)", "cas_number": "593-53-3", "gwp": 116},
+        {"name": "1,1,1,2,3,4,4,5,5,5-decafluoropentane", "chemical_formula": "HFC-43-10mee (C5H2F10)", "cas_number": "138495-42-8", "gwp": 1650},
+        {"name": "1,1,2,2-tetrafluoroethane", "chemical_formula": "HFC-134 (C2H2F4)", "cas_number": "359-35-3", "gwp": 1120},
+        {"name": "1,1,1,2-tetrafluoroethane", "chemical_formula": "HFC-134a (C2H2F4)", "cas_number": "811-97-2", "gwp": 1300},
+        {"name": "1,1,2-trifluoroethane", "chemical_formula": "HFC-143 (C2H3F3)", "cas_number": "430-66-0", "gwp": 328},
+        {"name": "1,1,1-trifluoroethane", "chemical_formula": "HFC-143a (C2H3F3)", "cas_number": "420-46-2", "gwp": 4800},
+        {"name": "1,1-difluoroethane", "chemical_formula": "HFC-152a (C2H4F2)", "cas_number": "75-37-6", "gwp": 138},
+	    {"name": "1,1,1,2,3,3,3-heptafluoro-propane", "chemical_formula": "HFC-227ea (C3HF7)", "cas_number": "431-89-0", "gwp": 3350},
+        {"name": "1,1,1,3,3,3-hexafluoro-propane", "chemical_formula": "HFC-236fa (C3H2F6)", "cas_number": "690-39-1", "gwp": 8060},
+        {"name": "1,1,2,2,3-pentafluoro-propane", "chemical_formula": "HFC-245ca (C3H3F5)", "cas_number": "679-86-7", "gwp": 716},
+       ]  
+
+    # Bulk creation of GasType records
     GasType.objects.bulk_create(
-        [
-            GasType(name='HFC-245ca', chemical_formula='C3H3F5'),
-            GasType(name='HFC-41', chemical_formula='CH3F'),
-            GasType(name='HFC-152a', chemical_formula='C2H4F2'),
-            GasType(name='HFC-43-10mee', chemical_formula='C5H2F10'),
-            GasType(name='HFC-143', chemical_formula='C2H3F3'),
-            # GasType(name='HFC-143a', chemical_formula='C2H3F3'),  # same chemical formula as HFC-143
-            GasType(name='HFC-23', chemical_formula='CHF3'),
-            GasType(name='HFC-227ea', chemical_formula='C3HF7'),
-            GasType(name='HFC-236fa', chemical_formula='C3H2F6'),
-        ]
-    )
+            [GasType(**data) for data in gas_types_data]
+            )
 
 def reverse_additional_gas_type_data(apps, schema_editor):
     """
-    Remove aditional gas_type data from erc.gas_type
+    Remove additional gas_type data from erc.gas_type
     """
     GasType = apps.get_model('reporting', 'GasType')
     chemical_formulas = [
-        'CHF3', 'CH2F2', 'CH3F', 'C5H2F10', 'C2HF5', 'C2H2F4', 
-        'C2H3F3', 'C2H4F2', 'C3HF7', 'C3H2F6', 'C3H3F5'
+        "C3H3F5", "CH3F", "C2H4F2 (Structure: CH3CHF2)", "C5H2F10", 
+        "C2H3F3 (Structure: CHF2CH2F)", "C2H3F3 (Structure: CF3CH3)", "CHF3", "C3HF7", "C3H2F6"
     ]
-    
+
     GasType.objects.filter(chemical_formula__in=chemical_formulas).delete()
+ 
+def init_update_gas_type_data(apps, schema_editor):
+    """
+    Update erc.gas_type with distinct chemical formula
+    """
+    GasType = apps.get_model('reporting', 'GasType')
+
+    # Update chemical formulas
+    g = GasType.objects.get(chemical_formula='CH2F2')
+    g.chemical_formula = 'HFC-32 (CH2F2)'
+    g.save()
+
+    g = GasType.objects.get(chemical_formula='C2HF5')
+    g.chemical_formula = 'HFC-125 (C2HF5)'
+    g.save()
+
+def reverse_update_gas_type_data(apps, schema_editor):
+    """
+    Reverse the chemical formula update
+    """
+    GasType = apps.get_model('reporting', 'GasType')
+
+    # Revert chemical formulas to their original values
+    g = GasType.objects.get(chemical_formula='HFC-32 (CH2F2)')
+    g.chemical_formula = 'CH2F2'
+    g.save()
+
+    g = GasType.objects.get(chemical_formula='HFC-125 (C2HF5)')
+    g.chemical_formula = 'C2HF5'
+    g.save()
 
 #### ADDITIONAL DATA: METHODOLOGIES ####
 
@@ -293,7 +335,6 @@ def reverse_configuration_element_data(apps, schema_editor):
         valid_to=valid_to,
     ).delete()
 
-
 #### CONFIGURATION ELEMENTS REPORTING FIELDS DATA ####
 
 def init_configuration_element_reporting_fields_data(apps, schema_editor):
@@ -382,9 +423,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
                 for element in configuration_elements:
                     element.reporting_fields.clear()
 
-
 #### ACTIVITY SCHEMA ####
-
 
 def init_activity_schema_data(apps, schema_monitor):
     """
@@ -415,7 +454,6 @@ def init_activity_schema_data(apps, schema_monitor):
         valid_to=valid_to,
     )
 
-
 def reverse_activity_schema_data(apps, schema_monitor):
     """  
     Remove Activity schema data
@@ -436,7 +474,6 @@ def reverse_activity_schema_data(apps, schema_monitor):
         valid_from=valid_from,
         valid_to=valid_to,
     ).delete()
-
 
 #### ACTIVITY SOURCE TYPE SCHEMAS ####
 
@@ -477,7 +514,6 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
             valid_to=valid_to,
         )
 
-
 def reverse_activity_source_type_schema_data(apps, schema_monitor):
     """
     Remove Activity SourceType schema data
@@ -501,18 +537,20 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
     ).delete()
 
 
-
-
 class Migration(migrations.Migration):
     dependencies = [
         ("reporting", "0055_liquefied_natural_gas"),
     ]
 
     operations = [
-        # migrations.RunPython(
-        #     init_additional_gas_type_data,
-        #     reverse_additional_gas_type_data,
-        # ),
+        migrations.RunPython(
+            init_update_gas_type_data,
+            reverse_update_gas_type_data,
+        ),
+        migrations.RunPython(
+            init_additional_gas_type_data,
+            reverse_additional_gas_type_data,
+        ),
         migrations.RunPython(
             init_additional_methodology_data,
             reverse_additional_methodology_data,

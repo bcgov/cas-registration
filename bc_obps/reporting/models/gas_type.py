@@ -7,7 +7,7 @@ class GasType(BaseModel):
 
     name = models.CharField(max_length=1000, db_comment="The name of a greenhouse gas type (example: Carbon Dioxide)")
     chemical_formula = models.CharField(
-        max_length=100, db_comment="The chemical formula representation of a greenhouse gast type (example: CO2)"
+        max_length=100, db_comment="The chemical formula representation of a greenhouse gas type (example: CO2)"
     )
     gwp = models.IntegerField(
         db_comment="GWP is the Global Warming Potential of a specific gas. The GWP value is used to convert gases into a CO2 equivalent value. For example, if CH4 gas has a gwp of 28, then 1 tonne of CH4 is equivalent to 28 tonnes of CO2 (CO2e). Source: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/392_2008#section6",
