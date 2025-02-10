@@ -60,9 +60,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_product_emission_allocation'
-        db_table_comment = (
-            "A table to store the allocated amount of emissions for a given product"
-        )
+        db_table_comment = "A table to store the allocated amount of emissions for a given product"
         app_label = "reporting"
         constraints = [
             models.UniqueConstraint(
