@@ -117,7 +117,7 @@
             "title": "Registration",
             "href": "/registration",
             "icon": "Entrance",
-            "content": "Submit BORO ID applications",
+            "content": "Register your Operation(s).",
             "conditions": [
               {
                 "api": "registration/user-operators/current/operator",
