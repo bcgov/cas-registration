@@ -3,13 +3,14 @@ from registration.models import Activity
 from registration.models.facility import Facility
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class FacilityReport(TimeStampedModel):
-    '''
+    """
     Model representing a report for a single facility.
     A report (each report version) may contain multiple facility reports.
-    '''
+    """
 
     facility = models.ForeignKey(
         Facility,
@@ -52,10 +53,14 @@ class FacilityReport(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store individual facility information as part of a report"
         db_table = 'erc"."facility_report'
-        app_label = 'reporting'
+        app_label = "reporting"
         constraints = [
             models.UniqueConstraint(
-                fields=['report_version', 'facility_id'],
+                fields=["report_version", "facility_id"],
                 name="unique_facility_report_per_facility_and_report_version",
             )
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
         ]

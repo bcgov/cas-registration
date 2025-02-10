@@ -1,6 +1,7 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportOperationRepresentative(TimeStampedModel):
@@ -25,8 +26,12 @@ class ReportOperationRepresentative(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_operation_representative'
-        app_label = 'reporting'
+        app_label = "reporting"
         db_table_comment = (
             "Stores information about operation representatives linked to report versions, "
             "including their selection status for reports."
         )
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]

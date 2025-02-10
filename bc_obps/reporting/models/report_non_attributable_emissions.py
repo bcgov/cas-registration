@@ -4,6 +4,7 @@ from registration.models import TimeStampedModel
 from reporting.models import ReportVersion, FacilityReport
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.gas_type import GasType
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportNonAttributableEmissions(TimeStampedModel):
@@ -38,4 +39,8 @@ class ReportNonAttributableEmissions(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_non_attributable_emissions'
         db_table_comment = "A table to store non-attributable emissions data."
-        app_label = 'reporting'
+        app_label = "reporting"
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]
