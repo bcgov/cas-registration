@@ -1,4 +1,5 @@
 from django.db import models
+import pgtrigger
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report import Report
 
@@ -47,4 +48,12 @@ class ReportVersion(TimeStampedModel):
                 name="unique_report_version_with_draft_status_per_report",
                 violation_error_message="Only one draft report version can exist on a report.",
             )
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            pgtrigger.Protect(
+                name="immutable_report_version",
+                operation=pgtrigger.Update,
+                condition=pgtrigger.Q(old__status="Submitted"),
+            ),
         ]

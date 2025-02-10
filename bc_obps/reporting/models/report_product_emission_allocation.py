@@ -5,6 +5,7 @@ from reporting.models.facility_report import FacilityReport
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_product import ReportProduct
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportProductEmissionAllocation(TimeStampedModel):
@@ -60,16 +61,28 @@ class ReportProductEmissionAllocation(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_product_emission_allocation'
         db_table_comment = "A table to store the allocated amount of emissions for a given product"
-        app_label = 'reporting'
+        app_label = "reporting"
         constraints = [
             models.UniqueConstraint(
-                fields=["report_version", "facility_report", "report_product", "emission_category"],
+                fields=[
+                    "report_version",
+                    "facility_report",
+                    "report_product",
+                    "emission_category",
+                ],
                 name="unique_report_product_emission_allocation",
                 violation_error_message="A FacilityReport can only have one ReportProductEmissionAllocation per Report Product and Emission Category",
             ),
             models.CheckConstraint(
                 name="allocation_other_methodology_must_have_description",
-                check=~Q(allocation_methodology="Other", allocation_other_methodology_description__isnull=True),
+                check=~Q(
+                    allocation_methodology="Other",
+                    allocation_other_methodology_description__isnull=True,
+                ),
                 violation_error_message="A value for allocation_other_methodology_description must be provided if the allocation_methodology is 'Other'",
             ),
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
         ]

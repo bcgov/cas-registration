@@ -1,6 +1,12 @@
 from datetime import date, timedelta, datetime
 from typing import Any
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from model_bakery import baker
+from reporting.models.report_attachment import ReportAttachment
+from reporting.models.report_methodology import ReportMethodology
+from reporting.models.report_person_responsible import ReportPersonResponsible
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
 from registration.models import NaicsCode
 from registration.models.activity import Activity
 from reporting.models import (
@@ -11,7 +17,9 @@ from reporting.models import (
 )
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
-from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
+from reporting.models.activity_source_type_json_schema import (
+    ActivitySourceTypeJsonSchema,
+)
 from reporting.models.configuration import Configuration
 from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
@@ -21,6 +29,7 @@ from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.reporting_year import ReportingYear
@@ -30,22 +39,34 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_verification_visit import ReportVerificationVisit
 
-from registration.tests.utils.baker_recipes import operation, operator, facility, regulated_product
+from registration.tests.utils.baker_recipes import (
+    operation,
+    operator,
+    facility,
+    regulated_product,
+)
 from model_bakery.recipe import Recipe, foreign_key, seq
 from reporting.models.source_type import SourceType
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.emission_category_mapping import EmissionCategoryMapping
-from reporting.models.report_non_attributable_emissions import ReportNonAttributableEmissions
+from reporting.models.report_non_attributable_emissions import (
+    ReportNonAttributableEmissions,
+)
 
 
-def json_seq(json_key="generated_json", json_value="test json value", seq_value: Any = 1, **seq_args):
+def json_seq(
+    json_key="generated_json",
+    json_value="test json value",
+    seq_value: Any = 1,
+    **seq_args,
+):
     """
     Extends model_bakery's `seq` function to generate sequential json values.
     seq_value is passed as the first argument to seq() and will initialize that sequence.
     """
     generator = seq(seq_value, **seq_args)
     while True:
-        yield {json_key: f'{json_value} {next(generator)}'}
+        yield {json_key: f"{json_value} {next(generator)}"}
 
 
 reporting_year = Recipe(ReportingYear)
@@ -59,7 +80,11 @@ report = Recipe(
 
 report_version = Recipe(ReportVersion, report=foreign_key(report))
 
-facility_report = Recipe(FacilityReport, report_version=foreign_key(report_version), facility=foreign_key(facility))
+facility_report = Recipe(
+    FacilityReport,
+    report_version=foreign_key(report_version),
+    facility=foreign_key(facility),
+)
 report_operation = Recipe(ReportOperation, report_version=foreign_key(report_version))
 
 report_verification = Recipe(ReportVerification, report_version=foreign_key(report_version))
@@ -80,7 +105,11 @@ methodology = Recipe(Methodology)
 activity_json_schema = Recipe(
     ActivityJsonSchema,
     activity=foreign_key(activity),
-    json_schema={"type": "object", "title": "Test Activity Json Schema", "properties": {}},
+    json_schema={
+        "type": "object",
+        "title": "Test Activity Json Schema",
+        "properties": {},
+    },
     valid_from=foreign_key(configuration),
     valid_to=foreign_key(configuration),
 )
@@ -88,7 +117,11 @@ activity_source_type_json_schema = Recipe(
     ActivitySourceTypeJsonSchema,
     activity=foreign_key(activity),
     source_type=foreign_key(source_type),
-    json_schema={"type": "object", "title": "Test Activity Source Type Json Schema", "properties": {}},
+    json_schema={
+        "type": "object",
+        "title": "Test Activity Source Type Json Schema",
+        "properties": {},
+    },
     valid_from=foreign_key(configuration),
     valid_to=foreign_key(configuration),
 )
@@ -154,7 +187,7 @@ report_non_attributable_emissions = Recipe(
     activity="Test Activity",
     source_type="Test Source Type",
     emission_category=foreign_key(emission_category),
-    gas_type=[foreign_key(gas_type)],
+    gas_type=baker.prepare_recipe("reporting.tests.utils.gas_type", _quantity=2),
 )
 
 report_verification = Recipe(
@@ -210,7 +243,7 @@ report_new_entrant_production = Recipe(
 
 naics_code = Recipe(
     NaicsCode,
-    naics_code='12345',
+    naics_code="12345",
 )
 
 report_operation_representative = Recipe(
@@ -226,4 +259,29 @@ report_product_emission_allocation = Recipe(
     facility_report=foreign_key(facility_report),
     report_product=foreign_key(report_product),
     emission_category=foreign_key(emission_category),
+)
+
+report_attachment = Recipe(
+    ReportAttachment,
+    report_version=foreign_key(report_version),
+    attachment="test",
+)
+report_methodology = Recipe(
+    ReportMethodology,
+    report_version=foreign_key(report_version),
+    report_emission=foreign_key(report_emission),
+    methodology=foreign_key(methodology),
+    json_data=json_seq(json_value="generated report methodology"),
+)
+
+report_person_responsible = Recipe(
+    ReportPersonResponsible,
+    report_version=foreign_key(report_version),
+)
+
+report_raw_activity_data = Recipe(
+    ReportRawActivityData,
+    facility_report=foreign_key(facility_report),
+    activity=foreign_key(activity),
+    json_data=json_seq(json_value="generated raw activity data"),
 )

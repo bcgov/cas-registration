@@ -15,11 +15,11 @@ def validate_overlapping_records(
     exception_message: str,
 ) -> None:
     if hasattr(object_class, "source_type"):
-        all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(
+        all_ranges = object_class.objects.select_related("valid_from", "valid_to").filter(
             activity=save_self.activity, source_type=save_self.source_type
         )
     else:
-        all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(activity=save_self.activity)
+        all_ranges = object_class.objects.select_related("valid_from", "valid_to").filter(activity=save_self.activity)
     for y in all_ranges:
         if (
             (save_self.valid_from.valid_from >= y.valid_from.valid_from)
@@ -48,8 +48,14 @@ class ReportingCustomPagination(PaginationBase):
 
         # Calculate total count and complete_count
         results = queryset.aggregate(
-            total_count=Count('*'),
-            completed_count=Sum(Case(When(is_completed=True, then=1), default=0, output_field=IntegerField())),
+            total_count=Count("*"),
+            completed_count=Sum(
+                Case(
+                    When(is_completed=True, then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
         )
 
         paginator = Paginator(queryset, page_size)
@@ -57,6 +63,6 @@ class ReportingCustomPagination(PaginationBase):
 
         return {
             "items": list(page_obj.object_list),  # Items for the current page
-            "count": results['total_count'],  # Total count of items
-            "is_completed_count": results['completed_count'],
+            "count": results["total_count"],  # Total count of items
+            "is_completed_count": results["completed_count"],
         }

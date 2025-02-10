@@ -1,6 +1,7 @@
 from django.db import models
 from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_source_type import ReportSourceType
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportUnit(ReportDataBaseModel):
@@ -26,3 +27,7 @@ class ReportUnit(ReportDataBaseModel):
         db_table_comment = "A table to store the reported unit-specific data, in a JSON format"
         db_table = 'erc"."report_unit'
         app_label = "reporting"
+        triggers = [
+            *ReportDataBaseModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]

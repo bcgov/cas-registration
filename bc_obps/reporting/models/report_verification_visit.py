@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Q
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_verification import ReportVerification
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportVerificationVisit(TimeStampedModel):
@@ -17,7 +18,8 @@ class ReportVerificationVisit(TimeStampedModel):
     )
 
     visit_name = models.CharField(
-        max_length=100, db_comment="The name of the site visited (Facility X, Other, or None)"
+        max_length=100,
+        db_comment="The name of the site visited (Facility X, Other, or None)",
     )
 
     class VisitType(models.TextChoices):
@@ -47,11 +49,15 @@ class ReportVerificationVisit(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."verification_visit'
         db_table_comment = "Table to store individual verification visit information"
-        app_label = 'reporting'
+        app_label = "reporting"
         constraints = [
             models.CheckConstraint(
                 name="other_facility_must_have_coordinates",
                 check=Q(is_other_visit=False) | Q(visit_coordinates__isnull=False),
                 violation_error_message="Coordinates must be provided for an other facility visit",
             ),
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger("report_verification__report_version"),
         ]

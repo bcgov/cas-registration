@@ -1,6 +1,7 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportAdditionalData(TimeStampedModel):
@@ -9,10 +10,9 @@ class ReportAdditionalData(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="report_additional_data",
         db_comment="The report version this report additional data applies to",
-        primary_key=True,
     )
     capture_emissions = models.BooleanField(
-        db_comment='Whether or not capture emissions was selected',
+        db_comment="Whether or not capture emissions was selected",
         default=False,
     )
     emissions_on_site_use = models.IntegerField(
@@ -39,4 +39,8 @@ class ReportAdditionalData(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store the additional data for the report"
         db_table = 'erc"."report_additional_data'
-        app_label = 'reporting'
+        app_label = "reporting"
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]
