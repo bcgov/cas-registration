@@ -32,17 +32,16 @@ export default function EndOfFacilityForm({
         <MultiStepHeader stepIndex={1} steps={multiStepHeaderSteps} />
       </div>
       <div className="w-full flex">
-        <div className="hidden md:flex flex-col w-1/3">
+        <div className="hidden md:flex flex-col">
           <ReportingTaskList elements={taskListElements} />
         </div>
-
-        <div className="w-2/3 flex flex-col">
-          <div className="flex-grow flex items-center justify-center mr-40">
+        <div className="w-full">
+          <div className={"mt-10 mb-40 mr-40"}>
             <ReportSubmissionEnd facilityName={facilityName} />
           </div>
-
-          <div className="mt-auto">
+          <div className="flex flex-col justify-end mt-10">
             <NavigationForm
+              key="form-buttons"
               schema={{}}
               backUrl={backUrl}
               continueUrl={saveAndContinueUrl}
