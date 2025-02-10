@@ -13,8 +13,8 @@ class TestDataAccessUserOperatorService:
     @staticmethod
     def test_get_admin_user_operator_requests_for_irc_users():
         # Prepare operators
-        declined_operator = baker.make_recipe('utils.operator', status=Operator.Statuses.DECLINED)
-        approved_operator = baker.make_recipe('utils.operator', status=Operator.Statuses.APPROVED)
+        declined_operator = baker.make_recipe('registration.tests.utils.operator', status=Operator.Statuses.DECLINED)
+        approved_operator = baker.make_recipe('registration.tests.utils.operator', status=Operator.Statuses.APPROVED)
 
         user_operators_with_declined_operator = []
         approved_admin_user_operators = []
@@ -27,8 +27,8 @@ class TestDataAccessUserOperatorService:
         # Declined operator with user operators (should be excluded in final result)
         user_operators_with_declined_operator.extend(
             baker.make_recipe(
-                'utils.user_operator',
-                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                'registration.tests.utils.user_operator',
+                user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
                 role=UserOperator.Roles.ADMIN,
                 status=UserOperator.Statuses.PENDING,
                 operator=declined_operator,
@@ -39,8 +39,8 @@ class TestDataAccessUserOperatorService:
         # Approved admin user operators (should be included in final result)
         approved_admin_user_operators.extend(
             baker.make_recipe(
-                'utils.user_operator',
-                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                'registration.tests.utils.user_operator',
+                user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
                 role=UserOperator.Roles.ADMIN,
                 status=UserOperator.Statuses.APPROVED,
                 _quantity=5,
@@ -50,8 +50,8 @@ class TestDataAccessUserOperatorService:
         # Pending(status) admin user operators for approved operator (should be included in final result)
         pending_admin_user_operators_for_approved_operator.extend(
             baker.make_recipe(
-                'utils.user_operator',
-                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                'registration.tests.utils.user_operator',
+                user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
                 operator=approved_operator,
                 role=UserOperator.Roles.ADMIN,
                 status=UserOperator.Statuses.PENDING,
@@ -62,8 +62,8 @@ class TestDataAccessUserOperatorService:
         # Declined admin user operators (should be included in final result)
         declined_admin_user_operators.extend(
             baker.make_recipe(
-                'utils.user_operator',
-                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                'registration.tests.utils.user_operator',
+                user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
                 role=UserOperator.Roles.ADMIN,
                 status=UserOperator.Statuses.DECLINED,
                 _quantity=5,
@@ -73,8 +73,8 @@ class TestDataAccessUserOperatorService:
         # Declined pending (role) user operators (should be included in final result only if no approved admin exists)
         declined_pending_user_operators.extend(
             baker.make_recipe(
-                'utils.user_operator',
-                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                'registration.tests.utils.user_operator',
+                user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
                 role=UserOperator.Roles.PENDING,
                 status=UserOperator.Statuses.DECLINED,
                 _quantity=5,
@@ -84,8 +84,8 @@ class TestDataAccessUserOperatorService:
         # Pending (role/status) user operators for the approved operator(should be excluded due to approved admin user)
         pending_user_operators_with_pending_status.extend(
             baker.make_recipe(
-                'utils.user_operator',
-                user=cycle(baker.make_recipe('utils.industry_operator_user', _quantity=5)),
+                'registration.tests.utils.user_operator',
+                user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
                 role=UserOperator.Roles.PENDING,
                 status=UserOperator.Statuses.PENDING,
                 operator=approved_operator,
@@ -95,7 +95,7 @@ class TestDataAccessUserOperatorService:
 
         # Add approved admin user for the approved operator (to prevent showing pending(status) user operators for this operator)
         approved_user_operator_for_approved_operator = baker.make_recipe(
-            'utils.user_operator',
+            'registration.tests.utils.user_operator',
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
             operator=approved_operator,

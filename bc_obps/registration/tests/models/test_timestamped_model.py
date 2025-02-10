@@ -11,7 +11,7 @@ class TestTimeStampedModel:
     def test_create_update_audit_fields():
         # Create a timestamped table (operator)
         operator = baker.make_recipe(
-            'utils.operator',
+            'registration.tests.utils.operator',
         )
 
         # Update a timestamped table (operator)

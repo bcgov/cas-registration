@@ -11,13 +11,15 @@ from registration.utils import custom_reverse_lazy
 
 class TestOperationRegistration(CommonTestSetup):
     def _prepare_test_data(self, operation_type: OperationTypes):
-        self.approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        self.bcghg_id = baker.make_recipe('utils.bcghg_id')
-        self.boro_id = baker.make_recipe('utils.boro_id')
+        self.approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', user=self.user
+        )
+        self.bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
+        self.boro_id = baker.make_recipe('registration.tests.utils.boro_id')
         # add some random contacts and facilities so we can test that they are not overridden
-        random_contacts = baker.make_recipe('utils.contact', _quantity=5)
+        random_contacts = baker.make_recipe('registration.tests.utils.contact', _quantity=5)
         self.operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             created_by=self.user,
             operator=self.approved_user_operator.operator,
             bcghg_id=self.bcghg_id,
@@ -28,7 +30,7 @@ class TestOperationRegistration(CommonTestSetup):
         # add some facilities so we can test that they are not overridden
         if operation_type == OperationTypes.LFO:
             baker.make_recipe(
-                'utils.facility_designated_operation_timeline',
+                'registration.tests.utils.facility_designated_operation_timeline',
                 operation=self.operation,
                 status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
                 _quantity=5,

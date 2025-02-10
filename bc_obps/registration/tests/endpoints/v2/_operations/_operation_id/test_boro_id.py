@@ -14,7 +14,11 @@ class TestOperationBoroIdEndpoint(CommonTestSetup):
             {},
             custom_reverse_lazy(
                 "operation_boro_id",
-                kwargs={'operation_id': baker.make_recipe('utils.operation', status=Operation.Statuses.REGISTERED).id},
+                kwargs={
+                    'operation_id': baker.make_recipe(
+                        'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED
+                    ).id
+                },
             ),
         )
         assert response.status_code == 200
