@@ -578,6 +578,11 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Anode Consumption - Soderberg'),
             Methodology(name='Anode/Cathode Baking'),
             Methodology(name='Green Coke Calcination'),
+            Methodology(name='Chemical Oxygen Demand'),
+            Methodology(name='Biochemical Oxygen Demand'),
+            Methodology(name='Nitrogen in effluent'),
+            Methodology(name='Default conversion factor'),
+            Methodology(name='Measured conversion factor')
         ]
     )
 
@@ -616,6 +621,11 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Anode Consumption - Soderberg',
             'Anode/Cathode Baking',
             'Green Coke Calcination',
+            'Chemical Oxygen Demand',
+            'Biochemical Oxygen Demand',
+            'Nitrogen in effluent',
+            'Default conversion factor',
+            'Measured conversion factor'
         ]
     ).delete()
 
@@ -691,6 +701,15 @@ def init_reporting_field_data(apps, schema_monitor):
             ),
             ReportingField(
                 field_name='Unit-Fuel-N2O Measured Emission Factor', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(
+                field_name='Average of Quarterly chemical oxygen demand', field_type='number', field_units='kg/m3'
+            ),
+            ReportingField(
+                field_name='Average of Quarterly five-day biochemical oxygen demand', field_type='number', field_units='kg/m3'
+            ),
+            ReportingField(
+                field_name='Average of Quarterly Nitrogen in effluent', field_type='number', field_units='kg/N m3'
             ),
             ReportingField(field_name='Annual Weighted Average Carbon Content', field_type='number', field_units=None),
             ReportingField(

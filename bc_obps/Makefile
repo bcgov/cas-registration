@@ -1,5 +1,5 @@
 SHELL := /usr/bin/env bash
-PSQL=psql -h localhost
+PSQL=psql -h localhost -U postgres
 DB_NAME=registration
 MANAGE_PY = manage.py
 SCHEMA_NAME=erc
