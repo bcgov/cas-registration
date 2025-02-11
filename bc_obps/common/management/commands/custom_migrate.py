@@ -10,9 +10,9 @@ class Command(BaseCommand):
     help = 'Run default migrations for all apps except reporting, then run custom migrations for reporting app'
 
     def handle(self, *args, **options):
-        # Only running the custom command in the test and production environments
+        # Only running the custom command in the production environment
         # Otherwise, run the default migrate command for all apps
-        if os.environ.get('ENVIRONMENT') not in ['test', 'prod']:
+        if os.environ.get('ENVIRONMENT') != 'prod':
             self.stdout.write('Running default migrate command for all apps...')
             call_command('migrate')
             # Revoke all RLS grants & policies for all roles
