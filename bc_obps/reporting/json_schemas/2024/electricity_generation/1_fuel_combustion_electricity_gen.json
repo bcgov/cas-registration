@@ -46,10 +46,11 @@
             "type": "array",
             "items": {
               "type": "object",
+              "required": ["annualFuelAmount"],
               "properties": {
                 "fuelType": {
                   "type": "object",
-                  "required": ["fuelName", "fuelUnit", "annualFuelAmount"],
+                  "required": ["fuelName", "fuelClassification", "fuelUnit"],
                   "properties": {
                     "fuelName": {
                       "title": "Fuel Name",
@@ -62,23 +63,23 @@
                       "type": "string",
                       "readOnly": true
                     },
-                    "fuelDescription": {
-                      "title": "Fuel Description",
-                      "maxLength": 500,
-                      "type": "string"
-                    },
                     "fuelUnit": {
                       "title": "Fuel Unit",
                       "maxLength": 200,
                       "type": "string",
                       "readOnly": true
-                    },
-                    "annualFuelAmount": {
-                      "title": "Annual Fuel Amount",
-                      "type": "number",
-                      "minimum": 0
                     }
                   }
+                },
+                "fuelDescription": {
+                  "title": "Fuel Description",
+                  "maxLength": 500,
+                  "type": "string"
+                },
+                "annualFuelAmount": {
+                  "title": "Annual Fuel Amount",
+                  "type": "number",
+                  "minimum": 0
                 },
                 "emissions": {
                   "title": "Emission Data",
