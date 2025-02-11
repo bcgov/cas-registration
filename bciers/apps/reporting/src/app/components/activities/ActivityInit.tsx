@@ -77,6 +77,8 @@ export default async function ActivityInit({
       sourceTypeQueryString += `&source_types[]=${k}`;
     }
   }
+  const isLinearOperation =
+    reportInfoTaskListData?.operationType === "Linear Facility Operation";
 
   const fetchSchema = async () => {
     const schema = await actionHandler(
@@ -100,6 +102,7 @@ export default async function ActivityInit({
         facilityId={facilityId}
         initialJsonSchema={safeJsonParse(jsonSchema).schema}
         initialSelectedSourceTypeIds={sourceTypeIds}
+        isLinearOperation={isLinearOperation}
       />
     </Suspense>
   );
