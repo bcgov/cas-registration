@@ -87,9 +87,9 @@ export default function ActivityForm({
   };
 
   const fetchSchemaData = async (sourceTypeIds: string[]) => {
-    const sourceTypeQueryString = sourceTypeIds
-      .map((id) => `&source_types[]=${id}`)
-      .join("&");
+    const sourceTypeQueryString = sourceTypeIds.length
+      ? `&${sourceTypeIds.map((id) => `source_types[]=${id}`).join("&")}`
+      : "";
     const schema = await actionHandler(
       `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}${sourceTypeQueryString}`,
       "GET",
@@ -106,6 +106,10 @@ export default function ActivityForm({
     }
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
+      if (schemaData.error) {
+        setErrorList([schemaData.error]);
+        return;
+      }
       setJsonSchema(safeJsonParse(schemaData).schema);
       setSelectedSourceTypeIds(selectedSourceTypes);
     }
