@@ -29,9 +29,7 @@ export const createAdministrationOperationInformationSchema = async (
       ),
       section2: await createMultipleOperatorsInformationSchema(),
       ...(status === OperationStatus.REGISTERED && {
-        section3: await createAdministrationRegistrationInformationSchema(
-          registrationPurposeValue,
-        ),
+        section3: await createAdministrationRegistrationInformationSchema(),
       }),
     },
   };
