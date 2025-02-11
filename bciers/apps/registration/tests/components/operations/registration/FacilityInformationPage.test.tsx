@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import FacilityInformationPage from "apps/registration/app/components/operations/registration/FacilityInformationPage";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import {
-  actionHandler,
   fetchFacilitiesPageData,
   useSearchParams,
   useSession,
@@ -30,9 +29,9 @@ describe("the FacilityInformationPage component", () => {
     vi.clearAllMocks();
   });
   it("should render the FacilityInformationPage component", async () => {
-    actionHandler.mockReturnValueOnce({
-      rows: [],
-      rowCount: 0,
+    fetchFacilitiesPageData.mockReturnValueOnce({
+      items: [],
+      count: 0,
     });
     render(
       await FacilityInformationPage({
@@ -101,7 +100,7 @@ describe("the FacilityInformationPage component", () => {
           status: "Active",
         },
       ],
-      rowCount: 1,
+      row_count: 1,
     });
     render(
       await FacilityInformationPage({
@@ -122,9 +121,9 @@ describe("the FacilityInformationPage component", () => {
   });
 
   it("should render the empty datagrid when there is no facility data", async () => {
-    actionHandler.mockReturnValueOnce({
-      rows: [],
-      rowCount: 0,
+    fetchFacilitiesPageData.mockReturnValueOnce({
+      items: [],
+      count: 0,
     });
     render(
       await FacilityInformationPage({
