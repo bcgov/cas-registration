@@ -75,11 +75,15 @@ const uiSchema = {
         items: {
           "ui:order": [
             "sourceSubType",
+            "type",
             "descriptionOfOtherSources",
             "emissions",
           ],
           sourceSubType: {
             "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          type: {
+            "ui:widget": "hidden",
           },
           descriptionOfOtherSources: {
             "ui:FieldTemplate": InlineFieldTemplate,
@@ -103,11 +107,15 @@ const uiSchema = {
         items: {
           "ui:order": [
             "sourceSubType",
+            "type",
             "descriptionOfOtherSources",
             "emissions",
           ],
           sourceSubType: {
             "ui:FieldTemplate": InlineFieldTemplate,
+          },
+          type: {
+            "ui:widget": "hidden",
           },
           descriptionOfOtherSources: {
             "ui:FieldTemplate": InlineFieldTemplate,

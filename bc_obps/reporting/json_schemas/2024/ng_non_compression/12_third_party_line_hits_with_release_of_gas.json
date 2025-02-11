@@ -18,6 +18,10 @@
               "Natural Gas Distribution"
             ]
           },
+          "type": {
+            "type": "string",
+            "default": "Source sub-type"
+          },
           "emissions": {
             "title": "Emission Data",
             "type": "array",

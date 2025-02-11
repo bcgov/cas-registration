@@ -89,9 +89,12 @@ export const sourceSubTypeWithFuelUiSchema = {
       padding: "p-2",
     },
     items: {
-      "ui:order": ["sourceSubType", "fuels"],
+      "ui:order": ["sourceSubType", "type", "fuels"],
       sourceSubType: {
         "ui:FieldTemplate": InlineFieldTemplate,
+      },
+      type: {
+        "ui:widget": "hidden",
       },
       fuels: fuelsFieldsUiSchema,
     },
@@ -111,9 +114,12 @@ export const sourceSubTypeWithoutFuelUiSchema = {
       padding: "p-2",
     },
     items: {
-      "ui:order": ["sourceSubType", "emissions"],
+      "ui:order": ["sourceSubType", "type", "emissions"],
       sourceSubType: {
         "ui:FieldTemplate": InlineFieldTemplate,
+      },
+      type: {
+        "ui:widget": "hidden",
       },
       emissions: emissionsFieldsUiSchema,
     },
