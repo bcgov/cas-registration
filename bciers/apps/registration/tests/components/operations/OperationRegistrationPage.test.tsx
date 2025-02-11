@@ -5,63 +5,8 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
-import {
-  fetchOperationsPageData,
-  getBusinessStructures,
-  getNaicsCodes,
-  getRegistrationPurposes,
-  getRegulatedProducts,
-  getReportingActivities,
-} from "@/administration/tests/components/operations/mocks";
-
-export const fetchFormEnums = () => {
-  // Regulated products
-  getRegulatedProducts.mockResolvedValueOnce([
-    { id: 1, name: "BC-specific refinery complexity throughput" },
-    { id: 2, name: "Cement equivalent" },
-  ]);
-  // Purposes
-  getRegistrationPurposes.mockResolvedValueOnce([
-    { id: 1, name: "Reporting Operation" },
-    { id: 2, name: "Potential Reporting Operation" },
-    { id: 3, name: "OBPS Regulated Operation" },
-    { id: 4, name: "Opted-in Operation" },
-    { id: 5, name: "New Entrant Operation" },
-    { id: 6, name: "Electricity Import Operation" },
-  ]);
-  // Naics codes
-  getNaicsCodes.mockResolvedValueOnce([
-    {
-      id: 1,
-      naics_code: "211110",
-      naics_description: "Oil and gas extraction (except oil sands)",
-    },
-    {
-      id: 2,
-      naics_code: "212114",
-      naics_description: "Bituminous coal mining",
-    },
-  ]);
-  // Reporting activities
-  getReportingActivities.mockResolvedValueOnce([
-    { id: 1, name: "Ammonia production" },
-    { id: 2, name: "Cement production" },
-  ]);
-  // Business structures
-  getBusinessStructures.mockResolvedValueOnce([
-    { name: "General Partnership" },
-    { name: "BC Corporation" },
-  ]);
-  // Operations
-  fetchOperationsPageData.mockResolvedValueOnce([
-    { id: "uuid1", name: "Operation 1" },
-    { id: "uuid2", name: "Operation 2" },
-    {
-      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-      name: "Existing Operation",
-    },
-  ]);
-};
+import { Apps } from "@bciers/utils/src/enums";
+import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 
 useSession.mockReturnValue({
   data: {
@@ -77,7 +22,7 @@ describe("the OperationRegistrationPage component", () => {
   });
 
   it("should render the Operation Information Form", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
     render(
       await OperationRegistrationPage({
         step: 1,

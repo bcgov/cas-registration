@@ -1,6 +1,15 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { useSession, useRouter } from "@bciers/testConfig/mocks";
+import {
+  useSession,
+  useRouter,
+  getRegulatedProducts,
+  getRegistrationPurposes,
+  getNaicsCodes,
+  getReportingActivities,
+  getBusinessStructures,
+  fetchOperationsPageData,
+} from "@bciers/testConfig/mocks";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import {
   allOperationRegistrationSteps,
@@ -8,10 +17,11 @@ import {
 } from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
 import { actionHandler } from "@bciers/testConfig/mocks";
-import { fetchFormEnums } from "../OperationRegistrationPage.test";
+import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
 import { mockDataUri } from "./NewEntrantOperationForm.test";
 import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";
+import { Apps } from "@bciers/utils/src/enums";
 
 const mockPush = vi.fn();
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
@@ -34,7 +44,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the OperationInformationForm component", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
     render(
       <OperationInformationForm
         rawFormData={{}}
@@ -53,7 +63,8 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should fetch operation data when an existing operation is selected", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
+    // getCurrentUsersOperations;
     render(
       <OperationInformationForm
         rawFormData={{}}
@@ -83,7 +94,7 @@ describe("the OperationInformationForm component", () => {
       timeout: 20000,
     },
     async () => {
-      fetchFormEnums(); // mock actionHandler calls to populate dropdown options
+      fetchFormEnums(Apps.REGISTRATION); // mock actionHandler calls to populate dropdown options
 
       actionHandler.mockResolvedValueOnce({
         id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
@@ -92,7 +103,6 @@ describe("the OperationInformationForm component", () => {
         naics_code_id: 1,
         boundary_map: mockDataUri,
         process_flow_diagram: mockDataUri,
-        activities: [1],
       }); // mock the GET from selecting an operation
 
       actionHandler.mockResolvedValueOnce({
@@ -118,6 +128,16 @@ describe("the OperationInformationForm component", () => {
         screen.queryByPlaceholderText(/select regulated product/i),
       ).not.toBeInTheDocument();
 
+      const reportingActivitiesInput = screen.getByPlaceholderText(
+        /select reporting activity.../i,
+      );
+
+      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openActivitiesDropdown);
+      const activityOption = screen.getByText("Ammonia production");
+      await userEvent.click(activityOption);
+
       const operationInput = screen.getByLabelText(/Select your operation+/i);
       await fillComboboxWidgetField(operationInput, "Existing Operation");
 
@@ -133,7 +153,6 @@ describe("the OperationInformationForm component", () => {
           "211110 - Oil and gas extraction (except oil sands)",
         );
 
-        expect(screen.getByText(/Ammonia production/i)).toBeVisible();
         expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(2);
       });
       // edit one of the pre-filled values
@@ -144,7 +163,6 @@ describe("the OperationInformationForm component", () => {
       expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
         "Existing Operation edited",
       );
-
       // submit
       await userEvent.click(
         screen.getByRole("button", { name: /save and continue/i }),
@@ -160,10 +178,10 @@ describe("the OperationInformationForm component", () => {
             body: JSON.stringify({
               registration_purpose: "Reporting Operation",
               operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+              activities: [1],
               name: "Existing Operation edited",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              activities: [1],
               process_flow_diagram:
                 "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
               boundary_map:
@@ -188,7 +206,7 @@ describe("the OperationInformationForm component", () => {
       timeout: 60000,
     },
     async () => {
-      fetchFormEnums();
+      fetchFormEnums(Apps.REGISTRATION);
       actionHandler.mockResolvedValueOnce({
         id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
         name: "Picklejuice",
@@ -256,7 +274,6 @@ describe("the OperationInformationForm component", () => {
         /Oil and gas extraction+/i,
       );
 
-
       // upload attachment
       const processFlowDiagramInput = screen.getByLabelText(/process flow+/i);
       await userEvent.upload(processFlowDiagramInput, mockFile);
@@ -317,10 +334,10 @@ describe("the OperationInformationForm component", () => {
             body: JSON.stringify({
               registration_purpose: "OBPS Regulated Operation",
               regulated_products: [1, 2],
+              activities: [2],
               name: "Op Name",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              activities: [2],
               process_flow_diagram:
                 "data:application/pdf;name=test.pdf;base64,dGVzdA==",
               boundary_map:
@@ -356,7 +373,7 @@ describe("the OperationInformationForm component", () => {
       timeout: 60000,
     },
     async () => {
-      fetchFormEnums();
+      fetchFormEnums(Apps.REGISTRATION);
       actionHandler.mockResolvedValueOnce({
         id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
         name: "EIO Op Name",
@@ -412,7 +429,7 @@ describe("the OperationInformationForm component", () => {
   );
 
   it("should show the correct help text when selecting a purpose", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
     render(
       <OperationInformationForm
         rawFormData={{}}
@@ -440,24 +457,24 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should show the confirmation modal when the selected purpose changes", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
     render(
-      <OperationInformationForm rawFormData={{}} schema={await createRegistrationOperationInformationSchema()} step={1} steps={allOperationRegistrationSteps} />
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
     );
 
     const purposeInput = screen.getByRole("combobox", {
       name: /The purpose of this registration+/i,
     });
-    await fillComboboxWidgetField(
-      purposeInput,
-      "Reporting Operation",
-    );
+    await fillComboboxWidgetField(purposeInput, "Reporting Operation");
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          RegistrationPurposeHelpText["Reporting Operation"]
-        )
+        screen.getByText(RegistrationPurposeHelpText["Reporting Operation"]),
       ).toBeVisible();
     });
     await userEvent.clear(purposeInput);
@@ -466,9 +483,9 @@ describe("the OperationInformationForm component", () => {
       expect(
         screen.getByText(
           /Are you sure you want to change your registration purpose+/i,
-        )
+        ),
       ).toBeVisible();
-    })
+    });
     await userEvent.click(
       screen.getByRole("button", { name: /Change registration purpose/i }),
     );
@@ -483,7 +500,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should trigger validation errors", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
     render(
       <OperationInformationForm
         rawFormData={{}}
@@ -506,22 +523,23 @@ describe("the OperationInformationForm component", () => {
       .spyOn(console, "warn")
       .mockImplementation(() => {});
 
-    // repeat the fetchFormEnums, except this time we will mock the operation response to have an empty array
+    // // repeat the fetchFormEnums, except this time we will mock the operation response to have an empty array
     // Regulated products
-    actionHandler.mockResolvedValueOnce([
+    getRegulatedProducts.mockResolvedValueOnce([
       { id: 1, name: "BC-specific refinery complexity throughput" },
       { id: 2, name: "Cement equivalent" },
     ]);
-    // Operations
-    actionHandler.mockResolvedValueOnce([]);
     // Purposes
-    actionHandler.mockResolvedValueOnce([
+    getRegistrationPurposes.mockResolvedValueOnce([
       "Reporting Operation",
       "Potential Reporting Operation",
+      "OBPS Regulated Operation",
+      "Opted-in Operation",
+      "New Entrant Operation",
       "Electricity Import Operation",
     ]);
     // Naics codes
-    actionHandler.mockResolvedValueOnce([
+    getNaicsCodes.mockResolvedValueOnce([
       {
         id: 1,
         naics_code: "211110",
@@ -534,15 +552,17 @@ describe("the OperationInformationForm component", () => {
       },
     ]);
     // Reporting activities
-    actionHandler.mockResolvedValueOnce([
+    getReportingActivities.mockResolvedValueOnce([
       { id: 1, name: "Ammonia production" },
       { id: 2, name: "Cement production" },
     ]);
     // Business structures
-    actionHandler.mockResolvedValueOnce([
+    getBusinessStructures.mockResolvedValueOnce([
       { name: "General Partnership" },
       { name: "BC Corporation" },
     ]);
+
+    fetchOperationsPageData.mockResolvedValueOnce([]);
 
     render(
       <OperationInformationForm

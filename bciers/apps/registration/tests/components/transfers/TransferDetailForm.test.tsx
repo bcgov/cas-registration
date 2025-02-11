@@ -1,8 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
-import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
-import { fetchOperationsPageData } from "@/administration/tests/components/operations/mocks";
-import { fetchFacilitiesPageData } from "@/administration/tests/components/facilities/mocks";
+import {
+  actionHandler,
+  fetchFacilitiesPageData,
+  fetchOperationsPageData,
+  useRouter,
+  useSession,
+} from "@bciers/testConfig/mocks";
 import TransferDetailForm from "@/registration/app/components/transfers/TransferDetailForm";
 import { Session } from "@bciers/testConfig/types";
 import { randomUUID, UUID } from "crypto";

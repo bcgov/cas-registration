@@ -42,7 +42,8 @@ const OperationInformationForm = ({
     ? createNestedFormData(rawFormData, schema)
     : {};
   const [formState, setFormState] = useState(nestedFormData);
-  const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] = useState<boolean>(false);
+  const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
+    useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
   const [selectedPurpose, setSelectedPurpose] = useState(
     formState.section1?.registration_purpose || "",
@@ -50,8 +51,7 @@ const OperationInformationForm = ({
   const [
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
-  ]= useState<
-  RegistrationPurposes | "">("");
+  ] = useState<RegistrationPurposes | "">("");
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
@@ -169,7 +169,7 @@ const OperationInformationForm = ({
 
   const handleSelectedPurposeChange = (data: any) => {
     const newSelectedPurpose: RegistrationPurposes =
-      data.section1.registration_purpose;
+      data.section1?.registration_purpose;
     // if purpose is being selected for the first time, we don't need to show
     // the ConfirmChangeOfRegistrationPurposeModal. Just need to update
     // the state for selectedPurpose, and show the RegistrationPurposeHelpText

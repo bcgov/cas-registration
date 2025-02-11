@@ -3,23 +3,17 @@ import { RJSFSchema } from "@rjsf/utils";
 import OperationInformationForm from "@/administration/app/components/operations/OperationInformationForm";
 import {
   actionHandler,
+  getOperationWithDocuments,
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
-import {
-  getBusinessStructures,
-  getNaicsCodes,
-  getOperationWithDocuments,
-  getRegistrationPurposes,
-  getRegulatedProducts,
-  getReportingActivities,
-} from "./mocks";
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
-import { FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
+import { Apps, FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
-import { getContacts } from "../contacts/mocks";
+
+import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 
 useSession.mockReturnValue({
   data: {
@@ -33,73 +27,6 @@ useSearchParams.mockReturnValue({
 });
 
 const mockDataUri = "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
-
-export const fetchFormEnums = () => {
-  // Naics codes
-  getNaicsCodes.mockResolvedValue([
-    {
-      id: 1,
-      naics_code: "211110",
-      naics_description: "Oil and gas extraction (except oil sands)",
-    },
-    {
-      id: 2,
-      naics_code: "212114",
-      naics_description: "Bituminous coal mining",
-    },
-  ]);
-  // Reporting activities
-  getReportingActivities.mockResolvedValue([
-    {
-      id: 1,
-      name: "General stationary combustion excluding line tracing",
-      applicable_to: "all",
-    },
-    {
-      id: 2,
-      name: "Fuel combustion by mobile equipment",
-      applicable_to: "sfo",
-    },
-  ]);
-
-  // Business structures
-  getBusinessStructures.mockResolvedValue([
-    { name: "General Partnership" },
-    { name: "BC Corporation" },
-  ]);
-
-  // Regulated products
-  getRegulatedProducts.mockResolvedValue([
-    { id: 1, name: "BC-specific refinery complexity throughput" },
-    { id: 2, name: "Cement equivalent" },
-  ]);
-
-  // Contacts
-  getContacts.mockResolvedValue({
-    items: [
-      {
-        id: 1,
-        first_name: "Ivy",
-        last_name: "Jones",
-        email: "ivy.jones@example.com",
-      },
-      {
-        id: 2,
-        first_name: "Jack",
-        last_name: "King",
-        email: "jack.king@example.com",
-      },
-    ],
-    count: 2,
-  });
-
-  // Registration purposes
-  getRegistrationPurposes.mockResolvedValue([
-    "Potential Reporting Operation",
-    "Reporting Operation",
-    "Opted-in Operation",
-  ]);
-};
 
 // Just using a simple schema for testing purposes
 const testSchema: RJSFSchema = {
@@ -235,7 +162,7 @@ const optInFormData = {
 const newEntrantFormData = {
   name: "Operation 5",
   type: "Single Facility Operation",
-  registration_purpose: "New Entrant Operation",
+  registration_purpose: RegistrationPurposes.NEW_ENTRANT_OPERATION,
   new_entrant_application: mockDataUri,
   date_of_first_shipment: "On or before March 31, 2024",
 };
@@ -263,7 +190,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the form with the correct values for a non-EIO when formData is provided", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         formData.registration_purpose,
@@ -318,7 +245,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the form with the correct form for an EIO when formData is provided", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
@@ -717,7 +644,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the new entrant application information if purpose is new entrant", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
     const modifiedSchema = await createAdministrationOperationInformationSchema(
       newEntrantFormData.registration_purpose,
@@ -820,7 +747,7 @@ describe("the OperationInformationForm component", () => {
         },
       },
     };
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(newEntrantFormData);
 
     render(
@@ -876,7 +803,7 @@ describe("the OperationInformationForm component", () => {
       },
     });
 
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         formData.registration_purpose,
@@ -914,7 +841,7 @@ describe("the OperationInformationForm component", () => {
         secondary_naics_code_id: 2,
         operation_has_multiple_operators: false,
         activities: [1, 2],
-        registration_purpose: "Reporting Operation",
+        registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
         regulated_products: [1],
         opt_in: false,
         operation_representatives: [1],
@@ -929,7 +856,7 @@ describe("the OperationInformationForm component", () => {
         },
       });
 
-      fetchFormEnums();
+      fetchFormEnums(Apps.ADMINISTRATION);
       const createdFormSchema =
         await createAdministrationOperationInformationSchema(
           testFormData.registration_purpose,
@@ -1001,7 +928,7 @@ describe("the OperationInformationForm component", () => {
       get: mockGet,
     });
     mockGet.mockReturnValue("true");
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
         formData.registration_purpose,
