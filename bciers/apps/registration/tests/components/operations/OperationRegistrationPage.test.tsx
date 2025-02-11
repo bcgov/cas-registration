@@ -20,23 +20,14 @@ export const fetchFormEnums = () => {
     { id: 1, name: "BC-specific refinery complexity throughput" },
     { id: 2, name: "Cement equivalent" },
   ]);
-  // Operations
-  fetchOperationsPageData.mockResolvedValueOnce([
-    { id: "uuid1", name: "Operation 1" },
-    { id: "uuid2", name: "Operation 2" },
-    {
-      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-      name: "Existing Operation",
-    },
-  ]);
   // Purposes
   getRegistrationPurposes.mockResolvedValueOnce([
-    "Reporting Operation",
-    "Potential Reporting Operation",
-    "OBPS Regulated Operation",
-    "Opted-in Operation",
-    "New Entrant Operation",
-    "Electricity Import Operation",
+    { id: 1, name: "Reporting Operation" },
+    { id: 2, name: "Potential Reporting Operation" },
+    { id: 3, name: "OBPS Regulated Operation" },
+    { id: 4, name: "Opted-in Operation" },
+    { id: 5, name: "New Entrant Operation" },
+    { id: 6, name: "Electricity Import Operation" },
   ]);
   // Naics codes
   getNaicsCodes.mockResolvedValueOnce([
@@ -60,6 +51,15 @@ export const fetchFormEnums = () => {
   getBusinessStructures.mockResolvedValueOnce([
     { name: "General Partnership" },
     { name: "BC Corporation" },
+  ]);
+  // Operations
+  fetchOperationsPageData.mockResolvedValueOnce([
+    { id: "uuid1", name: "Operation 1" },
+    { id: "uuid2", name: "Operation 2" },
+    {
+      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+      name: "Existing Operation",
+    },
   ]);
 };
 

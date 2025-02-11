@@ -32,7 +32,8 @@ export const createRegistrationPurposeSchema = async () => {
   }[] = await getReportingActivities();
   if (reportingActivities && "error" in reportingActivities)
     throw new Error("Failed to retrieve reporting activities information");
-  const registrationPurposes = await getRegistrationPurposes();
+  const registrationPurposes: RegistrationPurposes[] =
+    await getRegistrationPurposes();
   if (registrationPurposes && "error" in registrationPurposes)
     throw new Error("Failed to retrieve registration purposes information");
 
@@ -92,7 +93,7 @@ export const createRegistrationPurposeSchema = async () => {
           const isReportingActivities =
             reportingOperationPurposes.includes(purpose);
 
-          // have to determine required fields dynamically based on selectedPurpose
+          // have to determine required fields dynamically based on purpose
           const requiredFields = [];
           if (isRegulatedProducts) requiredFields.push("regulated_products");
           if (isReportingActivities) requiredFields.push("activities");

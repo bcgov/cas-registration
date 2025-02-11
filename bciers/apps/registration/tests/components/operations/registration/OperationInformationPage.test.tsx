@@ -24,6 +24,7 @@ describe("the OperationInformationPage component", () => {
       await OperationInformationPage({
         step: 1,
         steps: allOperationRegistrationSteps,
+        operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
       }),
     );
 
