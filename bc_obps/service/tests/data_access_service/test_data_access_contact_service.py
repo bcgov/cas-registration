@@ -18,8 +18,8 @@ pytestmark = pytest.mark.django_db
 class TestDataAccessContactService:
     @staticmethod
     def test_list_contacts_for_irc_user():
-        baker.make_recipe('utils.contact', _quantity=10)
-        user = baker.make_recipe('utils.cas_admin')
+        baker.make_recipe('registration.tests.utils.contact', _quantity=10)
+        user = baker.make_recipe('registration.tests.utils.cas_admin')
         assert ContactDataAccessService.get_all_contacts_for_user(user).count() == 10
 
     @staticmethod

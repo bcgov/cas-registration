@@ -45,10 +45,10 @@ class TransferEventModelTest(EventBaseModelMixin):
             ("from_operation", "from operation", None, None),
             ("to_operation", "to operation", None, None),
         ]
-        cls.from_operator: Operator = baker.make_recipe('utils.operator')
-        cls.to_operator: Operator = baker.make_recipe('utils.operator')
-        cls.from_operation: Operation = baker.make_recipe('utils.operation')
-        cls.to_operation: Operation = baker.make_recipe('utils.operation')
+        cls.from_operator: Operator = baker.make_recipe('registration.tests.utils.operator')
+        cls.to_operator: Operator = baker.make_recipe('registration.tests.utils.operator')
+        cls.from_operation: Operation = baker.make_recipe('registration.tests.utils.operation')
+        cls.to_operation: Operation = baker.make_recipe('registration.tests.utils.operation')
         super().setUpTestData()
 
     def test_event_with_operation_only(self):

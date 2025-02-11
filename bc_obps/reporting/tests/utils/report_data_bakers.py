@@ -20,7 +20,7 @@ from reporting.tests.utils.bakers import report_version_baker, activity_baker, s
 def facility_report_baker(**props):
     report_version = props.get('report_version') or report_version_baker()
     default_props = {
-        "facility": baker.make_recipe('utils.facility'),
+        "facility": baker.make_recipe('registration.tests.utils.facility'),
         "report_version": report_version,
     }
     return baker.make(FacilityReport, **(default_props | props))

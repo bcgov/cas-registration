@@ -9,9 +9,9 @@ from zoneinfo import ZoneInfo
 class EventBaseModelMixin(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.operation: Operation = baker.make_recipe('utils.operation')
-        cls.facility1: Facility = baker.make_recipe('utils.facility')
-        cls.facility2: Facility = baker.make_recipe('utils.facility')
+        cls.operation: Operation = baker.make_recipe('registration.tests.utils.operation')
+        cls.facility1: Facility = baker.make_recipe('registration.tests.utils.facility')
+        cls.facility2: Facility = baker.make_recipe('registration.tests.utils.facility')
 
     def create_event_with_operation_only(self, *args, **kwargs):
         event = self.model.objects.create(

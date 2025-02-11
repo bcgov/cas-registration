@@ -58,7 +58,7 @@ class TestReportService(TestCase):
                 "service.data_access_service.facility_service.FacilityDataAccessService.get_current_facilities_by_operation"
             ) as mock_facility_data_access_service_get_current_facilities_by_operation,
         ):
-            mock_facilities = baker.make_recipe('utils.facility', _quantity=3)
+            mock_facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=3)
 
             mock_report_data_access_service_report_exists.return_value = False
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
@@ -159,15 +159,13 @@ class TestReportService(TestCase):
             operation_report_type="New Report Type",
         )
 
-        with mock.patch('service.report_service.ReportOperation.objects.get') as mock_get, mock.patch(
-            'service.report_service.ReportOperationRepresentative.objects.filter'
-        ) as mock_filter, mock.patch(
-            'service.report_service.FacilityReport.objects.filter'
-        ) as mock_facility_filter, mock.patch(
-            'service.report_service.Activity.objects.filter'
-        ) as mock_activity_filter, mock.patch(
-            'service.report_service.RegulatedProduct.objects.filter'
-        ) as mock_regulated_product_filter:
+        with (
+            mock.patch('service.report_service.ReportOperation.objects.get') as mock_get,
+            mock.patch('service.report_service.ReportOperationRepresentative.objects.filter') as mock_filter,
+            mock.patch('service.report_service.FacilityReport.objects.filter') as mock_facility_filter,
+            mock.patch('service.report_service.Activity.objects.filter') as mock_activity_filter,
+            mock.patch('service.report_service.RegulatedProduct.objects.filter') as mock_regulated_product_filter,
+        ):
             mock_report_operation = mock.MagicMock(spec=ReportOperation)
             mock_get.return_value = mock_report_operation
 

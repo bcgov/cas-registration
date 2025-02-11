@@ -91,10 +91,10 @@ class TestUtils:
             - `owning_operation`: The created operation instance associated with the operator.
         """
         # Create an operator instance
-        operator = baker.make_recipe('utils.operator')
+        operator = baker.make_recipe('registration.tests.utils.operator')
 
         # Create an operation instance associated with the operator
-        owning_operation = baker.make_recipe('utils.operation', operator=operator)
+        owning_operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
 
         # Return the created operator and operation instances
         return operator, owning_operation
@@ -132,9 +132,9 @@ class TestUtils:
 
         # Create a facility, optionally with an address
         facility = baker.make_recipe(
-            'utils.facility',
+            'registration.tests.utils.facility',
             operation=owning_operation,
-            address=baker.make_recipe('utils.address') if with_address else None,
+            address=baker.make_recipe('registration.tests.utils.address') if with_address else None,
         )
 
         # Link the created facility with the operation
@@ -227,7 +227,7 @@ class TestUtils:
     @staticmethod
     def mock_update_operation_payload():
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
-        point_of_contact = baker.make_recipe('utils.contact')
+        point_of_contact = baker.make_recipe('registration.tests.utils.contact')
         product = baker.make(RegulatedProduct)
         operation = operation_baker()
         operation.regulated_products.set([product.id])

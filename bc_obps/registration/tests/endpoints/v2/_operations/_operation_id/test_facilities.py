@@ -14,7 +14,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
 
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline', _quantity=45)
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=45)
 
         facilities_url = custom_reverse_lazy(
             'list_facilities_by_operation_id', kwargs={'operation_id': timeline[0].operation.id}
@@ -77,10 +77,14 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert page_2_first_facility.id > page_2_first_facility_reverse.id
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline', _quantity=15)
-        named_facility = baker.make_recipe('utils.facility', name='Mynameis', type=Facility.Types.MEDIUM_FACILITY)
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=15)
+        named_facility = baker.make_recipe(
+            'registration.tests.utils.facility', name='Mynameis', type=Facility.Types.MEDIUM_FACILITY
+        )
         baker.make_recipe(
-            'utils.facility_designated_operation_timeline', facility=named_facility, operation=timeline[0].operation
+            'registration.tests.utils.facility_designated_operation_timeline',
+            facility=named_facility,
+            operation=timeline[0].operation,
         )
 
         facilities_url = custom_reverse_lazy(
@@ -149,7 +153,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         owning_operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, owning_operator)
         owning_operation = operation_baker(owning_operator.id)
-        facility_instance = baker.make_recipe('utils.facility')
+        facility_instance = baker.make_recipe('registration.tests.utils.facility')
         mock_facility = {
             'name': facility_instance.name,
             'type': 'Large Facility',

@@ -32,7 +32,7 @@ class TestGetIfAuthorized:
     def test_get_if_authorized_cas_user_success():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 
-        facility = baker.make_recipe('utils.facility')
+        facility = baker.make_recipe('registration.tests.utils.facility')
         baker.make(FacilityDesignatedOperationTimeline, operation=operation_baker(), facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
@@ -50,7 +50,7 @@ class TestGetIfAuthorized:
             role=UserOperator.Roles.ADMIN,
         )
         owning_operation: Operation = operation_baker(operator.id)
-        facility = baker.make_recipe('utils.facility')
+        facility = baker.make_recipe('registration.tests.utils.facility')
         baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
@@ -59,7 +59,7 @@ class TestGetIfAuthorized:
     @staticmethod
     def test_get_if_authorized_industry_user_fail():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
         timeline.end_date = None
         timeline.save()
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
@@ -93,9 +93,11 @@ class TestGetIfAuthorized:
 
     @staticmethod
     def test_create_facilities_with_designated_operations_create_multiple_facilities():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         owning_operation: Operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, type="Linear Facility Operation"
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            type="Linear Facility Operation",
         )
         payload = [
             FacilityIn(
@@ -134,9 +136,11 @@ class TestGetIfAuthorized:
 class TestCreateFacilityWithDesignatedOperation:
     @staticmethod
     def test_create_sfo_facility_with_designated_operation_without_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        owning_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        owning_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
 
         payload = FacilityIn(
             name='zip',
@@ -154,10 +158,12 @@ class TestCreateFacilityWithDesignatedOperation:
 
     @staticmethod
     def test_create_second_sfo_facility_error():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         owning_operation = baker.make_recipe(
-            'utils.operation', operator=approved_user_operator.operator, type='Single Facility Operation'
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            type='Single Facility Operation',
         )
 
         payload = FacilityIn(
@@ -190,9 +196,11 @@ class TestCreateFacilityWithDesignatedOperation:
 
     @staticmethod
     def test_create_lfo_facility_with_designated_operation_with_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        owning_operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        owning_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
 
         payload = FacilityIn(
             street_address='123 street',
@@ -241,14 +249,14 @@ class TestUpdateFacility:
         user = baker.make(User, app_role=AppRole.objects.get(role_name=user_role))
 
         # Create a new instance of the Operator model
-        operator = baker.make_recipe('utils.operator')
+        operator = baker.make_recipe('registration.tests.utils.operator')
 
         # Authorize the Operator User if required
         if user_role == "industry_user":
-            baker.make_recipe('utils.approved_user_operator', user=user, operator=operator)
+            baker.make_recipe('registration.tests.utils.approved_user_operator', user=user, operator=operator)
 
         # Create an Owning Operation
-        owning_operation = baker.make_recipe('utils.operation', operator=operator)
+        owning_operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
 
         # Create Well Authorization Numbers if provided
         well_auth_objs = []
@@ -260,7 +268,7 @@ class TestUpdateFacility:
 
         # Create a new instance of the Facility model
         address = address_baker() if with_address else None
-        facility = baker.make_recipe('utils.facility', address=address, operation=owning_operation)
+        facility = baker.make_recipe('registration.tests.utils.facility', address=address, operation=owning_operation)
 
         # Set Well Authorization Numbers if they were created
         if well_auth_objs:
@@ -499,8 +507,8 @@ class TestUpdateFacility:
 class TestGenerateBcghgId:
     @staticmethod
     def test_generates_bcghg_id():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
         timeline.operation.operator = approved_user_operator.operator
         timeline.operation.save()
         timeline.end_date = None
@@ -516,7 +524,7 @@ class TestUpdateFacilitysOperation:
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_unauthorized_user_cannot_update(mock_get_by_guid):
-        cas_admin = baker.make_recipe('utils.cas_admin')
+        cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
         mock_get_by_guid.return_value = cas_admin
         operation = MagicMock()
         operation_id = uuid4()
@@ -528,7 +536,7 @@ class TestUpdateFacilitysOperation:
     def test_update_operation_for_facility_success(mock_get_by_guid):
         cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
         mock_get_by_guid.return_value = cas_analyst
-        operation = baker.make_recipe('utils.operation')
-        facility = baker.make_recipe('utils.facility')
+        operation = baker.make_recipe('registration.tests.utils.operation')
+        facility = baker.make_recipe('registration.tests.utils.facility')
         FacilityService.update_operation_for_facility(cas_analyst.user_guid, facility, operation.id)
         assert facility.operation == operation

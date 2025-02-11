@@ -17,9 +17,16 @@ class TestTransferEventService:
     @staticmethod
     def test_list_transfer_events():
         # transfer of 3 operations
-        baker.make_recipe('utils.transfer_event', operation=baker.make_recipe('utils.operation'), _quantity=3)
+        baker.make_recipe(
+            'registration.tests.utils.transfer_event',
+            operation=baker.make_recipe('registration.tests.utils.operation'),
+            _quantity=3,
+        )
         # transfer of 4 facilities
-        baker.make_recipe('utils.transfer_event', facilities=baker.make_recipe('utils.facility', _quantity=4))
+        baker.make_recipe(
+            'registration.tests.utils.transfer_event',
+            facilities=baker.make_recipe('registration.tests.utils.facility', _quantity=4),
+        )
         # sorting and filtering are tested in the endpoint test in conjunction with pagination
         result = TransferEventService.list_transfer_events(
             "status",
@@ -31,16 +38,16 @@ class TestTransferEventService:
     @staticmethod
     def test_validate_no_overlapping_transfer_events():
         # Scenario 1: No overlapping operation or facility
-        new_operation = baker.make_recipe('utils.operation')
-        new_facilities = baker.make_recipe('utils.facility', _quantity=2)
+        new_operation = baker.make_recipe('registration.tests.utils.operation')
+        new_facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=2)
         TransferEventService._validate_no_overlapping_transfer_events(
             operation_id=new_operation.id, facility_ids=[facility.id for facility in new_facilities]
         )
 
         # Scenario 2: Overlapping operation
-        operation = baker.make_recipe('utils.operation')
+        operation = baker.make_recipe('registration.tests.utils.operation')
         baker.make_recipe(
-            'utils.transfer_event',
+            'registration.tests.utils.transfer_event',
             operation=operation,
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
@@ -48,9 +55,9 @@ class TestTransferEventService:
             TransferEventService._validate_no_overlapping_transfer_events(operation_id=operation.id)
 
         # Scenario 3: Overlapping facilities
-        facilities = baker.make_recipe('utils.facility', _quantity=2)
+        facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=2)
         baker.make_recipe(
-            'utils.transfer_event',
+            'registration.tests.utils.transfer_event',
             facilities=facilities,
             status=TransferEvent.Statuses.COMPLETE,
         )
@@ -63,9 +70,9 @@ class TestTransferEventService:
             )
 
         # Scenario 4: Overlapping operation but excluded by current_transfer_id
-        overlapping_operation = baker.make_recipe('utils.operation')
+        overlapping_operation = baker.make_recipe('registration.tests.utils.operation')
         existing_transfer = baker.make_recipe(
-            'utils.transfer_event',
+            'registration.tests.utils.transfer_event',
             operation=overlapping_operation,
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
@@ -75,9 +82,9 @@ class TestTransferEventService:
         )
 
         # Scenario 5: Overlapping facilities but excluded by current_transfer_id
-        overlapping_facilities = baker.make_recipe('utils.facility', _quantity=2)
+        overlapping_facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=2)
         existing_transfer = baker.make_recipe(
-            'utils.transfer_event',
+            'registration.tests.utils.transfer_event',
             facilities=overlapping_facilities,
             status=TransferEvent.Statuses.COMPLETE,
         )
@@ -89,7 +96,7 @@ class TestTransferEventService:
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_unauthorized_user(mock_get_by_guid):
-        cas_admin = baker.make_recipe('utils.cas_admin')
+        cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
         mock_get_by_guid.return_value = cas_admin
         # Mock user to not be a CAS analyst
         mock_user = MagicMock()
@@ -101,9 +108,9 @@ class TestTransferEventService:
 
     @classmethod
     def _get_transfer_event_payload_for_operation(cls):
-        from_operator = baker.make_recipe('utils.operator')
-        to_operator = baker.make_recipe('utils.operator')
-        operation = baker.make_recipe('utils.operation')
+        from_operator = baker.make_recipe('registration.tests.utils.operator')
+        to_operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = baker.make_recipe('registration.tests.utils.operation')
         return TransferEventCreateIn.model_construct(
             transfer_entity="Operation",
             from_operator=from_operator.id,
@@ -116,7 +123,7 @@ class TestTransferEventService:
     @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_operation_missing_operation(cls, mock_get_by_guid, mock_validate_no_overlap):
-        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        cas_analyst = baker.make_recipe("registration.tests.utils.cas_analyst")
         payload = cls._get_transfer_event_payload_for_operation()
         payload.operation = None
 
@@ -132,7 +139,7 @@ class TestTransferEventService:
     @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_operation_using_the_same_operator(cls, mock_get_by_guid, mock_validate_no_overlap):
-        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        cas_analyst = baker.make_recipe("registration.tests.utils.cas_analyst")
         payload_with_same_from_operator_and_to_operator = cls._get_transfer_event_payload_for_operation()
         payload_with_same_from_operator_and_to_operator.to_operator = (
             payload_with_same_from_operator_and_to_operator.from_operator
@@ -156,7 +163,7 @@ class TestTransferEventService:
     def test_create_transfer_event_operation(
         cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap, mock_process_event_if_effective
     ):
-        cas_analyst = baker.make_recipe('utils.cas_analyst')
+        cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
         payload = cls._get_transfer_event_payload_for_operation()
 
         mock_user = MagicMock()
@@ -185,11 +192,11 @@ class TestTransferEventService:
 
     @classmethod
     def _get_transfer_event_payload_for_facility(cls):
-        from_operator = baker.make_recipe('utils.operator')
-        to_operator = baker.make_recipe('utils.operator')
-        from_operation = baker.make_recipe('utils.operation')
-        to_operation = baker.make_recipe('utils.operation')
-        facilities = baker.make_recipe('utils.facility', _quantity=2)
+        from_operator = baker.make_recipe('registration.tests.utils.operator')
+        to_operator = baker.make_recipe('registration.tests.utils.operator')
+        from_operation = baker.make_recipe('registration.tests.utils.operation')
+        to_operation = baker.make_recipe('registration.tests.utils.operation')
+        facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=2)
         return TransferEventCreateIn.model_construct(
             transfer_entity="Facility",
             from_operator=from_operator.id,
@@ -204,7 +211,7 @@ class TestTransferEventService:
     @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_facility_missing_required_fields(cls, mock_get_by_guid, mock_validate_no_overlap):
-        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        cas_analyst = baker.make_recipe("registration.tests.utils.cas_analyst")
         payload_without_facility = cls._get_transfer_event_payload_for_facility()
         payload_without_facility.facilities = None
 
@@ -236,7 +243,7 @@ class TestTransferEventService:
     @patch("service.transfer_event_service.TransferEventService._validate_no_overlapping_transfer_events")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_create_transfer_event_facility_between_the_same_operation(cls, mock_get_by_guid, mock_validate_no_overlap):
-        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        cas_analyst = baker.make_recipe("registration.tests.utils.cas_analyst")
         payload_with_same_from_and_to_operation = cls._get_transfer_event_payload_for_facility()
         payload_with_same_from_and_to_operation.to_operation = payload_with_same_from_and_to_operation.from_operation
 
@@ -256,7 +263,7 @@ class TestTransferEventService:
     def test_create_transfer_event_facility(
         cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap, mock_process_event_if_effective
     ):
-        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        cas_analyst = baker.make_recipe("registration.tests.utils.cas_analyst")
         payload = cls._get_transfer_event_payload_for_facility()
 
         mock_user = MagicMock()
@@ -292,7 +299,7 @@ class TestTransferEventService:
     def test_process_event_on_effective_date(
         cls, mock_create_transfer_event, mock_get_by_guid, mock_validate_no_overlap, mock_process_event
     ):
-        cas_analyst = baker.make_recipe("utils.cas_analyst")
+        cas_analyst = baker.make_recipe("registration.tests.utils.cas_analyst")
 
         # Use an effective date that is yesterday
         payload = cls._get_transfer_event_payload_for_operation()
@@ -319,16 +326,18 @@ class TestTransferEventService:
         # Setup test data: Three transfer events, two of which are due today and one is due in the future
         today = datetime.now(ZoneInfo("UTC"))
         due_event_1 = baker.make_recipe(
-            "utils.transfer_event", effective_date=today, status=TransferEvent.Statuses.TO_BE_TRANSFERRED
+            "registration.tests.utils.transfer_event",
+            effective_date=today,
+            status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
         due_event_2 = baker.make_recipe(
-            "utils.transfer_event",
+            "registration.tests.utils.transfer_event",
             effective_date=today - timedelta(days=1),
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
         # future_event to ensure it is not processed
         future_event = baker.make_recipe(
-            "utils.transfer_event",
+            "registration.tests.utils.transfer_event",
             effective_date=today + timedelta(days=1),
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
@@ -363,8 +372,8 @@ class TestTransferEventService:
         user_guid = uuid4()
         # Scenario 1: Transfer event with facilities
         transfer_event_facilities = baker.make_recipe(
-            "utils.transfer_event",
-            facilities=baker.make_recipe("utils.facility", _quantity=3),
+            "registration.tests.utils.transfer_event",
+            facilities=baker.make_recipe("registration.tests.utils.facility", _quantity=3),
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
 
@@ -381,10 +390,10 @@ class TestTransferEventService:
 
         # Scenario 2: Transfer event with an operation
         transfer_event_operation = baker.make_recipe(
-            "utils.transfer_event",
-            operation=baker.make_recipe("utils.operation"),
+            "registration.tests.utils.transfer_event",
+            operation=baker.make_recipe("registration.tests.utils.operation"),
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
-            created_by=baker.make_recipe("utils.cas_analyst"),
+            created_by=baker.make_recipe("registration.tests.utils.cas_analyst"),
         )
 
         # Reset the mock for the next scenario(otherwise we will get a call count 1 from the previous scenario)
@@ -409,13 +418,13 @@ class TestTransferEventService:
     def test_process_single_event_failure(mock_process_operation: MagicMock, mock_process_facilities: MagicMock):
         user_guid = uuid4()
         operation_event = baker.make_recipe(
-            "utils.transfer_event",
-            operation=baker.make_recipe("utils.operation"),
+            "registration.tests.utils.transfer_event",
+            operation=baker.make_recipe("registration.tests.utils.operation"),
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
         facility_event = baker.make_recipe(
-            "utils.transfer_event",
-            facilities=[baker.make_recipe("utils.facility")],
+            "registration.tests.utils.transfer_event",
+            facilities=[baker.make_recipe("registration.tests.utils.facility")],
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
         )
 
@@ -450,12 +459,12 @@ class TestTransferEventService:
         mock_set_timeline: MagicMock,
         mock_get_current_timeline: MagicMock,
     ):
-        facility_1 = baker.make_recipe("utils.facility")
-        facility_2 = baker.make_recipe("utils.facility")
-        from_operation = baker.make_recipe("utils.operation")
-        to_operation = baker.make_recipe("utils.operation")
+        facility_1 = baker.make_recipe("registration.tests.utils.facility")
+        facility_2 = baker.make_recipe("registration.tests.utils.facility")
+        from_operation = baker.make_recipe("registration.tests.utils.operation")
+        to_operation = baker.make_recipe("registration.tests.utils.operation")
         transfer_event = baker.make_recipe(
-            "utils.transfer_event",
+            "registration.tests.utils.transfer_event",
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
             facilities=[facility_1, facility_2],
             from_operation=from_operation,
@@ -529,9 +538,9 @@ class TestTransferEventService:
         mock_get_current_timeline,
     ):
         transfer_event = baker.make_recipe(
-            "utils.transfer_event",
+            "registration.tests.utils.transfer_event",
             status=TransferEvent.Statuses.TO_BE_TRANSFERRED,
-            operation=baker.make_recipe("utils.operation"),
+            operation=baker.make_recipe("registration.tests.utils.operation"),
         )
 
         user_guid = uuid4()  # Simulating the user GUID
@@ -594,7 +603,7 @@ class TestTransferEventService:
             TransferEventService.get_if_authorized(unauthorized_user.user_guid, transfer_event.id)
 
         # Scenario 2: Authorized user
-        mock_get_by_guid.return_value = cas_admin = baker.make_recipe('utils.cas_admin')
+        mock_get_by_guid.return_value = cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
         result = TransferEventService.get_if_authorized(cas_admin.user_guid, uuid4())
         assert result == transfer_event
 
