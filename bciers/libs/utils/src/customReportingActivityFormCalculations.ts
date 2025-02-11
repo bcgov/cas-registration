@@ -2,20 +2,13 @@ export const calculateMobileAnnualAmount = (formData: any) => {
   const mobileUnit = formData?.sourceTypes?.mobileFuelCombustionPartOfFacility;
   if (!mobileUnit || !mobileUnit.fuels) return;
 
-  // For each fuel, calculate annual amount if all quarters are present
+  //  For each fuel, for each quarter amount, add to calculated annual fuel amount
   for (const fuel of mobileUnit.fuels) {
-    if (
-      !fuel?.q1FuelAmount ||
-      !fuel?.q2FuelAmount ||
-      !fuel?.q3FuelAmount ||
-      !fuel?.q4FuelAmount
-    )
-      return;
-    const total =
-      fuel.q1FuelAmount +
-      fuel.q2FuelAmount +
-      fuel.q3FuelAmount +
-      fuel.q4FuelAmount;
+    let total = 0;
+    if (fuel?.q1FuelAmount !== null && fuel?.q1FuelAmount !== undefined) total += fuel.q1FuelAmount;
+    if (fuel?.q2FuelAmount !== null && fuel?.q2FuelAmount !== undefined) total += fuel.q2FuelAmount;
+    if (fuel?.q3FuelAmount !== null && fuel?.q3FuelAmount !== undefined) total += fuel.q3FuelAmount;
+    if (fuel?.q4FuelAmount !== null && fuel?.q4FuelAmount !== undefined) total += fuel.q4FuelAmount;
     fuel["annualFuelAmount"] = total; // Apply total
   }
 };
