@@ -189,7 +189,6 @@ def init_additional_gas_type_data(apps, schema_editor):
         {"name": "Fluoromethane", "chemical_formula": "HFC-41 (CH3F)", "cas_number": "593-53-3", "gwp": 116},
         {"name": "1,1,1,2,3,4,4,5,5,5-decafluoropentane", "chemical_formula": "HFC-43-10mee (C5H2F10)", "cas_number": "138495-42-8", "gwp": 1650},
         {"name": "1,1,2,2-tetrafluoroethane", "chemical_formula": "HFC-134 (C2H2F4)", "cas_number": "359-35-3", "gwp": 1120},
-        {"name": "1,1,1,2-tetrafluoroethane", "chemical_formula": "HFC-134a (C2H2F4)", "cas_number": "811-97-2", "gwp": 1300},
         {"name": "1,1,2-trifluoroethane", "chemical_formula": "HFC-143 (C2H3F3)", "cas_number": "430-66-0", "gwp": 328},
         {"name": "1,1,1-trifluoroethane", "chemical_formula": "HFC-143a (C2H3F3)", "cas_number": "420-46-2", "gwp": 4800},
         {"name": "1,1-difluoroethane", "chemical_formula": "HFC-152a (C2H4F2)", "cas_number": "75-37-6", "gwp": 138},
@@ -229,6 +228,10 @@ def init_update_gas_type_data(apps, schema_editor):
     g = GasType.objects.get(chemical_formula='C2HF5')
     g.chemical_formula = 'HFC-125 (C2HF5)'
     g.save()
+
+    g = GasType.objects.get(chemical_formula='C2H2F4')
+    g.chemical_formula = 'HFC-134a (C2H2F4)'
+    g.save()    
 
 def reverse_update_gas_type_data(apps, schema_editor):
     """
