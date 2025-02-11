@@ -5,7 +5,6 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from registration.models import Document
 from registration.utils import files_have_same_hash
 from django.core.files.base import ContentFile
-from service.operation_service import OperationService
 
 
 class DocumentServiceV2:
@@ -13,8 +12,10 @@ class DocumentServiceV2:
     def get_operation_document_by_type_if_authorized(
         cls, user_guid: UUID, operation_id: UUID, document_type: str
     ) -> Document | None:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
-        return DocumentDataAccessService.get_operation_document_by_type(operation.id, document_type)
+        from service.operation_service_v2 import OperationServiceV2
+
+        OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
+        return DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
 
     @classmethod
     def create_or_replace_operation_document(

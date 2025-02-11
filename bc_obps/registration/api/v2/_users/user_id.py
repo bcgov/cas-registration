@@ -13,6 +13,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.user_service import UserService
 
 
+# brianna we aren't using this
 @router.get(
     "/users/{user_id}",
     response={200: UserContactPageOut, custom_codes_4xx: Message},
