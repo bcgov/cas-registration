@@ -1,0 +1,117 @@
+{
+  "type": "object",
+  "title": "Fuel combustion for electricity generation",
+  "default": { "units": [{ "fuels": [{ "emissions": [{}] }] }] },
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Units",
+      "items": {
+        "type": "object",
+        "required": [
+          "unitName",
+          "unitType",
+          "generationType",
+          "nameplateCapacity",
+          "netPower"
+        ],
+        "properties": {
+          "unitName": {
+            "title": "Unit Name",
+            "maxLength": 200,
+            "type": "string"
+          },
+          "unitType": {
+            "title": "Unit Type",
+            "type": "string",
+            "enum": ["TBD"]
+          },
+          "generationType": {
+            "title": "Generation Type",
+            "type": "string",
+            "enum": ["Cogeneration", "Non-Cogeneration"]
+          },
+          "nameplateCapacity": {
+            "title": "Nameplate Capacity",
+            "type": "number",
+            "minimum": 0
+          },
+          "netPower": {
+            "title": "Net Power",
+            "type": "number",
+            "minimum": 0
+          },
+          "fuels": {
+            "title": "Fuel Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["annualFuelAmount"],
+              "properties": {
+                "fuelType": {
+                  "type": "object",
+                  "required": ["fuelName", "fuelClassification", "fuelUnit"],
+                  "properties": {
+                    "fuelName": {
+                      "title": "Fuel Name",
+                      "type": "string",
+                      "enum": []
+                    },
+                    "fuelClassification": {
+                      "title": "Fuel Classification",
+                      "maxLength": 200,
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "fuelUnit": {
+                      "title": "Fuel Unit",
+                      "maxLength": 200,
+                      "type": "string",
+                      "readOnly": true
+                    }
+                  }
+                },
+                "fuelDescription": {
+                  "title": "Fuel Description",
+                  "maxLength": 500,
+                  "type": "string"
+                },
+                "annualFuelAmount": {
+                  "title": "Annual Fuel Amount",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "emissions": {
+                  "title": "Emission Data",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["gasType", "emission"],
+                    "properties": {
+                      "gasType": {
+                        "title": "Gas Type",
+                        "type": "string",
+                        "enum": []
+                      },
+                      "emission": {
+                        "title": "Emission",
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "equivalentEmission": {
+                        "title": "Equivalent Emission",
+                        "type": "string",
+                        "readOnly": true,
+                        "default": "Value will be computed upon saving"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
