@@ -6,7 +6,7 @@ from model_bakery import baker
 
 class TestFacilityBcghgIdEndpoint(CommonTestSetup):
     def test_authorized_role_can_issue_id(self):
-        timeline = baker.make_recipe('utils.facility_designated_operation_timeline', end_date=None)
+        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', end_date=None)
         response = TestUtils.mock_patch_with_auth_role(
             self,
             'cas_director',

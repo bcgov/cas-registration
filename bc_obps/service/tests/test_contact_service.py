@@ -123,10 +123,10 @@ class TestContactService:
 
     @staticmethod
     def test_update_contact_without_address():
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         contact = baker.make_recipe(
-            'utils.contact', operator=approved_user_operator.operator, address=None
+            'registration.tests.utils.contact', operator=approved_user_operator.operator, address=None
         )  # Contact with no address
 
         contact_payload = ContactIn(
@@ -253,13 +253,14 @@ class TestContactService:
     @staticmethod
     def test_get_with_places_assigned_with_contacts():
         contact = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative')
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         # add contact to operator (they have to be associated with the operator or will throw unauthorized)
         approved_user_operator.operator.contacts.set([contact])
         # add contact to operation
-        operation = baker.make_recipe('utils.operation', operator=approved_user_operator.operator)
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         operation.contacts.set([contact])
 
         result = ContactService.get_with_places_assigned(approved_user_operator.user.user_guid, contact.id)
@@ -270,9 +271,10 @@ class TestContactService:
     @staticmethod
     def test_get_with_places_assigned_with_no_contacts():
         contact = baker.make_recipe(
-            'utils.contact', business_role=BusinessRole.objects.get(role_name='Operation Representative')
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
         )
-        approved_user_operator = baker.make_recipe('utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         # add contact to operator (they have to be associated with the operator or will throw unauthorized)
         approved_user_operator.operator.contacts.set([contact])
 

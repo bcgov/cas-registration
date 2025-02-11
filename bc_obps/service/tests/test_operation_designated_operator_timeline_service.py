@@ -12,15 +12,20 @@ pytestmark = pytest.mark.django_db
 class TestOperationDesignatedOperatorTimelineService:
     @staticmethod
     def test_get_current_timeline():
-        timeline_with_no_end_date = baker.make_recipe('utils.operation_designated_operator_timeline', end_date=None)
+        timeline_with_no_end_date = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline', end_date=None
+        )
         # another timeline for the same operation to make sure it is not returned
-        baker.make_recipe('utils.operation_designated_operator_timeline', operation=timeline_with_no_end_date.operation)
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=timeline_with_no_end_date.operation,
+        )
         result_found = OperationDesignatedOperatorTimelineService.get_current_timeline(
             timeline_with_no_end_date.operator_id, timeline_with_no_end_date.operation_id
         )
         assert result_found == timeline_with_no_end_date
 
-        timeline_with_end_date = baker.make_recipe('utils.operation_designated_operator_timeline')
+        timeline_with_end_date = baker.make_recipe('registration.tests.utils.operation_designated_operator_timeline')
         result_not_found = OperationDesignatedOperatorTimelineService.get_current_timeline(
             timeline_with_end_date.operator_id, timeline_with_end_date.operation_id
         )
@@ -29,7 +34,8 @@ class TestOperationDesignatedOperatorTimelineService:
     @staticmethod
     def test_set_timeline_status_and_end_date():
         timeline = baker.make_recipe(
-            'utils.operation_designated_operator_timeline', status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE
+            'registration.tests.utils.operation_designated_operator_timeline',
+            status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
         )
         new_status = OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED
         end_date = datetime.now(ZoneInfo("UTC"))

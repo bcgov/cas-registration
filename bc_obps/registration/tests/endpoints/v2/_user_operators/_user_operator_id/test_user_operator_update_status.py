@@ -73,9 +73,11 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
     def test_cas_analyst_approves_access_request_with_existing_operator(self, mocker):
 
         approved_admin_user_operator = baker.make_recipe(
-            'utils.approved_user_operator', role=UserOperator.Roles.ADMIN, user=self.user
+            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN, user=self.user
         )
-        pending_user_operator = baker.make_recipe('utils.user_operator', operator=approved_admin_user_operator.operator)
+        pending_user_operator = baker.make_recipe(
+            'registration.tests.utils.user_operator', operator=approved_admin_user_operator.operator
+        )
 
         pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
 

@@ -12,7 +12,7 @@ from reporting.tests.utils.immutable_report_version import (
 class FacilityReportModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        f = baker.make_recipe("utils.facility")
+        f = baker.make_recipe('registration.tests.utils.facility')
 
         cls.test_object = FacilityReport.objects.create(
             facility=f,

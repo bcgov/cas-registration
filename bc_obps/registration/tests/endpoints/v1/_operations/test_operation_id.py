@@ -262,11 +262,13 @@ class TestOperationIdEndpoint(CommonTestSetup):
         assert response.status_code == 422
 
     def test_industry_user_update_operation_with_updated_point_of_contact(self):
-        contact1 = baker.make_recipe('utils.contact')
+        contact1 = baker.make_recipe('registration.tests.utils.contact')
         # contact2 is a new contact, even though they have the same email as contact1
-        contact2 = baker.make_recipe('utils.contact', email=contact1.email)
-        operator = baker.make_recipe('utils.operator')
-        operation = baker.make_recipe('utils.operation', operator=operator, point_of_contact=contact2)
+        contact2 = baker.make_recipe('registration.tests.utils.contact', email=contact1.email)
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=operator, point_of_contact=contact2
+        )
 
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',

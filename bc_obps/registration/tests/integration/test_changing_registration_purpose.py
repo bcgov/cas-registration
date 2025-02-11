@@ -25,10 +25,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         return {"date_of_first_shipment": "On or after April 1, 2024", "new_entrant_application": MOCK_DATA_URL}
 
     def _prepare_test_data(self, registration_purpose):
-        self.approved_user_operator = baker.make_recipe('utils.approved_user_operator', user=self.user)
-        contact = baker.make_recipe('utils.contact')
+        self.approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', user=self.user
+        )
+        contact = baker.make_recipe('registration.tests.utils.contact')
         self.operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             created_by=self.user,
             operator=self.approved_user_operator.operator,
             registration_purpose=registration_purpose,
