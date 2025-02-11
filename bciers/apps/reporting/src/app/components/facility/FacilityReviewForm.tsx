@@ -36,7 +36,7 @@ const FacilityReview: React.FC<Props> = ({
 }) => {
   const [formData, setFormData] = useState<any>(formsData);
   const queryString = serializeSearchParams(useSearchParams());
-  const backUrl = `/reports/${version_id}/person-responsible`;
+  const backUrl = `/reports/${version_id}/facilities/report-information`;
   const continueURL = `activities${queryString}`;
   const [errors, setErrors] = useState<string[] | undefined>();
 

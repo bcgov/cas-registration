@@ -32,6 +32,7 @@ interface Props {
   facilityId: UUID;
   initialJsonSchema: RJSFSchema;
   initialSelectedSourceTypeIds: string[];
+  isLinearOperation: boolean;
 }
 
 // 🧩 Main component
@@ -44,6 +45,7 @@ export default function ActivityForm({
   facilityId,
   initialJsonSchema,
   initialSelectedSourceTypeIds,
+  isLinearOperation,
 }: Readonly<Props>) {
   const searchParams = useSearchParams(); // is read-only
   let step = searchParams ? Number(searchParams.get("step")) : 0;
@@ -123,8 +125,12 @@ export default function ActivityForm({
     const taskListLength = activitiesSection?.elements?.length;
     if (taskListLength && step === -1) step = taskListLength - 1;
 
-    if (step === 0 && !isContinue)
+    if (step === 0 && !isContinue) {
+      if (isLinearOperation) {
+        return `/reports/${reportVersionId}/facilities/${facilityId}/review-facility-information`;
+      }
       return `/reports/${reportVersionId}/person-responsible`; // Facility review page
+    }
     if (taskListLength && step + 1 >= taskListLength && isContinue) {
       return "non-attributable"; // Activities done, go to Non-attributable emissions
     }
