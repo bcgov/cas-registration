@@ -1,5 +1,6 @@
 {
   "title": "Electricity generation",
   "type": "object",
+  "required": ["sourceTypes"],
   "properties": {}
 }
