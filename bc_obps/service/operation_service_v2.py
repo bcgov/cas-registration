@@ -1,9 +1,10 @@
-from typing import Optional, Tuple, Callable, Generator, Union
+from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.models.facility import Facility
 from registration.schema.v1.facility import FacilityIn
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 from service.contact_service_v2 import ContactServiceV2
+from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
@@ -23,6 +24,7 @@ from registration.models.user_operator import UserOperator
 from registration.models import Operation
 from ninja import Query
 from django.db import transaction
+from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.document_service import DocumentService
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
@@ -47,6 +49,26 @@ from registration.models.operation_designated_operator_timeline import Operation
 
 
 class OperationServiceV2:
+    @classmethod
+    def get_if_authorized_v2(
+        cls,
+        user_guid: UUID,
+        operation_id: UUID,
+        only_fields: Optional[List[str]] = None,
+    ) -> Operation:
+        operation: Operation
+        if only_fields:
+            operation = Operation.objects.only(*only_fields).get(id=operation_id)
+        else:
+            operation = OperationDataAccessServiceV2.get_by_id(operation_id)
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if user.is_industry_user():
+
+            if not operation.user_has_access(user.user_guid):
+                raise Exception(UNAUTHORIZED_MESSAGE)
+            return operation
+        return operation
+
     @classmethod
     def list_operations_timeline(
         cls,
@@ -74,7 +96,8 @@ class OperationServiceV2:
     @classmethod
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        # brianna don't use only_fields here--this function is often used in other functions that need more than the only_fields and then that triggers a query for every individual field
+        operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id)
         fields_to_update = ['status']
         if status == Operation.Statuses.REGISTERED:
             cls.raise_exception_if_operation_missing_registration_information(operation)
@@ -89,7 +112,7 @@ class OperationServiceV2:
     def update_opted_in_operation_detail(
         cls, user_guid: UUID, operation_id: UUID, payload: OptedInOperationDetailIn
     ) -> OptedInOperationDetail:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
         if not operation.opted_in_operation:
             raise Exception("Operation does not have an opted-in operation.")
         return OptedInOperationDataAccessService.update_opted_in_operation_detail(
@@ -98,18 +121,14 @@ class OperationServiceV2:
 
     @classmethod
     def get_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Optional[OptedInOperationDetail]:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
         return operation.opted_in_operation
 
     @classmethod
     def create_or_replace_new_entrant_application(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationIn
     ) -> Operation:
-        operation = OperationDataAccessService.get_by_id(operation_id)
-
-        # industry users can only edit operations that belong to their operator
-        if not operation.user_has_access(user_guid):
-            raise Exception(UNAUTHORIZED_MESSAGE)
+        operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
 
         (
             new_entrant_application_document,
@@ -131,7 +150,7 @@ class OperationServiceV2:
     def create_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeIn
     ) -> Contact:
-        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation: Operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
         existing_contact_id = payload.existing_contact_id
         if existing_contact_id:
             # We need to prevent users from updating the contact's first name, last name, and email if they are using an existing contact
@@ -153,16 +172,22 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def create_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Operation:
+    def _create_or_update_eio(cls, user_guid: UUID, operation: Operation, payload: OperationInformationIn) -> None:
+        # EIO operations have a facility with the same data as the operation
+        eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)
+        facility = operation.facilities.first()
+        if not facility:
+            FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
+        else:
+            FacilityService.update_facility(user_guid, facility.id, eio_payload)
+
+    @classmethod
+    @transaction.atomic()
+    def _create_opted_in_operation_detail(cls, user_guid: UUID, operation: Operation) -> Operation:
         """
         Creates an empty OptedInOperationDetail instance for the specified operation.
         This method is called before any opt-in data is available.
         """
-        operation = OperationDataAccessService.get_by_id(operation_id)
-
-        # industry users can only edit operations that belong to their operator
-        if not operation.user_has_access(user_guid):
-            raise Exception(UNAUTHORIZED_MESSAGE)
 
         operation.opt_in = True
         operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
@@ -175,7 +200,7 @@ class OperationServiceV2:
     def remove_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeRemove
     ) -> OperationRepresentativeRemove:
-        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation: Operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
         operation.contacts.remove(payload.id)
 
         return OperationRepresentativeRemove(id=payload.id)
@@ -193,19 +218,11 @@ class OperationServiceV2:
 
     @classmethod
     @transaction.atomic()
-    def create_or_update_operation_v2(
+    def _create_operation_v2(
         cls,
         user_guid: UUID,
-        payload: Union[OperationInformationIn, OperationInformationInUpdate],
-        operation_id: UUID | None = None,
+        payload: OperationInformationIn,
     ) -> Operation:
-        user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
-        # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
-
-        if operation_id:
-            operation = OperationService.get_if_authorized(user_guid, operation_id)
-            if payload.registration_purpose != operation.registration_purpose:
-                payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
 
         operation_data = payload.dict(
             include={
@@ -219,46 +236,36 @@ class OperationServiceV2:
                 'opt_in',
             }
         )
-        operation_data['pk'] = operation_id if operation_id else None
+        user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
         operation_data['operator_id'] = user_operator.operator_id
 
-        operation, created = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
-
-        if created:
-            OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline(
-                user_guid,
-                {
-                    'operator': user_operator.operator,
-                    'operation': operation,
-                    'start_date': datetime.now(ZoneInfo("UTC")),
-                },
-            )
-
-        # set m2m relationships
-        operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
-        (
-            operation.regulated_products.set(payload.regulated_products)
-            if payload.regulated_products
-            else operation.regulated_products.clear()
+        operation = OperationDataAccessServiceV2.create_operation_v2(
+            user_guid,
+            operation_data,
+            payload.activities if hasattr(payload, "activities") and payload.activities else [],
+            payload.regulated_products if hasattr(payload, "regulated_products") and payload.regulated_products else [],
         )
 
-        if isinstance(payload, OperationInformationInUpdate):
-            for contact_id in payload.operation_representatives:
-                ContactServiceV2.raise_exception_if_contact_missing_address_information(contact_id)
+        OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline(
+            user_guid,
+            {
+                'operator': user_operator.operator,
+                'operation': operation,
+                'start_date': datetime.now(ZoneInfo("UTC")),
+            },
+        )
 
-            operation.contacts.set(payload.operation_representatives)
-
-        # create or replace documents
+        # create documents
         operation_documents = [
             doc
-            for doc, created in [
+            for doc in [
                 *(
                     [
-                        DocumentServiceV2.create_or_replace_operation_document(
+                        DocumentDataAccessServiceV2.create_document(
                             user_guid,
-                            operation.id,
                             payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
                             'boundary_map',
+                            operation.id,
                         )
                     ]
                     if payload.boundary_map
@@ -266,75 +273,62 @@ class OperationServiceV2:
                 ),
                 *(
                     [
-                        DocumentServiceV2.create_or_replace_operation_document(
+                        DocumentDataAccessServiceV2.create_document(
                             user_guid,
-                            operation.id,
                             payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
                             'process_flow_diagram',
+                            operation.id,
                         )
                     ]
                     if payload.process_flow_diagram
                     else []
                 ),
                 *(
-                    [
-                        DocumentServiceV2.create_or_replace_operation_document(
-                            user_guid,
-                            operation.id,
-                            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                            'new_entrant_application',
-                        )
-                    ]
+                    DocumentDataAccessServiceV2.create_document(
+                        user_guid,
+                        payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
+                        'new_entrant_application',
+                        operation.id,
+                    )
                     if payload.new_entrant_application
                     else []
                 ),
             ]
-            if created
         ]
         operation.documents.add(*operation_documents)
 
-        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            operation = cls.create_opted_in_operation_detail(user_guid, operation.id)
-
+        # brianna this could just be create
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
+
+        # handle purposes
+        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            operation = cls._create_opted_in_operation_detail(user_guid, operation)
+        if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            cls._create_or_update_eio(user_guid, operation, payload)
 
         return operation
 
     @classmethod
     @transaction.atomic()
     def register_operation_information(
-        cls, user_guid: UUID, operation_id: UUID | None, payload: OperationInformationIn
+        cls,
+        user_guid: UUID,
+        operation_id: UUID | None,
+        payload: Union[OperationInformationIn, OperationInformationInUpdate],
     ) -> Operation:
 
+        # can't optimize this much more without looking at files--the extra hits to operation are in the middleware, and the multi hits to document are from the resolvers
+        operation: Operation
         if operation_id:
-            existing_operation = OperationDataAccessService.get_by_id(operation_id)
-
-            if not existing_operation.user_has_access(user_guid):
-                raise Exception(UNAUTHORIZED_MESSAGE)
-
-        operation: Operation = cls.create_or_update_operation_v2(
-            user_guid,
-            payload,
-            operation_id,
-        )
-
-        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            operation = cls.create_opted_in_operation_detail(user_guid, operation.id)
-
-        if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-            # EIO operations have a facility with the same data as the operation
-            eio_payload = FacilityIn(
-                name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id
+            operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id)
+            cls.update_operation(user_guid, payload, operation_id)
+        else:
+            operation = cls._create_operation_v2(
+                user_guid,
+                payload,
             )
-            facility = operation.facilities.first()
-
-            if not facility:
-                FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
-            else:
-                FacilityService.update_facility(user_guid, facility.id, eio_payload)
-
         if operation.status == Operation.Statuses.NOT_STARTED:
             cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
         return operation
@@ -393,20 +387,109 @@ class OperationServiceV2:
         payload: OperationInformationIn,
         operation_id: UUID,
     ) -> Operation:
-        """
-        This service is used for updating an operation after it's been registered. During registration, we use the endpoints in cas-registration/bc_obps/registration/api/v2/_operations/_operation_id/_registration
-        """
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
 
-        if not operation.status == Operation.Statuses.REGISTERED:
-            raise Exception('Operation must be registered')
+        # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
-        updated_operation: Operation = cls.create_or_update_operation_v2(
+        # brianna this seems to be called twice. If I comment out everything in the fuction except this service, I get 16 silk queries instead of 8
+        operation: Operation = OperationServiceV2.get_if_authorized_v2(
             user_guid,
-            payload,
             operation_id,
         )
-        return updated_operation
+
+        if payload.registration_purpose != operation.registration_purpose:
+            payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
+
+        operation_data = payload.dict(
+            include={
+                'name',
+                'type',
+                'naics_code_id',
+                'secondary_naics_code_id',
+                'tertiary_naics_code_id',
+                'date_of_first_shipment',
+                'registration_purpose',
+                'opt_in',
+            }
+        )
+
+        operation_data['pk'] = operation_id
+        operation_data['operator_id'] = operation.operator.id
+
+        operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
+
+        operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
+
+        (
+            operation.regulated_products.set(payload.regulated_products)
+            if payload.regulated_products
+            else operation.regulated_products.clear()
+        )  #  this is hitting some seemingly unrelated ones
+
+        if operation.status == Operation.Statuses.REGISTERED and isinstance(payload, OperationInformationInUpdate):
+            # operation representatives are only mandatory to register (vs. simply update) and operation
+            for contact_id in payload.operation_representatives:
+                ContactServiceV2.raise_exception_if_contact_missing_address_information(contact_id)
+
+            operation.contacts.set(payload.operation_representatives)
+
+        # create or replace documents
+        operation_documents = [
+            doc
+            for doc, created in [
+                *(
+                    [
+                        DocumentServiceV2.create_or_replace_operation_document(
+                            user_guid,
+                            operation.id,
+                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
+                            'boundary_map',
+                        )
+                    ]
+                    if payload.boundary_map
+                    else []
+                ),
+                *(
+                    [
+                        DocumentServiceV2.create_or_replace_operation_document(
+                            user_guid,
+                            operation.id,
+                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
+                            'process_flow_diagram',
+                        )
+                    ]
+                    if payload.process_flow_diagram
+                    else []
+                ),
+                *(
+                    [
+                        DocumentServiceV2.create_or_replace_operation_document(
+                            user_guid,
+                            operation.id,
+                            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
+                            'new_entrant_application',
+                        )
+                    ]
+                    if payload.new_entrant_application
+                    else []
+                ),
+            ]
+            if created
+        ]
+        operation.documents.add(*operation_documents)
+        # 41
+
+        # # this is not handled by changing registration purpose
+        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+            operation = cls._create_opted_in_operation_detail(user_guid, operation)
+
+        if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            cls._create_or_update_eio(user_guid, operation, payload)
+
+        # # handle multiple operators
+        multiple_operators_data = payload.multiple_operators_array
+        cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
+
+        return operation
 
     @classmethod
     def is_operation_opt_in_information_complete(cls, operation: Operation) -> bool:
@@ -507,7 +590,8 @@ class OperationServiceV2:
 
     @classmethod
     def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
+        operation: Operation = OperationDataAccessService.get_by_id(operation_id)
 
         if operation.bc_obps_regulated_operation:
             raise Exception('Operation already has a BORO ID.')
@@ -521,13 +605,16 @@ class OperationServiceV2:
             raise Exception('Failed to create a BORO ID for the operation.')
         operation.bc_obps_regulated_operation.issued_by = User.objects.get(user_guid=user_guid)
         operation.bc_obps_regulated_operation.save()
+        # this adds 11 queries
         operation.save(update_fields=['bc_obps_regulated_operation'])
 
         return operation.bc_obps_regulated_operation
 
     @classmethod
     def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> BcGreenhouseGasId:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
+        operation = OperationDataAccessService.get_by_id(operation_id)
+
         operation.generate_unique_bcghg_id()
         if operation.bcghg_id is None:
             raise Exception('Failed to create a BCGHG ID for the operation.')
