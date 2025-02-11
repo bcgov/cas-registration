@@ -116,15 +116,18 @@ export default function ActivityForm({
   };
 
   const createUrl = (isContinue: boolean) => {
-    const taskListLength = taskListData.find((taskListElement) => {
-      return taskListElement.title === "Activities Information";
-    })?.elements?.length;
+    const activitiesSection = taskListData
+      .flatMap((taskListElement) => taskListElement.elements || [])
+      .find((element) => element.title === "Activities information");
+
+    const taskListLength = activitiesSection?.elements?.length;
     if (taskListLength && step === -1) step = taskListLength - 1;
 
     if (step === 0 && !isContinue)
       return `/reports/${reportVersionId}/person-responsible`; // Facility review page
-    if (taskListLength && step + 1 >= taskListLength && isContinue)
+    if (taskListLength && step + 1 >= taskListLength && isContinue) {
       return "non-attributable"; // Activities done, go to Non-attributable emissions
+    }
 
     const params = new URLSearchParams(
       searchParams ? searchParams.toString() : "",
