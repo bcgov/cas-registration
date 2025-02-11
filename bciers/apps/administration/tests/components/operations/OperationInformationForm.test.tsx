@@ -144,7 +144,7 @@ const formData = {
 const optInFormData = {
   name: "Operation 5",
   type: "Single Facility Operation",
-  registration_purpose: "Opted-in Operation",
+  registration_purpose: RegistrationPurposes.OPTED_IN_OPERATION,
   opted_in_operation: {
     meets_section_3_emissions_requirements: true,
     meets_electricity_import_operation_criteria: true,
@@ -210,9 +210,6 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Oil and gas extraction/i)).toBeVisible();
     // secondary
     expect(screen.getByText(/Bituminous coal mining/i)).toBeVisible();
-    // reporting activities
-    expect(screen.getByText(/Reporting Activities/i)).toBeVisible();
-    expect(screen.getByText(/General stationary combustion/i)).toBeVisible();
     // 2 file inputs
     expect(screen.getByText(/Process Flow Diagram/i)).toBeVisible();
     expect(screen.getByText(/Boundary Map/i)).toBeVisible();
@@ -241,6 +238,9 @@ describe("the OperationInformationForm component", () => {
     const reportingOperationLabels =
       screen.getAllByText(/Reporting Operation/i);
     expect(reportingOperationLabels.length === 2); // first is the from the Registration Purpose field, second is a section header
+    // reporting activities
+    expect(screen.getByText(/Reporting Activities/i)).toBeVisible();
+    expect(screen.getByText(/General stationary combustion/i)).toBeVisible();
   });
 
   it("should render the form with the correct form for an EIO when formData is provided", async () => {
