@@ -46,18 +46,27 @@ class TestOperationRegistration(CommonTestSetup):
         ]
 
     def _set_operation_information(self, purpose: Operation.Purposes, operation_type: OperationTypes):
-        operation_information_payload = {
-            "registration_purpose": purpose,
-            "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
-            "name": f"{purpose} name",
-            "type": operation_type,
-            "naics_code_id": 1,
-            "secondary_naics_code_id": 2,
-            "tertiary_naics_code_id": 3,
-            "activities": [1, 2],
-            "boundary_map": MOCK_DATA_URL,
-            "process_flow_diagram": MOCK_DATA_URL,
-        }
+
+        if operation_type == OperationTypes.EIO:
+            operation_information_payload = {
+                "registration_purpose": purpose,
+                "name": f"{purpose} name",
+                "type": operation_type.value,
+            }
+        else:
+            operation_information_payload = {
+                "registration_purpose": purpose,
+                "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
+                "name": f"{purpose} name",
+                "type": operation_type,
+                "naics_code_id": 1,
+                "secondary_naics_code_id": 2,
+                "tertiary_naics_code_id": 3,
+                "activities": [1, 2],
+                "boundary_map": MOCK_DATA_URL,
+                "process_flow_diagram": MOCK_DATA_URL,
+            }
+
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
@@ -65,6 +74,7 @@ class TestOperationRegistration(CommonTestSetup):
             operation_information_payload,
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
         )
+
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()
@@ -177,15 +187,16 @@ class TestOperationRegistration(CommonTestSetup):
         self.updated_at = self.operation.updated_at  # save the updated_at timestamp to compare later
 
     @pytest.mark.parametrize("operation_type", [OperationTypes.SFO.value, OperationTypes.LFO.value])
-    @pytest.mark.parametrize("purpose", list(Operation.Purposes))
+    @pytest.mark.parametrize(
+        "purpose", [p for p in Operation.Purposes if p != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION]
+    )  # EIOs have OperationTypes.EIO so are tested separately below
     def test_operation_registration_workflow(self, operation_type, purpose):
         #### prepare test data
         self._prepare_test_data(operation_type)
         #### Operation Information Form ####
         self._set_operation_information(purpose, operation_type)
         #### Facility From ####
-        if purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
-            self._set_facilities()
+        self._set_facilities()
 
         if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             #### New Entrant Application Form ####
@@ -283,3 +294,28 @@ class TestOperationRegistration(CommonTestSetup):
 
         assert self.operation.status == Operation.Statuses.REGISTERED
         assert self.operation.registration_purpose is not None
+
+    def test_operation_registration_workflow_EIO(self):
+        #### prepare test data
+        self._prepare_test_data(OperationTypes.EIO)
+        #### Operation Information Form ####
+        self._set_operation_information(Operation.Purposes.ELECTRICITY_IMPORT_OPERATION, OperationTypes.EIO)
+        #### Operation Representative Form ####
+        self._set_operation_representative()
+        #### Registration Submission ####
+        self._set_registration_submission()
+
+        # Assertions
+        assert self.operation.name == f'{Operation.Purposes.ELECTRICITY_IMPORT_OPERATION} name'
+        assert self.operation.type == OperationTypes.EIO.value
+        assert self.operation.operator_id == self.approved_user_operator.operator_id
+        assert self.operation.bcghg_id_id == self.bcghg_id.id
+        assert self.operation.opt_in is False
+        assert self.operation.opted_in_operation_id is None
+        assert not self.operation.regulated_products.exists()
+
+        # make sure we have the facility
+        assert self.operation.facilities.count() == 1
+
+        assert self.operation.status == Operation.Statuses.REGISTERED
+        assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION

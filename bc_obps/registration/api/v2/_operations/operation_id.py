@@ -9,7 +9,6 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.operation_service import OperationService
 from service.operation_service_v2 import OperationServiceV2
 from common.api.utils import get_current_user_guid
 from registration.decorators import handle_http_errors
@@ -33,7 +32,7 @@ from registration.schema.generic import Message
 )
 @handle_http_errors()
 def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
+    return 200, OperationServiceV2.get_if_authorized_v2(get_current_user_guid(request), operation_id)
 
 
 @router.get(
@@ -46,7 +45,7 @@ def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200
 )
 @handle_http_errors()
 def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
+    return 200, OperationServiceV2.get_if_authorized_v2(get_current_user_guid(request), operation_id)
 
 
 ##### PUT ######
