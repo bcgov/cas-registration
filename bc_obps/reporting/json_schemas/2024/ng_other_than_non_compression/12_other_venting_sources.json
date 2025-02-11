@@ -19,6 +19,10 @@
               "Natural Gas Distribution"
             ]
           },
+          "type": {
+            "type": "string",
+            "default": "Source sub-type"
+          },
           "descriptionOfOtherSources": {
             "title": "Description of other sources",
             "default": "",

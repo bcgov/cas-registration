@@ -15,6 +15,10 @@
             "type": "string",
             "enum": ["LNG Storage", "LNG Import and Export Equipment"]
           },
+          "type": {
+            "type": "string",
+            "default": "Source sub-type"
+          },
           "emissions": {
             "title": "Emission Data",
             "type": "array",

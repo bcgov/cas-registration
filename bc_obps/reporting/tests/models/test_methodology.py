@@ -62,10 +62,33 @@ class TestInitialData(TestCase):
                 "WCI.353 (t)",
                 "CEPEI Methodology Manual",
                 "Other CGA Methodology",
+                "WCI.363 (a)(1)",
+                "WCI.363 (a.1)(1)",
+                "WCI.363 (b)",
+                "WCI.363 (b.1)",
+                "WCI.363 (d)",
+                "WCI.363 (e)",
+                "WCI.363 (f)(1)",
+                "WCI.363 (f)(2)",
+                "WCI.363 (k)",
+                "WCI.363 (g)",
+                "WCI.363 (o)",
+                "WCI.363 (h.1)",
+                "WCI.363 (h)(1)",
+                "WCI.363 (h)(2)",
+                "WCI.363 (h)(3)",
+                "WCI.363 (h)(4)",
+                "WCI.363 (i)",
+                "WCI.363 (j)",
+                "WCI.363 (n)",
+                "WCI.363 (t)",
+                "WCI.363 (g.1)(i)",
+                "WCI.363 (g.1)(ii)",
+                "2009 API Compendium",
+                "Other Methodology",
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
-
         self.assertEqual(len(existing_methodologies), len(expected_methodologies))
         self.assertEqual(existing_methodologies, expected_methodologies)
 
