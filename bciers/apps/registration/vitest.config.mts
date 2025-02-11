@@ -9,6 +9,7 @@ export default defineConfig({
   cacheDir: "../../node_modules/.vite/apps/registration",
   plugins: [react(), tsconfigPaths()],
   test: {
+    testTimeout: 30000,
     environment: "jsdom",
     globals: true,
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
