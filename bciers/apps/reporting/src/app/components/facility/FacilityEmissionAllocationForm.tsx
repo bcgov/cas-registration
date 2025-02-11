@@ -126,7 +126,7 @@ export default function FacilityEmissionAllocationForm({
   const backUrl = `/reports/${version_id}/facilities/${facility_id}/production-data`;
   const isLinearOperation = operationType === "Linear Facility Operation";
   const saveAndContinueUrl = isLinearOperation
-    ? `/reports/${version_id}/facilities/${facility_id}/end-of-facility`
+    ? `/reports/${version_id}/facilities/${facility_id}/end-of-facility-report`
     : `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;
 
   // 📋 Get the task list elements for the form
