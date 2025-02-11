@@ -17,8 +17,23 @@ CONFIG_VALID_RELATIONSHIPS = [
     {
         "activity": ACTIVITY,
         "source_type": "Fuel combustion for electricity generation",
-        "gas_types": ["CO2", "CH4", "N2O"],
+        "gas_types": ["CO2"],
         "methodologies": ["CEMS", "Measured CC and MW", "Alternative Parameter Measurement", "Replacement Methodology"],
+    },
+    {
+        "activity": ACTIVITY,
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4", "N2O"],
+        "methodologies": [
+            "Default HHV/Default EF",
+            "Default EF",
+            "Measured HHV/Default EF",
+            "Measured EF",
+            "Measured Steam/Default EF",
+            "Heat Input/Default EF",
+            "Alternative Parameter Measurement",
+            "Replacement Methodology",
+        ],
     },
     # Acid gas scrubbers and acid gas reagents
     {
@@ -71,28 +86,144 @@ CONFIG_VALID_RELATIONSHIPS = [
 
 # Configuration of reporting fields configuration data associated with source_type, gas_type, methodology
 CONFIG_REPORTING_FIELDS = [
-    # Fuel combustion for electricity generation
     {
         "source_type": "Fuel combustion for electricity generation",
         "gas_types": ["CO2"],
         "methodologies": ["Measured CC and MW"],
         "reporting_fields": [
-            "Annual Weighted Average Carbon Content",
-            "Annual Weighted Average Molecular Weight",
-            "Molar Volume Conversion Factor",
+            {"name": "Annual Weighted Average Carbon Content"},
+            {"name": "Annual Weighted Average Molecular Weight"},
+            {"name": "Molar Volume Conversion Factor"},
         ],
     },
-    # Acid gas scrubbers and acid gas reagents
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Default HHV/Default EF"],
+        "reporting_fields": [
+            {"name": "Fuel Default High Heating Value"},
+            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Default EF"],
+        "reporting_fields": [{"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/fuel units"}],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Measured HHV/Default EF"],
+        "reporting_fields": [
+            {"name": "Fuel Annual Weighted Average High Heating Value"},
+            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Measured EF"],
+        "reporting_fields": [{"name": "Unit-Fuel-CH4 Measured Emission Factor", "units": "kg/fuel units"}],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Measured Steam/Default EF"],
+        "reporting_fields": [
+            {"name": "Unit-Fuel Annual Steam Generated"},
+            {"name": "Boiler Ratio"},
+            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Heat Input/Default EF"],
+        "reporting_fields": [
+            {"name": "Unit-Fuel Heat Input"},
+            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Alternative Parameter Measurement"],
+        "reporting_fields": [{"name": "Description"}],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["CH4"],
+        "methodologies": ["Replacement Methodology"],
+        "reporting_fields": [{"name": "Description"}],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Default HHV/Default EF"],
+        "reporting_fields": [
+            {"name": "Fuel Default High Heating Value"},
+            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Default EF"],
+        "reporting_fields": [{"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/fuel units"}],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Measured HHV/Default EF"],
+        "reporting_fields": [
+            {"name": "Fuel Annual Weighted Average High Heating Value"},
+            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Measured EF"],
+        "reporting_fields": [{"name": "Unit-Fuel-N2O Measured Emission Factor", "units": "kg/fuel units"}],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Measured Steam/Default EF"],
+        "reporting_fields": [
+            {"name": "Unit-Fuel Annual Steam Generated"},
+            {"name": "Boiler Ratio"},
+            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Heat Input/Default EF"],
+        "reporting_fields": [
+            {"name": "Unit-Fuel Heat Input"},
+            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+        ],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Alternative Parameter Measurement"],
+        "reporting_fields": [{"name": "Description"}],
+    },
+    {
+        "source_type": "Fuel combustion for electricity generation",
+        "gas_types": ["N2O"],
+        "methodologies": ["Replacement Methodology"],
+        "reporting_fields": [{"name": "Description"}],
+    },
     {
         "source_type": "Acid gas scrubbers and acid gas reagents",
         "gas_types": ["CO2"],
-        "methodologies": [
-            "Alternative Parameter Methodology",
-            "Replacement Methodology",
-        ],
-        "reporting_fields": ["Description"],
+        "methodologies": ["Alternative Parameter Methodology", "Replacement Methodology"],
+        "reporting_fields": [{"name": "Description"}],
     },
-    # Cooling units
     {
         "source_type": "Cooling units",
         "gas_types": [
@@ -110,66 +241,69 @@ CONFIG_REPORTING_FIELDS = [
             "HFC-236fa (C3H2F6)",
             "HFC-245ca (C3H3F5)",
         ],
-        "methodologies": ["Mass balance", "Alternative Parameter Measurement", "Replacement Methodology"],
-        "reporting_fields": ["Description"],
+        "methodologies": ["Alternative Parameter Measurement", "Replacement Methodology"],
+        "reporting_fields": [{"name": "Description"}],
     },
-    # Geothermal geyser steam or fluids
     {
         "source_type": "Geothermal geyser steam or fluids",
         "gas_types": ["CO2"],
-        "methodologies": [
-            "Alternative Parameter Methodology",
-            "Replacement Methodology",
-        ],
-        "reporting_fields": ["Description"],
+        "methodologies": ["Alternative Parameter Methodology", "Replacement Methodology"],
+        "reporting_fields": [{"name": "Description"}],
     },
-    # Installation maintenance...
     {
         "source_type": "Installation, maintenance, operation and decommissioning of electrical equipment",
         "gas_types": ["SF6"],
-        "methodologies": [
-            "Alternative Parameter Methodology",
-            "Replacement Methodology",
-        ],
-        "reporting_fields": ["Description"],
+        "methodologies": ["Alternative Parameter Methodology", "Replacement Methodology"],
+        "reporting_fields": [{"name": "Description"}],
     },
 ]
 
 # Configuration of schema files related to activity source types:
-# 1. JSON schema file name (str) – Identifier for the schema file.
-# 2. Source type name (str) – Human-readable name of the source type.
-# 3. has_unit (bool) – Indicates if the source type is associated with a unit.
-# 4. has_fuel (bool) – Indicates if the source type involves fuel usage.
+# JSON Schema File Name (str) – Unique identifier for the schema file.
+# Source Type Name (str) – Human-readable name describing the source type.
+# has_unit (bool) –
+# true: Includes unit-level data (e.g., power generation units), adding a "units" array to the schema.
+# false: No unit-level data, omitting "units".
+# has_fuel (bool) –
+# true: Involves fuel consumption, adding a "fuels" array within "units".
+# false: No fuel-related fields, omitting "fuels".
+# The schema should be structured with "units" and/or "fuels" based on these values.
+# If both has_unit and has_fuel are true, "units" will contain "fuels", which in turn includes "emissions" data.
 CONFIG_SOURCE_TYPE_SCHEMA = [
     (
         "1_fuel_combustion_electricity_gen",
         "Fuel combustion for electricity generation",
         True,
         True,
+        # "default": { "units": [{ "fuels": [{ "emissions": [{}] }] }] },
     ),
     (
         "2_acid_gas_scrubbers_reagents",
         "Acid gas scrubbers and acid gas reagents",
         False,
-        True,
+        False,
+        # "default": { "emissions": [{}] },
     ),
     (
         "3_cooling_units",
         "Cooling units",
         False,
-        True,
+        False,
+        # "default": { "emissions": [{}] },
     ),
     (
         "4_geothermal_geyser_steam_fluids",
         "Geothermal geyser steam or fluids",
         False,
-        True,
+        False,
+        # "default": { "emissions": [{}] },
     ),
     (
         "5_electrical_equipment_install_maint_decom",
         "Installation, maintenance, operation and decommissioning of electrical equipment",
-        True,
         False,
+        False,
+        # "default": { "emissions": [{}] },
     ),
 ]
 
@@ -428,10 +562,14 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
                     valid_from=valid_from,
                     valid_to=valid_to,
                 )
+                for field in config["reporting_fields"]:
+                    field_name = field["name"]
+                    field_units = field.get("units") if isinstance(field, dict) else None
+                    if field_units is None:
+                        reporting_field = ReportingField.objects.get(field_name=field_name, field_units__isnull=True)
+                    else:
+                        reporting_field = ReportingField.objects.get(field_name=field_name, field_units=field_units)
 
-                # For each reporting field defined in the config, associate it with the ConfigurationElement
-                for field_name in config["reporting_fields"]:
-                    reporting_field = ReportingField.objects.get(field_name=field_name)
                     configuration_element.reporting_fields.add(reporting_field)
 
 
@@ -446,25 +584,22 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Configuration = apps.get_model('reporting', 'Configuration')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    ReportingField = apps.get_model('reporting', 'ReportingField')
 
     # Fetch the configuration constants
     activity = Activity.objects.get(name=ACTIVITY)
     valid_from = Configuration.objects.get(valid_from=VALID_FROM)
     valid_to = Configuration.objects.get(valid_to=VALID_TO)
 
-    # Iterate through the reporting fields configuration json and clear reporting field associations
+    # Iterate through the reporting fields configuration json for the different source types
     for config in CONFIG_REPORTING_FIELDS:
         source_type = SourceType.objects.get(name=config["source_type"])
-
         for gas_type_name in config["gas_types"]:
             gas_type = GasType.objects.get(chemical_formula=gas_type_name)
-
-            # Filter methodologies
             methodologies = Methodology.objects.filter(name__in=config["methodologies"])
 
-            # Find the matching configuration elements and clear reporting fields
             for methodology in methodologies:
-                configuration_elements = ConfigurationElement.objects.filter(
+                configuration_element = ConfigurationElement.objects.get(
                     activity=activity,
                     source_type=source_type,
                     gas_type=gas_type,
@@ -472,8 +607,16 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
                     valid_from=valid_from,
                     valid_to=valid_to,
                 )
-                for element in configuration_elements:
-                    element.reporting_fields.clear()
+
+                for field in config["reporting_fields"]:
+                    field_name = field["name"]
+                    field_units = field.get("units") if isinstance(field, dict) else None
+                    if field_units is None:
+                        reporting_field = ReportingField.objects.get(field_name=field_name, field_units__isnull=True)
+                    else:
+                        reporting_field = ReportingField.objects.get(field_name=field_name, field_units=field_units)
+
+                    configuration_element.reporting_fields.remove(reporting_field)
 
 
 #### ACTIVITY SCHEMA ####

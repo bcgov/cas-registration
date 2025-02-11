@@ -1,5 +1,32 @@
 {
   "type": "object",
-  "title": "Acid gas scrubbers and acid gas reagents",
-  "properties": {}
+  "title": "Acid gas scrubbers and acid gas reagent",
+  "default": { "emissions": [{}] },
+  "properties": {
+    "emissions": {
+      "title": "Emission Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "emission": {
+            "title": "Emission",
+            "type": "number",
+            "minimum": 0
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
+          }
+        }
+      }
+    }
+  }
 }
