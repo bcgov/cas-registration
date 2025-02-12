@@ -3,6 +3,7 @@ PSQL=psql -h localhost
 DB_NAME=registration
 MANAGE_PY = manage.py
 SCHEMA_NAME=erc
+PYTEST=pytest --rootdir=bc_obps
 
 # If the VIRTUAL_ENV is specified, we can assume we're in a poetry shell, otherwise
 # we need to execute "poetry run"
@@ -114,29 +115,29 @@ clean:
 .PHONY: pythontests
 pythontests: ## run Python tests
 pythontests: # ARGS can be used to pass arguments to pytest like -k to specify a test name
-	$(POETRY_RUN) pytest $(ARGS)
+	$(POETRY_RUN) $(PYTEST) $(ARGS)
 
 
 .PHONY: pythontests_verbose
 pythontests_verbose: ## run Python tests with verbose output
 pythontests_verbose:
-	$(POETRY_RUN) pytest -v
+	$(POETRY_RUN) $(PYTEST) -v
 
 .PHONY: pythontests_watch
 pythontests_watch: ## Use pytest-testmon and pytest-watch to trigger test runs on file changes
 pythontests_watch:
-	$(POETRY_RUN) ptw --runner "pytest --picked --testmon"
+	$(POETRY_RUN) ptw --runner "pytest --rootdir=bc_obps --picked --testmon"
 
 .PHONY: pythontests_coverage
 pythontests_coverage: ## run Python tests with coverage
 pythontests_coverage:
-	$(POETRY_RUN) pytest --cov=. --cov-config=.coveragerc --cov-report=term-missing --no-cov-on-fail
+	$(POETRY_RUN) $(PYTEST) --cov=. --cov-config=.coveragerc --cov-report=term-missing --no-cov-on-fail
 
 
 .PHONY: pythontests_parallel
 pythontests_parallel: ## run Python tests in parallel for faster execution
 pythontests_parallel:
-	$(POETRY_RUN) pytest -n auto
+	$(POETRY_RUN) $(PYTEST) -n auto
 
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
