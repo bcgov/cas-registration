@@ -2,6 +2,7 @@
 
 ## Django Silk
 
+ddd
 [Django Silk](https://github.com/jazzband/django-silk) is a powerful profiling tool for Django applications. It allows developers to measure and analyze the performance of their Django views, routes and middlewares. Profiling your endpoints with Django Silk can help identify bottlenecks and optimize your code for better performance.
 The information provided by Silk can be immensely helpful in identifying and resolving performance issues during the development phase.
 
