@@ -1,10 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "@/administration/app/components/operations/OperationInformationPage";
-import { getOperationWithDocuments } from "./mocks";
-import { useSearchParams, useSession } from "@bciers/testConfig/mocks";
-import { fetchFormEnums } from "./OperationInformationForm.test";
+import {
+  getOperationWithDocuments,
+  useSearchParams,
+  useSession,
+} from "@bciers/testConfig/mocks";
 import { beforeAll } from "vitest";
-import { OperationStatus } from "@bciers/utils/src/enums";
+import { Apps, OperationStatus } from "@bciers/utils/src/enums";
+import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 
 const formData = {
   name: "Operation 3",
@@ -51,7 +54,7 @@ describe("the OperationInformationPage component", () => {
     });
   });
   it("renders the OperationInformationPage component without Registration Information", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(formData);
     render(await OperationInformationPage({ operationId }));
 
@@ -80,7 +83,7 @@ describe("the OperationInformationPage component", () => {
   });
 
   it("should render the form without Registration Information", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce(formData);
 
     render(await OperationInformationPage({ operationId }));
@@ -93,7 +96,7 @@ describe("the OperationInformationPage component", () => {
     expect(screen.getByText(/212114 - Bituminous coal mining/i)).toBeVisible();
   });
   it("should render the form with Registration Information", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.ADMINISTRATION);
     getOperationWithDocuments.mockResolvedValueOnce({
       status: OperationStatus.REGISTERED,
     });
