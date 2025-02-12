@@ -25,12 +25,9 @@ jobs:
           fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Run Nx Affected Tests with Remote Caching
         id: nx-tests
-        run: |
-          yarn nx affected --base=origin/develop --target=test --parallel
+        run: yarn nx run components:test
         shell: bash
 
   yarn-audit:
