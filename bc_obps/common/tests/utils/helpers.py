@@ -2,9 +2,10 @@ from django.db import models
 from django.test import TestCase
 from registration.models import User, AppRole
 import uuid
+from django.db import connection
 
 
-def set_db_user_guid_for_tests(cursor):
+def set_db_user_guid_for_tests():
     user = User.objects.create(
         user_guid=uuid.uuid4(),
         business_guid=uuid.uuid4(),
@@ -16,7 +17,8 @@ def set_db_user_guid_for_tests(cursor):
         position_title='Default User',
         phone_number='+16044011234',
     )
-    cursor.execute('set my.guid = %s', [str(user.user_guid)])
+    with connection.cursor() as cursor:
+        cursor.execute('set my.guid = %s', [str(user.user_guid)])
 
 
 class BaseTestCase(TestCase):

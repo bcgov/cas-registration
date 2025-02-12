@@ -10,7 +10,6 @@ pytestmark = pytest.mark.django_db
 class TestListContactService:
     @staticmethod
     def test_list_contacts():
-
         user = baker.make_recipe('registration.tests.utils.cas_admin')
 
         operators = baker.make_recipe('registration.tests.utils.operator', _quantity=2)

@@ -1,8 +1,12 @@
 import typing
 from django.db import models
+
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models import DocumentType, TimeStampedModel
 from simple_history.models import HistoricalRecords
 from django.core.files.storage import default_storage
+from registration.models.rls_configs.document import Rls as DocumentRls
 
 
 class Document(TimeStampedModel):
@@ -31,7 +35,9 @@ class Document(TimeStampedModel):
         db_table_comment = (
             "Table that contains information about documents such as file metadata, type, and description."
         )
-        db_table = 'erc"."document'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.DOCUMENT.value}'
+
+    Rls = DocumentRls
 
     @typing.no_type_check
     def delete(self, *args, **kwargs):
