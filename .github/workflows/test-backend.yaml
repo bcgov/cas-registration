@@ -19,4 +19,4 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: Run pytest
         working-directory: ./bc_obps
-        run: make pythontests ARGS="-n auto" # -n auto runs tests in parallel
+        run: make pythontests_parallel

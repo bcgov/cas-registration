@@ -136,7 +136,7 @@ pythontests_coverage:
 .PHONY: pythontests_parallel
 pythontests_parallel: ## run Python tests in parallel for faster execution
 pythontests_parallel:
-	$(POETRY_RUN) pytest -n auto
+	$(POETRY_RUN) pytest --rootdir=bc_obps -n auto
 
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
