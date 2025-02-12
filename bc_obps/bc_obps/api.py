@@ -4,6 +4,7 @@ from ninja import NinjaAPI, Swagger
 from common.api import router as common_router
 from registration.api import router as registration_router
 from reporting.api import router as reporting_router
+from compliance.api import router as compliance_router
 from ninja.errors import ValidationError
 
 # Docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
@@ -22,3 +23,4 @@ def custom_validation_errors(request: HttpRequest, exc: Type[ValidationError]) -
 api.add_router("/common/", common_router, tags=["V1"])
 api.add_router("/registration/", registration_router, tags=["V1"])
 api.add_router("/reporting/", reporting_router, tags=["V1"])
+api.add_router("/compliance/", compliance_router, tags=["V1"])
