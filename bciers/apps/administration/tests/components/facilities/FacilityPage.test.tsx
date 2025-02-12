@@ -1,8 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { useSession, useRouter } from "@bciers/testConfig/mocks";
+import {
+  useSession,
+  useRouter,
+  getOperation,
+  getFacility,
+} from "@bciers/testConfig/mocks";
 import FacilityPage from "apps/administration/app/components/facilities/FacilityPage";
-import { getOperation } from "../operations/mocks";
-import { getFacility } from "./mocks";
 
 useSession.mockReturnValue({
   get: vi.fn(),

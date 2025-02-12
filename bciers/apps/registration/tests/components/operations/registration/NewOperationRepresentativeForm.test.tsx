@@ -227,11 +227,14 @@ describe("the NewOperationRepresentativeForm component", () => {
     expect(errorMessages).toHaveLength(4);
 
     // Clearing the selected contact - must clear the form
+    await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
+
     await userEvent.clear(
       screen.getByRole("combobox", {
         name: /select existing contact \(optional\)/i,
       }),
     );
+
     checkEmptyOperationRepresentativeForm();
   });
 

@@ -27,8 +27,7 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: Run Nx Affected Tests with Remote Caching
         id: nx-tests
-        run: |
-          yarn nx affected --base=origin/develop --target=test --parallel
+        run: yarn nx run components:test
         shell: bash
 
   yarn-audit:

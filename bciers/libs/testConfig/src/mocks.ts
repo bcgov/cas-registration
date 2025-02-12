@@ -34,6 +34,17 @@ const useSession = vi.fn();
 const auth = vi.fn();
 const fetchTransferEventsPageData = vi.fn();
 const getUserOperatorsPageData = vi.fn();
+const getOperation = vi.fn();
+const getOperationWithDocuments = vi.fn();
+const getNaicsCodes = vi.fn();
+const getReportingActivities = vi.fn();
+const getRegulatedProducts = vi.fn();
+const getRegistrationPurposes = vi.fn();
+const getBusinessStructures = vi.fn();
+const fetchOperationsPageData = vi.fn();
+const fetchFacilitiesPageData = vi.fn();
+const getFacility = vi.fn();
+const getCurrentUsersOperations = vi.fn();
 
 export {
   actionHandler,
@@ -48,4 +59,15 @@ export {
   getUserOperatorsPageData,
   notFound,
   fetchTransferEventsPageData,
+  getOperation,
+  getOperationWithDocuments,
+  getNaicsCodes,
+  getReportingActivities,
+  getRegulatedProducts,
+  getRegistrationPurposes,
+  getBusinessStructures,
+  fetchOperationsPageData,
+  fetchFacilitiesPageData,
+  getFacility,
+  getCurrentUsersOperations,
 };

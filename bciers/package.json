@@ -48,7 +48,8 @@
     "report:e2e:ui": "nx run reporting:e2e:ui",
     "report:e2e:report": "nx run reporting:report",
     "report:test": "nx run reporting:test",
-    "dev-reporting": "nx run-many -t dev -p dashboard,reporting --maxParallel=5"
+    "dev-reporting": "nx run-many -t dev -p dashboard,reporting --maxParallel=5",
+    "test:browser": "vitest"
   },
   "private": true,
   "module": "commonjs",
@@ -134,6 +135,7 @@
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/browser": "^3.0.5",
     "@vitest/coverage-v8": "^3.0.3",
     "@vitest/expect": "^3.0.3",
     "@vitest/ui": "^3.0.3",
@@ -147,9 +149,11 @@
     "happo.io": "^9.1.2",
     "jsdom": "~22.1.0",
     "nx": "19.8.2",
+    "playwright": "^1.50.1",
     "prettier": "^3.0.3",
     "ts-mockito": "^2.6.1",
     "vite-tsconfig-paths": "^5.1.4",
+    "vitest-browser-react": "^0.0.4",
     "vitest-fetch-mock": "^0.4.3",
     "webkit": "^0.0.0"
   },

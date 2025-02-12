@@ -4,9 +4,11 @@ import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectRadio from "@bciers/testConfig/helpers/expectRadio";
 import expectComboBox from "@bciers/testConfig/helpers/expectComboBox";
-import { actionHandler } from "@bciers/testConfig/mocks";
-import { fetchOperationsPageData } from "@/administration/tests/components/operations/mocks";
-import { fetchFacilitiesPageData } from "@/administration/tests/components/facilities/mocks";
+import {
+  actionHandler,
+  fetchFacilitiesPageData,
+  fetchOperationsPageData,
+} from "@bciers/testConfig/mocks";
 import TransferForm from "@/registration/app/components/transfers/TransferForm";
 
 const mockOperators = [

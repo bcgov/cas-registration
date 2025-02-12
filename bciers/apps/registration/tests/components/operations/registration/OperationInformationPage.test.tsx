@@ -3,7 +3,8 @@ import OperationInformationPage from "apps/registration/app/components/operation
 import { useSession } from "@bciers/testConfig/mocks";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
-import { fetchFormEnums } from "../OperationRegistrationPage.test";
+import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
+import { Apps } from "@bciers/utils/src/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -18,12 +19,13 @@ describe("the OperationInformationPage component", () => {
     vi.clearAllMocks();
   });
   it("should render the OperationInformationPage component", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
 
     render(
       await OperationInformationPage({
         step: 1,
         steps: allOperationRegistrationSteps,
+        operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
       }),
     );
 

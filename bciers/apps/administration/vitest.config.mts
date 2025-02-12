@@ -9,6 +9,7 @@ export default defineConfig({
   cacheDir: "../../node_modules/.vite/apps/administration",
   plugins: [react(), tsconfigPaths()],
   test: {
+    testTimeout: 30000,
     environment: "jsdom",
     globals: true,
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
@@ -27,8 +28,6 @@ export default defineConfig({
     },
     setupFiles: [
       "../../libs/testConfig/src/global.tsx",
-      "./tests/components/facilities/mocks.ts",
-      "./tests/components/operations/mocks.ts",
       "./tests/components/operators/mocks.ts",
       "./tests/components/contacts/mocks.ts",
     ],

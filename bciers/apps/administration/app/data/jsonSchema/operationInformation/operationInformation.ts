@@ -1,6 +1,6 @@
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { getNaicsCodes, getReportingActivities } from "@bciers/actions/api";
+import { getNaicsCodes } from "@bciers/actions/api";
 import { Apps, OperationTypes } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 
@@ -31,13 +31,11 @@ export const createOperationInformationSchema = async (
 
   // SFOs and LFOs require more properties and a different type enum
   const naicsCodes = await getNaicsCodes();
-  const reportingActivities = await getReportingActivities();
   const sfoAndLfoSchema = { ...eioOperationInformationSchema };
 
   sfoAndLfoSchema.required = [
     ...(sfoAndLfoSchema.required ?? []),
     "naics_code_id",
-    "activities",
     "boundary_map",
     "process_flow_diagram",
   ];
@@ -90,24 +88,6 @@ export const createOperationInformationSchema = async (
         }),
       ),
     },
-
-    activities: {
-      type: "array",
-      minItems: 1,
-      items: {
-        type: "number",
-        enum: reportingActivities.map(
-          (activity: { id: number; applicable_to: string; name: string }) =>
-            activity.id,
-        ),
-        // enumNames is a non-standard field required for the MultiSelectWidget
-        // @ts-ignore
-        enumNames: reportingActivities.map(
-          (activity: { applicable_to: string; name: string }) => activity.name,
-        ),
-      },
-      title: "Reporting Activities",
-    },
     process_flow_diagram: {
       type: "string",
       title: "Process Flow Diagram",
@@ -149,10 +129,6 @@ export const operationInformationUISchema: UiSchema = {
   tertiary_naics_code_id: {
     "ui:widget": "ComboBox",
     "ui:placeholder": "Select Tertiary NAICS code",
-  },
-  activities: {
-    "ui:widget": "MultiSelectWidget",
-    "ui:placeholder": "Select Reporting Activity",
   },
   process_flow_diagram: {
     "ui:widget": "FileWidget",
