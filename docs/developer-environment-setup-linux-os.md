@@ -125,6 +125,8 @@ psql --version   # Should show 16.2
 
 After system restart, you'll need to:
 
+### Backend
+
 1. Start PostgreSQL: Either run `make start_pg` from inside the
    cas-registration/bc_obps directory or
    `make -C bc_obps start_pg` from the root (cas-registration/) directory
@@ -142,6 +144,32 @@ After system restart, you'll need to:
    This will start running the backend development server locally (default port is :8000;
    terminal output will indicate what localhost address to use to access the backend server).
    To test it out, navigate to the /api/docs endpoint in your browser
+
+### Frontend
+
+1. After completing the Frontend Development Setup (if not done yet, see below), open a new terminal window and navigate to the bciers directory:
+
+   ```bash
+   cd bciers
+   ```
+
+2. Start all frontend applications:
+
+   ```bash
+   yarn dev-all
+   ```
+
+3. Open your browser in incognito mode and navigate to:
+
+   ```
+   http://localhost:3000/onboarding
+   ```
+
+4. Click the "Log in with Business BCeID" button
+
+5. On the login page, enter your username and password, then click the Continue button
+
+6. On the next page, select "Compliance" or another available option to proceed with the application
 
 ---
 

@@ -9,17 +9,17 @@
         "tiles": [
           {
             "title": "My Compliance",
-            "href": "/compliance/summaries",
+            "href": "/compliance/compliance-summaries",
             "icon": "File",
             "content": "Request issuance of earned credits, manage compliance obligations, pay penalties, and track monetary payment summaries here.",
             "links": [
               {
                 "title": "Compliance Summaries",
-                "href": "/compliance/summaries"
+                "href": "/compliance/compliance-summaries"
               },
               {
                 "title": "Payment Summaries",
-                "href": "/compliance/payments"
+                "href": "/compliance/payment-summaries"
               }
             ]
           },
