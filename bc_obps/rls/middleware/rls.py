@@ -1,9 +1,8 @@
 import logging
 from typing import Callable, Optional
-from uuid import UUID
 from django.db import connection
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse
-from bc_obps import settings
 from registration.models import User
 
 logger = logging.getLogger(__name__)
@@ -31,15 +30,18 @@ class RlsMiddleware:
         # Note from Dylan for later:
         # when we get to actually setting roles, we'll want to still set a role here. We might need an "Unauthenticated" role to set in this case.
         if user:
-            self._set_user_context(user.user_guid)
+            self._set_user_context(user)
         else:
             logger.info("Anonymous user detected, skipping user context setup", exc_info=True)
         return self.get_response(request)
 
     @staticmethod
-    def _set_user_context(user_guid: UUID) -> None:
+    def _set_user_context(user: User) -> None:
         try:
             with connection.cursor() as cursor:
-                cursor.execute('set my.guid = %s', [str(user_guid)])
+                cursor.execute('set my.guid = %s', [str(user.user_guid)])
+                # set the role based on the user's app role
+                if settings.RLS_FLAG is True:
+                    cursor.execute('set role %s', [user.app_role.role_name])
         except Exception as e:
             logger.error(f"Failed to set user context: {e}", exc_info=True)

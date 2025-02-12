@@ -1,7 +1,11 @@
+from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
+
+from registration.enums.enums import RegistrationTableNames
+from registration.models.rls_configs.address import Rls as AddressRls
 
 
 class Address(BaseModel):
@@ -26,4 +30,6 @@ class Address(BaseModel):
 
     class Meta:
         db_table_comment = "Table containing address data. Only Canadian addresses are supported."
-        db_table = 'erc"."address'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.ADDRESS.value}'
+
+    Rls = AddressRls

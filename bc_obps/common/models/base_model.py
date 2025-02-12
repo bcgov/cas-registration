@@ -1,11 +1,11 @@
 import typing
 from uuid import UUID
 from django.db import models
-
 from common.constants import AUDIT_FIELDS
+from rls.models import Rls
 
 
-class BaseModel(models.Model):
+class BaseModel(models.Model, metaclass=Rls):
     """
     Abstract base class for all models in the app.
     This class adds a save method that calls full_clean before saving.
