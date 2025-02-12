@@ -1,6 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { fetchFacilitiesPageData } from "./mocks"; // Import the mock above the component to avoid dependency issues
-import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
+import {
+  fetchFacilitiesPageData,
+  useRouter,
+  useSearchParams,
+} from "@bciers/testConfig/mocks";
 import Facilities from "apps/administration/app/components/facilities/Facilities";
 
 useRouter.mockReturnValue({

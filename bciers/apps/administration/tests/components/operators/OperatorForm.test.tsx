@@ -1,6 +1,11 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { actionHandler, useSession, useRouter } from "@bciers/testConfig/mocks";
+import {
+  actionHandler,
+  useSession,
+  useRouter,
+  getBusinessStructures,
+} from "@bciers/testConfig/mocks";
 
 import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
 
@@ -11,7 +16,6 @@ import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
-import { getBusinessStructures } from "../operations/mocks";
 
 useSession.mockReturnValue({
   get: vi.fn(),
