@@ -54,7 +54,7 @@ const MoreCell: React.FC = () => {
 };
 
 const ActionCell = (params: GridRenderCellParams) => {
-  const reportId = params.value;
+  const reportVersionId = params?.row?.report_version_id;
   const router = useRouter();
   const OperationId = params.row.id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
@@ -90,11 +90,13 @@ const ActionCell = (params: GridRenderCellParams) => {
       router.push(`reports/${newReportId}/review-operator-data`);
   };
 
-  if (reportId) {
+  if (reportVersionId) {
     return (
       <Button
         color="primary"
-        onClick={() => router.push(`reports/${reportId}/review-operator-data`)}
+        onClick={() =>
+          router.push(`reports/${reportVersionId}/review-operator-data`)
+        }
       >
         Continue
       </Button>
