@@ -279,18 +279,29 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
     # SOURCE TYPE: Oil-water separators
-    # #CH4 - Default HHV/Default EF - Fuel Default High Heating Value
+    # #CH4 - Default conversion factor
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
         source_type_id=SourceType.objects.get(
             name='Oil-water separators'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        methodology_id=Methodology.objects.get(name='Default conversion factor').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    )
+    # #CH4 - Measured conversion factor - Measured conversion factor
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
+        source_type_id=SourceType.objects.get(
+            name='Oil-water separators'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured conversion factor').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Fuel Default High Heating Value', field_units__isnull=True)
+        ReportingField.objects.get(field_name='Measured conversion factor', field_units='kgCH4/kgNMHC')
     )
     # CH4 - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(
@@ -339,8 +350,8 @@ def init_activity_schema_data(apps, schema_monitor):
     import os
 
     cwd = os.getcwd()
-    with open(f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/activity.json') as gsc_st1:
-        schema = json.load(gsc_st1)
+    with open(f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/activity.json') as waster_water:
+        schema = json.load(waster_water)
 
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
@@ -374,17 +385,13 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
 
     cwd = os.getcwd()
     with open(
-            f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/with_useful_energy.json'
+            f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/wastewater_processing_using_anaerobic.json'
     ) as json_schema_file:
-        with_useful_energy_schema = json.load(json_schema_file)
+        using_anaerobic = json.load(json_schema_file)
     with open(
-            f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/without_useful_energy.json'
+            f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/oil_water_separators.json'
     ) as json_schema_file:
-        without_useful_energy_schema = json.load(json_schema_file)
-    with open(
-            f'{cwd}/reporting/json_schemas/2024/gsc_non_compression_non_combustion/field_gas_process_vent_gas_at_lfo.json'
-    ) as json_schema_file:
-        field_gas_process_vent_gas_at_lfo_schema = json.load(json_schema_file)
+        oil_water_separators = json.load(json_schema_file)
 
     ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
@@ -399,9 +406,10 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
-                json_schema=with_useful_energy_schema,
+                json_schema=using_anaerobic,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,             has_unit=False,
+                has_fuel=False,
             ),
             ActivitySourceTypeSchema(
                 activity_id=Activity.objects.get(
@@ -410,20 +418,11 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
                 source_type_id=SourceType.objects.get(
                     name='Oil-water separators'
                 ).id,
-                json_schema=without_useful_energy_schema,
+                json_schema=oil_water_separators,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
-            ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Field gas or process vent gas combustion at a linear facilities operation'
-                ).id,
-                json_schema=field_gas_process_vent_gas_at_lfo_schema,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+                has_unit=False,
+                has_fuel=False,
             ),
         ]
     )
@@ -442,7 +441,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0014_carbonates_use')]
+    dependencies = [('reporting', '0059_og_extraction_non_compression_non_processing')]
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),

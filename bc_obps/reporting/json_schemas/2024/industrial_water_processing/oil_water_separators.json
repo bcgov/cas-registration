@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "title": "Oil-water separators",
+  "default": { "emissions": [{}] },
+  "properties": {
+    "emissions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "emission": {
+            "title": "Emission",
+            "type": "number",
+            "minimum": 0
+          },
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
+          }
+        }
+      }
+    }
+  }
+}

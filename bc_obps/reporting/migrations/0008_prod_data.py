@@ -711,6 +711,9 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(
                 field_name='Average of Quarterly Nitrogen in effluent', field_type='number', field_units='kg/N m3'
             ),
+            ReportingField(
+                field_name='Measured conversion factor', field_type='number', field_units='kgCH4/kgNMHC'
+            ),
             ReportingField(field_name='Annual Weighted Average Carbon Content', field_type='number', field_units=None),
             ReportingField(
                 field_name='Annual Weighted Average Molecular Weight', field_type='number', field_units=None
@@ -824,6 +827,10 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
             'Overvoltage Methodology',
             'Overvoltage Emission Factor',
             'Last Date of Overvoltage Emission Factor Measurement',
+            'Average of Quarterly chemical oxygen demand'
+            'Average of Quarterly five-day biochemical oxygen demand'
+            'Average of Quarterly Nitrogen in effluent'
+            'Measured conversion factor'
         ]
     ).delete()
 

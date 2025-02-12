@@ -7,5 +7,6 @@ export async function createReport(operationId: string, reportingYear: number) {
       reporting_year: reportingYear,
     }),
   });
+  console.log("response", response);
   return response;
 }
