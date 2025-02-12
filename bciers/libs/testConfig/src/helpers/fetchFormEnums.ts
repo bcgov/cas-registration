@@ -1,5 +1,4 @@
 import {
-  fetchOperationsPageData,
   getBusinessStructures,
   getCurrentUsersOperations,
   getNaicsCodes,
@@ -118,17 +117,6 @@ const fetchFormEnums = (app: Apps) => {
 
     // used in the registration form to population the select operation dropdown
     getCurrentUsersOperations.mockResolvedValueOnce([
-      { id: "uuid1", name: "Operation 1" },
-      { id: "uuid2", name: "Operation 2" },
-      {
-        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-        name: "Existing Operation",
-      },
-    ]);
-
-    // brianna is this right? it could also be getCurrentUsersOperations
-    // this is used in transfer form
-    fetchOperationsPageData.mockResolvedValueOnce([
       { id: "uuid1", name: "Operation 1" },
       { id: "uuid2", name: "Operation 2" },
       {
