@@ -1,9 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { useSession } from "@bciers/testConfig/mocks";
+import { getBusinessStructures, useSession } from "@bciers/testConfig/mocks";
 import UserOperatorReviewForm from "@/administration/app/components/userOperators/UserOperatorReviewForm";
 import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
-import { getBusinessStructures } from "../operations/mocks";
 
 describe("UserOperatorReview component", () => {
   beforeEach(async () => {

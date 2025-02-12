@@ -12,6 +12,18 @@ import {
   useSearchParams,
   useSession,
   notFound,
+  // these functions are used in multiple apps
+  getOperation,
+  getOperationWithDocuments,
+  getNaicsCodes,
+  getReportingActivities,
+  getRegulatedProducts,
+  getRegistrationPurposes,
+  getBusinessStructures,
+  fetchOperationsPageData,
+  fetchFacilitiesPageData,
+  getFacility,
+  getCurrentUsersOperations,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -49,6 +61,52 @@ vi.mock("@/dashboard/auth", () => ({
 vi.mock("@bciers/actions", () => ({
   actionHandler,
   getToken,
+}));
+
+vi.mock("libs/actions/src/api/getOperation", () => ({
+  default: getOperation,
+}));
+
+vi.mock("libs/actions/src/api/getOperationWithDocuments", () => ({
+  default: getOperationWithDocuments,
+}));
+
+vi.mock("libs/actions/src/api/getNaicsCodes", () => ({
+  default: getNaicsCodes,
+}));
+
+vi.mock("libs/actions/src/api/getReportingActivities", () => ({
+  default: getReportingActivities,
+}));
+
+vi.mock("libs/actions/src/api/getRegulatedProducts", () => ({
+  default: getRegulatedProducts,
+}));
+
+vi.mock("libs/actions/src/api/getRegistrationPurposes", () => ({
+  default: getRegistrationPurposes,
+}));
+
+vi.mock("libs/actions/src/api/getBusinessStructures", () => ({
+  default: getBusinessStructures,
+}));
+
+vi.mock("libs/actions/src/api/fetchOperationsPageData", () => ({
+  default: fetchOperationsPageData,
+}));
+
+vi.mock(
+  "apps/administration/app/components/facilities/fetchFacilitiesPageData",
+  () => ({
+    default: fetchFacilitiesPageData,
+  }),
+);
+
+vi.mock("apps/administration/app/components/facilities/getFacility", () => ({
+  default: getFacility,
+}));
+vi.mock("libs/actions/src/api/getCurrentUsersOperations", () => ({
+  default: getCurrentUsersOperations,
 }));
 
 // mock fetch
