@@ -66,7 +66,12 @@ const uiSchema = {
               title: "Fuel",
             },
             items: {
-              "ui:order": ["fuelType", "annualFuelAmount", "emissions"],
+              "ui:order": [
+                "fuelType",
+                "fuelDescription",
+                "annualFuelAmount",
+                "emissions",
+              ],
               fuelType: {
                 "ui:field": "fuelType",
                 "ui:FieldTemplate": FieldTemplate,
@@ -82,6 +87,9 @@ const uiSchema = {
                 fuelClassification: {
                   "ui:FieldTemplate": InlineFieldTemplate,
                 },
+              },
+              fuelDescription: {
+                "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFuelAmount: {
                 "ui:FieldTemplate": InlineFieldTemplate,
@@ -145,7 +153,12 @@ const uiSchema = {
               title: "Fuel",
             },
             items: {
-              "ui:order": ["fuelType", "annualFuelAmount", "emissions"],
+              "ui:order": [
+                "fuelType",
+                "fuelDescription",
+                "annualFuelAmount",
+                "emissions",
+              ],
               fuelType: {
                 "ui:field": "fuelType",
                 "ui:FieldTemplate": FieldTemplate,
@@ -161,6 +174,9 @@ const uiSchema = {
                 fuelClassification: {
                   "ui:FieldTemplate": InlineFieldTemplate,
                 },
+              },
+              fuelDescription: {
+                "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFuelAmount: {
                 "ui:FieldTemplate": InlineFieldTemplate,
@@ -225,7 +241,12 @@ const uiSchema = {
               title: "Fuel",
             },
             items: {
-              "ui:order": ["fuelType", "annualFuelAmount", "emissions"],
+              "ui:order": [
+                "fuelType",
+                "fuelDescription",
+                "annualFuelAmount",
+                "emissions",
+              ],
               fuelType: {
                 "ui:field": "fuelType",
                 "ui:FieldTemplate": FieldTemplate,
@@ -241,6 +262,9 @@ const uiSchema = {
                 fuelClassification: {
                   "ui:FieldTemplate": InlineFieldTemplate,
                 },
+              },
+              fuelDescription: {
+                "ui:FieldTemplate": InlineFieldTemplate,
               },
               annualFuelAmount: {
                 "ui:FieldTemplate": InlineFieldTemplate,
