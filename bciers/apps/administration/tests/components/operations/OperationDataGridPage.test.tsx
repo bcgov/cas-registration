@@ -1,8 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
+import {
+  fetchOperationsPageData,
+  useRouter,
+  useSearchParams,
+} from "@bciers/testConfig/mocks";
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
 import { auth } from "@bciers/testConfig/mocks";
-import { fetchOperationsPageData } from "./mocks";
 
 useRouter.mockReturnValue({
   query: {},

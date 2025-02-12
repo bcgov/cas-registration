@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import {
   auth,
+  getBusinessStructures,
   useRouter,
   useSearchParams,
   useSession,
@@ -8,7 +9,6 @@ import {
 import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 import { getCurrentOperator } from "./mocks";
 import OperatorPage from "apps/administration/app/components/operators/OperatorPage";
-import { getBusinessStructures } from "../operations/mocks";
 
 useRouter.mockReturnValue({
   query: {},

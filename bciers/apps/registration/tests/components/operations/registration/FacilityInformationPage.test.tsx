@@ -3,6 +3,7 @@ import FacilityInformationPage from "apps/registration/app/components/operations
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import {
   actionHandler,
+  fetchFacilitiesPageData,
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
@@ -30,8 +31,8 @@ describe("the FacilityInformationPage component", () => {
   });
   it("should render the FacilityInformationPage component", async () => {
     actionHandler.mockReturnValueOnce({
-      items: [],
-      count: 0,
+      rows: [],
+      rowCount: 0,
     });
     render(
       await FacilityInformationPage({
@@ -54,9 +55,9 @@ describe("the FacilityInformationPage component", () => {
   });
 
   it("should render the single facility operation form with name and type pre-populated", async () => {
-    actionHandler.mockReturnValueOnce({
-      items: [],
-      count: 0,
+    fetchFacilitiesPageData.mockReturnValueOnce({
+      rows: [],
+      row_count: 0,
     });
     const { container } = render(
       await FacilityInformationPage({
@@ -85,8 +86,8 @@ describe("the FacilityInformationPage component", () => {
   });
 
   it("should render the datagrid with facility information", async () => {
-    actionHandler.mockReturnValueOnce({
-      items: [
+    fetchFacilitiesPageData.mockReturnValueOnce({
+      rows: [
         {
           id: "1",
           facility__name: "Test Facility 1",
@@ -100,7 +101,7 @@ describe("the FacilityInformationPage component", () => {
           status: "Active",
         },
       ],
-      count: 1,
+      rowCount: 1,
     });
     render(
       await FacilityInformationPage({
@@ -122,8 +123,8 @@ describe("the FacilityInformationPage component", () => {
 
   it("should render the empty datagrid when there is no facility data", async () => {
     actionHandler.mockReturnValueOnce({
-      items: [],
-      count: 0,
+      rows: [],
+      rowCount: 0,
     });
     render(
       await FacilityInformationPage({

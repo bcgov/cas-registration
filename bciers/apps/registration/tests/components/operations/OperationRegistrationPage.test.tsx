@@ -5,54 +5,8 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
-import { regulatedOperationPurposes } from "@/registration/app/components/operations/registration/enums";
-
-export const fetchFormEnums = () => {
-  // Regulated products
-  actionHandler.mockResolvedValueOnce([
-    { id: 1, name: "BC-specific refinery complexity throughput" },
-    { id: 2, name: "Cement equivalent" },
-  ]);
-  // Operations
-  actionHandler.mockResolvedValueOnce([
-    { id: "uuid1", name: "Operation 1" },
-    { id: "uuid2", name: "Operation 2" },
-    {
-      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-      name: "Existing Operation",
-    },
-  ]);
-  // Purposes
-  actionHandler.mockResolvedValueOnce([
-    ...regulatedOperationPurposes,
-    "Reporting Operation",
-    "Potential Reporting Operation",
-    "Electricity Import Operation",
-  ]);
-  // Naics codes
-  actionHandler.mockResolvedValueOnce([
-    {
-      id: 1,
-      naics_code: "211110",
-      naics_description: "Oil and gas extraction (except oil sands)",
-    },
-    {
-      id: 2,
-      naics_code: "212114",
-      naics_description: "Bituminous coal mining",
-    },
-  ]);
-  // Reporting activities
-  actionHandler.mockResolvedValueOnce([
-    { id: 1, name: "Amonia production" },
-    { id: 2, name: "Cement production" },
-  ]);
-  // Business structures
-  actionHandler.mockResolvedValueOnce([
-    { name: "General Partnership" },
-    { name: "BC Corporation" },
-  ]);
-};
+import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
+import { Apps } from "@bciers/utils/src/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -68,7 +22,7 @@ describe("the OperationRegistrationPage component", () => {
   });
 
   it("should render the Operation Information Form", async () => {
-    fetchFormEnums();
+    fetchFormEnums(Apps.REGISTRATION);
     render(
       await OperationRegistrationPage({
         step: 1,
@@ -93,8 +47,8 @@ describe("the OperationRegistrationPage component", () => {
       get: vi.fn(),
     });
     actionHandler.mockReturnValue({
-      items: [],
-      count: 0,
+      rows: [],
+      rowCount: 0,
     });
     actionHandler.mockResolvedValueOnce({
       registration_purpose: "OBPS Regulated Operation",

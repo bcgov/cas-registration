@@ -29,7 +29,7 @@ auth.mockReturnValueOnce({
 });
 
 const mockResponse = {
-  items: [
+  rows: [
     {
       operation__id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
       operation__name: "Operation 3",
