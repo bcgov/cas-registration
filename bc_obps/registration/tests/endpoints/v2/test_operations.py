@@ -83,6 +83,7 @@ class TestPostOperationsEndpoint(CommonTestSetup):
             self.mock_payload,
             custom_reverse_lazy("register_create_operation_information"),
         )
+
         assert response.status_code == 200
         assert response.json().get('name') == "op name"
         assert response.json().get('id') is not None

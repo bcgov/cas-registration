@@ -19,7 +19,9 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     response={200: List[OperationRepresentativeListOut], custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the list of operation representatives associated with the operation.""",
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize(
+        "approved_authorized_roles",
+    ),
 )
 @handle_http_errors()
 def list_operation_representatives(

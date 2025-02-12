@@ -112,6 +112,7 @@ if DEBUG:  # DEV only apps
     # SILK
     INSTALLED_APPS.append("silk")
     MIDDLEWARE.insert(0, "silk.middleware.SilkyMiddleware")
+    SILKY_META = True
 
 ROOT_URLCONF = "bc_obps.urls"
 

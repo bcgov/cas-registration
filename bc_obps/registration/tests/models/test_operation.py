@@ -215,6 +215,7 @@ class OperationModelTest(BaseTestCase):
         approved_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', user=User.objects.first()
         )
+
         operation_for_approved_user_operator = baker.make_recipe(
             'registration.tests.utils.operation', operator=approved_user_operator.operator
         )

@@ -13,6 +13,7 @@ from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
 
+
 ##### GET #####
 @router.get(
     "/operations/{uuid:operation_id}/registration/operation",
