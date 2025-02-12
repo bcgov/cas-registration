@@ -12,10 +12,10 @@ backend:
 
   resources:
     limits:
-      memory: 512Mi
+      memory: 750Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 512Mi
 
 administrationFrontend:
   replicaCount: 1
