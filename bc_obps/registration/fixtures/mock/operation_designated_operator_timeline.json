@@ -397,7 +397,17 @@
       "status": "Active"
     }
   },
-
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "8494e89c-489b-441b-a05d-e935b1d82487",
+      "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
+      "created_by": "00000000-0000-0000-0000-000000000018",
+      "created_at": "2024-12-06T21:09:07Z",
+      "start_date": "2024-12-06T21:09:07Z",
+      "status": "Active"
+    }
+  },
   {
     "model": "registration.operationdesignatedoperatortimeline",
     "fields": {
