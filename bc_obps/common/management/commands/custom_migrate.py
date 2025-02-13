@@ -20,7 +20,7 @@ class Command(BaseCommand):
             RlsManager.re_apply_rls()
             if os.environ.get('ENVIRONMENT') == 'test':
                 call_command('load_test_data')
-            if os.environ.get('ENVIRONMENT') == 'dev':
+            if os.environ.get('ENVIRONMENT') == 'dev' and os.environ.get('CI') != 'true':
                 call_command('load_fixtures')
                 call_command('load_reporting_fixtures')
             return
