@@ -18,7 +18,12 @@ CONFIG_VALID_RELATIONSHIPS = [
         "activity": ACTIVITY,
         "source_type": "Fuel combustion for electricity generation",
         "gas_types": ["CO2"],
-        "methodologies": ["CEMS", "Measured CC and MW", "Alternative Parameter Measurement Methodology"],
+        "methodologies": [
+            "CEMS",
+            "Measured CC and MW",
+            "Alternative Parameter Measurement Methodology",
+            "Replacement Methodology",
+        ],
     },
     {
         "activity": ACTIVITY,
@@ -40,7 +45,7 @@ CONFIG_VALID_RELATIONSHIPS = [
         "activity": ACTIVITY,
         "source_type": "Acid gas scrubbers and acid gas reagents",
         "gas_types": ["CO2"],
-        "methodologies": ["Acid gas", "Alternative Parameter Measurement Methodology"],
+        "methodologies": ["Acid gas", "Alternative Parameter Measurement Methodology", "Replacement Methodology"],
     },
     # Cooling units
     {
@@ -61,14 +66,14 @@ CONFIG_VALID_RELATIONSHIPS = [
             "HFC-236fa (C3H2F6)",
             "HFC-245ca (C3H3F5)",
         ],
-        "methodologies": ["Mass balance", "Alternative Parameter Measurement Methodology"],
+        "methodologies": ["Mass balance", "Alternative Parameter Measurement Methodology", "Replacement Methodology"],
     },
     # Geothermal geyser steam or fluids
     {
         "activity": ACTIVITY,
         "source_type": "Geothermal geyser steam or fluids",
         "gas_types": ["CO2"],
-        "methodologies": ["Measured heat", "Alternative Parameter Measurement Methodology"],
+        "methodologies": ["Measured heat", "Alternative Parameter Measurement Methodology", "Replacement Methodology"],
     },
     # Installation maintenance...
     {
@@ -241,19 +246,19 @@ CONFIG_REPORTING_FIELDS = [
             "HFC-236fa (C3H2F6)",
             "HFC-245ca (C3H3F5)",
         ],
-        "methodologies": ["Alternative Parameter Measurement Methodology"],
+        "methodologies": ["Alternative Parameter Measurement Methodology", "Replacement Methodology"],
         "reporting_fields": [{"name": "Description"}],
     },
     {
         "source_type": "Geothermal geyser steam or fluids",
         "gas_types": ["CO2"],
-        "methodologies": ["Alternative Parameter Measurement Methodology"],
+        "methodologies": ["Alternative Parameter Measurement Methodology", "Replacement Methodology"],
         "reporting_fields": [{"name": "Description"}],
     },
     {
         "source_type": "Installation, maintenance, operation and decommissioning of electrical equipment",
         "gas_types": ["SF6"],
-        "methodologies": ["Alternative Parameter Measurement Methodology"],
+        "methodologies": ["Alternative Parameter Measurement Methodology", "Replacement Methodology"],
         "reporting_fields": [{"name": "Description"}],
     },
 ]
@@ -437,9 +442,9 @@ def init_additional_methodology_data(apps, schema_editor):
             Methodology(name="Direct measurement"),
             Methodology(name="Mass balance"),
             Methodology(name="Measured heat"),
-            Methodology(name="Alternative Parameter Measurement Methodology"),
         ]
     )
+
 
 def reverse_additional_methodology_data(apps, schema_editor):
     """
@@ -452,7 +457,6 @@ def reverse_additional_methodology_data(apps, schema_editor):
             "Direct measurement",
             "Mass balance",
             "Measured heat",
-            "Alternative Parameter Measurement Methodology",
         ]
     ).delete()
 
@@ -741,7 +745,7 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0059_og_extraction_non_compression_non_processing"),
+        ("reporting", "0060_og_extraction_other_than_non_compression"),
     ]
 
     operations = [

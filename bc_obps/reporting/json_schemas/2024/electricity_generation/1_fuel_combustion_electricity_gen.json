@@ -34,7 +34,7 @@
           "unitType": {
             "title": "Unit Type",
             "type": "string",
-            "enum": ["TBD"]
+            "enum": ["Boiler", "Kiln", "Other"]
           },
           "generationType": {
             "title": "Generation Type",

@@ -5,7 +5,6 @@ import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTempl
 import {
   sourceTypeCheckboxUiSchema,
   fuelsFieldsUiSchema,
-  emissionsFieldsUiSchema,
   emissionsOnlyUiSchema,
 } from "./common";
 const uiSchema = {
