@@ -26,5 +26,19 @@
       "phone_number": "+12502222222",
       "app_role": "industry_user"
     }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "b52343e2-2699-40d8-8fac-b4dbb52446e9",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
+      "bceid_business_name": "Cas, Bcgov",
+      "first_name": "Bcgov",
+      "last_name": "Cas",
+      "position_title": "test",
+      "email": "ggircs@gov.bc.ca",
+      "phone_number": "+12345678900",
+      "app_role": "industry_user"
+    }
   }
 ]
