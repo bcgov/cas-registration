@@ -7,6 +7,10 @@ import {
   NEW_ENTRANT_REGISTRATION_PURPOSE,
 } from "@reporting/src/app/utils/constants";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
+import {
+  ActivePage,
+  getAdditionalInformationTaskList,
+} from "@reporting/src/app/components/taskList/3_additionalInformation";
 
 export function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
@@ -45,16 +49,22 @@ export default async function AdditionalReportingDataPage({
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
   const operationType = await getFacilityReport(version_id);
-
+  const isNewEntrant = registrationPurpose === NEW_ENTRANT_REGISTRATION_PURPOSE;
+  const taskListElements = getAdditionalInformationTaskList(
+    version_id,
+    ActivePage.AdditionalReportingData,
+    isNewEntrant,
+    operationType?.operation_type,
+  );
   return (
     <AdditionalReportingDataForm
       versionId={version_id}
       includeElectricityGenerated={
         registrationPurpose === REGULATED_OPERATION_REGISTRATION_PURPOSE
       }
-      isNewEntrant={registrationPurpose === NEW_ENTRANT_REGISTRATION_PURPOSE}
+      isNewEntrant={isNewEntrant}
       initialFormData={transformedData}
-      operationType={operationType?.operation_type}
+      taskListElements={taskListElements}
     />
   );
 }
