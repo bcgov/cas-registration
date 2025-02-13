@@ -1,7 +1,6 @@
 import pytest
 from model_bakery import baker
 from copy import deepcopy
-
 from registration.models import Operation, NaicsCode, DocumentType
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.constants import MOCK_DATA_URL
@@ -39,7 +38,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         )
 
     def _set_operation_information(self):
-        mock_naics_codes = baker.make(NaicsCode, _quantity=2)
+        naics_codes = NaicsCode.objects.all()[0:2]
         operation_information_payload = {
             # begin with most basic allowed payload - EIOs will only use this
             "name": self.operation.name,
@@ -53,8 +52,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
                     "boundary_map": MOCK_DATA_URL,
                     "process_flow_diagram": MOCK_DATA_URL,
                     "activities": [2, 3],
-                    "naics_code_id": mock_naics_codes[0].id,
-                    "secondary_naics_code_id": mock_naics_codes[1].id,
+                    "naics_code_id": naics_codes[0].id,
+                    "secondary_naics_code_id": naics_codes[1].id,
                 }
             )
         if self.operation.registration_purpose in [
@@ -75,7 +74,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         self.operation.refresh_from_db()
 
     def _set_new_registration_purpose(self, new_purpose):
-        mock_naics_codes = baker.make(NaicsCode, _quantity=2)
+        naics_codes = NaicsCode.objects.all()[0:2]
         # begin with most basic allowed payload - EIOs will only use this
         operation_payload = {
             "name": self.operation.name,
@@ -91,8 +90,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
                     "process_flow_diagram": MOCK_DATA_URL,
                     "activities": [2, 3],
                     "naics_code_id": self.operation.naics_code_id
-                    or mock_naics_codes[0].id,  # if old purpose was EIO, operation won't have any NAICS codes
-                    "secondary_naics_code_id": self.operation.secondary_naics_code_id or mock_naics_codes[1].id,
+                    or naics_codes[0].id,  # if old purpose was EIO, operation won't have any NAICS codes
+                    "secondary_naics_code_id": self.operation.secondary_naics_code_id or naics_codes[1].id,
                 }
             )
         if new_purpose in [
@@ -602,7 +601,7 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         If the registration_status == Draft, the irrelevant data should be deleted
         """
         if original_purpose == new_purpose:
-            pytest.skip()
+            pytest.skip(reason="Original and New Registration Purposes are the same")
 
         ### set original registration_purpose and save the operation
         self._prepare_test_data(original_purpose)
