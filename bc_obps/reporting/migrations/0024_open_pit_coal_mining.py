@@ -47,7 +47,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Coal when broken or exposed to the atmosphere during mining'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -90,12 +90,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Configuration = apps.get_model('reporting', 'Configuration')
     ReportingField = apps.get_model('reporting', 'ReportingField')
-    # CH4 - Alternative Parameter Measurement - Description
+    # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Open pit coal mining').id,
         source_type_id=SourceType.objects.get(name='Coal when broken or exposed to the atmosphere during mining').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))

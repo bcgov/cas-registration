@@ -67,7 +67,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -102,7 +102,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -127,7 +127,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(name='Anode effects').id,
                 gas_type_id=GasType.objects.get(chemical_formula='C2F6').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -160,7 +160,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
                 source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
                 gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -501,14 +501,14 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Coke dust emissions', field_units__isnull=True))
-    # CO2 - Alternative Parameter Measurement
+    # CO2 - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(
             name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -636,12 +636,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             field_name='Last Date of Overvoltage Emission Factor Measurement', field_units__isnull=True
         )
     )
-    # CF4 - Alternative Parameter Measurement
+    # CF4 - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='CF4').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -654,12 +654,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
-    # C2F6 - Alternative Parameter Measurement
+    # C2F6 - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(name='Anode effects').id,
         gas_type_id=GasType.objects.get(chemical_formula='C2F6').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -673,12 +673,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
     # SOURCE TYPE: Cover gas from electrolysis cells
-    # SF6 - Alternative Parameter Measurement
+    # SF6 - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Aluminum or alumina production').id,
         source_type_id=SourceType.objects.get(name='Cover gas from electrolysis cells').id,
         gas_type_id=GasType.objects.get(chemical_formula='SF6').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))

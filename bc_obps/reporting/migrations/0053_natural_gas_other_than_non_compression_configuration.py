@@ -61,7 +61,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             "WCI.353 (a)(1)",
             "WCI.353 (a)(2)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -83,7 +83,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             "WCI.353 (a.1)(1)",
             "WCI.353 (a.1)(2)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -104,7 +104,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "WCI.353 (b)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -125,7 +125,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "WCI.353 (b.1)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -146,7 +146,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "WCI.353 (c)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -167,7 +167,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "WCI.353 (d)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -189,7 +189,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "WCI.353 (e)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -210,7 +210,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "WCI.353 (f)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -234,7 +234,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             "WCI.353 (g)",
             "CEPEI Methodology Manual",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -256,7 +256,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             "WCI.353 (h)",
             "CEPEI Methodology Manual",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -277,7 +277,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "WCI.353 (m)",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -299,7 +299,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             "CEPEI Methodology Manual",
             "Other CGA Methodology",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -321,7 +321,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             "CEPEI Methodology Manual",
             "Other CGA Methodology",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -344,7 +344,7 @@ def init_configuration_element_data(apps, schema_monitor):
             "WCI.353 (c.1)(i)",
             "WCI.353 (c.1)(ii)",
             "CEPEI Methodology Manual",
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
         for gas_formula in [
@@ -379,7 +379,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     Activity = apps.get_model("registration", "Activity")
     ReportingField = apps.get_model("reporting", "ReportingField")
 
-    # All configuration elements for methodologies "Alternative Parameter Measurement" and "Replacement Methodology"
+    # All configuration elements for methodologies "Alternative Parameter Measurement Methodology" and "Replacement Methodology"
     # have a description field.
 
     # If performance issues arise, this could be optimized by batch-inserts in the through model of the m2m relationship
@@ -389,7 +389,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             name="Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities"
         ),
         methodology__name__in=[
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
             "Other CGA Methodology",
         ],
@@ -409,7 +409,7 @@ def reverse_configuration_element_reporting_fields_data(apps, schema_monitor):
             name="Activities for the purpose of natural gas transmission, natural gas distribution, natural gas storage, carbon dioxide transportation or oil transmission, other than non-compression and non-processing activities"
         ),
         methodology__name__in=[
-            "Alternative Parameter Measurement",
+            "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
             "Other CGA Methodology",
         ],

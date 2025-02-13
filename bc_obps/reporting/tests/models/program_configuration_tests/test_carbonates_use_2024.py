@@ -19,7 +19,7 @@ class TestCarbonateUse2024(TestCase):
             'CO2': {
                 'Calcination Fraction': 3,
                 'Mass of Output Carbonates': 4,
-                'Alternative Parameter Methodology': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
         }

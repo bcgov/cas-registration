@@ -21,7 +21,7 @@ class StorageOfPetroleumProducts2024Test(TestCase):
             'CH4': {
                 'WCI.203(f)(1)': 0,
                 'WCI.203(f)(2)': 0,
-                'Alternative Parameter Methodology': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             }
         }
