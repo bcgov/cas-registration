@@ -41,7 +41,7 @@ class OperationService:
             operation.verified_at = datetime.now(ZoneInfo("UTC"))
             operation.verified_by_id = user_guid
             if status == Operation.Statuses.APPROVED:
-                operation.generate_unique_boro_id()
+                operation.generate_unique_boro_id(user_guid=user_guid)
                 # approve the operator if it's not already approved (the case for imported operators)
                 operator: Operator = operation.operator
                 if operator.status != Operator.Statuses.APPROVED:

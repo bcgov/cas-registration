@@ -70,6 +70,7 @@ class FacilityModelTest(BaseTestCase):
         facility_designated_operation_timeline.operation.save()
 
         self.test_object.bcghg_id = None
-        self.test_object.generate_unique_bcghg_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        self.test_object.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
         expected_id = '13221210004'
         assert self.test_object.bcghg_id.pk == expected_id

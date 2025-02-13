@@ -249,7 +249,7 @@ class Operation(TimeStampedModel):
             .exists()
         )
 
-    def generate_unique_boro_id(self) -> None:
+    def generate_unique_boro_id(self, user_guid: UUID) -> None:
         """
         Generate a unique BC OBPS regulated operation ID based on the current year and the latest BORO ID.
         """
@@ -278,13 +278,13 @@ class Operation(TimeStampedModel):
         if Operation.objects.filter(bc_obps_regulated_operation__pk=new_boro_id).exists():
             raise ValidationError("Generated BORO ID is not unique.")
 
-        new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id)
+        new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id, issued_by_id=user_guid)
         self.bc_obps_regulated_operation = new_boro_id_instance
 
-    def generate_unique_bcghg_id(self) -> None:
+    def generate_unique_bcghg_id(self, user_guid: UUID) -> None:
         from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
 
-        generate_unique_bcghg_id_for_operation_or_facility(self)
+        generate_unique_bcghg_id_for_operation_or_facility(self, user_guid)
 
     @property
     def current_designated_operator(self) -> Operator:

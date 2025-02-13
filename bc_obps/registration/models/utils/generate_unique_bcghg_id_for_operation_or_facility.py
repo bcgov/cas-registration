@@ -1,9 +1,10 @@
+from uuid import UUID
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility import Facility
 from registration.models.operation import Operation
 
 
-def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facility) -> None:
+def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facility, user_guid: UUID) -> None:
     """
     Generate a unique BCGHG ID for an operation or facility based on the operation type, NAICS code, and the latest BCGHG ID with the same type and code.
     """
@@ -35,5 +36,5 @@ def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facil
         new_bcghg_id = str(int(latest_bcghg_id) + 1)
     else:
         new_bcghg_id = str(f"{first_digit}{naics_code}{1:04d}")  # Pad the number with zeros to make it 4 digits long
-    new_bcghg_id_instance = BcGreenhouseGasId.objects.create(id=new_bcghg_id)
+    new_bcghg_id_instance = BcGreenhouseGasId.objects.create(id=new_bcghg_id, issued_by_id=user_guid)
     record.bcghg_id = new_bcghg_id_instance
