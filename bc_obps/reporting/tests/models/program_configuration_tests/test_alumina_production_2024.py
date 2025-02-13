@@ -21,20 +21,20 @@ class TestAluminaProduction2024(TestCase):
                 'Anode Consumption - Soderberg': 8,
                 'Anode/Cathode Baking': 8,
                 'Green Coke Calcination': 8,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
         }
         gas_config_anode_effects = {
             'C2F6': {
                 'C2F6 anode effects': 0,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
             'CF4': {
                 'Slope method': 6,
                 'Overvoltage method': 6,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
         }
@@ -42,7 +42,7 @@ class TestAluminaProduction2024(TestCase):
             'SF6': {
                 'Inventory': 0,
                 'Input/output': 0,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
         }

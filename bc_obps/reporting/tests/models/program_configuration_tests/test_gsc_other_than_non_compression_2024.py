@@ -26,7 +26,7 @@ class TestGSCOtherThanNonCompression2024(TestCase):
                 'Measured CC': 1,
                 'Measured Steam/Measured EF': 2,
                 'CEMS': 0,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
             'CH4': {
@@ -36,7 +36,7 @@ class TestGSCOtherThanNonCompression2024(TestCase):
                 'Measured EF': 1,
                 'Measured Steam/Default EF': 3,
                 'Heat Input/Default EF': 2,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
             'N2O': {
@@ -46,7 +46,7 @@ class TestGSCOtherThanNonCompression2024(TestCase):
                 'Measured EF': 1,
                 'Measured Steam/Default EF': 3,
                 'Heat Input/Default EF': 2,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
         }

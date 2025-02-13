@@ -59,7 +59,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -111,8 +111,8 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
     valid_from = Configuration.objects.get(valid_from='2023-01-01')
     valid_to = Configuration.objects.get(valid_to='2099-12-31')
 
-    # CO2 - Alternative Parameter Measurement
-    methodology_alt = Methodology.objects.get(name='Alternative Parameter Measurement')
+    # CO2 - Alternative Parameter Measurement Methodology
+    methodology_alt = Methodology.objects.get(name='Alternative Parameter Measurement Methodology')
     config_element_alt = ConfigurationElement.objects.get(
         activity_id=activity.id,
         source_type_id=source_type.id,
