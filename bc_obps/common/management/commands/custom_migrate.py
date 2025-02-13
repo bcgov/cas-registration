@@ -18,6 +18,11 @@ class Command(BaseCommand):
             # Revoke all RLS grants & policies for all roles
             # Re-apply all RLS grants & policies for all roles
             RlsManager.re_apply_rls()
+            if os.environ.get('ENVIRONMENT') == 'test':
+                call_command('load_test_data')
+            if os.environ.get('ENVIRONMENT') == 'dev':
+                call_command('load_fixtures')
+                call_command('load_reporting_fixtures')
             return
         # Run the default migrate command for all apps except the reporting app
         self.stdout.write('Running default migrations for all apps except reporting...')
