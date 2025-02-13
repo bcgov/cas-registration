@@ -1,7 +1,5 @@
 import uuid
 from django.db import models
-
-
 from registration.models.well_authorization_number import WellAuthorizationNumber
 from registration.models import Address, TimeStampedModel, Operation
 from simple_history.models import HistoricalRecords
@@ -77,6 +75,7 @@ class Facility(TimeStampedModel):
     well_authorization_numbers = models.ManyToManyField(WellAuthorizationNumber, related_name='facilities')
     history = HistoricalRecords(
         table_name='erc_history"."facility_history',
+        m2m_fields=[well_authorization_numbers],
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
