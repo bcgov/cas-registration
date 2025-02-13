@@ -154,8 +154,8 @@ class UserOperatorServiceV2:
                     phone_number=str(user_operator.user.phone_number),  # ContactIn expects a string,
                     position_title=user_operator.user.position_title,
                 )
-                contact = ContactService.create_contact(user_operator.user_id, contact_payload)
-                user_operator.operator.contacts.add(contact)
+                # Create a contact record for the user_operator and add it to the operator's contacts
+                ContactService.create_contact(user_operator.user_id, contact_payload)
 
             access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
 
