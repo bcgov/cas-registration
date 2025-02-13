@@ -15,7 +15,6 @@ def init_additional_methodology_data(apps, schema_monitor):
         [
             Methodology(name='Calcination Fraction'),
             Methodology(name='Mass of Output Carbonates'),
-            Methodology(name='Alternative Parameter Methodology'),
         ]
     )
 
@@ -29,7 +28,6 @@ def reverse_additional_methodology_data(apps, schema_monitor):
         name__in=[
             'Calcination Fraction',
             'Mass of Output Carbonates',
-            'Alternative Parameter Methodology',
         ]
     ).delete()
 
@@ -75,7 +73,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Carbonates used but not consumed in other activities set out in column 2'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -259,14 +257,14 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Number of output carbonate types', field_units__isnull=True)
     )
-    # CO2 - Alternative Parameter Methodology
+    # CO2 - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Carbonate use').id,
         source_type_id=SourceType.objects.get(
             name='Carbonates used but not consumed in other activities set out in column 2'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))

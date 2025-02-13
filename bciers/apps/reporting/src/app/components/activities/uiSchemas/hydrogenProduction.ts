@@ -60,7 +60,7 @@ const uiSchema = {
               enumOptions: [
                 "CEMS",
                 "Feedstock Material Balance",
-                "Alternative Parameter Measurement",
+                "Alternative Parameter Measurement Methodology",
                 "Replacement Methodology",
               ],
             },

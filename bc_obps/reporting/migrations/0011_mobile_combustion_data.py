@@ -47,7 +47,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Fuel combustion by mobile equipment that is part of the facility'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -88,7 +88,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Fuel combustion by mobile equipment that is part of the facility'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -129,7 +129,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Fuel combustion by mobile equipment that is part of the facility'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -198,14 +198,14 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units='kg/fuel units')
     )
-    # CO2 - Alternative Parameter Measurement - Description
+    # CO2 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id,
         source_type_id=SourceType.objects.get(
             name='Fuel combustion by mobile equipment that is part of the facility'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -247,14 +247,14 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Emission Factor', field_units='kg/fuel units')
     )
-    # CH4 - Alternative Parameter Measurement - Description
+    # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id,
         source_type_id=SourceType.objects.get(
             name='Fuel combustion by mobile equipment that is part of the facility'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -295,14 +295,14 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Emission Factor', field_units='kg/fuel units')
     )
-    # N2O - Alternative Parameter Measurement - Description
+    # N2O - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Fuel combustion by mobile equipment').id,
         source_type_id=SourceType.objects.get(
             name='Fuel combustion by mobile equipment that is part of the facility'
         ).id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))

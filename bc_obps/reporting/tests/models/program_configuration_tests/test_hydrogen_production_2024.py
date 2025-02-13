@@ -22,7 +22,7 @@ class HydrogenProduction2024Test(TestCase):
             'CO2': {
                 'CEMS': 0,
                 'Feedstock Material Balance': 0,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             }
         }

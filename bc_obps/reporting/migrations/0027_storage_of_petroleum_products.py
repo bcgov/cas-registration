@@ -40,7 +40,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Storage of petroleum products').id,
                 source_type_id=SourceType.objects.get(name='Above-ground storage tanks').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -88,8 +88,8 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
     valid_from = Configuration.objects.get(valid_from='2023-01-01')
     valid_to = Configuration.objects.get(valid_to='2099-12-31')
 
-    # CH4 - Alternative Parameter Methodology - Description
-    methodology_alt = Methodology.objects.get(name='Alternative Parameter Methodology')
+    # CH4 - Alternative Parameter Measurement Methodology - Description
+    methodology_alt = Methodology.objects.get(name='Alternative Parameter Measurement Methodology')
     config_element_alt = ConfigurationElement.objects.get(
         activity_id=activity.id,
         source_type_id=source_type.id,

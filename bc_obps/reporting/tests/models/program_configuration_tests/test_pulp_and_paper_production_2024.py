@@ -20,17 +20,17 @@ class PulpAndPaperProduction2024TestCase(TestCase):
                 'Solids-HHV': 3,
                 'Solids-CC': 3,
                 'Make-up Chemical Use Methodology': 2,
-                'Alternative Parameter Methodology': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
             'CH4': {
                 'Solids-HHV': 3,
-                'Alternative Parameter Methodology': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
             'N2O': {
                 'Solids-HHV': 3,
-                'Alternative Parameter Methodology': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
         }

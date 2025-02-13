@@ -21,7 +21,7 @@ class OpenPitCoalMining2024Test(TestCase):
         gas_config = {
             'CH4': {
                 'Emissions Factor Methodology': 0,
-                'Alternative Parameter Measurement': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             }
         }

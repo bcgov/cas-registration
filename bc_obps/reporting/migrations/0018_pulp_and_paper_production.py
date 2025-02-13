@@ -77,7 +77,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Pulp and paper production').id,
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -102,7 +102,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Pulp and paper production').id,
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -127,7 +127,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Pulp and paper production').id,
                 source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -317,12 +317,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             field_name='Make-up quantity of Na2CO3 used (tonnes/year)', field_units__isnull=True
         ),
     )
-    # CO2 - Alternative Parameter Methodology
+    # CO2 - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
@@ -374,12 +374,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             field_name='Annual high heat value of spent liquor solids (GJ/kg)', field_units__isnull=True
         ),
     )
-    # CH4 - Alternative Parameter Methodology
+    # CH4 - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
@@ -431,12 +431,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             field_name='Annual high heat value of spent liquor solids (GJ/kg)', field_units__isnull=True
         ),
     )
-    # N2O - Alternative Parameter Methodology
+    # N2O - Alternative Parameter Measurement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
         source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Methodology').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
