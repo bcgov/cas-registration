@@ -1,6 +1,18 @@
 [
   {
     "model": "registration.operator",
+    "pk": "00000000-0000-0000-0000-000000000000",
+    "fields": {
+      "legal_name": "BCGOV",
+      "cra_business_number": 123456787,
+      "bc_corporate_registry_number": "abc1234569",
+      "business_structure": "Sole Proprietorship",
+      "status": "Approved",
+      "is_new": false
+    }
+  },
+  {
+    "model": "registration.operator",
     "pk": "685d581b-5698-411f-ae00-de1d97334a71",
     "fields": {
       "legal_name": "Alpha Enterprises",
@@ -196,11 +208,11 @@
   },
   {
     "model": "registration.operator",
-    "pk": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
+    "pk": "550e8400-e29b-41d4-a716-446655440000",
     "fields": {
       "legal_name": "Papa Enterprises - no associated operations",
-      "cra_business_number": 987654334,
-      "bc_corporate_registry_number": "qrs1234567",
+      "cra_business_number": 987654356,
+      "bc_corporate_registry_number": "tuv1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
       "status": "Approved",

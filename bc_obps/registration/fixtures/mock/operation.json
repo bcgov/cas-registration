@@ -41,7 +41,7 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Charlie LFO - Draft -- no facility",
+      "name": "Barbie LFO - Draft -- no facility",
       "type": "Linear Facility Operation",
       "naics_code": 20,
       "opt_in": false,
@@ -78,7 +78,7 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-12T15:27:00.000Z",
-      "name": "Alien SFO - Registered",
+      "name": "Alien SFO - Registered - no facility",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "opt_in": false,
@@ -139,8 +139,8 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-15T15:27:00.000Z",
-      "name": "Anteater SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Anteater LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990006",
@@ -158,8 +158,8 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-16T15:27:00.000Z",
-      "name": "Arctic SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Arctic LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990007",
@@ -177,8 +177,8 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-17T15:27:00.000Z",
-      "name": "Argument SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Argument LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990008",
@@ -197,8 +197,8 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-18T15:27:00.000Z",
-      "name": "Art SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Art LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "status": "Registered",
@@ -215,8 +215,8 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-19T15:27:00.000Z",
-      "name": "SFO 11 - Registered",
-      "type": "Single Facility Operation",
+      "name": "Aeolian LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990010",
@@ -235,8 +235,8 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-20T15:27:00.000Z",
-      "name": "SFO 12 - Registered",
-      "type": "Single Facility Operation",
+      "name": "Anchor LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990011",
@@ -254,8 +254,8 @@
       "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-21T15:27:00.000Z",
-      "name": "SFO 13 - Registered",
-      "type": "Single Facility Operation",
+      "name": "Airplane LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "regulated_products": [3, 4],
@@ -273,8 +273,8 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-22T15:27:00.000Z",
-      "name": "Bojangles SFO - Not Started",
-      "type": "Single Facility Operation",
+      "name": "Bojangles LFO - Not Started",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990013",
@@ -289,8 +289,8 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-23T15:27:00.000Z",
-      "name": "Brine SFO - Not Started",
-      "type": "Single Facility Operation",
+      "name": "Brine LFO - Not Started",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990014",
@@ -307,8 +307,8 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-24T15:27:00.000Z",
-      "name": "Bling SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Bling LFO - Draft",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990015",
@@ -324,8 +324,8 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-25T15:27:00.000Z",
-      "name": "Bees SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Bees LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990016",
@@ -344,8 +344,8 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-26T15:27:00.000Z",
-      "name": "Blue SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Blue LFO - Draft",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990017",
@@ -360,8 +360,8 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-27T15:27:00.000Z",
-      "name": "Bullet SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Bullet LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990018",
@@ -380,8 +380,8 @@
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-28T15:27:00.000Z",
-      "name": "Bat SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Bat LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990019",
@@ -398,8 +398,8 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Bin SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Bin LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990020",
@@ -416,8 +416,8 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Bark SFO - Registered",
-      "type": "Single Facility Operation",
+      "name": "Bark LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990021",
@@ -445,8 +445,8 @@
     "fields": {
       "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Brown SFO - Draft -- no facility",
-      "type": "Single Facility Operation",
+      "name": "Brown LFO - Draft -- no facility",
+      "type": "Linear Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "status": "Draft",
@@ -459,11 +459,12 @@
     "fields": {
       "operator": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
       "point_of_contact": 1,
-      "name": "Cat SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Cat LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "activities": [1, 5],
+      "contacts": [7]
     }
   },
   {
@@ -472,11 +473,13 @@
     "fields": {
       "operator": "7e8b72dc-4196-427f-a553-7879748139e1",
       "point_of_contact": 1,
-      "name": "Dog SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Dog LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [8]
     }
   },
   {
@@ -485,11 +488,13 @@
     "fields": {
       "operator": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
       "point_of_contact": 1,
-      "name": "Elephant SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Elephant LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [9]
     }
   },
   {
@@ -498,11 +503,13 @@
     "fields": {
       "operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
       "point_of_contact": 1,
-      "name": "Fox SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Fox LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [10]
     }
   },
   {
@@ -511,11 +518,13 @@
     "fields": {
       "operator": "edb1aff1-f888-4199-ab88-068364496347",
       "point_of_contact": 1,
-      "name": "Giraffe SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Giraffe LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [11]
     }
   },
   {
@@ -524,11 +533,13 @@
     "fields": {
       "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
       "point_of_contact": 1,
-      "name": "Horse SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Horse LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [12]
     }
   },
   {
@@ -537,11 +548,13 @@
     "fields": {
       "operator": "04384911-264a-4510-b582-11ee704b8e41",
       "point_of_contact": 1,
-      "name": "Iguana SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Iguana LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [13]
     }
   },
   {
@@ -550,11 +563,13 @@
     "fields": {
       "operator": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
       "point_of_contact": 1,
-      "name": "Jaguar SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Jaguar LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [14]
     }
   },
   {
@@ -563,11 +578,13 @@
     "fields": {
       "operator": "bb979661-0782-49b2-9c64-acd8424b692b",
       "point_of_contact": 1,
-      "name": "Kangaroo SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Kangaroo LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [15]
     }
   },
   {
@@ -576,11 +593,13 @@
     "fields": {
       "operator": "bb702949-e303-4788-9ba9-806232a5f711",
       "point_of_contact": 1,
-      "name": "Lion SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Lion LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [16]
     }
   },
   {
@@ -589,11 +608,13 @@
     "fields": {
       "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
       "point_of_contact": 1,
-      "name": "Monkey SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Monkey LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [17]
     }
   },
   {
@@ -602,11 +623,13 @@
     "fields": {
       "operator": "5c847c75-3b17-414c-97f8-88ba81cb3821",
       "point_of_contact": 1,
-      "name": "Narwhal SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Narwhal LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [18]
     }
   },
   {
@@ -615,11 +638,13 @@
     "fields": {
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
       "point_of_contact": 1,
-      "name": "Ostrich SFO - Draft",
-      "type": "Single Facility Operation",
+      "name": "Ostrich LFO - Registered",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
-      "status": "Draft",
-      "activities": [1, 5]
+      "status": "Registered",
+      "registration_purpose": "Potential Reporting Operation",
+      "activities": [1, 5],
+      "contacts": [19]
     }
   }
 ]
