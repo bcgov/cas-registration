@@ -11,17 +11,14 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { useSearchParams } from "next/navigation";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import {
-  ActivePage,
-  getAdditionalInformationTaskList,
-} from "@reporting/src/app/components/taskList/3_additionalInformation";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 interface AdditionalReportingDataProps {
   versionId: number;
   includeElectricityGenerated: boolean;
   initialFormData: any;
   isNewEntrant: boolean;
-  operationType?: string;
+  taskListElements: TaskListElement[];
 }
 
 interface FormData {
@@ -43,7 +40,7 @@ export default function AdditionalReportingDataForm({
   includeElectricityGenerated,
   initialFormData,
   isNewEntrant,
-  operationType,
+  taskListElements,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
@@ -86,12 +83,7 @@ export default function AdditionalReportingDataForm({
     <MultiStepFormWithTaskList
       initialStep={2}
       steps={multiStepHeaderSteps}
-      taskListElements={getAdditionalInformationTaskList(
-        versionId,
-        ActivePage.AdditionalReportingData,
-        isNewEntrant,
-        operationType,
-      )}
+      taskListElements={taskListElements}
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
