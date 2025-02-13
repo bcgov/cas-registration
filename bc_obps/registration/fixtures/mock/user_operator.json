@@ -23,13 +23,14 @@
       "user_friendly_id": 2
     }
   },
+
   {
     "model": "registration.useroperator",
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "role": "pending",
-      "status": "Pending",
+      "role": "approved",
+      "status": "Approved",
       "verified_at": "2024-02-27 06:24:57.293242-08",
       "verified_by": "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
       "user_friendly_id": 3
@@ -65,8 +66,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000005",
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "role": "pending",
-      "status": "Pending",
+      "role": "reporter",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 8
@@ -113,8 +114,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000009",
       "operator": "edb1aff1-f888-4199-ab88-068364496347",
-      "role": "pending",
-      "status": "Pending",
+      "role": "reporter",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 12
@@ -125,8 +126,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000010",
       "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
-      "role": "pending",
-      "status": "Pending",
+      "role": "reporter",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 13
@@ -174,7 +175,7 @@
       "user": "00000000-0000-0000-0000-000000000014",
       "operator": "bb702949-e303-4788-9ba9-806232a5f711",
       "role": "admin",
-      "status": "Declined",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 17
@@ -185,8 +186,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000015",
       "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
-      "role": "pending",
-      "status": "Pending",
+      "role": "reporter",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 18
@@ -197,8 +198,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000016",
       "operator": "5c847c75-3b17-414c-97f8-88ba81cb3821",
-      "role": "pending",
-      "status": "Pending",
+      "role": "reporter",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 19
@@ -209,6 +210,18 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000017",
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
+      "role": "reporter",
+      "status": "Approved",
+      "verified_at": null,
+      "verified_by": null,
+      "user_friendly_id": 20
+    }
+  },
+  {
+    "model": "registration.useroperator",
+    "fields": {
+      "user": "00000000-0000-0000-0000-000000000018",
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "role": "pending",
       "status": "Pending",
       "verified_at": null,

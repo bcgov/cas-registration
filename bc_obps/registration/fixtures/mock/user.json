@@ -334,5 +334,20 @@
       "email": "oscar.perez@example.com",
       "phone_number": "+16044011249"
     }
+  },
+  {
+    "model": "registration.user",
+    "pk": 20,
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000018",
+      "bceid_business_name": "Alpha Enterprises",
+      "business_guid": "685d581b-5698-411f-ae00-de1d97334a71",
+      "app_role": "industry_user",
+      "first_name": "Annicka",
+      "last_name": "Awesome",
+      "position_title": "Manager",
+      "email": "annicka.awesome@example.com",
+      "phone_number": "+16044011234"
+    }
   }
 ]
