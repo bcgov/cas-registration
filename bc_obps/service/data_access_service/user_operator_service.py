@@ -3,7 +3,7 @@ from uuid import UUID
 from service.data_access_service.user_service import UserDataAccessService
 from registration.models import Operator, User, UserOperator
 from django.db import transaction
-from django.db.models import QuerySet, OuterRef
+from django.db.models import QuerySet, Q, OuterRef, Exists
 
 
 class UserOperatorDataAccessService:
@@ -59,22 +59,20 @@ class UserOperatorDataAccessService:
     @classmethod
     def get_admin_user_operator_requests_for_irc_users(cls) -> QuerySet[UserOperator]:
         # Base query excluding operators with status 'Declined'
-        qs = UserOperator.objects.select_related("user", "operator")
-        # .exclude(
-        #     operator__status=Operator.Statuses.DECLINED
-        # )
+        qs = UserOperator.objects.select_related("user", "operator").exclude(
+            operator__status=Operator.Statuses.DECLINED
+        )
         # Subquery to check if an approved admin user exists for the operator
         approved_admin_operator_exists = UserOperator.objects.filter(
             operator=OuterRef('operator'), role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
         )
-        # # Condition 1: Include all `Admin` roles with any status (Approved, Declined, or Pending)
-        # admin_condition = Q(role=UserOperator.Roles.ADMIN)
-        # # Condition 2: Include `Pending` roles only if the operator doesn't have an approved admin user operator
-        # pending_condition = Q(role=UserOperator.Roles.PENDING) & ~Exists(approved_admin_operator_exists)
+        # Condition 1: Include all `Admin` roles with any status (Approved, Declined, or Pending)
+        admin_condition = Q(role=UserOperator.Roles.ADMIN)
+        # Condition 2: Include `Pending` roles only if the operator doesn't have an approved admin user operator
+        pending_condition = Q(role=UserOperator.Roles.PENDING) & ~Exists(approved_admin_operator_exists)
 
-        # # Condition 3: Exclude all `Reporter` roles regardless of status
-        # reporter_exclusion = Q(role=UserOperator.Roles.REPORTER)
+        # Condition 3: Exclude all `Reporter` roles regardless of status
+        reporter_exclusion = Q(role=UserOperator.Roles.REPORTER)
 
         # Include all Admin roles OR Include Pending roles only if no approved admin exists for operator, Exclude Reporter roles
-        # return qs.filter(admin_condition | pending_condition).exclude(reporter_exclusion)
-        return qs
+        return qs.filter(admin_condition | pending_condition).exclude(reporter_exclusion)
