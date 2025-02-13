@@ -26,13 +26,6 @@ const OperationEmissionSummaryPage = async ({ version_id }: Props) => {
     isNewEntrant,
     operationType?.operation_type,
   );
-
-  const emissionSummaryTaskListElement = taskListData.find(
-    (e) => e.title == "Operation emission summary",
-  );
-  if (emissionSummaryTaskListElement)
-    emissionSummaryTaskListElement.isActive = true;
-
   return (
     <OperationEmissionSummaryForm
       versionId={version_id}
