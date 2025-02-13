@@ -1,5 +1,3 @@
-
-
 from django.db import migrations
 import json
 
@@ -23,9 +21,7 @@ def init_configuration_element_data(apps, schema_monitor):
         [
             # CH4
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
@@ -35,9 +31,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
@@ -47,9 +41,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
@@ -59,9 +51,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
@@ -72,9 +62,7 @@ def init_configuration_element_data(apps, schema_monitor):
             ),
             # N2O
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
@@ -84,9 +72,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
@@ -96,9 +82,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
@@ -114,53 +98,37 @@ def init_configuration_element_data(apps, schema_monitor):
         [
             # CH4
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Oil-water separators'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
+                source_type_id=SourceType.objects.get(name='Oil-water separators').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Default conversion factor').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Oil-water separators'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
+                source_type_id=SourceType.objects.get(name='Oil-water separators').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Measured conversion factor').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Oil-water separators'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
+                source_type_id=SourceType.objects.get(name='Oil-water separators').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
             ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Oil-water separators'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
+                source_type_id=SourceType.objects.get(name='Oil-water separators').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
                 methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            )
+            ),
         ]
     )
 
@@ -173,9 +141,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     ReportingActivity = apps.get_model('reporting', 'ReportingActivity')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ConfigurationElement.objects.filter(
-        reporting_activity_id=ReportingActivity.objects.get(
-            name='Industrial wastewater processing'
-        ).id,
+        reporting_activity_id=ReportingActivity.objects.get(name='Industrial wastewater processing').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
@@ -196,9 +162,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # #CH4 - Chemical Oxygen Demand - Average of Quarterly chemical oxygen demand
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Industrial wastewater process using anaerobic digestion'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Chemical Oxygen Demand').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -209,22 +173,20 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # CH4 - Biochemical Oxygen Demand - Average of Quarterly five-day biochemical oxygen demand
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Industrial wastewater process using anaerobic digestion'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Biochemical Oxygen Demand').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Average of Quarterly five-day biochemical oxygen demand',field_units='kg/m3')
+        ReportingField.objects.get(
+            field_name='Average of Quarterly five-day biochemical oxygen demand', field_units='kg/m3'
+        )
     )
     # CH4 - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Industrial wastewater process using anaerobic digestion'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -233,9 +195,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # CH4 - Replacement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Industrial wastewater process using anaerobic digestion'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -245,22 +205,18 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # N2O - Nitrogen in effluent - Average of Quarterly Nitrogen in effluent
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Industrial wastewater process using anaerobic digestion'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Nitrogen in effluent').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Average of Quarterly Nitrogen in effluent',field_units='kg/N m3')
+        ReportingField.objects.get(field_name='Average of Quarterly Nitrogen in effluent', field_units='kg/N m3')
     )
     # N2O - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Industrial wastewater process using anaerobic digestion'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -269,9 +225,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # N2O - Replacement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Industrial wastewater process using anaerobic digestion'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -282,9 +236,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # #CH4 - Default conversion factor
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Oil-water separators'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Oil-water separators').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Default conversion factor').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -293,9 +245,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # #CH4 - Measured conversion factor - Measured conversion factor
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Oil-water separators'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Oil-water separators').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Measured conversion factor').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -306,9 +256,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # CH4 - Alternative Parameter Measurement - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Oil-water separators'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Oil-water separators').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -317,9 +265,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     # CH4 - Replacement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
-        source_type_id=SourceType.objects.get(
-            name='Oil-water separators'
-        ).id,
+        source_type_id=SourceType.objects.get(name='Oil-water separators').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
         methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
@@ -370,9 +316,7 @@ def reverse_init_activity_schema_data(apps, schema_monitor):
     '''
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     Activity = apps.get_model('registration', 'Activity')
-    ActivitySchema.objects.filter(
-        activity_id=Activity.objects.get(name='Industrial wastewater processing').id
-    ).delete()
+    ActivitySchema.objects.filter(activity_id=Activity.objects.get(name='Industrial wastewater processing').id).delete()
 
 
 # SOURCE TYPE
@@ -385,11 +329,11 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
 
     cwd = os.getcwd()
     with open(
-            f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/wastewater_processing_using_anaerobic.json'
+        f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/wastewater_processing_using_anaerobic.json'
     ) as json_schema_file:
         using_anaerobic = json.load(json_schema_file)
     with open(
-            f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/oil_water_separators.json'
+        f'{cwd}/reporting/json_schemas/2024/industrial_water_processing/oil_water_separators.json'
     ) as json_schema_file:
         oil_water_separators = json.load(json_schema_file)
 
@@ -400,24 +344,19 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     ActivitySourceTypeSchema.objects.bulk_create(
         [
             ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
                 json_schema=using_anaerobic,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,             has_unit=False,
+                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+                has_unit=False,
                 has_fuel=False,
             ),
             ActivitySourceTypeSchema(
-                activity_id=Activity.objects.get(
-                    name='Industrial wastewater processing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='Oil-water separators'
-                ).id,
+                activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
+                source_type_id=SourceType.objects.get(name='Oil-water separators').id,
                 json_schema=oil_water_separators,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
