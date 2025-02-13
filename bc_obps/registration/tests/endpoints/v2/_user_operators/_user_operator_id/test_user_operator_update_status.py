@@ -84,7 +84,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         mock_send_operator_access_request_email = mocker.patch(
             "service.user_operator_service_v2.send_operator_access_request_email"
         )
-        response_2 = TestUtils.mock_put_with_auth_role(
+        response = TestUtils.mock_put_with_auth_role(
             self,
             "cas_analyst",
             self.content_type,
@@ -99,7 +99,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
                 },
             ),
         )
-        assert response_2.status_code == 200
+        assert response.status_code == 200
         pending_user_operator.refresh_from_db()  # refresh the pending_user_operator object to get the updated status
         assert pending_user_operator.status == UserOperator.Statuses.APPROVED
         assert pending_user_operator.role == UserOperator.Roles.ADMIN

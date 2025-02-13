@@ -22,4 +22,3 @@ class Rls:
         }
     }
     m2m_rls_list = generate_m2m_rls(m2m_models_grants_mapping)
-
