@@ -6,7 +6,7 @@ from django.urls import get_resolver
 from django.test import Client, override_settings, TestCase
 from registration.utils import custom_reverse_lazy
 from registration.models import User
-from endpoints import ENDPOINTS, mock_uuid
+from common.tests.endpoints.auth.test_endpoints_list import ENDPOINTS, mock_uuid
 from common.permissions import get_permission_configs
 from registration.models import AppRole, UserOperator, Operator, Operation, Facility
 from registration.tests.utils.bakers import operator_baker, operation_baker, user_operator_baker
