@@ -6,6 +6,7 @@ import {
   REGULATED_OPERATION_REGISTRATION_PURPOSE,
   NEW_ENTRANT_REGISTRATION_PURPOSE,
 } from "@reporting/src/app/utils/constants";
+import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 export function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
@@ -43,6 +44,7 @@ export default async function AdditionalReportingDataPage({
   const reportAdditionalData = await getReportAdditionalData(version_id);
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
+  const operationType = await getFacilityReport(version_id);
 
   return (
     <AdditionalReportingDataForm
@@ -52,6 +54,7 @@ export default async function AdditionalReportingDataPage({
       }
       isNewEntrant={registrationPurpose === NEW_ENTRANT_REGISTRATION_PURPOSE}
       initialFormData={transformedData}
+      operationType={operationType?.operation_type}
     />
   );
 }

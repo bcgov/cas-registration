@@ -21,6 +21,7 @@ interface AdditionalReportingDataProps {
   includeElectricityGenerated: boolean;
   initialFormData: any;
   isNewEntrant: boolean;
+  operationType?: string;
 }
 
 interface FormData {
@@ -42,6 +43,7 @@ export default function AdditionalReportingDataForm({
   includeElectricityGenerated,
   initialFormData,
   isNewEntrant,
+  operationType,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
@@ -88,6 +90,7 @@ export default function AdditionalReportingDataForm({
         versionId,
         ActivePage.AdditionalReportingData,
         isNewEntrant,
+        operationType,
       )}
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
