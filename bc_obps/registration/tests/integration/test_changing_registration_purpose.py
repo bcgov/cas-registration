@@ -2,6 +2,7 @@ import pytest
 from model_bakery import baker
 from copy import deepcopy
 from registration.models import Operation, NaicsCode, DocumentType
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.constants import MOCK_DATA_URL
 from registration.utils import custom_reverse_lazy
@@ -467,6 +468,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).count() > 0
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")).count() > 0
         assert self.operation.naics_code is not None
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation=self.operation).count() == 0
+        assert self.operation.facilities.count() == 0
 
     def _test_eio_to_regulated(self):
         """
@@ -479,6 +482,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
         assert self.operation.regulated_products.count() > 0
         assert self.operation.naics_code is not None
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation=self.operation).count() == 0
+        assert self.operation.facilities.count() == 0
 
     def _test_eio_to_potential_reporting(self):
         """
@@ -490,6 +495,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")) is not None
         assert self.operation.documents.filter(type=DocumentType.objects.get(name="boundary_map")) is not None
         assert self.operation.naics_code is not None
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation=self.operation).count() == 0
+        assert self.operation.facilities.count() == 0
 
     def _test_eio_to_new_entrant(self):
         """
@@ -506,6 +513,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         )
         assert self.operation.date_of_first_shipment is not None
         assert self.operation.naics_code is not None
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation=self.operation).count() == 0
+        assert self.operation.facilities.count() == 0
 
     def _test_eio_to_opted_in(self):
         """
@@ -528,6 +537,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product is True
         assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
         assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation=self.operation).count() == 0
+        assert self.operation.facilities.count() == 0
 
     ### Tests for Original Purpose = Potential Reporting
 

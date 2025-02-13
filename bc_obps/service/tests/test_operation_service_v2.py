@@ -1206,6 +1206,8 @@ class TestHandleChangeOfRegistrationPurpose:
         assert returned_payload.tertiary_naics_code_id is None
         assert returned_payload.boundary_map is None
         assert returned_payload.process_flow_diagram is None
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation=operation).count() == 0
+        assert operation.facilities.count() == 0
 
     @staticmethod
     def test_new_purpose_reporting():
