@@ -51,6 +51,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={false}
         initialFormData={{}}
         isNewEntrant={true}
+        operationType={"Linear Facility Operation"}
       />,
     );
     const capturedEmissionsText = await screen.findByText(
@@ -66,6 +67,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={false}
         initialFormData={{}}
         isNewEntrant={true}
+        operationType={"Linear Facility Operation"}
       />,
     );
 
@@ -88,6 +90,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={true}
         initialFormData={{}}
         isNewEntrant={false}
+        operationType={"Linear Facility Operation"}
       />,
     );
 
@@ -102,6 +105,7 @@ describe("AdditionalReportingData Component", () => {
         includeElectricityGenerated={false}
         initialFormData={{}}
         isNewEntrant={true}
+        operationType={"Linear Facility Operation"}
       />,
     );
 

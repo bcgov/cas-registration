@@ -10,11 +10,16 @@ export const getAdditionalInformationTaskList: (
   versionId: number,
   activeIndex?: ActivePage | number,
   isNewEntrant?: boolean,
-) => TaskListElement[] = (versionId, activeIndex, isNewEntrant) => {
+  operationType?: string,
+) => TaskListElement[] = (
+  versionId,
+  activeIndex,
+  isNewEntrant,
+  operationType,
+) => {
   const additionalReportingDataItem: TaskListElement = {
     type: "Page",
     title: "Additional reporting data",
-    isChecked: true,
     link: `/reports/${versionId}/additional-reporting-data`,
     isActive: activeIndex === ActivePage.AdditionalReportingData,
   };
@@ -33,11 +38,17 @@ export const getAdditionalInformationTaskList: (
     link: `/reports/${versionId}/emission-summary`,
   };
 
-  return isNewEntrant
-    ? [
-        additionalReportingDataItem,
-        newEntrantItem,
-        operationEmissionSummaryItem,
-      ]
-    : [additionalReportingDataItem, operationEmissionSummaryItem];
+  const taskList: TaskListElement[] = [additionalReportingDataItem];
+
+  // Add new entrant item if applicable
+  if (isNewEntrant) {
+    taskList.push(newEntrantItem);
+  }
+
+  // Add operation emission summary item only if operationType is "Linear Facility Operation"
+  if (operationType === "Linear Facility Operation") {
+    taskList.push(operationEmissionSummaryItem);
+  }
+
+  return taskList;
 };
