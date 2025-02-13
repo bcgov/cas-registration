@@ -3,6 +3,7 @@ import { getNewEntrantData } from "@reporting/src/app/utils/getNewEntrantData";
 import { getAdditionalInformationTaskList } from "@reporting/src/app/components/taskList/3_additionalInformation";
 import { ActivePage } from "@reporting/src/app/components/taskList/3_additionalInformation";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 export default async function NewEntrantInformationPage({
   version_id,
@@ -62,10 +63,12 @@ export default async function NewEntrantInformationPage({
     ),
   };
 
+  const operationType = await getFacilityReport(version_id);
   const taskListElements = getAdditionalInformationTaskList(
     version_id,
     ActivePage.NewEntrantInformation,
     true,
+    operationType?.operation_type,
   );
 
   return (
