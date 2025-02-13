@@ -145,7 +145,7 @@ const formData = {
 const optInFormData = {
   name: "Operation 5",
   type: "Single Facility Operation",
-  registration_purpose: "Opted-in Operation",
+  registration_purpose: RegistrationPurposes.OPTED_IN_OPERATION,
   opted_in_operation: {
     meets_section_3_emissions_requirements: true,
     meets_electricity_import_operation_criteria: true,
@@ -211,9 +211,6 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Oil and gas extraction/i)).toBeVisible();
     // secondary
     expect(screen.getByText(/Bituminous coal mining/i)).toBeVisible();
-    // reporting activities
-    expect(screen.getByText(/Reporting Activities/i)).toBeVisible();
-    expect(screen.getByText(/General stationary combustion/i)).toBeVisible();
     // 2 file inputs
     expect(screen.getByText(/Process Flow Diagram/i)).toBeVisible();
     expect(screen.getByText(/Boundary Map/i)).toBeVisible();
@@ -239,7 +236,12 @@ describe("the OperationInformationForm component", () => {
         /The purpose of this registration is to register as a\:/i,
       ),
     ).toBeVisible();
-    expect(screen.getByText(/Reporting Operation/i)).toBeVisible();
+    const reportingOperationLabels =
+      screen.getAllByText(/Reporting Operation/i);
+    expect(reportingOperationLabels.length === 2); // first is the from the Registration Purpose field, second is a section header
+    // reporting activities
+    expect(screen.getByText(/Reporting Activities/i)).toBeVisible();
+    expect(screen.getByText(/General stationary combustion/i)).toBeVisible();
   });
 
   it("should render the form with the correct form for an EIO when formData is provided", async () => {
@@ -870,7 +872,7 @@ describe("the OperationInformationForm component", () => {
       );
       await userEvent.click(screen.getByRole("button", { name: "Edit" }));
       const cancelChipIcon = screen.getAllByTestId("CancelIcon");
-      await userEvent.click(cancelChipIcon[2]); // 0-1 are activities
+      await userEvent.click(cancelChipIcon[0]);
       expect(screen.queryByText(/ivy/i)).not.toBeInTheDocument();
       const operationRepresentativesComboBoxInput = screen.getByRole(
         "combobox",
@@ -901,12 +903,12 @@ describe("the OperationInformationForm component", () => {
             type: "Single Facility Operation",
             naics_code_id: 1,
             secondary_naics_code_id: 2,
-            activities: [1, 2],
             process_flow_diagram: mockDataUri,
             boundary_map: mockDataUri,
             operation_has_multiple_operators: false,
             registration_purpose: "Reporting Operation",
             operation_representatives: [2],
+            activities: [1, 2],
           }),
         },
       );

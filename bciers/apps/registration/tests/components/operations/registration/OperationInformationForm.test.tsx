@@ -102,7 +102,6 @@ describe("the OperationInformationForm component", () => {
         naics_code_id: 1,
         boundary_map: mockDataUri,
         process_flow_diagram: mockDataUri,
-        activities: [1],
       }); // mock the GET from selecting an operation
 
       actionHandler.mockResolvedValueOnce({
@@ -124,21 +123,22 @@ describe("the OperationInformationForm component", () => {
       });
       await fillComboboxWidgetField(purposeInput, "Reporting Operation");
 
-      const reportingActivitiesInput = screen.getByPlaceholderText(
-        /select reporting activity.../i,
-      );
-
       expect(
         screen.queryByPlaceholderText(/select regulated product/i),
       ).not.toBeInTheDocument();
 
-      const operationInput = screen.getByLabelText(/Select your operation+/i);
-      await fillComboboxWidgetField(operationInput, "Existing Operation");
+      const reportingActivitiesInput = screen.getByPlaceholderText(
+        /select reporting activity.../i,
+      );
+
       const openActivitiesDropdown = reportingActivitiesInput?.parentElement
         ?.children[1]?.children[0] as HTMLInputElement;
       await userEvent.click(openActivitiesDropdown);
       const activityOption = screen.getByText("Ammonia production");
       await userEvent.click(activityOption);
+
+      const operationInput = screen.getByLabelText(/Select your operation+/i);
+      await fillComboboxWidgetField(operationInput, "Existing Operation");
 
       // assert the mocked GET values are in the form
       await waitFor(() => {
@@ -152,7 +152,6 @@ describe("the OperationInformationForm component", () => {
           "211110 - Oil and gas extraction (except oil sands)",
         );
 
-        expect(screen.getByText(/Ammonia production/i)).toBeVisible();
         expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(2);
       });
       // edit one of the pre-filled values
@@ -163,7 +162,6 @@ describe("the OperationInformationForm component", () => {
       expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
         "Existing Operation edited",
       );
-
       // submit
       await userEvent.click(
         screen.getByRole("button", { name: /save and continue/i }),
@@ -179,10 +177,10 @@ describe("the OperationInformationForm component", () => {
             body: JSON.stringify({
               registration_purpose: "Reporting Operation",
               operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+              activities: [1],
               name: "Existing Operation edited",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              activities: [1],
               process_flow_diagram:
                 "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
               boundary_map:
@@ -240,6 +238,17 @@ describe("the OperationInformationForm component", () => {
       const product2 = screen.getByText("Cement equivalent");
       await userEvent.click(product2);
 
+      // activities
+      const reportingActivitiesInput = screen.getByPlaceholderText(
+        /select reporting activity.../i,
+      );
+
+      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openActivitiesDropdown);
+      const activityOption = screen.getByText("Cement production");
+      await userEvent.click(activityOption);
+
       // add a new operation
       await userEvent.type(screen.getByLabelText(/Operation Name/i), "Op Name");
 
@@ -263,17 +272,6 @@ describe("the OperationInformationForm component", () => {
         primaryNaicsInput,
         /Oil and gas extraction+/i,
       );
-
-      // activities
-      const reportingActivitiesInput = screen.getByPlaceholderText(
-        /select reporting activity.../i,
-      );
-
-      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
-        ?.children[1]?.children[0] as HTMLInputElement;
-      await userEvent.click(openActivitiesDropdown);
-      const activityOption = screen.getByText("Cement production");
-      await userEvent.click(activityOption);
 
       // upload attachment
       const processFlowDiagramInput = screen.getByLabelText(/process flow+/i);
@@ -335,10 +333,10 @@ describe("the OperationInformationForm component", () => {
             body: JSON.stringify({
               registration_purpose: "OBPS Regulated Operation",
               regulated_products: [1, 2],
+              activities: [2],
               name: "Op Name",
               type: "Single Facility Operation",
               naics_code_id: 1,
-              activities: [2],
               process_flow_diagram:
                 "data:application/pdf;name=test.pdf;base64,dGVzdA==",
               boundary_map:
@@ -455,8 +453,42 @@ describe("the OperationInformationForm component", () => {
         ),
       ).toBeVisible();
     });
+  });
+
+  it("should show the confirmation modal when the selected purpose changes", async () => {
+    fetchFormEnums(Apps.REGISTRATION);
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    const purposeInput = screen.getByRole("combobox", {
+      name: /The purpose of this registration+/i,
+    });
+    await fillComboboxWidgetField(purposeInput, "Reporting Operation");
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(RegistrationPurposeHelpText["Reporting Operation"]),
+      ).toBeVisible();
+    });
     await userEvent.clear(purposeInput);
     await fillComboboxWidgetField(purposeInput, "OBPS Regulated Operation");
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Are you sure you want to change your registration purpose+/i,
+        ),
+      ).toBeVisible();
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: /Change registration purpose/i }),
+    );
+
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -490,18 +522,16 @@ describe("the OperationInformationForm component", () => {
       .spyOn(console, "warn")
       .mockImplementation(() => {});
 
-    // repeat the fetchFormEnums, except this time we will mock the operation response to have an empty array
+    // // repeat the fetchFormEnums, except this time we will mock the operation response to have an empty array
     // Regulated products
     getRegulatedProducts.mockResolvedValueOnce([
       { id: 1, name: "BC-specific refinery complexity throughput" },
       { id: 2, name: "Cement equivalent" },
     ]);
-
     // Purposes
     getRegistrationPurposes.mockResolvedValueOnce([
       "Reporting Operation",
       "Potential Reporting Operation",
-
       "Electricity Import Operation",
     ]);
     // Naics codes
