@@ -31,7 +31,6 @@ class ContactDataAccessService:
         contact: Contact
         contact, _ = Contact.custom_update_or_create(
             self=Contact,
-            user_guid=user_guid,
             **data,
         )
         return contact

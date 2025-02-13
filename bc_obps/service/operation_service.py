@@ -95,7 +95,7 @@ class OperationService:
                 "email": payload.email,
                 "phone_number": payload.phone_number,
             }
-            poc = ContactDataAccessService.update_or_create(existing_point_of_contact_id, user_contact_data, user_guid)
+            poc = ContactDataAccessService.update_or_create(existing_point_of_contact_id, user_contact_data)
             return poc
 
         elif is_external_point_of_contact is True:  # the point of contact is an external user
@@ -108,7 +108,7 @@ class OperationService:
             }
 
             external_poc = ContactDataAccessService.update_or_create(
-                existing_point_of_contact_id, external_contact_data, user_guid
+                existing_point_of_contact_id, external_contact_data
             )
             return external_poc
         return None
