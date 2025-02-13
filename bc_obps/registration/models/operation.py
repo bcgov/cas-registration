@@ -187,7 +187,7 @@ class Operation(TimeStampedModel):
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
-        m2m_fields=[regulated_products, activities],
+        m2m_fields=[regulated_products, activities, contacts],
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
