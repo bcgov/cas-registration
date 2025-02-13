@@ -6,7 +6,12 @@ from rls.utils.helpers import generate_rls_grants
 class Rls:
     role_grants_mapping = {
         # External users can delete when they change the registration purpose
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE, RlsOperations.DELETE],
+        RlsRoles.INDUSTRY_USER: [
+            RlsOperations.SELECT,
+            RlsOperations.INSERT,
+            RlsOperations.UPDATE,
+            RlsOperations.DELETE,
+        ],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],

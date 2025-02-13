@@ -91,9 +91,7 @@ class OperatorServiceV2:
                 updated_mailing_address = AddressDataAccessService.upsert_address_from_data(new_address, old_address_id)
                 po_operator_data['mailing_address'] = updated_mailing_address
 
-            new_parent_operators.append(
-                ParentOperatorService.create_or_update(po_data.id, operator, po_operator_data)
-            )
+            new_parent_operators.append(ParentOperatorService.create_or_update(po_data.id, operator, po_operator_data))
 
         for old_parent in old_parent_operators:
             if old_parent not in new_parent_operators:

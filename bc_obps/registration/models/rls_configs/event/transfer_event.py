@@ -16,9 +16,13 @@ class Rls:
         RegistrationTableNames.TRANSFER_EVENT_FACILITIES: {
             RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
             RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
-            RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE, RlsOperations.DELETE],
+            RlsRoles.CAS_ANALYST: [
+                RlsOperations.SELECT,
+                RlsOperations.INSERT,
+                RlsOperations.UPDATE,
+                RlsOperations.DELETE,
+            ],
             RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
         }
     }
     m2m_rls_list = generate_m2m_rls(m2m_models_grants_mapping)
-
