@@ -56,7 +56,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (a)(1)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (a)(1)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -72,7 +76,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (a.1)(1)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (a.1)(1)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -88,7 +96,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (b)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (b)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -104,7 +116,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (b.1)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (b.1)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -120,7 +136,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (c)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (c)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2']
     )
 
@@ -136,7 +156,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (d)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (d)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -152,7 +176,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (g)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (g)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -175,7 +203,7 @@ def init_configuration_element_data(apps, schema_monitor):
             'WCI.363 (h)(2)',
             'WCI.363 (h)(3)',
             'WCI.363 (h)(4)',
-            'Alternative Parameter Measurement',
+            'Alternative Parameter Measurement Methodology',
             'Replacement Methodology',
         ]
         for gas_formula in ['CO2', 'CH4']
@@ -193,7 +221,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (j)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (j)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -209,7 +241,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (j)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (j)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4', 'N2O']
     )
 
@@ -225,7 +261,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (k)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (k)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4', 'N2O']
     )
 
@@ -241,7 +281,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (l)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (l)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -257,7 +301,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (m)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (m)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -275,7 +323,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (n)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (n)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -294,7 +346,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             'WCI.363 (o)',
             '2009 API Compendium',
-            'Alternative Parameter Measurement',
+            'Alternative Parameter Measurement Methodology',
             'Replacement Methodology',
         ]
         for gas_formula in ['CO2', 'CH4']
@@ -312,7 +364,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (h.1)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (h.1)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -328,7 +384,11 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['WCI.363 (t)', 'Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in [
+            'WCI.363 (t)',
+            'Alternative Parameter Measurement Methodology',
+            'Replacement Methodology',
+        ]
         for gas_formula in ['CO2']
     )
 
@@ -344,7 +404,7 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in ['Alternative Parameter Measurement Methodology', 'Replacement Methodology']
         for gas_formula in ['CO2', 'CH4']
     )
 
@@ -362,7 +422,7 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
             valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
         )
-        for methodology_name in ['Alternative Parameter Measurement', 'Replacement Methodology']
+        for methodology_name in ['Alternative Parameter Measurement Methodology', 'Replacement Methodology']
         for gas_formula in ['CO2']
     )
 
@@ -381,7 +441,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             '2009 API Compendium',
             'Other Methodology',
-            'Alternative Parameter Measurement',
+            'Alternative Parameter Measurement Methodology',
             'Replacement Methodology',
         ]
         for gas_formula in ['CO2', 'CH4']
@@ -402,7 +462,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             '2009 API Compendium',
             'Other Methodology',
-            'Alternative Parameter Measurement',
+            'Alternative Parameter Measurement Methodology',
             'Replacement Methodology',
         ]
         for gas_formula in ['CO2', 'CH4']
@@ -423,7 +483,7 @@ def init_configuration_element_data(apps, schema_monitor):
         for methodology_name in [
             'WCI.363 (g.1)(i)',
             'WCI.363 (g.1)(ii)',
-            'Alternative Parameter Measurement',
+            'Alternative Parameter Measurement Methodology',
             'Replacement Methodology',
         ]
         for gas_formula in ['CO2', 'CH4']
@@ -455,12 +515,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     Methodology = apps.get_model('reporting', 'Methodology')
     ReportingField = apps.get_model('reporting', 'ReportingField')
 
-    # Add "Description" fields to all ConfigurationElement records for this activity for methdologies: Replacement Methodology & Alternative Parameter Measurement
+    # Add "Description" fields to all ConfigurationElement records for this activity for methdologies: Replacement Methodology & Alternative Parameter Measurement Methodology
     activity_id = Activity.objects.get(
         name='Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities'
     ).id
     methodology_ids = Methodology.objects.filter(
-        name__in=['Replacement Methodology', 'Alternative Parameter Measurement']
+        name__in=['Replacement Methodology', 'Alternative Parameter Measurement Methodology']
     ).values_list("id", flat=True)
     activity_configs = ConfigurationElement.objects.filter(activity_id=activity_id, methodology_id__in=methodology_ids)
     for config in activity_configs:
