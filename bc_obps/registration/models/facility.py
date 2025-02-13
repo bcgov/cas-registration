@@ -96,7 +96,7 @@ class Facility(TimeStampedModel):
         """
         return self.designated_operations.get(end_date__isnull=True).operation
 
-    def generate_unique_bcghg_id(self) -> None:
+    def generate_unique_bcghg_id(self, user_guid: uuid.UUID) -> None:
         from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
 
-        generate_unique_bcghg_id_for_operation_or_facility(self)
+        generate_unique_bcghg_id_for_operation_or_facility(self, user_guid)

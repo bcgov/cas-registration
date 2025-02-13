@@ -345,13 +345,15 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
     def test_does_not_generate_if_record_has_existing_bcghg_id(self):
         existing_id = baker.make(BcGreenhouseGasId, id='14121100001')
         operation: Operation = baker.make_recipe('registration.tests.utils.operation', bcghg_id=existing_id)
-        operation.generate_unique_bcghg_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
         assert operation.bcghg_id == existing_id
 
     def test_does_not_generate_for_operation_if_type_is_invalid(self):
         operation: Operation = baker.make_recipe('registration.tests.utils.operation', type='Not my type')
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         with pytest.raises(ValueError, match='Invalid operation type: Not my type'):
-            operation.generate_unique_bcghg_id()
+            operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
 
     def test_does_not_generate_for_facility_if_type_is_invalid(self):
         timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
@@ -359,12 +361,14 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
         timeline.save()
         timeline.operation.type = 'Not my type'
         timeline.operation.save()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         with pytest.raises(ValueError, match='Invalid operation type: Not my type'):
-            timeline.facility.generate_unique_bcghg_id()
+            timeline.facility.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
 
     def test_generate_unique_bcghg_id_for_operation(self):
         operation: Operation = baker.make_recipe('registration.tests.utils.operation', type='Linear Facility Operation')
-        operation.generate_unique_bcghg_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
         expected_id = f'2{operation.naics_code.naics_code}0001'
         assert operation.bcghg_id.pk == expected_id
 

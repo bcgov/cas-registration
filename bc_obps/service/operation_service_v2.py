@@ -9,7 +9,6 @@ from service.data_access_service.operation_designated_operator_timeline_service 
     OperationDesignatedOperatorTimelineDataAccessService,
 )
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from registration.models.user import User
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.document_type import DocumentType
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -597,13 +596,9 @@ class OperationServiceV2:
         if operation.status != Operation.Statuses.REGISTERED:
             raise Exception('Operations must be registered before they can be issued a BORO ID.')
 
-        operation.generate_unique_boro_id()
+        operation.generate_unique_boro_id(user_guid=user_guid)
         if operation.bc_obps_regulated_operation is None:
             raise Exception('Failed to create a BORO ID for the operation.')
-        operation.bc_obps_regulated_operation.issued_by = User.objects.get(user_guid=user_guid)
-        operation.bc_obps_regulated_operation.save()
-        # this adds 11 queries
-        operation.save(update_fields=['bc_obps_regulated_operation'])
 
         return operation.bc_obps_regulated_operation
 
@@ -611,14 +606,9 @@ class OperationServiceV2:
     def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> BcGreenhouseGasId:
         # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
         operation = OperationDataAccessService.get_by_id(operation_id)
-
-        operation.generate_unique_bcghg_id()
+        operation.generate_unique_bcghg_id(user_guid=user_guid)
         if operation.bcghg_id is None:
             raise Exception('Failed to create a BCGHG ID for the operation.')
-        operation.bcghg_id.issued_by = User.objects.get(user_guid=user_guid)
-        operation.bcghg_id.save()
-        operation.save(update_fields=['bcghg_id'])
-
         return operation.bcghg_id
 
     @classmethod
