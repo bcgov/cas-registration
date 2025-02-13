@@ -94,6 +94,7 @@ operator_for_operation = Recipe(
 industry_operator_user = Recipe(User, app_role=AppRole.objects.get(role_name="industry_user"))
 cas_admin = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
 cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
+cas_director = Recipe(User, app_role=AppRole.objects.get(role_name="cas_director"))
 
 operation = Recipe(
     Operation,
