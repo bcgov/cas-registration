@@ -1,0 +1,42 @@
+{
+  "type": "object",
+  "properties": {
+    "measuredCarbonContent": {
+      "type": "number",
+      "title": "Measured Carbon Content (weight fraction)",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "monthsMissingDataProcedures": {
+      "type": "number",
+      "title": "Number of months the missing data procedures were used"
+    },
+    "missingDataDescription": {
+      "type": "string",
+      "title": "Description of how the monthly mass of materials with missing data was determined"
+    },
+    "reducingAgents": {
+      "type": "array",
+      "title": "Reducing Agent",
+      "items": {
+        "type": "object",
+        "properties": {
+          "amountUsed": {
+            "type": "number",
+            "title": "Amount Used of Reducing Agent (t)"
+          },
+          "carbonContent": {
+            "type": "number",
+            "title": "Reducing Agent Carbon Content (weight fraction)",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "emissionFactor": {
+            "type": "number",
+            "title": "Emission Factor (tonnes CO2/tonnes reducing agent)"
+          }
+        }
+      }
+    }
+  }
+}

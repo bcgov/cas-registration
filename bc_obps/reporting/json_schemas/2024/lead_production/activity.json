@@ -1,0 +1,6 @@
+{
+  "title": "Lead production",
+  "type": "object",
+  "required": ["sourceTypes"],
+  "properties": {}
+}
