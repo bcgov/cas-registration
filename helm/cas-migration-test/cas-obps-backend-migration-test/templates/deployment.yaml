@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-migration-test
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: backend-migration-test
+  template:
+    metadata:
+      labels:
+        app: backend-migration-test
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.tag }}"
+          env:
+            - name: ENVIRONMENT
+              value: "{{ .Values.backend.environment }}"
+            - name: GROWTHBOOK_CLIENT_KEY
+              value: "{{ .Values.growthbook.clientKey }}"
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              cpu: {{ .Values.backend.resources.limits.cpu }}
+              memory: {{ .Values.backend.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.backend.resources.requests.cpu }}
+              memory: {{ .Values.backend.resources.requests.memory }}
