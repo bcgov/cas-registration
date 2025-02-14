@@ -80,6 +80,44 @@ bc_corporate_registry_number: { type: "string", title: "title", format: "bc_corp
 - `uri` - URL format: http://www.website.com, https://www.website.com
 - `email` - Standard email format: email@address.com
 
+## Custom definitions
+
+You can use RJSF `definitions` if you have a lot of repeated schema like CementProduction in reporting.
+
+- To do so you must first define the definitions in the root of the schema on the same level as `properties`. An example of this can be found in the root activity schema of `bc_obps/reporting/json_schemas/2024/cement_production/activity.json`
+
+```
+{
+  "type": "object",
+  "properties": {},
+  "definitions": {
+    "definedExample": {
+      "type": "object",
+      "properties": {
+        "repeatedField": {
+          "title": "repeated field example",
+          "type": "number",
+        },
+      }
+    }
+  }
+}
+```
+
+- The definitions can then be used in any part of the schema being added, such as the added `custom methodology` for reporting:
+
+```
+{
+  "type": "object",
+  "properties": {
+    "exampleField": {
+      "title": "exampleField",
+      "$ref": "#/definitions/definedExample"
+    },
+  }
+}
+```
+
 ## Custom widgets
 
 Custom widgets can be created and added to the `widgets` object in the `defaultTheme.ts` which is done automatically if the widget is added to the exports in `bciers/libs/components/src/form/index.ts`. They can then be set in the forms `uiSchema` using the `ui:widget` option.
