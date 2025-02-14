@@ -120,6 +120,20 @@ class TestEndpointPermissions(TestCase):
             + "\n".join(f"- {endpoint}" for endpoint in untested_endpoints)
         )
 
+    def test_no_duplicate_endpoints(self):
+        """Check that there are no duplicate endpoints in the test data"""
+        for role, endpoints in ENDPOINTS.items():
+            seen = set()
+            duplicates = set()
+            for endpoint in endpoints:
+                endpoint_key = (endpoint["method"], endpoint["endpoint_name"])
+                if endpoint_key in seen:
+                    duplicates.add(endpoint_key)
+                else:
+                    seen.add(endpoint_key)
+            self.assertFalse(duplicates, f"Duplicate endpoints found in role '{role}': {duplicates}")
+
+    @classmethod
     @patch("common.permissions.check_permission_for_role")
     def test_role_access_restrictions(cls, mock_check_permission_for_role):
         app_roles = AppRole.get_all_app_roles()
