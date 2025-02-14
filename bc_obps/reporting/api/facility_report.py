@@ -130,7 +130,7 @@ def get_facility_report_list(
     request: HttpRequest,
     version_id: int,
     filters: FacilityReportFilterSchema = Query(...),
-    sort_field: Optional[str] = "created_at",
+    sort_field: Optional[str] = "facility_name",
     sort_order: Optional[Literal["desc", "asc"]] = "asc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[FacilityReport]:
