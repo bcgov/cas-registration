@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.apps import apps
 from rls.utils.manager import RlsManager
+from registration.models import Operation
 
 
 class Command(BaseCommand):
@@ -18,6 +19,9 @@ class Command(BaseCommand):
             # Revoke all RLS grants & policies for all roles
             # Re-apply all RLS grants & policies for all roles
             RlsManager.re_apply_rls()
+            if Operation.objects.exists():
+                self.stdout.write(self.style.WARNING("Skipping fixture load: Data already exists."))
+                return
             if os.environ.get('ENVIRONMENT') == 'test':
                 call_command("pgtrigger", "disable", "--schema", "erc")
                 call_command('load_test_data')
