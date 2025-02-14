@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  ENVIRONMENT: "{{ .Values.backend.environment }}"
+  GROWTHBOOK_CLIENT_KEY: "{{ .Values.growthbook.clientKey }}"
