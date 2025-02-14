@@ -44,9 +44,13 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             user (User): The user for whom operations are being fetched.
         """
 
-        facilities_subquery = FacilityDesignatedOperationTimeline.objects.filter(
-            operation_id=OuterRef('operation'), operation_id__type=OperationTypes.SFO.value, end_date__isnull=True
-        ).order_by('start_date')
+        facilities_subquery = (
+            FacilityDesignatedOperationTimeline.objects.filter(
+                operation_id=OuterRef('operation'), operation_id__type=OperationTypes.SFO.value, end_date__isnull=True
+            )
+            .only('facility__pk', 'facility__name')
+            .order_by('start_date')
+        )
 
         # Subquery for sfo_facility_id (UUID) and facility_name (string)
         sfo_facility_id_subquery = facilities_subquery.values('facility__pk')[:1]
@@ -60,10 +64,13 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             "operation__bcghg_id__id",
             "operation__id",
             "operation__status",
+            "operation__registration_purpose",
             "operator__legal_name",
         ]
         queryset = (
-            OperationDesignatedOperatorTimeline.objects.select_related('operator', 'operation')
+            OperationDesignatedOperatorTimeline.objects.select_related(
+                'operator', 'operation', 'operation__bcghg_id', 'operation__bc_obps_regulated_operation'
+            )
             .annotate(
                 sfo_facility_id=Subquery(sfo_facility_id_subquery, output_field=UUIDField()),
                 sfo_facility_name=Subquery(sfo_facility_name_subquery, output_field=CharField()),

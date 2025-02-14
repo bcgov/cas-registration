@@ -14,7 +14,7 @@ from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
-from service.operation_service import OperationService
+from service.operation_service_v2 import OperationServiceV2
 
 
 class ContactWithPlacesAssigned(ContactOut):
@@ -42,7 +42,7 @@ class ContactService:
         operation_id: UUID,
         user_guid: UUID,
     ) -> QuerySet[Contact]:
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
+        operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
         return operation.contacts.order_by('-created_at')
 
     @classmethod
