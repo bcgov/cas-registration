@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-migration-test-ingress
+spec:
+  rules:
+    - host: "{{ .Values.backend.route.host }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-migration-test
+                port:
+                  number: 8000
