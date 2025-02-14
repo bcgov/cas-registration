@@ -4,13 +4,23 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
+import GridItemFieldTemplate from "@bciers/components/form/fields/GridItemFieldTemplate";
 import CollapsibleDefinitionFieldTemplate from "@bciers/components/form/fields/CollapsibleDefinitionFieldTemplate";
+
+const gridSchema = {
+  "ui:FieldTemplate": GridItemFieldTemplate,
+};
 
 const definitionSchema = {
   "ui:FieldTemplate": CollapsibleDefinitionFieldTemplate,
-  emissionFactor: {
-    "ui:FieldTemplate": InlineFieldTemplate,
-  },
+  clinkerProduction: gridSchema,
+  emissionFactor: gridSchema,
+  totalCalciumContentOfClinker: gridSchema,
+  totalMagnesiumContentOfClinker: gridSchema,
+  nonCalcinedCalciumOxideContentOfClinker: gridSchema,
+  nonCalcinedMagnesiumOxideContentOfClinker: gridSchema,
+  quantityOfNonCarbonateRawMaterialsEnteringTheKiln: gridSchema,
+  quantityOfCKDNotRecycledBackToKilns: gridSchema,
 };
 
 const uiSchema = {
@@ -50,6 +60,9 @@ const uiSchema = {
             },
             "ui:order": [
               "methodology",
+              "description",
+              "amountOfRawMaterialConsumedT",
+              "rawMaterialOrganicCarbonContentWeightFraction",
               "quarter1",
               "quarter2",
               "quarter3",
@@ -68,6 +81,15 @@ const uiSchema = {
               "december",
             ],
             methodology: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            description: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            amountOfRawMaterialConsumedT: {
+              "ui:FieldTemplate": InlineFieldTemplate,
+            },
+            rawMaterialOrganicCarbonContentWeightFraction: {
               "ui:FieldTemplate": InlineFieldTemplate,
             },
             quarter1: definitionSchema,

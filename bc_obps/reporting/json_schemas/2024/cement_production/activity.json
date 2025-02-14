@@ -6,37 +6,37 @@
     "month": {
       "type": "object",
       "properties": {
-        "Clinker Production": {
+        "clinkerProduction": {
           "title": "Clinker Production (t)",
           "type": "number",
           "minimum": 0
         },
-        "Emission Factor": {
+        "emissionFactor": {
           "title": "Emission Factor (t CO2/t clinker)",
           "type": "number",
           "minimum": 0
         },
-        "Total Calcium Content of Clinker": {
+        "totalCalciumContentOfClinker": {
           "title": "Total Calcium Content of Clinker (weight fraction)",
           "type": "number",
           "minimum": 0
         },
-        "Total Magnesium Content of Clinker": {
+        "totalMagnesiumContentOfClinker": {
           "title": "Total Magnesium Content of Clinker (weight fraction)",
           "type": "number",
           "minimum": 0
         },
-        "Non-calcined Calcium oxide content of Clinker": {
+        "nonCalcinedCalciumOxideContentOfClinker": {
           "title": "Non-calcined Calcium oxide content of Clinker (weight fraction)",
           "type": "number",
           "minimum": 0
         },
-        "Non-calcined Magnesium oxide content of Clinker": {
+        "nonCalcinedMagnesiumOxideContentOfClinker": {
           "title": "Non-calcined Magnesium oxide content of Clinker (weight fraction)",
           "type": "number",
           "minimum": 0
         },
-        "Quantity of non-carbonate raw materials entering the kiln": {
+        "quantityOfNonCarbonateRawMaterialsEnteringTheKiln": {
           "title": "Quantity of non-carbonate raw materials entering the kiln (tonnes)",
           "type": "number",
           "minimum": 0
@@ -46,12 +46,12 @@
     "quarter": {
       "type": "object",
       "properties": {
-        "Quantity of CKD not recycled back to kilns": {
+        "quantityOfCKDNotRecycledBackToKilns": {
           "title": "Quantity of CKD not recycled back to kilns (t)",
           "type": "number",
           "minimum": 0
         },
-        "Emission Factor": {
+        "emissionFactor": {
           "title": "Emission Factor (t CO2/t CKD)",
           "type": "number",
           "minimum": 0

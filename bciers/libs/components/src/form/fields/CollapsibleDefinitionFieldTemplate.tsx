@@ -14,8 +14,8 @@ import {
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-// For definitions with many fields e.g. CementProduction
-// Referenced from SourceTypeBoxTemplate, but will include error colors and is 3x3 at full width for UX
+// For definitions with many fields that may be too long e.g. CementProduction, to be used with GridItemFieldTemplate
+// Referenced from SourceTypeBoxTemplate, but will include error colors and is 3 columns at full width for UX
 function CollapsibleDefinitionFieldTemplate({
   classNames,
   label,
@@ -34,7 +34,11 @@ function CollapsibleDefinitionFieldTemplate({
           <Grid item xs={10}>
             <CardHeader
               sx={{ color: "blue" }}
-              titleTypographyProps={{ variant: "h6", color: "#38598A" }}
+              titleTypographyProps={
+                errors?.props.errors
+                  ? { variant: "h6", color: "#DC2626" }
+                  : { variant: "h6", color: "#38598A" }
+              }
               title={label}
             />
           </Grid>
@@ -57,6 +61,14 @@ function CollapsibleDefinitionFieldTemplate({
             marginRight: "30px",
             marginTop: "10px",
             marginBottom: "10px",
+            fieldset: {
+              display: "inline-grid",
+              gridTemplateColumns: {
+                sm: "1fr 1fr", // If small only have 2 columns
+                md: "1fr 1fr 1fr", // If full size, get full 3 columns
+              },
+              gap: "1rem",
+            },
           }}
         >
           {description}
