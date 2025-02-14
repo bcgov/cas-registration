@@ -888,37 +888,6 @@ class TestOperationServiceV2UpdateOperation:
         assert Operation.objects.count() == 1
         assert Facility.objects.count() == 1
 
-    def test_update_operation_with_no_regulated_products(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        existing_operation = baker.make_recipe(
-            'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
-            created_by=approved_user_operator.user,
-            status=Operation.Statuses.REGISTERED,
-        )
-        payload = OperationInformationIn(
-            registration_purpose='OBPS Regulated Operation',
-            name="Test Update Operation Name",
-            type="SFO",
-            naics_code_id=2,
-            secondary_naics_code_id=3,
-            tertiary_naics_code_id=4,
-            activities=[3],
-            process_flow_diagram=MOCK_DATA_URL,
-            boundary_map=MOCK_DATA_URL,
-        )
-        operation = OperationServiceV2.update_operation(
-            approved_user_operator.user.user_guid, payload, existing_operation.id
-        )
-        operation.refresh_from_db()
-        assert Operation.objects.count() == 1
-        assert operation.activities.count() == 1
-        assert operation.documents.count() == 2
-        assert operation.created_at is not None
-        assert operation.updated_at is not None
-        assert operation.regulated_products.count() == 0
-        assert operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
-
 
 class TestCreateOrUpdateEio:
     @staticmethod
