@@ -39,7 +39,8 @@ class RlsManager:
                 'registration_historicaloperation_regulated_p_m2m_history_id_seq',
             ]
             for item in tables_and_sequences:
-                cursor.execute(f"grant insert, update, select on public.{item} to public;")
+                query = SQL("grant insert, update, select on public.{} to public;").format(Identifier(item))
+                cursor.execute(query)
 
             if settings.DEBUG:
                 # We need to grant all privileges on all tables in schema public to public in DEBUG mode to be able to run silk profiler
