@@ -28,12 +28,15 @@ export const calculateEmissionData = (category: EmissionAllocationData) => {
   if (emissionTotal) {
     percentage = handlePercentageNearHundred((sum / emissionTotal) * 100);
   } else {
-    percentage = sum ? -99.99 : 100;
+    percentage = sum ? -1 : 100;
   }
 
   return {
     ...category,
-    products_emission_allocation_sum: `${percentage.toFixed(2)}%`,
+    products_emission_allocation_sum:
+      percentage < 0 || percentage > 100
+        ? `This category is over-allocated by ${sum - emissionTotal}`
+        : `${percentage.toFixed(2)}%`,
     emission_total: category.emission_total.toString(),
   };
 };
