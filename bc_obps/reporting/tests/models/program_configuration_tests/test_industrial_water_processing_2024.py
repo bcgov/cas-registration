@@ -13,12 +13,12 @@ class IndustrialWasterWaterProcessing2024Test(BaseProgramConfigurationTest, Test
                 "CH4": {
                     "Chemical Oxygen Demand": 1,
                     "Biochemical Oxygen Demand": 1,
-                    "Alternative Parameter Measurement": 1,
+                    "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
                 "N2O": {
                     "Nitrogen in effluent": 1,
-                    "Alternative Parameter Measurement": 1,
+                    "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
             },
@@ -26,7 +26,7 @@ class IndustrialWasterWaterProcessing2024Test(BaseProgramConfigurationTest, Test
                 "CH4": {
                     "Default conversion factor": 0,
                     "Measured conversion factor": 1,
-                    "Alternative Parameter Measurement": 1,
+                    "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
             },

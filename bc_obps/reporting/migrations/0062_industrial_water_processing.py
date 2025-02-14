@@ -16,7 +16,7 @@ def init_configuration_element_data(apps, schema_monitor):
     Methodology = apps.get_model('reporting', 'Methodology')
     Configuration = apps.get_model('reporting', 'Configuration')
 
-    # Industrial wastewater processing
+    # Industrial wastewater process using anaerobic digestion
     ConfigurationElement.objects.bulk_create(
         [
             # CH4
@@ -46,7 +46,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -77,7 +77,7 @@ def init_configuration_element_data(apps, schema_monitor):
                     name='Industrial wastewater process using anaerobic digestion'
                 ).id,
                 gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -117,7 +117,7 @@ def init_configuration_element_data(apps, schema_monitor):
                 activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
                 source_type_id=SourceType.objects.get(name='Oil-water separators').id,
                 gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+                methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
@@ -183,12 +183,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
             field_name='Average of Quarterly five-day biochemical oxygen demand', field_units='kg/m3'
         )
     )
-    # CH4 - Alternative Parameter Measurement - Description
+    # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
         source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -213,12 +213,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Average of Quarterly Nitrogen in effluent', field_units='kg/N m3')
     )
-    # N2O - Alternative Parameter Measurement - Description
+    # N2O - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
         source_type_id=SourceType.objects.get(name='Industrial wastewater process using anaerobic digestion').id,
         gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -253,12 +253,12 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Measured conversion factor', field_units='kgCH4/kgNMHC')
     )
-    # CH4 - Alternative Parameter Measurement - Description
+    # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Industrial wastewater processing').id,
         source_type_id=SourceType.objects.get(name='Oil-water separators').id,
         gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
-        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
@@ -380,7 +380,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0059_og_extraction_non_compression_non_processing')]
+    dependencies = [('reporting', '0061_electricity_generation')]
 
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
