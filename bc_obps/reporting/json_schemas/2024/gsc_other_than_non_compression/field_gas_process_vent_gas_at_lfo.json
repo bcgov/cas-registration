@@ -52,6 +52,11 @@
                     }
                   }
                 },
+                "fuelDescription": {
+                  "title": "Fuel Description",
+                  "maxLength": 500,
+                  "type": "string"
+                },
                 "annualFuelAmount": {
                   "title": "Annual Fuel Amount",
                   "type": "number",
