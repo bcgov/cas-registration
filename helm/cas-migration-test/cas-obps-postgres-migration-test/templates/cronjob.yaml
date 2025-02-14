@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restore-backup
+spec:
+  schedule: "0 3 * * *"  # Runs at 3 AM daily
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: restore
+            image: google/cloud-sdk:latest
+            command:
+            - /bin/sh
+            - -c
+            - "{{ .Values.postgres.restoreCommand }}"
+          restartPolicy: Never
