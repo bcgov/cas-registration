@@ -6,7 +6,7 @@ from django.urls import get_resolver
 from django.test import Client, override_settings, TestCase
 from registration.utils import custom_reverse_lazy
 from registration.models import User
-from common.tests.endpoints.auth.test_endpoints_list import ENDPOINTS, mock_uuid
+from common.tests.endpoints.auth.constants import ENDPOINTS, MOCK_UUID
 from common.permissions import get_permission_configs
 from registration.models import AppRole, UserOperator, Operator, Operation, Facility
 from registration.tests.utils.bakers import operator_baker, operation_baker, user_operator_baker
@@ -30,26 +30,26 @@ class TestEndpointPermissions(TestCase):
         if app_role in cls.auth_headers:
             return cls.auth_headers[app_role]
         else:
-            Operation.objects.filter(id=mock_uuid).delete()
-            Operation.objects.filter(operator_id=mock_uuid).delete()
-            Operator.objects.filter(id=mock_uuid).delete()  # Clear first
-            Facility.objects.filter(id=mock_uuid).delete()
-            UserOperator.objects.filter(id=mock_uuid).delete()
-            User.objects.filter(user_guid=mock_uuid).delete()
-            user = baker.make(User, user_guid=mock_uuid, app_role_id=app_role)
+            Operation.objects.filter(id=MOCK_UUID).delete()
+            Operation.objects.filter(operator_id=MOCK_UUID).delete()
+            Operator.objects.filter(id=MOCK_UUID).delete()  # Clear first
+            Facility.objects.filter(id=MOCK_UUID).delete()
+            UserOperator.objects.filter(id=MOCK_UUID).delete()
+            User.objects.filter(user_guid=MOCK_UUID).delete()
+            user = baker.make(User, user_guid=MOCK_UUID, app_role_id=app_role)
             if app_role != 'cas_pending':
-                operator = operator_baker({'id': mock_uuid})
+                operator = operator_baker({'id': MOCK_UUID})
                 user_operator = user_operator_baker(
                     {
-                        'id': mock_uuid,
+                        'id': MOCK_UUID,
                         'user': user,
                         'operator': operator,
                         'status': UserOperator.Statuses.APPROVED,
                         'role': UserOperator.Roles.ADMIN,
                     }
                 )
-                operation_baker(user_operator.operator.id, id=mock_uuid)
-            baker.make_recipe('registration.tests.utils.facility', id=mock_uuid)
+                operation_baker(user_operator.operator.id, id=MOCK_UUID)
+            baker.make_recipe('registration.tests.utils.facility', id=MOCK_UUID)
             auth_header = {'user_guid': str(user.user_guid)}
             auth_header_dumps = json.dumps(auth_header)
             cls.auth_headers[app_role] = auth_header_dumps
@@ -136,25 +136,38 @@ class TestEndpointPermissions(TestCase):
     @classmethod
     @patch("common.permissions.check_permission_for_role")
     def test_role_access_restrictions(cls, mock_check_permission_for_role):
-        app_roles = AppRole.get_all_app_roles()
+        """
+        Test that each role has the correct access restrictions for each endpoint.
+
+        This test verifies that:
+        - Each role can only access the endpoints they are authorized for.
+        - Unauthorized roles receive a 401 status code when attempting to access restricted endpoints.
+
+        Methods:
+            get_authorized_roles(permission): Retrieves the roles authorized for a given permission.
+            permission_side_effect(request, permission): Side effect function to simulate permission checks.
+
+        Assertions:
+            - Ensures unauthorized roles receive a 401 status code.
+            - Verifies the permission check function is called with the correct parameters.
+        """
 
         def get_authorized_roles(permission):
             permission_config = get_permission_configs(permission)
             return next(iter(permission_config.values()), [])
 
         def permission_side_effect(request, permission):
-            authorized_app_roles = get_authorized_roles(permission)
             auth_header = json.loads(request.META.get('HTTP_AUTHORIZATION', '{}'))
             user = User.objects.get(user_guid=auth_header.get('user_guid'))
 
             request.current_user = user
-            return user.app_role_id in authorized_app_roles
+            return user.app_role_id in get_authorized_roles(permission)
 
         mock_check_permission_for_role.side_effect = permission_side_effect
 
-        for current_app_role in app_roles:
-            for role, configs in cls.endpoints_to_test.items():
-                authorized_app_roles = get_authorized_roles(role)
+        for current_app_role in AppRole.get_all_app_roles():
+            for permission_group, configs in cls.endpoints_to_test.items():
+                authorized_app_roles = get_authorized_roles(permission_group)
 
                 for config in configs:
                     endpoint = custom_reverse_lazy(config["endpoint_name"], kwargs=config.get("kwargs", {}))
@@ -165,5 +178,5 @@ class TestEndpointPermissions(TestCase):
                         assert (
                             response.status_code == 401
                         ), f"Got {response.status_code} but expected 401 for unauthorized role {current_app_role} for endpoint {endpoint}"
-                    mock_check_permission_for_role.assert_called_once_with(ANY, role)
+                    mock_check_permission_for_role.assert_called_once_with(ANY, permission_group)
                     mock_check_permission_for_role.reset_mock()
