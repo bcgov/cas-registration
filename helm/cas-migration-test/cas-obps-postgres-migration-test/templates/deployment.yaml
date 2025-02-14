@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-migration-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-migration-test
+  template:
+    metadata:
+      labels:
+        app: postgres-migration-test
+    spec:
+      containers:
+      - name: postgres
+        image: "{{ .Values.postgres.image }}"
+        env:
+        - name: POSTGRES_DB
+          value: "obps"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        volumeMounts:
+        - name: backup-volume
+          mountPath: /tmp
+      volumes:
+      - name: backup-volume
+        persistentVolumeClaim:
+          claimName: postgres-backup-pvc
