@@ -25,7 +25,7 @@ describe("customReportingActivityFormCalculations", () => {
     expect(fuel.annualFuelAmount).toBe(10);
   });
 
-  it("does not calculate the annual fuel amount in mobile combustion form without all quarters", () => {
+  it("calculates the annual fuel amount in mobile combustion form with filled quarters", () => {
     const jsonForm = {
       sourceTypes: {
         mobileFuelCombustionPartOfFacility: {
@@ -42,6 +42,6 @@ describe("customReportingActivityFormCalculations", () => {
     calculateMobileAnnualAmount(jsonForm);
     const fuel =
       jsonForm.sourceTypes.mobileFuelCombustionPartOfFacility.fuels[0];
-    expect(fuel.annualFuelAmount).toBe(undefined);
+    expect(fuel.annualFuelAmount).toBe(1);
   });
 });
