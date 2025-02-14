@@ -18,9 +18,9 @@ class TestCementProduction2024(TestCase):
         gas_config = {
             'CO2': {
                 'CEMS': 0,
-                'Calcination Emissions': 11,
+                'Calcination Emissions': 0,
                 'Oxidation Emissions': 2,
-                'Alternative Parameter Methodology': 1,
+                'Alternative Parameter Measurement Methodology': 1,
                 'Replacement Methodology': 1,
             },
         }
