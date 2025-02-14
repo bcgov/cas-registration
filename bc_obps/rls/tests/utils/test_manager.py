@@ -82,7 +82,9 @@ class TestRlsManager(TestCase):
             'registration_historicaloperation_regulated_p_m2m_history_id_seq',
         ]
         for item in tables_and_sequences:
-            mock_cursor_instance.execute.assert_any_call(f"grant insert, update, select on public.{item} to public;")
+            mock_cursor_instance.execute.assert_any_call(
+                SQL("grant insert, update, select on public.{} to public;").format(Identifier(item))
+            )
 
     @patch('rls.utils.manager.settings')
     @patch('rls.utils.manager.apps.all_models')
