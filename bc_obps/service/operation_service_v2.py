@@ -96,7 +96,6 @@ class OperationServiceV2:
     @classmethod
     @transaction.atomic()
     def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
-        # brianna don't use only_fields here--this function is often used in other functions that need more than the only_fields and then that triggers a query for every individual field
         operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id)
         fields_to_update = ['status']
         if status == Operation.Statuses.REGISTERED:
@@ -297,7 +296,6 @@ class OperationServiceV2:
         ]
         operation.documents.add(*operation_documents)
 
-        # brianna this could just be create
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
@@ -390,7 +388,6 @@ class OperationServiceV2:
 
         # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
-        # brianna this seems to be called twice. If I comment out everything in the fuction except this service, I get 16 silk queries instead of 8
         operation: Operation = OperationServiceV2.get_if_authorized_v2(
             user_guid,
             operation_id,
