@@ -19,14 +19,14 @@ class Command(BaseCommand):
             # Re-apply all RLS grants & policies for all roles
             RlsManager.re_apply_rls()
             if os.environ.get('ENVIRONMENT') == 'test':
-                call_command('disable_pg_triggers')
+                call_command("pgtrigger", "disable", "--schema", "erc")
                 call_command('load_test_data')
-                call_command('enable_pg_triggers')
+                call_command("pgtrigger", "enable", "--schema", "erc")
             if os.environ.get('ENVIRONMENT') == 'dev' and os.environ.get('CI') != 'true':
-                call_command('disable_pg_triggers')
+                call_command("pgtrigger", "disable", "--schema", "erc")
                 call_command('load_fixtures')
                 call_command('load_reporting_fixtures')
-                call_command('enable_pg_triggers')
+                call_command("pgtrigger", "enable", "--schema", "erc")
             return
         # Run the default migrate command for all apps except the reporting app
         self.stdout.write('Running default migrations for all apps except reporting...')
