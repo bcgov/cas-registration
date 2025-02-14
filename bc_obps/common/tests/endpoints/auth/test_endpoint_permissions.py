@@ -1,9 +1,16 @@
+import json
 import logging
 import pytest
 from unittest.mock import patch, MagicMock, ANY
 from django.urls import get_resolver
 from django.test import Client, override_settings, TestCase
 from registration.utils import custom_reverse_lazy
+from registration.models import User
+from common.tests.endpoints.auth.constants import ENDPOINTS, MOCK_UUID
+from common.permissions import get_permission_configs
+from registration.models import AppRole, UserOperator, Operator, Operation, Facility
+from registration.tests.utils.bakers import operator_baker, operation_baker, user_operator_baker
+from model_bakery import baker
 
 
 @pytest.fixture(autouse=True)
@@ -14,590 +21,55 @@ def suppress_django_request_logs(caplog):
 @override_settings(MIDDLEWARE=[])  # Remove middleware to prevent checking the user in the database
 class TestEndpointPermissions(TestCase):
     client = Client()
-    mock_uuid = "e1300fd7-2dee-47d1-b655-2ad3fd10f052"
-    mock_version = "1"
-    mock_int = 1
-    endpoints_to_test = {
-        "authorized_roles": [
-            {"method": "get", "endpoint_name": "v1_list_business_structures"},
-            {"method": "get", "endpoint_name": "v1_list_naics_codes"},
-            {"method": "get", "endpoint_name": "v1_list_regulated_products"},
-            {"method": "get", "endpoint_name": "v1_list_reporting_activities"},
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_operators_by_cra_number_or_legal_name",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_operator",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_user_operator_has_admin",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "list_dashboard_data"},
-            {"method": "get", "endpoint_name": "list_business_structures"},
-            {"method": "get", "endpoint_name": "list_naics_codes"},
-            {
-                "method": "get",
-                "endpoint_name": "get_operators_by_cra_number_or_legal_name",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_operator_confirm",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "list_regulated_products"},
-            {"method": "get", "endpoint_name": "list_reporting_activities"},
-            {
-                "method": "get",
-                "endpoint_name": "get_user_operator_has_admin",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-        ],
-        "approved_industry_user": [
-            {"method": "post", "endpoint_name": "v1_create_operation"},
-            {"method": "post", "endpoint_name": "v1_create_contact"},
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_operation",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_operator_and_user_operator",
-                "kwargs": {"user_operator_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "v1_is_current_user_approved_admin"},
-            {"method": "get", "endpoint_name": "v1_get_operator_users"},
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_contact",
-                "kwargs": {"contact_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_user",
-                "kwargs": {"user_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_current_operator_and_user_operator",
-            },
-            {"method": "get", "endpoint_name": "is_current_user_approved_admin"},
-            {"method": "get", "endpoint_name": "get_operator_users"},
-            {
-                "method": "get",
-                "endpoint_name": "get_user",
-                "kwargs": {"user_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "operation_registration_get_opted_in_operation_detail",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_current_operator_from_user_operator",
-            },
-            {"method": "get", "endpoint_name": "list_current_users_operations"},
-            {
-                "method": "get",
-                "endpoint_name": "get_initial_activity_data",
-                "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_person_responsible_by_version_id",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_additional_data_by_version_id",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_registration_purpose_by_version_id",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_facility_list_by_version_id",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_verification_by_version_id",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_regulated_products_by_version_id",
-                "kwargs": {"version_id": mock_int},
-            },
-            {"method": "get", "endpoint_name": "get_gas_type"},
-            {"method": "get", "endpoint_name": "get_emission_category"},
-            {
-                "method": "get",
-                "endpoint_name": "load_production_data",
-                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_non_attributable_by_version_id",
-                "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "load_report_activity_data",
-                "kwargs": {
-                    "report_version_id": mock_int,
-                    "facility_id": mock_uuid,
-                    "activity_id": mock_int,
-                },
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_new_entrant_data",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_facility_report_list",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "register_get_operation_information",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "get_report_type_by_version", "kwargs": {'version_id': mock_version}},
-            {
-                "method": "get",
-                "endpoint_name": "get_selected_facilities",
-                "kwargs": {'report_version_id': mock_version},
-            },
-            {"method": "get", "endpoint_name": "get_current_operator_from_user_operator"},
-            {"method": "get", "endpoint_name": "get_report_attachments", "kwargs": {"report_version_id": mock_int}},
-            {
-                "method": "get",
-                "endpoint_name": "get_report_type_by_version",
-                "kwargs": {"version_id": mock_version},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_current_operator_from_user_operator",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_attachments",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_emission_allocations",
-                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_report_needs_verification",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {"method": "post", "endpoint_name": "create_facilities"},
-            {"method": "post", "endpoint_name": "create_contact"},
-            {
-                "method": "post",
-                "endpoint_name": "create_operation_representative",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_new_entrant_data",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "register_create_operation_information",
-            },
-            {"method": "post", "endpoint_name": "start_report"},
-            {
-                "method": "post",
-                "endpoint_name": "save_report",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_facility_report",
-                "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_selected_facilities",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_report_additional_data",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_report_verification",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_report_contact",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_report_activity_data",
-                "kwargs": {
-                    "report_version_id": mock_int,
-                    "facility_id": mock_uuid,
-                    "activity_id": mock_int,
-                },
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_production_data",
-                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_emission_allocation_data",
-                "kwargs": {"report_version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "save_report_attachments",
-                "kwargs": {"report_version_id": mock_int},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "register_edit_operation_information",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "submit_report_version",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "patch",
-                "endpoint_name": "save_facility_report_list",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "change_report_version_type",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "update_operation",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "update_operator_and_user_operator",
-                "kwargs": {"user_operator_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "update_facility",
-                "kwargs": {"facility_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "update_contact",
-                "kwargs": {"contact_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "operation_registration_update_opted_in_operation_detail",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "create_or_replace_new_entrant_application",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "update_operation",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "patch",
-                "endpoint_name": "operation_registration_submission",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "remove_operation_representative",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_compliance_summary_data",
-                "kwargs": {"report_version_id": mock_int},
-            },
-        ],
-        "all_roles": [
-            {"method": "put", "endpoint_name": "v1_update_user_profile"},
-            {"method": "get", "endpoint_name": "get_reporting_year"},
-            {"method": "put", "endpoint_name": "update_user_profile"},
-        ],
-        "industry_user": [
-            {"method": "post", "endpoint_name": "v1_create_operator_and_user_operator"},
-            {
-                "method": "post",
-                "endpoint_name": "v1_request_access",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "v1_request_admin_access",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_user_operator_access_declined",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_pending_operator_and_user_operator",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_current_user_operator_has_registered_operation",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_current_user_operator_has_required_fields",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_user_operator_access_declined",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_pending_operator_and_user_operator",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_current_user_operator_has_registered_operation",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_current_user_operator_has_required_fields",
-            },
-            {
-                "method": "post",
-                "endpoint_name": "request_access",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {
-                "method": "post",
-                "endpoint_name": "request_admin_access",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
-        ],
-        "approved_industry_admin_user": [
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_current_user_operator_access_requests",
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_current_user_operator_access_requests",
-            },
-        ],
-        "authorized_irc_user": [
-            {"method": "get", "endpoint_name": "v1_list_user_operators"},
-            {"method": "get", "endpoint_name": "list_user_operators"},
-            {"method": "get", "endpoint_name": "list_user_operators"},
-            {"method": "get", "endpoint_name": "list_transfer_events"},
-            {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": mock_uuid}},
-        ],
-        "approved_authorized_roles": [
-            {
-                "method": "get",
-                "endpoint_name": "get_operator",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "v1_list_operations"},
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_operation",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_user_operator_by_id",
-                "kwargs": {"user_operator_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "v1_get_contact",
-                "kwargs": {"contact_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "v1_list_contacts"},
-            {"method": "get", "endpoint_name": "list_operations"},
-            {"method": "get", "endpoint_name": "list_contacts"},
-            {
-                "method": "get",
-                "endpoint_name": "get_operation",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "list_facilities_by_operation_id",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "list_operation_representatives",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_user_operator_by_id",
-                "kwargs": {"user_operator_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_facility",
-                "kwargs": {"facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_contact",
-                "kwargs": {"contact_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "get_registration_purposes"},
-            {
-                "method": "get",
-                "endpoint_name": "get_operation_new_entrant_application",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_operation",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_operation_with_documents",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {"method": "get", "endpoint_name": "list_operations"},
-            {"method": "get", "endpoint_name": "list_operators"},
-            {
-                "method": "get",
-                "endpoint_name": "get_report_operation_by_version_id",
-                "kwargs": {"version_id": mock_int},
-            },
-            {"method": "get", "endpoint_name": "build_form_schema"},
-            {"method": "get", "endpoint_name": "get_dashboard_operations_list"},
-            {
-                "method": "get",
-                "endpoint_name": "get_facility_report_form_data",
-                "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_ordered_facility_report_activities",
-                "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_facility_report_by_version_id",
-                "kwargs": {"version_id": mock_int},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_emission_summary_totals",
-                "kwargs": {"version_id": mock_int, "facility_id": mock_uuid},
-            },
-            {
-                "method": "get",
-                "endpoint_name": "get_operation_emission_summary_totals",
-                "kwargs": {"version_id": mock_int},
-            },
-        ],
-        "authorized_irc_user_and_industry_admin_user": [],
-        "cas_director": [
-            {
-                "method": "patch",
-                "endpoint_name": "facility_bcghg_id",
-                "kwargs": {"facility_id": mock_uuid},
-            },
-            {
-                "method": "patch",
-                "endpoint_name": "operation_boro_id",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "patch",
-                "endpoint_name": "operation_bcghg_id",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-        ],
-        "cas_director_analyst_and_industry_admin_user": [
-            {
-                "method": "put",
-                "endpoint_name": "update_user_operator_status",
-                "kwargs": {"user_operator_id": mock_uuid},
-            },
-        ],
-        "v1_authorized_irc_user_write": [
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_operation_status",
-                "kwargs": {"operation_id": mock_uuid},
-            },
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_operator_status",
-                "kwargs": {"operator_id": mock_uuid},
-            },
-        ],
-        "v1_authorized_irc_user_and_industry_admin_user_write": [
-            {
-                "method": "put",
-                "endpoint_name": "v1_update_user_operator_status",
-                "kwargs": {"user_operator_id": mock_uuid},
-            },
-        ],
-        "cas_analyst": [
-            {"method": "post", "endpoint_name": "create_transfer_event"},
-            {"method": "patch", "endpoint_name": "update_transfer_event", "kwargs": {"transfer_id": mock_uuid}},
-            {"method": "delete", "endpoint_name": "delete_transfer_event", "kwargs": {"transfer_id": mock_uuid}},
-        ],
-    }
+    endpoints_to_test = ENDPOINTS
+    auth_headers = {}
 
     @classmethod
-    def _call_endpoint(cls, method, endpoint):
+    def setup(cls, app_role):
+
+        if app_role in cls.auth_headers:
+            return cls.auth_headers[app_role]
+        else:
+            Operation.objects.filter(id=MOCK_UUID).delete()
+            Operation.objects.filter(operator_id=MOCK_UUID).delete()
+            Operator.objects.filter(id=MOCK_UUID).delete()  # Clear first
+            Facility.objects.filter(id=MOCK_UUID).delete()
+            UserOperator.objects.filter(id=MOCK_UUID).delete()
+            User.objects.filter(user_guid=MOCK_UUID).delete()
+            user = baker.make(User, user_guid=MOCK_UUID, app_role_id=app_role)
+            if app_role != 'cas_pending':
+                operator = operator_baker({'id': MOCK_UUID})
+                user_operator = user_operator_baker(
+                    {
+                        'id': MOCK_UUID,
+                        'user': user,
+                        'operator': operator,
+                        'status': UserOperator.Statuses.APPROVED,
+                        'role': UserOperator.Roles.ADMIN,
+                    }
+                )
+                operation_baker(user_operator.operator.id, id=MOCK_UUID)
+            baker.make_recipe('registration.tests.utils.facility', id=MOCK_UUID)
+            auth_header = {'user_guid': str(user.user_guid)}
+            auth_header_dumps = json.dumps(auth_header)
+            cls.auth_headers[app_role] = auth_header_dumps
+
+        return cls.auth_headers[app_role]
+
+    @classmethod
+    def _call_endpoint(cls, method, endpoint, app_role=None):
         client_method = getattr(cls.client, method)
+        kwargs = {
+            'path': endpoint,
+        }
 
-        if method.lower() == "get":
-            return client_method(endpoint)
+        if app_role:
+            kwargs['HTTP_AUTHORIZATION'] = cls.setup(app_role)
 
-        # For methods that require content_type and data
-        return client_method(
-            endpoint,
-            content_type="application/json",
-            data={},
-        )
+        if method.lower() != "get":
+            kwargs.update({'content_type': "application/json", 'data': {}})
+
+        return client_method(**kwargs)
 
     @classmethod
     @patch("common.permissions.check_permission_for_role")
@@ -647,3 +119,63 @@ class TestEndpointPermissions(TestCase):
             f"The following endpoints (COUNT:{len(untested_endpoints)}) are not covered by permission tests:\n"
             + "\n".join(f"- {endpoint}" for endpoint in untested_endpoints)
         )
+
+    def test_no_duplicate_endpoints(self):
+        """Check that there are no duplicate endpoints in the test data"""
+        for role, endpoints in ENDPOINTS.items():
+            seen = set()
+            duplicates = set()
+            for endpoint in endpoints:
+                endpoint_key = (endpoint["method"], endpoint["endpoint_name"])
+                if endpoint_key in seen:
+                    duplicates.add(endpoint_key)
+                else:
+                    seen.add(endpoint_key)
+            self.assertFalse(duplicates, f"Duplicate endpoints found in role '{role}': {duplicates}")
+
+    @classmethod
+    @patch("common.permissions.check_permission_for_role")
+    def test_role_access_restrictions(cls, mock_check_permission_for_role):
+        """
+        Test that each role has the correct access restrictions for each endpoint.
+
+        This test verifies that:
+        - Each role can only access the endpoints they are authorized for.
+        - Unauthorized roles receive a 401 status code when attempting to access restricted endpoints.
+
+        Methods:
+            get_authorized_roles(permission): Retrieves the roles authorized for a given permission.
+            permission_side_effect(request, permission): Side effect function to simulate permission checks.
+
+        Assertions:
+            - Ensures unauthorized roles receive a 401 status code.
+            - Verifies the permission check function is called with the correct parameters.
+        """
+
+        def get_authorized_roles(permission):
+            permission_config = get_permission_configs(permission)
+            return next(iter(permission_config.values()), [])
+
+        def permission_side_effect(request, permission):
+            auth_header = json.loads(request.headers.get("Authorization", "{}"))
+            user = User.objects.get(user_guid=auth_header.get('user_guid'))
+            request.current_user = user
+            return user.app_role_id in get_authorized_roles(permission)
+
+        mock_check_permission_for_role.side_effect = permission_side_effect
+
+        for current_app_role in AppRole.get_all_app_roles():
+            for permission_group, configs in cls.endpoints_to_test.items():
+                authorized_app_roles = get_authorized_roles(permission_group)
+
+                for config in configs:
+                    endpoint = custom_reverse_lazy(config["endpoint_name"], kwargs=config.get("kwargs", {}))
+                    method = config.get("method")
+                    response = cls._call_endpoint(method, endpoint, current_app_role)
+
+                    if current_app_role not in authorized_app_roles:
+                        assert (
+                            response.status_code == 401
+                        ), f"Got {response.status_code} but expected 401 for unauthorized role {current_app_role} for endpoint {endpoint}"
+                    mock_check_permission_for_role.assert_called_once_with(ANY, permission_group)
+                    mock_check_permission_for_role.reset_mock()
