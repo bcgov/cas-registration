@@ -157,9 +157,8 @@ class TestEndpointPermissions(TestCase):
             return next(iter(permission_config.values()), [])
 
         def permission_side_effect(request, permission):
-            auth_header = json.loads(request.META.get('HTTP_AUTHORIZATION', '{}'))
+            auth_header = json.loads(request.headers.get("Authorization", "{}"))
             user = User.objects.get(user_guid=auth_header.get('user_guid'))
-
             request.current_user = user
             return user.app_role_id in get_authorized_roles(permission)
 
