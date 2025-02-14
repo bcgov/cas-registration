@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 from typing import Dict, List
 from common.enums import Schemas
+=======
+from typing import Dict, List, Any
+from reporting.enums.enums import ReportingTableNames
+>>>>>>> chore: add reporting table enums
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.grant import RlsGrant
@@ -8,7 +13,7 @@ from rls.utils.m2m import M2mRls
 
 def generate_rls_grants(
     role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
-    table: RegistrationTableNames,
+    table: RegistrationTableNames | ReportingTableNames,
     schema: Schemas = Schemas.ERC,
 ) -> List[RlsGrant]:
     """
@@ -20,7 +25,7 @@ def generate_rls_grants(
 
 
 def generate_m2m_rls(
-    m2m_models_grants_mapping: Dict[RegistrationTableNames, Dict[RlsRoles, List[RlsOperations]]],
+    m2m_models_grants_mapping: Dict[Any, Dict[RlsRoles, List[RlsOperations]]],
     schema: Schemas = Schemas.ERC,
 ) -> List[M2mRls]:
     """
