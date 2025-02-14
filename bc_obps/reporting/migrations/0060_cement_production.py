@@ -308,7 +308,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0050_remove_reportverification_other_facility_coordinates_and_more')]
+    dependencies = [('reporting', '0059_og_extraction_non_compression_non_processing')]
 
     operations = [
         migrations.RunPython(init_custom_schema_data, reverse_init_custom_schema_data),
