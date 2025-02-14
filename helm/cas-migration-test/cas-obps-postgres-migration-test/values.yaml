@@ -1,0 +1,23 @@
+# PostgreSQL Migration Test Configuration
+postgres:
+  image: postgres:14
+  backupBucket: "gs://cas-registration-backups"  # ✅ Updated GCP backup bucket
+  restoreCommand: "gsutil cp gs://cas-registration-backups/latest.dump /tmp/backup.dump && pg_restore -U postgres -d obps /tmp/backup.dump"
+
+  storage:
+    size: 10Gi
+    class: standard
+
+# Backend Migration Test Configuration
+backend:
+  image:
+    repository: ghcr.io/bcgov/cas-registration-backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  database:
+    host: postgres
+    user: obps
+    passwordSecret: obps-db-secret
+    name: obps
+    port: 5432
