@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cas-obps-postgres-migration-test
+description: Helm chart for testing database restoration from GCP backups
+version: 0.1.0
+appVersion: "14"
