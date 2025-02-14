@@ -18,13 +18,6 @@
       "title": "Units",
       "items": {
         "type": "object",
-        "required": [
-          "unitName",
-          "unitType",
-          "generationType",
-          "nameplateCapacity",
-          "netPower"
-        ],
         "properties": {
           "unitName": {
             "title": "Unit Name",
@@ -56,11 +49,9 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["annualFuelAmount"],
               "properties": {
                 "fuelType": {
                   "type": "object",
-                  "required": ["fuelName"],
                   "properties": {
                     "fuelName": {
                       "title": "Fuel Name",
@@ -94,7 +85,6 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "required": ["gasType", "emission", "methodology"],
                     "properties": {
                       "gasType": {
                         "title": "Gas Type",
@@ -151,8 +141,14 @@
                     "type": "string",
                     "enum": ["Industrial output", "Electricity Generation"]
                   }
-                },
-                "required": ["cycleType", "thermalOutput"]
+                }
+              },
+              {
+                "properties": {
+                  "generationType": {
+                    "enum": ["Non-Cogeneration"]
+                  }
+                }
               }
             ]
           }
