@@ -1,0 +1,23 @@
+backend:
+  replicaCount: 1
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-reg-backend-dev.apps.silver.devops.gov.bc.ca
+
+  environment: dev
+
+  deployRoute: true
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+growthbook:
+  clientKey: sdk-YMBcx9KglRDGzGTE
