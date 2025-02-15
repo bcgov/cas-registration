@@ -9,7 +9,8 @@ class Rls:
         # To issue BORO ID and BCGHG ID
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
-        RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
+        # CAS_ANALYST needs to be able to update the operation_id field when transferring a facility
+        RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.FACILITY)
