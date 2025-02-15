@@ -88,6 +88,10 @@ class TestInitialData(TestCase):
                 "WCI.363 (c)",
                 "WCI.363 (l)",
                 "WCI.363 (m)",
+                "Acid gas",
+                "Direct measurement",
+                "Mass balance",
+                "Measured heat",
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))

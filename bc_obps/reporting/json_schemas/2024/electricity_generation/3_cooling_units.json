@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "title": "Cooling units",
+  "default": { "emissions": [{}] },
+  "properties": {
+    "emissions": {
+      "title": "Emission Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "casNumber": {
+            "title": "CAS Registry Number",
+            "type": "string",
+            "readOnly": true
+          },
+          "emission": {
+            "title": "Emission",
+            "type": "number",
+            "minimum": 0
+          },
+          "equivalentEmission": {
+            "title": "Equivalent Emission",
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
+          }
+        }
+      }
+    }
+  }
+}

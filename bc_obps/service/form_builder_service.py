@@ -85,6 +85,7 @@ def handle_methodologies(
                         "type": "string",
                         "default": reporting_field.field_units,
                         "title": f"{reporting_field.field_name} Units",
+                        "readOnly": True,
                     }
 
         methodology_one_of["methodology"]["oneOf"].append(methodology_object)
@@ -97,6 +98,7 @@ def handle_methodologies(
 
 
 def handle_gas_types(
+    source_type_schema: ActivitySourceTypeJsonSchema,
     gas_type_enum: List,
     gas_type_one_of: Dict,
     config_element_for_gas_types: QuerySet[ConfigurationElement],
@@ -107,9 +109,14 @@ def handle_gas_types(
     # Convert QuerySet to a list for efficient iteration without extra database hits
     config_elements_list = list(config_element_for_gas_types)
 
-    # Use a dictionary to keep track of gas type formulas and their IDs
-    gas_type_map: Dict[int, str] = {ce.gas_type_id: ce.gas_type.chemical_formula for ce in config_elements_list}
-
+    # Use a dictionary to keep track of gas type's chemical_formula and cas_number
+    gas_type_map: Dict[int, Dict[str, str]] = {
+        ce.gas_type_id: {
+            "chemical_formula": ce.gas_type.chemical_formula,
+            "cas_number": ce.gas_type.cas_number,
+        }
+        for ce in config_elements_list
+    }
     # Gather all necessary gas_type_ids for filtering fetched configurations
     gas_type_ids = list(gas_type_map.keys())
 
@@ -137,7 +144,9 @@ def handle_gas_types(
     # Process each gas type element
     for index, config_element_for_gas_type in enumerate(config_elements_list):
         gas_type_id = config_element_for_gas_type.gas_type_id
-        gas_type_chemical_formula = gas_type_map[gas_type_id]
+        gas_type_info = gas_type_map.get(gas_type_id, {})
+        gas_type_chemical_formula = gas_type_info.get("chemical_formula", "")
+        gas_type_cas_number = gas_type_info.get("cas_number", "")
 
         # Add the gas type to the enum list
         gas_type_enum.append(gas_type_chemical_formula)
@@ -151,24 +160,41 @@ def handle_gas_types(
                 f"& gas_type_id {gas_type_id} & configuration {config_id}"
             )
 
-        # Append to oneOf branch for each gasType selection
-        gas_type_one_of["gasType"]["oneOf"].append(
-            {
-                "properties": {
-                    "gasType": {"enum": [gas_type_chemical_formula]},
-                    "methodology": {
-                        "type": "object",
-                        "properties": {
-                            "methodology": {
-                                "title": "Methodology",
-                                "type": "string",
-                                "enum": [],
-                            }
-                        },
+        # Define the gas type schema
+        gas_type_schema = {
+            "properties": {
+                "gasType": {"enum": [gas_type_chemical_formula]},
+                "methodology": {
+                    "type": "object",
+                    "properties": {
+                        "methodology": {
+                            "title": "Methodology",
+                            "type": "string",
+                            "enum": [],
+                        }
                     },
-                }
+                },
             }
-        )
+        }
+
+        # Conditionally add CAS Number if it exists in the schema
+        if (
+            "properties" in source_type_schema.json_schema
+            and "emissions" in source_type_schema.json_schema["properties"]
+        ):
+            emissions_properties = source_type_schema.json_schema["properties"]["emissions"]["items"]["properties"]
+
+            if "casNumber" in emissions_properties:
+                # If 'casNumber' is present, add it to the schema
+                gas_type_schema["properties"]["casNumber"] = {
+                    "type": "string",
+                    "title": "CAS Registry Number",
+                    "default": gas_type_cas_number,
+                    "readOnly": True,
+                }
+
+        # Append the gas type schema to the oneOf branch
+        gas_type_one_of["gasType"]["oneOf"].append(gas_type_schema)
 
         # Handle methodologies for the current gas type
         handle_methodologies(
@@ -254,6 +280,7 @@ def build_source_type_schema(
     # Maps of the gas_type & methodology objects will be passed in the return object so we have the IDs on the frontend.
     gas_type_one_of: Dict = {"gasType": {"oneOf": []}}
     handle_gas_types(
+        source_type_schema,
         gas_type_enum,
         gas_type_one_of,
         config_element_for_gas_types,
