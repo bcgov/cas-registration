@@ -20,7 +20,7 @@ from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.multiple_operator_service import MultipleOperatorService
 from registration.models.user_operator import UserOperator
-from registration.models import Operation
+from registration.models import Operation, User
 from ninja import Query
 from django.db import transaction
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
@@ -62,10 +62,8 @@ class OperationServiceV2:
             operation = OperationDataAccessServiceV2.get_by_id(operation_id)
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
-
             if not operation.user_has_access(user.user_guid):
                 raise Exception(UNAUTHORIZED_MESSAGE)
-            return operation
         return operation
 
     @classmethod
