@@ -115,6 +115,7 @@ class TransferEventService:
             cls._process_single_event(transfer_event, user_guid)
 
     @classmethod
+    @transaction.atomic
     def create_transfer_event(cls, user_guid: UUID, payload: TransferEventCreateIn) -> TransferEvent:
         user = UserDataAccessService.get_by_guid(user_guid)
 
