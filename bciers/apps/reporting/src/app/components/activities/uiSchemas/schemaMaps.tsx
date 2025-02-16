@@ -13,6 +13,7 @@ import ngNonCompressionUiSchema from "./ngNonCompressionUiSchema";
 import ngOtherThanNonCompressionUiSchema from "./ngOtherThanNonCompressionUiSchema";
 import lngActivitiesUiSchema from "./lngActivities";
 import ogExtractionNonCompressionUiSchema from "./ogExtractionNonCompressionUiSchema";
+import industrialWastewaterProcessingUiSchema from "@reporting/src/app/components/activities/uiSchemas/industrialWastewaterProcessingUiSchema";
 import ogExtractionOtherThanNcNpUiSchema from "./ogExtractionOtherThanNcNpUiSchema";
 import electricityGenerationUiSchema from "./electricityGenerationUiSchema";
 
@@ -39,6 +40,7 @@ export const uiSchemaMap: UiSchemaMap = {
     ngOtherThanNonCompressionUiSchema,
   lng_activities: lngActivitiesUiSchema,
   og_activities_non_compression: ogExtractionNonCompressionUiSchema,
+  ind_wastewater_processing: industrialWastewaterProcessingUiSchema,
   og_activities_other_than_non_compression: ogExtractionOtherThanNcNpUiSchema,
   electricity_generation: electricityGenerationUiSchema,
 };
