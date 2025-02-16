@@ -23,6 +23,7 @@ gunicorn = "^22.0.0"
 sentry-sdk = {extras = ["django"], version = "^2.8.0"}
 dj-database-url = "^2.1.0"
 django-pgtrigger = "^4.13.3"
+django-querycount = "^0.8.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
