@@ -579,49 +579,25 @@ def init_configuration_element_reporting_fields_data(apps, schema_editor):
 
 
 def reverse_configuration_element_reporting_fields_data(apps, schema_editor):
-    """
-    Remove reporting field associations from ConfigurationElement for specific configurations.
-    """
-    # Retrieve models from the app registry to interact with the database
-    Activity = apps.get_model('registration', 'Activity')
-    SourceType = apps.get_model('reporting', 'SourceType')
-    GasType = apps.get_model('reporting', 'GasType')
-    Methodology = apps.get_model('reporting', 'Methodology')
-    Configuration = apps.get_model('reporting', 'Configuration')
-    ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
-    ReportingField = apps.get_model('reporting', 'ReportingField')
+    '''
+    Remove initial data from erc.configuration_element_reporting_fields
+    '''
 
-    # Fetch the configuration constants
+    ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
+    Activity = apps.get_model("registration", "Activity")
+    Configuration = apps.get_model("reporting", "Configuration")
+
     activity = Activity.objects.get(name=ACTIVITY)
     valid_from = Configuration.objects.get(valid_from=VALID_FROM)
     valid_to = Configuration.objects.get(valid_to=VALID_TO)
 
-    # Iterate through the reporting fields configuration json for the different source types
-    for config in CONFIG_REPORTING_FIELDS:
-        source_type = SourceType.objects.get(name=config["source_type"])
-        for gas_type_name in config["gas_types"]:
-            gas_type = GasType.objects.get(chemical_formula=gas_type_name)
-            methodologies = Methodology.objects.filter(name__in=config["methodologies"])
-
-            for methodology in methodologies:
-                configuration_element = ConfigurationElement.objects.get(
-                    activity=activity,
-                    source_type=source_type,
-                    gas_type=gas_type,
-                    methodology=methodology,
-                    valid_from=valid_from,
-                    valid_to=valid_to,
-                )
-
-                for field in config["reporting_fields"]:
-                    field_name = field["name"]
-                    field_units = field.get("units") if isinstance(field, dict) else None
-                    if field_units is None:
-                        reporting_field = ReportingField.objects.get(field_name=field_name, field_units__isnull=True)
-                    else:
-                        reporting_field = ReportingField.objects.get(field_name=field_name, field_units=field_units)
-
-                    configuration_element.reporting_fields.remove(reporting_field)
+    ConfigurationElement.reporting_fields.through.objects.filter(
+        configurationelement_id__in=ConfigurationElement.objects.filter(
+            activity=activity,
+            valid_from=valid_from,
+            valid_to=valid_to,
+        ).values_list("id", flat=True)
+    ).delete()
 
 
 #### ACTIVITY SCHEMA ####
@@ -684,7 +660,7 @@ def reverse_activity_schema_data(apps, schema_monitor):
 
 def init_activity_source_type_schema_data(apps, schema_monitor):
     """
-    Add activity source type schema data to erc.activity_schema
+    Add activity source type schema data to erc.activity_source_type_schema
     """
     # Import JSON data
     import os
