@@ -409,7 +409,7 @@ class OperationServiceV2:
         operation_data['pk'] = operation_id
         operation_data['operator_id'] = operation.operator.id
 
-        operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
+        operation, _ = Operation.custom_update_or_create(Operation, **operation_data)
 
         operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
 
@@ -584,6 +584,10 @@ class OperationServiceV2:
 
     @classmethod
     def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_director():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
         # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
         operation: Operation = OperationDataAccessService.get_by_id(operation_id)
 
@@ -595,6 +599,7 @@ class OperationServiceV2:
             raise Exception('Operations must be registered before they can be issued a BORO ID.')
 
         operation.generate_unique_boro_id(user_guid=user_guid)
+        operation.save(update_fields=['bc_obps_regulated_operation'])
         if operation.bc_obps_regulated_operation is None:
             raise Exception('Failed to create a BORO ID for the operation.')
 
@@ -602,9 +607,13 @@ class OperationServiceV2:
 
     @classmethod
     def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> BcGreenhouseGasId:
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_director():
+            raise Exception(UNAUTHORIZED_MESSAGE)
         # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
         operation = OperationDataAccessService.get_by_id(operation_id)
         operation.generate_unique_bcghg_id(user_guid=user_guid)
+        operation.save(update_fields=['bcghg_id'])
         if operation.bcghg_id is None:
             raise Exception('Failed to create a BCGHG ID for the operation.')
         return operation.bcghg_id

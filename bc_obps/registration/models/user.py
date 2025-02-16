@@ -58,6 +58,12 @@ class User(UserAndContactCommonInfo):
         """
         return self.app_role.role_name == "cas_analyst"
 
+    def is_cas_director(self) -> bool:
+        """
+        Return whether the user is a CAS director.
+        """
+        return self.app_role.role_name == "cas_director"
+
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:
         """
