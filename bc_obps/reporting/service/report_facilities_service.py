@@ -82,6 +82,7 @@ class ReportFacilitiesService:
         operation_id = report_version.report.operation.id
         available_facilities = (
             FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id)
+            .order_by('facility__name')
             .distinct()
             .values('facility_id', 'facility__name', 'end_date')
         )
