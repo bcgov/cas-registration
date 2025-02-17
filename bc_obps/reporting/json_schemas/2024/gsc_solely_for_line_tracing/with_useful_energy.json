@@ -1,7 +1,17 @@
 {
   "type": "object",
   "title": "General stationary combustion of fuel or waste with production of useful energy",
-  "default": { "units": [{ "fuels": [{ "emissions": [{}] }] }] },
+  "default": {
+    "units": [
+      {
+        "fuels": [
+          {
+            "emissions": [{}]
+          }
+        ]
+      }
+    ]
+  },
   "properties": {
     "units": {
       "type": "array",
@@ -17,12 +27,7 @@
           "gscUnitType": {
             "title": "GSC Unit Type",
             "type": "string",
-            "enum": ["Boiler", "Kiln", "Other"]
-          },
-          "description": {
-            "title": "Description",
-            "default": "",
-            "type": "string"
+            "enum": ["Kiln", "Other"]
           },
           "fuels": {
             "title": "Fuel Data",
@@ -59,8 +64,7 @@
                 },
                 "annualFuelAmount": {
                   "title": "Annual Fuel Amount",
-                  "type": "number",
-                  "minimum": 0
+                  "type": "number"
                 },
                 "emissions": {
                   "title": "Emission Data",
@@ -75,8 +79,7 @@
                       },
                       "emission": {
                         "title": "Emission",
-                        "type": "number",
-                        "minimum": 0
+                        "type": "number"
                       },
                       "equivalentEmission": {
                         "title": "Equivalent Emission",
@@ -89,6 +92,32 @@
                 }
               }
             }
+          }
+        },
+        "dependencies": {
+          "gscUnitType": {
+            "oneOf": [
+              {
+                "properties": {
+                  "gscUnitType": {
+                    "enum": ["Other"]
+                  },
+                  "gscUnitDescription": {
+                    "title": "Unit Type Description",
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "gscUnitType": {
+                      "enum": ["Other"]
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }

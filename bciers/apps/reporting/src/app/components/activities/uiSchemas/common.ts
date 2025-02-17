@@ -143,3 +143,31 @@ export const fuelsOnlyUiSchema = {
   "ui:FieldTemplate": SourceTypeBoxTemplate,
   fuels: fuelsFieldsUiSchema,
 };
+
+const inlineField = {
+  "ui:FieldTemplate": InlineFieldTemplate,
+};
+
+const gscUnitUiSchema = {
+  "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
+  "ui:FieldTemplate": FieldTemplate,
+  "ui:title": "Unit Data",
+  "ui:options": {
+    arrayAddLabel: "Add Unit",
+    label: false,
+    title: "Unit",
+    padding: "p-2",
+  },
+  items: {
+    "ui:order": ["gscUnitName", "gscUnitType", "gscUnitDescription", "fuels"],
+    gscUnitName: inlineField,
+    gscUnitType: inlineField,
+    description: inlineField,
+    fuels: fuelsFieldsUiSchema,
+  },
+};
+
+export const gscTemplate = {
+  "ui:FieldTemplate": SourceTypeBoxTemplate,
+  units: gscUnitUiSchema,
+};
