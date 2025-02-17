@@ -17,12 +17,7 @@
           "gscUnitType": {
             "title": "GSC Unit Type",
             "type": "string",
-            "enum": ["Boiler", "Kiln", "Other"]
-          },
-          "description": {
-            "title": "Description",
-            "default": "",
-            "type": "string"
+            "enum": ["Kiln", "Other"]
           },
           "fuels": {
             "title": "Fuel Data",
@@ -89,6 +84,32 @@
                 }
               }
             }
+          }
+        },
+        "dependencies": {
+          "gscUnitType": {
+            "oneOf": [
+              {
+                "properties": {
+                  "gscUnitType": {
+                    "enum": ["Other"]
+                  },
+                  "gscUnitDescription": {
+                    "title": "Unit Type Description",
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "gscUnitType": {
+                      "enum": ["Other"]
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }

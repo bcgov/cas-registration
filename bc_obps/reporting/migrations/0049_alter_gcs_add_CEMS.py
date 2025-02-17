@@ -55,19 +55,6 @@ def add_configuration_element_data(apps, schema_monitor):
                 valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
                 valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
             ),
-            # CO2 - without production of useful energy
-            ConfigurationElement(
-                activity_id=Activity.objects.get(
-                    name='General stationary combustion solely for the purpose of line tracing'
-                ).id,
-                source_type_id=SourceType.objects.get(
-                    name='General stationary combustion of waste without production of useful energy'
-                ).id,
-                gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
-                methodology_id=Methodology.objects.get(name='CEMS').id,
-                valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
-                valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
-            ),
             # General stationary combustion, other than non-compression and non-processing combustion
             # CO2 - with production of useful energy
             ConfigurationElement(

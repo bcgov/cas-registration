@@ -5,14 +5,12 @@ const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   gscWithProductionOfUsefulEnergy: sourceTypeCheckboxUiSchema,
-  gscWithoutProductionOfUsefulEnergy: sourceTypeCheckboxUiSchema,
   sourceTypes: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       label: false,
     },
     gscWithProductionOfUsefulEnergy: gscTemplate,
-    gscWithoutProductionOfUsefulEnergy: gscTemplate,
   },
 };
 

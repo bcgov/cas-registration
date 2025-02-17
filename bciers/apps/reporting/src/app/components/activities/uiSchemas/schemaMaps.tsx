@@ -17,6 +17,7 @@ import industrialWastewaterProcessingUiSchema from "@reporting/src/app/component
 import ogExtractionOtherThanNcNpUiSchema from "./ogExtractionOtherThanNcNpUiSchema";
 import electricityGenerationUiSchema from "./electricityGenerationUiSchema";
 import cementProductionUISchema from "./cementProductionUISchema";
+import gscSolelyLineTracingUiSchema from "./gscSolelyLineTracingUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -25,7 +26,7 @@ type UiSchemaMap = {
 // Activity slug & matching uiSchema
 export const uiSchemaMap: UiSchemaMap = {
   gsc_excluding_line_tracing: gscUiSchema,
-  gsc_solely_for_line_tracing: gscUiSchema,
+  gsc_solely_for_line_tracing: gscSolelyLineTracingUiSchema,
   gsc_other_than_non_compression: gscOtherThanNonCompression,
   gsc_non_compression: gscNonCompressionNonProcessingUiSchema,
   fuel_combustion_by_mobile: fuelCombustionMobileUiSchema,
