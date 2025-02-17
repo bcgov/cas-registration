@@ -1,0 +1,6 @@
+{
+  "title": "Zinc production",
+  "type": "object",
+  "required": ["sourceTypes"],
+  "properties": {}
+}
