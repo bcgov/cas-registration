@@ -14,7 +14,6 @@ VALID_TO = "2099-12-31"
 
 # Configuration of valid combinations of the models
 CONFIG_VALID_RELATIONSHIPS = [
-    # Stored coal piles
     {
         "activity": ACTIVITY,
         "source_type": SOURCE_TYPE,

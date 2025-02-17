@@ -63,10 +63,10 @@
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990003",
-      "regulated_products": [2, 6, 7, 8, 16],
+      "regulated_products": [2, 6, 7, 8],
       "status": "Registered",
       "bc_obps_regulated_operation": "23-0001",
-      "activities": [1, 3, 8, 10],
+      "activities": [1, 2, 3, 10],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [3, 4]
     }
