@@ -2,7 +2,6 @@ from service.activity_service import ActivityService
 from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
-from registration.decorators import handle_http_errors
 from django.http import HttpRequest
 from typing import Tuple
 from uuid import UUID
@@ -17,7 +16,6 @@ from reporting.schema.generic import Message
     response={200: str, custom_codes_4xx: Message},
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def get_initial_activity_data(
     request: HttpRequest, version_id: int, facility_id: UUID, activity_id: int
 ) -> Tuple[int, str]:
@@ -25,6 +23,5 @@ def get_initial_activity_data(
 
 
 @router.get("/activities", response={200: list, custom_codes_4xx: Message})
-@handle_http_errors()
 def get_activities(request: HttpRequest) -> Tuple[int, list]:
     return 200, ActivityService.get_all_activities()

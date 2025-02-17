@@ -3,7 +3,6 @@ from typing import Literal, Tuple
 from django.http import HttpRequest
 
 from common.permissions import authorize
-from registration.decorators import handle_http_errors
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
@@ -19,7 +18,6 @@ from ..service.report_new_entrant_service import ReportNewEntrantService
     exclude_none=True,
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[int, dict]:
 
     report_new_entrant = ReportNewEntrantService.get_new_entrant_data(report_version_id=report_version_id)
@@ -44,7 +42,6 @@ def get_new_entrant_data(request: HttpRequest, report_version_id: int) -> Tuple[
     description="Saves the data for the new entrant report",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def save_new_entrant_data(
     request: HttpRequest,
     report_version_id: int,

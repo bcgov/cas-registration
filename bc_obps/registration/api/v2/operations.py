@@ -7,7 +7,6 @@ from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from ..router import router
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -28,7 +27,6 @@ from registration.schema.v2.operation_timeline import OperationTimelineFilterSch
     tags=V2,
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 @paginate(CustomPagination)
 def list_operations(
     request: HttpRequest,
@@ -58,7 +56,6 @@ REGISTRATION_PURPOSES_LITERALS = Literal[
     description="""Retrieves a list of strings representing the valid options for an operation's registration purpose (aka registration category).""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[REGISTRATION_PURPOSES_LITERALS]]:
     purposes = [purpose for purpose in Operation.Purposes]
     return 200, purposes
@@ -73,7 +70,6 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
     It associates the new operation with the current user's approved user-operator.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def register_create_operation_information(
     request: HttpRequest, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:

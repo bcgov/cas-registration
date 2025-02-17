@@ -1,7 +1,6 @@
 from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.report_person_responsible import ReportContactService
@@ -18,7 +17,6 @@ from ..schema.report_person_responsible import ReportPersonResponsibleIn, Report
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def get_report_person_responsible_by_version_id(
     request: HttpRequest, version_id: int
 ) -> Tuple[Literal[200], ReportPersonResponsibleOut]:
@@ -36,7 +34,6 @@ def get_report_person_responsible_by_version_id(
     ),
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def save_report_contact(
     request: HttpRequest, version_id: int, payload: ReportPersonResponsibleIn
 ) -> tuple[Literal[201], ReportPersonResponsible]:

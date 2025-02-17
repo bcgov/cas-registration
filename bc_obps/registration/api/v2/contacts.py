@@ -6,7 +6,6 @@ from registration.utils import CustomPagination
 from registration.constants import CONTACT_TAGS
 from ninja.pagination import paginate
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from registration.models.contact import Contact
 from registration.schema.v1.contact import ContactIn, ContactOut
 from service.contact_service_v2 import ContactServiceV2
@@ -25,7 +24,6 @@ from registration.schema.generic import Message
     The endpoint allows authorized users to view and sort contacts associated to an operator filtered by various criteria such as first name, last name and email.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 @paginate(CustomPagination)
 def list_contacts(
     request: HttpRequest,
@@ -46,6 +44,5 @@ def list_contacts(
     description="""Creates a new contact for the current user and associate it to the operator the user is associated with.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:
     return 201, ContactServiceV2.create_contact(get_current_user_guid(request), payload)

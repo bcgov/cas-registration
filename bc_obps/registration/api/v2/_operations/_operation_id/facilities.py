@@ -13,7 +13,6 @@ from django.db.models import QuerySet
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import FACILITY_TAGS
-from registration.decorators import handle_http_errors
 from ninja.pagination import paginate
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -28,7 +27,6 @@ from ninja import Query
     The endpoint allows authorized users to view and sort facilities associated to an operation filtered by various criteria such as facility name, type, and bcghg_id.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 @paginate(CustomPagination)
 def list_facilities_by_operation_id(
     request: HttpRequest,

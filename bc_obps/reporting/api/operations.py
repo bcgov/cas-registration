@@ -7,7 +7,6 @@ from ninja.pagination import paginate, PageNumberPagination
 
 from common.api.utils import get_current_user_guid
 from registration.constants import PAGE_SIZE
-from registration.decorators import handle_http_errors
 from registration.models.operation import Operation
 from reporting.schema.generic import Message
 from reporting.constants import DASHBOARD_TAGS
@@ -28,7 +27,6 @@ from .router import router
     the main reporting dashboard page.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 @paginate(PageNumberPagination, page_size=PAGE_SIZE)
 def get_dashboard_operations_list(request: HttpRequest) -> QuerySet[Operation]:
     user_guid: UUID = get_current_user_guid(request)

@@ -3,7 +3,6 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report_activity_data import ReportActivityDataIn
@@ -20,7 +19,6 @@ from .router import router
     description="""Saves the data for an activity report form, for a given report version, facility and activity; returns the id of the ReportActivity record on success.""",
     auth=authorize('approved_industry_user'),
 )
-@handle_http_errors()
 def save_report_activity_data(
     request: HttpRequest,
     report_version_id: int,
@@ -44,7 +42,6 @@ def save_report_activity_data(
     description="""Loads the initial data for an activity report form, for a given report version, facility and activity.""",
     auth=authorize('approved_industry_user'),
 )
-# @handle_http_errors()
 def load_report_activity_data(
     request: HttpRequest,
     report_version_id: int,

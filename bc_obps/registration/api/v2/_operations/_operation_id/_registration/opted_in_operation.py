@@ -11,7 +11,6 @@ from registration.constants import V2
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
 
@@ -24,7 +23,6 @@ from registration.schema.generic import Message
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
     auth=authorize('approved_industry_user'),
 )
-@handle_http_errors()
 def operation_registration_get_opted_in_operation_detail(
     request: HttpRequest, operation_id: UUID
 ) -> Tuple[Literal[200], Optional[OptedInOperationDetail]]:
@@ -39,7 +37,6 @@ def operation_registration_get_opted_in_operation_detail(
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
     auth=authorize('approved_industry_user'),
 )
-@handle_http_errors()
 def operation_registration_update_opted_in_operation_detail(
     request: HttpRequest, operation_id: UUID, payload: OptedInOperationDetailIn
 ) -> Tuple[Literal[200, 400], OptedInOperationDetail]:

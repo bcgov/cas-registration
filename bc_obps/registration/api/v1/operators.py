@@ -6,7 +6,6 @@ from common.api.utils import get_current_user_guid
 from registration.constants import OPERATOR_TAGS
 from service.operator_service import OperatorService
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.decorators import handle_http_errors
 from ..router import router
 from registration.models import Operator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -26,7 +25,6 @@ from django.db.models import QuerySet
     If no matching operator is found, an exception is raised.""",
     auth=authorize("authorized_roles"),
 )
-@handle_http_errors()
 def v1_get_operators_by_cra_number_or_legal_name(
     request: HttpRequest, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
 ) -> Tuple[Literal[200], Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]]:
@@ -42,7 +40,6 @@ def v1_get_operators_by_cra_number_or_legal_name(
     This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.""",
     auth=authorize("authorized_roles"),
 )
-@handle_http_errors()
 def v1_get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], Operator]:
     return 200, OperatorDataAccessService.get_operator_by_id(operator_id)
 
@@ -59,7 +56,6 @@ def v1_get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[20
     If the operator is new and declined, all associated user operators are also declined, and notifications are sent accordingly.""",
     auth=authorize("v1_authorized_irc_user_write"),
 )
-@handle_http_errors()
 def v1_update_operator_status(
     request: HttpRequest, operator_id: UUID, payload: OperatorIn
 ) -> Tuple[Literal[200], Operator]:

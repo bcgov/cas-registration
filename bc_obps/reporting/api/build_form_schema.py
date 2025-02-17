@@ -2,7 +2,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.form_builder_service import FormBuilderService
 from common.permissions import authorize
 from .router import router
-from registration.decorators import handle_http_errors
 from django.http import HttpRequest
 from typing import Tuple
 
@@ -16,7 +15,6 @@ from registration.schema.generic import Message
     response={200: str, custom_codes_4xx: Message},
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def build_form_schema(
     request: HttpRequest,
     activity: int,

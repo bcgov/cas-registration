@@ -4,7 +4,6 @@ from common.permissions import authorize
 from django.db import transaction
 from django.http import HttpRequest
 from ninja import File, Form, UploadedFile
-from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report_attachment import ReportAttachmentOut
@@ -20,7 +19,6 @@ from .router import router
     description="""Saves the reporting attachments, passed as text in the payload.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 @transaction.atomic()
 def save_report_attachments(
     request: HttpRequest,

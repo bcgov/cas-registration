@@ -6,7 +6,6 @@ from common.api.utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.operation_service import OperationService
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.models import Operation
 from registration.schema.v1 import (
@@ -26,7 +25,6 @@ from registration.schema.generic import Message
     An email notification is sent to the relevant external user based on the new status of the operation.""",
     auth=authorize("v1_authorized_irc_user_write"),
 )
-@handle_http_errors()
 def v1_update_operation_status(
     request: HttpRequest, operation_id: UUID, payload: OperationUpdateStatusIn
 ) -> Tuple[Literal[200], Operation]:

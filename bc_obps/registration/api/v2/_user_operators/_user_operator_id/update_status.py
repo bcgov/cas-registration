@@ -4,7 +4,6 @@ from django.http import HttpRequest
 from uuid import UUID
 from registration.constants import USER_OPERATOR_TAGS
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from registration.schema.v1 import (
     UserOperatorOut,
     UserOperatorStatusUpdate,
@@ -25,7 +24,6 @@ from service.user_operator_service_v2 import UserOperatorServiceV2
     An email notification is sent based on the updated status.""",
     auth=authorize("cas_director_analyst_and_industry_admin_user"),
 )
-@handle_http_errors()
 def update_user_operator_status(
     request: HttpRequest, user_operator_id: UUID, payload: UserOperatorStatusUpdate
 ) -> Tuple[Literal[200], UserOperator]:

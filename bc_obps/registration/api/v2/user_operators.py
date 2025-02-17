@@ -3,7 +3,6 @@ from ninja import Query
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from django.http import HttpRequest
-from registration.decorators import handle_http_errors
 from registration.models import UserOperator
 from registration.schema.generic import Message
 from registration.api.router import router
@@ -25,7 +24,6 @@ from ninja.pagination import paginate, PageNumberPagination
     user details, and operator legal name.""",
     auth=authorize("authorized_irc_user"),
 )
-@handle_http_errors()
 @paginate(PageNumberPagination)
 def list_user_operators(
     request: HttpRequest,
@@ -48,7 +46,6 @@ def list_user_operators(
     It sets the operator's status to 'Approved' and the user operator's role to 'admin' and status to 'Approved`.""",
     auth=authorize("industry_user"),
 )
-@handle_http_errors()
 def create_operator_and_user_operator(
     request: HttpRequest, payload: OperatorIn
 ) -> Tuple[Literal[200], UserOperatorOperatorOut]:

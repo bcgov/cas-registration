@@ -3,7 +3,6 @@ from typing import Literal, Tuple
 from django.http import HttpRequest
 from registration.schema.v1.user import UserIn
 from registration.constants import USER_TAGS
-from registration.decorators import handle_http_errors
 from registration.models import User
 from registration.schema.v1 import UserOut
 from registration.schema.generic import Message
@@ -23,7 +22,6 @@ from service.user_profile_service import UserProfileService
     The endpoint determines the user's role based on the identity provider specified in the payload and assigns the appropriate application role.
     The user's GUID is obtained from the authorization header.""",
 )
-@handle_http_errors()
 def v1_create_user_profile(request: HttpRequest, payload: UserIn) -> Tuple[Literal[200], User]:
     # Determine the role based on the identity provider
     return 200, UserProfileService.create_user_profile(json.loads(request.headers.get('Authorization')).get('user_guid'), payload)  # type: ignore[arg-type]
