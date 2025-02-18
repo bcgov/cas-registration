@@ -87,6 +87,34 @@
     "pk": 7,
     "fields": {
       "business_role": "Operation Representative",
+      "first_name": "Cherise",
+      "last_name": "Cyclone",
+      "position_title": "Manager",
+      "address": 1,
+      "email": "cherise.cyclone@example.com",
+      "phone_number": "+16044011238",
+      "operator_id": "438eff6c-d2e7-40ab-8220-29d3a86ef314"
+    }
+  },
+  {
+    "model": "registration.contact",
+    "pk": 8,
+    "fields": {
+      "business_role": "Operation Representative",
+      "first_name": "Dina",
+      "last_name": "Dessert",
+      "position_title": "Manager",
+      "address": 7,
+      "email": "dina.dessert@example.com",
+      "phone_number": "+16044011239",
+      "operator_id": "7e8b72dc-4196-427f-a553-7879748139e1"
+    }
+  },
+  {
+    "model": "registration.contact",
+    "pk": 9,
+    "fields": {
+      "business_role": "Operation Representative",
       "first_name": "Eve",
       "last_name": "Foster",
       "position_title": "Manager",
@@ -98,7 +126,7 @@
   },
   {
     "model": "registration.contact",
-    "pk": 8,
+    "pk": 10,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Frank",
@@ -112,7 +140,7 @@
   },
   {
     "model": "registration.contact",
-    "pk": 9,
+    "pk": 11,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Grace",
@@ -126,7 +154,7 @@
   },
   {
     "model": "registration.contact",
-    "pk": 10,
+    "pk": 12,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Henry",
@@ -140,34 +168,34 @@
   },
   {
     "model": "registration.contact",
-    "pk": 11,
+    "pk": 13,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Ivy",
-      "last_name": "Jones - no address",
+      "last_name": "Inkblot - no address",
       "position_title": "Manager",
-      "email": "ivy.jones@example.com",
+      "email": "ivy.inkblot@example.com",
       "phone_number": "+16044011243",
       "operator_id": "04384911-264a-4510-b582-11ee704b8e41"
     }
   },
   {
     "model": "registration.contact",
-    "pk": 12,
+    "pk": 14,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Jack",
-      "last_name": "King - incomplete address",
+      "last_name": "Jones - incomplete address",
       "position_title": "Manager",
       "address": 21,
-      "email": "jack.king@example.com",
+      "email": "jack.jones@example.com",
       "phone_number": "+16044011244",
       "operator_id": "f209ef09-dfe6-42a1-ac4c-7689897f1b51"
     }
   },
   {
     "model": "registration.contact",
-    "pk": 13,
+    "pk": 15,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Karen",
@@ -181,7 +209,7 @@
   },
   {
     "model": "registration.contact",
-    "pk": 14,
+    "pk": 16,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Leo",
@@ -195,7 +223,7 @@
   },
   {
     "model": "registration.contact",
-    "pk": 15,
+    "pk": 17,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Mia",
@@ -209,7 +237,7 @@
   },
   {
     "model": "registration.contact",
-    "pk": 16,
+    "pk": 18,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Nina",
@@ -223,7 +251,7 @@
   },
   {
     "model": "registration.contact",
-    "pk": 17,
+    "pk": 19,
     "fields": {
       "business_role": "Operation Representative",
       "first_name": "Oscar",
@@ -232,20 +260,6 @@
       "address": 17,
       "email": "oscar.perez@example.com",
       "phone_number": "+16044011249",
-      "operator_id": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12"
-    }
-  },
-  {
-    "model": "registration.contact",
-    "pk": 18,
-    "fields": {
-      "business_role": "Operation Representative",
-      "first_name": "Paula",
-      "last_name": "Quinn",
-      "position_title": "Manager",
-      "address": 18,
-      "email": "paula.quinn@example.com",
-      "phone_number": "+16044011250",
       "operator_id": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12"
     }
   }
