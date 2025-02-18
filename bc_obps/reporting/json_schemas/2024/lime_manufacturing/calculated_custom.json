@@ -1,0 +1,125 @@
+{
+  "type": "object",
+  "properties": {
+    "limeTypes": {
+      "type": "array",
+      "title": "Lime Types",
+      "items": {
+        "type": "object",
+        "properties": {
+          "limeType": {
+            "type": "string",
+            "title": "Lime Type",
+            "enum": [
+              "Calcium Oxide",
+              "High Calcium Quicklime",
+              "Calcium Hydroxide",
+              "Hydrated Lime",
+              "Dolomitic Quick Lime",
+              "Dolomitic Hydrate",
+              "Other"
+            ]
+          },
+          "limeDescription": {
+            "type": "string",
+            "title": "Lime Description"
+          },
+          "monthlyData": {
+            "type": "array",
+            "title": "Monthly Data",
+            "items": {
+              "type": "object",
+              "properties": {
+                "month": {
+                  "type": "string",
+                  "title": "Month",
+                  "enum": [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                  ]
+                },
+                "emissionFactor": {
+                  "type": "number",
+                  "title": "Emission Factor (t CO2/t lime)"
+                },
+                "amountProduced": {
+                  "type": "number",
+                  "title": "Amount Produced (t)"
+                },
+                "caoContent": {
+                  "type": "number",
+                  "title": "CaO Content (weight fraction)"
+                },
+                "mgoContent": {
+                  "type": "number",
+                  "title": "MgO Content (weight fraction)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "byproductWaste": {
+      "type": "array",
+      "title": "Byproduct / Waste",
+      "items": {
+        "type": "object",
+        "properties": {
+          "byproductWasteID": {
+            "type": "string",
+            "title": "Byproduct / Waste ID"
+          },
+          "byproductWasteDescription": {
+            "type": "string",
+            "title": "Byproduct / Waste Description"
+          },
+          "quarterlyData": {
+            "type": "array",
+            "title": "Quarterly Data",
+            "items": {
+              "type": "object",
+              "properties": {
+                "quarter": {
+                  "type": "string",
+                  "title": "Quarter",
+                  "enum": ["Q1", "Q2", "Q3", "Q4"]
+                },
+                "emissionFactor": {
+                  "type": "number",
+                  "title": "Emission Factor (t CO2/t lime)"
+                },
+                "amountProduced": {
+                  "type": "number",
+                  "title": "Amount Produced (t)"
+                },
+                "caoContent": {
+                  "type": "number",
+                  "title": "CaO Content (weight fraction)"
+                },
+                "mgoContent": {
+                  "type": "number",
+                  "title": "MgO Content (weight fraction)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "missingDataProcedures": {
+      "type": "number",
+      "title": "Number of times in the reporting year that missing data procedures were followed"
+    }
+  }
+}

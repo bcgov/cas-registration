@@ -18,6 +18,7 @@ import ogExtractionOtherThanNcNpUiSchema from "./ogExtractionOtherThanNcNpUiSche
 import electricityGenerationUiSchema from "./electricityGenerationUiSchema";
 import cementProductionUISchema from "./cementProductionUISchema";
 import gscSolelyLineTracingUiSchema from "./gscSolelyLineTracingUiSchema";
+import limeManufacturingUiSchema from "./limeManufacturingUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -46,6 +47,7 @@ export const uiSchemaMap: UiSchemaMap = {
   og_activities_other_than_non_compression: ogExtractionOtherThanNcNpUiSchema,
   electricity_generation: electricityGenerationUiSchema,
   cement_production: cementProductionUISchema,
+  lime_manufacturing: limeManufacturingUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
