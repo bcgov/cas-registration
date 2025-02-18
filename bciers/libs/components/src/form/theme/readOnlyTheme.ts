@@ -16,6 +16,7 @@ import {
   BoroIdWidget,
   OperationRepresentativeWidget,
 } from "../widgets";
+import ModalWidget from "../widgets/ModalWidget";
 
 const { templates: defaultTemplates } = getDefaultRegistry();
 
@@ -39,6 +40,7 @@ const readOnlyTheme = {
     BoroIdWidget: BoroIdWidget,
     BcghgIdWidget: BcghgIdWidget,
     OperationRepresentativeWidget: OperationRepresentativeWidget,
+    ModalWidget: ModalWidget,
   },
   templates: {
     ...defaultTemplates,
