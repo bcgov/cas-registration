@@ -34,7 +34,9 @@ const OperationInformationForm = ({
   steps,
 }: OperationInformationFormProps) => {
   const router = useRouter();
-  const [selectedOperation, setSelectedOperation] = useState("");
+  const [selectedOperation, setSelectedOperation] = useState(
+    rawFormData.operation,
+  );
 
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
@@ -55,15 +57,15 @@ const OperationInformationForm = ({
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
-  console.log("selectedPurpose", selectedPurpose);
-  console.log(
-    "pendingChangeRegistrationPurpose",
-    pendingChangeRegistrationPurpose,
-  );
-  console.log(
-    "formState.section1.registration_purpose",
-    formState.section1.registration_purpose,
-  );
+  // console.log("selectedPurpose", selectedPurpose);
+  // console.log(
+  //   "pendingChangeRegistrationPurpose",
+  //   pendingChangeRegistrationPurpose,
+  // );
+  // console.log(
+  //   "formState.section1.registration_purpose",
+  //   formState.section1.registration_purpose,
+  // );
   const updateUiSchemaWithHelpText = (
     registrationPurpose: RegistrationPurposes,
   ) => {
@@ -235,14 +237,22 @@ const OperationInformationForm = ({
         onChange={(e: IChangeEvent) => {
           let newSelectedOperation = e.formData?.section1?.operation;
           let newSelectedPurpose = e.formData?.section1?.registration_purpose;
+          // console.log("newSelectedOperation", newSelectedOperation);
+          // console.log("selectedOperation", selectedOperation);
+          // console.log(
+          //   "newSelectedOperation !== selectedOperation",
+          //   newSelectedOperation !== selectedOperation,
+          // );
           if (
             newSelectedOperation &&
             newSelectedOperation !== selectedOperation
           ) {
-            // handleSelectOperationChange(e.formData);
+            console.log("should not hit here");
+            handleSelectOperationChange(e.formData);
             const b = "b";
           }
           if (newSelectedPurpose !== selectedPurpose) {
+            console.log("should hit here");
             handleSelectedPurposeChange(e.formData);
           }
         }}
