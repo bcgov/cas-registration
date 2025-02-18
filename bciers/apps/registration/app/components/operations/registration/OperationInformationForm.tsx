@@ -57,15 +57,6 @@ const OperationInformationForm = ({
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
-  // console.log("selectedPurpose", selectedPurpose);
-  // console.log(
-  //   "pendingChangeRegistrationPurpose",
-  //   pendingChangeRegistrationPurpose,
-  // );
-  // console.log(
-  //   "formState.section1.registration_purpose",
-  //   formState.section1.registration_purpose,
-  // );
   const updateUiSchemaWithHelpText = (
     registrationPurpose: RegistrationPurposes,
   ) => {
@@ -173,7 +164,6 @@ const OperationInformationForm = ({
     }
     // combine the entered data with the fetched data
     const combinedData = { ...data, section2: operationData };
-    console.log("should not hit here");
     setFormState(combinedData);
     setKey(Math.random());
   };
@@ -197,8 +187,6 @@ const OperationInformationForm = ({
 
   const cancelRegistrationPurposeChange = () => {
     setPendingChangeRegistrationPurpose("");
-    console.log("selectedPurpose in cancel", selectedPurpose);
-    // brianna does this not work because the useeffect isn't watching it?
     setFormState((prevState) => ({
       ...prevState,
       section1: {
@@ -237,22 +225,13 @@ const OperationInformationForm = ({
         onChange={(e: IChangeEvent) => {
           let newSelectedOperation = e.formData?.section1?.operation;
           let newSelectedPurpose = e.formData?.section1?.registration_purpose;
-          // console.log("newSelectedOperation", newSelectedOperation);
-          // console.log("selectedOperation", selectedOperation);
-          // console.log(
-          //   "newSelectedOperation !== selectedOperation",
-          //   newSelectedOperation !== selectedOperation,
-          // );
           if (
             newSelectedOperation &&
             newSelectedOperation !== selectedOperation
           ) {
-            console.log("should not hit here");
             handleSelectOperationChange(e.formData);
-            const b = "b";
           }
           if (newSelectedPurpose !== selectedPurpose) {
-            console.log("should hit here");
             handleSelectedPurposeChange(e.formData);
           }
         }}
