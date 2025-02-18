@@ -6,7 +6,6 @@ from zoneinfo import ZoneInfo
 from registration.models.facility import Facility
 from registration.schema.v1.facility import FacilityIn
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
-
 from registration.models.contact import Contact
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -1246,10 +1245,11 @@ class TestGenerateBoroId:
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
-        OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        OperationServiceV2.generate_boro_id(cas_director.user_guid, operation.id)
         operation.refresh_from_db()
         assert operation.bc_obps_regulated_operation is not None
-        assert operation.bc_obps_regulated_operation.issued_by == approved_user_operator.user
+        assert operation.bc_obps_regulated_operation.issued_by == cas_director
 
     @staticmethod
     def test_raises_exception_if_operation_is_non_regulated():
@@ -1260,9 +1260,10 @@ class TestGenerateBoroId:
             status=Operation.Statuses.REGISTERED,
             registration_purpose=Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
         )
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
 
         with pytest.raises(Exception, match="Non-regulated operations cannot be issued BORO ID."):
-            OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
+            OperationServiceV2.generate_boro_id(cas_director.user_guid, operation.id)
 
     @staticmethod
     def test_raises_exception_if_operation_is_not_registered():
@@ -1273,8 +1274,20 @@ class TestGenerateBoroId:
             status=Operation.Statuses.DRAFT,
             registration_purpose=Operation.Purposes.NEW_ENTRANT_OPERATION,
         )
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
 
         with pytest.raises(Exception, match="Operations must be registered before they can be issued a BORO ID."):
+            OperationServiceV2.generate_boro_id(cas_director.user_guid, operation.id)
+
+    @staticmethod
+    def test_raises_exception_if_user_unauthorized():
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
 
 

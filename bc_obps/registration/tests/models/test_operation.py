@@ -118,7 +118,8 @@ class OperationModelTest(BaseTestCase):
     def test_generate_unique_boro_id_existing_id(self):
         existing_id = baker.make(BcObpsRegulatedOperation, id='22-0001')  # Example existing ID for the current year
         self.test_object.bc_obps_regulated_operation = existing_id
-        self.test_object.generate_unique_boro_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation, existing_id, "Should not change the existing ID."
         )
@@ -126,7 +127,8 @@ class OperationModelTest(BaseTestCase):
     def test_generate_unique_boro_id_no_existing_id(self):
         # Case: No existing BORO ID
         self.test_object.bc_obps_regulated_operation = None
-        self.test_object.generate_unique_boro_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         current_year = datetime.now().year % 100
         expected_id = f"{current_year:02d}-0001"  # Assuming the first ID for the year
         self.assertEqual(
@@ -152,7 +154,8 @@ class OperationModelTest(BaseTestCase):
         )
 
         self.test_object.bc_obps_regulated_operation = None
-        self.test_object.generate_unique_boro_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         expected_id = f"{current_year:02d}-0004"
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation.pk,
@@ -176,7 +179,8 @@ class OperationModelTest(BaseTestCase):
         )
 
         self.test_object.bc_obps_regulated_operation = None
-        self.test_object.generate_unique_boro_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         current_year = datetime.now().year % 100
         expected_id = f"{current_year:02d}-0001"
         self.assertEqual(
@@ -203,7 +207,8 @@ class OperationModelTest(BaseTestCase):
         self.test_object.bcghg_id = None
         self.test_object.type = 'Single Facility Operation'
         self.test_object.naics_code = baker.make(NaicsCode, naics_code='322121')
-        self.test_object.generate_unique_bcghg_id()
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        self.test_object.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
         expected_id = '13221210004'
         assert self.test_object.bcghg_id.pk == expected_id
 

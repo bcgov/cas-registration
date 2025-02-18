@@ -25,6 +25,28 @@ class RlsManager:
             cursor.execute("grant usage on schema common to public")
             cursor.execute("grant select on all tables in schema common to public")
 
+            # Tables and sequences that need to be granted INSERT and UPDATE privileges
+            # These are the tables that have historical records for m2m relationships
+            # At the time of writing this, there is no way to specify the schema for these tables in Django model field
+            tables_and_sequences = [
+                'registration_historicalfacility_well_authorization_numbers',
+                'registration_historicalfacility_well_authori_m2m_history_id_seq',
+                'registration_historicaloperation_contacts',
+                'registration_historicaloperation_contacts_m2m_history_id_seq',
+                'registration_historicaloperation_activities',
+                'registration_historicaloperation_activities_m2m_history_id_seq',
+                'registration_historicaloperation_regulated_products',
+                'registration_historicaloperation_regulated_p_m2m_history_id_seq',
+            ]
+            for item in tables_and_sequences:
+                query = SQL("grant insert, update, select on public.{} to public;").format(Identifier(item))
+                cursor.execute(query)
+
+            if settings.DEBUG:
+                # We need to grant all privileges on all tables in schema public to public in DEBUG mode to be able to run silk profiler
+                cursor.execute("grant usage on schema public to public")
+                cursor.execute("grant all privileges on all tables in schema public to public")
+
     @classmethod
     def apply_rls(cls) -> None:
         apps_to_apply_rls = [app for app in settings.LOCAL_APPS if app != 'rls']

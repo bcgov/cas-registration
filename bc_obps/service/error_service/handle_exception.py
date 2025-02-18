@@ -1,6 +1,7 @@
 import traceback
 from typing import Union
-from django.http import Http404, HttpRequest
+from django.http import HttpRequest, Http404
+from django.db.utils import InternalError, ProgrammingError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from bc_obps.settings import DEBUG
 from ninja.responses import Response
@@ -30,5 +31,8 @@ def handle_exception(request: HttpRequest, exc: Union[Exception, type[Exception]
 
     if isinstance(exc, PermissionError):
         return Response({"message": "Permission denied."}, status=403)
+
+    if isinstance(exc, (InternalError, ProgrammingError)):
+        return Response({"message": "Internal Server Error"}, status=500)
 
     return Response({"message": str(exc)}, status=400)

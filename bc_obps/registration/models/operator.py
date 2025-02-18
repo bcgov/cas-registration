@@ -1,6 +1,5 @@
 import uuid
 from django.db import models
-
 from common.enums import Schemas
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,

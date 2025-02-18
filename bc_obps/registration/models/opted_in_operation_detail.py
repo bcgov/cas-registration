@@ -1,6 +1,9 @@
 from django.db import models
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models import TimeStampedModel
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.opted_in_operation_detail import Rls as OptedInOperationDetailRls
 
 
 class OptedInOperationDetail(TimeStampedModel):
@@ -49,4 +52,6 @@ class OptedInOperationDetail(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing details about operations that have opted in"
-        db_table = 'erc"."opted_in_operation_detail'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.OPTED_IN_OPERATION_DETAIL.value}'
+
+    Rls = OptedInOperationDetailRls

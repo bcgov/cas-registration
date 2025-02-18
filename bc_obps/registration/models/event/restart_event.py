@@ -1,6 +1,9 @@
 from django.db import models
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models.event.event_base_model import EventBaseModel
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.event.restart_event import Rls as RestartEventRls
 
 
 class RestartEvent(EventBaseModel):
@@ -17,8 +20,10 @@ class RestartEvent(EventBaseModel):
         db_table_comment = (
             "Restart events for operations and/or facilities after they have been closed or temporarily shutdown."
         )
-        db_table = 'erc"."restart_event'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.RESTART_EVENT.value}'
         default_related_name = "restart_events"
+
+    Rls = RestartEventRls
 
     def __str__(self) -> str:
         return f"Restart event - Effective date:{self.effective_date}, status:{self.status}"
