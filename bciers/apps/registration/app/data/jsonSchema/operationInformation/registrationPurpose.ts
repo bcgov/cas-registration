@@ -165,7 +165,7 @@ export const registrationPurposeUISchema: UiSchema = {
   },
   registration_purpose: {
     "ui:placeholder": "Select Registration Purpose",
-    "ui:widget": "ModalWidget",
+    "ui:widget": "ComboBox",
   },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
