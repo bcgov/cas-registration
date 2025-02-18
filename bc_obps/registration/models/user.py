@@ -1,9 +1,12 @@
 import typing
 from django.db import models
+from common.enums import Schemas
 from registration.constants import USER_CACHE_PREFIX
+from registration.enums.enums import RegistrationTableNames
 from registration.models import UserAndContactCommonInfo, AppRole
 from simple_history.models import HistoricalRecords
 from django.core.cache import cache
+from registration.models.rls_configs.user import Rls as UserRls
 
 
 class User(UserAndContactCommonInfo):
@@ -26,13 +29,16 @@ class User(UserAndContactCommonInfo):
 
     class Meta:
         db_table_comment = "Table containing information about app users. Industry users are all associated with a business and are identified via their Business BCEID."
-        db_table = 'erc"."user'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.USER.value}'
+
         constraints = [
             models.UniqueConstraint(
                 fields=["user_guid", "business_guid"],
                 name="uuid_user_and_business_constraint",
             )
         ]
+
+    Rls = UserRls
 
     def is_irc_user(self) -> bool:
         """
@@ -51,6 +57,12 @@ class User(UserAndContactCommonInfo):
         Return whether the user is a CAS analyst.
         """
         return self.app_role.role_name == "cas_analyst"
+
+    def is_cas_director(self) -> bool:
+        """
+        Return whether the user is a CAS director.
+        """
+        return self.app_role.role_name == "cas_director"
 
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:

@@ -1,8 +1,11 @@
 import typing
+from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
 from simple_history.models import HistoricalRecords
 from django.core.cache import cache
+from registration.enums.enums import RegistrationTableNames
+from registration.models.rls_configs.regulated_product import Rls as RegulatedProductRls
 
 
 class RegulatedProduct(BaseModel):
@@ -18,7 +21,9 @@ class RegulatedProduct(BaseModel):
 
     class Meta:
         db_table_comment = 'Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis.'
-        db_table = 'erc"."regulated_product'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.REGULATED_PRODUCT.value}'
+
+    Rls = RegulatedProductRls
 
     def __str__(self) -> str:
         return self.name

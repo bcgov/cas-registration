@@ -1,6 +1,5 @@
 import typing
 from django.db import models
-
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
 from registration.models import DocumentType, TimeStampedModel

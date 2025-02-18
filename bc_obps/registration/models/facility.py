@@ -1,9 +1,12 @@
 import uuid
 from django.db import models
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models.well_authorization_number import WellAuthorizationNumber
 from registration.models import Address, TimeStampedModel, Operation
 from simple_history.models import HistoricalRecords
 from django.core.validators import MaxValueValidator, MinValueValidator
+from registration.models.rls_configs.facility import Rls as FacilityRls
 
 
 class Facility(TimeStampedModel):
@@ -81,8 +84,10 @@ class Facility(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table."
-        db_table = 'erc"."facility'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.FACILITY.value}'
         verbose_name_plural = "Facilities"
+
+    Rls = FacilityRls
 
     @property
     def current_designated_operation(self) -> Operation:
@@ -91,7 +96,7 @@ class Facility(TimeStampedModel):
         """
         return self.designated_operations.get(end_date__isnull=True).operation
 
-    def generate_unique_bcghg_id(self) -> None:
+    def generate_unique_bcghg_id(self, user_guid: uuid.UUID) -> None:
         from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
 
-        generate_unique_bcghg_id_for_operation_or_facility(self)
+        generate_unique_bcghg_id_for_operation_or_facility(self, user_guid)

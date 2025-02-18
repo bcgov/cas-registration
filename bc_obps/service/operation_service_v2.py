@@ -9,7 +9,6 @@ from service.data_access_service.operation_designated_operator_timeline_service 
     OperationDesignatedOperatorTimelineDataAccessService,
 )
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from registration.models.user import User
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.document_type import DocumentType
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -21,7 +20,7 @@ from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.multiple_operator_service import MultipleOperatorService
 from registration.models.user_operator import UserOperator
-from registration.models import Operation
+from registration.models import Operation, User
 from ninja import Query
 from django.db import transaction
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
@@ -63,10 +62,8 @@ class OperationServiceV2:
             operation = OperationDataAccessServiceV2.get_by_id(operation_id)
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
-
             if not operation.user_has_access(user.user_guid):
                 raise Exception(UNAUTHORIZED_MESSAGE)
-            return operation
         return operation
 
     @classmethod
@@ -412,7 +409,7 @@ class OperationServiceV2:
         operation_data['pk'] = operation_id
         operation_data['operator_id'] = operation.operator.id
 
-        operation, _ = Operation.custom_update_or_create(Operation, user_guid, **operation_data)
+        operation, _ = Operation.custom_update_or_create(Operation, **operation_data)
 
         operation.activities.set(payload.activities) if payload.activities else operation.activities.clear()
 
@@ -587,6 +584,10 @@ class OperationServiceV2:
 
     @classmethod
     def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_director():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
         # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
         operation: Operation = OperationDataAccessService.get_by_id(operation_id)
 
@@ -597,28 +598,24 @@ class OperationServiceV2:
         if operation.status != Operation.Statuses.REGISTERED:
             raise Exception('Operations must be registered before they can be issued a BORO ID.')
 
-        operation.generate_unique_boro_id()
+        operation.generate_unique_boro_id(user_guid=user_guid)
+        operation.save(update_fields=['bc_obps_regulated_operation'])
         if operation.bc_obps_regulated_operation is None:
             raise Exception('Failed to create a BORO ID for the operation.')
-        operation.bc_obps_regulated_operation.issued_by = User.objects.get(user_guid=user_guid)
-        operation.bc_obps_regulated_operation.save()
-        # this adds 11 queries
-        operation.save(update_fields=['bc_obps_regulated_operation'])
 
         return operation.bc_obps_regulated_operation
 
     @classmethod
     def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> BcGreenhouseGasId:
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_director():
+            raise Exception(UNAUTHORIZED_MESSAGE)
         # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
         operation = OperationDataAccessService.get_by_id(operation_id)
-
-        operation.generate_unique_bcghg_id()
+        operation.generate_unique_bcghg_id(user_guid=user_guid)
+        operation.save(update_fields=['bcghg_id'])
         if operation.bcghg_id is None:
             raise Exception('Failed to create a BCGHG ID for the operation.')
-        operation.bcghg_id.issued_by = User.objects.get(user_guid=user_guid)
-        operation.bcghg_id.save()
-        operation.save(update_fields=['bcghg_id'])
-
         return operation.bcghg_id
 
     @classmethod

@@ -14,7 +14,7 @@ class TestRlsManager(TestCase):
         RlsManager.revoke_all_privileges()
 
         # Ensure SQL execution calls are made
-        self.assertEqual(mock_cursor_instance.execute.call_count, 6)
+        self.assertEqual(mock_cursor_instance.execute.call_count, 14)
 
         # Check the correct SQL commands are executed
         mock_cursor_instance.execute.assert_any_call(
@@ -67,6 +67,24 @@ class TestRlsManager(TestCase):
         )
         mock_cursor_instance.execute.assert_any_call("grant usage on schema common to public")
         mock_cursor_instance.execute.assert_any_call("grant select on all tables in schema common to public")
+
+        # Tables and sequences that need to be granted INSERT and UPDATE privileges
+        # These are the tables that have historical records for m2m relationships
+        # At the time of writing this, there is no way to specify the schema for these tables in Django model field
+        tables_and_sequences = [
+            'registration_historicalfacility_well_authorization_numbers',
+            'registration_historicalfacility_well_authori_m2m_history_id_seq',
+            'registration_historicaloperation_contacts',
+            'registration_historicaloperation_contacts_m2m_history_id_seq',
+            'registration_historicaloperation_activities',
+            'registration_historicaloperation_activities_m2m_history_id_seq',
+            'registration_historicaloperation_regulated_products',
+            'registration_historicaloperation_regulated_p_m2m_history_id_seq',
+        ]
+        for item in tables_and_sequences:
+            mock_cursor_instance.execute.assert_any_call(
+                SQL("grant insert, update, select on public.{} to public;").format(Identifier(item))
+            )
 
     @patch('rls.utils.manager.settings')
     @patch('rls.utils.manager.apps.all_models')

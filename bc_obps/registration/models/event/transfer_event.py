@@ -1,7 +1,10 @@
+from common.enums import Schemas
+from registration.enums.enums import RegistrationTableNames
 from registration.models import Operator, Operation
 from django.db import models
 from registration.models.event.event_base_model import EventBaseModel
 from simple_history.models import HistoricalRecords
+from registration.models.rls_configs.event.transfer_event import Rls as TransferEventRls
 
 
 class TransferEvent(EventBaseModel):
@@ -50,8 +53,10 @@ class TransferEvent(EventBaseModel):
 
     class Meta(EventBaseModel.Meta):
         db_table_comment = "Transfer events for operations and/or facilities."
-        db_table = 'erc"."transfer_event'
+        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.TRANSFER_EVENT.value}'
         default_related_name = "transfer_events"
+
+    Rls = TransferEventRls
 
     def __str__(self) -> str:
         return f"Transfer event - Effective date:{self.effective_date}, status:{self.status}"

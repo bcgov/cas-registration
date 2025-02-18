@@ -1,5 +1,4 @@
 import typing
-from uuid import UUID
 from django.db import models
 from common.constants import AUDIT_FIELDS
 from rls.models import Rls
@@ -28,7 +27,7 @@ class BaseModel(models.Model, metaclass=Rls):
         super().save(*args, **kwargs)
 
     @typing.no_type_check
-    def custom_update_or_create(self, user_guid: UUID, **kwargs: dict):
+    def custom_update_or_create(self, **kwargs: dict):
         # Extract pk or id from kwargs if available
         pk = kwargs.pop('pk', None)
         kwargs_id = kwargs.pop('id', None)
