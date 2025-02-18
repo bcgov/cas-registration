@@ -841,17 +841,6 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
             'Average of Quarterly five-day biochemical oxygen demand'
             'Average of Quarterly Nitrogen in effluent'
             'Measured conversion factor',
-            'Month',
-            'Clinker Production (t)',
-            'Emission Factor (t CO2/t clinker)',
-            'Total Calcium Content of Clinker (weight fraction)',
-            'Total Magnesium Content of Clinker (weight fraction)',
-            'Non-calcined Calcium oxide content of Clinker (weight fraction)',
-            'Non-calcined Magnesium oxide content of Clinker (weight fraction)',
-            'Quantity of non-carbonate raw materials entering the kiln (tonnes)',
-            'Quarter',
-            'Quantity of CKD not recycled back to kilns (t)',
-            'Emission Factor (t CO2/t CKD)',
             'Amount of raw material consumed (t)',
             'Raw material organic carbon content (weight fraction)',
         ]
