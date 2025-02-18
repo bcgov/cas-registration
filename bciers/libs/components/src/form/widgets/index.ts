@@ -19,3 +19,4 @@ export { default as BoroIdWidget } from "./BoroIdWidget";
 export { default as CheckboxGroupWidget } from "./CheckboxGroupWidget";
 export { default as BcghgIdWidget } from "./BcghgIdWidget";
 export { default as OperationRepresentativeWidget } from "./OperationRepresentativeWidget";
+export { default as ModalWidget } from "./ModalWidget";
