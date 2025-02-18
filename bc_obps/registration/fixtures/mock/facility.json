@@ -319,22 +319,7 @@
       "longitude_of_largest_emissions": -123.5
     }
   },
-  {
-    "model": "registration.facility",
-    "pk": "459b80f9-b5f3-48aa-9727-90c30eaf3a59",
-    "fields": {
-      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
-      "created_by": "00000000-0000-0000-0000-000000000001",
-      "created_at": "2024-06-05T23:18:59.623Z",
-      "name": "Facility 23",
-      "type": "Large Facility",
-      "address": 2,
-      "swrs_facility_id": 1023,
-      "bcghg_id": "13219990027",
-      "latitude_of_largest_emissions": 43.5,
-      "longitude_of_largest_emissions": -123.5
-    }
-  },
+
   {
     "model": "registration.facility",
     "pk": "4486f2fb-62ed-438d-bb3e-0819b51e3aff",
@@ -343,7 +328,7 @@
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 24",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1024,
       "bcghg_id": "13219990999",
       "latitude_of_largest_emissions": 43.5,
@@ -358,7 +343,7 @@
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 25",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1025,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -371,7 +356,7 @@
       "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
-      "name": "Facility 26",
+      "name": "Bubblegum",
       "type": "Single Facility",
       "swrs_facility_id": 1026,
       "latitude_of_largest_emissions": 43.5,
@@ -385,7 +370,7 @@
       "operation": "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
-      "name": "Facility 27",
+      "name": "Alleyoop",
       "type": "Single Facility",
       "swrs_facility_id": 1027,
       "latitude_of_largest_emissions": 43.5,
@@ -400,7 +385,7 @@
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 28",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1028,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -414,7 +399,7 @@
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 29",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1029,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -428,7 +413,7 @@
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 30",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1030,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -442,7 +427,7 @@
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 31",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1031,
       "bcghg_id": "13219990025",
       "latitude_of_largest_emissions": 43.5,
@@ -456,7 +441,7 @@
       "operation": "7d3fc7d1-0504-4ee4-a9c5-447f4b324b57",
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "name": "Facility 32",
       "swrs_facility_id": 1032,
       "bcghg_id": "13219990022",
@@ -472,7 +457,7 @@
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 33",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1033,
       "bcghg_id": "13219990009",
       "latitude_of_largest_emissions": 43.5,
@@ -487,7 +472,7 @@
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 34",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1034,
       "bcghg_id": "13219990008",
       "latitude_of_largest_emissions": 43.5,
@@ -502,7 +487,7 @@
       "created_by": "00000000-0000-0000-0000-000000000004",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 35",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1035,
       "bcghg_id": "13219990024",
       "latitude_of_largest_emissions": 43.5,
@@ -517,7 +502,7 @@
       "created_by": "00000000-0000-0000-0000-000000000023",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 36",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1036,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -531,7 +516,7 @@
       "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 37",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1037,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -545,7 +530,7 @@
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 38",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1038,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -559,7 +544,7 @@
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 39",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1039,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -573,7 +558,7 @@
       "created_by": "00000000-0000-0000-0000-000000000023",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 40",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1040,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -587,7 +572,7 @@
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 41",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1041,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -601,7 +586,7 @@
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 42",
-      "type": "Single Facility",
+      "type": "Medium Facility",
       "swrs_facility_id": 1042,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
