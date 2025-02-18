@@ -17,50 +17,45 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 // For definitions with many fields that may be too long e.g. CementProduction, to be used with GridItemFieldTemplate
 // Referenced from SourceTypeBoxTemplate, but will include error colors and is 3 columns at full width for UX
 function CollapsibleDefinitionFieldTemplate({
-  classNames,
-  label,
-  help,
-  description,
-  errors,
   children,
+  label,
+  errors,
   readonly,
+  classNames,
 }: FieldTemplateProps) {
-  const [expand, setExpand] = useState(true);
+  const [expandCollapse, setExpandCollapse] = useState(true);
 
   return (
-    <Paper className={classNames} sx={{ marginBottom: "10px" }}>
+    <Paper className={classNames} sx={{ marginBottom: "1rem" }}>
       <Card style={{ textAlign: "left" }}>
         <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
-          <Grid item xs={10}>
+          <Grid item xs={"auto"}>
             <CardHeader
-              sx={{ color: "blue" }}
+              title={label}
               titleTypographyProps={
                 errors?.props.errors
-                  ? { variant: "h6", color: "#DC2626" }
-                  : { variant: "h6", color: "#38598A" }
+                ? { variant: "h6", color: "#DC2626" }
+                : { variant: "h6", color: "#38598A" }
               }
-              title={label}
+              sx={{ color: "blue" }}
             />
           </Grid>
           {!readonly && (
             <Grid item xs={1}>
               <CardActions
-                sx={{ justifyContent: "flex-end", marginRight: "30px" }}
+                sx={{ justifyContent: "flex-end" }}
               >
-                <IconButton onClick={() => setExpand(!expand)}>
-                  {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                <IconButton onClick={() => setExpandCollapse(!expandCollapse)}>
+                  {!expandCollapse ? <ExpandMoreIcon /> : <ExpandLessIcon />}
                 </IconButton>
               </CardActions>
             </Grid>
           )}
         </Grid>
         <Collapse
-          in={expand}
+          in={expandCollapse}
           sx={{
-            marginLeft: "30px",
-            marginRight: "30px",
-            marginTop: "10px",
-            marginBottom: "10px",
+            marginBottom: "1rem",
             fieldset: {
               display: "inline-grid",
               gridTemplateColumns: {
@@ -71,10 +66,8 @@ function CollapsibleDefinitionFieldTemplate({
             },
           }}
         >
-          {description}
           {children}
           {errors}
-          {help}
         </Collapse>
       </Card>
     </Paper>
