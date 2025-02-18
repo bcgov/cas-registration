@@ -5,7 +5,6 @@ from registration.constants import USER_OPERATOR_TAGS
 from registration.schema.v2.user_operator import UserOperatorOutV2
 from service.user_operator_service import UserOperatorService
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from registration.schema.v1 import (
     UserOperatorOperatorIn,
     RequestAccessOut,
@@ -28,7 +27,6 @@ from service.data_access_service.user_operator_service import UserOperatorDataAc
     Internal users are always allowed to access user operators.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tuple[Literal[200], UserOperator]:
     UserOperatorService.check_if_user_eligible_to_access_user_operator(
         get_current_user_guid(request), user_operator_id
@@ -48,7 +46,6 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
     The updated data is saved, and a new user-operator instance is created if one does not already exist.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def update_operator_and_user_operator(
     request: HttpRequest, payload: UserOperatorOperatorIn, user_operator_id: UUID
 ) -> Tuple[Literal[200], Dict[str, UUID]]:

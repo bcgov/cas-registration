@@ -6,7 +6,6 @@ from registration.models.contact import Contact
 from registration.schema.v1.contact import ContactIn, ContactOut
 from service.contact_service import ContactService, ContactWithPlacesAssigned
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -21,7 +20,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     exclude_none=True,  # To exclude None values from the response(used for address fields)
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def v1_get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Optional[ContactWithPlacesAssigned]]:
     return 200, ContactService.get_with_places_assigned(get_current_user_guid(request), contact_id)
 
@@ -33,6 +31,5 @@ def v1_get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200],
     description="""Updates the details of a specific contact by its ID. The endpoint checks if the current user is authorized to access the contact.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def v1_update_contact(request: HttpRequest, contact_id: int, payload: ContactIn) -> Tuple[Literal[200], Contact]:
     return 200, ContactService.update_contact(get_current_user_guid(request), contact_id, payload)

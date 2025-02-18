@@ -8,7 +8,6 @@ from common.api.utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from registration.models.contact import Contact
 from registration.schema.v1.contact import OperationRepresentativeListOut
-from registration.decorators import handle_http_errors
 from registration.schema.generic import Message
 from service.contact_service import ContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -23,7 +22,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
         "approved_authorized_roles",
     ),
 )
-@handle_http_errors()
 def list_operation_representatives(
     request: HttpRequest,
     operation_id: UUID,

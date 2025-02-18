@@ -4,7 +4,6 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from service.data_access_service.user_service import UserDataAccessService
-from registration.decorators import handle_http_errors
 from registration.schema.v1 import IsApprovedUserOperator
 from registration.schema.generic import Message
 from registration.api.router import router
@@ -21,7 +20,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     It returns a dictionary indicating whether the user is an approved admin.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def v1_is_current_user_approved_admin(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
     user_guid = get_current_user_guid(request)
     return 200, UserDataAccessService.is_user_an_approved_admin_user_operator(user_guid)

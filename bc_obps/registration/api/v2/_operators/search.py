@@ -3,7 +3,6 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
 from service.operator_service import OperatorService
-from registration.decorators import handle_http_errors
 from registration.models import Operator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.v1 import OperatorSearchOut
@@ -23,7 +22,6 @@ from registration.api.router import router
     If no matching operator is found, an exception is raised.""",
     auth=authorize("authorized_roles"),
 )
-@handle_http_errors()
 def get_operators_by_cra_number_or_legal_name(
     request: HttpRequest, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
 ) -> Tuple[Literal[200], Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]]:

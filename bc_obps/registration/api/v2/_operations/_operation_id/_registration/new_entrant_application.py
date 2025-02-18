@@ -13,7 +13,6 @@ from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from registration.models import Operation
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
 
@@ -30,7 +29,6 @@ from registration.schema.generic import Message
     auth=authorize("approved_authorized_roles"),
     exclude_none=True,  # Exclude None values from the response so that frontend can uses default value for date_of_first_shipment
 )
-@handle_http_errors()
 def get_operation_new_entrant_application(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
     return 200, OperationServiceV2.get_if_authorized_v2(
         get_current_user_guid(request), operation_id, ['id', 'operator_id']
@@ -44,7 +42,6 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
     description="Creates or replaces a new entrant application document for an Operation",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def create_or_replace_new_entrant_application(
     request: HttpRequest, operation_id: UUID, payload: OperationNewEntrantApplicationIn
 ) -> Tuple[Literal[200], Operation]:

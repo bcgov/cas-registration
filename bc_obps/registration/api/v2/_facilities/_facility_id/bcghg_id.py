@@ -8,7 +8,6 @@ from registration.constants import V2
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
 
@@ -20,7 +19,6 @@ from registration.schema.generic import Message
     description="""Generates and returns a BCGHG ID for the facility if the facility doesn't already have a BCGHG ID.""",
     auth=authorize('cas_director'),
 )
-@handle_http_errors()
 def facility_bcghg_id(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200], BcGreenhouseGasId]:
     return 200, FacilityService.generate_bcghg_id(
         get_current_user_guid(request),

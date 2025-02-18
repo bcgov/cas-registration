@@ -1,6 +1,5 @@
 from typing import Literal, Tuple
 from django.http import HttpRequest
-from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.generic import Message
@@ -18,7 +17,6 @@ from common.permissions import authorize
     exclude_none=True,
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def get_compliance_summary_data(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], ComplianceData]:
     compliance_data = ComplianceService.get_calculated_compliance_data(report_version_id)
 

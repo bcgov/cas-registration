@@ -7,7 +7,6 @@ from django.http import HttpRequest
 from registration.utils import CustomPagination
 from registration.constants import TRANSFER_EVENT_TAGS
 from ninja.pagination import paginate
-from registration.decorators import handle_http_errors
 from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
@@ -25,7 +24,6 @@ from registration.schema.v2.transfer_event import TransferEventCreateIn, Transfe
     The endpoint allows authorized users to view and sort transfer events filtered by various criteria such as operation, facility, and status.""",
     auth=authorize("authorized_irc_user"),
 )
-@handle_http_errors()
 @paginate(CustomPagination)
 def list_transfer_events(
     request: HttpRequest,
@@ -45,7 +43,6 @@ def list_transfer_events(
     description="""Creates a new transfer event.""",
     auth=authorize("cas_analyst"),
 )
-@handle_http_errors()
 def create_transfer_event(
     request: HttpRequest,
     payload: TransferEventCreateIn,

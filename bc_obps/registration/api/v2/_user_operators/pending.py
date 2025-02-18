@@ -5,7 +5,6 @@ from registration.constants import USER_OPERATOR_TAGS
 from registration.schema.v1.user_operator import PendingUserOperatorOut
 from service.data_access_service.user_service import UserDataAccessService
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from registration.schema.generic import Message
 from registration.api.router import router
 from registration.models import UserOperator
@@ -23,6 +22,5 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     Declined user-operators are excluded from the results.""",
     auth=authorize("industry_user"),
 )
-@handle_http_errors()
 def get_pending_operator_and_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
     return 200, UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))

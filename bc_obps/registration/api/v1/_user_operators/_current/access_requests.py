@@ -5,7 +5,6 @@ from registration.constants import USER_OPERATOR_TAGS
 from registration.models import UserOperator
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from django.db.models import QuerySet
-from registration.decorators import handle_http_errors
 from registration.schema.v1 import ExternalDashboardUsersTileData
 from registration.schema.generic import Message
 from typing import List, Literal, Tuple
@@ -23,7 +22,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     The list is filtered based on the business GUID of the current user and the associated operator.""",
     auth=authorize("approved_industry_admin_user"),
 )
-@handle_http_errors()
 def v1_get_current_user_operator_access_requests(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
     return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(
         get_current_user_guid(request)

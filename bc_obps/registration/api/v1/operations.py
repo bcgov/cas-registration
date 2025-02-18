@@ -4,7 +4,6 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from service.operation_service import OperationService
-from registration.decorators import handle_http_errors
 from ..router import router
 from registration.schema.v1 import (
     OperationCreateIn,
@@ -28,7 +27,6 @@ from ninja.types import DictStrAny
     The endpoint allows authorized users to view operations filtered by various criteria such as BCGHG ID, regulated operation, name, operator, status, and sort order.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def v1_list_operations(
     request: HttpRequest, filters: OperationFilterSchema = Query(...)
 ) -> Tuple[Literal[200], DictStrAny]:
@@ -46,6 +44,5 @@ def v1_list_operations(
     It verifies that an operation with the given BCGHG ID does not already exist and associates the new operation with the current user's approved user-operator.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def v1_create_operation(request: HttpRequest, payload: OperationCreateIn) -> Tuple[Literal[201], DictStrAny]:
     return 201, OperationService.create_operation(get_current_user_guid(request), payload)

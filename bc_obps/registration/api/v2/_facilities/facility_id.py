@@ -10,7 +10,6 @@ from common.api.utils import get_current_user_guid
 
 from common.permissions import authorize
 
-from registration.decorators import handle_http_errors
 
 from registration.api.router import router
 from registration.models import (
@@ -30,7 +29,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     exclude_none=True,  # To exclude None values from the response(used for address fields)
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200], Facility]:
     return 200, FacilityService.get_if_authorized(get_current_user_guid(request), facility_id)
 
@@ -46,6 +44,5 @@ def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200],
     """,
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def update_facility(request: HttpRequest, facility_id: UUID, payload: FacilityIn) -> Tuple[Literal[200], Facility]:
     return 200, FacilityService.update_facility(get_current_user_guid(request), facility_id, payload)

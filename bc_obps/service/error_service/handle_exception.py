@@ -1,31 +1,34 @@
-"""
-Module: handle_exception.py
-Description: This module handles http exceptions.
-"""
 import traceback
-from typing import Dict, Literal, Optional, Tuple
-from django.http import Http404
+from typing import Union
+from django.http import Http404, HttpRequest
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from bc_obps.settings import DEBUG
+from ninja.responses import Response
 from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
 
 
-def handle_exception(error: Exception) -> Tuple[Literal[400, 401, 403, 404, 422], Dict[str, Optional[str]]]:
+def handle_exception(request: HttpRequest, exc: Union[Exception, type[Exception]]) -> Response:
     """
-    This function handles exceptions for BCEIRS. Returns a 4xx status.
+    Global exception handler for Django Ninja API.
     """
+
     if DEBUG == "True":
         # Print the error in the console for easier debugging
         print("---------------------------------------------ERROR START-----------------------------------------------")
         print(traceback.format_exc())
         print("---------------------------------------------ERROR END-------------------------------------------------")
-    if error.args and error.args[0] == UNAUTHORIZED_MESSAGE:
-        return 401, {"message": UNAUTHORIZED_MESSAGE}
-    if isinstance(error, (Http404, ObjectDoesNotExist)):
-        return 404, {"message": "Not Found"}
-    if isinstance(error, ValidationError):
-        return 422, {"message": generate_useful_error(error)}
-    if isinstance(error, PermissionError):
-        return 403, {"message": "Permission denied."}
-    return 400, {"message": str(error)}
+
+    if exc.args and exc.args[0] == UNAUTHORIZED_MESSAGE:
+        return Response({"message": UNAUTHORIZED_MESSAGE}, status=401)
+
+    if isinstance(exc, (ObjectDoesNotExist, Http404)):
+        return Response({"message": "Not Found"}, status=404)
+
+    if isinstance(exc, ValidationError):
+        return Response({"message": generate_useful_error(exc)}, status=422)
+
+    if isinstance(exc, PermissionError):
+        return Response({"message": "Permission denied."}, status=403)
+
+    return Response({"message": str(exc)}, status=400)
