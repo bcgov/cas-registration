@@ -55,7 +55,15 @@ const OperationInformationForm = ({
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
-
+  console.log("selectedPurpose", selectedPurpose);
+  console.log(
+    "pendingChangeRegistrationPurpose",
+    pendingChangeRegistrationPurpose,
+  );
+  console.log(
+    "formState.section1.registration_purpose",
+    formState.section1.registration_purpose,
+  );
   const updateUiSchemaWithHelpText = (
     registrationPurpose: RegistrationPurposes,
   ) => {
@@ -163,6 +171,7 @@ const OperationInformationForm = ({
     }
     // combine the entered data with the fetched data
     const combinedData = { ...data, section2: operationData };
+    console.log("should not hit here");
     setFormState(combinedData);
     setKey(Math.random());
   };
@@ -186,6 +195,16 @@ const OperationInformationForm = ({
 
   const cancelRegistrationPurposeChange = () => {
     setPendingChangeRegistrationPurpose("");
+    console.log("selectedPurpose in cancel", selectedPurpose);
+    // brianna does this not work because the useeffect isn't watching it?
+    setFormState((prevState) => ({
+      ...prevState,
+      section1: {
+        ...prevState.section1,
+        registration_purpose: selectedPurpose,
+      },
+    }));
+    setKey(Math.random());
     setIsConfirmPurposeChangeModalOpen(false);
   };
 
@@ -219,8 +238,10 @@ const OperationInformationForm = ({
           if (
             newSelectedOperation &&
             newSelectedOperation !== selectedOperation
-          )
-            handleSelectOperationChange(e.formData);
+          ) {
+            // handleSelectOperationChange(e.formData);
+            const b = "b";
+          }
           if (newSelectedPurpose !== selectedPurpose) {
             handleSelectedPurposeChange(e.formData);
           }
