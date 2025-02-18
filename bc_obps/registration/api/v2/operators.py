@@ -4,7 +4,6 @@ from registration.models.operator import Operator
 from service.operator_service_v2 import OperatorServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.decorators import handle_http_errors
 from ..router import router
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -22,7 +21,6 @@ from registration.utils import CustomPagination
     tags=["V2"],
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 @paginate(CustomPagination)
 def list_operators(
     request: HttpRequest,

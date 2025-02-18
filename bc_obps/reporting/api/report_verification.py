@@ -2,7 +2,6 @@ from typing import Literal
 from reporting.models.report_verification import ReportVerification
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -18,7 +17,6 @@ from reporting.service.report_verification_service import ReportVerificationServ
     description="""Fetches the Verification data associated with the given report version ID.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def get_report_verification_by_version_id(
     request: HttpRequest, report_version_id: int
 ) -> tuple[Literal[200], ReportVerification]:
@@ -32,7 +30,6 @@ def get_report_verification_by_version_id(
     description="""Checks if a report needs verification data based on its purpose and attributable emissions.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def get_report_needs_verification(request: HttpRequest, report_version_id: int) -> tuple[Literal[200], bool]:
     return 200, ReportVerificationService.get_report_needs_verification(report_version_id)
 
@@ -44,7 +41,6 @@ def get_report_needs_verification(request: HttpRequest, report_version_id: int) 
     description="""Creates or updates the Verification data for the given report version ID.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def save_report_verification(
     request: HttpRequest, report_version_id: int, payload: ReportVerificationIn
 ) -> tuple[Literal[200], ReportVerification]:

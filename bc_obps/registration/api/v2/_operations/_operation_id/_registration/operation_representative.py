@@ -10,7 +10,6 @@ from registration.schema.v2.operation import (
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from common.permissions import authorize
 from registration.schema.generic import Message
@@ -25,7 +24,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def create_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeIn
 ) -> Tuple[Literal[200], Contact]:
@@ -42,7 +40,6 @@ def create_operation_representative(
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def remove_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeRemove
 ) -> Tuple[Literal[200], OperationRepresentativeRemove]:

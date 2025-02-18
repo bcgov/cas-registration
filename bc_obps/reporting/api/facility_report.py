@@ -2,7 +2,6 @@ from typing import Literal, Tuple, List, Optional
 from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.facility_report_service import FacilityReportService
@@ -34,7 +33,6 @@ from ..utils import ReportingCustomPagination
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def get_facility_report_form_data(
     request: HttpRequest, version_id: int, facility_id: UUID
 ) -> Tuple[Literal[200], FacilityReport]:
@@ -49,7 +47,6 @@ def get_facility_report_form_data(
     description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a list of activities that apply to that facility, ordered by weight""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def get_ordered_facility_report_activities(
     request: HttpRequest, version_id: int, facility_id: UUID
 ) -> Tuple[Literal[200], QuerySet[Activity]]:
@@ -68,7 +65,6 @@ def get_ordered_facility_report_activities(
     facility object or an error message if the update fails.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def save_facility_report(
     request: HttpRequest, version_id: int, facility_id: UUID, payload: FacilityReportIn
 ) -> Tuple[Literal[201], FacilityReport]:
@@ -99,7 +95,6 @@ def save_facility_report(
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     facility_report = FacilityReportService.get_facility_report_by_version_id(version_id)
     facility_id = facility_report[0] if isinstance(facility_report, tuple) else facility_report
@@ -124,7 +119,6 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
     details.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 @paginate(ReportingCustomPagination, page_size=10)
 def get_facility_report_list(
     request: HttpRequest,
@@ -145,7 +139,6 @@ def get_facility_report_list(
     to be updated for the respective facility reports.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def save_facility_report_list(
     request: HttpRequest, version_id: int, payload: List[FacilityReportListInSchema]
 ) -> Literal[200]:

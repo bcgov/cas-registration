@@ -20,7 +20,6 @@ For example:
     url_name="request_access",
     auth=authorize("industry_user"),
 )
-@handle_http_errors()
 def request_access(request, payload: SelectOperatorIn):
 
     return 201, ApplicationAccessService.request_access(payload.operator_id, get_current_user_guid(request))

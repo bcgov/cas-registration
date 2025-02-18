@@ -6,7 +6,6 @@ from reporting.schema.report_product_emission_allocation import (
     ReportProductEmissionAllocationsSchemaIn,
     ReportProductEmissionAllocationsSchemaOut,
 )
-from registration.decorators import handle_http_errors
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
 from reporting.schema.generic import Message
@@ -23,7 +22,6 @@ from reporting.service.report_emission_allocation_service import ReportEmissionA
     exclude_none=True,
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def get_emission_allocations(
     request: HttpRequest, report_version_id: int, facility_id: UUID
 ) -> tuple[Literal[200], ReportProductEmissionAllocationsSchemaOut]:
@@ -39,7 +37,6 @@ def get_emission_allocations(
     description="""Saves the data for the allocation of emissions page into multiple ReportProductEmissionAllocation rows""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def save_emission_allocation_data(
     request: HttpRequest,
     report_version_id: int,

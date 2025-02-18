@@ -6,7 +6,6 @@ from registration.constants import OPERATION_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.operation_service import OperationService
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.models import Operation
 from registration.schema.v1 import (
@@ -25,7 +24,6 @@ from registration.schema.generic import Message
     Industry users can only access operations they are permitted to view. If an unauthorized user attempts to access the operation, an error is raised.""",
     auth=authorize("approved_authorized_roles"),
 )
-@handle_http_errors()
 def v1_get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
@@ -40,7 +38,6 @@ def v1_get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[
     Unauthorized access attempts raise an error.""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def v1_update_operation(
     request: HttpRequest, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn
 ) -> Tuple[Literal[200], Operation]:

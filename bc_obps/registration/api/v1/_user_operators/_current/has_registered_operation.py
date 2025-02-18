@@ -2,7 +2,6 @@ from django.http import HttpRequest
 from typing import Dict, Literal, Tuple
 from registration.api.router import router
 from registration.constants import USER_OPERATOR_TAGS
-from registration.decorators import handle_http_errors
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from common.api.utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
@@ -22,7 +21,6 @@ from registration.schema.generic import Message
     """,
     auth=authorize("industry_user"),
 )
-@handle_http_errors()
 def v1_get_current_user_operator_has_registered_operation(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
     try:
         # Retrieve the operator associated with the current user

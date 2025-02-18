@@ -9,7 +9,6 @@ from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.models import Operation
-from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
 
@@ -22,7 +21,6 @@ from registration.schema.generic import Message
     The endpoint ensures that only authorized industry users can update operations belonging to their operator.""",
     auth=authorize('approved_industry_user'),
 )
-@handle_http_errors()
 def operation_registration_submission(
     request: HttpRequest, operation_id: UUID, payload: OperationRegistrationSubmissionIn
 ) -> Tuple[Literal[200], Operation | None]:

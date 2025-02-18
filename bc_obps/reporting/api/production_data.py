@@ -3,7 +3,6 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
-from registration.decorators import handle_http_errors
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
@@ -21,7 +20,6 @@ from .router import router
     description="""Saves the data for the production data page into multiple ReportProduct rows""",
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def save_production_data(
     request: HttpRequest,
     report_version_id: int,
@@ -46,7 +44,6 @@ def save_production_data(
     exclude_none=True,
     auth=authorize("approved_industry_user"),
 )
-@handle_http_errors()
 def load_production_data(request: HttpRequest, report_version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
 
     report_products = (
