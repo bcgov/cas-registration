@@ -14,11 +14,13 @@ def init_additional_methodology_data(apps, schema_monitor):
     Methodology = apps.get_model("reporting", "Methodology")
     Methodology.objects.bulk_create(
         [
-            Methodology(name="WCI.353 (h)(1)"),
-            Methodology(name="WCI.353 (h)(2)"),
-            Methodology(name="WCI.353 (h)(3)"),
-            Methodology(name="WCI.353 (h)(4)"),
-            Methodology(name="WCI.353 (t)"),
+            Methodology(name="WCI.363 (c)"),
+            Methodology(name="WCI.363 (d)"),
+            Methodology(name="WCI.363 (h)(1)"),
+            Methodology(name="WCI.363 (h)(2)"),
+            Methodology(name="WCI.363 (h)(3)"),
+            Methodology(name="WCI.363 (h)(4)"),
+            Methodology(name="WCI.363 (t)"),
         ]
     )
 
@@ -30,11 +32,13 @@ def reverse_additional_methodology_data(apps, schema_monitor):
     Methodology = apps.get_model("reporting", "Methodology")
     Methodology.objects.filter(
         name__in=[
-            "WCI.353 (h)(1)",
-            "WCI.353 (h)(2)",
-            "WCI.353 (h)(3)",
-            "WCI.353 (h)(4)",
-            "WCI.353 (t)",
+            "WCI.363 (c)",
+            "WCI.363 (d)",
+            "WCI.363 (h)(1)",
+            "WCI.363 (h)(2)",
+            "WCI.363 (h)(3)",
+            "WCI.363 (h)(4)",
+            "WCI.363 (t)",
         ]
     ).delete()
 
@@ -149,7 +153,7 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_to=Configuration.objects.get(valid_to="2099-12-31"),
         )
         for methodology_name in [
-            "WCI.353 (c)",
+            "WCI.363 (c)",
             "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
@@ -169,7 +173,7 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_to=Configuration.objects.get(valid_to="2099-12-31"),
         )
         for methodology_name in [
-            "WCI.353 (d)",
+            "WCI.363 (d)",
             "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
@@ -211,10 +215,10 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_to=Configuration.objects.get(valid_to="2099-12-31"),
         )
         for methodology_name in [
-            "WCI.353 (h)(1)",
-            "WCI.353 (h)(2)",
-            "WCI.353 (h)(3)",
-            "WCI.353 (h)(4)",
+            "WCI.363 (h)(1)",
+            "WCI.363 (h)(2)",
+            "WCI.363 (h)(3)",
+            "WCI.363 (h)(4)",
             "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
@@ -366,7 +370,7 @@ def init_configuration_element_data(apps, schema_monitor):
             valid_to=Configuration.objects.get(valid_to="2099-12-31"),
         )
         for methodology_name in [
-            "WCI.353 (t)",
+            "WCI.363 (t)",
             "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
