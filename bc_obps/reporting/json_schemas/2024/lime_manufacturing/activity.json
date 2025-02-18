@@ -1,0 +1,6 @@
+{
+  "title": "Lime manufacturing",
+  "type": "object",
+  "required": ["sourceTypes"],
+  "properties": {}
+}
