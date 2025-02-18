@@ -34,17 +34,15 @@ function CollapsibleDefinitionFieldTemplate({
               title={label}
               titleTypographyProps={
                 errors?.props.errors
-                ? { variant: "h6", color: "#DC2626" }
-                : { variant: "h6", color: "#38598A" }
+                  ? { variant: "h6", color: "#DC2626" }
+                  : { variant: "h6", color: "#38598A" }
               }
               sx={{ color: "blue" }}
             />
           </Grid>
           {!readonly && (
             <Grid item xs={1}>
-              <CardActions
-                sx={{ justifyContent: "flex-end" }}
-              >
+              <CardActions sx={{ justifyContent: "flex-end" }}>
                 <IconButton onClick={() => setExpandCollapse(!expandCollapse)}>
                   {!expandCollapse ? <ExpandMoreIcon /> : <ExpandLessIcon />}
                 </IconButton>
