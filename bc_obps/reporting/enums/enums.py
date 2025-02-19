@@ -43,6 +43,7 @@ class ReportingTableNames(Enum):
 
     # M2M tables
     CONFIGURATION_ELEMENT_REPORTING_FIELDS = 'configuration_element_reporting_fields'
+    FACILITY_REPORT_ACTIVITIES = 'facility_report_activities'
     REPORT_EMISSION_EMISSION_CATEGORIES = 'report_emission_emission_categories'
     REPORT_NON_ATTRIBUTABLE_EMISSIONS_GAS_TYPE = 'report_non_attributable_emissions_gas_type'
     REPORT_OPERATION_ACTIVITIES = 'report_operation_activities'
