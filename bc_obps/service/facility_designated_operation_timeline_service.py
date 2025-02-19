@@ -21,7 +21,6 @@ class FacilityDesignatedOperationTimelineService:
 
         if user.is_industry_user():
             UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            base_queryset = base_queryset.exclude(status=FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED)
 
         return base_queryset
 
@@ -54,10 +53,8 @@ class FacilityDesignatedOperationTimelineService:
         cls,
         user_guid: UUID,
         timeline: FacilityDesignatedOperationTimeline,
-        status: FacilityDesignatedOperationTimeline.Statuses,
         end_date: datetime,
     ) -> FacilityDesignatedOperationTimeline:
-        timeline.status = status
         timeline.end_date = end_date
-        timeline.save(update_fields=["status", "end_date"])
+        timeline.save(update_fields=["end_date"])
         return timeline
