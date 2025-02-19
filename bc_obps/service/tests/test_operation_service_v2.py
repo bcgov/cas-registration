@@ -537,7 +537,6 @@ class TestOperationServiceV2CreateOperation:
         assert timeline_record.operation == operation
         assert timeline_record.operator == approved_user_operator.operator
         assert timeline_record.start_date is not None
-        assert timeline_record.status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
 
     @staticmethod
     def test_create_operation_with_multiple_operators():
@@ -989,7 +988,6 @@ class TestCreateOrUpdateEio:
     @staticmethod
     @patch("service.facility_service.FacilityService.update_facility")
     def test_update_eio(mock_update_facility):
-
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         registration_purpose = 'Electricity Import Operation'
@@ -1443,17 +1441,14 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            status=OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN,
         )
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
         )
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
         )
 
         timeline = OperationServiceV2.list_operations_timeline(
@@ -1463,9 +1458,7 @@ class TestListOperationTimeline:
             filters=OperationTimelineFilterSchema(),
         )
 
-        assert timeline.count() == 2  # transferred statuses are excluded in the data access service
-        assert timeline[1].status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
-        assert timeline[0].status == OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN
+        assert timeline.count() == 3
 
     @staticmethod
     def test_gets_filtered_sorted_list_for_industry_user():

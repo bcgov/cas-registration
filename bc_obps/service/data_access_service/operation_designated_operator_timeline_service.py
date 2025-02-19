@@ -2,7 +2,6 @@ from uuid import UUID
 from ninja.types import DictStrAny
 from typing import List
 from registration.models.operation import Operation
-from registration.schema.v2.operation_timeline import OperationTimelineListOut
 
 from registration.enums.enums import OperationTypes
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -57,7 +56,6 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         sfo_facility_name_subquery = facilities_subquery.values('facility__name')[:1]
 
         only_fields: List[str] = [
-            *OperationTimelineListOut.Meta.fields,
             "operation__name",
             "operation__type",
             "operation__bc_obps_regulated_operation__id",
@@ -84,6 +82,4 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         else:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(operator_id=user_operator.operator_id).exclude(
-                status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED
-            )
+            return queryset.filter(operator_id=user_operator.operator_id)

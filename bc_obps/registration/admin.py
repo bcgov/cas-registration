@@ -96,7 +96,6 @@ class FacilityDesignatedOperationTimelineAdmin(admin.ModelAdmin):
 class OperationDesignatedOperatorTimelineAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'status',
         'operation',
         'operator',
         'start_date',

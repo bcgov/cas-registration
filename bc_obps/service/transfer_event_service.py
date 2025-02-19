@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from django.db import transaction
 from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline, User
+from registration.models import User
 from registration.models.event.transfer_event import TransferEvent
 from typing import Optional
 from ninja import Query
@@ -242,7 +242,6 @@ class TransferEventService:
                 FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
                     user_guid,
                     current_timeline,
-                    FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
                     event.effective_date,
                 )
 
@@ -253,7 +252,6 @@ class TransferEventService:
                     "facility": facility,
                     "operation": event.to_operation,
                     "start_date": event.effective_date,
-                    "status": FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
                 },
             )
             # update the facility's operation
@@ -273,7 +271,6 @@ class TransferEventService:
             OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date(
                 user_guid,
                 current_timeline,
-                OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
                 event.effective_date,
             )
 
@@ -284,7 +281,6 @@ class TransferEventService:
                 "operation": event.operation,
                 "operator": event.to_operator,
                 "start_date": event.effective_date,
-                "status": OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
             },
         )
 
