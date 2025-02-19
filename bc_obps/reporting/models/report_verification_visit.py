@@ -48,7 +48,7 @@ class ReportVerificationVisit(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table = 'erc"."verification_visit'
+        db_table = 'erc"."report_verification_visit'
         db_table_comment = "Table to store individual verification visit information"
         app_label = "reporting"
         constraints = [

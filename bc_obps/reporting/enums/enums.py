@@ -13,7 +13,7 @@ class ReportingTableNames(Enum):
     FUEL_TYPE = 'fuel_type'
     GAS_TYPE = 'gas_type'
     METHODOLOGY = 'methodology'
-    NAICS_REGULATORY_VALUE = 'naics_regulatory_value'
+    NAICS_REGULATORY_VALUE = 'naics_regulatory_values'
     PRODUCT_EMISSION_INTENSITY = 'product_emission_intensity'
     REPORT_ACTIVITY = 'report_activity'
     REPORT_ADDITIONAL_DATA = 'report_additional_data'
