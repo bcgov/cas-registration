@@ -15,7 +15,8 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import finalReviewTheme from "./formCustomization/finalReviewTheme";
 import { additionalReportingDataUiSchema } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { complianceSummaryUiSchema } from "@reporting/src/data/jsonSchema/complianceSummary";
-import { useState } from "react";
+import { Key, useState } from "react";
+import { RJSFSchema } from "@rjsf/utils";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
@@ -74,20 +75,53 @@ const FinalReviewForm: React.FC<Props> = ({
       submittingButtonText="Continue"
       noSaveButton
     >
-      {data.map((form, idx) => (
-        <Form
-          key={idx}
-          schema={form.schema}
-          formData={form.data}
-          uiSchema={{
-            ...resolveUiSchema(form.uiSchema),
-            "ui:submitButtonOptions": { norender: true },
-          }}
-          readonly={true}
-          formContext={form.context || {}}
-          validator={customizeValidator({})}
-        />
-      ))}
+      {data.map((form, idx) => {
+        if (form.isCollapsible) {
+          return (
+            <details
+              key={idx}
+              className="border-2 border-t-0 border-b-0 border-[#38598A] p-2 my-2 w-full"
+            >
+              <summary className="cursor-pointer font-bold text-[#38598A] text-2xl py-2 border-2 border-t-0 border-b-0 border-[#38598A]">
+                {form.schema.title}
+              </summary>
+              {form.data.map(
+                (
+                  activity: { schema: RJSFSchema; data: any; uiSchema: any },
+                  index: Key | null | undefined,
+                ) => (
+                  <Form
+                    key={index}
+                    schema={activity.schema}
+                    formData={activity.data}
+                    uiSchema={{
+                      ...resolveUiSchema(activity.uiSchema),
+                      "ui:submitButtonOptions": { norender: true },
+                    }}
+                    readonly={true}
+                    formContext={form.context || {}}
+                    validator={customizeValidator({})}
+                  />
+                ),
+              )}
+            </details>
+          );
+        }
+
+        return (
+          <Form
+            schema={form.schema}
+            formData={form.data}
+            uiSchema={{
+              ...resolveUiSchema(form.uiSchema),
+              "ui:submitButtonOptions": { norender: true },
+            }}
+            readonly={true}
+            formContext={form.context || {}}
+            validator={customizeValidator({})}
+          />
+        );
+      })}
     </MultiStepWrapperWithTaskList>
   );
 };
