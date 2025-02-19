@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-from typing import Dict, List
 from common.enums import Schemas
-=======
 from typing import Dict, List, Any
 from reporting.enums.enums import ReportingTableNames
->>>>>>> chore: add reporting table enums
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.grant import RlsGrant
