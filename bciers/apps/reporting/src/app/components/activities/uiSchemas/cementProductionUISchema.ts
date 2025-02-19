@@ -4,23 +4,18 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
-import GridItemFieldTemplate from "@bciers/components/form/fields/GridItemFieldTemplate";
-import CollapsibleDefinitionFieldTemplate from "@bciers/components/form/fields/CollapsibleDefinitionFieldTemplate";
-
-const gridSchema = {
-  "ui:FieldTemplate": GridItemFieldTemplate,
-};
+import DefinitionFieldTemplate from "@bciers/components/form/fields/DefinitionFieldTemplate";
 
 const definitionSchema = {
-  "ui:FieldTemplate": CollapsibleDefinitionFieldTemplate,
-  clinkerProduction: gridSchema,
-  emissionFactor: gridSchema,
-  totalCalciumContentOfClinker: gridSchema,
-  totalMagnesiumContentOfClinker: gridSchema,
-  nonCalcinedCalciumOxideContentOfClinker: gridSchema,
-  nonCalcinedMagnesiumOxideContentOfClinker: gridSchema,
-  quantityOfNonCarbonateRawMaterialsEnteringTheKiln: gridSchema,
-  quantityOfCKDNotRecycledBackToKilns: gridSchema,
+  "ui:FieldTemplate": DefinitionFieldTemplate,
+  clinkerProduction: FieldTemplate,
+  emissionFactor: FieldTemplate,
+  totalCalciumContentOfClinker: FieldTemplate,
+  totalMagnesiumContentOfClinker: FieldTemplate,
+  nonCalcinedCalciumOxideContentOfClinker: FieldTemplate,
+  nonCalcinedMagnesiumOxideContentOfClinker: FieldTemplate,
+  quantityOfNonCarbonateRawMaterialsEnteringTheKiln: FieldTemplate,
+  quantityOfCKDNotRecycledBackToKilns: FieldTemplate,
 };
 
 const uiSchema = {
@@ -63,10 +58,6 @@ const uiSchema = {
               "description",
               "amountOfRawMaterialConsumedT",
               "rawMaterialOrganicCarbonContentWeightFraction",
-              "quarter1",
-              "quarter2",
-              "quarter3",
-              "quarter4",
               "january",
               "february",
               "march",
@@ -79,6 +70,10 @@ const uiSchema = {
               "october",
               "november",
               "december",
+              "quarter1",
+              "quarter2",
+              "quarter3",
+              "quarter4",
             ],
             methodology: {
               "ui:FieldTemplate": InlineFieldTemplate,
