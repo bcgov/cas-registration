@@ -6,7 +6,7 @@ import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFacto
 
 const complianceSummaryColumns = (): GridColDef[] => {
   const ActionCell = ActionCellFactory({
-    generateHref: (params: { row: ComplianceSummary }) => 
+    generateHref: (params: { row: ComplianceSummary }) =>
       `/compliance-summaries/${params.row.id}`,
     cellText: "View Details",
   });
@@ -66,4 +66,4 @@ const complianceSummaryColumns = (): GridColDef[] => {
   ];
 };
 
-export default complianceSummaryColumns; 
+export default complianceSummaryColumns;

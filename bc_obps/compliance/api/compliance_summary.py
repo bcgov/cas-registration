@@ -1,5 +1,4 @@
 from typing import List, Literal, Tuple
-from ninja.responses import Response
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.db.models import QuerySet
@@ -51,14 +50,7 @@ def get_compliance_summary(request: HttpRequest, summary_id: int) -> Tuple[Liter
     # Get the compliance summary if it belongs to one of the user's operations
     summary = get_object_or_404(
         ComplianceSummary.objects.select_related(
-            'report',
-            'report__operation',
-            'current_report_version',
-            'compliance_period',
-            'obligation'
-        ).filter(
-            id=summary_id,
-            report__operation__in=operations
-        )
+            'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
+        ).filter(id=summary_id, report__operation__in=operations)
     )
     return 200, summary
