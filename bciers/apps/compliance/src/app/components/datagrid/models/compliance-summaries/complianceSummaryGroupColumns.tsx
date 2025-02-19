@@ -9,13 +9,13 @@ const complianceSummaryGroupColumns = (
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
   const columnGroupModel = [
-    createColumnGroup("reportingYear", "Reporting Year", SearchCell),
-    createColumnGroup("operationName", "Operation Name", SearchCell),
-    createColumnGroup("excessEmissions", "Excess Emissions", SearchCell),
-    createColumnGroup("outstandingBalance", "Outstanding Balance", SearchCell),
-    createColumnGroup("complianceStatus", "Compliance Status", SearchCell),
-    createColumnGroup("penaltyStatus", "Penalty Status", SearchCell),
-    createColumnGroup("obligationId", "Obligation ID", SearchCell),
+    createColumnGroup("reporting_year", "Reporting Year", SearchCell),
+    createColumnGroup("operation_name", "Operation Name", SearchCell),
+    createColumnGroup("excess_emissions", "Excess Emissions", SearchCell),
+    createColumnGroup("outstanding_balance", "Outstanding Balance", SearchCell),
+    createColumnGroup("compliance_status", "Compliance Status", SearchCell),
+    createColumnGroup("penalty_status", "Penalty Status", SearchCell),
+    createColumnGroup("obligation_id", "Obligation ID", SearchCell),
     createColumnGroup("actions", "Actions", EmptyGroupCell),
   ] as GridColumnGroupingModel;
 
