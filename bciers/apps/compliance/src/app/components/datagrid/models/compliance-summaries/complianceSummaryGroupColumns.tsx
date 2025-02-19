@@ -22,4 +22,4 @@ const complianceSummaryGroupColumns = (
   return columnGroupModel;
 };
 
-export default complianceSummaryGroupColumns; 
+export default complianceSummaryGroupColumns;

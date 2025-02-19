@@ -22,14 +22,14 @@ const ComplianceSummariesDataGrid = ({
 
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
-    [lastFocusedField, setLastFocusedField]
+    [lastFocusedField, setLastFocusedField],
   );
 
   const columns = complianceSummaryColumns();
 
   const columnGroup = useMemo(
     () => complianceSummaryGroupColumns(SearchCell),
-    [SearchCell]
+    [SearchCell],
   );
 
   return (
@@ -43,4 +43,4 @@ const ComplianceSummariesDataGrid = ({
   );
 };
 
-export default ComplianceSummariesDataGrid; 
+export default ComplianceSummariesDataGrid;

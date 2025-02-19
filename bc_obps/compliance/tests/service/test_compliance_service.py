@@ -2,9 +2,7 @@ from decimal import Decimal
 import pytest
 from unittest.mock import patch, MagicMock
 from uuid import UUID
-from reporting.models import ReportVersion
-from reporting.service.compliance_service import ComplianceService as ReportComplianceService
-from compliance.models import ComplianceSummary, ComplianceProduct, ComplianceObligation
+from compliance.models import ComplianceSummary, ComplianceObligation
 from compliance.service.compliance_service import ComplianceService
 
 
@@ -52,7 +50,7 @@ class TestComplianceService:
         mock_get_compliance_data,
         mock_get_report_version,
         mock_report_version,
-        mock_compliance_data
+        mock_compliance_data,
     ):
         # Arrange
         user_guid = UUID('12345678-1234-5678-1234-567812345678')
@@ -77,7 +75,7 @@ class TestComplianceService:
             credited_emissions=Decimal('0.0'),
             reduction_factor=Decimal('0.95'),
             tightening_rate=Decimal('0.01'),
-            compliance_status=ComplianceSummary.ComplianceStatus.PARTIALLY_MET
+            compliance_status=ComplianceSummary.ComplianceStatus.PARTIALLY_MET,
         )
 
         mock_create_product.assert_called_once_with(
@@ -87,13 +85,13 @@ class TestComplianceService:
             apr_dec_production=Decimal('750.0'),
             emission_intensity=Decimal('0.1'),
             allocated_industrial_process_emissions=Decimal('50.0'),
-            allocated_compliance_emissions=Decimal('40.0')
+            allocated_compliance_emissions=Decimal('40.0'),
         )
 
         mock_create_obligation.assert_called_once_with(
             compliance_summary=mock_summary,
             amount=Decimal('10.0'),
-            status=ComplianceObligation.ObligationStatus.PENDING
+            status=ComplianceObligation.ObligationStatus.PENDING,
         )
 
         assert result == mock_summary
@@ -109,4 +107,4 @@ class TestComplianceService:
 
         # Test FULLY_MET
         status = ComplianceService._determine_compliance_status(Decimal('0.0'), Decimal('0.0'))
-        assert status == ComplianceSummary.ComplianceStatus.FULLY_MET 
+        assert status == ComplianceSummary.ComplianceStatus.FULLY_MET
