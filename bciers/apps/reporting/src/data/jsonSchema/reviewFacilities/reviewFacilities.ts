@@ -21,39 +21,37 @@ export const buildReviewFacilitiesSchema = (
     facility__name: string;
     is_selected: boolean;
   }[],
-) =>
-  ({
-    type: "object",
-    title: "Review Facilities",
-    properties: {
-      facilities_note: {
-        type: "object",
-        readOnly: true,
-      },
-      select_info: {
-        type: "object",
-        readOnly: true,
-      },
-      current_facilities_section: {
-        type: "object",
-        title: "List of facilities currently assigned to this operation",
-        properties: {
-          current_facilities: {
-            type: "array",
-            items: {
-              type: "string",
-              enum: current_facilities.map(
-                (facility) => facility.facility__name,
-              ),
-            },
-            uniqueItems: true,
-            default: current_facilities
-              .filter((facility) => facility.is_selected)
-              .map((facility) => facility.facility__name),
+): RJSFSchema => ({
+  type: "object",
+  title: "Review Facilities",
+  properties: {
+    facilities_note: {
+      type: "object",
+      readOnly: true,
+    },
+    select_info: {
+      type: "object",
+      readOnly: true,
+    },
+    current_facilities_section: {
+      type: "object",
+      title: "List of facilities currently assigned to this operation",
+      properties: {
+        current_facilities: {
+          type: "array",
+          items: {
+            type: "string",
+            enum: current_facilities.map((facility) => facility.facility__name),
           },
+          uniqueItems: true,
+          default: current_facilities
+            .filter((facility) => facility.is_selected)
+            .map((facility) => facility.facility__name),
         },
       },
+    },
 
+    ...(past_facilities.length > 0 && {
       past_facilities_section: {
         type: "object",
         title: "Past facilities that belonged to this operation",
@@ -71,16 +69,17 @@ export const buildReviewFacilitiesSchema = (
           },
         },
       },
+    }),
 
-      sync_button: {
-        type: "object",
-        properties: {
-          label: { type: "string", default: "Sync Facilities" },
-          disabled: { type: "boolean", default: false },
-        },
+    sync_button: {
+      type: "object",
+      properties: {
+        label: { type: "string", default: "Sync Facilities" },
+        disabled: { type: "boolean", default: false },
       },
     },
-  }) as RJSFSchema;
+  },
+});
 
 export const buildReviewFacilitiesUiSchema = (operation_id: string) => ({
   "ui:FieldTemplate": FieldTemplate,
