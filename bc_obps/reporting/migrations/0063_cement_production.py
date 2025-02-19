@@ -3,6 +3,35 @@
 from django.db import migrations
 import json
 
+#### ADDITIONAL METHODOLOGIES ####
+
+
+def init_additional_methodology_data(apps, schema_monitor):
+    """
+    Add additional data to erc.methodology
+    """
+    Methodology = apps.get_model("reporting", "Methodology")
+    Methodology.objects.bulk_create(
+        [
+            Methodology(name="Calcination Emissions"),
+            Methodology(name="Oxidation Emissions"),
+        ]
+    )
+
+
+def reverse_additional_methodology_data(apps, schema_monitor):
+    """
+    Remove additional data from erc.methodology
+    """
+    Methodology = apps.get_model("reporting", "Methodology")
+    Methodology.objects.filter(
+        name__in=[
+            "Calcination Emissions",
+            "Oxidation Emissions",
+        ]
+    ).delete()
+
+
 #### CONFIG DATA ####
 
 
@@ -311,6 +340,10 @@ class Migration(migrations.Migration):
     dependencies = [('reporting', '0062_industrial_water_processing')]
 
     operations = [
+        migrations.RunPython(
+            init_additional_methodology_data,
+            reverse_additional_methodology_data,
+        ),
         migrations.RunPython(init_custom_schema_data, reverse_init_custom_schema_data),
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
         migrations.RunPython(

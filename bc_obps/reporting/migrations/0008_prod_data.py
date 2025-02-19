@@ -583,8 +583,6 @@ def init_methodology_data(apps, schema_monitor):
             Methodology(name='Nitrogen in effluent'),
             Methodology(name='Default conversion factor'),
             Methodology(name='Measured conversion factor'),
-            Methodology(name='Calcination Emissions'),
-            Methodology(name='Oxidation Emissions'),
         ]
     )
 
@@ -628,8 +626,6 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Nitrogen in effluent',
             'Default conversion factor',
             'Measured conversion factor',
-            'Calcination Emissions',
-            'Oxidation Emissions',
         ]
     ).delete()
 
