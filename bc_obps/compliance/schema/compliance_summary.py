@@ -5,6 +5,7 @@ from ninja import Schema
 
 class ComplianceProductOut(Schema):
     """Schema for compliance product output"""
+
     product_name: str
     annual_production: Decimal
     apr_dec_production: Decimal
@@ -15,12 +16,14 @@ class ComplianceProductOut(Schema):
 
 class ComplianceObligationOut(Schema):
     """Schema for compliance obligation output"""
+
     amount: Decimal
     status: str
 
 
 class ComplianceSummaryListOut(Schema):
     """Schema for compliance summary list output"""
+
     id: int
     operation_name: str
     reporting_year: int
@@ -52,6 +55,7 @@ class ComplianceSummaryListOut(Schema):
 
 class ComplianceSummaryOut(Schema):
     """Schema for compliance summary output"""
+
     id: int
     operation_name: str
     operation_bcghg_id: str
@@ -82,4 +86,4 @@ class ComplianceSummaryOut(Schema):
 
     @staticmethod
     def resolve_excess_emissions(obj) -> Decimal:
-        return round(obj.excess_emissions) 
+        return round(obj.excess_emissions)

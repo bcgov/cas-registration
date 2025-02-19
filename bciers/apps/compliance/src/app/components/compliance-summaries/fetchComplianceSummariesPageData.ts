@@ -9,7 +9,7 @@ export const fetchComplianceSummariesPageData = async (params: {
   count: number;
 }> => {
   const queryParams = buildQueryParams(params);
-  
+
   const data = await actionHandler(
     `compliance/summaries${queryParams}`,
     "GET",
@@ -20,4 +20,4 @@ export const fetchComplianceSummariesPageData = async (params: {
     items: data?.items || [],
     count: data?.count || 0,
   };
-}; 
+};

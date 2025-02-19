@@ -14,14 +14,13 @@ class ComplianceService:
         """Creates a compliance summary for a submitted report version"""
         with transaction.atomic():
             report_version = ReportVersion.objects.select_related('report').get(id=report_version_id)
-            
+
             # Get compliance data from reporting service
             compliance_data = ReportComplianceService.get_calculated_compliance_data(report_version_id)
 
             # Determine compliance status
             compliance_status = cls._determine_compliance_status(
-                compliance_data.excess_emissions,
-                compliance_data.credited_emissions
+                compliance_data.excess_emissions, compliance_data.credited_emissions
             )
 
             # Create compliance summary
@@ -37,7 +36,7 @@ class ComplianceService:
                 credited_emissions=compliance_data.credited_emissions,
                 reduction_factor=compliance_data.regulatory_values.reduction_factor,
                 tightening_rate=compliance_data.regulatory_values.tightening_rate,
-                compliance_status=compliance_status
+                compliance_status=compliance_status,
             )
 
             # Create compliance products
@@ -49,7 +48,7 @@ class ComplianceService:
                     apr_dec_production=product_data.apr_dec_production,
                     emission_intensity=product_data.emission_intensity,
                     allocated_industrial_process_emissions=product_data.allocated_industrial_process_emissions,
-                    allocated_compliance_emissions=product_data.allocated_compliance_emissions
+                    allocated_compliance_emissions=product_data.allocated_compliance_emissions,
                 )
 
             # Create compliance obligation if there are excess emissions
@@ -57,7 +56,7 @@ class ComplianceService:
                 ComplianceObligation.objects.create(
                     compliance_summary=summary,
                     amount=compliance_data.excess_emissions,
-                    status=ComplianceObligation.ObligationStatus.PENDING
+                    status=ComplianceObligation.ObligationStatus.PENDING,
                 )
 
             return summary
@@ -70,4 +69,4 @@ class ComplianceService:
         elif credited_emissions > Decimal('0'):
             return ComplianceSummary.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceSummary.ComplianceStatus.FULLY_MET 
+            return ComplianceSummary.ComplianceStatus.FULLY_MET

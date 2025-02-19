@@ -6,6 +6,7 @@ from .compliance_summary import ComplianceSummary
 
 class ComplianceObligation(TimeStampedModel):
     """Model to store compliance obligations"""
+
     class ObligationStatus(models.TextChoices):
         PENDING = "PENDING", "Pending"
         FULFILLED = "FULFILLED", "Fulfilled"
@@ -15,18 +16,14 @@ class ComplianceObligation(TimeStampedModel):
         ComplianceSummary,
         on_delete=models.PROTECT,
         related_name="obligation",
-        db_comment="The compliance summary this obligation belongs to"
+        db_comment="The compliance summary this obligation belongs to",
     )
-    amount = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="The amount of the obligation"
-    )
+    amount = models.DecimalField(max_digits=20, decimal_places=4, db_comment="The amount of the obligation")
     status = models.CharField(
         max_length=50,
         choices=ObligationStatus.choices,
         default=ObligationStatus.PENDING,
-        db_comment="The status of the obligation (e.g., PENDING, FULFILLED, PARTIALLY_FULFILLED)"
+        db_comment="The status of the obligation (e.g., PENDING, FULFILLED, PARTIALLY_FULFILLED)",
     )
 
     history = HistoricalRecords(
@@ -36,4 +33,4 @@ class ComplianceObligation(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store compliance obligations"
-        db_table = 'erc"."compliance_obligation' 
+        db_table = 'erc"."compliance_obligation'

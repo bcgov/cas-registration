@@ -34,4 +34,4 @@ export default stackMiddlewares([
   withAuthorization,
   withRulesAppliedCompliance,
   withResponseCompliance,
-]); 
+]);

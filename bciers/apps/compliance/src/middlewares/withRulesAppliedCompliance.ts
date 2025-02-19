@@ -43,4 +43,4 @@ export const withRulesAppliedCompliance: MiddlewareFactory = (
     }
     return next(request, _next);
   };
-}; 
+};

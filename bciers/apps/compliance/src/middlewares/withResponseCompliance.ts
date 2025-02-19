@@ -18,4 +18,4 @@ export const withResponseCompliance: MiddlewareFactory = () => {
 
     return NextResponse.rewrite(request.nextUrl);
   };
-}; 
+};

@@ -2,7 +2,7 @@ export interface ComplianceSummariesSearchParams {
   page?: string;
   pageSize?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface ComplianceSummary {
@@ -14,4 +14,4 @@ export interface ComplianceSummary {
   compliance_status?: string;
   penalty_status?: string;
   obligation_id?: string;
-} 
+}

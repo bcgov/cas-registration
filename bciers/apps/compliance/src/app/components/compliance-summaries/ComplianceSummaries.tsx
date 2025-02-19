@@ -16,4 +16,4 @@ export default function ComplianceSummaries({ initialData }: Props) {
   }
 
   return <ComplianceSummariesDataGrid initialData={initialData} />;
-} 
+}

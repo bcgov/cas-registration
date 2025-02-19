@@ -7,7 +7,6 @@ from registration.api import router as registration_router
 from reporting.api import router as reporting_router
 from service.error_service.handle_exception import handle_exception
 from compliance.api import router as compliance_router
-from ninja.errors import ValidationError
 
 # Docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
 # Filtering is case sensitive matching the filter expression anywhere inside the tag.
