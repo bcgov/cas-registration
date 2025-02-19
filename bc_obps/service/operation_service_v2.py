@@ -470,10 +470,12 @@ class OperationServiceV2:
             if created
         ]
         operation.documents.add(*operation_documents)
-        # 41
 
         # # this is not handled by changing registration purpose
-        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+        if (
+            operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+            and operation.opted_in_operation is None
+        ):
             operation = cls._create_opted_in_operation_detail(user_guid, operation)
 
         if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:

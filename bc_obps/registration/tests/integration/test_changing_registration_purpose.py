@@ -3,6 +3,7 @@ from model_bakery import baker
 from copy import deepcopy
 from registration.models import Operation, NaicsCode, DocumentType
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.constants import MOCK_DATA_URL
 from registration.utils import custom_reverse_lazy
@@ -299,6 +300,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.opt_in is False
+        assert OptedInOperationDetail.objects.count() == 0
+        assert OptedInOperationDetail._base_manager.count() == 1
         assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert self.operation.opted_in_operation.archived_at is not None
@@ -313,6 +316,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert self.operation.opt_in is False
+        assert OptedInOperationDetail.objects.count() == 0
+        assert OptedInOperationDetail._base_manager.count() == 1
         assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert self.operation.opted_in_operation.archived_at is not None
@@ -327,6 +332,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
         assert self.operation.opt_in is False
+        assert OptedInOperationDetail.objects.count() == 0
+        assert OptedInOperationDetail._base_manager.count() == 1  # this checks that the opt-in record was archived
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
@@ -340,6 +347,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.opt_in is False
+        assert OptedInOperationDetail.objects.count() == 0
+        assert OptedInOperationDetail._base_manager.count() == 1
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
@@ -357,6 +366,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
         assert self.operation.opt_in is False
+        assert OptedInOperationDetail.objects.count() == 0
+        assert OptedInOperationDetail._base_manager.count() == 1
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
