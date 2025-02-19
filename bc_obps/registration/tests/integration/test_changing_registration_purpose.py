@@ -301,9 +301,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
-        assert OptedInOperationDetail._base_manager.count() == 1
         assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
+            assert OptedInOperationDetail._base_manager.count() == 1
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
         else:
@@ -317,9 +317,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
-        assert OptedInOperationDetail._base_manager.count() == 1
         assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
+            assert OptedInOperationDetail._base_manager.count() == 1
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
         else:
@@ -333,8 +333,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
         assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
-        assert OptedInOperationDetail._base_manager.count() == 1  # this checks that the opt-in record was archived
         if self.operation.status == Operation.Statuses.REGISTERED:
+            assert OptedInOperationDetail._base_manager.count() == 1
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
         else:
@@ -348,8 +348,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
         assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
-        assert OptedInOperationDetail._base_manager.count() == 1
         if self.operation.status == Operation.Statuses.REGISTERED:
+            assert OptedInOperationDetail._base_manager.count() == 1
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
         else:
@@ -367,8 +367,8 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
         assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
-        assert OptedInOperationDetail._base_manager.count() == 1
         if self.operation.status == Operation.Statuses.REGISTERED:
+            assert OptedInOperationDetail._base_manager.count() == 1
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
         else:
