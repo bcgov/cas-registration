@@ -6,12 +6,12 @@ export interface ComplianceSummariesSearchParams {
 }
 
 export interface ComplianceSummary {
-  id: string;
-  reportingYear: number;
-  operationName: string;
-  excessEmissions: number;
-  outstandingBalance: number;
-  complianceStatus: string;
-  penaltyStatus: string;
-  obligationId: string;
+  id: number;
+  operation_name: string;
+  reporting_year: number;
+  excess_emissions: string;
+  outstanding_balance?: string;
+  compliance_status?: string;
+  penalty_status?: string;
+  obligation_id?: string;
 } 
