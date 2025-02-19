@@ -16,7 +16,7 @@ const complianceSummaryColumns = (): GridColDef[] => {
       field: "reportingYear",
       headerName: "Reporting Year",
       width: 150,
-      type: "number",
+      type: "string",
     },
     {
       field: "operationName",
@@ -26,15 +26,17 @@ const complianceSummaryColumns = (): GridColDef[] => {
     },
     {
       field: "excessEmissions",
-      headerName: "Excess Emissions (tCO2e)",
+      headerName: "Excess Emission",
       width: 200,
       type: "number",
+      valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
       field: "outstandingBalance",
       headerName: "Outstanding Balance",
       width: 200,
       type: "number",
+      valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
       field: "complianceStatus",
