@@ -8,73 +8,56 @@ from .compliance_period import CompliancePeriod
 
 class ComplianceSummary(TimeStampedModel):
     """Model to store compliance summaries for reports"""
+
     class ComplianceStatus(models.TextChoices):
         PARTIALLY_MET = "PARTIALLY_MET", "Partially Met"
-        FULLY_MET = "FULLY_MET", "Fully Met" 
+        FULLY_MET = "FULLY_MET", "Fully Met"
         EARNED_CREDITS = "EARNED_CREDITS", "Earned Credits"
 
     report = models.ForeignKey(
         Report,
         on_delete=models.PROTECT,
         related_name="compliance_summaries",
-        db_comment="The report this compliance summary is for"
+        db_comment="The report this compliance summary is for",
     )
     current_report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.PROTECT,
         related_name="compliance_summaries",
-        db_comment="The current version of the report this summary is based on"
+        db_comment="The current version of the report this summary is based on",
     )
     compliance_period = models.ForeignKey(
         CompliancePeriod,
         on_delete=models.PROTECT,
         related_name="compliance_summaries",
-        db_comment="The compliance period this summary belongs to"
+        db_comment="The compliance period this summary belongs to",
     )
     emissions_attributable_for_reporting = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="Total emissions attributable for reporting in tCO2e"
+        max_digits=20, decimal_places=4, db_comment="Total emissions attributable for reporting in tCO2e"
     )
     reporting_only_emissions = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="Emissions that are for reporting only in tCO2e"
+        max_digits=20, decimal_places=4, db_comment="Emissions that are for reporting only in tCO2e"
     )
     emissions_attributable_for_compliance = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="Total emissions attributable for compliance in tCO2e"
+        max_digits=20, decimal_places=4, db_comment="Total emissions attributable for compliance in tCO2e"
     )
-    emission_limit = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="The emission limit in tCO2e"
-    )
+    emission_limit = models.DecimalField(max_digits=20, decimal_places=4, db_comment="The emission limit in tCO2e")
     excess_emissions = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="The excess emissions in tCO2e (positive if over limit)"
+        max_digits=20, decimal_places=4, db_comment="The excess emissions in tCO2e (positive if over limit)"
     )
     credited_emissions = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="The credited emissions in tCO2e (positive if under limit)"
+        max_digits=20, decimal_places=4, db_comment="The credited emissions in tCO2e (positive if under limit)"
     )
     reduction_factor = models.DecimalField(
-        max_digits=10,
-        decimal_places=4,
-        db_comment="The reduction factor from NAICS regulatory values"
+        max_digits=10, decimal_places=4, db_comment="The reduction factor from NAICS regulatory values"
     )
     tightening_rate = models.DecimalField(
-        max_digits=10,
-        decimal_places=4,
-        db_comment="The tightening rate from NAICS regulatory values"
+        max_digits=10, decimal_places=4, db_comment="The tightening rate from NAICS regulatory values"
     )
     compliance_status = models.CharField(
         max_length=50,
         choices=ComplianceStatus.choices,
-        db_comment="The compliance status (e.g., PARTIALLY_MET, FULLY_MET, EARNED_CREDITS)"
+        db_comment="The compliance status (e.g., PARTIALLY_MET, FULLY_MET, EARNED_CREDITS)",
     )
 
     history = HistoricalRecords(
@@ -90,4 +73,4 @@ class ComplianceSummary(TimeStampedModel):
                 fields=["report", "current_report_version"],
                 name="unique_compliance_summary_per_report_version",
             )
-        ] 
+        ]

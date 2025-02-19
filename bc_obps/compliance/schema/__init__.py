@@ -1,1 +1,1 @@
-"""Schema package for compliance models""" 
+"""Schema package for compliance models"""
