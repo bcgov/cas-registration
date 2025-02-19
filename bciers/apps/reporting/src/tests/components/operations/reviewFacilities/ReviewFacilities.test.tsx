@@ -55,6 +55,22 @@ const mockFacilitiesInitialData = {
   ],
 };
 
+const mockFacilitiesInitialDataWithoutPastFacility = {
+  current_facilities: [
+    {
+      facility_id: "fake-guid1",
+      facility__name: "Facility 1",
+      is_selected: true,
+    },
+    {
+      facility_id: "fake-guid2",
+      facility__name: "Facility 2",
+      is_selected: false,
+    },
+  ],
+  past_facilities: [],
+};
+
 describe("LFOFacilitiesForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -230,5 +246,28 @@ describe("LFOFacilitiesForm", () => {
     fireEvent.click(saveButton);
 
     expect(mockRouterPush).toHaveBeenCalledTimes(0);
+  });
+
+  it("should not show past facilities section if no facilities are selected", async () => {
+    (actionHandler as Mock).mockResolvedValueOnce(
+      mockFacilitiesInitialDataWithoutPastFacility,
+    );
+
+    render(
+      <LFOFacilitiesForm
+        initialData={mockFacilitiesInitialDataWithoutPastFacility}
+        version_id={1}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Past facilities that belonged to this operation"),
+      ).not.toBeInTheDocument();
+    });
+
+    // Ensure that current facilities are still rendered
+    expect(screen.getByText("Facility 1")).toBeInTheDocument();
+    expect(screen.getByText("Facility 2")).toBeInTheDocument();
   });
 });
