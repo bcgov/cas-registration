@@ -3,6 +3,7 @@ from registration.models import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_new_entrant import ReportNewEntrant
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_new_entrant_production import Rls as ReportNewEntrantProductionRls
 
 
 class ReportNewEntrantProduction(TimeStampedModel):
@@ -42,3 +43,5 @@ class ReportNewEntrantProduction(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger("report_new_entrant__report_version"),
         ]
+
+    Rls = ReportNewEntrantProductionRls

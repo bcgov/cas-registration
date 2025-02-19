@@ -3,6 +3,7 @@ from reporting.models import ActivitySourceTypeJsonSchema, ReportDataBaseModel
 from reporting.models.report_activity import ReportActivity
 from reporting.models.source_type import SourceType
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_source_type import Rls as ReportSourceTypeRls
 
 
 class ReportSourceType(ReportDataBaseModel):
@@ -39,3 +40,5 @@ class ReportSourceType(ReportDataBaseModel):
             *ReportDataBaseModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportSourceTypeRls

@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import (
     RangeBoundary,
     RangeOperators,
 )
+from reporting.models.rls_configs.naics_regulatory_value import Rls as NaicsRegulatoryValueRls
 
 
 class TsTzRange(models.Func):
@@ -52,3 +53,5 @@ class NaicsRegulatoryValue(BaseModel):
                 ],
             ),
         ]
+
+    Rls = NaicsRegulatoryValueRls

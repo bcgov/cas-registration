@@ -3,6 +3,7 @@ from django.db.models import Q
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_verification import ReportVerification
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_verification_visit import Rls as ReportVerificationVisitRls
 
 
 class ReportVerificationVisit(TimeStampedModel):
@@ -61,3 +62,5 @@ class ReportVerificationVisit(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger("report_verification__report_version"),
         ]
+
+    Rls = ReportVerificationVisitRls

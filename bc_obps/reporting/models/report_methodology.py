@@ -3,6 +3,7 @@ from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_emission import ReportEmission
 from reporting.models.methodology import Methodology
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_methodology import Rls as ReportMethodologyRls
 
 
 class ReportMethodology(ReportDataBaseModel):
@@ -28,3 +29,5 @@ class ReportMethodology(ReportDataBaseModel):
             *ReportDataBaseModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportMethodologyRls

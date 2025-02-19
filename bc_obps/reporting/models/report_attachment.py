@@ -3,6 +3,7 @@ from django.db.models import CharField, FileField, ForeignKey
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_attachment import Rls as ReportAttachmentRls
 
 FOLDER_NAME = "report_attachments/%Y/"
 
@@ -46,3 +47,5 @@ class ReportAttachment(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportAttachmentRls

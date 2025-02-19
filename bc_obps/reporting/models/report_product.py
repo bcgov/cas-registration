@@ -5,6 +5,7 @@ from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_product import Rls as ReportProductRls
 
 
 class ReportProduct(TimeStampedModel):
@@ -101,3 +102,5 @@ class ReportProduct(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportProductRls

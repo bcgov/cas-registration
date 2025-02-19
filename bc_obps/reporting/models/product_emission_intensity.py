@@ -7,6 +7,7 @@ from django.contrib.postgres.fields import (
     RangeBoundary,
     RangeOperators,
 )
+from reporting.models.rls_configs.product_emission_intensity import Rls as ProductEmissionIntensityRls
 
 
 class TsTzRange(models.Func):
@@ -54,3 +55,5 @@ class ProductEmissionIntensity(BaseModel):
                 ],
             ),
         ]
+
+    Rls = ProductEmissionIntensityRls

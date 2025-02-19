@@ -212,4 +212,4 @@ if not DEBUG and ENVIRONMENT == "dev":
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BACKEND_HOST')}"]
 
 
-RLS_FLAG = False
+RLS_FLAG = True
