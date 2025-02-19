@@ -4,6 +4,7 @@ from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_activity import Rls as ReportActivityRls
 
 
 class ReportActivity(ReportDataBaseModel):
@@ -41,3 +42,5 @@ class ReportActivity(ReportDataBaseModel):
             *ReportDataBaseModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportActivityRls

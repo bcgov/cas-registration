@@ -3,9 +3,9 @@ from django.db import models
 from registration.models import Activity
 from reporting.models import SourceType, GasType, Methodology, Configuration, ReportingField
 import typing
-
 from reporting.models.custom_methodology_schema import CustomMethodologySchema
 from reporting.utils import validate_overlapping_records
+from reporting.models.rls_configs.configuration_element import Rls as ConfigurationElementRls
 
 
 class ConfigurationElement(BaseModel):
@@ -34,6 +34,8 @@ class ConfigurationElement(BaseModel):
     class Meta:
         db_table_comment = "Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI"
         db_table = 'erc"."configuration_element'
+
+    Rls = ConfigurationElementRls
 
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:
