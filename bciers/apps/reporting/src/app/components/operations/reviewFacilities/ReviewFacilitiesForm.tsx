@@ -71,67 +71,65 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const getFacilityIdsForSubmission = (data: SubmissionData) => {
     const facilityIds: string[] = [];
 
-    // Helper function to find facility_id by facility__name
     const findFacilityId = (name: string, facilities: Facility[]) => {
-      const facility = facilities.find(
-        (fac: any) => fac.facility__name === name,
-      );
+      const facility = facilities?.find((fac) => fac.facility__name === name);
       return facility ? facility.facility_id : null;
     };
 
-    // Get current facilities
-    data.current_facilities_section.current_facilities.forEach(
-      (name: string) => {
+    // Handle Current Facilities
+    if (data.current_facilities_section?.current_facilities?.length) {
+      data.current_facilities_section.current_facilities.forEach(
+        (name: string) => {
+          const facilityId = findFacilityId(
+            name,
+            facilitiesData.current_facilities || [],
+          );
+          if (facilityId) facilityIds.push(facilityId);
+        },
+      );
+    }
+
+    // Handle Past Facilities (Avoiding undefined errors)
+    if (data.past_facilities_section?.past_facilities?.length) {
+      data.past_facilities_section.past_facilities.forEach((name: string) => {
         const facilityId = findFacilityId(
           name,
-          facilitiesData.current_facilities,
+          facilitiesData.past_facilities || [],
         );
-        if (facilityId) {
-          facilityIds.push(facilityId);
-        }
-      },
-    );
-
-    // Get past facilities
-    data.past_facilities_section.past_facilities.forEach((name: string) => {
-      const facilityId = findFacilityId(name, facilitiesData.past_facilities);
-      if (facilityId) {
-        facilityIds.push(facilityId);
-      }
-    });
+        if (facilityId) facilityIds.push(facilityId);
+      });
+    }
 
     return facilityIds;
   };
 
   // returns an array of facility names that were previously selected but are not currently selected
   const getListOfRemovedFacilities = () => {
-    // get the array of currently selected facilities
-    const selectedFacilities =
-      formData.current_facilities_section.current_facilities.concat(
-        formData.past_facilities_section.past_facilities,
-      );
-    // get the array of initially selected facilities
-    const previouslySelectedFacilities = formData.current_facilities
-      .filter((curr_facility: Facility) => curr_facility.is_selected) // filter out the unselected facilities
-      .map((curr_facility: Facility) => curr_facility.facility__name) // flatten the array to just the facility names
-      .concat(
-        // join the current and past facilities
-        formData.past_facilities
-          .filter((past_facility: Facility) => past_facility.is_selected)
-          .map((past_facility: Facility) => past_facility.facility__name),
-      );
-    // return the facilities that were previously selected but are not currently selected
+    const selectedFacilities = [
+      ...(formData.current_facilities_section?.current_facilities || []),
+      ...(formData.past_facilities_section?.past_facilities || []),
+    ];
+
+    const previouslySelectedFacilities = [
+      ...(formData.current_facilities
+        ?.filter((curr: Facility) => curr.is_selected)
+        .map((curr: Facility) => curr.facility__name) || []),
+      ...(formData.past_facilities
+        ?.filter((past: Facility) => past.is_selected)
+        .map((past: Facility) => past.facility__name) || []),
+    ];
+
     return previouslySelectedFacilities.filter(
-      (facility: any) => !selectedFacilities.includes(facility),
+      (facility) => !selectedFacilities.includes(facility),
     );
   };
 
-  const isAnyFacilitySelected = (data: SubmissionData) => {
-    return (
-      data.current_facilities_section.current_facilities.length > 0 ||
-      data.past_facilities_section.past_facilities.length > 0
-    );
-  };
+  const isAnyFacilitySelected = ({
+    current_facilities_section,
+    past_facilities_section,
+  }: SubmissionData) =>
+    current_facilities_section.current_facilities.length > 0 ||
+    past_facilities_section?.past_facilities.length > 0;
 
   const handleChange = (e: any) => {
     setFormData({ ...e.formData });
@@ -149,7 +147,6 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
     const pathToRevalidate = `reporting/reports/${version_id}/review-facilities-list`;
-
     try {
       const response = await actionHandler(endpoint, method, pathToRevalidate, {
         body: JSON.stringify(
