@@ -4,7 +4,6 @@ from service.data_access_service.operation_designated_operator_timeline_service 
 )
 import pytest
 from model_bakery import baker
-from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from registration.constants import UNAUTHORIZED_MESSAGE
 
 pytestmark = pytest.mark.django_db
@@ -22,17 +21,8 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
     def test_get_operations_for_industry_user():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        # transferred operation - should not be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
-            operator=approved_user_operator.operator,
-        )
-
-        # closed operations
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
             operator=approved_user_operator.operator,
             _quantity=20,
         )
@@ -40,7 +30,6 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
         # someone else's operations - should not be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
             _quantity=5,
         )
 
@@ -52,7 +41,6 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
     @staticmethod
     def test_get_operations_for_internal_user():
-
         # non-registered operation - should not be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
@@ -63,14 +51,12 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
-            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
         )
 
         # closed operations
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
-            status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
             _quantity=20,
         )
 

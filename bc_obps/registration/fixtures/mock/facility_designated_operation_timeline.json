@@ -6,8 +6,7 @@
       "created_at": "2024-06-05T23:19:34.959Z",
       "facility": "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
       "operation": "002d5a9e-32a6-4191-938c-2c02bfec592d",
-      "start_date": "2024-06-05T23:19:32Z",
-      "status": "Closed"
+      "start_date": "2024-06-05T23:19:32Z"
     }
   },
   {
@@ -18,8 +17,7 @@
       "facility": "459b80f9-b5f3-48aa-9727-90c30eaf3a58",
       "operation": "002d5a9e-32a6-4191-938c-2c02bfec592d",
       "start_date": "2024-06-05T23:19:56Z",
-      "end_date": "2024-06-28T23:20:02Z",
-      "status": "Transferred"
+      "end_date": "2024-06-28T23:20:02Z"
     }
   },
   {
@@ -29,8 +27,7 @@
       "created_at": "2024-06-05T23:19:58.000Z",
       "facility": "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
       "operation": "002d5a9e-32a6-4191-938c-2c02bfec592d",
-      "start_date": "2024-06-05T23:19:57Z",
-      "status": "Temporarily Shutdown"
+      "start_date": "2024-06-05T23:19:57Z"
     }
   },
   {

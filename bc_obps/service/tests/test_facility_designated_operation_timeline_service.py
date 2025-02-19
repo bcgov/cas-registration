@@ -46,18 +46,11 @@ class TestGetTimeline:
         users_operation = baker.make_recipe(
             'registration.tests.utils.operation', operator=approved_user_operator.operator
         )
-        # user's timeline - 5 transferred, 10 active to make sure the filter is working
-        baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline',
-            operation=users_operation,
-            _quantity=5,
-            status=FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
-        )
+        # user's timeline
         baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline',
             operation=users_operation,
             _quantity=10,
-            status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
         )
         # random timeline
         baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
@@ -67,8 +60,6 @@ class TestGetTimeline:
         )
         # the industry user should only be able to see their one
         assert facilities.count() == 10
-        # Make sure the status filter is working
-        assert all(facility.status == FacilityDesignatedOperationTimeline.Statuses.ACTIVE for facility in facilities)
 
 
 class TestListTimeline:
@@ -150,21 +141,17 @@ class TestFacilityDesignatedOperationTimelineService:
     def test_set_timeline_status_and_end_date():
         timeline = baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline',
-            status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
         )
-        new_status = FacilityDesignatedOperationTimeline.Statuses.CLOSED
         end_date = datetime.now(ZoneInfo("UTC"))
 
         updated_timeline = FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
-            timeline, new_status, end_date
+            timeline, end_date
         )
 
-        assert updated_timeline.status == new_status
         assert updated_timeline.end_date == end_date
         assert updated_timeline.facility_id == timeline.facility_id
         assert updated_timeline.operation_id == timeline.operation_id
 
         # Verify the changes are saved in the database
         timeline.refresh_from_db()
-        assert timeline.status == new_status
         assert timeline.end_date == end_date

@@ -19,7 +19,7 @@ class FacilityDesignatedOperationTimelineOut(ModelSchema):
 
     class Meta:
         model = FacilityDesignatedOperationTimeline
-        fields = ['id', 'status']
+        fields = ['id']
 
 
 class FacilityDesignatedOperationTimelineFilterSchema(FilterSchema):
@@ -29,5 +29,4 @@ class FacilityDesignatedOperationTimelineFilterSchema(FilterSchema):
     facility__bcghg_id__id: Optional[str] = Field(None, json_schema_extra={'q': 'facility__bcghg_id__id__icontains'})
     facility__name: Optional[str] = Field(None, json_schema_extra={'q': 'facility__name__icontains'})
     facility__type: Optional[str] = Field(None, json_schema_extra={'q': 'facility__type__icontains'})
-    status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
     end_date: Optional[bool] = Field(None, json_schema_extra={'q': 'end_date__isnull'})

@@ -491,7 +491,6 @@ class TestTransferEventService:
         # Verify that set_timeline_status_and_end_date was called for facility_1 (existing timeline)
         mock_set_timeline.assert_called_once_with(
             timeline_1,
-            FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,
         )
 
@@ -502,7 +501,6 @@ class TestTransferEventService:
                 "facility": facility_2,
                 "operation": transfer_event.to_operation,
                 "start_date": transfer_event.effective_date,
-                "status": FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
             },
         )
 
@@ -512,7 +510,6 @@ class TestTransferEventService:
                 "facility": facility_1,
                 "operation": transfer_event.to_operation,
                 "start_date": transfer_event.effective_date,
-                "status": FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
             },
         )
         # Verify that update_operation_for_facility was called twice, once for each facility
@@ -556,7 +553,6 @@ class TestTransferEventService:
         # Verify that set_timeline_status_and_end_date was called since the timeline exists
         mock_set_timeline.assert_called_once_with(
             mock_get_current_timeline.return_value,
-            OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,
         )
 
@@ -576,7 +572,6 @@ class TestTransferEventService:
                 "operation": transfer_event.operation,
                 "operator": transfer_event.to_operator,
                 "start_date": transfer_event.effective_date,
-                "status": OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
             },
         )
 

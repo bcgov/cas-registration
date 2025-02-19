@@ -30,7 +30,6 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         # make sure key fields are present
         assert response_items_1[0].keys() == {
             'id',
-            'status',
             'facility__name',
             'facility__type',
             'facility__bcghg_id__id',

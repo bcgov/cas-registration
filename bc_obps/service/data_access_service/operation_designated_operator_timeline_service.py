@@ -57,7 +57,6 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         sfo_facility_name_subquery = facilities_subquery.values('facility__name')[:1]
 
         only_fields: List[str] = [
-            *OperationTimelineListOut.Meta.fields,
             "operation__name",
             "operation__type",
             "operation__bc_obps_regulated_operation__id",
@@ -84,6 +83,4 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         else:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(operator_id=user_operator.operator_id).exclude(
-                status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED
-            )
+            return queryset.filter(operator_id=user_operator.operator_id)

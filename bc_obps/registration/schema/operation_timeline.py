@@ -2,6 +2,7 @@ from uuid import UUID
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from typing import Optional
 from ninja import Field, FilterSchema, ModelSchema
+from common.constants import AUDIT_FIELDS
 
 
 class OperationTimelineListOut(ModelSchema):
@@ -21,9 +22,7 @@ class OperationTimelineListOut(ModelSchema):
 
     class Meta:
         model = OperationDesignatedOperatorTimeline
-        fields = [
-            'status',
-        ]
+        exclude = ["start_date", "end_date", "operation", "operator", *AUDIT_FIELDS]
 
 
 class OperationTimelineFilterSchema(FilterSchema):
