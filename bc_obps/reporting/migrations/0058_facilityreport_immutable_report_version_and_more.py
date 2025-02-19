@@ -298,11 +298,11 @@ class Migration(migrations.Migration):
             trigger=pgtrigger.compiler.Trigger(
                 name='immutable_report_version',
                 sql=pgtrigger.compiler.UpsertTriggerSql(
-                    func='\n            declare\n                status text;\n            begin\n                select rel1.status into status\n                from "erc"."report_version" rel1\n                join "erc"."report_verification" rel2 on rel2.report_version_id=rel1.id\n                join "erc"."verification_visit" rel3 on rel3.report_verification_id=rel2.id\n                where rel3.id=new.id\n                limit 1;\n\n                if status=\'Submitted\' then\n                    raise exception \'reportverificationvisit record is immutable after a report version has been submitted\';\n                end if;\n\n                return new;\n            end;\n            ',
+                    func='\n            declare\n                status text;\n            begin\n                select rel1.status into status\n                from "erc"."report_version" rel1\n                join "erc"."report_verification" rel2 on rel2.report_version_id=rel1.id\n                join "erc"."report_verification_visit" rel3 on rel3.report_verification_id=rel2.id\n                where rel3.id=new.id\n                limit 1;\n\n                if status=\'Submitted\' then\n                    raise exception \'reportverificationvisit record is immutable after a report version has been submitted\';\n                end if;\n\n                return new;\n            end;\n            ',
                     hash='15ba5fea0ce08a292c133688a45344c3fc7447c0',
                     operation='UPDATE',
                     pgid='pgtrigger_immutable_report_version_4239c',
-                    table='erc"."verification_visit',
+                    table='erc"."report_verification_visit',
                     when='BEFORE',
                 ),
             ),
