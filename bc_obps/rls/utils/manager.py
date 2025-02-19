@@ -85,6 +85,5 @@ class RlsManager:
 
     @classmethod
     def re_apply_rls(cls) -> None:
-        if settings.RLS_FLAG is True:
-            cls.revoke_all_privileges()
-            cls.apply_rls()
+        cls.revoke_all_privileges()
+        cls.apply_rls()
