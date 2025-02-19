@@ -2,7 +2,7 @@ from django.test import TestCase
 from .base_program_configuration_test import BaseProgramConfigurationTest
 
 
-class NaturalGasOtherThanNonCompression2024Test(BaseProgramConfigurationTest, TestCase):
+class LngActivities2024Test(BaseProgramConfigurationTest, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.activity_name = "LNG activities"
@@ -63,19 +63,19 @@ class NaturalGasOtherThanNonCompression2024Test(BaseProgramConfigurationTest, Te
             },
             "Acid gas removal venting or incineration": {
                 "CO2": {
-                    "WCI.353 (c)": 0,
+                    "WCI.363 (c)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 }
             },
             "Dehydrator venting": {
                 "CO2": {
-                    "WCI.353 (d)": 0,
+                    "WCI.363 (d)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
                 "CH4": {
-                    "WCI.353 (d)": 0,
+                    "WCI.363 (d)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
@@ -94,18 +94,18 @@ class NaturalGasOtherThanNonCompression2024Test(BaseProgramConfigurationTest, Te
             },
             "Releases from tanks used for storage, production or processing": {
                 "CO2": {
-                    "WCI.353 (h)(1)": 0,
-                    "WCI.353 (h)(2)": 0,
-                    "WCI.353 (h)(3)": 0,
-                    "WCI.353 (h)(4)": 0,
+                    "WCI.363 (h)(1)": 0,
+                    "WCI.363 (h)(2)": 0,
+                    "WCI.363 (h)(3)": 0,
+                    "WCI.363 (h)(4)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
                 "CH4": {
-                    "WCI.353 (h)(1)": 0,
-                    "WCI.353 (h)(2)": 0,
-                    "WCI.353 (h)(3)": 0,
-                    "WCI.353 (h)(4)": 0,
+                    "WCI.363 (h)(1)": 0,
+                    "WCI.363 (h)(2)": 0,
+                    "WCI.363 (h)(3)": 0,
+                    "WCI.363 (h)(4)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
@@ -193,7 +193,7 @@ class NaturalGasOtherThanNonCompression2024Test(BaseProgramConfigurationTest, Te
             },
             "Enhanced oil recovery injection pump blowdowns": {
                 "CO2": {
-                    "WCI.353 (t)": 0,
+                    "WCI.363 (t)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
