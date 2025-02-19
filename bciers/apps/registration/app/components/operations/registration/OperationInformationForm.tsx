@@ -17,7 +17,7 @@ import {
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
 import { eioOperationInformationSchema } from "@/administration/app/data/jsonSchema/operationInformation/operationInformation";
-import ConfirmChangeOfRegistrationPurposeModal from "./ConfirmChangeOfRegistrationPurposeModal";
+import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
 
 interface OperationInformationFormProps {
   rawFormData: { [key: string]: any };

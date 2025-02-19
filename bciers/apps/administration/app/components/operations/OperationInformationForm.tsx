@@ -21,7 +21,7 @@ import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
-import ConfirmChangeOfRegistrationPurposeModal from "apps/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
+import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
 
 const OperationInformationForm = ({
   formData,
