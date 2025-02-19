@@ -1,7 +1,6 @@
 "use client";
 
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
-import { OperationInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState, useEffect } from "react";
@@ -21,7 +20,7 @@ import { eioOperationInformationSchema } from "@/administration/app/data/jsonSch
 import ConfirmChangeOfRegistrationPurposeModal from "./ConfirmChangeOfRegistrationPurposeModal";
 
 interface OperationInformationFormProps {
-  rawFormData: OperationInformationFormData;
+  rawFormData: { [key: string]: any };
   schema: RJSFSchema;
   step: number;
   steps: string[];
@@ -35,7 +34,7 @@ const OperationInformationForm = ({
 }: OperationInformationFormProps) => {
   const router = useRouter();
   const [selectedOperation, setSelectedOperation] = useState(
-    rawFormData.operation,
+    rawFormData?.operation,
   );
 
   const [error, setError] = useState(undefined);
