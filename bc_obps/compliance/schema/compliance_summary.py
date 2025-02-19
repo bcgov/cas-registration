@@ -25,6 +25,9 @@ class ComplianceSummaryListOut(Schema):
     operation_name: str
     reporting_year: int
     excess_emissions: Decimal
+    compliance_status: str
+    penalty_status: str | None
+    obligation_id: int | None
 
     @staticmethod
     def resolve_operation_name(obj) -> str:
@@ -33,6 +36,18 @@ class ComplianceSummaryListOut(Schema):
     @staticmethod
     def resolve_reporting_year(obj) -> int:
         return obj.compliance_period.end_date.year
+
+    @staticmethod
+    def resolve_excess_emissions(obj) -> Decimal:
+        return round(obj.excess_emissions)
+
+    @staticmethod
+    def resolve_penalty_status(obj) -> str | None:
+        return obj.obligation.penalty_status if hasattr(obj, 'obligation') and obj.obligation else None
+
+    @staticmethod
+    def resolve_obligation_id(obj) -> int | None:
+        return obj.obligation.id if hasattr(obj, 'obligation') and obj.obligation else None
 
 
 class ComplianceSummaryOut(Schema):
@@ -63,4 +78,8 @@ class ComplianceSummaryOut(Schema):
 
     @staticmethod
     def resolve_reporting_year(obj) -> int:
-        return obj.compliance_period.end_date.year 
+        return obj.compliance_period.end_date.year
+
+    @staticmethod
+    def resolve_excess_emissions(obj) -> Decimal:
+        return round(obj.excess_emissions) 
