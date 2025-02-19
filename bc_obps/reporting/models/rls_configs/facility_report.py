@@ -19,12 +19,13 @@ class Rls:
     grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.FACILITY_REPORT)
     m2m_models_grants_mapping = {
         ReportingTableNames.FACILITY_REPORT_ACTIVITIES: {
-            RlsRoles.CAS_DIRECTOR: [
+            RlsRoles.INDUSTRY_USER: [
                 RlsOperations.SELECT,
                 RlsOperations.INSERT,
                 RlsOperations.UPDATE,
                 RlsOperations.DELETE,
             ],
+            RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
             RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
             RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
             RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],

@@ -20,23 +20,25 @@ class Rls:
     # M2M relationships
     m2m_models_grants_mapping = {
         ReportingTableNames.REPORT_OPERATION_ACTIVITIES: {
-            RlsRoles.CAS_DIRECTOR: [
+            RlsRoles.INDUSTRY_USER: [
                 RlsOperations.SELECT,
                 RlsOperations.INSERT,
                 RlsOperations.UPDATE,
                 RlsOperations.DELETE,
             ],
+            RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
             RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
             RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
             RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
         },
         ReportingTableNames.REPORT_OPERATION_REGULATED_PRODUCTS: {
-            RlsRoles.CAS_DIRECTOR: [
+            RlsRoles.INDUSTRY_USER: [
                 RlsOperations.SELECT,
                 RlsOperations.INSERT,
                 RlsOperations.UPDATE,
                 RlsOperations.DELETE,
             ],
+            RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
             RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
             RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
             RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
