@@ -84,6 +84,68 @@ CONFIG_SOURCE_TYPE_SCHEMA = [
 ]
 
 
+def init_additional_methodology_data(apps, schema_monitor):
+    '''
+    Add new methodology data to erc.methodology
+    '''
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Methodology.objects.bulk_create(
+        [
+            Methodology(name='Default emission factor'),
+            Methodology(name='Measured emission factor'),
+            Methodology(name="WCI.203(a)(1)"),
+            Methodology(name="WCI.203(a)(2)"),
+            Methodology(name="WCI.203(a)(3)"),
+            Methodology(name="WCI.203(b)"),
+            Methodology(name="WCI.203(c)"),
+            Methodology(name="WCI.203(d)"),
+            Methodology(name="WCI.203(e)(1)"),
+            Methodology(name="WCI.203(e)(2)(A)(i)"),
+            Methodology(name="WCI.203(e)(2)(A)(ii)"),
+            Methodology(name="WCI.203(e)(B)"),
+            Methodology(name="WCI.203(e)(3)(A)"),
+            Methodology(name="WCI.203(e)(3)(B)"),
+            Methodology(name="WCI.203(i)(1)"),
+            Methodology(name="WCI.203(i)(2)"),
+            Methodology(name="WCI.203(j)(2)"),
+            Methodology(name="WCI.203(l)"),
+            Methodology(name="WCI.203(m)(1)"),
+            Methodology(name="WCI.203(m)(2)"),
+        ]
+    )
+
+
+def reverse_init_additional_methodology_data(apps, schema_monitor):
+    '''
+    Remove new methodology data from erc.methodology
+    '''
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Methodology.objects.filter(
+        name__in=[
+            'Default emission factor',
+            'Measured emission factor',
+            "WCI.203(a)(1)",
+            "WCI.203(a)(2)",
+            "WCI.203(a)(3)",
+            "WCI.203(b)",
+            "WCI.203(c)",
+            "WCI.203(d)",
+            "WCI.203(e)(1)",
+            "WCI.203(e)(2)(A)(i)",
+            "WCI.203(e)(2)(A)(ii)",
+            "WCI.203(e)(B)",
+            "WCI.203(e)(3)(A)",
+            "WCI.203(e)(3)(B)",
+            "WCI.203(i)(1)",
+            "WCI.203(i)(2)",
+            "WCI.203(j)(2)",
+            "WCI.203(l)",
+            "WCI.203(m)(1)",
+            "WCI.203(m)(2)",
+        ]
+    ).delete()
+
+
 def init_configuration_element_data(apps, schema_monitor):
     '''
     Add initial data to erc.configuration_element
@@ -827,6 +889,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(
+            init_additional_methodology_data,
+            reverse_init_additional_methodology_data,
+        ),
         migrations.RunPython(
             init_configuration_element_data,
             reverse_init_configuration_element_data,
