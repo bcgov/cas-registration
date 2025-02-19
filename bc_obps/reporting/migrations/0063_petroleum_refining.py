@@ -42,7 +42,7 @@ CONFIG_SOURCE_TYPE_SCHEMA = [
     (
         "7_oil_water_separators",
         "Oil-water separators at refineries",
-        True,
+        False,
         False,
     ),
     (
