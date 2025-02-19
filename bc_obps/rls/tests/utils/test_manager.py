@@ -1,12 +1,9 @@
-import unittest
 from unittest import TestCase
 from unittest.mock import patch, MagicMock
-from django.conf import settings
 from psycopg.sql import Composed, SQL, Identifier
 from rls.utils.manager import RlsManager
 
 
-@unittest.skipIf(not settings.RLS_FLAG, "RLS implementation")
 class TestRlsManager(TestCase):
     @patch('django.db.connection.cursor')
     def test_revoke_all_privileges(self, mock_cursor):
