@@ -1,5 +1,4 @@
 from datetime import datetime
-from itertools import cycle
 from zoneinfo import ZoneInfo
 
 from registration.models import OperationDesignatedOperatorTimeline
@@ -171,7 +170,6 @@ facility_designated_operation_timeline = Recipe(
     facility=foreign_key(
         facility
     ),  # note: you have to manually assign the correct operation_id to this facility in each test if desired
-    status=cycle([status for status in FacilityDesignatedOperationTimeline.Statuses]),
     end_date=datetime.now(ZoneInfo("UTC")),
 )
 
@@ -180,7 +178,6 @@ operation_designated_operator_timeline = Recipe(
     operation=foreign_key(operation),
     operator=foreign_key(operator),
     start_date=datetime.now(ZoneInfo("UTC")),
-    status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
     end_date=datetime.now(ZoneInfo("UTC")),
 )
 
