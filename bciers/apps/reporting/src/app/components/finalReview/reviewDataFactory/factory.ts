@@ -1,4 +1,3 @@
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import activityFactoryItem from "./activityFactoryItem";
 import nonAttributableEmissionsFactoryItem from "./nonAttributableEmissionsFactoryItem";
 import operationReviewFactoryItem from "./operationReviewFactoryItem";
@@ -9,6 +8,7 @@ import allocationOfEmissionsFactoryItem from "./allocationOfEmissionsFactoryItem
 import { RJSFSchema } from "@rjsf/utils";
 import additionalReportingDataFactoryItem from "./additionalReportingDataFactoryItem";
 import complianceSummaryFactoryItem from "./complianceSummaryFactoryItem";
+import operationEmissionSummaryFactoryItem from "./operationEmissionSummaryFactoryItem";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 
 export type ReviewData = {
@@ -26,30 +26,24 @@ export type ReviewDataFactoryItem = (
 export default async function reviewDataFactory(
   versionId: number,
 ): Promise<ReviewData[]> {
-  const facilityId = (await getFacilityReport(versionId)).facility_id;
-  const currentFacilities = (await getOperationFacilitiesList(versionId)) || [];
+  // 🚀 Fetch facilities for this report version
+  const listFacilities = (await getOperationFacilitiesList(versionId)) || [];
+  const currentFacilities = listFacilities.current_facilities;
+  const facilityId = currentFacilities[0].facility_id;
+  const operationType = currentFacilities.length > 1 ? "LFO" : "SFO";
 
   const reviewData: ReviewData[] = [
     ...(await operationReviewFactoryItem(versionId, facilityId)),
     ...(await personResponsibleFactoryItem(versionId, facilityId)),
-    // Facility activities will be inserted here
-    ...(await nonAttributableEmissionsFactoryItem(versionId, facilityId)),
-    ...(await emissionsSummaryFactoryItem(versionId, facilityId)),
-    ...(await productionDataFactoryItem(versionId, facilityId)),
-    ...(await allocationOfEmissionsFactoryItem(versionId, facilityId)),
+    // Facility activity data will be inserted here
     ...(await additionalReportingDataFactoryItem(versionId, facilityId)),
     ...(await complianceSummaryFactoryItem(versionId, facilityId)),
   ];
 
   let insertIndex = 2; // Third position in the array
-
-  for (const facility of currentFacilities.current_facilities) {
+  // Facility activity data
+  for (const facility of currentFacilities) {
     if (facility.is_selected) {
-      const facilityActivities = await activityFactoryItem(
-        versionId,
-        facility.facility_id,
-      );
-
       reviewData.splice(insertIndex, 0, {
         schema: {
           type: "object",
@@ -57,12 +51,35 @@ export default async function reviewDataFactory(
           properties: {},
         },
         uiSchema: {},
-        data: facilityActivities,
+        data: [
+          ...(await activityFactoryItem(versionId, facility.facility_id)),
+          ...(await nonAttributableEmissionsFactoryItem(
+            versionId,
+            facility.facility_id,
+          )),
+          ...(await emissionsSummaryFactoryItem(
+            versionId,
+            facility.facility_id,
+          )),
+          ...(await productionDataFactoryItem(versionId, facility.facility_id)),
+          ...(await allocationOfEmissionsFactoryItem(
+            versionId,
+            facility.facility_id,
+          )),
+        ],
         isCollapsible: true, // Marks this section as collapsible
       });
 
       insertIndex++; // Adjust the index for multiple selected facilities
     }
+  }
+  // Insert operationEmissionSummaryFactoryItem if operationType is "LFO"
+  if (operationType === "LFO") {
+    const emissionSummary = await operationEmissionSummaryFactoryItem(
+      versionId,
+      facilityId,
+    );
+    reviewData.splice(reviewData.length - 1, 0, ...emissionSummary);
   }
 
   return reviewData;

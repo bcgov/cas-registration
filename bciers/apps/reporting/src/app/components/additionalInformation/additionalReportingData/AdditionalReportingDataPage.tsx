@@ -65,6 +65,7 @@ export default async function AdditionalReportingDataPage({
       isNewEntrant={isNewEntrant}
       initialFormData={transformedData}
       taskListElements={taskListElements}
+      operationType={operationType?.operation_type}
     />
   );
 }
