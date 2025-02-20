@@ -10,8 +10,8 @@ class ComplianceSummary(TimeStampedModel):
     """Model to store compliance summaries for reports"""
 
     class ComplianceStatus(models.TextChoices):
-        PARTIALLY_MET = "PARTIALLY_MET", "Partially Met"
-        FULLY_MET = "FULLY_MET", "Fully Met"
+        OBLIGATION_NOT_MET = "OBLIGATION_NOT_MET", "Obligation Not Met"
+        OBLIGATION_FULLY_MET = "OBLIGATION_FULLY_MET", "Obligation Fully Met"
         EARNED_CREDITS = "EARNED_CREDITS", "Earned Credits"
 
     report = models.ForeignKey(
