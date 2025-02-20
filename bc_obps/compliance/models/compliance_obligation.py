@@ -12,6 +12,11 @@ class ComplianceObligation(TimeStampedModel):
         FULFILLED = "FULFILLED", "Fulfilled"
         PARTIALLY_FULFILLED = "PARTIALLY_FULFILLED", "Partially Fulfilled"
 
+    class PenaltyStatus(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        PAID = "PAID", "Paid"
+        OVERDUE = "OVERDUE", "Overdue"
+
     compliance_summary = models.OneToOneField(
         ComplianceSummary,
         on_delete=models.PROTECT,
@@ -24,6 +29,12 @@ class ComplianceObligation(TimeStampedModel):
         choices=ObligationStatus.choices,
         default=ObligationStatus.PENDING,
         db_comment="The status of the obligation (e.g., PENDING, FULFILLED, PARTIALLY_FULFILLED)",
+    )
+    penalty_status = models.CharField(
+        max_length=50,
+        choices=PenaltyStatus.choices,
+        default=PenaltyStatus.PENDING,
+        db_comment="The status of the penalty (e.g., PENDING, PAID, OVERDUE)",
     )
 
     history = HistoricalRecords(
