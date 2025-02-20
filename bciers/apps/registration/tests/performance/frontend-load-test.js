@@ -1,9 +1,9 @@
 /* eslint-disable */
 import exec from "k6/execution";
-import landing_page from "./scenarios/frontend/landing_page.js";
+import landingPage from "./scenarios/frontend/landing-page.js";
 import operation from "./scenarios/frontend/operation.js";
 import user from "./scenarios/frontend/user.js";
-import user_operator from "./scenarios/frontend/user_operator.js";
+import userOperator from "./scenarios/frontend/user-operator.js";
 
 const defaultOptions = {
   executor: "constant-vus",
@@ -19,10 +19,10 @@ const defaultOptions = {
 };
 export const options = {
   scenarios: {
-    landing_page: defaultOptions,
+    landingPage: defaultOptions,
     operation: defaultOptions,
     user: defaultOptions,
-    user_operator: defaultOptions,
+    userOperator: defaultOptions,
   },
   thresholds: {
     checks: ["rate==1.0"],
@@ -30,8 +30,8 @@ export const options = {
 };
 
 export default function () {
-  if (exec.scenario.name === "landing_page") {
-    landing_page();
+  if (exec.scenario.name === "landing-page") {
+    landingPage();
   }
 
   if (exec.scenario.name === "operation") {
@@ -42,7 +42,7 @@ export default function () {
     user();
   }
 
-  if (exec.scenario.name === "user_operator") {
-    user_operator();
+  if (exec.scenario.name === "user-operator") {
+    userOperator();
   }
 }
