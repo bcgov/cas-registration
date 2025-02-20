@@ -16,8 +16,7 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import finalReviewTheme from "./formCustomization/finalReviewTheme";
 import { additionalReportingDataUiSchema } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { complianceSummaryUiSchema } from "@reporting/src/data/jsonSchema/complianceSummary";
-import { Key, useState } from "react";
-import { RJSFSchema } from "@rjsf/utils";
+import { useState } from "react";
 
 interface Props extends HasReportVersion {
   taskListElements: TaskListElement[];
@@ -42,6 +41,22 @@ const resolveUiSchema = (uiSchema: any) => {
 };
 
 const Form = withTheme(finalReviewTheme);
+
+// Helper function to render the Form component
+const RenderForm = ({ idx, form }: { idx: number; form: any; data: any }) => (
+  <Form
+    key={idx}
+    schema={form.schema}
+    formData={form.data}
+    uiSchema={{
+      ...resolveUiSchema(form.uiSchema),
+      "ui:submitButtonOptions": { norender: true },
+    }}
+    readonly={true}
+    formContext={form.context || {}}
+    validator={customizeValidator({})}
+  />
+);
 
 const FinalReviewForm: React.FC<Props> = ({
   version_id,
@@ -87,43 +102,17 @@ const FinalReviewForm: React.FC<Props> = ({
               <summary className="cursor-pointer font-bold text-[#38598A] text-2xl py-2 border-2 border-t-0 border-b-0 border-[#38598A]">
                 {form.schema.title}
               </summary>
-              {form.data.map(
-                (
-                  activity: { schema: RJSFSchema; data: any; uiSchema: any },
-                  index: Key | null | undefined,
-                ) => (
-                  <Form
-                    key={index}
-                    schema={activity.schema}
-                    formData={activity.data}
-                    uiSchema={{
-                      ...resolveUiSchema(activity.uiSchema),
-                      "ui:submitButtonOptions": { norender: true },
-                    }}
-                    readonly={true}
-                    formContext={form.context || {}}
-                    validator={customizeValidator({})}
-                  />
-                ),
+
+              {/* Render items if they exist, otherwise render data */}
+              {(form.items?.length ? form.items : form.data).map(
+                (item: any, index: number) =>
+                  RenderForm({ idx: index, form: item, data }),
               )}
             </details>
           );
         }
 
-        return (
-          <Form
-            key={idx}
-            schema={form.schema}
-            formData={form.data}
-            uiSchema={{
-              ...resolveUiSchema(form.uiSchema),
-              "ui:submitButtonOptions": { norender: true },
-            }}
-            readonly={true}
-            formContext={form.context || {}}
-            validator={customizeValidator({})}
-          />
-        );
+        return RenderForm({ idx, form, data });
       })}
     </MultiStepWrapperWithTaskList>
   );
