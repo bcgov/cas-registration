@@ -1,0 +1,32 @@
+[
+  {
+    "model": "compliance.complianceproduct",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "compliance_summary": 1,
+      "report_product": 1,
+      "annual_production": "5000.0000",
+      "apr_dec_production": "3750.0000",
+      "emission_intensity": "2.0000",
+      "allocated_industrial_process_emissions": "1000.0000",
+      "allocated_compliance_emissions": "9000.0000"
+    }
+  },
+  {
+    "model": "compliance.complianceproduct",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "compliance_summary": 2,
+      "report_product": 2,
+      "annual_production": "4000.0000",
+      "apr_dec_production": "3000.0000",
+      "emission_intensity": "1.8000",
+      "allocated_industrial_process_emissions": "800.0000",
+      "allocated_compliance_emissions": "7200.0000"
+    }
+  }
+] 
