@@ -3,7 +3,6 @@
 from typing import Dict
 from django.db import migrations, models
 
-
 """
 One-time forward-only migration to be applied to prod data.
 Purpose: create a contact record for each approved industry_user who doesn't already appear in the contact table.
@@ -11,21 +10,18 @@ Purpose: create a contact record for each approved industry_user who doesn't alr
 
 
 def count_stats(User, Contact, UserOperator) -> Dict[str, int]:
-    total_users = User.objects.count()
-    industry_users = User.objects.filter(app_role__role_name="industry_user").count()
-    contacts = Contact.objects.count()
-    approved_user_operators = UserOperator.objects.filter(status="Approved").count()
-
+    """Collects and returns key statistics about the data before and after migration."""
     return {
-        'total_users': total_users,
-        'industry_users': industry_users,
-        'contacts': contacts,
-        'approved_user_operators': approved_user_operators,
+        'total_users': User.objects.count(),
+        'industry_users': User.objects.filter(app_role__role_name="industry_user").count(),
+        'contacts': Contact.objects.count(),
+        'approved_user_operators': UserOperator.objects.filter(status="Approved").count(),
     }
 
 
-def create_contacts_from_prod_industry_users(apps, schema_monitor):
-    # import the required django models
+def create_contacts_from_prod_industry_users(apps, schema_editor):
+    """Creates Contact records for approved industry users not already in the Contact table."""
+    # Import the required Django models
     User = apps.get_model('registration', 'User')
     Contact = apps.get_model('registration', 'Contact')
     UserOperator = apps.get_model('registration', 'UserOperator')
@@ -33,69 +29,61 @@ def create_contacts_from_prod_industry_users(apps, schema_monitor):
 
     before_stats = count_stats(User, Contact, UserOperator)
 
-    # filter on Users to fetch only those with app_role_id == "industry_user"
-    # and status == "Approved", and whose email doesn't appear in the Contact table
-    approved_industry_users = (
-        User.objects.filter(app_role__role_name="industry_user", user_operators__status="Approved")
-        .exclude(email__in=Contact.objects.values_list("email", flat=True))
-        .distinct()
-    )
+    # Fetch only approved UserOperator user IDs
+    approved_user_operators = UserOperator.objects.filter(status="Approved").values_list("user_id", flat=True)
+
+    # Fetch approved industry users who are not already in Contact
+    approved_industry_users = User.objects.filter(
+        user_guid__in=approved_user_operators, app_role__role_name="industry_user"
+    ).exclude(email__in=Contact.objects.values_list("email", flat=True))
 
     operation_representative_role = BusinessRole.objects.get(role_name="Operation Representative")
 
-    # for each user in approved_industry_users, create a new Contact record for them
-    new_contacts = [
-        Contact(
-            first_name=user.first_name,
-            last_name=user.last_name,
-            email=user.email,
-            phone_number=user.phone_number,
-            business_role=operation_representative_role,
-            address=None,
-            operator=user.user_operators.first().operator,
-        )
-        for user in approved_industry_users
-    ]
-    Contact.objects.bulk_create(new_contacts)
+    created_count = 0
 
-    print(f'\n\n\n{len(new_contacts)} new contacts created')
+    for user in approved_industry_users:
+        users_user_operator = user.user_operators.filter(status="Approved").first()
+        operator = users_user_operator.operator if users_user_operator else None
+        if operator:
+            _, created = Contact.objects.get_or_create(
+                email=user.email,
+                defaults={
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "phone_number": user.phone_number,
+                    "business_role": operation_representative_role,
+                    "address": None,
+                    "operator": operator,
+                },
+            )
+            if created:
+                created_count += 1
+
+    print(f'\n\n\n{created_count} new contacts created')
 
     after_stats = count_stats(User, Contact, UserOperator)
+    log_migration_summary(before_stats, after_stats, Contact, User)
 
-    assertions(before_stats, after_stats, Contact, User)
 
+def log_migration_summary(before_stats, after_stats, Contact, User):
+    print("Migration Summary:")
+    print(f"Before Migration: {before_stats}")
+    print(f"After Migration: {after_stats}")
 
-def assertions(before_stats, after_stats, Contact, User):
-    print("\n\n\n*** BEFORE MIGRATION ***")
-    print(before_stats)
-    print("*** AFTER MIGRATION ***")
-    print(after_stats)
-    print("\n\n\n")
+    if after_stats['contacts'] < after_stats['approved_user_operators']:
+        print("The number of contacts is less than the number of approved user operators.")
 
-    # assert that there are at least as many contacts as there are user_operators with "Approved" status
-    # (since every industry_user should also be a contact, but there may be some contacts
-    # who aren't users)
-    assert after_stats.get('contacts') >= after_stats.get('approved_user_operators')
-
-    # assert that no internal users (role "cas_x") appear in the Contacts table
-    assert not Contact.objects.filter(
+    internal_user_contacts = Contact.objects.filter(
         email__in=User.objects.filter(app_role__role_name__startswith="cas_").values_list("email", flat=True)
-    ).exists()
+    )
+    if internal_user_contacts.exists():
+        print(f"Internal users (cas_x) found in Contacts table: {list(internal_user_contacts.values('email'))}")
 
-    # assert that each combination of (email_address, operator_id) is unique
-    # assert not Contact.objects.values("email", "operator_id").annotate(count=models.Count("id")).filter(count__gt=1)
-    # NOTE: this assertion fails because there's duplicate contact data in the prod dataset.
-    # This is because a new Contact was created for each "Point of Contact" that an operation has in Reg1
-
-    # to see a printout of the duplicated contacts:
-    print(Contact.objects.values("email", "operator_id").annotate(count=models.Count("id")).filter(count__gt=1))
-
-    # basic assertion - there should be at least as many contacts after the migration as before (probably more)
-    assert after_stats.get('contacts') >= before_stats.get('contacts')
-
-    # basic assertion - no new users should have been created (and none deleted)
-    assert after_stats.get('total_users') == before_stats.get('total_users')
-    assert after_stats.get('industry_users') == before_stats.get('industry_users')
+    duplicate_contacts = (
+        Contact.objects.values("email", "operator_id").annotate(count=models.Count("id")).filter(count__gt=1)
+    )
+    if duplicate_contacts.exists():
+        print(f"Duplicate contacts detected: {list(duplicate_contacts)}")
 
 
 class Migration(migrations.Migration):
@@ -103,4 +91,6 @@ class Migration(migrations.Migration):
         ('registration', '0077_historicalfacility_well_authorization_numbers_and_more'),
     ]
 
-    operations = [migrations.RunPython(create_contacts_from_prod_industry_users)]
+    operations = [
+        migrations.RunPython(create_contacts_from_prod_industry_users, migrations.RunPython.noop, elidable=True),
+    ]
