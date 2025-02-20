@@ -763,6 +763,12 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(
                 field_name='Last Date of Overvoltage Emission Factor Measurement', field_type='string', field_units=None
             ),
+            ReportingField(field_name='Amount of raw material consumed (t)', field_type='number', field_units=None),
+            ReportingField(
+                field_name='Raw material organic carbon content (weight fraction)',
+                field_type='number',
+                field_units=None,
+            ),
         ]
     )
 
@@ -831,6 +837,8 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
             'Average of Quarterly five-day biochemical oxygen demand'
             'Average of Quarterly Nitrogen in effluent'
             'Measured conversion factor',
+            'Amount of raw material consumed (t)',
+            'Raw material organic carbon content (weight fraction)',
         ]
     ).delete()
 

@@ -1,0 +1,62 @@
+{
+  "title": "Cement Production",
+  "type": "object",
+  "properties": {},
+  "definitions": {
+    "month": {
+      "type": "object",
+      "properties": {
+        "clinkerProduction": {
+          "title": "Clinker Production (t)",
+          "type": "number",
+          "minimum": 0
+        },
+        "emissionFactor": {
+          "title": "Emission Factor (t CO2/t clinker)",
+          "type": "number",
+          "minimum": 0
+        },
+        "totalCalciumContentOfClinker": {
+          "title": "Total Calcium Content of Clinker (weight fraction)",
+          "type": "number",
+          "minimum": 0
+        },
+        "totalMagnesiumContentOfClinker": {
+          "title": "Total Magnesium Content of Clinker (weight fraction)",
+          "type": "number",
+          "minimum": 0
+        },
+        "nonCalcinedCalciumOxideContentOfClinker": {
+          "title": "Non-calcined Calcium oxide content of Clinker (weight fraction)",
+          "type": "number",
+          "minimum": 0
+        },
+        "nonCalcinedMagnesiumOxideContentOfClinker": {
+          "title": "Non-calcined Magnesium oxide content of Clinker (weight fraction)",
+          "type": "number",
+          "minimum": 0
+        },
+        "quantityOfNonCarbonateRawMaterialsEnteringTheKiln": {
+          "title": "Quantity of non-carbonate raw materials entering the kiln (tonnes)",
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "quarter": {
+      "type": "object",
+      "properties": {
+        "quantityOfCKDNotRecycledBackToKilns": {
+          "title": "Quantity of CKD not recycled back to kilns (t)",
+          "type": "number",
+          "minimum": 0
+        },
+        "emissionFactor": {
+          "title": "Emission Factor (t CO2/t CKD)",
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
