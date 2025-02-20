@@ -8,7 +8,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "closure_event":"operation_id":w -> "operation":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "closure_event":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "closure_event_facilities":"elipses":w -> "closure_event":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "closure_event_facilities":"elipses":w -> "facility":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "closure_event_facilities":"elipses":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"address_id":w -> "address":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"business_role_id":w -> "business_role":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -24,23 +24,26 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "document":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "document_type":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "emission_category":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
-  "facility":"elipses":w -> "address":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "facility":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "facility":"elipses":w -> "bc_greenhouse_gas_id":"id":e [arrowhead=none dir=back arrowtail=teeodot];
-  "facility":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "facility":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=teeodot style=dashed];
-  "facility":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility":"address_id":w -> "address":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility":"bcghg_id_id":w -> "bc_greenhouse_gas_id":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "facility":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility":"name":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=teeodot style=dashed];
+  "facility":"operation_id":w -> "operation":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_designated_operation_timeline":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_designated_operation_timeline":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "facility_designated_operation_timeline":"facility_id":w -> "facility":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
+  "facility_designated_operation_timeline":"facility_id":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=teeodot];
   "facility_designated_operation_timeline":"operation_id":w -> "operation":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_designated_operation_timeline":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "facility_report":"elipses":w -> "facility":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_report":"elipses":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_report":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "facility_report":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_well_authorization_numbers":"elipses":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_well_authorization_numbers":"elipses":w -> "well_authorization_number":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "fuel_type":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "gas_type":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "methodology":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
@@ -229,14 +232,14 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "restart_event":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "restart_event":"operation_id":w -> "operation":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "restart_event":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "restart_event_facilities":"elipses":w -> "facility":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "restart_event_facilities":"elipses":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "restart_event_facilities":"elipses":w -> "restart_event":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "source_type":"elipses":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "temporary_shutdown_event":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "temporary_shutdown_event":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "temporary_shutdown_event":"operation_id":w -> "operation":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "temporary_shutdown_event":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "temporary_shutdown_event_facilities":"elipses":w -> "facility":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "temporary_shutdown_event_facilities":"elipses":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "temporary_shutdown_event_facilities":"elipses":w -> "temporary_shutdown_event":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "transfer_event":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "transfer_event":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -246,7 +249,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "transfer_event":"to_operation_id":w -> "operation":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "transfer_event":"to_operator_id":w -> "operator":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "transfer_event":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "transfer_event_facilities":"elipses":w -> "facility":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "transfer_event_facilities":"elipses":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "transfer_event_facilities":"elipses":w -> "transfer_event":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "user":"app_role_id":w -> "app_role":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "user":"bceid_business_name":w -> "business_structure":"name":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
@@ -260,7 +263,6 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "user_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "verification_visit":"elipses":w -> "report_verification":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "well_authorization_number":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "well_authorization_number":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -413,7 +415,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="41" HEIGHT="16"><B>facility</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">7 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">7 &gt;</TD></TR>
     </TABLE>>
     URL="facility.html"
     target="_top"
@@ -440,6 +442,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="facility_report.html"
     target="_top"
     tooltip="facility_report"
+  ];
+  "facility_well_authorization_numbers" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="216" HEIGHT="16"><B>facility_well_authorization_numbers</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="facility_well_authorization_numbers.html"
+    target="_top"
+    tooltip="facility_well_authorization_numbers"
   ];
   "fuel_type" [
    label=<
@@ -538,7 +551,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
       <TR><TD PORT="tertiary_naics_code_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="204" HEIGHT="16">tertiary_naics_code_id</TD></TR></TABLE></TD><TD PORT="tertiary_naics_code_id.type" ALIGN="LEFT">int8[19]</TD></TR>
       <TR><TD PORT="date_of_first_shipment" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="204" HEIGHT="16">date_of_first_shipment</TD></TR></TABLE></TD><TD PORT="date_of_first_shipment.type" ALIGN="LEFT">varchar[1000]</TD></TR>
       <TR><TD PORT="registration_purpose" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="204" HEIGHT="16">registration_purpose</TD></TR></TABLE></TD><TD PORT="registration_purpose.type" ALIGN="LEFT">varchar[1000]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 13</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">14 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 13</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">15 &gt;</TD></TR>
     </TABLE>>
     URL="operation.html"
     target="_top"
@@ -861,7 +874,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="112" HEIGHT="16"><B>report_verification</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="report_verification.html"
     target="_top"
@@ -883,7 +896,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="88" HEIGHT="16"><B>reporting_field</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">72 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">76 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
     URL="reporting_field.html"
     target="_top"
@@ -1004,7 +1017,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="99" HEIGHT="16"><B>verification_visit</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="verification_visit.html"
     target="_top"

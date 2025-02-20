@@ -1904,6 +1904,24 @@
                                         <td><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>Restrict delete</span></td>
                                     </tr>
                                     <tr>
+                                        <td>facility_operation_id_85a22241_fk_operation_id</td>
+                                        <td>
+                                            <table border='0' cellspacing='0' cellpadding='0'>
+                                                <tr>
+                                                    <td><a href='tables/facility.html'>facility</a><span>.operation_id</span></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table border='0' cellspacing='0' cellpadding='0'>
+                                                <tr>
+                                                    <td><a href='tables/operation.html'>operation</a><span>.id</span></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>Restrict delete</span></td>
+                                    </tr>
+                                    <tr>
                                         <td>transfer_event_updated_by_id_a65894a8_fk_user_user_guid</td>
                                         <td>
                                             <table border='0' cellspacing='0' cellpadding='0'>
@@ -3812,24 +3830,6 @@
                                         <td><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>Restrict delete</span></td>
                                     </tr>
                                     <tr>
-                                        <td>verification_visit_report_verification__9c927c00_fk_report_ve</td>
-                                        <td>
-                                            <table border='0' cellspacing='0' cellpadding='0'>
-                                                <tr>
-                                                    <td><a href='tables/verification_visit.html'>verification_visit</a><span>.report_verification_id</span></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td>
-                                            <table border='0' cellspacing='0' cellpadding='0'>
-                                                <tr>
-                                                    <td><a href='tables/report_verification.html'>report_verification</a><span>.report_version_id</span></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>Restrict delete</span></td>
-                                    </tr>
-                                    <tr>
                                         <td>verification_visit_archived_by_id_4f80d4f8_fk_user_user_guid</td>
                                         <td>
                                             <table border='0' cellspacing='0' cellpadding='0'>
@@ -5031,7 +5031,7 @@
                                     <tr>
                                         <td><a href='tables/report_product_emission_allocation.html'>report_product_emission_allocation</a></td>
                                         <td>allocation_other_methodology_must_have_description</td>
-                                        <td>((NOT (((allocation_methodology)::text &#61; &#39;other&#39;::text) AND (allocation_other_methodology_description IS NULL))))</td>
+                                        <td>((NOT (((allocation_methodology)::text &#61; &#39;Other&#39;::text) AND (allocation_other_methodology_description IS NULL))))</td>
                                     </tr>
                                     <tr>
                                         <td><a href='tables/report_product.html'>report_product</a></td>

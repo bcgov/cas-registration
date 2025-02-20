@@ -5,6 +5,7 @@ partner_operator
 user_operator
 report_person_responsible
 report_methodology
+report_verification
 report_raw_activity_data
 report_operation_representative
 report_new_entrant_production
@@ -13,8 +14,8 @@ report_attachment
 operation_designated_operator_timeline
 facility_designated_operation_timeline
 document
-verification_visit
 report_additional_data
+verification_visit
 emission_category_mapping
 transfer_event_facilities
 temporary_shutdown_event_facilities
@@ -36,7 +37,6 @@ transfer_event
 configuration_element
 report_product
 report_non_attributable_emissions
-report_verification
 temporary_shutdown_event
 restart_event
 closure_event
@@ -54,9 +54,9 @@ report_activity
 facility_report
 report_version
 report
+facility
 operation
 contact
-facility
 activity_source_type_json_schema
 opted_in_operation_detail
 activity_json_schema

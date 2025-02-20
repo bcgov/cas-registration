@@ -385,6 +385,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="18" name="longitude_of_largest_emissions" nullable="true" remarks="The longitude of the largest point of emissions" size="9" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="is_current_year" nullable="true" remarks="The facility's starting date is within the current year or preceeding year" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="20" name="starting_date" nullable="true" remarks="The date of the facility starting operations" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="operation_id" nullable="true" remarks="The operation who currently owns the facility (see the FacilityDesignatedOperationTimeline for past and upcoming ownership)" size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="facility_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -415,6 +416,9 @@
          </index>
          <index name="facility_history_name_5f0987cd_like" unique="false">
             <column ascending="true" name="name"/>
+         </index>
+         <index name="facility_history_operation_id_aa599622" unique="false">
+            <column ascending="true" name="operation_id"/>
          </index>
          <index name="facility_history_updated_by_id_e6eb1d70" unique="false">
             <column ascending="true" name="updated_by_id"/>

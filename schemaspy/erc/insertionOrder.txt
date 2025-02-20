@@ -19,9 +19,9 @@ bc_obps_regulated_operation
 activity_json_schema
 opted_in_operation_detail
 activity_source_type_json_schema
-facility
 contact
 operation
+facility
 report
 report_version
 facility_report
@@ -39,7 +39,6 @@ well_authorization_number
 closure_event
 restart_event
 temporary_shutdown_event
-report_verification
 report_non_attributable_emissions
 report_product
 configuration_element
@@ -61,8 +60,8 @@ restart_event_facilities
 temporary_shutdown_event_facilities
 transfer_event_facilities
 emission_category_mapping
-report_additional_data
 verification_visit
+report_additional_data
 document
 facility_designated_operation_timeline
 operation_designated_operator_timeline
@@ -71,6 +70,7 @@ report_new_entrant_emission
 report_new_entrant_production
 report_operation_representative
 report_raw_activity_data
+report_verification
 report_methodology
 report_person_responsible
 user_operator
