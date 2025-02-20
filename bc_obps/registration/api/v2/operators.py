@@ -19,7 +19,7 @@ from registration.utils import CustomPagination
     "/operators",
     response={200: List[OperatorListOut], custom_codes_4xx: Message},
     tags=["V2"],
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("authorized_irc_user"),
 )
 @paginate(CustomPagination)
 def list_operators(
