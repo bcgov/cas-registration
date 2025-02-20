@@ -21,7 +21,6 @@ def suppress_django_request_logs(caplog):
 class TestEndpointPermissions(TestCase):
     client = Client()
     endpoints_to_test = ENDPOINTS
-    auth_headers = {}
 
     @classmethod
     def _call_endpoint(cls, method, endpoint, app_role=None):
