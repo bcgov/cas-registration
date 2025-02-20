@@ -23,7 +23,6 @@ spec:
         component: reporting-frontend
         layer: frontend
     spec:
-      automountServiceAccountToken: false
       serviceAccountName: {{ .Release.Name }}-pod-logger
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
