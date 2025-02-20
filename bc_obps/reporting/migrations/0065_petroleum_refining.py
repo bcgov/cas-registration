@@ -885,7 +885,7 @@ def reverse_activity_source_type_schema_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0062_industrial_water_processing'),
+        ('reporting', '0064_lime_manufacturing'),
     ]
 
     operations = [
