@@ -122,3 +122,10 @@ growthbook:
 
 download-dags:
   airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
+
+cas-logging-sidecar:
+  host: ~
+  index: "cas-bciers-dev-logs"
+  prefix: "cas-bciers"
+  tag: "oc-cas-bciers"
+  logName: "cas-bciers-dev-logs"
