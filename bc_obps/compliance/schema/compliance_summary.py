@@ -29,7 +29,6 @@ class ComplianceSummaryListOut(Schema):
     reporting_year: int
     excess_emissions: Decimal
     compliance_status: str
-    penalty_status: str | None
     obligation_id: int | None
 
     @staticmethod
@@ -43,10 +42,6 @@ class ComplianceSummaryListOut(Schema):
     @staticmethod
     def resolve_excess_emissions(obj) -> Decimal:
         return round(obj.excess_emissions)
-
-    @staticmethod
-    def resolve_penalty_status(obj) -> str | None:
-        return obj.obligation.penalty_status if hasattr(obj, 'obligation') and obj.obligation else None
 
     @staticmethod
     def resolve_obligation_id(obj) -> int | None:
