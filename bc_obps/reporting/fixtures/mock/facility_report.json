@@ -1,0 +1,30 @@
+[
+  {
+    "model": "reporting.facilityreport",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "facility": "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
+      "report_version": 1,
+      "facility_name": "Facility 1",
+      "facility_type": "Large Facility",
+      "facility_bcghgid": null,
+      "is_completed": false
+    }
+  },
+  {
+    "model": "reporting.facilityreport",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "facility": "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
+      "report_version": 2,
+      "facility_name": "Facility 3",
+      "facility_type": "Medium Facility",
+      "facility_bcghgid": "13219990007",
+      "is_completed": false
+    }
+  }
+] 
