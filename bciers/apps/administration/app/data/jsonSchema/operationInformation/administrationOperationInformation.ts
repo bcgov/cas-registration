@@ -29,9 +29,7 @@ export const createAdministrationOperationInformationSchema = async (
       ),
       section2: await createMultipleOperatorsInformationSchema(),
       ...(status === OperationStatus.REGISTERED && {
-        section3: await createAdministrationRegistrationInformationSchema(
-          registrationPurposeValue,
-        ),
+        section3: await createAdministrationRegistrationInformationSchema(),
       }),
     },
   };
@@ -52,16 +50,16 @@ export const administrationOperationInformationUiSchema: UiSchema = {
       "operation_representatives",
       "registration_purpose",
       "regulated_operation_preface",
-      "regulated_products",
+      "reporting_operation_preface",
       "opted_in_preface",
-      "opted_in_operation",
       "new_entrant_preface",
+      "potential_reporting_preface",
+      "activities",
+      "regulated_products",
+      "opted_in_operation",
       "date_of_first_shipment",
       "new_entrant_application",
     ],
-    registration_purpose: {
-      "ui:widget": "ReadOnlyWidget",
-    },
     ...optedInOperationDetailsUiSchema,
   },
 };
