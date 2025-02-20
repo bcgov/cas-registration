@@ -13,7 +13,7 @@
             "title": "Feedstock"
           },
           "annualFeedstockConsumedAmount": {
-            "type": "string",
+            "type": "number",
             "title": "Annual Amount of Feedstock Consumed"
           },
           "unitForAnnualFeedstockConsumedAmount": {
