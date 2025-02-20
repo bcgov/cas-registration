@@ -16,4 +16,4 @@ class Command(BaseCommand):
 
         for fixture in fixtures:
             self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
-            call_command('loaddata', fixture) 
+            call_command('loaddata', fixture)
