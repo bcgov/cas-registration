@@ -24,6 +24,7 @@ spec:
         layer: frontend
     spec:
       automountServiceAccountToken: false
+      serviceAccountName: {{ .Release.Name }}-pod-logger
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
           envFrom:
@@ -36,4 +37,11 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.reportingFrontend.resources | nindent 12 }}
+          {{- $containerName := printf "%s-reporting-frontend" (include "cas-bciers.fullname" .) }}
+        {{- include "cas-logging-sidecar.containers" (dict
+            "containerToSidecar" $containerName
+            "logName" "cas-bciers-dev-logs"
+        "host" .Values "cas-logging-sidecar" "host") | nindent 8 }}
       restartPolicy: Always
+      volumes:
+        {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
