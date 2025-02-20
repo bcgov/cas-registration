@@ -20,12 +20,9 @@ class ComplianceService:
             start_date = date(reporting_year, 1, 1)
             end_date = date(reporting_year, 12, 31)
             compliance_deadline = date(reporting_year + 1, 6, 30)
-            
+
             return CompliancePeriod.objects.create(
-                id=reporting_year,
-                start_date=start_date,
-                end_date=end_date,
-                compliance_deadline=compliance_deadline
+                id=reporting_year, start_date=start_date, end_date=end_date, compliance_deadline=compliance_deadline
             )
 
     @classmethod
@@ -63,7 +60,7 @@ class ComplianceService:
 
             # Get all report products for this version
             report_products = {
-                rp.product.name: rp 
+                rp.product.name: rp
                 for rp in ReportProduct.objects.select_related('product').filter(report_version_id=report_version_id)
             }
 
@@ -86,7 +83,7 @@ class ComplianceService:
                     compliance_summary=summary,
                     amount=compliance_data.excess_emissions,
                     status=ComplianceObligation.ObligationStatus.PENDING,
-                    penalty_status=ComplianceObligation.PenaltyStatus.PENDING
+                    penalty_status=ComplianceObligation.PenaltyStatus.PENDING,
                 )
 
             return summary
