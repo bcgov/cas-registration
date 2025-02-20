@@ -51,7 +51,6 @@ class TestGSCSolelyLineTracing2024(TestCase):
 
         config = {
             'General stationary combustion of fuel or waste with production of useful energy': gas_config,
-            'General stationary combustion of waste without production of useful energy': gas_config,
         }
 
         self.assertQuerysetEqual(
@@ -80,4 +79,4 @@ class TestGSCSolelyLineTracing2024(TestCase):
                     msg=f'{source_type_name}:{gas_name} contains config for the proper methods and field counts',
                 )
 
-        assert len(config_elements) == 50
+        assert len(config_elements) == 25
