@@ -93,7 +93,7 @@ const FinalReviewForm: React.FC<Props> = ({
       noSaveButton
     >
       {data.map((form, idx) => {
-        if (form.isCollapsible) {
+        if (form.items) {
           return (
             <details
               key={idx}
@@ -102,11 +102,8 @@ const FinalReviewForm: React.FC<Props> = ({
               <summary className="cursor-pointer font-bold text-[#38598A] text-2xl py-2 border-2 border-t-0 border-b-0 border-[#38598A]">
                 {form.schema.title}
               </summary>
-
-              {/* Render items if they exist, otherwise render data */}
-              {(form.items?.length ? form.items : form.data).map(
-                (item: any, index: number) =>
-                  RenderForm({ idx: index, form: item, data }),
+              {form.items.map((item: any, index: number) =>
+                RenderForm({ idx: index, form: item, data }),
               )}
             </details>
           );

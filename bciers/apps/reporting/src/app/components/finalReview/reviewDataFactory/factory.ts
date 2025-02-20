@@ -13,7 +13,6 @@ export type ReviewData = {
   data: any;
   context?: any;
   items?: ReviewData[];
-  isCollapsible?: boolean;
 };
 
 export type ReviewDataFactoryItem = (
@@ -35,17 +34,11 @@ export default async function reviewDataFactory(
     ...(await personResponsibleFactoryItem(versionId, facilityId)),
     ...(await facilityActivitiesFactoryItem(versionId, currentFacilities)),
     ...(await additionalReportingDataFactoryItem(versionId, facilityId)),
+    ...(operationType === "LFO"
+      ? await operationEmissionSummaryFactoryItem(versionId, facilityId)
+      : []),
     ...(await complianceSummaryFactoryItem(versionId, facilityId)),
   ];
-
-  // Insert operationEmissionSummaryFactoryItem if operationType is "LFO"
-  if (operationType === "LFO") {
-    const emissionSummary = await operationEmissionSummaryFactoryItem(
-      versionId,
-      facilityId,
-    );
-    reviewData.splice(reviewData.length - 1, 0, ...emissionSummary);
-  }
 
   return reviewData;
 }
