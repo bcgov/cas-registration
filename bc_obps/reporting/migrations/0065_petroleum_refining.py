@@ -273,7 +273,7 @@ def init_configuration_element_data(apps, schema_monitor):
         )
         for methodology_name in [
             "CEMS",
-            "WCI.203(b)",
+            "WCI.203(c)",
             "Alternative Parameter Measurement Methodology",
             "Replacement Methodology",
         ]
@@ -284,22 +284,6 @@ def init_configuration_element_data(apps, schema_monitor):
             activity=petroleum_refining_activity,
             source_type=SourceType.objects.get(name='Asphalt production'),
             gas_type=GasType.objects.get(chemical_formula="CH4"),
-            methodology=Methodology.objects.get(name=methodology_name),
-            valid_from=Configuration.objects.get(valid_from='2023-01-01'),
-            valid_to=Configuration.objects.get(valid_to='2099-12-31'),
-        )
-        for methodology_name in [
-            "WCI.203(b)",
-            "Alternative Parameter Measurement Methodology",
-            "Replacement Methodology",
-        ]
-    )
-    ## Gas: N2O
-    ConfigurationElement.objects.bulk_create(
-        ConfigurationElement(
-            activity=petroleum_refining_activity,
-            source_type=SourceType.objects.get(name='Asphalt production'),
-            gas_type=GasType.objects.get(chemical_formula="N2O"),
             methodology=Methodology.objects.get(name=methodology_name),
             valid_from=Configuration.objects.get(valid_from='2023-01-01'),
             valid_to=Configuration.objects.get(valid_to='2099-12-31'),
@@ -640,17 +624,17 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(
                 field_name='Average of quarterly chemical oxygen demand (kg/m3)',
                 field_type='number',
-                field_units='kg/m3',
+                field_units=None,
             ),
             ReportingField(
                 field_name='Average of quarterly five-day biochemical oxygen demand (kg/m3)',
                 field_type='number',
-                field_units='kg/m3',
+                field_units=None,
             ),
             ReportingField(
                 field_name='Average of quarterly nitrogen in effluent (kg/N m3)',
                 field_type='number',
-                field_units='kg/N m3',
+                field_units=None,
             ),
         ]
     )
@@ -720,7 +704,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to=Configuration.objects.get(valid_to="2099-12-31"),
     ).reporting_fields.add(
         ReportingField.objects.get(
-            field_name="Average of quarterly chemical oxygen demand (kg/m3)", field_units="kg/m3"
+            field_name="Average of quarterly chemical oxygen demand (kg/m3)", field_units__isnull=True
         )
     )
     ### Methdology: Biochemical Oxygen Demand
@@ -733,7 +717,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to=Configuration.objects.get(valid_to="2099-12-31"),
     ).reporting_fields.add(
         ReportingField.objects.get(
-            field_name="Average of quarterly five-day biochemical oxygen demand (kg/m3)", field_units="kg/m3"
+            field_name="Average of quarterly five-day biochemical oxygen demand (kg/m3)", field_units__isnull=True
         )
     )
     ## Gas: N2O
@@ -747,7 +731,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to=Configuration.objects.get(valid_to="2099-12-31"),
     ).reporting_fields.add(
         ReportingField.objects.get(
-            field_name="Average of quarterly nitrogen in effluent (kg/N m3)", field_units="kg/N m3"
+            field_name="Average of quarterly nitrogen in effluent (kg/N m3)", field_units__isnull=True
         )
     )
 
