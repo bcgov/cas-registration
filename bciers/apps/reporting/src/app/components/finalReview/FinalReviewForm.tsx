@@ -9,6 +9,7 @@ import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
 import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { emissionAllocationUiSchema } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
+import { emissionSummaryUiSchema } from "@reporting/src/data/jsonSchema/emissionSummary";
 import { ReviewData } from "./reviewDataFactory/factory";
 import { withTheme } from "@rjsf/core";
 import { customizeValidator } from "@rjsf/validator-ajv8";
@@ -31,6 +32,7 @@ const finalReviewSchemaMap: { [key: string]: any } = {
   productionData: productionDataUiSchema,
   emissionAllocation: emissionAllocationUiSchema,
   additionalReportingData: additionalReportingDataUiSchema,
+  operationEmissionSummary: emissionSummaryUiSchema,
   complianceSummary: complianceSummaryUiSchema,
 };
 
@@ -110,6 +112,7 @@ const FinalReviewForm: React.FC<Props> = ({
 
         return (
           <Form
+            key={idx}
             schema={form.schema}
             formData={form.data}
             uiSchema={{
