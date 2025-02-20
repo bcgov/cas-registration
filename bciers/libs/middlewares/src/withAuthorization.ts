@@ -19,11 +19,9 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
     if (token) {
-      console.log("withAuthorization", 'next middleware');
       // 🛸 Route to next middleware
       return next(request, _next);
     } else {
-      console.log("withAuthorization", 'redirect to onboarding');
       // 🛸 Redirect unauthenticated requests
       return NextResponse.redirect(new URL(`/onboarding`, request.url));
     }
