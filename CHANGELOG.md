@@ -1,3 +1,33 @@
+# [1.22.0](https://github.com/bcgov/cas-registration/compare/v1.21.0...v1.22.0) (2025-02-19)
+
+### Bug Fixes
+
+- bump @octokit/endpoint from 9.0.5 to 9.0.6 ([22be6f4](https://github.com/bcgov/cas-registration/commit/22be6f4597d2433b1b09845bb5290b30c2613cbe))
+- bump @octokit/endpoint from 9.0.5 to 9.0.6 ([5743c13](https://github.com/bcgov/cas-registration/commit/5743c134024b3bbd5da94576e400b65e60d13c4c))
+- bumps @octokit/request-error from 5.1.0 to 5.1.1 ([99bdf64](https://github.com/bcgov/cas-registration/commit/99bdf6473d3d747423fbd055c07d88defac82fae))
+- capitalize Other in emission allocation model ([5c8777c](https://github.com/bcgov/cas-registration/commit/5c8777c276540e983f34d229cf197dab5f20868c))
+- improve mobile fuel annual amount calculator to fix reporting form 0 issues ([0d9b77f](https://github.com/bcgov/cas-registration/commit/0d9b77f6f66024d5369cdfe125650ce9b5a59e1c))
+- Update content text in external.json to use plural form of obligations ([85036ee](https://github.com/bcgov/cas-registration/commit/85036ee18ff3ab561b154b863030b8ead61e06a2))
+- Wrap items in dropdowns for multiSelectWidget ([059fff2](https://github.com/bcgov/cas-registration/commit/059fff26d5390a07b4ad6040906b1873011159f5))
+
+### Features
+
+- add compliance summary layout ([db10053](https://github.com/bcgov/cas-registration/commit/db10053940cb3a747967c1593f34d043d3f24bdd))
+- add config for og_extraction other than non-compression ([ab72dab](https://github.com/bcgov/cas-registration/commit/ab72dabdde86bdc552a5417e383906055fb2ac51))
+- add configs & json schemas for og extraction non compression activity ([8c3fd65](https://github.com/bcgov/cas-registration/commit/8c3fd65d2e4cfaadcfbf49d6c9223935f3aceecb))
+- add gpg ssh setup guide ([fa2f413](https://github.com/bcgov/cas-registration/commit/fa2f4135bc88af4036569173e05495b18affa409))
+- add registration app grants ([1fdacd6](https://github.com/bcgov/cas-registration/commit/1fdacd6f8c752095a0b2d238d0a9400ac7543eeb))
+- add rls as the metaclass and set role in the rls middleware ([0e9fcf2](https://github.com/bcgov/cas-registration/commit/0e9fcf2f0be302148dfb9c39df03f11a5794dc34))
+- electricity gen activity ([7d65777](https://github.com/bcgov/cas-registration/commit/7d65777b841cc7e34d442918033853673f56950f))
+- external user can select Registration Purpose\Electricity Import Operation ([f3758d2](https://github.com/bcgov/cas-registration/commit/f3758d2132decb405b798fa744505ea0520896f3))
+- lng activity configuration ([4752698](https://github.com/bcgov/cas-registration/commit/47526983b1cd7166302c97e33aecc4efc76a4fe4))
+- report version data is protected by trigger when version is submitted ([b2a7b2b](https://github.com/bcgov/cas-registration/commit/b2a7b2bccf9c98f105468449a1f933f85be6129b))
+- update setup documentation ([248fa35](https://github.com/bcgov/cas-registration/commit/248fa35c033d04fd6f6a0dbc66c20751c2b116b9))
+
+### Reverts
+
+- Revert "chore: temp commit so cas users can see all admin requests" ([a57441c](https://github.com/bcgov/cas-registration/commit/a57441c34aa17f694c093a0a3fb46bf405ba60b2))
+
 # [1.21.0](https://github.com/bcgov/cas-registration/compare/v1.20.0...v1.21.0) (2025-02-05)
 
 ### Bug Fixes
