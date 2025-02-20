@@ -470,10 +470,12 @@ class OperationServiceV2:
             if created
         ]
         operation.documents.add(*operation_documents)
-        # 41
 
         # # this is not handled by changing registration purpose
-        if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
+        if (
+            operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+            and operation.opted_in_operation is None
+        ):
             operation = cls._create_opted_in_operation_detail(user_guid, operation)
 
         if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
@@ -646,6 +648,11 @@ class OperationServiceV2:
         If the operation wasn't yet registered when the selected RP changed, the original data will be deleted.
         """
         old_purpose = operation.registration_purpose
+
+        if old_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            # EIOs have one facility that has the same information as the operation
+            FacilityDesignatedOperationTimeline.objects.get(operation=operation).delete()
+            operation.facilities.all().delete()
         if old_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             payload.opt_in = False
             opted_in_detail = operation.opted_in_operation

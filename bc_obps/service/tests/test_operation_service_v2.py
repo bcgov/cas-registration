@@ -117,6 +117,33 @@ class TestOperationServiceV2:
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             opt_in=True,
+            status=Operation.Statuses.DRAFT,
+        )
+        operation.opted_in_operation = opted_in_operation_detail
+        operation.save()
+
+        assert operation.opted_in_operation is not None
+        assert OptedInOperationDetail.objects.count() == 1
+
+        OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
+        operation.refresh_from_db()
+
+        assert operation.opt_in is False
+        assert operation.opted_in_operation is None
+        # operation.status is 'Draft', so opted_in_operation_detail should be deleted
+        assert OptedInOperationDetail.objects.count() == 0
+        assert OptedInOperationDetail._base_manager.count() == 0
+
+    @staticmethod
+    def test_archive_opted_in_operation_detail():
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
+            opt_in=True,
+            status=Operation.Statuses.REGISTERED,
         )
         operation.opted_in_operation = opted_in_operation_detail
         operation.save()
@@ -130,8 +157,12 @@ class TestOperationServiceV2:
 
         assert operation.opt_in is False
         assert operation.opted_in_operation is None
-        # operation.status is 'Draft', so opted_in_operation_detail should be deleted
+        # operation.status is 'Registered', so opted_in_operation_detail should be archived
         assert not OptedInOperationDetail.objects.filter(id=detail_id).exists()
+        # archived objects will not be retrieved
+        assert OptedInOperationDetail.objects.count() == 0
+        # archived objects exist
+        assert OptedInOperationDetail._base_manager.count() == 1
 
     @staticmethod
     def test_list_current_users_unregistered_operations():
@@ -887,6 +918,51 @@ class TestOperationServiceV2UpdateOperation:
         assert Operation.objects.count() == 1
         assert Facility.objects.count() == 1
 
+    @staticmethod
+    def test_update_opt_in_operation():
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose='Opted-in Operation',
+            status=Operation.Statuses.DRAFT,
+        )
+        opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
+        existing_operation.opted_in_operation = opted_in_operation_detail
+        existing_operation.save()
+
+        contacts = baker.make_recipe(
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+            _quantity=3,
+        )
+
+        payload = OperationInformationInUpdate(
+            registration_purpose='Opted-in Operation',
+            regulated_products=[1],
+            name="I am updated",
+            type="SFO",
+            naics_code_id=1,
+            secondary_naics_code_id=2,
+            tertiary_naics_code_id=3,
+            activities=[1],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            operation_representatives=[contact.id for contact in contacts],
+        )
+
+        operation = OperationServiceV2.update_operation(
+            approved_user_operator.user.user_guid,
+            payload,
+            existing_operation.id,
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        assert (
+            OptedInOperationDetail.objects.count() == 1
+        )  # only 1 record (to make sure we didn't create duplicate new ones)
+        assert OptedInOperationDetail._base_manager.count() == 1  # 1 operation total including archived records
+
 
 class TestCreateOrUpdateEio:
     @staticmethod
@@ -1206,6 +1282,8 @@ class TestHandleChangeOfRegistrationPurpose:
         assert returned_payload.tertiary_naics_code_id is None
         assert returned_payload.boundary_map is None
         assert returned_payload.process_flow_diagram is None
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation=operation).count() == 0
+        assert operation.facilities.count() == 0
 
     @staticmethod
     def test_new_purpose_reporting():
