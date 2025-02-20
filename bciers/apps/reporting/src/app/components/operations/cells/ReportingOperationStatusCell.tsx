@@ -1,36 +1,31 @@
 "use client";
 
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
-import { Chip, ChipOwnProps } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid";
+import {
+  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+  BC_GOV_SEMANTICS_GREEN,
+} from "@bciers/styles";
 
 export default function ReportingOperationStatusCell(
   params: GridRenderCellParams,
 ) {
-  const colorMap = new Map<string, ChipOwnProps["color"]>([
-    [ReportOperationStatus.NOT_STARTED, "primary"],
-    [ReportOperationStatus.DRAFT, "primary"],
-    [ReportOperationStatus.SUBMITTED, "success"],
+  const colorMap = new Map<string, string>([
+    [ReportOperationStatus.NOT_STARTED, BC_GOV_PRIMARY_BRAND_COLOR_BLUE],
+    [ReportOperationStatus.DRAFT, BC_GOV_PRIMARY_BRAND_COLOR_BLUE],
+    [ReportOperationStatus.SUBMITTED, BC_GOV_SEMANTICS_GREEN],
   ]);
   const status = params.value || ReportOperationStatus.NOT_STARTED;
   const statusColor = colorMap.get(status) || "primary";
-  const isMultiLineStatus = status === ReportOperationStatus.NOT_STARTED;
-
-  const fontSize = isMultiLineStatus ? "14px" : "16px";
   return (
-    <Chip
-      label={
-        <div style={{ whiteSpace: "normal", color: statusColor, fontSize }}>
-          {status}
-        </div>
-      }
-      variant="outlined"
-      color={statusColor}
-      sx={{
-        width: 100,
-        height: 40,
-        borderRadius: "20px",
+    <div
+      style={{
+        whiteSpace: "normal",
+        fontSize: "16px",
+        color: statusColor,
       }}
-    />
+    >
+      {status}
+    </div>
   );
 }
