@@ -25,7 +25,6 @@ export default async function facilityActivitiesFactoryItem(
         },
         uiSchema: {},
         data: {},
-        isCollapsible: true,
         items: [
           ...(await activityFactoryItem(versionId, facility.facility_id)),
           ...(await nonAttributableEmissionsFactoryItem(
