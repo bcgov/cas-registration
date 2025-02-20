@@ -7,7 +7,7 @@ class PetroleumRefining2024Test(BaseProgramConfigurationTest, TestCase):
     def setUpTestData(cls):
         cls.activity_name = "Petroleum refining"
         cls.year = 2024
-        cls.config_element_count = 96
+        cls.config_element_count = 93
         cls.config = {
             "Catalyst regeneration": {
                 "CO2": {
@@ -48,16 +48,11 @@ class PetroleumRefining2024Test(BaseProgramConfigurationTest, TestCase):
             "Asphalt production": {
                 "CO2": {
                     "CEMS": 0,
-                    "WCI.203(b)": 0,
+                    "WCI.203(c)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
                 },
                 "CH4": {
-                    "WCI.203(b)": 0,
-                    "Alternative Parameter Measurement Methodology": 1,
-                    "Replacement Methodology": 1,
-                },
-                "N2O": {
                     "WCI.203(c)": 0,
                     "Alternative Parameter Measurement Methodology": 1,
                     "Replacement Methodology": 1,
