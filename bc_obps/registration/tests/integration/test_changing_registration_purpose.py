@@ -303,7 +303,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert OptedInOperationDetail.objects.count() == 0
         assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
-            assert OptedInOperationDetail._base_manager.count() == 1
+            assert (
+                OptedInOperationDetail._base_manager.count() == 1
+            )  # base_manage retrieves all records including archived ones, and there should be 1 because if the status=Registered, we archived rather than delete
             assert self.operation.opted_in_operation.archived_at is not None
             assert self.operation.opted_in_operation.archived_by is not None
         else:
