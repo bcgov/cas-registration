@@ -73,6 +73,11 @@ LOCAL_APPS = [
     "rls",
 ]
 
+RLS_GRANT_APPS = [
+    "registration",
+    "reporting",
+]
+
 INSTALLED_APPS = [
     # Django apps
     "django.contrib.admin",
