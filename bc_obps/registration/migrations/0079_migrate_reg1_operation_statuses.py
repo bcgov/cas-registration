@@ -60,7 +60,7 @@ def migrate_reg1_operation_statuses(apps, schema_monitor):
     changes_requested_operations_updated = Operation.objects.filter(status="Changes Requested").update(status="Draft")
     declined_operations_archived = Operation.objects.filter(status="Declined").update(
         archived_by_id='c3bc1b69-15de-44ac-b03b-982bf3163406', archived_at=datetime.datetime.now(datetime.timezone.utc)
-    )  # declined operations will be archived, per PR's instruction
+    )  # declined operations will be archived, per PR's instruction and using her user GUID
 
     after_stats = count_stats(Operation)
 
