@@ -14,7 +14,7 @@ const ActionCell = ({
   const router = useRouter();
 
   const handleRedirect = () => {
-    const url = `/reporting/reports/${version_id}/facilities/${id}/review-facility-information`;
+    const url = `/reports/${version_id}/facilities/${id}/review-facility-information`;
     router.push(url);
   };
 
