@@ -114,7 +114,7 @@ def assertions(before_stats, after_stats, updates, declined_operations_after):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('registration', '0077_historicalfacility_well_authorization_numbers_and_more'),
+        ('registration', '0078_V1_22_0'),
     ]
 
     operations = [migrations.RunPython(migrate_reg1_operation_statuses, migrations.RunPython.noop, elidable=True)]
