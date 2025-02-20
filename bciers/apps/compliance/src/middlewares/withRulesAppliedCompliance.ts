@@ -18,6 +18,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
       },
     );
     if (operatorFields.has_registered_operation !== true) {
+      console.log("withRulesAppliedCompliance", 'redirect to onboarding');
       return NextResponse.redirect(new URL(`/onboarding`, request.url));
     }
   } catch (error) {
@@ -32,15 +33,19 @@ export const withRulesAppliedCompliance: MiddlewareFactory = (
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const token = await getToken();
     if (token?.identity_provider === IDP.BCEIDBUSINESS) {
+      console.log("withRulesAppliedCompliance", 'token', token);
       try {
         const response = await handleIndustryUserRoutes(request, token);
+        console.log("withRulesAppliedCompliance", 'response', response);
         if (response) {
           return response;
         }
       } catch (error) {
+        console.log("withRulesAppliedCompliance", 'error', error);
         return NextResponse.redirect(new URL(`/onboarding`, request.url));
       }
     }
+    console.log("withRulesAppliedCompliance", 'next middleware');
     return next(request, _next);
   };
 };
