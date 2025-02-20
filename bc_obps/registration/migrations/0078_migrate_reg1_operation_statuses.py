@@ -2,10 +2,13 @@
 
 from django.db import migrations
 from typing import Dict
+import datetime
+import uuid
 
 """
 One-time forward-only migration to be applied to prod data.
 Purpose: set the `status` field of Operations (created in Reg1) to match the statuses used in Administration/Registration2 modules.
+Also archives operations with a "Declined" status (only 1 as of Feb 19, 2025)
 
 Reg1 Status        | Reg2 Status
 -------------------+-------------------
@@ -14,7 +17,7 @@ APPROVED           | DRAFT
 CHANGES_REQUESTED  | DRAFT
 NOT_STARTED        | NOT_STARTED
 DRAFT              | DRAFT
-DECLINED           | To Be Determined
+DECLINED           | Archive the operation
 """
 
 
@@ -46,22 +49,34 @@ def migrate_reg1_operation_statuses(apps, schema_monitor):
 
     before_stats = count_stats(Operation)
 
+    declined_operations_before = Operation.objects.filter(status="Declined")
+
+    print("\n\n\nDeclined operations - before migration:")
+    for op in declined_operations_before:
+        print(f'{op.id}: archived_by_id={op.archived_by_id}, archived_at={op.archived_at}')
+
     pending_operations_updated = Operation.objects.filter(status="Pending").update(status="Draft")
     approved_operations_updated = Operation.objects.filter(status="Approved").update(status="Draft")
     changes_requested_operations_updated = Operation.objects.filter(status="Changes Requested").update(status="Draft")
+    declined_operations_archived = Operation.objects.filter(status="Declined").update(
+        archived_by_id='c3bc1b69-15de-44ac-b03b-982bf3163406', archived_at=datetime.datetime.now(datetime.timezone.utc)
+    )  # declined operations will be archived, per PR's instruction
 
     after_stats = count_stats(Operation)
+
+    declined_operations_after = Operation.objects.filter(status="Declined")
 
     updates = {
         'pending_ops_updated': pending_operations_updated,
         'approved_ops_updated': approved_operations_updated,
         'changes_requested_ops_updated': changes_requested_operations_updated,
+        'declined_operations_archived': declined_operations_archived,
     }
 
-    assertions(before_stats, after_stats, updates)
+    assertions(before_stats, after_stats, updates, declined_operations_after)
 
 
-def assertions(before_stats, after_stats, updates):
+def assertions(before_stats, after_stats, updates, declined_operations_after):
     print("\n\n\n*** BEFORE MIGRATION ***")
     print(before_stats)
     print("*** AFTER MIGRATION ***")
@@ -78,6 +93,17 @@ def assertions(before_stats, after_stats, updates):
     assert after_stats.get('approved') == 0
     assert after_stats.get('changes_requested') == 0
 
+    # assert that the number of Declined operations before is the same as after the migration is applied
+    assert before_stats.get('declined') == after_stats.get('declined')
+
+    print("\n\n\nDeclined operations - after migration:")
+    for op in declined_operations_after:
+        print(f'{op.id}: archived_by_id={op.archived_by_id}, archived_at={op.archived_at}')
+    # assert that the Declined operations are marked as archived after the migration
+    for op in declined_operations_after:
+        assert op.archived_at is not None
+        assert op.archived_by_id == uuid.UUID('c3bc1b69-15de-44ac-b03b-982bf3163406')
+
     # assert that the number of "Not Started" operations remains the same
     assert before_stats.get('not_started') == after_stats.get('not_started')
 
@@ -91,4 +117,4 @@ class Migration(migrations.Migration):
         ('registration', '0077_historicalfacility_well_authorization_numbers_and_more'),
     ]
 
-    operations = [migrations.RunPython(migrate_reg1_operation_statuses)]
+    operations = [migrations.RunPython(migrate_reg1_operation_statuses, migrations.RunPython.noop, elidable=True)]
