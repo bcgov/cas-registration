@@ -105,6 +105,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
+    # django-querycount is hard coded to work only in DEBUG mode set to true
+    'querycount.middleware.QueryCountMiddleware',
 ]
 
 if DEBUG:  # DEV only apps
@@ -213,3 +215,12 @@ if not DEBUG and ENVIRONMENT == "dev":
 
 
 RLS_FLAG = False
+
+# DJANGO-QUERYCOUNT SETTINGS
+# Repo: https://github.com/bradmontgomery/django-querycount
+QUERYCOUNT = {
+    # define a list of regexp patterns that get applied to each request's path. If there is a match, the middleware will not be applied to that request
+    'IGNORE_REQUEST_PATTERNS': [r'^/admin/', r'^/static/', r'^/silk/'],
+    # define a list of regexp patterns that ignored to statistic sql query count
+    'IGNORE_SQL_PATTERNS': [r'silk_'],
+}
