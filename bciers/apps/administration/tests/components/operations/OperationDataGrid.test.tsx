@@ -37,7 +37,7 @@ const mockResponse = {
       operator__legal_name: "FakeOperator",
       operation__name: "Operation 2",
       operation__bcghg_id: "12111130002",
-      operation__type: "Linear Facility Operation",
+      operation__type: "Linear Facilities Operation",
       sfo_facility_id: null,
       sfo_facility_name: null,
       status: "Active",

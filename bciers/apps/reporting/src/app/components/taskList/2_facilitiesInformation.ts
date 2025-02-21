@@ -1,4 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export type ActivityData = { id: number; name: string; slug: string };
 
@@ -16,7 +17,7 @@ export const getFacilitiesInformationTaskList = (
   orderedActivities: ReadonlyArray<ActivityData>,
   activeIndex?: ActivePage | number,
   facilityName?: string,
-  operationType = "Single Facility Operation",
+  operationType = OperationTypes.SFO,
   expandActivities?: boolean, //to disable activity
 ): TaskListElement[] => {
   const name = facilityName ? facilityName : "Facility";
@@ -24,7 +25,7 @@ export const getFacilitiesInformationTaskList = (
   const isActivityListExpanded = expandActivities ?? true;
 
   const backToFacilitiesLink: TaskListElement[] =
-    operationType === "Linear Facility Operation"
+    operationType === OperationTypes.LFO
       ? [
           {
             type: "Link",
@@ -35,7 +36,7 @@ export const getFacilitiesInformationTaskList = (
         ]
       : [];
   const facilityItem: TaskListElement[] =
-    operationType !== "Linear Facility Operation"
+    operationType !== OperationTypes.LFO
       ? []
       : [
           {

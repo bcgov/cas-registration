@@ -37,7 +37,7 @@ describe("the FacilityInformationPage component", () => {
       await FacilityInformationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         operationName: "Test Operation",
-        operationType: "Linear Facility Operation",
+        operationType: "Linear Facilities Operation",
         searchParams: {},
         step: 2,
         steps: allOperationRegistrationSteps,
@@ -106,7 +106,7 @@ describe("the FacilityInformationPage component", () => {
       await FacilityInformationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         operationName: "Test Operation",
-        operationType: "Linear Facility Operation",
+        operationType: "Linear Facilities Operation",
         searchParams: {},
         step: 2,
         steps: allOperationRegistrationSteps,
@@ -129,7 +129,7 @@ describe("the FacilityInformationPage component", () => {
       await FacilityInformationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         operationName: "Test Operation",
-        operationType: "Linear Facility Operation",
+        operationType: "Linear Facilities Operation",
         searchParams: {},
         step: 2,
         steps: allOperationRegistrationSteps,

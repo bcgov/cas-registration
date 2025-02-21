@@ -1,4 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export enum ActivePage {
   "AdditionalReportingData" = 1,
@@ -45,8 +46,8 @@ export const getAdditionalInformationTaskList: (
     taskList.push(newEntrantItem);
   }
 
-  // Add operation emission summary item only if operationType is "Linear Facility Operation"
-  if (operationType === "Linear Facility Operation") {
+  // Add operation emission summary item only if operationType is "Linear Facilities Operation"
+  if (operationType === OperationTypes.LFO) {
     taskList.push(operationEmissionSummaryItem);
   }
 

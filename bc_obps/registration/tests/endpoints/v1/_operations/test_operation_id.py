@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 import pytest
-from registration.enums.enums import BoroIdApplicationStates
+from registration.enums.enums import BoroIdApplicationStates, OperationTypes
 from registration.models import (
     Contact,
     Operation,
@@ -273,7 +273,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
             # this updates the existing contact (contact2)
-            type='Single Facility Operation',
+            type=OperationTypes.SFO,
             naics_code_id=operation.naics_code_id,
             # activity=[],
             regulated_products=[],
@@ -325,7 +325,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         first_contact = operation.point_of_contact
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
-            type='Single Facility Operation',
+            type=OperationTypes.SFO,
             naics_code_id=operation.naics_code_id,
             # activity=[],
             regulated_products=[],

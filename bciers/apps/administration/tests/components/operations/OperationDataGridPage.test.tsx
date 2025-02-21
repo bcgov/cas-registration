@@ -32,7 +32,7 @@ const mockResponse = {
       operator: "FakeOperator",
       name: "Operation 2",
       bcghg_id: "12111130002",
-      type: "Linear Facility Operation",
+      type: "Linear Facilities Operation",
       status: "Registered",
       bc_obps_regulated_operation: "24-0001",
     },

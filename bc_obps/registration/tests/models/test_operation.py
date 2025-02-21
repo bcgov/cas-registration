@@ -1,5 +1,6 @@
 from datetime import datetime
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
+from registration.enums.enums import OperationTypes
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
     BcObpsRegulatedOperation,
@@ -205,7 +206,7 @@ class OperationModelTest(BaseTestCase):
             )
 
         self.test_object.bcghg_id = None
-        self.test_object.type = 'Single Facility Operation'
+        self.test_object.type = OperationTypes.SFO
         self.test_object.naics_code = baker.make(NaicsCode, naics_code='322121')
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         self.test_object.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
