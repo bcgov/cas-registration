@@ -367,7 +367,7 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
             timeline.facility.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
 
     def test_generate_unique_bcghg_id_for_operation(self):
-        operation: Operation = baker.make_recipe('registration.tests.utils.operation', type=OperationTypes.LFO)
+        operation: Operation = baker.make_recipe('registration.tests.utils.operation', type=OperationTypes.LFO.value)
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
         expected_id = f'2{operation.naics_code.naics_code}0001'
@@ -377,7 +377,7 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
         timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
         timeline.end_date = None
         timeline.save()
-        timeline.operation.type = OperationTypes.LFO
+        timeline.operation.type = OperationTypes.LFO.value
         timeline.operation.save()
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         timeline.facility.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
