@@ -18,6 +18,7 @@
     "reducingAgents": {
       "type": "array",
       "title": "Reducing Agent",
+      "default": [{}],
       "items": {
         "type": "object",
         "properties": {
