@@ -19,6 +19,7 @@ import electricityGenerationUiSchema from "./electricityGenerationUiSchema";
 import cementProductionUISchema from "./cementProductionUISchema";
 import gscSolelyLineTracingUiSchema from "./gscSolelyLineTracingUiSchema";
 import limeManufacturingUiSchema from "./limeManufacturingUiSchema";
+import coalStorageUiSchema from "./coalStorageUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -48,6 +49,7 @@ export const uiSchemaMap: UiSchemaMap = {
   electricity_generation: electricityGenerationUiSchema,
   cement_production: cementProductionUISchema,
   lime_manufacturing: limeManufacturingUiSchema,
+  coal_storage: coalStorageUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
