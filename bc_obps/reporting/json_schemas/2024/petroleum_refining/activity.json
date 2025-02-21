@@ -1,0 +1,28 @@
+{
+  "title": "Petroleum refining",
+  "type": "object",
+  "properties": {
+    "feedstocks": {
+      "type": "array",
+      "title": "Feedstocks",
+      "items": {
+        "type": "object",
+        "properties": {
+          "feedstock": {
+            "type": "string",
+            "title": "Feedstock"
+          },
+          "annualFeedstockConsumedAmount": {
+            "type": "number",
+            "title": "Annual Amount of Feedstock Consumed"
+          },
+          "unitForAnnualFeedstockConsumedAmount": {
+            "type": "string",
+            "title": "Unit for Annual Amount of Feedstock Consumed",
+            "enum": ["Sm3", "Kilolitres", "Tonnes", "Bone dry tonnes"]
+          }
+        }
+      }
+    }
+  }
+}
