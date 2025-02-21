@@ -208,6 +208,6 @@ describe("The attachments form", () => {
     expect(sentFormDataKeys).toEqual(["files", "file_types"]);
     expect(sentFormDataValues).toEqual([file, "verification_statement"]);
 
-    expect(useRouter().push).toHaveBeenCalledWith("/reports/1346/final-review");
+    expect(useRouter().push).toHaveBeenCalledWith("/reports/1346/sign-off");
   });
 });

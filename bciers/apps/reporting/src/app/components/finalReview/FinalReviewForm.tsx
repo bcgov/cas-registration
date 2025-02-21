@@ -9,6 +9,7 @@ import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
 import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { emissionAllocationUiSchema } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
+import { emissionSummaryUiSchema } from "@reporting/src/data/jsonSchema/emissionSummary";
 import { ReviewData } from "./reviewDataFactory/factory";
 import { withTheme } from "@rjsf/core";
 import { customizeValidator } from "@rjsf/validator-ajv8";
@@ -30,6 +31,7 @@ const finalReviewSchemaMap: { [key: string]: any } = {
   productionData: productionDataUiSchema,
   emissionAllocation: emissionAllocationUiSchema,
   additionalReportingData: additionalReportingDataUiSchema,
+  operationEmissionSummary: emissionSummaryUiSchema,
   complianceSummary: complianceSummaryUiSchema,
 };
 
@@ -39,6 +41,22 @@ const resolveUiSchema = (uiSchema: any) => {
 };
 
 const Form = withTheme(finalReviewTheme);
+
+// Helper function to render the Form component
+const RenderForm = ({ idx, form }: { idx: number; form: any; data: any }) => (
+  <Form
+    key={idx}
+    schema={form.schema}
+    formData={form.data}
+    uiSchema={{
+      ...resolveUiSchema(form.uiSchema),
+      "ui:submitButtonOptions": { norender: true },
+    }}
+    readonly={true}
+    formContext={form.context || {}}
+    validator={customizeValidator({})}
+  />
+);
 
 const FinalReviewForm: React.FC<Props> = ({
   version_id,
@@ -74,20 +92,25 @@ const FinalReviewForm: React.FC<Props> = ({
       submittingButtonText="Continue"
       noSaveButton
     >
-      {data.map((form, idx) => (
-        <Form
-          key={idx}
-          schema={form.schema}
-          formData={form.data}
-          uiSchema={{
-            ...resolveUiSchema(form.uiSchema),
-            "ui:submitButtonOptions": { norender: true },
-          }}
-          readonly={true}
-          formContext={form.context || {}}
-          validator={customizeValidator({})}
-        />
-      ))}
+      {data.map((form, idx) => {
+        if (form.items) {
+          return (
+            <details
+              key={idx}
+              className="border-2 border-t-0 border-b-0 border-[#38598A] p-2 my-2 w-full"
+            >
+              <summary className="cursor-pointer font-bold text-[#38598A] text-2xl py-2 border-2 border-t-0 border-b-0 border-[#38598A]">
+                {form.schema.title}
+              </summary>
+              {form.items.map((item: any, index: number) =>
+                RenderForm({ idx: index, form: item, data }),
+              )}
+            </details>
+          );
+        }
+
+        return RenderForm({ idx, form, data });
+      })}
     </MultiStepWrapperWithTaskList>
   );
 };

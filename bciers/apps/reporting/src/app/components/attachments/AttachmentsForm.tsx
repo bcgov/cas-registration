@@ -26,7 +26,7 @@ const AttachmentsForm: React.FC<Props> = ({
   isVerificationStatementMandatory,
 }) => {
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${version_id}/final-review`;
+  const saveAndContinueUrl = `/reports/${version_id}/sign-off`;
   const backUrl = `/reports/${version_id}/verification`;
 
   const [isSaving, setIsSaving] = useState<boolean>(false);

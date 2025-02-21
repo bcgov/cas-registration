@@ -19,6 +19,7 @@ interface AdditionalReportingDataProps {
   initialFormData: any;
   isNewEntrant: boolean;
   taskListElements: TaskListElement[];
+  operationType: string;
 }
 
 interface FormData {
@@ -41,6 +42,7 @@ export default function AdditionalReportingDataForm({
   initialFormData,
   isNewEntrant,
   taskListElements,
+  operationType,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
@@ -51,7 +53,9 @@ export default function AdditionalReportingDataForm({
   const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
   const saveAndContinueUrl = isNewEntrant
     ? `new-entrant-information`
-    : `emission-summary`;
+    : operationType === "Linear Facility Operation"
+    ? "emission-summary"
+    : "compliance-summary";
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
