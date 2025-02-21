@@ -17,6 +17,7 @@ import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface Props {
   versionId: number;
@@ -49,7 +50,7 @@ const PersonResponsibleForm = ({
   const [schema, setSchema] = useState<RJSFSchema>(initialSchema);
 
   const continueUrl =
-    operationType === "Linear Facility Operation"
+    operationType === OperationTypes.LFO
       ? `/reports/${versionId}/facilities/review-facilities`
       : `/reports/${versionId}/facilities/${facilityId}/activities`;
   const backUrl = `/reports/${versionId}/review-operator-data`;

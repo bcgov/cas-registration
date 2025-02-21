@@ -1,5 +1,6 @@
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.naics_code import NaicsCode
+from registration.enums.enums import OperationTypes
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import Facility
 from model_bakery import baker
@@ -65,7 +66,7 @@ class FacilityModelTest(BaseTestCase):
         facility_designated_operation_timeline = baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline', facility=self.test_object, end_date=None
         )
-        facility_designated_operation_timeline.operation.type = 'Single Facility Operation'
+        facility_designated_operation_timeline.operation.type = OperationTypes.SFO
         facility_designated_operation_timeline.operation.naics_code = baker.make(NaicsCode, naics_code='322121')
         facility_designated_operation_timeline.operation.save()
 

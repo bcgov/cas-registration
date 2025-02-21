@@ -114,7 +114,7 @@ describe("Facilities component", () => {
     });
     getOperation.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-      type: "Linear Facility Operation",
+      type: "Linear Facilities Operation",
     });
     render(
       await FacilityPage({

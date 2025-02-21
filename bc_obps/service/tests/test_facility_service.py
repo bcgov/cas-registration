@@ -97,7 +97,7 @@ class TestGetIfAuthorized:
         owning_operation: Operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
-            type="Linear Facility Operation",
+            type="Linear Facilities Operation",
         )
         payload = [
             FacilityIn(
