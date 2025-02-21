@@ -22,17 +22,19 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
+import { eioOperationInformationSchema } from "../../data/jsonSchema/operationInformation/operationInformation";
 
 const OperationInformationForm = ({
   formData,
   operationId,
-  schema,
+  schema: initialSchema,
 }: {
   formData: OperationInformationPartialFormData;
   operationId: UUID;
   schema: RJSFSchema;
 }) => {
   const [error, setError] = useState(undefined);
+  const [schema, setSchema] = useState(initialSchema);
   const [selectedPurpose, setSelectedPurpose] = useState(
     formData.registration_purpose || "",
   );
@@ -40,6 +42,8 @@ const OperationInformationForm = ({
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
   ] = useState("");
+  const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
+    useState<boolean>(false);
   const router = useRouter();
   // To get the user's role from the session
   const role = useSessionRole();
@@ -49,6 +53,18 @@ const OperationInformationForm = ({
   useEffect(() => {
     if (selectedPurpose) {
       formData.registration_purpose = selectedPurpose;
+    }
+    if (selectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION) {
+      // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
+      setSchema({
+        ...initialSchema,
+        properties: {
+          ...initialSchema.properties,
+          section1: eioOperationInformationSchema,
+        },
+      });
+    } else {
+      setSchema(initialSchema);
     }
   }, [selectedPurpose]);
 
@@ -98,11 +114,13 @@ const OperationInformationForm = ({
 
   const cancelRegistrationPurposeChange = () => {
     setPendingChangeRegistrationPurpose("");
+    setIsConfirmPurposeChangeModalOpen(false);
   };
 
   const confirmRegistrationPurposeChange = () => {
     if (pendingChangeRegistrationPurpose !== "") {
       setSelectedPurpose(pendingChangeRegistrationPurpose);
+      setIsConfirmPurposeChangeModalOpen(false);
     }
     formData.registration_purpose = pendingChangeRegistrationPurpose;
     setPendingChangeRegistrationPurpose("");
@@ -110,6 +128,7 @@ const OperationInformationForm = ({
 
   const handleSelectedPurposeChange = (newSelectedPurpose: string) => {
     if (newSelectedPurpose && selectedPurpose) {
+      setIsConfirmPurposeChangeModalOpen(true);
       setPendingChangeRegistrationPurpose(newSelectedPurpose);
     }
   };
@@ -123,7 +142,7 @@ const OperationInformationForm = ({
         </Note>
       )}
       <ConfirmChangeOfRegistrationPurposeModal
-        open={pendingChangeRegistrationPurpose !== ""}
+        open={isConfirmPurposeChangeModalOpen}
         cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
         confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
       />
