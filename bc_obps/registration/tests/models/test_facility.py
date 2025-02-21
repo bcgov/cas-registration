@@ -66,7 +66,7 @@ class FacilityModelTest(BaseTestCase):
         facility_designated_operation_timeline = baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline', facility=self.test_object, end_date=None
         )
-        facility_designated_operation_timeline.operation.type = OperationTypes.SFO
+        facility_designated_operation_timeline.operation.type = OperationTypes.SFO.value
         facility_designated_operation_timeline.operation.naics_code = baker.make(NaicsCode, naics_code='322121')
         facility_designated_operation_timeline.operation.save()
 

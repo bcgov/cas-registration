@@ -18,9 +18,9 @@ def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facil
     if not operation.naics_code:
         raise ValueError('BCGHG cannot be generated. Missing NAICS code.')
 
-    if operation.type == OperationTypes.SFO:
+    if operation.type == OperationTypes.SFO.value:
         first_digit = '1'
-    elif operation.type == OperationTypes.LFO:
+    elif operation.type == OperationTypes.LFO.value:
         first_digit = '2'
     else:
         raise ValueError(f"Invalid operation type: {operation.type}")
