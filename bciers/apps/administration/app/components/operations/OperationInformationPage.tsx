@@ -3,6 +3,7 @@ import { getOperationWithDocuments } from "@bciers/actions/api";
 import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
+import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 const OperationInformationPage = async ({
   operationId,
@@ -17,7 +18,7 @@ const OperationInformationPage = async ({
   if (operation?.error) throw new Error("Error fetching operation information");
 
   const formSchema = await createAdministrationOperationInformationSchema(
-    operation?.registration_purpose,
+    undefined, // we do know the registration purpose at this point, but we don't want to consider it when generating the schema
     operation.status,
   );
 
