@@ -398,6 +398,7 @@ ENDPOINTS = {
         },
     ],
     "authorized_irc_user": [
+        {"method": "get", "endpoint_name": "list_operators"},
         {"method": "get", "endpoint_name": "v1_list_user_operators"},
         {"method": "get", "endpoint_name": "list_user_operators"},
         {"method": "get", "endpoint_name": "list_transfer_events"},
@@ -469,7 +470,6 @@ ENDPOINTS = {
             "endpoint_name": "get_operation_with_documents",
             "kwargs": {"operation_id": MOCK_UUID},
         },
-        {"method": "get", "endpoint_name": "list_operators"},
         {
             "method": "get",
             "endpoint_name": "get_report_operation_by_version_id",
