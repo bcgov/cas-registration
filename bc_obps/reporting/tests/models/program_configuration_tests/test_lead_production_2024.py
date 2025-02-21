@@ -49,6 +49,7 @@ class LeadProduction2024Test(BaseProgramConfigurationTest, TestCase):
             "reducingAgents": {
                 "type": "array",
                 "title": "Reducing Agent",
+                "default": [{}],
                 "items": {
                     "type": "object",
                     "properties": {
