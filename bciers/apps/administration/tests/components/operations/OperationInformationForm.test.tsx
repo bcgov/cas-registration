@@ -179,6 +179,8 @@ describe("the OperationInformationForm component", () => {
         formData={{}}
         schema={testSchema}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchema}
       />,
     );
 
@@ -201,6 +203,8 @@ describe("the OperationInformationForm component", () => {
         formData={formData}
         schema={createdFormSchema}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={createdFormSchema}
       />,
     );
     //name
@@ -253,15 +257,23 @@ describe("the OperationInformationForm component", () => {
       );
     render(
       <OperationInformationForm
-        formData={{ name: "Operation 3", type: "Electricity Import Operation" }}
+        formData={{
+          name: "Operation 3",
+          type: "Electricity Import Operation",
+          registration_purpose: "Electricity Import Operation",
+        }}
         schema={createdFormSchema}
         operationId={operationId}
+        eioSchema={createdFormSchema}
+        generalSchema={testSchema}
       />,
     );
     //name
     expect(screen.getByText(/Operation 3/i)).toBeVisible();
-    // type
-    expect(screen.getByText(/Electricity Import Operation/i)).toBeVisible();
+    // type and purpose
+    expect(screen.getAllByText(/Electricity Import Operation/i)).toHaveLength(
+      2,
+    );
     // primary naics code
     expect(screen.queryByText(/naics/i)).not.toBeInTheDocument();
 
@@ -271,7 +283,6 @@ describe("the OperationInformationForm component", () => {
         /The purpose of this registration is to register as a\:/i,
       ),
     ).toBeVisible();
-    expect(screen.getByText(/Electricity Import Operation/i)).toBeVisible();
   });
 
   it("should enable editing when the Edit button is clicked", async () => {
@@ -280,6 +291,8 @@ describe("the OperationInformationForm component", () => {
         formData={formData}
         schema={testSchema}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchema}
       />,
     );
 
@@ -300,6 +313,8 @@ describe("the OperationInformationForm component", () => {
         formData={formData}
         schema={testSchema}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchema}
       />,
     );
 
@@ -345,6 +360,8 @@ describe("the OperationInformationForm component", () => {
         formData={optInFormData}
         schema={testSchemaWithOpt}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchemaWithOpt}
       />,
     );
 
@@ -416,6 +433,8 @@ describe("the OperationInformationForm component", () => {
         formData={formData}
         schema={testSchema}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchema}
       />,
     );
 
@@ -440,6 +459,8 @@ describe("the OperationInformationForm component", () => {
         formData={optInFormData}
         schema={testSchemaWithOpt}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={testSchemaWithOpt}
       />,
     );
 
@@ -587,6 +608,26 @@ describe("the OperationInformationForm component", () => {
           },
         }}
         operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={{
+          type: "object",
+          properties: {
+            section1: {
+              title: "Section 1",
+              type: "object",
+              properties: {
+                bc_obps_regulated_operation: {
+                  type: "string",
+                  title: "BORO ID",
+                },
+                bcghg_id: {
+                  type: "string",
+                  title: "BCGHGID",
+                },
+              },
+            },
+          },
+        }}
       />,
     );
 
@@ -610,6 +651,26 @@ describe("the OperationInformationForm component", () => {
 
       render(
         <OperationInformationForm
+          eioSchema={testSchema}
+          generalSchema={{
+            type: "object",
+            properties: {
+              section1: {
+                title: "Section 1",
+                type: "object",
+                properties: {
+                  bc_obps_regulated_operation: {
+                    type: "string",
+                    title: "BORO ID",
+                  },
+                  bcghg_id: {
+                    type: "string",
+                    title: "BCGHGID",
+                  },
+                },
+              },
+            },
+          }}
           formData={{ ...formData, status: OperationStatus.REGISTERED }}
           schema={{
             type: "object",
@@ -653,6 +714,8 @@ describe("the OperationInformationForm component", () => {
 
     const { container } = render(
       <OperationInformationForm
+        eioSchema={testSchema}
+        generalSchema={modifiedSchema}
         formData={newEntrantFormData}
         schema={modifiedSchema}
         operationId={operationId}
@@ -752,6 +815,8 @@ describe("the OperationInformationForm component", () => {
 
     render(
       <OperationInformationForm
+        eioSchema={testSchema}
+        generalSchema={testSchemaWithNewEntrant}
         formData={newEntrantFormData}
         schema={testSchemaWithNewEntrant}
         operationId={operationId}
@@ -812,6 +877,8 @@ describe("the OperationInformationForm component", () => {
 
     render(
       <OperationInformationForm
+        eioSchema={testSchema}
+        generalSchema={createdFormSchema}
         formData={formData}
         schema={createdFormSchema}
         operationId={operationId}
@@ -865,6 +932,8 @@ describe("the OperationInformationForm component", () => {
 
       render(
         <OperationInformationForm
+          eioSchema={testSchema}
+          generalSchema={createdFormSchema}
           formData={testFormData}
           schema={createdFormSchema}
           operationId={operationId}
@@ -937,6 +1006,8 @@ describe("the OperationInformationForm component", () => {
 
     render(
       <OperationInformationForm
+        eioSchema={testSchema}
+        generalSchema={createdFormSchema}
         formData={{}}
         schema={createdFormSchema}
         operationId={operationId}
