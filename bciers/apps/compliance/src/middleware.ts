@@ -1,5 +1,8 @@
-import { stackMiddlewares } from "@bciers/middlewares";
-import { withAuthorizationCompliance } from "./middlewares/withAuthorizationCompliance";
+import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
+import { withRulesAppliedCompliance } from "./middlewares/withRulesAppliedCompliance";
+import { withResponseCompliance } from "./middlewares/withResponseCompliance";
+
+export const appName = "compliance";
 
 /* 📌
 Middleware allows you to run code before a request is completed so you can modify the response by
@@ -23,10 +26,12 @@ Custom matcher config
 Conditional statements
 */
 export const config = {
-  matcher: [
-    "/((?!static|.*\\..*|api|_next|sw.js|favicon.ico|bciers/libs/shared/).*)",
-  ],
+  matcher: ["/", "/((?!api|_next|sw.js|favicon.ico).*)"],
 };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([withAuthorizationCompliance]);
+export default stackMiddlewares([
+  withAuthorization,
+  withRulesAppliedCompliance,
+  withResponseCompliance,
+]);

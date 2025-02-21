@@ -1,0 +1,40 @@
+[
+  {
+    "model": "reporting.reportproduct",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "report_version": 1,
+      "facility_report": 1,
+      "product": 1,
+      "annual_production": 5000.0,
+      "production_data_apr_dec": 3750.0,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": null,
+      "storage_quantity_end_of_period": null,
+      "quantity_sold_during_period": null,
+      "quantity_throughput_during_period": null
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "report_version": 2,
+      "facility_report": 2,
+      "product": 2,
+      "annual_production": 4000.0,
+      "production_data_apr_dec": 3000.0,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": null,
+      "storage_quantity_end_of_period": null,
+      "quantity_sold_during_period": null,
+      "quantity_throughput_during_period": null
+    }
+  }
+]

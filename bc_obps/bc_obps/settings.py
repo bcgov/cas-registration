@@ -71,6 +71,7 @@ LOCAL_APPS = [
     "reporting",
     "common",
     "rls",
+    "compliance",
 ]
 
 INSTALLED_APPS = [
