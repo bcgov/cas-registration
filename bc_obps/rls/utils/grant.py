@@ -1,9 +1,7 @@
-from typing import List
+from typing import List, Any
 from django.db.backends.utils import CursorWrapper
 from psycopg.sql import SQL, Identifier
 from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from reporting.enums.enums import ReportingTableNames
 from rls.enums import RlsRoles, RlsOperations
 
 
@@ -22,7 +20,7 @@ class RlsGrant:
         self,
         role: RlsRoles,
         grants: List[RlsOperations],
-        table: RegistrationTableNames | ReportingTableNames,
+        table: Any,
         schema: Schemas = Schemas.ERC,
     ):
         self.role = role.value
