@@ -22,16 +22,19 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
-import { eioOperationInformationSchema } from "../../data/jsonSchema/operationInformation/operationInformation";
 
 const OperationInformationForm = ({
   formData,
   operationId,
   schema: initialSchema,
+  eioSchema,
+  generalSchema,
 }: {
   formData: OperationInformationPartialFormData;
   operationId: UUID;
   schema: RJSFSchema;
+  eioSchema: RJSFSchema;
+  generalSchema: RJSFSchema;
 }) => {
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
@@ -55,18 +58,11 @@ const OperationInformationForm = ({
       formData.registration_purpose = selectedPurpose;
     }
     if (selectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION) {
-      // EIOs only require basic information, so if a user selects EIO we remove some of the form fields
-      setSchema({
-        ...initialSchema,
-        properties: {
-          ...initialSchema.properties,
-          section1: eioOperationInformationSchema,
-        },
-      });
+      setSchema(eioSchema);
     } else {
-      setSchema(initialSchema);
+      setSchema(generalSchema);
     }
-  }, [selectedPurpose]);
+  }, [selectedPurpose, eioSchema, generalSchema]);
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
