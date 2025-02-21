@@ -25,13 +25,17 @@
           },
           {
             "title": "B.C. Carbon Registry",
-            "href": "/compliance/bc-carbon-registry",
+            "href": "https://carbonregistry.gov.bc.ca/br-reg/public/bc/home.jsp#/login",
+            "target": "_blank",
+            "rel": "noopener",
             "icon": "File",
             "content": "Receive, trade, or apply compliance units (earned credits, offset units) towards compliance obligations here.",
             "links": [
               {
                 "title": "Go to B.C. Carbon Registry",
-                "href": "/compliance/bc-carbon-registry"
+                "href": "https://carbonregistry.gov.bc.ca/br-reg/public/bc/home.jsp#/login",
+                "target": "_blank",
+                "rel": "noopener"
               }
             ]
           }

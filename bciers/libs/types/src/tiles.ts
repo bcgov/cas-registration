@@ -12,6 +12,8 @@ export type LinkItem = {
   title: string; // The title of the link
   conditions?: Condition[]; // Optional array of conditions to display the link
   allowedRoles?: string[]; // Optional array of roles that can see the tile
+  target?: string; // Optional target attribute for the link (e.g., '_blank', '_self')
+  rel?: string; // Optional rel attribute for the link (e.g., 'noopener noreferrer')
 };
 
 // Main ContentItem type, including optional conditions and links
@@ -22,6 +24,8 @@ export type ContentItem = {
   content: string; // Description or content of the dashboard tile
   links?: LinkItem[]; // Optional array of links, each can have a condition
   conditions?: Condition[]; // Optional array of conditions to display the tile
+  target?: string; // Optional target attribute for the tile's main link
+  rel?: string; // Optional rel attribute for the tile's main link
 };
 
 export type IconMap = {
