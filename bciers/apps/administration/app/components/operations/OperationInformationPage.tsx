@@ -18,7 +18,15 @@ const OperationInformationPage = async ({
   if (operation?.error) throw new Error("Error fetching operation information");
 
   const formSchema = await createAdministrationOperationInformationSchema(
-    undefined, // we do know the registration purpose at this point, but we don't want to consider it when generating the schema
+    operation.registration_purpose,
+    operation.status,
+  );
+  const eioSchema = await createAdministrationOperationInformationSchema(
+    RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+    operation.status,
+  );
+  const generalSchema = await createAdministrationOperationInformationSchema(
+    undefined,
     operation.status,
   );
 
@@ -29,7 +37,11 @@ const OperationInformationPage = async ({
         registration_purpose: operation?.registration_purpose,
       }}
       operationId={operationId}
+      // this is the schema needed for the operation's existing registration purpose
       schema={formSchema}
+      // these schemas are used to support changing the registration purpose
+      eioSchema={eioSchema}
+      generalSchema={generalSchema}
     />
   );
 };
