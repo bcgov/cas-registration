@@ -1,7 +1,5 @@
 from common.enums import Schemas
 from typing import Dict, List, Any
-from reporting.enums.enums import ReportingTableNames
-from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.grant import RlsGrant
 from rls.utils.m2m import M2mRls
@@ -9,7 +7,7 @@ from rls.utils.m2m import M2mRls
 
 def generate_rls_grants(
     role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
-    table: RegistrationTableNames | ReportingTableNames,
+    table: Any,
     schema: Schemas = Schemas.ERC,
 ) -> List[RlsGrant]:
     """
