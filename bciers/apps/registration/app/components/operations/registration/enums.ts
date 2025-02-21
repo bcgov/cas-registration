@@ -47,7 +47,7 @@ export const RegistrationPurposeHelpText: {
   [RegistrationPurposes.OBPS_REGULATED_OPERATION]:
     "An OBPS Regulated Operation is a type of reporting operation that produces a regulated product and emits greater than or equal to 10 000 tCO2e per year. This option should be selected if you are a registering as a mandatory participant in the B.C. OBPS.",
   [RegistrationPurposes.OPTED_IN_OPERATION]:
-    "An Opted-in Operation is an industrial operation than produces a regulated product and emits less than 10 000 tCO2e per year. These operations may apply to voluntarily participate in the B.C. OBPS. This option should be selected if you are registering and applying to be an Opted-In Operation.",
+    "An Opted-in Operation is an industrial operation that produces a regulated product and emits less than 10,000 tCO2e per year. These operations may apply to voluntarily participate in the B.C. OBPS. This option should be selected if your operation has already been designated as an Opted-In Operation, OR if your operation is registering and applying to be an Opted-In Operation for the first time.",
   [RegistrationPurposes.NEW_ENTRANT_OPERATION]:
     "This option should be selected if you are registering and applying to be a New Entrant.",
   [RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION]:
