@@ -2,6 +2,7 @@ from uuid import UUID
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility import Facility
 from registration.models.operation import Operation
+from registration.enums.enums import OperationTypes
 
 
 def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facility, user_guid: UUID) -> None:
@@ -17,9 +18,9 @@ def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facil
     if not operation.naics_code:
         raise ValueError('BCGHG cannot be generated. Missing NAICS code.')
 
-    if operation.type == 'Single Facility Operation':
+    if operation.type == OperationTypes.SFO:
         first_digit = '1'
-    elif operation.type == 'Linear Facility Operation':
+    elif operation.type == OperationTypes.LFO:
         first_digit = '2'
     else:
         raise ValueError(f"Invalid operation type: {operation.type}")
