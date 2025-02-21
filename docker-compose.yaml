@@ -13,7 +13,7 @@ services:
     network_mode: host
 
   backend:
-    image: ghcr.io/bcgov/cas-reg-backend:latest
+    image: ghcr.io/bcgov/cas-reg-backend:${GITHUB_SHA}
     environment:
       DB_USER: postgres
       DB_NAME: registration
@@ -35,7 +35,7 @@ services:
       start_period: 60s
 
   dashboard:
-    image: ghcr.io/bcgov/cas-dash-e2e-frontend:latest
+    image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
       CI: "true"
       PORT: 3000
@@ -52,7 +52,7 @@ services:
     network_mode: host
 
   administration:
-    image: ghcr.io/bcgov/cas-admin-frontend:latest
+    image: ghcr.io/bcgov/cas-admin-frontend:${GITHUB_SHA}
     environment:
       PORT: 4001
       HOSTNAME: localhost
@@ -68,7 +68,7 @@ services:
     network_mode: host
 
   compliance:
-    image: ghcr.io/bcgov/cas-compliance-frontend:latest
+    image: ghcr.io/bcgov/cas-compliance-frontend:${GITHUB_SHA}
     environment:
       PORT: 7000
       HOSTNAME: localhost
@@ -84,7 +84,7 @@ services:
     network_mode: host
 
   registration:
-    image: ghcr.io/bcgov/cas-reg-frontend:$latest
+    image: ghcr.io/bcgov/cas-reg-frontend:${GITHUB_SHA}
     environment:
       PORT: 4000
       HOSTNAME: localhost
@@ -100,7 +100,7 @@ services:
     network_mode: host
 
   reporting:
-    image: ghcr.io/bcgov/cas-rep-frontend:$latest
+    image: ghcr.io/bcgov/cas-rep-frontend:${GITHUB_SHA}
     environment:
       PORT: 5000
       HOSTNAME: localhost
@@ -116,7 +116,7 @@ services:
     network_mode: host
 
   nx-app:
-    image: ${IMAGE_URL}:latest
+    image: ghcr.io/bcgov/cas-nx-app:${GITHUB_SHA}
     environment:
       PORT: ${NX_APP_PORT}
       HOSTNAME: localhost
