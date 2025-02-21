@@ -1,0 +1,138 @@
+{
+  "type": "object",
+  "properties": {
+    "coalPurchases": {
+      "type": "array",
+      "title": "Coal Purchases",
+      "default": [{}],
+      "items": {
+        "type": "object",
+        "properties": {
+          "annualCoalPurchaseAmount": {
+            "title": "Annual Amount Purchased Coal (tonnes)",
+            "type": "number",
+            "minimum": 0
+          },
+          "coalBasin": {
+            "title": "Coal Basin/Field",
+            "type": "string",
+            "enum": [
+              "Battle River",
+              "Cadomin-Luscar",
+              "Central Appalachia (E KY)",
+              "Central Appalachia (VA)",
+              "Central Appalachia (WV)",
+              "Coalspur",
+              "Comox",
+              "Crowness",
+              "Elk Valley",
+              "Estavan",
+              "Illinois",
+              "N. Great Plains",
+              "Northwest (AK)",
+              "Northwest (WA)",
+              "Northern Appalachia",
+              "Obed Mountain",
+              "Peace River",
+              "Rockies (Green River Basin)",
+              "Rockies (Piceance Basin)",
+              "Rockies (Raton Basin)",
+              "Rockies (San Juan Basin)",
+              "Rockies (Uinta Basin)",
+              "Sheerness",
+              "Smokey River",
+              "Wabamun",
+              "Warrior",
+              "West Interior (Arkoma Basin)",
+              "West Interior (Forest City, Cherokee Basins)",
+              "West Interior (Gulf Coast Basin)",
+              "Willow Bunch",
+              "Other"
+            ]
+          },
+          "provinceState": {
+            "title": "Province/State",
+            "type": "string",
+            "enum": [
+              "Alabama",
+              "Alaska",
+              "Alberta",
+              "Arizona",
+              "Arkansas",
+              "British Columbia",
+              "California",
+              "Colorado",
+              "Illinois",
+              "Indiana",
+              "Iowa",
+              "Kansas",
+              "Kentucky West",
+              "Louisiana",
+              "Maryland",
+              "Mississippi",
+              "Missouri",
+              "Montana",
+              "New Brunswick",
+              "New Mexico",
+              "North Dakota",
+              "Nova Scotia",
+              "Ohio",
+              "Oklahoma",
+              "Pennsylvania",
+              "Saskatchewan",
+              "Tennessee",
+              "Texas",
+              "Utah",
+              "Virginia",
+              "Washington",
+              "West Virginia North",
+              "West Virginia South",
+              "Wyoming",
+              "Other"
+            ]
+          },
+          "mineType": {
+            "title": "Mine Type",
+            "type": "string",
+            "enum": ["Underground", "Open-pit"]
+          },
+          "defaultCH4EmissionFactor": {
+            "title": "Default CH4 Emission Factor",
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "dependencies": {
+          "coalBasin": {
+            "oneOf": [
+              {
+                "properties": {
+                  "coalBasin": {
+                    "enum": ["Other"]
+                  },
+                  "basinName": {
+                    "title": "Basin Name",
+                    "type": "string"
+                  },
+                  "basinDescription": {
+                    "title": "Basin Description",
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "coalBasin": {
+                      "enum": ["Other"]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
