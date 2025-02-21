@@ -432,7 +432,7 @@ def reverse_custom_schema_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0066_zinc_production'),
+        ('reporting', '0067_petroleum_refining'),
     ]
 
     operations = [
