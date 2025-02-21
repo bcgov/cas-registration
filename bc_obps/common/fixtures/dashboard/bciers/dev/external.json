@@ -203,7 +203,9 @@
               },
               {
                 "title": "B.C. Carbon Registry",
-                "href": "/compliance/bc-carbon-registry"
+                "href": "https://carbonregistry.gov.bc.ca/br-reg/public/bc/home.jsp#/login",
+                "target": "_blank",
+                "rel": "noopener"
               }
             ]
           },
