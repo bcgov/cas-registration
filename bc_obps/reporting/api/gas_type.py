@@ -19,3 +19,12 @@ from ..service.gas_type_service import GasTypeService
 )
 def get_gas_type(request: HttpRequest) -> tuple[int, list[GasType]]:
     return 200, GasTypeService.get_all_gas_types()
+
+
+@router.get(
+    "/basic-gas-types",
+    response={200: List[GasTypeSchema], custom_codes_4xx: Message},
+    auth=authorize("approved_industry_user"),
+)
+def get_basic_gas_types(request: HttpRequest) -> tuple[int, list[GasType]]:
+    return 200, GasTypeService.get_basic_gas_types()

@@ -1,5 +1,5 @@
 import NonAttributableEmissionsForm from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributableEmissionsForm";
-import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
+import { getBasicGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 import { getAllEmissionCategories } from "@reporting/src/app/utils/getAllEmissionCategories";
 import { getNonAttributableEmissionsData } from "@reporting/src/app/utils/getNonAttributableEmissionsData";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
@@ -15,7 +15,7 @@ export default async function NonAttributableEmissionsPage({
   version_id,
   facility_id,
 }: HasFacilityId) {
-  const gasTypes = await getAllGasTypes();
+  const gasTypes = await getBasicGasTypes();
   const emissionCategories = await getAllEmissionCategories();
   const emissionFormData = await getNonAttributableEmissionsData(
     version_id,
