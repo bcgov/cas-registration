@@ -22,6 +22,7 @@ import limeManufacturingUiSchema from "./limeManufacturingUiSchema";
 import coalStorageUiSchema from "./coalStorageUiSchema";
 import zincProductionUiSchema from "./zincProductionUiSchema";
 import petroleumRefiningUiSchema from "./petroleumRefiningUiSchema";
+import leadProductionUiSchema from "./leadProductionUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -54,6 +55,7 @@ export const uiSchemaMap: UiSchemaMap = {
   coal_storage: coalStorageUiSchema,
   zinc_production: zincProductionUiSchema,
   petroleum_refining: petroleumRefiningUiSchema,
+  lead_production: leadProductionUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
