@@ -16,10 +16,11 @@ api = NinjaAPI(
 # This is a custom exception handler for Ninja ValidationError, This helps to return a more detailed error message for Unprocessable Entity (422) responses
 @api.exception_handler(ValidationError)
 def custom_validation_errors(request: HttpRequest, exc: Type[ValidationError]) -> HttpResponse:
-    print(exc.errors)  # <--------------------- !!!!
+    print(exc.errors)
     return api.create_response(request, {"detail": exc.errors}, status=422)
 
-api.add_exception_handler(Exception, handle_exception) # Global exception handler
+
+api.add_exception_handler(Exception, handle_exception)  # Global exception handler
 
 api.add_router("/common/", common_router, tags=["V1"])
 api.add_router("/registration/", registration_router, tags=["V1"])
