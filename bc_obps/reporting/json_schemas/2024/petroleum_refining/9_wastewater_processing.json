@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "title": "Wastewater processing using anaerobic digestion at refineries",
+  "default": { "emissions": [{}] },
+  "properties": {
+    "emissions": {
+      "title": "Emission Data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "emission": {
+            "title": "Emissions (tonnes)",
+            "type": "number",
+            "minimum": 0
+          },
+          "gasType": {
+            "title": "Gas Type",
+            "type": "string",
+            "enum": []
+          },
+          "equivalentEmission": {
+            "title": "Equivalent emissions (tC02e)",
+            "type": "string",
+            "readOnly": true,
+            "default": "Value will be computed upon saving"
+          }
+        }
+      }
+    }
+  }
+}
