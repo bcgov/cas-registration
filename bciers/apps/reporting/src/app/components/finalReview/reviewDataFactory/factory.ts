@@ -1,21 +1,20 @@
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import activityFactoryItem from "./activityFactoryItem";
-import nonAttributableEmissionsFactoryItem from "./nonAttributableEmissionsFactoryItem";
+import { RJSFSchema } from "@rjsf/utils";
 import operationReviewFactoryItem from "./operationReviewFactoryItem";
 import personResponsibleFactoryItem from "./personResponsibleFactoryItem";
-import emissionsSummaryFactoryItem from "./emissionsSummaryFactoryItem";
-import productionDataFactoryItem from "./productionDataFactoryItem";
-import allocationOfEmissionsFactoryItem from "./allocationOfEmissionsFactoryItem";
-import { RJSFSchema } from "@rjsf/utils";
+import facilityActivitiesFactoryItem from "./facilityActivitiesFactoryItem";
 import additionalReportingDataFactoryItem from "./additionalReportingDataFactoryItem";
 import complianceSummaryFactoryItem from "./complianceSummaryFactoryItem";
+import operationEmissionSummaryFactoryItem from "./operationEmissionSummaryFactoryItem";
+import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 
 export type ReviewData = {
   schema: RJSFSchema;
   uiSchema: Object | string;
   data: any;
   context?: any;
+  items?: ReviewData[];
 };
+
 export type ReviewDataFactoryItem = (
   version_id: number,
   facility_id: string,
@@ -24,17 +23,22 @@ export type ReviewDataFactoryItem = (
 export default async function reviewDataFactory(
   versionId: number,
 ): Promise<ReviewData[]> {
-  const facilityId = (await getFacilityReport(versionId)).facility_id;
+  // Fetch facilities for this report version
+  const listFacilities = (await getOperationFacilitiesList(versionId)) || [];
+  const currentFacilities = listFacilities.current_facilities;
+  const facilityId = currentFacilities[0].facility_id;
+  const operationType = currentFacilities.length > 1 ? "LFO" : "SFO";
 
-  return [
+  let reviewData: ReviewData[] = [
     ...(await operationReviewFactoryItem(versionId, facilityId)),
     ...(await personResponsibleFactoryItem(versionId, facilityId)),
-    ...(await activityFactoryItem(versionId, facilityId)),
-    ...(await nonAttributableEmissionsFactoryItem(versionId, facilityId)),
-    ...(await emissionsSummaryFactoryItem(versionId, facilityId)),
-    ...(await productionDataFactoryItem(versionId, facilityId)),
-    ...(await allocationOfEmissionsFactoryItem(versionId, facilityId)),
+    ...(await facilityActivitiesFactoryItem(versionId, currentFacilities)),
     ...(await additionalReportingDataFactoryItem(versionId, facilityId)),
+    ...(operationType === "LFO"
+      ? await operationEmissionSummaryFactoryItem(versionId, facilityId)
+      : []),
     ...(await complianceSummaryFactoryItem(versionId, facilityId)),
   ];
+
+  return reviewData;
 }
