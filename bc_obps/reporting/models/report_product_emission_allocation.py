@@ -6,6 +6,7 @@ from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_product import ReportProduct
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_product_emission_allocation import Rls as ReportProductEmissionAllocationRls
 
 
 class ReportProductEmissionAllocation(TimeStampedModel):
@@ -87,3 +88,5 @@ class ReportProductEmissionAllocation(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportProductEmissionAllocationRls

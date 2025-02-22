@@ -110,7 +110,7 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                'db_table': 'erc"."verification_visit',
+                'db_table': 'erc"."report_verification_visit',
                 'db_table_comment': 'Table to store individual verification visit information',
             },
         ),

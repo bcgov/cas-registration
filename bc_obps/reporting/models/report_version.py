@@ -2,6 +2,7 @@ from django.db import models
 import pgtrigger
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report import Report
+from reporting.models.rls_configs.report_version import Rls as ReportVersionRls
 
 
 class ReportVersion(TimeStampedModel):
@@ -57,3 +58,5 @@ class ReportVersion(TimeStampedModel):
                 condition=pgtrigger.Q(old__status="Submitted"),
             ),
         ]
+
+    Rls = ReportVersionRls

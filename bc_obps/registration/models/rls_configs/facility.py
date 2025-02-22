@@ -5,7 +5,12 @@ from rls.utils.helpers import generate_rls_grants, generate_m2m_rls
 
 class Rls:
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
+        RlsRoles.INDUSTRY_USER: [
+            RlsOperations.SELECT,
+            RlsOperations.INSERT,
+            RlsOperations.UPDATE,
+            RlsOperations.DELETE,
+        ],  # Industry User needs delete permission for the specific flow when changing registration purpose from EIO
         # To issue BORO ID and BCGHG ID
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],

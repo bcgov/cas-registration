@@ -4,6 +4,7 @@ from registration.models.facility import Facility
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.facility_report import Rls as FacilityReportRls
 
 
 class FacilityReport(TimeStampedModel):
@@ -64,3 +65,5 @@ class FacilityReport(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = FacilityReportRls

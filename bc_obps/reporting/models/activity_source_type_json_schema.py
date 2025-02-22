@@ -4,6 +4,7 @@ from registration.models import Activity
 from reporting.models import SourceType, Configuration
 import typing
 from reporting.utils import validate_overlapping_records
+from reporting.models.rls_configs.activity_source_type_json_schema import Rls as ActivitySourceTypeJsonSchemaRls
 
 
 class ActivitySourceTypeJsonSchema(BaseModel):
@@ -29,6 +30,8 @@ class ActivitySourceTypeJsonSchema(BaseModel):
     class Meta:
         db_table_comment = "Intersection table that assigns a json_schema as valid for a period of time given an activity-sourceType pair"
         db_table = 'erc"."activity_source_type_json_schema'
+
+    Rls = ActivitySourceTypeJsonSchemaRls
 
     @typing.no_type_check
     def save(self, *args, **kwargs) -> None:

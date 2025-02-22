@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from reporting.models.rls_configs.fuel_type import Rls as FuelTypeRls
 
 
 class FuelType(BaseModel):
@@ -18,3 +19,5 @@ class FuelType(BaseModel):
     class Meta:
         db_table_comment = "This table contains the list of fuel types that can be reported."
         db_table = 'erc"."fuel_type'
+
+    Rls = FuelTypeRls

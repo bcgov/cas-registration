@@ -1,13 +1,10 @@
-import unittest
 from unittest.mock import patch, MagicMock
-from django.conf import settings
 from django.test import TestCase, RequestFactory
 from django.http import HttpResponse
 from model_bakery import baker
 from rls.middleware.rls import RlsMiddleware
 
 
-@unittest.skipIf(not settings.RLS_FLAG, "RLS implementation")
 class TestRlsMiddleware(TestCase):
     def setUp(self):
         self.factory = RequestFactory()

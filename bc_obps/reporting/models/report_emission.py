@@ -9,6 +9,7 @@ from django.db.models.fields.json import KeyTextTransform
 from django.db.models.functions import Cast
 from reporting.models.report_unit import ReportUnit
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_emission import Rls as ReportEmissionRls
 
 
 class AnnotateEmissionsManager(models.Manager):
@@ -75,3 +76,5 @@ class ReportEmission(ReportDataBaseModel):
             *ReportDataBaseModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportEmissionRls

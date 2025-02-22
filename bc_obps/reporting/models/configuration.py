@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import (
     RangeBoundary,
     RangeOperators,
 )
+from reporting.models.rls_configs.configuration import Rls as ConfigurationRls
 
 
 class TsTzRange(models.Func):
@@ -29,3 +30,5 @@ class Configuration(BaseModel):
                 expressions=[(TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS)],
             ),
         ]
+
+    Rls = ConfigurationRls

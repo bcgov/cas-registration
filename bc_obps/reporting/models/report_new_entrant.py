@@ -2,6 +2,7 @@ from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_new_entrant import Rls as ReportNewEntrantRls
 
 
 class ReportNewEntrant(TimeStampedModel):
@@ -32,3 +33,5 @@ class ReportNewEntrant(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportNewEntrantRls

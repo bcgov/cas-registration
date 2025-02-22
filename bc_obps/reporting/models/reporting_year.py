@@ -1,5 +1,6 @@
 from django.db import models
 from common.models.base_model import BaseModel
+from reporting.models.rls_configs.reporting_year import Rls as ReportingYearRls
 
 
 class ReportingYear(BaseModel):
@@ -23,3 +24,5 @@ class ReportingYear(BaseModel):
     class Meta:
         db_table_comment = "Reporting year"
         db_table = 'erc"."reporting_year'
+
+    Rls = ReportingYearRls

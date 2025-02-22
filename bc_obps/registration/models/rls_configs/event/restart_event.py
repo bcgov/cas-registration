@@ -15,6 +15,10 @@ class Rls:
     # M2M relationships
     m2m_models_grants_mapping = {
         RegistrationTableNames.RESTART_EVENT_FACILITIES: {
+            RlsRoles.INDUSTRY_USER: [
+                RlsOperations.SELECT,
+                RlsOperations.DELETE,
+            ],  # Industry User needs delete permission for the specific flow when changing registration purpose from EIO
             RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
             RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
             RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],

@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from reporting.models.rls_configs.emission_category import Rls as EmissionCategoryRls
 
 
 class EmissionCategory(BaseModel):
@@ -25,3 +26,5 @@ class EmissionCategory(BaseModel):
             "This table contains the set of emission categories that greenhouse gas emissions can be counted under."
         )
         db_table = 'erc"."emission_category'
+
+    Rls = EmissionCategoryRls

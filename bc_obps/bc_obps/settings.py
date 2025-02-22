@@ -73,6 +73,11 @@ LOCAL_APPS = [
     "rls",
 ]
 
+RLS_GRANT_APPS = [
+    "registration",
+    "reporting",
+]
+
 INSTALLED_APPS = [
     # Django apps
     "django.contrib.admin",
@@ -210,6 +215,3 @@ NINJA_PAGINATION_PER_PAGE = 20
 # Bypass CSRF protection in development(for admin login page only)
 if not DEBUG and ENVIRONMENT == "dev":
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BACKEND_HOST')}"]
-
-
-RLS_FLAG = False
