@@ -7,6 +7,7 @@ from registration.models.time_stamped_model import TimeStampedModel
 from registration.models.activity import Activity
 from reporting.models.facility_report import FacilityReport
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_raw_activity_data import Rls as ReportRawActivityDataRls
 
 
 class ReportRawActivityData(TimeStampedModel):
@@ -49,6 +50,8 @@ class ReportRawActivityData(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger("facility_report__report_version"),
         ]
+
+    Rls = ReportRawActivityDataRls
 
     def __str__(self) -> str:
         """String representation of the ReportRawActivityData instance."""

@@ -2,6 +2,7 @@ from django.db import models
 from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_unit import Rls as ReportUnitRls
 
 
 class ReportUnit(ReportDataBaseModel):
@@ -31,3 +32,5 @@ class ReportUnit(ReportDataBaseModel):
             *ReportDataBaseModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportUnitRls

@@ -2,6 +2,7 @@ from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_operation_representative import Rls as ReportOperationRepresentativeRls
 
 
 class ReportOperationRepresentative(TimeStampedModel):
@@ -35,3 +36,5 @@ class ReportOperationRepresentative(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportOperationRepresentativeRls

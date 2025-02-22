@@ -2,6 +2,7 @@ from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_verification import Rls as ReportVerificationRls
 
 
 class ReportVerification(TimeStampedModel):
@@ -65,3 +66,5 @@ class ReportVerification(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportVerificationRls

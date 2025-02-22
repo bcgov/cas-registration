@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from reporting.models.rls_configs.gas_type import Rls as GasTypeRls
 
 
 class GasType(BaseModel):
@@ -22,3 +23,5 @@ class GasType(BaseModel):
     class Meta:
         db_table_comment = "This table contains the list of gas types that can be reported as defined in GGERR (Greenhous Gas Emission Reporting Regulation)"
         db_table = 'erc"."gas_type'
+
+    Rls = GasTypeRls

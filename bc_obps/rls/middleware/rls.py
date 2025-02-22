@@ -41,7 +41,6 @@ class RlsMiddleware:
             with connection.cursor() as cursor:
                 cursor.execute('set my.guid = %s', [str(user.user_guid)])
                 # set the role based on the user's app role
-                if settings.RLS_FLAG is True:
-                    cursor.execute('set role %s', [user.app_role.role_name])
+                cursor.execute('set role %s', [user.app_role.role_name])
         except Exception as e:
             logger.error(f"Failed to set user context: {e}", exc_info=True)

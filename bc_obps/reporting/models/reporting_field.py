@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from reporting.models.rls_configs.reporting_field import Rls as ReportingFieldRls
 
 
 class ReportingField(BaseModel):
@@ -26,3 +27,5 @@ class ReportingField(BaseModel):
                 name='unique_reporting_field',
             )
         ]
+
+    Rls = ReportingFieldRls

@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from reporting.models.rls_configs.source_type import Rls as SoureTypeRls
 
 
 class SourceType(BaseModel):
@@ -20,3 +21,5 @@ class SourceType(BaseModel):
                 name='unique_source_type_json_key',
             )
         ]
+
+    Rls = SoureTypeRls

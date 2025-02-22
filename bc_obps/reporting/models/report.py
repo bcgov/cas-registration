@@ -3,6 +3,7 @@ from registration.models.operation import Operation
 from registration.models.operator import Operator
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.reporting_year import ReportingYear
+from reporting.models.rls_configs.report import Rls as ReportRls
 
 
 class Report(TimeStampedModel):
@@ -35,3 +36,5 @@ class Report(TimeStampedModel):
         constraints = [
             models.UniqueConstraint(name="unique_report_per_reporting_year", fields=['operation', 'reporting_year'])
         ]
+
+    Rls = ReportRls

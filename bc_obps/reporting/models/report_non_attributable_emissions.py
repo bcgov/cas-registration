@@ -5,6 +5,7 @@ from reporting.models import ReportVersion, FacilityReport
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.gas_type import GasType
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_non_attributable_emission import Rls as ReportNonAttributableEmissionRls
 
 
 class ReportNonAttributableEmissions(TimeStampedModel):
@@ -44,3 +45,5 @@ class ReportNonAttributableEmissions(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportNonAttributableEmissionRls

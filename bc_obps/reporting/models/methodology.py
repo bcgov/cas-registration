@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from reporting.models.rls_configs.methodology import Rls as MethodologyRls
 
 
 class Methodology(BaseModel):
@@ -10,3 +11,5 @@ class Methodology(BaseModel):
     class Meta:
         db_table_comment = "Table contains the set of reporting methodologies that can be applied to an emission as outlined in GGERR (Greenhous Gas Emission Reporting Regulation)"
         db_table = 'erc"."methodology'
+
+    Rls = MethodologyRls

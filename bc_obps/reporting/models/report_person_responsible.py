@@ -4,6 +4,7 @@ from registration.models.time_stamped_model import TimeStampedModel
 from registration.models.user_and_contact_common_info import UserAndContactCommonInfo
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_person_responsible import Rls as ReportPersonResponsibleRls
 
 
 class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
@@ -42,3 +43,5 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+
+    Rls = ReportPersonResponsibleRls

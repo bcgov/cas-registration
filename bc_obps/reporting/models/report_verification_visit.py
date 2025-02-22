@@ -3,6 +3,7 @@ from django.db.models import Q
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_verification import ReportVerification
 from reporting.models.triggers import immutable_report_version_trigger
+from reporting.models.rls_configs.report_verification_visit import Rls as ReportVerificationVisitRls
 
 
 class ReportVerificationVisit(TimeStampedModel):
@@ -47,7 +48,7 @@ class ReportVerificationVisit(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table = 'erc"."verification_visit'
+        db_table = 'erc"."report_verification_visit'
         db_table_comment = "Table to store individual verification visit information"
         app_label = "reporting"
         constraints = [
@@ -61,3 +62,5 @@ class ReportVerificationVisit(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger("report_verification__report_version"),
         ]
+
+    Rls = ReportVerificationVisitRls
