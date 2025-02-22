@@ -323,6 +323,10 @@ ENDPOINTS = {
             "endpoint_name": "get_compliance_summary_data",
             "kwargs": {"report_version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_basic_gas_types",
+        },
     ],
     "all_roles": [
         {"method": "put", "endpoint_name": "v1_update_user_profile"},
