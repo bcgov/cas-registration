@@ -1,16 +1,16 @@
 import { actionHandler } from "@bciers/actions";
 
 export async function getOrderedActivities(
-  versionId: number,
+  reportVersionId: number,
   facilityId: string,
 ) {
-  const orderedActivities = await actionHandler(
-    `reporting/report-version/${versionId}/facility-report/${facilityId}/activity-list`,
-    "GET",
-    "",
-  );
-  if (orderedActivities.error) {
-    throw new Error("We couldn't find the activity list for this facility.");
+  const endpoint = `reporting/report-version/${reportVersionId}/facility-report/${facilityId}/activity-list`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the activity list for report version ${reportVersionId}, facility ${facilityId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
   }
-  return orderedActivities;
+  return response;
 }

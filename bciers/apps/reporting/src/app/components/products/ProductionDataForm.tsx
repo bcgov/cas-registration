@@ -5,7 +5,7 @@ import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
-import { postProductionData } from "@bciers/actions/api";
+import postProductionData from "@reporting/src/app/utils/postProductionData";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 
 interface Props {

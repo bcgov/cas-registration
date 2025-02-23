@@ -1,9 +1,10 @@
 import { actionHandler } from "@bciers/actions";
 
 export const getAllEmissionCategories = async () => {
-  return actionHandler(
-    `reporting/emission-category`,
-    "GET",
-    `reporting/emission-category`,
-  );
+  const endpoint = "reporting/emission-category";
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error("Failed to fetch the emission category.");
+  }
+  return response;
 };

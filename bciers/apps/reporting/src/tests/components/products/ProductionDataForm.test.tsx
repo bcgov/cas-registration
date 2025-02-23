@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { postProductionData } from "@bciers/actions/api";
+import postProductionData from "@reporting/src/app/utils/postProductionData";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { act, render } from "@testing-library/react";

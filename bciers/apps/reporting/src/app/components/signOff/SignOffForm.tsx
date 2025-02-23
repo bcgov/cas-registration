@@ -10,7 +10,7 @@ import { SignOffFormData } from "@reporting/src/app/components/signOff/types";
 import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import postSubmitReport from "@bciers/actions/api/postSubmitReport";
+import postSubmitReport from "@reporting/src/app/utils/postSubmitReport";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import reportValidationMessages from "./reportValidationMessages";

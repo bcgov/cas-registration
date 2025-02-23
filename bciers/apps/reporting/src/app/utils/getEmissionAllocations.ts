@@ -1,9 +1,16 @@
 import { actionHandler } from "@bciers/actions";
 
 export async function getEmissionAllocations(
-  report_version_id: number,
-  facility_id: string,
+  reportVersionId: number,
+  facilityId: string,
 ) {
-  const endpoint = `reporting/report-version/${report_version_id}/facilities/${facility_id}/allocate-emissions`;
-  return actionHandler(endpoint, "GET", "");
+  const endpoint = `reporting/report-version/${reportVersionId}/facilities/${facilityId}/allocate-emissions`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the emission allocations for report version ${reportVersionId}, facility ${facilityId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
+  }
+  return response;
 }

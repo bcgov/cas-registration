@@ -5,7 +5,7 @@ import {
   getAdditionalInformationTaskList,
 } from "@reporting/src/app/components/taskList/3_additionalInformation";
 import { NEW_ENTRANT_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
-import { getOperationEmissionSummaryData } from "@bciers/actions/api/getOperationEmissionSummaryData";
+import { getOperationEmissionSummaryData } from "@reporting/src/app/utils/getOperationEmissionSummaryData";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 

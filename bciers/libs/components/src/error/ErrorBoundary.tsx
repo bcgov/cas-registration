@@ -34,8 +34,12 @@ export default function ErrorBoundary({ error }: Props) {
           marginBottom: "1rem",
         }}
       >
-        <AlertTitle>Error</AlertTitle>
-        <strong>{error.message}</strong>
+        <AlertTitle>
+          <strong>Error</strong>
+        </AlertTitle>
+        <div style={{ whiteSpace: "pre-wrap" }}>
+          <strong>{error.message}</strong>
+        </div>
       </Alert>
     </div>
   );

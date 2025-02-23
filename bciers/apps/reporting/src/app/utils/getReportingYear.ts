@@ -5,5 +5,13 @@ export const getReportingYear = async (): Promise<{
   report_due_date: string;
   reporting_window_end: string;
 }> => {
-  return actionHandler("reporting/reporting-year", "GET");
+  const endpoint = "reporting/reporting-year";
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the reporting for report year.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
+  }
+  return response;
 };
