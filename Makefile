@@ -50,7 +50,7 @@ install: NAMESPACE=$(OBPS_NAMESPACE_PREFIX)-$(ENVIRONMENT)
 install: CHART_DIR=./helm/cas-bciers
 install: CHART_INSTANCE=cas-bciers
 install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
-										--set defaultImageTag=$(IMAGE_TAG) \
+										--set defaultImageTag=pr-2896 \
 										--set download-dags.dagConfiguration="$$dagConfig" \
 										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
 										--set cas-logging-sidecar.host=elasticsearch.$(GGIRCS_NAMESPACE_PREFIX)-tools.svc.cluster.local

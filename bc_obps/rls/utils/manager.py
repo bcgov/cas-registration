@@ -15,11 +15,14 @@ class RlsManager:
         with connection.cursor() as cursor:
             cursor.execute("select current_user")
             user = cursor.fetchone()
-            raise Exception(f"user: {user}")
+            print(f"user: {user}")
 
             drop_owned_by_query = SQL("drop owned by {}").format(
                 SQL(", ").join(role_identifiers)
             )
+
+            raise Exception("aaaaaa")
+
             grant_usage_query = SQL("grant usage on schema erc to {}").format(
                 SQL(", ").join(role_identifiers)
             )
