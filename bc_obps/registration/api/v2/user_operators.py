@@ -39,7 +39,7 @@ def list_user_operators(
 ## POST
 @router.post(
     "/user-operators",
-    response={200: UserOperatorOperatorOut, custom_codes_4xx: Message},
+    response={201: UserOperatorOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS_V2,
     description="""Creates a new operator and a new user-operator for the current user.
     The endpoint ensures that only authorized industry users can create a new operator and user-operator.
@@ -48,9 +48,9 @@ def list_user_operators(
 )
 def create_operator_and_user_operator(
     request: HttpRequest, payload: OperatorIn
-) -> Tuple[Literal[200], UserOperatorOperatorOut]:
+) -> Tuple[Literal[201], UserOperatorOperatorOut]:
     user_operator_data = UserOperatorServiceV2.create_operator_and_user_operator(
         get_current_user_guid(request), payload
     )
 
-    return 200, UserOperatorOperatorOut(**user_operator_data)
+    return 201, UserOperatorOperatorOut(**user_operator_data)

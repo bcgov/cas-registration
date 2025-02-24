@@ -86,7 +86,7 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
             data,
             custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': operation.id}),
         )
-        assert response.status_code == 200
+        assert response.status_code == 201
         assert response.json().get('id') == contact.id
         operation_contact = operation.contacts.get(id=contact.id)
         assert operation_contact.first_name == contact.first_name
@@ -124,7 +124,7 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
         )
 
         # Assert
-        assert response.status_code == 200
+        assert response.status_code == 201
         response_json = response.json()
         new_contact_id = response_json.get('id')
         assert new_contact_id is not None

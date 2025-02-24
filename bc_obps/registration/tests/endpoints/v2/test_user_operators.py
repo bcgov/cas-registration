@@ -254,7 +254,7 @@ class TestCreateUserOperator(CommonTestSetup):
     def _assert_post_success(self, post_response):
         """Asserts post success and the created Operator and UserOperator."""
 
-        assert post_response.status_code == 200
+        assert post_response.status_code == 201
         assert post_response.json().get("operator_id") is not None
         assert post_response.json().get("user_operator_id") is not None
 
