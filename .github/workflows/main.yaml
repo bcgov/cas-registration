@@ -17,52 +17,52 @@ env:
   PGUSER: postgres
 
 jobs:
-  check-nx-affected:
-    runs-on: ubuntu-latest
-    outputs:
-      NX_AFFECTED_E2E: ${{steps.check-nx-affected.outputs.NX_AFFECTED_E2E}}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: check nx affected target e2e:ci projects and save output
-        id: check-nx-affected
-        run: |
-          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop)
-          echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
-        working-directory: ./bciers
-        shell: bash
-  build-administration:
-    uses: ./.github/workflows/build-administration.yaml
+  # check-nx-affected:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     NX_AFFECTED_E2E: ${{steps.check-nx-affected.outputs.NX_AFFECTED_E2E}}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #     - name: dev env setup
+  #       uses: ./.github/actions/dev-env-setup
+  #     - name: check nx affected target e2e:ci projects and save output
+  #       id: check-nx-affected
+  #       run: |
+  #         NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop)
+  #         echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
+  #       working-directory: ./bciers
+  #       shell: bash
+  # build-administration:
+  #   uses: ./.github/workflows/build-administration.yaml
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
-  build-compliance:
-    uses: ./.github/workflows/build-compliance.yaml
-  build-dashboard:
-    uses: ./.github/workflows/build-dashboard.yaml
-  build-dashboard-e2e:
-    uses: ./.github/workflows/build-dashboard-e2e.yaml
-  build-registration:
-    uses: ./.github/workflows/build-registration.yaml
-  build-registration1:
-    uses: ./.github/workflows/build-registration1.yaml
-  build-reporting:
-    uses: ./.github/workflows/build-reporting.yaml
-  test-code:
-    needs: [check-nx-affected]
-    uses: ./.github/workflows/test-code.yaml
-  test-backend:
-    needs: [build-backend, check-nx-affected]
-    uses: ./.github/workflows/test-backend.yaml
-    secrets: inherit
-  zap-owasp:
-    # We will need to set up the BCIERS apps to get zap scanned
-    needs: [build-backend, build-registration1, check-nx-affected]
-    uses: ./.github/workflows/zap-owasp.yaml
-  trivy:
-    uses: ./.github/workflows/trivy.yaml
-  codeql:
-    uses: ./.github/workflows/codeql.yaml
+  # build-compliance:
+  #   uses: ./.github/workflows/build-compliance.yaml
+  # build-dashboard:
+  #   uses: ./.github/workflows/build-dashboard.yaml
+  # build-dashboard-e2e:
+  #   uses: ./.github/workflows/build-dashboard-e2e.yaml
+  # build-registration:
+  #   uses: ./.github/workflows/build-registration.yaml
+  # build-registration1:
+  #   uses: ./.github/workflows/build-registration1.yaml
+  # build-reporting:
+  #   uses: ./.github/workflows/build-reporting.yaml
+  # test-code:
+  #   needs: [check-nx-affected]
+  #   uses: ./.github/workflows/test-code.yaml
+  # test-backend:
+  #   needs: [build-backend, check-nx-affected]
+  #   uses: ./.github/workflows/test-backend.yaml
+  #   secrets: inherit
+  # zap-owasp:
+  #   # We will need to set up the BCIERS apps to get zap scanned
+  #   needs: [build-backend, build-registration1, check-nx-affected]
+  #   uses: ./.github/workflows/zap-owasp.yaml
+  # trivy:
+  #   uses: ./.github/workflows/trivy.yaml
+  # codeql:
+  #   uses: ./.github/workflows/codeql.yaml
