@@ -48,7 +48,11 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'Successfully migrated {app_label}.'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Error migrating {app_label}: {e}'))
-                continue
+                # Some apps like messages and staticfiles do not have migrations so we can ignore them
+                if "does not have migrations" in str(e):
+                    continue
+                else:
+                    raise e
 
         self.stdout.write(self.style.SUCCESS('Default migrations completed.'))
 
