@@ -10,7 +10,7 @@ const taskListElements: TaskListElement[] = [
     title: "Operation information",
     isExpanded: true,
     elements: [
-      { type: "Page", title: "Review Operation information", isActive: true },
+      { type: "Page", title: "Review operation information", isActive: true },
       { type: "Page", title: "Person responsible" },
       { type: "Page", title: "Review facilities" },
     ],
@@ -55,7 +55,7 @@ describe("MultiStepFormWithTaskList", () => {
     expect(screen.getByText("Step 3")).toBeVisible();
 
     // Verify task list is rendered
-    expect(screen.getByText("Review Operation information")).toBeVisible();
+    expect(screen.getByText("Review operation information")).toBeVisible();
     expect(screen.getByText("Person responsible")).toBeVisible();
     expect(screen.getByText("Review facilities")).toBeVisible();
 

@@ -26,7 +26,7 @@ export default function SignOffForm({ version_id, taskListElements }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
-  const backUrl = `/reports/${version_id}/final-review`;
+  const backUrl = `/reports/${version_id}/attachments`;
 
   const allChecked = (formData: SignOffFormData) => {
     return Object.values(formData).every((value) => value);

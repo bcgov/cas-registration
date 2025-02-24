@@ -9,7 +9,6 @@ import {
   additionalReportingDataWithElectricityGeneratedSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
-import { useSearchParams } from "next/navigation";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
@@ -20,6 +19,7 @@ interface AdditionalReportingDataProps {
   isNewEntrant: boolean;
   taskListElements: TaskListElement[];
   operationType: string;
+  facilityId: string;
 }
 
 interface FormData {
@@ -43,18 +43,16 @@ export default function AdditionalReportingDataForm({
   isNewEntrant,
   taskListElements,
   operationType,
+  facilityId,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
 
-  // 🛸 Set up routing urls
-  const searchParams = useSearchParams();
-  const facilityId = searchParams.get("facility_id");
   const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
   const saveAndContinueUrl = isNewEntrant
     ? `new-entrant-information`
     : operationType === "Linear Facility Operation"
-    ? "emission-summary"
+    ? "operation-emission-summary"
     : "compliance-summary";
 
   const schema: RJSFSchema = includeElectricityGenerated

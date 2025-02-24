@@ -34,7 +34,7 @@ export default function VerificationForm({
   const [errors, setErrors] = useState<string[]>();
 
   const saveAndContinueUrl = `/reports/${version_id}/attachments`;
-  const backUrl = `/reports/${version_id}/compliance-summary`;
+  const backUrl = `/reports/${version_id}/final-review`;
 
   const verificationUiSchema =
     operationType === "SFO" ? sfoUiSchema : lfoUiSchema;

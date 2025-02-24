@@ -12,7 +12,7 @@ export interface ActivityData {
 export const buildFacilitySchema = (activities: ActivityData[]) =>
   ({
     type: "object",
-    title: "Review facility information",
+    title: "Review Facility Information",
     properties: {
       facility_name: { type: "string", title: "Facility name" },
       facility_type: {

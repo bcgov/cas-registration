@@ -58,7 +58,7 @@ describe("The FinalReviewForm component", () => {
     expect(mockRouterPush).toHaveBeenCalledWith(expectedRoute);
   });
   it("routes to the attachment page when the submit button is clicked", () => {
-    const expectedRoute = `/reports/12345/attachment`;
+    const expectedRoute = `/reports/12345/attachments`;
 
     render(
       <FinalReviewForm

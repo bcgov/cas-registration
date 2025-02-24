@@ -18,13 +18,13 @@ const OperationEmissionSummaryPage = async ({ version_id }: Props) => {
   const isNewEntrant =
     (await getRegistrationPurpose(version_id))?.registration_purpose ===
     NEW_ENTRANT_REGISTRATION_PURPOSE;
-  const operationType = await getFacilityReport(version_id);
+  const facilityReport = await getFacilityReport(version_id);
 
   const taskListData = getAdditionalInformationTaskList(
     version_id,
     ActivePage.OperationEmissionSummary,
     isNewEntrant,
-    operationType?.operation_type,
+    facilityReport?.operation_type,
   );
   return (
     <OperationEmissionSummaryForm
