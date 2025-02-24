@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   db:
@@ -23,30 +23,17 @@ services:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       ALLOWED_HOSTS: localhost,0.0.0.0,127.0.0.1
       ENVIRONMENT: dev
-      CI: "true"
+      CI: true
     depends_on:
       - db
     network_mode: host
-    healthcheck:
-      test: curl --fail http://127.0.0.1:8000/api || exit 1
-      interval: 10s
-      timeout: 10s
-      retries: 20
-      start_period: 60s
 
   dashboard:
     image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
-      CI: "true"
+      CI: true
       PORT: 3000
-      HOSTNAME: localhost
-      NEXTAUTH_URL_INTERNAL: http://localhost:3000
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       API_URL: http://127.0.0.1:8000/api/
-      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
       - backend
     network_mode: host
@@ -55,14 +42,7 @@ services:
     image: ghcr.io/bcgov/cas-admin-frontend:${GITHUB_SHA}
     environment:
       PORT: 4001
-      HOSTNAME: localhost
-      NEXTAUTH_URL_INTERNAL: http://localhost:3000
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       API_URL: http://127.0.0.1:8000/api/
-      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
       - backend
     network_mode: host
@@ -71,14 +51,7 @@ services:
     image: ghcr.io/bcgov/cas-compliance-frontend:${GITHUB_SHA}
     environment:
       PORT: 7000
-      HOSTNAME: localhost
-      NEXTAUTH_URL_INTERNAL: http://localhost:3000
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       API_URL: http://127.0.0.1:8000/api/
-      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
       - backend
     network_mode: host
@@ -87,46 +60,7 @@ services:
     image: ghcr.io/bcgov/cas-reg-frontend:${GITHUB_SHA}
     environment:
       PORT: 4000
-      HOSTNAME: localhost
-      NEXTAUTH_URL_INTERNAL: http://localhost:3000
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       API_URL: http://127.0.0.1:8000/api/
-      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-    depends_on:
-      - backend
-    network_mode: host
-
-  reporting:
-    image: ghcr.io/bcgov/cas-rep-frontend:${GITHUB_SHA}
-    environment:
-      PORT: 5000
-      HOSTNAME: localhost
-      NEXTAUTH_URL_INTERNAL: http://localhost:3000
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      API_URL: http://127.0.0.1:8000/api/
-      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-    depends_on:
-      - backend
-    network_mode: host
-
-  nx-app:
-    image: ghcr.io/bcgov/cas-nx-app:${GITHUB_SHA}
-    environment:
-      PORT: ${NX_APP_PORT}
-      HOSTNAME: localhost
-      NEXTAUTH_URL_INTERNAL: http://localhost:3000
-      NEXTAUTH_URL: http://localhost:3000
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      API_URL: http://127.0.0.1:8000/api/
-      KEYCLOAK_LOGIN_URL: ${KEYCLOAK_LOGIN_URL}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
       - backend
     network_mode: host
