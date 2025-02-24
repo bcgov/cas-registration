@@ -14,12 +14,16 @@ def count_stats(Operation) -> Dict[str, int]:
     has_boro_id = Operation.objects.filter(bc_obps_regulated_operation__isnull=False).count()
     has_registration_purpose = Operation.objects.filter(registration_purpose__isnull=False).count()
     has_regulated_purpose = Operation.objects.filter(registration_purpose='OBPS Regulated Operation').count()
+    is_opt_in_with_boro_id = Operation.objects.filter(registration_purpose__isnull=False, opt_in=True).count()
+    has_opt_in_purpose = Operation.objects.filter(registration_purpose='Opted-in Operation').count()
 
     return {
         'total': total,
         'has_boro_id': has_boro_id,
+        'is_opt_in_with_boro_id': is_opt_in_with_boro_id,
         'has_registration_purpose': has_registration_purpose,
         'has_regulated_purpose': has_regulated_purpose,
+        'has_opt_in_purpose': has_opt_in_purpose
     }
 
 
@@ -30,9 +34,18 @@ def migrate_assign_regulated_purpose(apps, schema_monitor):
     before_stats = count_stats(Operation)
     print(f'before_stats: {before_stats}')
 
+    operation_count = 0
+    opt_in_count = 0
+    obps_count = 0
     for operation in Operation.objects.all():
         if operation.bc_obps_regulated_operation is not None:
-            operation.registration_purpose = 'OBPS Regulated Operation'
+            operation_count = operation_count + 1
+            if operation.opt_in == True:
+                opt_in_count = opt_in_count+1
+                operation.registration_purpose = 'Opted-in Operation'
+            else:
+                operation.registration_purpose = 'OBPS Regulated Operation'
+                obps_count = obps_count +1
             operation.save(update_fields=['registration_purpose'])
 
     after_stats = count_stats(Operation)
@@ -40,7 +53,9 @@ def migrate_assign_regulated_purpose(apps, schema_monitor):
 
     assert before_stats.get('total') == after_stats.get('total')
     assert after_stats.get('has_boro_id') == after_stats.get('has_registration_purpose')
-    assert after_stats.get('has_boro_id') == after_stats.get('has_regulated_purpose')
+    assert before_stats.get('is_opt_in') == after_stats.get('is_opt_in')
+    assert after_stats.get('is_opt_in_with_boro_id') == after_stats.get('has_opt_in_purpose')
+    assert after_stats.get('has_boro_id') == after_stats.get('has_regulated_purpose') + after_stats.get('has_opt_in_purpose')
 
 
 class Migration(migrations.Migration):
