@@ -1,75 +1,75 @@
 /* eslint-disable */
-import http from "k6/http";
-import { check } from "k6";
-import { crypto } from "k6/experimental/webcrypto";
-import { getInternalUserParams } from "../../setup/params.js";
+import { SERVER_HOST } from "../../setup/constants.js";
+import { getUserParams, makeRequest } from "../../setup/helpers.js";
 
-const transferEvent = () => {
-  const HOST = __ENV.SERVER_HOST;
-  const fromOperatorId = crypto.randomUUID();
-  const toOperatorId = crypto.randomUUID();
-  const operationId = crypto.randomUUID();
+import { fail } from "k6";
 
-  // ##### GET #####
-  // check(http.get(HOST + "/transfer-events", getInternalUserParams("cas_director")), {
-  //   "is status 200": (r) => r.status === 200,
-  // });
+const fromOperatorId = "a35fb5ad-edd9-4465-982e-81b824644d07";
+const toOperatorId = "685d581b-5698-411f-ae00-de1d97334a71";
+const operationId = "8494e89c-489b-441b-a05d-e935b1d82487";
 
-
-  // ##### POST #####
-  const newTransferEvent = http.post(
-    HOST + "/transfer-events",
-    JSON.stringify({
-      transfer_entity: "Operation",
-      from_operator: fromOperatorId,
-      to_operator: toOperatorId,
-      operation: operationId,
-    }),
-    getInternalUserParams("cas_analyst"),
-  );
-
-  check(newTransferEvent, {
-    "is status 201": (r) => r.status === 201,
+function createTransferEvent() {
+  const payload = JSON.stringify({
+    transfer_entity: "Operation",
+    from_operator: fromOperatorId,
+    to_operator: toOperatorId,
+    operation: operationId,
+    effective_date: "2025-12-01T09:00:00Z",
   });
 
-  // Get the transfer event ID from the POST response so we can use it in PUT test
-  const newTransferEventId = JSON.parse(newTransferEvent.body).transfer_id;
-  console.log("newTransferEventId: ", newTransferEventId);
+  const res = makeRequest(
+    "POST",
+    `${SERVER_HOST}/transfer-events`,
+    payload,
+    getUserParams("cas_analyst"),
+    201,
+    "Creating transfer event failed",
+  );
+  return JSON.parse(res.body).transfer_id;
+}
 
-  // ##### PUT #####
+function updateTransferEvent(transferEventId) {
+  const payload = JSON.stringify({
+    operation: operationId,
+    transfer_entity: "Operation",
+    effective_date: "2025-10-01T09:00:00Z",
+  });
 
-  // check(
-  //   http.put(
-  //     HOST + `/operations/${operationId}?submit=false&form_section=1`,
-  //     JSON.stringify({
-  //       operator_id: 2,
-  //       name: "Test Operation Updated",
-  //       status: "Pending",
-  //       documents: [],
-  //       regulated_products: [],
-  //       activities: [],
-  //       type: "Test Type Updated",
-  //       naics_code: 21,
-  //     }),
-  //     industryUserParams,
-  //   ),
-  //   {
-  //     "is status 200": (r) => r.status === 200,
-  //   },
-  // );
-  //
-  // check(
-  //   http.put(
-  //     HOST + `/operation/${operationId}/update-status`,
-  //     JSON.stringify({
-  //       status: "Approved",
-  //     }),
-  //     internalUserParams,
-  //   ),
-  //   {
-  //     "is status 200": (r) => r.status === 200,
-  //   },
-  // );
-};
+  makeRequest(
+    "PATCH",
+    `${SERVER_HOST}/transfer-events/${transferEventId}`,
+    payload,
+    getUserParams("cas_analyst"),
+    200,
+    "Updating transfer event failed",
+  );
+}
 
-export default transferEvent;
+function deleteTransferEvent(transferEventId) {
+  makeRequest(
+    "DELETE",
+    `${SERVER_HOST}/transfer-events/${transferEventId}`,
+    null,
+    getUserParams("cas_analyst"),
+    200,
+    "Deleting transfer event failed",
+  );
+}
+
+function fetchTransferEvents() {
+  makeRequest(
+    "GET",
+    `${SERVER_HOST}/transfer-events`,
+    null,
+    getUserParams("cas_analyst"),
+    200,
+    "Fetching transfer events failed",
+  );
+}
+
+export default function () {
+  const transferEventId = createTransferEvent();
+  updateTransferEvent(transferEventId);
+  deleteTransferEvent(transferEventId);
+  fetchTransferEvents();
+}
