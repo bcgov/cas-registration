@@ -1,230 +1,294 @@
 /* eslint-disable */
-import http from "k6/http";
-import { check } from "k6";
+import { SERVER_HOST } from "../../setup/constants.js";
+import { getUserParams, makeRequest } from "../../setup/helpers.js";
 import {
-  industryUserParams,
-  industryUser2Params,
-  industryUser3Params,
-  internalUserParams,
-  INDUSTRY_USER_GUID,
-} from "../../setup/params.js";
+  randomIntBetween,
+  randomString,
+} from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
 import { crypto } from "k6/experimental/webcrypto";
 
-const userOperator = () => {
-  const HOST = __ENV.SERVER_HOST;
-  // ##### GET #####
-
-  check(
-    http.get(HOST + "/user-operator-status-from-user", industryUserParams),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
-  );
-
-  check(
-    http.get(
-      HOST +
-        `/user-operator/is-approved-admin-user-operator/${INDUSTRY_USER_GUID}`,
-      industryUserParams,
-    ),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
-  );
-
-  const getUserOperatorOperator = http.get(
-    HOST + "/user-operators/user-operator",
-    industryUser2Params,
-  );
-
-  check(getUserOperatorOperator, {
-    "is status 200": (r) => r.status === 200,
+// We need to have distinct users to be able to create operators and user operators
+function createUser() {
+  const url = "/users";
+  const body = JSON.stringify({
+    identity_provider: "bceidbusiness",
+    first_name: "Test",
+    last_name: "User",
+    position_title: "Test Position",
+    email: "test.user@test.com",
+    phone_number: "+12345678901",
+    business_guid: "12345678-1234-1234-1234-123456789012",
+    bceid_business_name: "Test Business",
   });
 
-  check(getUserOperatorId, {
-    "is status 200": (r) => r.status === 200,
-  });
-
-  const userOperatorId = JSON.parse(getUserOperatorId.body).user_operator_id;
-  const operatorId = JSON.parse(getUserOperatorOperator.body).operator_id;
-
-  check(
-    http.get(HOST + `/user-operators/${userOperatorId}`, industryUserParams),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
-  );
-
-  check(
-    http.get(HOST + `/operators/${operatorId}/has-admin/`, industryUserParams),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
-  );
-
-  check(
-    http.get(
-      HOST + "/user-operators/current/access-requests",
-      industryUserParams,
-    ),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
-  );
-
-  check(http.get(HOST + "/user-operators", internalUserParams), {
-    "is status 200": (r) => r.status === 200,
-  });
-
-  // ##### POST #####
-
-  check(
-    http.post(
-      HOST + "/operators/{operator_id}/request-admin-access",
-      JSON.stringify({
-        operator_id: 1,
-      }),
-      industryUser3Params,
-    ),
-    {
-      "is status 201": (r) => r.status === 201,
-    },
-  );
-
-  // need to return to this one and get it to POST correctly
-  //   // check(
-  //   http.post(
-  //     HOST + "/operators/{operator_id}/request-access",
-  //     JSON.stringify({
-  //       operator_id: operatorId,
-  //     }),
-  //     industryUserParams,
-  //   ),
-  //   {
-  //     "is status 201": (r) => r.status === 201,
-  //   },
-  // );
-
-  // Create a new user so we can test some POST routes that only allow one request per user
   const newUserGuid = crypto.randomUUID();
 
-  check(
-    http.post(
-      HOST + `/user/user-profile/bceidbusiness`,
-      JSON.stringify({
-        first_name: "Test",
-        last_name: "User",
-        position_title: "Test Position",
-        email: "test.user@test.com",
-        phone_number: "+12345678901",
-        business_guid: "12345678-1234-1234-1234-123456789012",
-        bceid_business_name: "Test Business",
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: JSON.stringify({
-            // Generate ranom UUID so we can create new users
-            user_guid: newUserGuid,
-          }),
-        },
-      },
-    ),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
-  );
-
-  const newUserParams = {
+  const params = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: JSON.stringify({
-        user_guid: newUserGuid,
-      }),
+      Authorization: JSON.stringify({ user_guid: newUserGuid }),
     },
   };
 
-  const userOperatorPayload = JSON.stringify({
-    // Legal Name is unique now so generate a random one
-    legal_name: crypto.randomUUID(),
-    cra_business_number: Math.floor(Math.random() * 1000000000),
-    // Business Registry Number is unique now so generate a random 8 digit number
-    // Format: abc + 7 digits
-    bc_corporate_registry_number: `abc${
-      Math.floor(Math.random() * 90000) + 1000000
-    }`,
-    business_structure: "BC Corporation",
-    physical_street_address: "123 Test Street",
-    physical_municipality: "Victoria",
-    physical_province: "BC",
-    physical_postal_code: "V1V 1V1",
-    mailing_address_same_as_physical: true,
-    operator_has_parent_operators: false,
-    user_operator_id: 1,
+  makeRequest(
+    "POST",
+    `${SERVER_HOST}${url}`,
+    body,
+    params,
+    201,
+    "Creating User failed",
+  );
+  return newUserGuid;
+}
+
+const createOperatorAndUserOperator = (newUserGuid) => {
+  const payload = JSON.stringify({
+    legal_name: `Test Operator Legal Name ${randomString(5)}`, // to avoid duplicate legal names
+    trade_name: "Test Operator Trade Name",
+    business_structure: "Sole Proprietorship",
+    cra_business_number: randomIntBetween(100000000, 999999999),
+    bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
+      1000000,
+      9999999,
+    )}`,
+    partner_operators_array: [
+      {
+        partner_legal_name: "Partner Operator Legal Name",
+        partner_trade_name: "Partner Operator Trade Name",
+        partner_cra_business_number: 123456789,
+        partner_bc_corporate_registry_number: `${randomString(
+          3,
+        )}${randomIntBetween(1000000, 9999999)}`,
+        partner_business_structure: "Sole Proprietorship",
+        partner_street_address: "123 Test St",
+        partner_municipality: "TestVille",
+        partner_province: "BC",
+        partner_postal_code: "V1V 1V1",
+      },
+    ],
+    mailing_address: 1,
+    street_address: "123 Test St",
+    municipality: "TestVille",
+    province: "BC",
+    postal_code: "V1V 1V1",
   });
 
-  const createUserOperator = http.post(
-    HOST + "/user-operators",
-    userOperatorPayload,
-    newUserParams,
-  );
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: JSON.stringify({ user_guid: newUserGuid }),
+    },
+  };
 
-  check(createUserOperator, {
-    "is status 200": (r) => r.status === 200,
+  const res = makeRequest(
+    "POST",
+    `${SERVER_HOST}/user-operators`,
+    payload,
+    params,
+    201,
+    "Operator and UserOperator creation failed",
+  );
+  return JSON.parse(res.body).user_operator_id;
+};
+
+// TODO: Remove this if not being used
+const updateOperatorAndUserOperator = (newUserGuid, userOperatorId) => {
+  const payload = JSON.stringify({
+    legal_name: `Updated Legal Name ${randomString(5)}`, // to avoid duplicate legal names
+    trade_name: "Updated Trade Name",
+    business_structure: "Sole Proprietorship",
+    cra_business_number: randomIntBetween(100000000, 999999999),
+    bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
+      1000000,
+      9999999,
+    )}`,
+    parent_operators_array: [
+      {
+        po_legal_name: "Updated Parent Operator Legal Name",
+        po_trade_name: "Updated  Parent Operator Trade Name",
+        po_cra_business_number: 987654321,
+        po_bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
+          1000000,
+          9999999,
+        )}`,
+        po_business_structure: "BC Corporation",
+        po_website: "http://www.updatedparent.com",
+        po_physical_street_address: "Updated 456 Test St",
+        po_physical_municipality: "Updated TestVille",
+        po_physical_province: "BC",
+        po_physical_postal_code: "V1V 1V1",
+        po_mailing_address_same_as_physical: true,
+        operator_index: 1,
+      },
+    ],
+    physical_street_address: "Updated 123 Test St",
+    physical_municipality: "Updated TestVille",
+    physical_province: "ON",
+    physical_postal_code: "V2V 2V2",
+    mailing_street_address: "Updated 321 Test St",
+    mailing_municipality: "Updated TestVille2",
+    mailing_province: "BC",
+    mailing_postal_code: "V3V 3V3",
+    website: "http://www.updatedtest.com",
+    mailing_address_same_as_physical: false,
+    operator_has_parent_operators: true,
   });
 
-  const newUserOperatorId = JSON.parse(
-    createUserOperator.body,
-  ).user_operator_id;
-
-  check(
-    http.post(
-      HOST + "/user-operator/contact",
-      JSON.stringify({
-        user_operator_id: newUserOperatorId,
-        is_senior_officer: true,
-        street_address: "123 Test Street",
-        municipality: "Victoria",
-        province: "BC",
-        first_name: "Test",
-        last_name: "User",
-        so_email: "test@test.ca",
-        position_title: "Test Position",
-        postal_code: "V1V 1V1",
-      }),
-      newUserParams,
-    ),
-    {
-      "is status 200": (r) => r.status === 200,
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: JSON.stringify({ user_guid: newUserGuid }),
     },
-  );
-  // ##### PUT #####
+  };
 
-  check(
-    http.put(
-      HOST + `/user-operators/${newUserOperatorId}`,
-      userOperatorPayload,
-      newUserParams,
-    ),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
-  );
-
-  check(
-    http.put(
-      // brianna is this id ok
-      HOST + `/user-operators/${newUserOperatorId}/update-status`,
-      JSON.stringify({
-        user_guid: newUserGuid,
-        status: "Pending",
-      }),
-      internalUserParams,
-    ),
-    {
-      "is status 200": (r) => r.status === 200,
-    },
+  makeRequest(
+    "PUT",
+    `${SERVER_HOST}/user-operators/${userOperatorId}`,
+    payload,
+    params,
+    200,
+    "Operator and UserOperator update failed",
   );
 };
 
-export default userOperator;
+const currentUsersOperatorHasRegisteredOperation = () => {
+  makeRequest(
+    "GET",
+    `${SERVER_HOST}/user-operators/current/has_registered_operation`,
+    null,
+    getUserParams("industry_user_admin"),
+    200,
+    "Fetching registered operation failed",
+  );
+};
+
+const currentUsersOperatorHasRequiredFields = () => {
+  makeRequest(
+    "GET",
+    `${SERVER_HOST}/user-operators/current/has-required-fields`,
+    null,
+    getUserParams("industry_user_admin"),
+    200,
+    "Fetching required fields failed",
+  );
+};
+
+const currentUserIsApprovedAdmin = () => {
+  makeRequest(
+    "GET",
+    `${SERVER_HOST}/user-operators/current/is-current-user-approved-admin`,
+    null,
+    getUserParams("industry_user_admin"),
+    200,
+    "Fetching approved admin failed",
+  );
+};
+
+const currentUsersOperatorDetails = () => {
+  makeRequest(
+    "GET",
+    `${SERVER_HOST}/user-operators/current/operator`,
+    null,
+    getUserParams("industry_user_admin"),
+    200,
+    "Fetching operator details failed",
+  );
+};
+
+const updateCurrentUsersOperatorDetails = () => {
+  const payload = JSON.stringify({
+    legal_name: "Updated Test Operator Legal Name",
+    trade_name: "Updated Test Operator Trade Name",
+    business_structure: "Sole Proprietorship",
+    cra_business_number: randomIntBetween(100000000, 999999999),
+    bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
+      1000000,
+      9999999,
+    )}`,
+    parent_operators_array: [
+      {
+        po_legal_name: "Updated Parent Operator Legal Name",
+        po_trade_name: "Updated Parent Operator Trade Name",
+        po_cra_business_number: 987654321,
+        po_bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
+          1000000,
+          9999999,
+        )}`,
+        po_business_structure: "BC Corporation",
+        po_street_address: "Updated 456 Test St",
+        po_municipality: "Updated TestVille",
+        po_province: "ON",
+        po_postal_code: "V2V 2V2",
+      },
+    ],
+    partner_operators_array: [
+      {
+        partner_legal_name: "Updated Partner Operator Legal Name",
+        partner_trade_name: "Updated Partner Operator Trade Name",
+        partner_cra_business_number: 123456789,
+        partner_bc_corporate_registry_number: `${randomString(
+          3,
+        )}${randomIntBetween(1000000, 9999999)}`,
+        partner_business_structure: "Sole Proprietorship",
+        partner_street_address: "Updated 123 Test St",
+        partner_municipality: "Updated TestVille",
+        partner_province: "ON",
+        partner_postal_code: "V2V 2V2",
+      },
+    ],
+    mailing_address: 2,
+    street_address: "Updated 123 Test St",
+    municipality: "Updated TestVille",
+    province: "ON",
+    postal_code: "V2V 2V2",
+  });
+
+  makeRequest(
+    "PUT",
+    `${SERVER_HOST}/user-operators/current/operator`,
+    payload,
+    getUserParams("industry_user_admin"),
+    200,
+    "Updating operator details failed",
+  );
+};
+
+const updateUserOperatorStatus = (userOperatorId) => {
+  const payload = JSON.stringify({
+    role: "admin",
+    status: "Approved",
+  });
+
+  makeRequest(
+    "PUT",
+    `${SERVER_HOST}/user-operators/${userOperatorId}/update-status`,
+    payload,
+    getUserParams("cas_director"),
+    200,
+    "Updating user operator status failed",
+  );
+};
+
+const fetchUserOperators = () => {
+  makeRequest(
+    "GET",
+    `${SERVER_HOST}/user-operators`,
+    null,
+    getUserParams("cas_admin"),
+    200,
+    "Fetching user operators failed",
+  );
+};
+
+export default function () {
+  const newUserGuid = createUser();
+  const newUserOperatorId = createOperatorAndUserOperator(newUserGuid);
+  updateOperatorAndUserOperator(newUserGuid, newUserOperatorId);
+  currentUsersOperatorHasRegisteredOperation();
+  currentUsersOperatorHasRequiredFields();
+  currentUserIsApprovedAdmin();
+  currentUsersOperatorDetails();
+  updateCurrentUsersOperatorDetails();
+  updateUserOperatorStatus(newUserOperatorId);
+  fetchUserOperators();
+}
