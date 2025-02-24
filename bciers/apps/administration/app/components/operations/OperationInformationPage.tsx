@@ -3,6 +3,7 @@ import { getOperationWithDocuments } from "@bciers/actions/api";
 import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
+import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 
 const OperationInformationPage = async ({
   operationId,
@@ -17,7 +18,15 @@ const OperationInformationPage = async ({
   if (operation?.error) throw new Error("Error fetching operation information");
 
   const formSchema = await createAdministrationOperationInformationSchema(
-    operation?.registration_purpose,
+    operation.registration_purpose,
+    operation.status,
+  );
+  const eioSchema = await createAdministrationOperationInformationSchema(
+    RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+    operation.status,
+  );
+  const generalSchema = await createAdministrationOperationInformationSchema(
+    undefined,
     operation.status,
   );
 
@@ -28,7 +37,11 @@ const OperationInformationPage = async ({
         registration_purpose: operation?.registration_purpose,
       }}
       operationId={operationId}
+      // this is the schema needed for the operation's existing registration purpose
       schema={formSchema}
+      // these schemas are used to support changing the registration purpose
+      eioSchema={eioSchema}
+      generalSchema={generalSchema}
     />
   );
 };

@@ -17,7 +17,7 @@ import { Apps, OperationStatus } from "@bciers/utils/src/enums";
 import { optedInOperationDetailsUiSchema } from "./optedInOperation";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 export const createAdministrationOperationInformationSchema = async (
-  registrationPurposeValue: RegistrationPurposes,
+  registrationPurposeValue: RegistrationPurposes | undefined,
   status: OperationStatus,
 ): Promise<RJSFSchema> => {
   const administrationOperationInformationSchema: RJSFSchema = {

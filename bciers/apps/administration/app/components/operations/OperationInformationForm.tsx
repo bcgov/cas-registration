@@ -26,13 +26,18 @@ import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/componen
 const OperationInformationForm = ({
   formData,
   operationId,
-  schema,
+  schema: initialSchema,
+  eioSchema,
+  generalSchema,
 }: {
   formData: OperationInformationPartialFormData;
   operationId: UUID;
   schema: RJSFSchema;
+  eioSchema: RJSFSchema;
+  generalSchema: RJSFSchema;
 }) => {
   const [error, setError] = useState(undefined);
+  const [schema, setSchema] = useState(initialSchema);
   const [selectedPurpose, setSelectedPurpose] = useState(
     formData.registration_purpose || "",
   );
@@ -40,6 +45,8 @@ const OperationInformationForm = ({
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
   ] = useState("");
+  const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
+    useState<boolean>(false);
   const router = useRouter();
   // To get the user's role from the session
   const role = useSessionRole();
@@ -50,7 +57,12 @@ const OperationInformationForm = ({
     if (selectedPurpose) {
       formData.registration_purpose = selectedPurpose;
     }
-  }, [selectedPurpose]);
+    if (selectedPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION) {
+      setSchema(eioSchema);
+    } else {
+      setSchema(generalSchema);
+    }
+  }, [selectedPurpose, eioSchema, generalSchema]);
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -98,11 +110,13 @@ const OperationInformationForm = ({
 
   const cancelRegistrationPurposeChange = () => {
     setPendingChangeRegistrationPurpose("");
+    setIsConfirmPurposeChangeModalOpen(false);
   };
 
   const confirmRegistrationPurposeChange = () => {
     if (pendingChangeRegistrationPurpose !== "") {
       setSelectedPurpose(pendingChangeRegistrationPurpose);
+      setIsConfirmPurposeChangeModalOpen(false);
     }
     formData.registration_purpose = pendingChangeRegistrationPurpose;
     setPendingChangeRegistrationPurpose("");
@@ -110,6 +124,7 @@ const OperationInformationForm = ({
 
   const handleSelectedPurposeChange = (newSelectedPurpose: string) => {
     if (newSelectedPurpose && selectedPurpose) {
+      setIsConfirmPurposeChangeModalOpen(true);
       setPendingChangeRegistrationPurpose(newSelectedPurpose);
     }
   };
@@ -123,7 +138,7 @@ const OperationInformationForm = ({
         </Note>
       )}
       <ConfirmChangeOfRegistrationPurposeModal
-        open={pendingChangeRegistrationPurpose !== ""}
+        open={isConfirmPurposeChangeModalOpen}
         cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
         confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
       />

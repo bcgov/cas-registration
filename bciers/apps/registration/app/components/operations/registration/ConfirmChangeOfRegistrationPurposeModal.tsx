@@ -22,7 +22,7 @@ export default function ConfirmChangeOfRegistrationPurposeModal({
       confirmText="Change registration purpose"
     >
       Are you sure you want to change your registration purpose? If you proceed,
-      all of the form data you have entered will be lost.
+      some of the form data you have entered will be lost.
     </SimpleModal>
   );
 }
