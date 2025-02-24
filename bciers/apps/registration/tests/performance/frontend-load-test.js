@@ -1,9 +1,11 @@
 /* eslint-disable */
 import exec from "k6/execution";
-import landingPage from "./scenarios/frontend/landing-page.js";
-import operation from "./scenarios/frontend/operation.js";
-import user from "./scenarios/frontend/user.js";
-import userOperator from "./scenarios/frontend/user-operator.js";
+import {
+  landingPage,
+  operation,
+  user,
+  userOperator,
+} from "./scenarios/frontend/index.js";
 
 const defaultOptions = {
   executor: "constant-vus",
