@@ -9,6 +9,7 @@ import {
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface Props {
   versionId: number;
@@ -76,7 +77,7 @@ export default async function ActivityInit({
     }
   }
   const isLinearOperation =
-    reportInfoTaskListData?.operationType === "Linear Facility Operation";
+    reportInfoTaskListData?.operationType === OperationTypes.LFO;
 
   const fetchSchema = async () => {
     const schema = await actionHandler(

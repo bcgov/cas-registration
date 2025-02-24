@@ -22,6 +22,7 @@ import {
   ActivePage,
   getOperationInformationTaskList,
 } from "@reporting/src/app/components/taskList/1_operationInformation";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface Props {
   version_id: number;
@@ -43,7 +44,7 @@ const PersonResponsible = ({ version_id }: Props) => {
   const [schema, setSchema] = useState<RJSFSchema>(personResponsibleSchema);
 
   const continueUrl =
-    operationType === "Linear Facility Operation"
+    operationType === OperationTypes.LFO
       ? `/reports/${version_id}/facilities/review-facilities-list`
       : `/reports/${version_id}/facilities/${facilityId}/activities`;
   const backUrl = `/reports/${version_id}/review-operator-data`;

@@ -1,4 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export enum ActivePage {
   "ReviewOperatorInfo" = 0,
@@ -9,14 +10,14 @@ export enum ActivePage {
 export const getOperationInformationTaskList: (
   versionId: number,
   activeIndex?: ActivePage,
-  operationType?: string, // "Single Facility Operation" or "Linear Facility Operation"
+  operationType?: OperationTypes,
 ) => TaskListElement[] = (
   versionId,
   activeIndex = 0,
-  operationType = "Single Facility Operation",
+  operationType = OperationTypes.SFO,
 ) => {
   const facilityReviewItem: TaskListElement[] =
-    operationType !== "Linear Facility Operation"
+    operationType !== OperationTypes.LFO
       ? []
       : [
           {
