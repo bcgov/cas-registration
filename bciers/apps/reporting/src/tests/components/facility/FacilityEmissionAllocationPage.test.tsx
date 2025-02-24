@@ -1,9 +1,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationPage from "@reporting/src/app/components/facility/FacilityEmissionAllocationPage";
+import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllocations";
 
 // ✨ Mocks
+vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
+  getReportInformationTasklist: vi.fn(),
+}));
+
 vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
   getOrderedActivities: vi.fn(),
 }));
@@ -14,6 +19,10 @@ vi.mock("@reporting/src/app/utils/getEmissionAllocations", () => ({
 // 🏷 Constants
 const mockVersionId = 3;
 const mockFacilityId = "abc3";
+const mockReportTaskList = {
+  facilityName: "Test Facility",
+  operationType: "SFO",
+};
 const orderedActivities = [
   {
     id: 1,
@@ -164,10 +173,12 @@ describe("The FacilityEmissionAllocationPage component", () => {
     vi.resetAllMocks();
   });
   it("renders the FacilityEmissionAllocationForm", async () => {
+    (
+      getReportInformationTasklist as ReturnType<typeof vi.fn>
+    ).mockResolvedValueOnce(mockReportTaskList);
     (getOrderedActivities as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
       orderedActivities,
     );
-    // Mock the returned value for `getEmissionAllocations`
     (getEmissionAllocations as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       emissionAllocations,
     );
