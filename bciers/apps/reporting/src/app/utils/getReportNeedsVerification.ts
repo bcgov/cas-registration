@@ -1,14 +1,12 @@
 import { actionHandler } from "@bciers/actions";
 
-export async function getReportNeedsVerification(versionId: number) {
-  const response = await actionHandler(
-    `reporting/report-version/${versionId}/report-needs-verification`,
-    "GET",
-    "",
-  );
+export async function getReportNeedsVerification(reportVersionId: number) {
+  const endpoint = `reporting/report-version/${reportVersionId}/report-needs-verification`;
+  const response = await actionHandler(endpoint, "GET");
   if (response.error) {
     throw new Error(
-      "We couldn't find the verification requirement for this report.",
+      `Failed to fetch the verification requirement for report version ${reportVersionId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
     );
   }
   return response;

@@ -1,9 +1,13 @@
 import { actionHandler } from "@bciers/actions";
-export async function getReportingOperation(version_id: number) {
-  let response = await actionHandler(
-    `reporting/report-version/${version_id}/report-operation`,
-    "GET",
-    `reporting/report-version/${version_id}/report-operation`,
-  );
-  if (!response.error) return response;
+
+export async function getReportingOperation(reportVersionId: number) {
+  const endpoint = `reporting/report-version/${reportVersionId}/report-operation`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the operation for report version ${reportVersionId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
+  }
+  return response;
 }
