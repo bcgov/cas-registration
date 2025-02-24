@@ -2,12 +2,15 @@ import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityRe
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 export const getReportInformationTasklist = async (
-  versionId: number,
+  reportVersionId: number,
   facilityId: string,
 ) => {
-  const operationType = await getFacilityReport(versionId);
+  const operationType = await getFacilityReport(reportVersionId);
 
-  const facilityData = await getFacilityReportDetails(versionId, facilityId);
+  const facilityData = await getFacilityReportDetails(
+    reportVersionId,
+    facilityId,
+  );
 
   return {
     facilityName: facilityData?.facility_name,

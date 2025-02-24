@@ -1,11 +1,13 @@
 import { actionHandler } from "@bciers/actions";
-// Fetches the facility list for the operation associated with the given report version ID
-export async function getOperationFacilitiesList(version_id: number) {
-  const response = await actionHandler(
-    `reporting/report-version/${version_id}/review-facilities`,
-    "GET",
-  );
-  if (response && !response.error) {
-    return response;
+
+export async function getOperationFacilitiesList(reportVersionId: number) {
+  const endpoint = `reporting/report-version/${reportVersionId}/review-facilities`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the facility list for report version ${reportVersionId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
   }
+  return response;
 }

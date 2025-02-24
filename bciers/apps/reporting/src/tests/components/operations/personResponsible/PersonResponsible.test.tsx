@@ -3,11 +3,14 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi, Mock, it, expect } from "vitest";
 import { actionHandler } from "@bciers/actions";
 import PersonResponsible from "@reporting/src/app/components/operations/personResponsible/PersonResponsible";
+import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
-
+vi.mock("@reporting/src/app/utils/getFacilityReport", () => ({
+  getFacilityReport: vi.fn(),
+}));
 const mockPersonResponsibleData = {
   first_name: "John",
   last_name: "Doe",
@@ -19,12 +22,19 @@ const mockContactsData = {
   ],
   count: 2,
 };
+const mockFacilityReport = {
+  facility_id: 1,
+  operation_type: "SFO",
+};
 
 describe("PersonResponsible", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
   it("renders the form correctly after loading", async () => {
+    (getFacilityReport as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      mockFacilityReport,
+    );
     render(<PersonResponsible version_id={1} />);
     await waitFor(() => {
       expect(
@@ -65,6 +75,7 @@ describe("PersonResponsible", () => {
     (actionHandler as Mock)
       .mockResolvedValueOnce(mockContactsData)
       .mockResolvedValueOnce(mockPersonResponsibleData)
+      .mockResolvedValueOnce(mockFacilityReport)
       .mockResolvedValueOnce({});
 
     render(<PersonResponsible version_id={1} />);

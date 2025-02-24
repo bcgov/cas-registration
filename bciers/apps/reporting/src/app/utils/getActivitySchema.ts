@@ -1,19 +1,16 @@
 import { actionHandler } from "@bciers/actions";
 
 export async function getActivitySchema(
-  versionId: number,
+  reportVersionId: number,
   activityId: number,
   sourceTypeQueryString: string,
 ) {
-  const response = await actionHandler(
-    `reporting/build-form-schema?activity=${activityId}&report_version_id=${versionId}${sourceTypeQueryString}`,
-    "GET",
-    "",
-  );
-
+  const endpoint = `reporting/build-form-schema?activity=${activityId}&report_version_id=${reportVersionId}${sourceTypeQueryString}`;
+  const response = await actionHandler(endpoint, "GET");
   if (response.error) {
     throw new Error(
-      `Error fetching schema for version ${versionId}, activity ${activityId}, source types ${sourceTypeQueryString}`,
+      `Failed to fetch the schema for report version ${reportVersionId}, activity ${activityId}, source types ${sourceTypeQueryString}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
     );
   }
   return response;
