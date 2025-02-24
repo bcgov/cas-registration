@@ -2,9 +2,13 @@ import { getProductionData } from "@bciers/actions/api";
 import ProductionDataPage from "@reporting/src/app/components/products/ProductionDataPage";
 import { render, screen } from "@testing-library/react";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 
 vi.mock("@bciers/actions/api", () => ({
   getProductionData: vi.fn(),
+}));
+vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
+  getReportInformationTasklist: vi.fn(),
 }));
 vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
   getOrderedActivities: vi.fn().mockReturnValue([]),
@@ -18,12 +22,19 @@ const props: HasFacilityId = {
   facility_id: "abc",
 };
 
+const mockReportTaskList = {
+  facilityName: "Test Facility",
+  operationType: "SFO",
+};
 describe("The Production Data component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("fetches the proper data and passes it to the form", async () => {
+    (
+      getReportInformationTasklist as ReturnType<typeof vi.fn>
+    ).mockResolvedValueOnce(mockReportTaskList);
     getProductionDataMock.mockReturnValue({
       allowed_products: [],
       report_products: [],

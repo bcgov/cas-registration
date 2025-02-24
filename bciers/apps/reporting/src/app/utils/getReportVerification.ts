@@ -1,11 +1,13 @@
 import { actionHandler } from "@bciers/actions";
-// Fetches the report verification data associated with the given report version ID
-export async function getReportVerification(version_id: number) {
-  const response = await actionHandler(
-    `reporting/report-version/${version_id}/report-verification`,
-    "GET",
-  );
-  if (response && !response.error) {
-    return response;
+
+export async function getReportVerification(reportVersionId: number) {
+  const endpoint = `reporting/report-version/${reportVersionId}/report-verification`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the report verification for report version ${reportVersionId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
   }
+  return response;
 }
