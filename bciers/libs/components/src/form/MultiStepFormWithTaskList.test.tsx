@@ -10,7 +10,7 @@ const taskListElements: TaskListElement[] = [
     title: "Operation information",
     isExpanded: true,
     elements: [
-      { type: "Page", title: "Review Operation information", isActive: true },
+      { type: "Page", title: "Review operation information", isActive: true },
       { type: "Page", title: "Person responsible" },
       { type: "Page", title: "Review facilities" },
     ],

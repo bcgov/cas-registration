@@ -38,14 +38,21 @@ interface Props {
     }[];
   };
   taskListElements: TaskListElement[];
+  operationType: string;
 }
 
 const ComplianceSummaryForm: React.FC<Props> = ({
   versionId,
   summaryFormData,
   taskListElements,
+  operationType,
 }) => {
-  const backUrl = `/reports/${versionId}/emission-summary`;
+  const step =
+    operationType === "Linear Facility Operation"
+      ? "operation-emission-summary"
+      : "additional-reporting-data";
+  const backUrl = `/reports/${versionId}/${step}`;
+
   const continueUrl = `/reports/${versionId}/final-review`;
 
   return (

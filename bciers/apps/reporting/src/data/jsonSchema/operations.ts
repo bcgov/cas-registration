@@ -8,7 +8,7 @@ const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const operationReviewSchema: RJSFSchema = {
   type: "object",
-  title: "Review operation information",
+  title: "Review Operation Information",
   required: [
     "operation_representative_name",
     "operation_bcghgid",
