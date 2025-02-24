@@ -1,12 +1,16 @@
 import { actionHandler } from "@bciers/actions";
 
 export async function getFacilityReportDetails(
-  version_id: number,
-  facility_id: string,
+  reportVersionId: number,
+  facilityId: string,
 ) {
-  return actionHandler(
-    `reporting/report-version/${version_id}/facility-report/${facility_id}`,
-    "GET",
-    `reporting/report-version/${version_id}/facility-report/${facility_id}`,
-  );
+  const endpoint = `reporting/report-version/${reportVersionId}/facility-report/${facilityId}`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the facility details for report version ${reportVersionId}, facility ${facilityId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
+  }
+  return response;
 }

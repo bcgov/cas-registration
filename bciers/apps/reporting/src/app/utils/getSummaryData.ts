@@ -1,11 +1,16 @@
 import { actionHandler } from "@bciers/actions";
-export async function getSummaryData(versionId: number, facilityId: string) {
-  const response = await actionHandler(
-    `reporting/report-version/${versionId}/facility-report/${facilityId}/emission-summary`,
-    "GET",
-  );
+
+export async function getSummaryData(
+  reportVersionId: number,
+  facilityId: string,
+) {
+  const endpoint = `reporting/report-version/${reportVersionId}/facility-report/${facilityId}/emission-summary`;
+  const response = await actionHandler(endpoint, "GET");
   if (response.error) {
-    throw new Error("We couldn't find the summary data for this report.");
+    throw new Error(
+      `Failed to fetch the emission summary data for report version ${reportVersionId}, facility ${facilityId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
   }
   return response;
 }

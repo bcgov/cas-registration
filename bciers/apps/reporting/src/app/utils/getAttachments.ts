@@ -1,7 +1,14 @@
 import { actionHandler } from "@bciers/actions";
 
 // 🛠️ Function to fetch a contact by id
-export default async function getAttachments(report_version_id: number) {
-  const endpoint = `reporting/report-version/${report_version_id}/attachments`;
-  return actionHandler(endpoint, "GET", "");
+export default async function getAttachments(reportVersionId: number) {
+  const endpoint = `reporting/report-version/${reportVersionId}/attachments`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response.error) {
+    throw new Error(
+      `Failed to fetch the attachments for report version ${reportVersionId}.\n` +
+        "Please check if the provided ID(s) are correct and try again.",
+    );
+  }
+  return response;
 }
