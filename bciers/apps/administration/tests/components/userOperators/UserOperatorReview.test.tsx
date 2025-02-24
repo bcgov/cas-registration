@@ -48,8 +48,8 @@ describe("UserOperatorReview component", () => {
     await userEvent.click(screen.getByRole("button", { name: /confirm/i }));
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/update-status",
-        "PUT",
+        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/status",
+        "PATCH",
         "",
         {
           body: JSON.stringify({ role: "admin", status: "Approved" }),
@@ -83,8 +83,8 @@ describe("UserOperatorReview component", () => {
     await userEvent.click(screen.getByRole("button", { name: /confirm/i }));
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/update-status",
-        "PUT",
+        "registration/user-operators/1b06e328-715d-4642-b403-3392256d7344/status",
+        "PATCH",
         "",
         {
           body: JSON.stringify({ role: "admin", status: "Declined" }),

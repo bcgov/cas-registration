@@ -527,7 +527,7 @@ ENDPOINTS = {
     ],
     "cas_director_analyst_and_industry_admin_user": [
         {
-            "method": "put",
+            "method": "patch",
             "endpoint_name": "update_user_operator_status",
             "kwargs": {"user_operator_id": MOCK_UUID},
         },
