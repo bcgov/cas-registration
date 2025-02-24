@@ -13,19 +13,19 @@ class RlsManager:
         # Convert enum values into an SQL-safe list
         role_identifiers = [Identifier(role.value) for role in RlsRoles]
         with connection.cursor() as cursor:
-            cursor.execute("select current_user")
-            user = cursor.fetchone()
-            print(f"user: {user}")
+            reassign_owned_by_query = SQL(
+                "reassign owned by {} to current_user"
+            ).format(SQL(", ").join(role_identifiers))
 
             drop_owned_by_query = SQL("drop owned by {}").format(
                 SQL(", ").join(role_identifiers)
             )
 
-            raise Exception("aaaaaa")
-
             grant_usage_query = SQL("grant usage on schema erc to {}").format(
                 SQL(", ").join(role_identifiers)
             )
+
+            cursor.execute(reassign_owned_by_query)
             cursor.execute(drop_owned_by_query)
             cursor.execute(grant_usage_query)
 
