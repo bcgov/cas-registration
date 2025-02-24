@@ -15,7 +15,7 @@ class RlsManager:
         with connection.cursor() as cursor:
             cursor.execute("select current_user")
             user = cursor.fetchone()
-            print("Current user: " + user)
+            print(f"Current user: {user}")
 
             drop_owned_by_query = SQL("drop owned by {}").format(
                 SQL(", ").join(role_identifiers)
