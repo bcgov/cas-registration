@@ -13,9 +13,9 @@ class RlsManager:
         # Convert enum values into an SQL-safe list
         role_identifiers = [Identifier(role.value) for role in RlsRoles]
         with connection.cursor() as cursor:
-            reassign_owned_by_query = SQL(
-                "reassign owned by {} to current_user"
-            ).format(SQL(", ").join(role_identifiers))
+            cursor.execute("select current_user")
+            user = cursor.fetchone()
+            print("Current user: " + user)
 
             drop_owned_by_query = SQL("drop owned by {}").format(
                 SQL(", ").join(role_identifiers)
@@ -25,7 +25,6 @@ class RlsManager:
                 SQL(", ").join(role_identifiers)
             )
 
-            cursor.execute(reassign_owned_by_query)
             cursor.execute(drop_owned_by_query)
             cursor.execute(grant_usage_query)
 
