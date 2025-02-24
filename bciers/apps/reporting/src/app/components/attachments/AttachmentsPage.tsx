@@ -12,14 +12,14 @@ export const getDictFromAttachmentArray = (array: UploadedAttachment[]) =>
   Object.fromEntries(array.map((a) => [a.attachment_type, a]));
 
 const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
+  //🔍 Check if reports need verification - throws error for invalid version_id
+  const needsVerification = await getReportNeedsVerification(version_id);
+
   const uploadedAttachments: UploadedAttachment[] =
     await getAttachments(version_id);
 
   const uploadedAttachmentsDict =
     getDictFromAttachmentArray(uploadedAttachments);
-
-  //🔍 Check if reports need verification
-  const needsVerification = await getReportNeedsVerification(version_id);
   const taskListElements = await getSignOffAndSubmitSteps(
     version_id,
     ActivePage.Attachments,

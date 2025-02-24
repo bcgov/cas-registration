@@ -1,6 +1,6 @@
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
-import { getProductionData } from "@bciers/actions/api";
+import { getProductionData } from "@reporting/src/app/utils/getProductionData";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import {
   ActivePage,

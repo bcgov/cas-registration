@@ -1,5 +1,5 @@
 import { ReviewDataFactoryItem } from "./factory";
-import { getProductionData } from "@bciers/actions/api";
+import { getProductionData } from "@reporting/src/app/utils/getProductionData";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 
 const productionDataFactoryItem: ReviewDataFactoryItem = async (

@@ -1,4 +1,4 @@
-import { getProductionData } from "@bciers/actions/api";
+import { getProductionData } from "@reporting/src/app/utils/getProductionData";
 import ProductionDataPage from "@reporting/src/app/components/products/ProductionDataPage";
 import { render, screen } from "@testing-library/react";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
