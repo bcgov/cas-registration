@@ -9,6 +9,7 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_unit import ReportUnit
 from model_bakery.baker import make_recipe, make
 from reporting.models.report_version import ReportVersion
+from service.utils.get_report_valid_year_from_version_id import get_report_valid_year_from_version_id
 
 
 def get_report_unit_by_index(
@@ -42,15 +43,16 @@ class TestInfrastructure:
     @classmethod
     def build(cls):
         t = TestInfrastructure()
+        valid_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2025)
         t.facility_report = make_recipe(
             'reporting.tests.utils.facility_report',
+            report_version__report__reporting_year_id=valid_year.reporting_year,
         )
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        t.configuration = Configuration.objects.get(
-            valid_from__lte=t.facility_report.created_at, valid_to__gte=t.facility_report.created_at
-        )
+        valid_date = get_report_valid_year_from_version_id(t.report_version.id)
+        t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = make_recipe("reporting.tests.utils.activity")
         t.activity_json_schema = make_recipe(
             "reporting.tests.utils.activity_json_schema",
@@ -70,13 +72,16 @@ class TestInfrastructure:
     @classmethod
     def build_from_real_config(cls, activity_slug="gsc_non_compression"):
         t = TestInfrastructure()
-        t.facility_report = make_recipe('reporting.tests.utils.facility_report')
+        valid_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2025)
+        t.facility_report = make_recipe(
+            'reporting.tests.utils.facility_report',
+            report_version__report__reporting_year_id=valid_year.reporting_year,
+        )
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        t.configuration = Configuration.objects.get(
-            valid_from__lte=t.facility_report.created_at, valid_to__gte=t.facility_report.created_at
-        )
+        valid_date = get_report_valid_year_from_version_id(t.report_version.id)
+        t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = Activity.objects.get(slug=activity_slug)
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
@@ -96,9 +101,8 @@ class TestInfrastructure:
         t.facility_report.refresh_from_db()
         t.report_version = report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        t.configuration = Configuration.objects.get(
-            valid_from__lte=t.facility_report.created_at, valid_to__gte=t.facility_report.created_at
-        )
+        valid_date = get_report_valid_year_from_version_id(t.report_version.id)
+        t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = Activity.objects.get(slug="gsc_non_compression")
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
