@@ -157,6 +157,7 @@ class TestReportService(TestCase):
             regulated_products=["Cement equivalent", "Mining: gold-equivalent"],
             operation_representative_name=[1, 2],
             operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
         )
 
         with (

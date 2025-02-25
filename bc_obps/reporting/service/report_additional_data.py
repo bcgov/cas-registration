@@ -1,6 +1,6 @@
 from typing import Optional
 
-from reporting.models import ReportVersion, ReportAdditionalData
+from reporting.models import ReportVersion, ReportAdditionalData, ReportOperation
 from reporting.schema.report_additional_data import (
     ReportAdditionalDataIn,
 )
@@ -15,11 +15,7 @@ class ReportAdditionalDataService:
 
     @staticmethod
     def get_registration_purpose_by_version_id(version_id: int) -> dict:
-        registration_purpose = (
-            ReportVersion.objects.select_related('report', 'report__operation')
-            .get(id=version_id)
-            .report.operation.registration_purpose
-        )
+        registration_purpose = ReportOperation.objects.get(report_version__id=version_id).registration_purpose
         return {"registration_purpose": registration_purpose}
 
     @staticmethod
