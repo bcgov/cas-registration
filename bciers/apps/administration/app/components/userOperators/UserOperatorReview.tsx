@@ -26,8 +26,8 @@ export default function UserOperatorReview({
   const changePrimeAdminStatus = async (status: Status) => {
     try {
       const response = await actionHandler(
-        `registration/user-operators/${userOperatorId}/update-status`,
-        "PUT",
+        `registration/user-operators/${userOperatorId}/status`,
+        "PATCH",
         "",
         {
           body: JSON.stringify({

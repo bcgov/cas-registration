@@ -18,7 +18,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 @router.post(
     "/operations/{uuid:operation_id}/registration/operation-representative",
-    response={200: OperationRepresentativeOut, custom_codes_4xx: Message},
+    response={201: OperationRepresentativeOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Updates an operation with operation representative(s). User may create new contact to use as representatives if desired or use existing contacts.
     The endpoint ensures that only authorized industry users can update operations belonging to their operator. Unauthorized access attempts raise an error.""",
@@ -26,8 +26,8 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 def create_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeIn
-) -> Tuple[Literal[200], Contact]:
-    return 200, OperationServiceV2.create_operation_representative(
+) -> Tuple[Literal[201], Contact]:
+    return 201, OperationServiceV2.create_operation_representative(
         get_current_user_guid(request), operation_id, payload
     )
 
