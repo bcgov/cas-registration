@@ -29,7 +29,7 @@ const addNameToDataURL = (dataURL: string, name: string) => {
 };
 
 // make the widget handle file separately from rest of form data. Widget takes away everything file-related from rjsf (rjsf just sends a filename that we ignore or something, widget intercepts the file object). User might have expectation that file is uploaded right away, not a problem? Other expectation is that submit doesn't take forever. We should upload file on widget, file gets linked to form when we hit submit. Widget would block submission if file not uploaded. Could do a progress bar, configure widget however we like. Stick reporting's attachment element into widget (ish), how to get this to play nice with rjsf/ui schema TBD. Diasble form submission if widget is in progress of uploading stuff. Could tie to form validation.
-// brianna here we're going from a file to a dataurl, which we then have to come back from in the ninja schema
+// file here we're going from a file to a dataurl, which we then have to come back from in the ninja schema
 
 const FileWidget = ({
   id,
@@ -46,10 +46,10 @@ const FileWidget = ({
 }: WidgetProps) => {
   // operationId can be undefined we're creating a new operation
   // const operationId = formContext?.operationId;
-
   const [isUploading, setIsUploading] = useState(false);
-  // We need to store the value in state to prevent loosing the value when user switches between tabs
-  const [brianna, setBrianna] = useState(undefined);
+  // brianna initial state will need to be the get file
+  // const [file, setFile] = useState<File | undefined>(undefined);
+  const [fileName, setFileName] = useState("");
 
   const { data: session } = useSession();
   const isCasInternal =
@@ -84,10 +84,7 @@ const FileWidget = ({
 
   async function postDocuments(fileData: FormData) {
     const endpoint = `registration/documents`;
-    console.log("endpoint", endpoint);
-    for (let [key, value] of fileData.entries()) {
-      console.log(key, value);
-    }
+
     const response = await actionHandler(endpoint, "POST", "", {
       body: fileData,
     });
@@ -99,7 +96,6 @@ const FileWidget = ({
     if (!evt.target.files) {
       return;
     }
-
     if (evt.target.files.length > 0) {
       const file = evt.target.files[0];
       const maxSize = 20000000;
@@ -123,7 +119,8 @@ const FileWidget = ({
         // setError(response.error);
         setIsUploading(false);
       }
-      setBrianna(file);
+      onChange(file.name);
+      setFileName(file.name);
       setIsUploading(false);
     }
   };
@@ -131,6 +128,9 @@ const FileWidget = ({
   const disabledColour =
     disabled || readonly ? "text-bc-bg-dark-grey" : "text-bc-link-blue";
 
+  if (isUploading) {
+    return <div>Loading...</div>;
+  }
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
     <div className="py-4 flex">
@@ -140,7 +140,7 @@ const FileWidget = ({
           onClick={handleClick}
           className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
         >
-          {brianna ? "Reupload attachment" : "Upload attachment"}
+          {fileName ? "Reupload attachment" : "Upload attachment"}
         </button>
       )}
       <input
@@ -157,12 +157,12 @@ const FileWidget = ({
         value=""
         accept={options.accept ? String(options.accept) : undefined}
       />
-      {brianna ? (
+      {fileName ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
-            {/* how is this download working in reporting */}
-            <a download={brianna?.name} href={"#"} className="file-download">
-              {brianna.name}
+            {/* brianna gotta make this work */}
+            <a download={fileName} href={"#"} className="file-download">
+              {fileName}
             </a>
           </li>
         </ul>

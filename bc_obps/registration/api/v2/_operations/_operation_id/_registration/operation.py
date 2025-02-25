@@ -41,4 +41,5 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 def register_edit_operation_information(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:
+    breakpoint()
     return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)

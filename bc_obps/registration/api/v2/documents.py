@@ -29,7 +29,6 @@ def save_registration_document(
     document_type: Form[str],
     file: UploadedFile = File(...),
 ) -> Tuple[Literal[200], DocumentOut]:
-
     user_guid = get_current_user_guid(request)
 
     document_type_name = document_type.replace(" ", "_").lower()
