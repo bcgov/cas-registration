@@ -222,7 +222,7 @@ const OperationInformationForm = ({
     setPendingFormState({});
     setIsConfirmPurposeChangeModalOpen(false);
   };
-
+  console.log("confirmedFormState", confirmedFormState);
   return (
     <>
       <ConfirmChangeOfRegistrationPurposeModal

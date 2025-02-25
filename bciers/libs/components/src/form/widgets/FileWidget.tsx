@@ -36,6 +36,8 @@ type FileInfoType = {
 const processFile = (file: File): Promise<FileInfoType> => {
   const { name, size, type } = file;
   return new Promise((resolve, reject) => {
+    // make the widget handle file separately from rest of form data. Widget takes away everything file-related from rjsf (rjsf just sends a filename that we ignore or something, widget intercepts the file object). User might have expectation that file is uploaded right away, not a problem? Other expectation is that submit doesn't take forever. We should upload file on widget, file gets linked to form when we hit submit. Widget would block submission if file not uploaded. Could do a progress bar, configure widget however we like. Stick reporting's attachment element into widget (ish), how to get this to play nice with rjsf/ui schema TBD. Diasble form submission if widget is in progress of uploading stuff. Could tie to form validation.
+    // brianna here we're going from a file to a dataurl, which we then have to come back from in the ninja schema
     const reader = new window.FileReader();
     reader.onerror = reject;
     reader.onload = (event) => {
@@ -83,6 +85,7 @@ function FileInfoPreview<
   return (
     <>
       {" "}
+      {/* brianna is this just a link */}
       <a download={`preview-${name}`} href={dataURL} className="file-download">
         {translateString(TranslatableString.PreviewLabel)}
       </a>
@@ -130,6 +133,7 @@ export const extractFileInfo = (dataURLs: string[]): FileInfoType[] => {
   return dataURLs
     .filter((dataURL) => dataURL)
     .map((dataURL) => {
+      // brianna
       const { blob, name } = dataURItoBlob(dataURL);
       return {
         dataURL,
@@ -152,6 +156,7 @@ const FileWidget = ({
   registry,
 }: WidgetProps) => {
   // We need to store the value in state to prevent loosing the value when user switches between tabs
+
   const [localValue, setLocalValue] = useState(value);
   const [filesInfo, setFilesInfo] = useState<FileInfoType[]>(
     Array.isArray(localValue)
@@ -184,7 +189,7 @@ const FileWidget = ({
       if (!files) {
         return;
       }
-
+      // brianna if this is happening onchange how much is it affecting silk?
       processFiles(files).then((filesInfoEvent) => {
         const newValue = filesInfoEvent.map((fileInfo) => {
           if (fileInfo.size > maxSize) {
@@ -211,6 +216,8 @@ const FileWidget = ({
     disabled || readonly ? "text-bc-bg-dark-grey" : "text-bc-link-blue";
 
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
+  console.log("value", value);
+  console.log("localvalue", localValue);
   return (
     <div className="py-4 flex">
       {!isCasInternal && (

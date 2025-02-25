@@ -122,6 +122,7 @@ class OperationService:
         # if there is an existing statutory declaration document, check if the new one is different
         if existing_statutory_document:
             # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
+            # brianna search for files have same hash everywhere, we can just replace
             if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
                 existing_statutory_document.delete()
                 return DocumentDataAccessService.create_document(

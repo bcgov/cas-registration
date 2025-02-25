@@ -24,6 +24,7 @@ const AttachmentElement: React.FC<Props> = ({
   error,
   required,
 }) => {
+  //brianna
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 
   const handleClick = () => {

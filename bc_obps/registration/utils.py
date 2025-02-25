@@ -138,8 +138,9 @@ def files_have_same_hash(file1: Optional[ContentFile], file2: Optional[ContentFi
 
     hash1 = hashlib.sha256()
     hash2 = hashlib.sha256()
-
+# yes just replace every time
     try:
+        # brianna this reads both, would it be faster to just replace no matter what?
         # Handle ContentFile
         if isinstance(file1, ContentFile):
             hash1.update(file1.read())
