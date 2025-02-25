@@ -11,7 +11,7 @@ class TestRlsManager(TestCase):
         RlsManager.revoke_all_privileges()
 
         # Ensure SQL execution calls are made
-        self.assertEqual(mock_cursor_instance.execute.call_count, 14)
+        self.assertEqual(mock_cursor_instance.execute.call_count, 15)
 
         # Check the correct SQL commands are executed
         mock_cursor_instance.execute.assert_any_call(
