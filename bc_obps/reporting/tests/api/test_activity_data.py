@@ -25,7 +25,6 @@ class TestActivityData(CommonTestSetup):
             )
             + "?activity_id=1",
         )
-        print(response.json())
         assert response.status_code == 200
         response_object = json.loads(response.json())
         assert response_object['activityId'] == 1
