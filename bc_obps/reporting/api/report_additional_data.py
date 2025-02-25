@@ -20,7 +20,6 @@ from ..schema.report_additional_data import ReportAdditionalDataOut, ReportAddit
 )
 def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     response_data = ReportAdditionalDataService.get_registration_purpose_by_version_id(version_id)
-
     return 200, response_data
 
 
