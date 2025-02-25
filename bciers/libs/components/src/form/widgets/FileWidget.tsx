@@ -18,6 +18,8 @@ import {
   WidgetProps,
 } from "@rjsf/utils";
 import { useSession } from "next-auth/react";
+import { actionHandler } from "@bciers/actions";
+import { UUID } from "crypto";
 
 const addNameToDataURL = (dataURL: string, name: string) => {
   if (dataURL === null) {
@@ -150,12 +152,19 @@ const FileWidget = ({
   readonly,
   required,
   multiple,
+  label,
   onChange,
   value,
   options,
   registry,
+  formContext,
 }: WidgetProps) => {
+  // operationId can be undefined we're creating a new operation
+  // const operationId = formContext?.operationId;
+
+  const [isUploading, setIsUploading] = useState(false);
   // We need to store the value in state to prevent loosing the value when user switches between tabs
+  const [brianna, setBrianna] = useState(undefined);
 
   const [localValue, setLocalValue] = useState(value);
   const [filesInfo, setFilesInfo] = useState<FileInfoType[]>(
@@ -163,12 +172,6 @@ const FileWidget = ({
       ? extractFileInfo(localValue)
       : extractFileInfo([localValue]),
   );
-  // 🥷 Prevent resetting the value to null when user switch tabs
-  useEffect(() => {
-    if (localValue && !value) {
-      onChange(localValue);
-    }
-  }, [localValue, onChange, value]);
 
   const { data: session } = useSession();
   const isCasInternal =
@@ -181,43 +184,107 @@ const FileWidget = ({
     hiddenFileInput.current.click();
   };
 
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      event.preventDefault();
+  // const handleChange = useCallback(
+  //   (event: ChangeEvent<HTMLInputElement>) => {
+  //     event.preventDefault();
+  //     const maxSize = 20000000;
+  //     const files = event.target.files;
+  //     if (!files) {
+  //       return;
+  //     }
+  //     // brianna if this is happening onchange how much is it affecting silk?
+  //     processFiles(files).then((filesInfoEvent) => {
+  //       const newValue = filesInfoEvent.map((fileInfo) => {
+  //         if (fileInfo.size > maxSize) {
+  //           alert("File size must be less than 20MB");
+  //           return;
+  //         }
+  //         return fileInfo.dataURL;
+  //       });
+  //       if (multiple) {
+  //         setFilesInfo(filesInfo.concat(filesInfoEvent[0]));
+  //         onChange(localValue.concat(newValue[0]));
+  //         setLocalValue(localValue.concat(newValue[0]));
+  //       } else {
+  //         setFilesInfo(filesInfoEvent);
+  //         onChange(newValue[0]);
+  //         setLocalValue(newValue[0]);
+  //       }
+  //     });
+  //   },
+  //   [multiple, localValue, filesInfo, onChange],
+  // );
+
+  const validateAttachments = () => {
+    // if (
+    //   isVerificationStatementMandatory &&
+    //   !(
+    //     "verification_statement" in pendingUploadFiles ||
+    //     "verification_statement" in initialUploadedAttachments
+    //   )
+    // ) {
+    //   setValidationErrors({
+    //     verification_statement: "Must be present",
+    //   });
+    //   return false;
+    // } else {
+    //   setValidationErrors({});
+    //   return true;
+    // }
+    console.log("hit validate");
+    return true;
+  };
+
+  async function postDocuments(fileData: FormData) {
+    const endpoint = `registration/documents`;
+    console.log("endpoint", endpoint);
+    for (let [key, value] of fileData.entries()) {
+      console.log(key, value);
+    }
+    const response = await actionHandler(endpoint, "POST", "", {
+      body: fileData,
+    });
+
+    return response;
+  }
+
+  const handleChange = async (evt: ChangeEvent<HTMLInputElement>) => {
+    if (!evt.target.files) {
+      return;
+    }
+
+    if (evt.target.files.length > 0) {
+      const file = evt.target.files[0];
       const maxSize = 20000000;
-      const files = event.target.files;
-      if (!files) {
+      if (file.size > maxSize) {
+        alert("File size must be less than 20MB");
         return;
       }
-      // brianna if this is happening onchange how much is it affecting silk?
-      processFiles(files).then((filesInfoEvent) => {
-        const newValue = filesInfoEvent.map((fileInfo) => {
-          if (fileInfo.size > maxSize) {
-            alert("File size must be less than 20MB");
-            return;
-          }
-          return fileInfo.dataURL;
-        });
-        if (multiple) {
-          setFilesInfo(filesInfo.concat(filesInfoEvent[0]));
-          onChange(localValue.concat(newValue[0]));
-          setLocalValue(localValue.concat(newValue[0]));
-        } else {
-          setFilesInfo(filesInfoEvent);
-          onChange(newValue[0]);
-          setLocalValue(newValue[0]);
-        }
-      });
-    },
-    [multiple, localValue, filesInfo, onChange],
-  );
+      if (!validateAttachments()) return;
+
+      const formData = new FormData();
+
+      formData.append("file", file);
+      formData.append("document_type", label);
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      setIsUploading(true);
+      const response = await postDocuments(formData);
+
+      if (response.error) {
+        // setError(response.error);
+        setIsUploading(false);
+      }
+      setBrianna(file);
+      setIsUploading(false);
+    }
+  };
 
   const disabledColour =
     disabled || readonly ? "text-bc-bg-dark-grey" : "text-bc-link-blue";
 
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
-  console.log("value", value);
-  console.log("localvalue", localValue);
   return (
     <div className="py-4 flex">
       {!isCasInternal && (
@@ -226,7 +293,7 @@ const FileWidget = ({
           onClick={handleClick}
           className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
         >
-          {localValue ? "Reupload attachment" : "Upload attachment"}
+          {brianna ? "Reupload attachment" : "Upload attachment"}
         </button>
       )}
       <input
@@ -243,12 +310,15 @@ const FileWidget = ({
         value=""
         accept={options.accept ? String(options.accept) : undefined}
       />
-      {localValue ? (
-        <FilesInfo
-          registry={registry}
-          filesInfo={filesInfo}
-          preview={options.filePreview}
-        />
+      {brianna ? (
+        <ul className="m-0 py-0 flex flex-col justify-start">
+          <li>
+            {/* how is this download working in reporting */}
+            <a download={brianna?.name} href={"#"} className="file-download">
+              {brianna.name}
+            </a>
+          </li>
+        </ul>
       ) : (
         <span className="ml-4 text-lg">No attachment was uploaded</span>
       )}

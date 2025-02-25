@@ -222,7 +222,7 @@ const OperationInformationForm = ({
     setPendingFormState({});
     setIsConfirmPurposeChangeModalOpen(false);
   };
-  console.log("confirmedFormState", confirmedFormState);
+
   return (
     <>
       <ConfirmChangeOfRegistrationPurposeModal
@@ -239,6 +239,7 @@ const OperationInformationForm = ({
         step={step}
         steps={steps}
         error={error}
+        formContext={{ operationId: confirmedFormState?.id }}
         onChange={(e: IChangeEvent) => {
           let newSelectedOperation = e.formData?.section1?.operation;
           let newSelectedPurpose = e.formData?.section1?.registration_purpose;
