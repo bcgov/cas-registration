@@ -32,7 +32,6 @@ class TestOperationRegistration(CommonTestSetup):
             baker.make_recipe(
                 'registration.tests.utils.facility_designated_operation_timeline',
                 operation=self.operation,
-                status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
                 _quantity=5,
             )
         # saving the created_at, updated_at and operation_representative_id to compare later
@@ -46,7 +45,6 @@ class TestOperationRegistration(CommonTestSetup):
         ]
 
     def _set_operation_information(self, purpose: Operation.Purposes, operation_type: OperationTypes):
-
         if operation_type == OperationTypes.EIO:
             operation_information_payload = {
                 "registration_purpose": purpose,
@@ -261,7 +259,7 @@ class TestOperationRegistration(CommonTestSetup):
             # for LFO  5 existing facilities + 1 new facility
             assert (
                 FacilityDesignatedOperationTimeline.objects.filter(
-                    operation=self.operation, status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE
+                    operation=self.operation,
                 ).count()
                 == 6
             )
@@ -269,7 +267,7 @@ class TestOperationRegistration(CommonTestSetup):
             # for SFO we only have the new facility
             assert (
                 FacilityDesignatedOperationTimeline.objects.filter(
-                    operation=self.operation, status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE
+                    operation=self.operation,
                 ).count()
                 == 1
             )
