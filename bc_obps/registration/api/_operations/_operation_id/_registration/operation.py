@@ -1,9 +1,19 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from registration.schema import OperationInformationIn, OperationUpdateOut, OperationRegistrationOut, Message
+from registration.schema.generic import Message
 from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
+from ninja import File, Form, UploadedFile
+from service.operation_service import OperationService
+from registration.schema.operation import (
+    OperationRegistrationIn,
+    OperationRegistrationInWithDocuments,
+    OperationUpdateOut,
+    OperationRegistrationOut,
+)
+from service.operation_service_v2 import OperationServiceV2
+from registration.constants import V2
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -26,9 +36,8 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 
 
 ##### PUT #####
-
-
-@router.put(
+# https://stackoverflow.com/questions/77083771/django-ninja-update-a-filefield
+@router.post(
     "/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
@@ -37,6 +46,17 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
     auth=authorize('approved_industry_user'),
 )
 def register_edit_operation_information(
-    request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
+    request: HttpRequest,
+    operation_id: UUID,
+    details: Form[OperationRegistrationIn],
+    # documents are optional because if the user hasn't given us an updated document, we don't have to do anything
+    boundary_map: UploadedFile = File(None),
+    process_flow_diagram: UploadedFile = File(None),
 ) -> Tuple[Literal[200], Operation]:
-    return 200, OperationService.register_operation_information(get_current_user_guid(request), operation_id, payload)
+    payload = OperationRegistrationInWithDocuments(
+        **details.dict(by_alias=True),
+        **({'boundary_map': boundary_map} if boundary_map else {}),
+        **({'process_flow_diagram': process_flow_diagram} if process_flow_diagram else {})
+    )
+
+    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)

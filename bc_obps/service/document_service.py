@@ -1,8 +1,10 @@
 from typing import Tuple
 from uuid import UUID
+from ninja import UploadedFile
 from service.data_access_service.document_service import DocumentDataAccessService
 from registration.models import Document, Operation
-from registration.utils import files_have_same_hash
+from registration.models import Document, DocumentType, Operation
+from service.data_access_service.operation_service import OperationDataAccessService
 from django.core.files.base import ContentFile
 from service.data_access_service.operation_service import OperationDataAccessService
 
@@ -19,25 +21,26 @@ class DocumentService:
 
     @classmethod
     def create_or_replace_operation_document(
-        cls, user_guid: UUID, operation_id: UUID, file_data: ContentFile, document_type: str
-    ) -> Tuple[Document, bool]:
+        ccls, user_guid: UUID, operation_id: UUID, file: UploadedFile, type: str
+    ) -> Tuple[Document | None, bool]:
         """
         This function receives a document and operation id.
         Operations only have one of each type of document, so this function uses the type to check if an existing document needs to be replaced, or if no document exists and one must be created.
         This function does NOT set any m2m relationships.
         :returns: Tuple[Document, bool] where the bool is True if a new document was created, False if an existing document was updated
         """
-        existing_document = cls.get_operation_document_by_type_if_authorized(user_guid, operation_id, document_type)
-        # if there is an existing  document, check if the new one is different
+        existing_document = DocumentDataAccessService.get_operation_document_by_type(operation_id, type)
+        # if there is an existing  document, delete it
         if existing_document:
-            # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
-            if not files_have_same_hash(file_data, existing_document.file):
-                existing_document.delete()
-            else:
-                return existing_document, False
-        # if there is no existing document, create a new one
-        document = DocumentDataAccessService.create_document(user_guid, file_data, document_type, operation_id)
-        return document, True
+            existing_document.delete()
+
+        existing_document.delete()
+        # create the new documeent
+        document = DocumentDataAccessService.create_document(
+            operation_id=operation_id,
+            type=type,
+            file=file,
+        )
 
     @classmethod
     def archive_or_delete_operation_document(cls, user_guid: UUID, operation_id: UUID, document_type: str) -> bool:

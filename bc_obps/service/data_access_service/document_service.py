@@ -1,7 +1,12 @@
 from typing import Optional
 from uuid import UUID
+from ninja import UploadedFile
 from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
+from reporting.constants import MAX_UPLOAD_SIZE
+from ninja import UploadedFile
+from pydantic import ValidationError
+from reporting.constants import MAX_UPLOAD_SIZE
 
 
 class DocumentDataAccessService:
@@ -17,13 +22,19 @@ class DocumentDataAccessService:
 
     @classmethod
     def create_document(
-        cls, user_guid: UUID, file_data: Optional[ContentFile], document_type_name: str, operation_id: UUID
+         cls,
+        operation_id: UUID,
+        type: str,
+        file: UploadedFile,
     ) -> Document:
-        document = Document.objects.create(
-            file=file_data,
-            type=DocumentType.objects.get(name=document_type_name),
-            created_by_id=user_guid,
+        if file.size and file.size > MAX_UPLOAD_SIZE:
+            raise ValidationError(f"File document cannot exceed {MAX_UPLOAD_SIZE} bytes.")
+
+        document = Document(
             operation_id=operation_id,
+            file=file,
+            type=DocumentType.objects.get(name=type),
         )
+        document.save()
 
         return document
