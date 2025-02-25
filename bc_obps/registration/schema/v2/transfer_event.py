@@ -59,6 +59,7 @@ FacilitiesNameType = List[Dict[str, Union[str, UUID]]]
 
 
 class TransferEventOut(ModelSchema):
+    transfer_id: UUID = Field(alias="id") # Only added because of load testing
     transfer_entity: str
     from_operator: str = Field(alias="from_operator.legal_name")
     from_operator_id: UUID = Field(alias="from_operator.id")
