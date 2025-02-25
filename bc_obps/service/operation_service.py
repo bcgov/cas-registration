@@ -13,9 +13,6 @@ from service.data_access_service.operation_service import OperationDataAccessSer
 from django.db.models import Q
 from django.core.paginator import Paginator
 from ninja import Query
-from registration.utils import (
-    files_have_same_hash,
-)
 from datetime import datetime
 from registration.models import (
     Contact,
@@ -119,17 +116,10 @@ class OperationService:
         cls, user_guid: UUID, payload: OperationUpdateIn, existing_statutory_document: Optional[Document]
     ) -> Optional[Document]:
 
-        # if there is an existing statutory declaration document, check if the new one is different
+        # if there is an existing statutory declaration document, delete it so we can replace it with the new one
         if existing_statutory_document:
-            # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
-            # brianna search for files have same hash everywhere, we can just replace
-            if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
-                existing_statutory_document.delete()
-                return DocumentDataAccessService.create_document(
-                    user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
-                )
-            return None
-        # if there is no existing statutory declaration document, create a new one
+            existing_statutory_document.delete()
+
         return DocumentDataAccessService.create_document(
             user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
         )

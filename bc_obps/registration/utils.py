@@ -8,7 +8,6 @@ from registration.constants import DEFAULT_API_NAMESPACE
 import requests
 import base64
 import re
-import hashlib
 from django.core.files.base import ContentFile
 from registration.models import (
     Document,
@@ -124,43 +123,6 @@ def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: DictStrAny) -> Uni
 def set_verification_columns(record: Union[UserOperator, Operator, Operation], user_guid: UUID) -> None:
     record.verified_at = datetime.now(ZoneInfo("UTC"))
     record.verified_by_id = user_guid
-
-
-def files_have_same_hash(file1: Optional[ContentFile], file2: Optional[ContentFile]) -> bool:
-    """
-    Compare the hash of two files to determine if they are the same.
-    this might miss formatting changes.
-    """
-
-    # If either file is None, raise an error
-    if not file1 or not file2:
-        raise ValueError("Both files must be provided to compare hashes.")
-
-    hash1 = hashlib.sha256()
-    hash2 = hashlib.sha256()
-# yes just replace every time
-    try:
-        # brianna this reads both, would it be faster to just replace no matter what?
-        # Handle ContentFile
-        if isinstance(file1, ContentFile):
-            hash1.update(file1.read())
-        else:
-            # Handle FileField
-            with file1.open(mode='rb') as f1:
-                for chunk in iter(lambda: f1.read(4096), b''):
-                    hash1.update(chunk)
-
-        # Repeat for the second file
-        if isinstance(file2, ContentFile):
-            hash2.update(file2.read())
-        else:
-            with file2.open(mode='rb') as f2:
-                for chunk in iter(lambda: f2.read(4096), b''):
-                    hash2.update(chunk)
-
-        return hash1.hexdigest() == hash2.hexdigest()
-    except Exception as e:
-        raise ValueError(f"Error comparing files: {e}")
 
 
 class CustomPagination(PageNumberPagination):
