@@ -1,56 +1,127 @@
 name: ZAP OWASP Scan Code
 
+# This workflow can be called from other workflows.
 on:
   workflow_call:
 
 env:
+  # Common environment variables for your app
   PGUSER: postgres
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  KEYCLOAK_LOGIN_URL: ${{ secrets.KEYCLOAK_LOGIN_URL }}
 
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: run app locally
-        uses: ./.github/actions/run-registration1-app
-        with:
-          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-      - name: ZAP Frontend Scan
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Start Services with Docker Compose
+        run: |
+          echo "Starting services..."
+          docker-compose -f cas-registration/bciers/docker-compose-bciers-apps.yaml up -d
+          echo "Waiting for services to be ready..."
+          # Adjust sleep time if needed or implement a loop with health checks
+          sleep 60
+
+      # Scan the backend API (adjust the target path as needed)
+      - name: ZAP Scan - Backend API
         uses: zaproxy/action-baseline@v0.14.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "http://localhost:3000/"
-          rules_file_name: ".zap/rules-frontend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Frontend
-          fail_action: false
-          allow_issue_writing: false
-          artifact_name: frontend_zap_scan
-      - name: ZAP Backend Scan
-        uses: zaproxy/action-baseline@v0.14.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "http://0.0.0.0:8000/"
+          target: "http://127.0.0.1:8000/api"
           rules_file_name: ".zap/rules-backend.tsv"
           cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Backend
+          issue_title: "OWASP Baseline - Backend API"
           fail_action: false
           allow_issue_writing: false
           artifact_name: backend_zap_scan
 
-  # Retry the workflow due to secondary rate limiting errors causing frequent failures
+      # Scan the dashboard (frontend) app
+      - name: ZAP Scan - Dashboard Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://127.0.0.1:3000"
+          rules_file_name: ".zap/rules-frontend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Dashboard Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: dashboard_zap_scan
+
+      # Scan the administration (frontend) app
+      - name: ZAP Scan - Administration Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://127.0.0.1:4001"
+          rules_file_name: ".zap/rules-frontend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Administration Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: administration_zap_scan
+
+      # Scan the registration (frontend) app
+      - name: ZAP Scan - Registration Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://127.0.0.1:4000"
+          rules_file_name: ".zap/rules-frontend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Registration Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: registration_zap_scan
+
+      # Scan the compliance (frontend) app
+      - name: ZAP Scan - Compliance Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://127.0.0.1:7000"
+          rules_file_name: ".zap/rules-frontend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Compliance Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: compliance_zap_scan
+
+      # Scan the reporting (frontend) app
+      - name: ZAP Scan - Reporting Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://127.0.0.1:5000"
+          rules_file_name: ".zap/rules-frontend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Reporting Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: reporting_zap_scan
+
+      - name: Tear Down Services
+        run: |
+          echo "Stopping services..."
+          docker-compose -f cas-registration/bciers/docker-compose-bciers-apps.yaml down
+
+  # This job will retry the workflow if ZAP scanning fails due to rate limiting or transient errors.
   retry-on-failure:
     needs: zap-scan
-    if: failure() || needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled()
+    if: failure() || (needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled())
     runs-on: ubuntu-latest
     steps:
-      - env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-          GH_DEBUG: api
+      - name: Retry ZAP Scan
         run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}
