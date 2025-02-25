@@ -43,6 +43,7 @@ class TestReportVersionEndpoint(CommonTestSetup):
             "regulated_products": [],
             "operation_report_type": "Annual Report",
             "operation_representative_name": [1, 2],
+            "registration_purpose": "OBPS Regulated Operation",
         }
         assert report_version.report_operation.operator_legal_name != data["operator_legal_name"]
         assert report_version.report_operation.operator_trade_name != data["operator_trade_name"]

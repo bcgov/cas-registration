@@ -156,6 +156,7 @@ class TestReportService(TestCase):
             regulated_products=[2, 13],
             operation_representative_name=[1, 2],
             operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
         )
 
         with (
