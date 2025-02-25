@@ -29,7 +29,7 @@ jobs:
       - name: Start Services with Docker Compose
         run: |
           echo "Starting services..."
-          docker-compose -f cas-registration/bciers/docker-compose-bciers-apps.yaml up -d
+          docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
           echo "Waiting for services to be ready..."
           # Adjust sleep time if needed or implement a loop with health checks
           sleep 60
