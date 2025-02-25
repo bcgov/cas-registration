@@ -6,51 +6,148 @@ on:
 env:
   PGUSER: postgres
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  KEYCLOAK_LOGIN_URL: ${{ secrets.KEYCLOAK_LOGIN_URL }}
 
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: run app locally
-        uses: ./.github/actions/run-registration1-app
-        with:
-          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-      - name: ZAP Frontend Scan
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Install Docker and Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      # Start all services using Docker Compose
+      - name: Start Services with Docker Compose
+        run: |
+          echo "Starting services..."
+          docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
+          echo "Waiting for services to be ready..."
+
+      # - name: ssh into it
+      #   run: |
+      #     wget -qO /usr/local/bin/devtunnel https://aka.ms/TunnelsCliDownload/linux-x64 && chmod +x /usr/local/bin/devtunnel
+      #     npm -g i wetty@2.5.0
+      #     sudo wetty -p 5555 -c bash -b / &
+      #     devtunnel user login -g -d
+      #     devtunnel host -p 5555
+
+      # # Check running containers
+      # - name: Check Running Containers
+      #   run: docker ps -a
+
+      # # Debug Backend Readiness
+      # - name: Debug Backend Readiness
+      #   run: |
+      #     sleep 60  # Give it extra time to start
+      #     curl -v http://127.0.0.1:8000/api || true  # Show response for debugging
+
+      # # Wait for the backend API to be healthy
+      # - name: Wait for Backend API Readiness
+      #   run: |
+      #     timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api | grep -q "200"; do sleep 3; done' || { echo "Backend API is not ready"; exit 1; }
+
+      # # Wait for Frontend Readiness (Dashboard)
+      # - name: Wait for Dashboard Readiness
+      #   run: |
+      #     timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -q "200"; do sleep 3; done' || { echo "Dashboard is not ready"; exit 1; }
+
+      # Check for running containers
+      - name: Check Running Containers
+        run: docker ps --filter "status=running"
+
+      # Run ZAP Scan for Backend API
+      - name: ZAP Scan - Backend API
         uses: zaproxy/action-baseline@v0.14.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "http://localhost:3000/"
-          rules_file_name: ".zap/rules-frontend.tsv"
+          target: "http://localhost:8000/api"
           cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Frontend
-          fail_action: false
-          allow_issue_writing: false
-          artifact_name: frontend_zap_scan
-      - name: ZAP Backend Scan
-        uses: zaproxy/action-baseline@v0.14.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "http://0.0.0.0:8000/"
-          rules_file_name: ".zap/rules-backend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Backend
+          issue_title: "OWASP Baseline - Backend API"
           fail_action: false
           allow_issue_writing: false
           artifact_name: backend_zap_scan
 
-  # Retry the workflow due to secondary rate limiting errors causing frequent failures
+      # Run ZAP Scan for Frontend Apps
+      - name: ZAP Scan - Dashboard Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:3000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Dashboard Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: dashboard_zap_scan
+
+      - name: ZAP Scan - Administration Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:4001"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Administration Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: administration_zap_scan
+
+      - name: ZAP Scan - Registration Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:4000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Registration Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: registration_zap_scan
+
+      - name: ZAP Scan - Compliance Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:7000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Compliance Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: compliance_zap_scan
+
+      - name: ZAP Scan - Reporting Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:5000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Reporting Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: reporting_zap_scan
+
+      - name: Tear Down Services
+        run: |
+          echo "Stopping services..."
+          docker-compose -f ./cas-registration/bciers/docker-compose-bciers-apps.yaml down
+
+  # Retry job in case of failure
   retry-on-failure:
     needs: zap-scan
-    if: failure() || needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled()
+    if: failure() || (needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled())
     runs-on: ubuntu-latest
     steps:
-      - env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-          GH_DEBUG: api
+      - name: Retry ZAP Scan
         run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}
