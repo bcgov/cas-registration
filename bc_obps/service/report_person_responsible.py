@@ -7,8 +7,8 @@ from reporting.schema.report_person_responsible import ReportPersonResponsibleIn
 
 class ReportContactService:
     @classmethod
-    def get_report_person_responsible_by_version_id(cls, report_version_id: int) -> ReportPersonResponsible:
-        return ReportPersonResponsible.objects.get(report_version__id=report_version_id)
+    def get_report_person_responsible_by_version_id(cls, report_version_id: int) -> Optional[ReportPersonResponsible]:
+        return ReportPersonResponsible.objects.filter(report_version__id=report_version_id).first()
 
     @classmethod
     def save_report_contact(cls, version_id: int, data: ReportPersonResponsibleIn) -> ReportPersonResponsible:
