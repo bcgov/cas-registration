@@ -3,14 +3,14 @@ from reporting.models import Configuration, ConfigurationElement
 from typing import List, Dict, Any
 from registration.models import Activity
 from uuid import UUID
-from service.facility_report_service import FacilityReportService
+from service.utils.get_report_valid_year_from_version_id import get_report_valid_year_from_version_id
 
 
 class ActivityService:
     @classmethod
     def get_initial_activity_data(cls, version_id: int, facility_id: UUID, activity_id: int) -> str:
         source_type_map: dict[int, str] = {}
-        report_date = FacilityReportService.get_facility_report_by_version_and_id(version_id, facility_id).created_at
+        report_date = get_report_valid_year_from_version_id(version_id)
         config = Configuration.objects.get(valid_from__lte=report_date, valid_to__gte=report_date)
         source_type_data = (
             ConfigurationElement.objects.select_related('source_type')
