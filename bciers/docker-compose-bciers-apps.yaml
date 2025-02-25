@@ -21,7 +21,7 @@ services:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       ALLOWED_HOSTS: localhost,0.0.0.0,127.0.0.1
       ENVIRONMENT: dev
-      CI: true
+      CI: "true"
     depends_on:
       - db # Ensures the database is up before the backend starts
     network_mode: host
@@ -37,7 +37,7 @@ services:
     # Use the dashboard-e2e image which has nextjs rewrite hosts built in
     image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
-      CI: true # This is used to disable secureCookie in the dashboard route.ts file
+      CI: "true" # This is used to disable secureCookie in the dashboard route.ts file
       PORT: 3000
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000
