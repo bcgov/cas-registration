@@ -1,14 +1,10 @@
-from typing import Dict, Literal, Tuple
+from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
 from registration.schema.v2.user_operator import UserOperatorOutV2
 from service.user_operator_service import UserOperatorService
 from common.api.utils import get_current_user_guid
-from registration.schema.v1 import (
-    UserOperatorOperatorIn,
-    RequestAccessOut,
-)
 from registration.schema.generic import Message
 from registration.api.router import router
 from registration.models import UserOperator
@@ -32,26 +28,3 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
         get_current_user_guid(request), user_operator_id
     )  # industry users can only access their own user_operators
     return 200, UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
-
-
-## PUT
-@router.put(
-    "/user-operators/{uuid:user_operator_id}",
-    response={200: RequestAccessOut, custom_codes_4xx: Message},
-    tags=USER_OPERATOR_TAGS,
-    description="""Updates both the operator and the user-operator by their ID.
-    The endpoint ensures that industry users can only update their own user-operators.
-    It checks for the uniqueness of the CRA Business Number.
-    If all permissions and checks are in order, it updates the operator's status to 'Pending' if it is currently 'Draft'.
-    The updated data is saved, and a new user-operator instance is created if one does not already exist.""",
-    auth=authorize("approved_industry_user"),
-)
-def update_operator_and_user_operator(
-    request: HttpRequest, payload: UserOperatorOperatorIn, user_operator_id: UUID
-) -> Tuple[Literal[200], Dict[str, UUID]]:
-    UserOperatorService.check_if_user_eligible_to_access_user_operator(
-        get_current_user_guid(request), user_operator_id
-    )  # industry users can only update their own user_operators
-    return 200, UserOperatorService.update_operator_and_user_operator(
-        user_operator_id, payload, get_current_user_guid(request)
-    )
