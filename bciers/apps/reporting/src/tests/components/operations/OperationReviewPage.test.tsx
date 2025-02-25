@@ -6,7 +6,6 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils//defaultPageFactoryTypes";
 
@@ -90,7 +89,6 @@ describe("OperationReviewPage Component", () => {
       expect(getRegulatedProducts).toHaveBeenCalled();
       expect(getReportingYear).toHaveBeenCalled();
       expect(getReportType).toHaveBeenCalledWith(1);
-      expect(getRegistrationPurpose).toHaveBeenCalledWith(1);
       expect(getFacilityReport).toHaveBeenCalledWith(1);
     });
     await waitFor(() => {
