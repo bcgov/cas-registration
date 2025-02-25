@@ -32,7 +32,6 @@ class OperationTimelineFilterSchema(FilterSchema):
     operation__bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'operation__bcghg_id__id__icontains'})
     operation__name: Optional[str] = Field(None, json_schema_extra={'q': 'operation__name__icontains'})
     operation__type: Optional[str] = Field(None, json_schema_extra={'q': 'operation__type__icontains'})
-    status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
     operation__bc_obps_regulated_operation: Optional[str] = Field(
         None, json_schema_extra={'q': 'operation__bc_obps_regulated_operation__id__icontains'}
     )
