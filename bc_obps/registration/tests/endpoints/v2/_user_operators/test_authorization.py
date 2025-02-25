@@ -17,7 +17,7 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
         user_operator_2.save()
 
         subsequent_user_operator = baker.make(UserOperator, operator=operator)
-        response = TestUtils.mock_put_with_auth_role(
+        response = TestUtils.mock_patch_with_auth_role(
             self,
             'industry_user',
             self.content_type,

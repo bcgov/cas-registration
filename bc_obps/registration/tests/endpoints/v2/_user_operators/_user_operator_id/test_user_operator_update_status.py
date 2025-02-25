@@ -21,7 +21,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         mock_send_operator_access_request_email = mocker.patch(
             "service.user_operator_service_v2.send_operator_access_request_email"
         )
-        response = TestUtils.mock_put_with_auth_role(
+        response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
             self.content_type,
@@ -53,7 +53,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         other_operator = operator_baker({"status": Operator.Statuses.APPROVED, "is_new": False})
         other_user_operator = baker.make(UserOperator, operator=other_operator)
-        response = TestUtils.mock_put_with_auth_role(
+        response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
             self.content_type,
@@ -84,7 +84,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         mock_send_operator_access_request_email = mocker.patch(
             "service.user_operator_service_v2.send_operator_access_request_email"
         )
-        response = TestUtils.mock_put_with_auth_role(
+        response = TestUtils.mock_patch_with_auth_role(
             self,
             "cas_analyst",
             self.content_type,
@@ -122,7 +122,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         mock_send_operator_access_request_email = mocker.patch(
             "service.user_operator_service_v2.send_operator_access_request_email"
         )
-        response_2 = TestUtils.mock_put_with_auth_role(
+        response_2 = TestUtils.mock_patch_with_auth_role(
             self,
             'cas_director',
             self.content_type,
@@ -166,7 +166,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
             "service.user_operator_service_v2.send_operator_access_request_email"
         )
         # Now decline the user_operator and make sure the contacts are deleted
-        response = TestUtils.mock_put_with_auth_role(
+        response = TestUtils.mock_patch_with_auth_role(
             self,
             "cas_analyst",
             self.content_type,

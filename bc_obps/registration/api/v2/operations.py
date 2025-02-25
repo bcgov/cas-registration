@@ -64,7 +64,7 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 ##### POST #####
 @router.post(
     "/operations",
-    response={200: OperationCreateOut, custom_codes_4xx: Message},
+    response={201: OperationCreateOut, custom_codes_4xx: Message},
     tags=["V2"],
     description="""Creates a new operation for the current user and starts the registration process.
     It associates the new operation with the current user's approved user-operator.""",
@@ -72,5 +72,5 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 )
 def register_create_operation_information(
     request: HttpRequest, payload: OperationInformationIn
-) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload)
+) -> Tuple[Literal[201], Operation]:
+    return 201, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload)

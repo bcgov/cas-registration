@@ -164,7 +164,7 @@ class TestOperationRegistration(CommonTestSetup):
             operation_representative_payload,
             custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': self.operation.id}),
         )
-        if response.status_code != 200:
+        if response.status_code != 201:
             raise Exception(response.json())
         self.operation_representative_id = response.json()['id']
         self.operation.refresh_from_db()
