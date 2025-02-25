@@ -11,6 +11,9 @@ class TestReportAdditionalDataService(TestCase):
         self.report_additional_data = make_recipe(
             'reporting.tests.utils.report_additional_data', report_version=self.report_version
         )
+        self.report_operation = make_recipe(
+            'reporting.tests.utils.report_operation', report_version=self.report_version
+        )
 
     def test_get_report_report_additional_data_returns_correct_instance(self):
         """
@@ -70,3 +73,14 @@ class TestReportAdditionalDataService(TestCase):
         self.assertEqual(report_additional_data.emissions_off_site_transfer, data.emissions_off_site_transfer)
         self.assertEqual(report_additional_data.electricity_generated, data.electricity_generated)
         self.assertEqual(report_additional_data.report_version, self.report_version)
+
+    def test_get_registration_purpose_by_version_id_returns_correct_data(self):
+        """
+        Test that the service retrieves the correct registration purpose
+        for a given report version ID.
+        """
+        retrieved_data = ReportAdditionalDataService.get_registration_purpose_by_version_id(
+            version_id=self.report_version.id
+        )
+        self.assertIsNotNone(retrieved_data)
+        self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)

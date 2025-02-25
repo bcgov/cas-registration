@@ -49,6 +49,12 @@ class ReportOperation(TimeStampedModel):
         blank=True,
         null=True,
     )
+    registration_purpose = models.CharField(
+        max_length=1000,
+        db_comment="The Registration purpose of the operation",
+        blank=True,
+        null=True,
+    )
 
     # We don't create a backwards relation since this is a registration model
     activities = models.ManyToManyField(Activity, related_name="+")
