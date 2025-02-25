@@ -23,9 +23,8 @@ services:
       ENVIRONMENT: dev
       CI: "true"
     depends_on:
-      - db # Ensures the database is up before the backend starts
+      - db
     network_mode: host
-    # Healthcheck to ensure the API is ready before reporting healthy
     healthcheck:
       test: curl --fail http://127.0.0.1:8000/api || exit 1
       interval: 10s
@@ -34,10 +33,9 @@ services:
       start_period: 60s
 
   dashboard:
-    # Use the dashboard-e2e image which has nextjs rewrite hosts built in
     image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
-      CI: "true" # This is used to disable secureCookie in the dashboard route.ts file
+      CI: "true"
       PORT: 3000
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000
@@ -48,8 +46,15 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy  # Wait for backend health check
     network_mode: host
+    healthcheck:
+      test: curl --fail http://127.0.0.1:3000 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
 
   administration:
     image: ghcr.io/bcgov/cas-admin-frontend:${GITHUB_SHA}
@@ -64,7 +69,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     network_mode: host
 
   compliance:
@@ -80,7 +86,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     network_mode: host
 
   registration:
@@ -96,7 +103,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     network_mode: host
 
   reporting:
@@ -112,7 +120,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     network_mode: host
 
 volumes:
