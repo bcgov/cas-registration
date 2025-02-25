@@ -9,7 +9,11 @@ from registration.utils import custom_reverse_lazy
 class TestActivityData(CommonTestSetup):
     def test_authorized_users_can_get_activity_data(self):
         operator = baker.make_recipe("registration.tests.utils.operator")
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        valid_year = baker.make_recipe('reporting.tests.utils.reporting_year', reporting_year=2025)
+        facility_report = baker.make_recipe(
+            'reporting.tests.utils.facility_report',
+            report_version__report__reporting_year_id=valid_year.reporting_year,
+        )
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
@@ -21,7 +25,7 @@ class TestActivityData(CommonTestSetup):
             )
             + "?activity_id=1",
         )
-
+        print(response.json())
         assert response.status_code == 200
         response_object = json.loads(response.json())
         assert response_object['activityId'] == 1
