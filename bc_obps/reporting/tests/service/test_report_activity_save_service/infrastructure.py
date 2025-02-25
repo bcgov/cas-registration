@@ -9,7 +9,7 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_unit import ReportUnit
 from model_bakery.baker import make_recipe, make
 from reporting.models.report_version import ReportVersion
-from service.utils.get_report_valid_year_from_version_id import get_report_valid_year_from_version_id
+from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 
 
 def get_report_unit_by_index(
@@ -51,7 +51,7 @@ class TestInfrastructure:
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        valid_date = get_report_valid_year_from_version_id(t.report_version.id)
+        valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = make_recipe("reporting.tests.utils.activity")
         t.activity_json_schema = make_recipe(
@@ -80,7 +80,7 @@ class TestInfrastructure:
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        valid_date = get_report_valid_year_from_version_id(t.report_version.id)
+        valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = Activity.objects.get(slug=activity_slug)
         t.activity_json_schema = ActivityJsonSchema.objects.get(
@@ -101,7 +101,7 @@ class TestInfrastructure:
         t.facility_report.refresh_from_db()
         t.report_version = report_version
         t.user = make_recipe('registration.tests.utils.industry_operator_user')
-        valid_date = get_report_valid_year_from_version_id(t.report_version.id)
+        valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
         t.activity = Activity.objects.get(slug="gsc_non_compression")
         t.activity_json_schema = ActivityJsonSchema.objects.get(

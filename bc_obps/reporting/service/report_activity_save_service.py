@@ -1,6 +1,6 @@
 import uuid
 from django.db import transaction
-from service.utils.get_report_valid_year_from_version_id import get_report_valid_year_from_version_id
+from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import (
@@ -63,7 +63,7 @@ class ReportActivitySaveService:
         # Save raw json data
         self.save_raw_data(data)
         # Get the valid date for the activity configurations
-        valid_date = get_report_valid_year_from_version_id(self.facility_report.report_version.id)
+        valid_date = get_report_valid_date_from_version_id(self.facility_report.report_version.id)
         # Only one ReportActivity record per report_version/faciltiy/activity should ever exist
         report_activity, _ = ReportActivity.objects.update_or_create(
             id=data.get("id"),
@@ -99,7 +99,7 @@ class ReportActivitySaveService:
     ) -> ReportSourceType:
         source_type = SourceType.objects.get(json_key=source_type_slug)
         json_data = exclude_keys(source_type_data, ["units", "fuels", "emissions", "id"])
-        valid_date = get_report_valid_year_from_version_id(self.facility_report.report_version.id)
+        valid_date = get_report_valid_date_from_version_id(self.facility_report.report_version.id)
         json_base_schema = ActivitySourceTypeJsonSchema.objects.get(
             activity=report_activity.activity,
             source_type=source_type,
