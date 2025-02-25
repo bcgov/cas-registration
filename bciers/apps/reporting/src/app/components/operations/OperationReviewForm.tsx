@@ -32,7 +32,6 @@ interface Props {
   };
   allActivities: { id: number; name: string }[];
   allRegulatedProducts: { id: number; name: string }[];
-  registrationPurpose: string;
   facilityReport: {
     facility_id: string;
     operation_type: string;
@@ -51,7 +50,6 @@ export default function OperationReviewForm({
   reportingYear,
   allActivities,
   allRegulatedProducts,
-  registrationPurpose,
   facilityReport,
   allRepresentatives,
 }: Props) {
@@ -127,7 +125,6 @@ export default function OperationReviewForm({
         updateSchema(
           prevSchema,
           updatedFormData,
-          registrationPurpose,
           reportingWindowEnd,
           allActivities,
           allRegulatedProducts,
@@ -144,7 +141,6 @@ export default function OperationReviewForm({
     facilityReport,
     allActivities,
     allRegulatedProducts,
-    registrationPurpose,
     reportingWindowEnd,
     allRepresentatives,
   ]);

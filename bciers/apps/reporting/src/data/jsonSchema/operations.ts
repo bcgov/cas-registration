@@ -180,7 +180,6 @@ export const operationReviewUiSchema = {
 export const updateSchema = (
   prevSchema: RJSFSchema,
   formDataState: any,
-  registrationPurpose: string,
   reportingWindowEnd: string,
   allActivities: any[],
   allRegulatedProducts: any[],
@@ -220,7 +219,7 @@ export const updateSchema = (
       registration_purpose: {
         type: "string",
         title: "Registration Purpose",
-        default: registrationPurpose || "",
+        default: formDataState.registrationPurpose || "",
       },
       date_info: {
         type: "object",
