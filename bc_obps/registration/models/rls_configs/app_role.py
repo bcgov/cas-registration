@@ -10,5 +10,6 @@ class Rls:
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
+        RlsRoles.CAS_PENDING: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.APP_ROLE)
