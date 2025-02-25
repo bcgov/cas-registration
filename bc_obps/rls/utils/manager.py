@@ -14,9 +14,15 @@ class RlsManager:
         role_identifiers = [Identifier(role.value) for role in RlsRoles]
         with connection.cursor() as cursor:
             drop_owned_by_query = SQL('drop owned by {}').format(SQL(', ').join(role_identifiers))
-            grant_usage_query = SQL("grant usage on schema erc to {}").format(SQL(', ').join(role_identifiers))
+
+            grant_erc_usage_query = SQL("grant usage on schema erc to {}").format(SQL(', ').join(role_identifiers))
+            grant_public_usage_query = SQL("grant usage on schema public to {}").format(
+                SQL(', ').join(role_identifiers)
+            )
+
             cursor.execute(drop_owned_by_query)
-            cursor.execute(grant_usage_query)
+            cursor.execute(grant_erc_usage_query)
+            cursor.execute(grant_public_usage_query)
 
             # Grant usage and all privileges on all tables in schema erc_history to public(We don't care about this schema)
             cursor.execute("grant usage on schema erc_history to public")
