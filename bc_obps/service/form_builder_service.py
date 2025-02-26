@@ -1,6 +1,6 @@
 import json
-from service.utils.get_report_valid_year_from_version_id import (
-    get_report_valid_year_from_version_id,
+from service.utils.get_report_valid_date_from_version_id import (
+    get_report_valid_date_from_version_id,
 )
 from reporting.models import (
     Configuration,
@@ -377,7 +377,7 @@ class FormBuilderService:
 
         Description:
             - First, it verifies that the `activity` parameter is valid. If `activity` is None, it raises an exception.
-            - Then, it determines the report date by using `get_report_valid_year_from_version_id()`,
+            - Then, it determines the report date by using `get_report_valid_date_from_version_id()`,
               which extracts the valid reporting year based on the report version.
             - It retrieves a `Configuration` object that matches the report date by checking if the date
               falls between the `valid_from` and `valid_to` fields.
@@ -387,7 +387,7 @@ class FormBuilderService:
         if activity is None:
             raise Exception("Cannot build a schema without Activity data")
 
-        report_date = get_report_valid_year_from_version_id(report_version_id)
+        report_date = get_report_valid_date_from_version_id(report_version_id)
         # Get config objects
         config = Configuration.objects.only("id").get(valid_from__lte=report_date, valid_to__gte=report_date)
         schema = build_schema(config.id, activity, source_types)
