@@ -85,7 +85,7 @@ spec:
       {{- include "cas-logging-sidecar.containers" (dict
           "containerToSidecar" $containerName
           "logName" "cas-bciers-dev-logs"
-       "host" .Values "cas-logging-sidecar" "host") | nindent 8 }}
+          "host" (index .Values "cas-logging-sidecar" "host")  ) | nindent 8 }}
       volumes:
         {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
         - name: gcs-attachment-credentials
