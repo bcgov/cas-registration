@@ -83,4 +83,4 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         else:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(operator_id=user_operator.operator_id)
+            return queryset.filter(operator_id=user_operator.operator_id, end_date__isnull=True)
