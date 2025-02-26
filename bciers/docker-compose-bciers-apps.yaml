@@ -28,9 +28,9 @@ services:
     healthcheck:
       test: curl --fail http://127.0.0.1:8000/api || exit 1
       interval: 10s
-      timeout: 10s
+      timeout: 30s
       retries: 20
-      start_period: 60s
+      start_period: 120s
 
   dashboard:
     image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
@@ -52,9 +52,9 @@ services:
     healthcheck:
       test: curl --fail http://127.0.0.1:3000 || exit 1
       interval: 10s
-      timeout: 10s
+      timeout: 30s
       retries: 20
-      start_period: 60s
+      start_period: 120s
 
   administration:
     image: ghcr.io/bcgov/cas-admin-frontend:${GITHUB_SHA}
@@ -72,6 +72,13 @@ services:
       backend:
         condition: service_healthy
     network_mode: host
+    healthcheck:
+      test: [curl --fail http://127.0.0.1:3000 || exit 1]
+      interval: 10s
+      timeout: 30s
+      retries: 20
+      start_period: 120s
+    
 
   compliance:
     image: ghcr.io/bcgov/cas-compliance-frontend:${GITHUB_SHA}
@@ -89,6 +96,12 @@ services:
       backend:
         condition: service_healthy
     network_mode: host
+    healthcheck:
+      test: [curl --fail http://127.0.0.1:3000 || exit 1]
+      interval: 10s
+      timeout: 30s
+      retries: 20
+      start_period: 120s
 
   registration:
     image: ghcr.io/bcgov/cas-reg-frontend:${GITHUB_SHA}
@@ -106,6 +119,12 @@ services:
       backend:
         condition: service_healthy
     network_mode: host
+    healthcheck:
+      test: [curl --fail http://127.0.0.1:3000 || exit 1]
+      interval: 10s
+      timeout: 30s
+      retries: 20
+      start_period: 120s
 
   reporting:
     image: ghcr.io/bcgov/cas-rep-frontend:${GITHUB_SHA}
@@ -123,6 +142,12 @@ services:
       backend:
         condition: service_healthy
     network_mode: host
+    healthcheck:
+      test: [curl --fail http://127.0.0.1:3000 || exit 1]
+      interval: 10s
+      timeout: 30s
+      retries: 20
+      start_period: 120s
 
 volumes:
   db:
