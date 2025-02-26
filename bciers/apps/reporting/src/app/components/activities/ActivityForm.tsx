@@ -32,6 +32,8 @@ interface Props {
   facilityId: UUID;
   initialJsonSchema: RJSFSchema;
   initialSelectedSourceTypeIds: string[];
+  isLinearOperation: boolean;
+  facilityType: string;
 }
 
 // 🧩 Main component
@@ -44,6 +46,8 @@ export default function ActivityForm({
   facilityId,
   initialJsonSchema,
   initialSelectedSourceTypeIds,
+  isLinearOperation,
+  facilityType,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
@@ -87,7 +91,7 @@ export default function ActivityForm({
       ? `&${sourceTypeIds.map((id) => `source_types[]=${id}`).join("&")}`
       : "";
     const schema = await actionHandler(
-      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}${sourceTypeQueryString}`,
+      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}&facility_type=${facilityType}${sourceTypeQueryString}`,
       "GET",
       "",
     );
