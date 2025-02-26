@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 from reporting.models.report_verification import ReportVerification
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -12,14 +12,14 @@ from reporting.service.report_verification_service import ReportVerificationServ
 
 @router.get(
     "/report-version/{report_version_id}/report-verification",
-    response={200: ReportVerificationOut, custom_codes_4xx: Message},
+    response={200: Optional[ReportVerificationOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the Verification data associated with the given report version ID.""",
     auth=authorize("approved_industry_user"),
 )
 def get_report_verification_by_version_id(
     request: HttpRequest, report_version_id: int
-) -> tuple[Literal[200], ReportVerification]:
+) -> tuple[Literal[200], Optional[ReportVerification]]:
     return 200, ReportVerificationService.get_report_verification_by_version_id(report_version_id)
 
 

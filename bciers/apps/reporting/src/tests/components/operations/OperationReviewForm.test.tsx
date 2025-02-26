@@ -58,7 +58,7 @@ describe("OperationReviewForm Component", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Review operation information"),
+        screen.getByText("Review Operation Information"),
       ).toBeInTheDocument();
     });
 

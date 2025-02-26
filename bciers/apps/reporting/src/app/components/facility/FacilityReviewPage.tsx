@@ -16,7 +16,7 @@ export default async function FacilityReviewPage({
   facility_id,
 }: HasFacilityId) {
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
-  const operationType = await getFacilityReport(version_id);
+  const facilityReport = await getFacilityReport(version_id);
 
   const facilityData = await getFacilityReportDetails(version_id, facility_id);
   const activitiesData = await getAllActivities();
@@ -29,7 +29,7 @@ export default async function FacilityReviewPage({
     orderedActivities,
     ActivePage.ReviewInformation,
     facilityData?.facility_name,
-    operationType?.operation_type,
+    facilityReport?.operation_type,
   );
 
   const formData = {

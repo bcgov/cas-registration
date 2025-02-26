@@ -146,7 +146,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const submit = async (data: any) => {
     const endpoint = `reporting/report-version/${version_id}/review-facilities`;
     const method = "POST";
-    const pathToRevalidate = `reporting/reports/${version_id}/review-facilities-list`;
+    const pathToRevalidate = `reporting/reports/${version_id}/review-facilities`;
     try {
       const response = await actionHandler(endpoint, method, pathToRevalidate, {
         body: JSON.stringify(

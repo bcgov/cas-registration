@@ -48,13 +48,13 @@ export default async function AdditionalReportingDataPage({
   const reportAdditionalData = await getReportAdditionalData(version_id);
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
-  const operationType = await getFacilityReport(version_id);
+  const facilityReport = await getFacilityReport(version_id);
   const isNewEntrant = registrationPurpose === NEW_ENTRANT_REGISTRATION_PURPOSE;
   const taskListElements = getAdditionalInformationTaskList(
     version_id,
     ActivePage.AdditionalReportingData,
     isNewEntrant,
-    operationType?.operation_type,
+    facilityReport?.operation_type,
   );
   return (
     <AdditionalReportingDataForm
@@ -65,7 +65,8 @@ export default async function AdditionalReportingDataPage({
       isNewEntrant={isNewEntrant}
       initialFormData={transformedData}
       taskListElements={taskListElements}
-      operationType={operationType?.operation_type}
+      operationType={facilityReport?.operation_type}
+      facilityId={facilityReport?.facility_id}
     />
   );
 }

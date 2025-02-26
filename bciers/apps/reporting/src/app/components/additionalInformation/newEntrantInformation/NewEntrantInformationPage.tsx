@@ -63,12 +63,12 @@ export default async function NewEntrantInformationPage({
     ),
   };
 
-  const operationType = await getFacilityReport(version_id);
+  const facilityReport = await getFacilityReport(version_id);
   const taskListElements = getAdditionalInformationTaskList(
     version_id,
     ActivePage.NewEntrantInformation,
     true,
-    operationType?.operation_type,
+    facilityReport?.operation_type,
   );
 
   return (

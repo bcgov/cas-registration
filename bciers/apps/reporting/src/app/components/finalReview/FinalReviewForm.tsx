@@ -66,7 +66,7 @@ const FinalReviewForm: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const verificationUrl = `/reports/${version_id}/verification`;
-  const attachmentUrl = `/reports/${version_id}/attachment`;
+  const attachmentUrl = `/reports/${version_id}/attachments`;
   const saveAndContinueUrl = needsVerification
     ? verificationUrl
     : attachmentUrl;

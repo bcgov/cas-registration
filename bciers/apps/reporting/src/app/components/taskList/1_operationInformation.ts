@@ -22,7 +22,7 @@ export const getOperationInformationTaskList: (
           {
             type: "Page",
             title: "Review facilities",
-            link: `/reports/${versionId}/facilities/review-facilities-list`,
+            link: `/reports/${versionId}/facilities/review-facilities`,
             isActive: activeIndex === ActivePage.ReviewFacilities,
           },
         ];
@@ -35,7 +35,7 @@ export const getOperationInformationTaskList: (
       elements: [
         {
           type: "Page",
-          title: "Review Operation information",
+          title: "Review operation information",
           link: `/reports/${versionId}/review-operator-data`,
           isActive: activeIndex === ActivePage.ReviewOperatorInfo,
         },
