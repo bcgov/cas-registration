@@ -82,7 +82,7 @@ class ComplianceService:
                 ComplianceObligation.objects.create(
                     compliance_summary=summary,
                     emissions_amount_tco2e=compliance_data.excess_emissions,
-                    status=ComplianceObligation.ObligationStatus.PENDING,
+                    status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
                     penalty_status=ComplianceObligation.PenaltyStatus.PENDING,
                 )
 
@@ -92,8 +92,8 @@ class ComplianceService:
     def _determine_compliance_status(excess_emissions: Decimal, credited_emissions: Decimal) -> str:
         """Determines the compliance status based on emissions"""
         if excess_emissions > Decimal('0'):
-            return ComplianceSummary.ComplianceStatus.PARTIALLY_MET
+            return ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET
         elif credited_emissions > Decimal('0'):
             return ComplianceSummary.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceSummary.ComplianceStatus.FULLY_MET
+            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET
