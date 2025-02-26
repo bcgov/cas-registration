@@ -36,7 +36,7 @@ jobs:
         run: |
           wget -qO /usr/local/bin/devtunnel https://aka.ms/TunnelsCliDownload/linux-x64 && chmod +x /usr/local/bin/devtunnel
           npm -g i wetty@2.5.0
-          sudo wetty -c bash -b / &
+          sudo wetty -p 5555 -c bash -b / &
           devtunnel user login -g -d
           devtunnel host -p 5555
 
