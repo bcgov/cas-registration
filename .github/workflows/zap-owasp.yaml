@@ -31,6 +31,11 @@ jobs:
           docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
           echo "Waiting for services to be ready..."
 
+      # Check running containers
+      - name: Check Running Containers
+        run: docker ps -a
+
+
       # Debug Backend Readiness
       - name: Debug Backend Readiness
         run: |
