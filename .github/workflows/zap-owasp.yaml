@@ -45,12 +45,12 @@ jobs:
       # Wait for the backend API to be healthy
       - name: Wait for Backend API Readiness
         run: |
-          timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api | grep -q "200"; do sleep 3; done' || { echo "Backend API is not ready"; exit 1; }
+          timeout 180s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api | grep -q "200"; do sleep 5; done' || { echo "Backend API is not ready"; exit 1; }
 
       # Wait for Frontend Readiness (Dashboard)
-      - name: Wait for Dashboard Readiness
+      - name: Wait for Frontend Readiness
         run: |
-          timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -q "200"; do sleep 3; done' || { echo "Dashboard is not ready"; exit 1; }
+          timeout 180s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -q "200"; do sleep 5; done' || { echo "Frontend is not ready"; exit 1; }
 
       # Check for running containers
       - name: Check Running Containers
