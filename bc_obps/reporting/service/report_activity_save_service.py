@@ -1,5 +1,6 @@
 import uuid
 from django.db import transaction
+from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import (
@@ -53,6 +54,7 @@ class ReportActivitySaveService:
         self.facility_report = FacilityReport.objects.select_related("report_version", "report_version__report").get(
             report_version_id=report_version_id, facility_id=facility_id
         )
+        self.valid_date = get_report_valid_date_from_version_id(self.facility_report.report_version.id)
 
     @transaction.atomic()
     def save(self, data: dict) -> ReportActivity:
@@ -72,8 +74,8 @@ class ReportActivitySaveService:
                 "json_data": activity_data,
                 "activity_base_schema": ActivityJsonSchema.objects.get(
                     activity=self.activity,
-                    valid_from__valid_from__lte=self.facility_report.report_version.report.created_at,
-                    valid_to__valid_to__gte=self.facility_report.report_version.report.created_at,
+                    valid_from__valid_from__lte=self.valid_date,
+                    valid_to__valid_to__gte=self.valid_date,
                 ),
             },
             defaults={"json_data": activity_data},
@@ -97,12 +99,11 @@ class ReportActivitySaveService:
     ) -> ReportSourceType:
         source_type = SourceType.objects.get(json_key=source_type_slug)
         json_data = exclude_keys(source_type_data, ["units", "fuels", "emissions", "id"])
-
         json_base_schema = ActivitySourceTypeJsonSchema.objects.get(
             activity=report_activity.activity,
             source_type=source_type,
-            valid_from__valid_from__lte=self.facility_report.report_version.report.created_at,
-            valid_to__valid_to__gte=self.facility_report.report_version.report.created_at,
+            valid_from__valid_from__lte=self.valid_date,
+            valid_to__valid_to__gte=self.valid_date,
         )
 
         if json_base_schema.has_unit and "units" not in source_type_data:
