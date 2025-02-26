@@ -16,4 +16,4 @@ dependencies:
     condition: download-dags.enabled
   - name: cas-logging-sidecar
     repository: https://bcgov.github.io/cas-pipeline/
-    version: 0.2.0
+    version: 0.3.1
