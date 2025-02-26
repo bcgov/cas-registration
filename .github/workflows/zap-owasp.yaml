@@ -32,33 +32,33 @@ jobs:
           docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
           echo "Waiting for services to be ready..."
 
-      - name: ssh into it
-        run: |
-          wget -qO /usr/local/bin/devtunnel https://aka.ms/TunnelsCliDownload/linux-x64 && chmod +x /usr/local/bin/devtunnel
-          npm -g i wetty@2.5.0
-          sudo wetty -p 5555 -c bash -b / &
-          devtunnel user login -g -d
-          devtunnel host -p 5555
+      # - name: ssh into it
+      #   run: |
+      #     wget -qO /usr/local/bin/devtunnel https://aka.ms/TunnelsCliDownload/linux-x64 && chmod +x /usr/local/bin/devtunnel
+      #     npm -g i wetty@2.5.0
+      #     sudo wetty -p 5555 -c bash -b / &
+      #     devtunnel user login -g -d
+      #     devtunnel host -p 5555
 
-      # Check running containers
-      - name: Check Running Containers
-        run: docker ps -a
+      # # Check running containers
+      # - name: Check Running Containers
+      #   run: docker ps -a
 
-      # Debug Backend Readiness
-      - name: Debug Backend Readiness
-        run: |
-          sleep 60  # Give it extra time to start
-          curl -v http://127.0.0.1:8000/api || true  # Show response for debugging
+      # # Debug Backend Readiness
+      # - name: Debug Backend Readiness
+      #   run: |
+      #     sleep 60  # Give it extra time to start
+      #     curl -v http://127.0.0.1:8000/api || true  # Show response for debugging
 
-      # Wait for the backend API to be healthy
-      - name: Wait for Backend API Readiness
-        run: |
-          timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api | grep -q "200"; do sleep 3; done' || { echo "Backend API is not ready"; exit 1; }
+      # # Wait for the backend API to be healthy
+      # - name: Wait for Backend API Readiness
+      #   run: |
+      #     timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api | grep -q "200"; do sleep 3; done' || { echo "Backend API is not ready"; exit 1; }
 
-      # Wait for Frontend Readiness (Dashboard)
-      - name: Wait for Dashboard Readiness
-        run: |
-          timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -q "200"; do sleep 3; done' || { echo "Dashboard is not ready"; exit 1; }
+      # # Wait for Frontend Readiness (Dashboard)
+      # - name: Wait for Dashboard Readiness
+      #   run: |
+      #     timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -q "200"; do sleep 3; done' || { echo "Dashboard is not ready"; exit 1; }
 
       # Check for running containers
       - name: Check Running Containers
