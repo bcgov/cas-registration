@@ -31,7 +31,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 20
-      start_period: 60s
+      start_period: 90s
 
   dashboard:
     # Use the dashboard-e2e image which has nextjs rewrite hosts built in
