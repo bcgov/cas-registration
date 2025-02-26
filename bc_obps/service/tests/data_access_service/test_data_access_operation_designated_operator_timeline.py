@@ -21,6 +21,13 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
     def test_get_operations_for_industry_user():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
+        # simulating a transferred operation - should not be returned
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            end_date="2024-12-25 01:00:00-08",
+            operator=approved_user_operator.operator,
+        )
+
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
