@@ -54,6 +54,7 @@ class ReportActivitySaveService:
         self.facility_report = FacilityReport.objects.select_related("report_version", "report_version__report").get(
             report_version_id=report_version_id, facility_id=facility_id
         )
+        self.valid_date = get_report_valid_date_from_version_id(self.facility_report.report_version.id)
 
     @transaction.atomic()
     def save(self, data: dict) -> ReportActivity:
@@ -62,8 +63,7 @@ class ReportActivitySaveService:
 
         # Save raw json data
         self.save_raw_data(data)
-        # Get the valid date for the activity configurations
-        valid_date = get_report_valid_date_from_version_id(self.facility_report.report_version.id)
+
         # Only one ReportActivity record per report_version/faciltiy/activity should ever exist
         report_activity, _ = ReportActivity.objects.update_or_create(
             id=data.get("id"),
@@ -74,8 +74,8 @@ class ReportActivitySaveService:
                 "json_data": activity_data,
                 "activity_base_schema": ActivityJsonSchema.objects.get(
                     activity=self.activity,
-                    valid_from__valid_from__lte=valid_date,
-                    valid_to__valid_to__gte=valid_date,
+                    valid_from__valid_from__lte=self.valid_date,
+                    valid_to__valid_to__gte=self.valid_date,
                 ),
             },
             defaults={"json_data": activity_data},
@@ -99,12 +99,11 @@ class ReportActivitySaveService:
     ) -> ReportSourceType:
         source_type = SourceType.objects.get(json_key=source_type_slug)
         json_data = exclude_keys(source_type_data, ["units", "fuels", "emissions", "id"])
-        valid_date = get_report_valid_date_from_version_id(self.facility_report.report_version.id)
         json_base_schema = ActivitySourceTypeJsonSchema.objects.get(
             activity=report_activity.activity,
             source_type=source_type,
-            valid_from__valid_from__lte=valid_date,
-            valid_to__valid_to__gte=valid_date,
+            valid_from__valid_from__lte=self.valid_date,
+            valid_to__valid_to__gte=self.valid_date,
         )
 
         if json_base_schema.has_unit and "units" not in source_type_data:
