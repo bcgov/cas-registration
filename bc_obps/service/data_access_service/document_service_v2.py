@@ -7,6 +7,10 @@ from django.core.files.base import ContentFile
 
 class DocumentDataAccessServiceV2:
     @classmethod
+    def get_by_id(cls, document_id)-> Document:
+        Document.objects.get(id=document_id)
+
+    @classmethod
     def get_operation_document_by_type(cls, operation_id: UUID, document_type: str) -> Document | None:
         operation = OperationDataAccessService.get_by_id(operation_id=operation_id)
 

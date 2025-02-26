@@ -91,23 +91,23 @@ class OperationInformationIn(ModelSchema):
     date_of_first_shipment: Optional[str] = Field(None, alias="date_of_first_shipment")
     new_entrant_application: Optional[str] = None
 
-    # @field_validator("boundary_map")
-    # @classmethod
-    # def validate_boundary_map(cls, value: str) -> ContentFile:
-    #     breakpoint()
-    #     return data_url_to_file(value)
+    @field_validator("boundary_map")
+    @classmethod
+    def validate_boundary_map(cls, value: str) -> ContentFile:
+      
+        return int(value)
 
-    # @field_validator("process_flow_diagram")
-    # @classmethod
-    # def validate_process_flow_diagram(cls, value: str) -> ContentFile:
-    #     return data_url_to_file(value)
+    @field_validator("process_flow_diagram")
+    @classmethod
+    def validate_process_flow_diagram(cls, value: str) -> ContentFile:
+        return int(value)
 
-    # @field_validator("new_entrant_application")
-    # @classmethod
-    # def validate_new_entrant_application(cls, value: Optional[str]) -> Optional[ContentFile]:
-    #     if value:
-    #         return data_url_to_file(value)
-    #     return None
+    @field_validator("new_entrant_application")
+    @classmethod
+    def validate_new_entrant_application(cls, value: Optional[str]) -> Optional[ContentFile]:
+        if value:
+            return int(value)
+        return None
 
     class Meta:
         model = Operation

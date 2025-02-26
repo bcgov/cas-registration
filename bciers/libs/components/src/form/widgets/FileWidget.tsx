@@ -50,6 +50,8 @@ const FileWidget = ({
   // brianna initial state will need to be the get file
   // const [file, setFile] = useState<File | undefined>(undefined);
   const [fileName, setFileName] = useState("");
+  console.log("value", value);
+  const [oldFileId, setOldFileId] = useState(value);
 
   const { data: session } = useSession();
   const isCasInternal =
@@ -60,26 +62,6 @@ const FileWidget = ({
 
   const handleClick = () => {
     hiddenFileInput.current.click();
-  };
-
-  const validateAttachments = () => {
-    // if (
-    //   isVerificationStatementMandatory &&
-    //   !(
-    //     "verification_statement" in pendingUploadFiles ||
-    //     "verification_statement" in initialUploadedAttachments
-    //   )
-    // ) {
-    //   setValidationErrors({
-    //     verification_statement: "Must be present",
-    //   });
-    //   return false;
-    // } else {
-    //   setValidationErrors({});
-    //   return true;
-    // }
-    console.log("hit validate");
-    return true;
   };
 
   async function postDocuments(fileData: FormData) {
@@ -103,7 +85,11 @@ const FileWidget = ({
         alert("File size must be less than 20MB");
         return;
       }
-      if (!validateAttachments()) return;
+
+      if (oldFileId) {
+        console.log(`ID ${oldFileId} was deleted`);
+        // delete it
+      }
 
       const formData = new FormData();
 
@@ -118,10 +104,14 @@ const FileWidget = ({
       if (response.error) {
         // setError(response.error);
         setIsUploading(false);
+      } else {
+        console.log("response.id.toString()", response.id.toString());
+        onChange(response.id.toString());
+        // using file.name instead of something from the response because 1) don't want to add useEffect, 2) we don't store filename separrately from file in db and I don't want to retrieve the whole thing
+        setFileName(file.name);
+        setIsUploading(false);
+        setOldFileId(response.id);
       }
-      onChange(file.name);
-      setFileName(file.name);
-      setIsUploading(false);
     }
   };
 

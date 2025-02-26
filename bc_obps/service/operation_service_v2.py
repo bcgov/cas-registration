@@ -250,18 +250,16 @@ class OperationServiceV2:
                 'start_date': datetime.now(ZoneInfo("UTC")),
             },
         )
-
+        breakpoint()
         # create documents
         operation_documents = [
             doc
             for doc in [
                 *(
                     [
-                        DocumentDataAccessServiceV2.create_document(
-                            user_guid,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                            'boundary_map',
-                            operation.id,
+                        # brianna this wasn't pulling it right
+                        DocumentDataAccessServiceV2.get_by_id(
+                            payload.boundary_map, 
                         )
                     ]
                     if payload.boundary_map
@@ -269,28 +267,24 @@ class OperationServiceV2:
                 ),
                 *(
                     [
-                        DocumentDataAccessServiceV2.create_document(
-                            user_guid,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                            'process_flow_diagram',
-                            operation.id,
+                        DocumentDataAccessServiceV2.get_by_id(
+                            payload.process_flow_diagram, 
+                        
                         )
                     ]
                     if payload.process_flow_diagram
                     else []
                 ),
                 *(
-                    DocumentDataAccessServiceV2.create_document(
-                        user_guid,
-                        payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                        'new_entrant_application',
-                        operation.id,
-                    )
+                    DocumentDataAccessServiceV2.get_by_id(
+                            payload.new_entrant_application, 
+                        )
                     if payload.new_entrant_application
                     else []
                 ),
             ]
         ]
+        # brianna check if this sets the operation_id on the document records
         operation.documents.add(*operation_documents)
 
         # handle multiple operators

@@ -18,7 +18,7 @@ class DocumentServiceV2:
 
     @classmethod
     def create_or_replace_operation_document(
-        cls, user_guid: UUID, operation_id: UUID, file_data: ContentFile, document_type: str
+        cls, user_guid: UUID, document_id: UUID, file_data: ContentFile, document_type: str
     ) -> Tuple[Document, bool]:
         """
         This function receives a document and operation id.

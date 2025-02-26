@@ -73,5 +73,4 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 def register_create_operation_information(
     request: HttpRequest, payload: OperationInformationIn
 ) -> Tuple[Literal[201], Operation]:
-    breakpoint()
     return 201, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload)
