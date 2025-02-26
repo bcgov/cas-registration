@@ -23,6 +23,7 @@ spec:
         component: administration-frontend
         layer: frontend
     spec:
+      serviceAccountName: {{ .Release.Name }}-pod-logger
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-administration-frontend
           env:
