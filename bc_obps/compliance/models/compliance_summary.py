@@ -2,7 +2,6 @@ from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
-from simple_history.models import HistoricalRecords
 from .compliance_period import CompliancePeriod
 
 
@@ -54,16 +53,21 @@ class ComplianceSummary(TimeStampedModel):
     tightening_rate = models.DecimalField(
         max_digits=10, decimal_places=4, db_comment="The tightening rate from NAICS regulatory values"
     )
-    compliance_status = models.CharField(
-        max_length=50,
-        choices=ComplianceStatus.choices,
-        db_comment="The compliance status (e.g., OBLIGATION_NOT_MET, OBLIGATION_FULLY_MET, EARNED_CREDITS)",
-    )
 
-    history = HistoricalRecords(
-        table_name='erc_history"."compliance_summary_history',
-        history_user_id_field=models.UUIDField(null=True, blank=True),
-    )
+    @property
+    def compliance_status(self):
+        """
+        Compute compliance status based on excess_emissions and credited_emissions.
+        
+        Returns:
+            str: One of the ComplianceStatus choices
+        """
+        if self.excess_emissions > 0:
+            return self.ComplianceStatus.OBLIGATION_NOT_MET
+        elif self.credited_emissions > 0:
+            return self.ComplianceStatus.EARNED_CREDITS
+        else:
+            return self.ComplianceStatus.OBLIGATION_FULLY_MET
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store compliance summaries for reports"

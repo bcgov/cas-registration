@@ -12,9 +12,9 @@ class ComplianceObligation(TimeStampedModel):
         OBLIGATION_MET = "OBLIGATION_MET", "Obligation Met"
 
     class PenaltyStatus(models.TextChoices):
-        PENDING = "PENDING", "Pending"
+        NONE = "NONE", "None"
+        ACCRUING = "ACCRUING", "Accruing"
         PAID = "PAID", "Paid"
-        OVERDUE = "OVERDUE", "Overdue"
 
     compliance_summary = models.OneToOneField(
         ComplianceSummary,
@@ -32,8 +32,8 @@ class ComplianceObligation(TimeStampedModel):
     penalty_status = models.CharField(
         max_length=50,
         choices=PenaltyStatus.choices,
-        default=PenaltyStatus.PENDING,
-        db_comment="The status of the penalty (e.g., PENDING, PAID, OVERDUE)",
+        default=PenaltyStatus.NONE,
+        db_comment="The status of the penalty (e.g., NONE, ACCRUING, PAID)",
     )
 
     history = HistoricalRecords(
