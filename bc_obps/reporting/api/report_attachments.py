@@ -23,8 +23,8 @@ from .router import router
 def save_report_attachments(
     request: HttpRequest,
     report_version_id: int,
-    file_types: Form[List[str]],
-    files: List[UploadedFile] = File(...),
+    file_types: Form[List[str]], # can put this in a schema like the other form, we probably already have one
+    files: List[UploadedFile] = File(...), # this is django ninja streaming files for us
 ) -> Tuple[Literal[200], List[ReportAttachmentOut]]:
 
     if len(file_types) != len(files):

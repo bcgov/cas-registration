@@ -33,14 +33,14 @@ class OperationRegistrationOut(ModelSchema):
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
         boundary_map = obj.get_boundary_map()
         if boundary_map:
-            return file_to_data_url(boundary_map)
+            return boundary_map.filename
         return None
 
     @staticmethod
     def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
         process_flow_diagram = obj.get_process_flow_diagram()
         if process_flow_diagram:
-            return file_to_data_url(process_flow_diagram)
+            return process_flow_diagram.filename
         return None
 
     @staticmethod
@@ -204,6 +204,7 @@ class OperationOutWithDocuments(OperationOutV2):
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
         boundary_map = obj.get_boundary_map()
+        breakpoint()
         if boundary_map:
             return file_to_data_url(boundary_map)
         return None

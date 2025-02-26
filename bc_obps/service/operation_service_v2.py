@@ -257,7 +257,6 @@ class OperationServiceV2:
             for doc in [
                 *(
                     [
-                        # brianna this wasn't pulling it right
                         DocumentDataAccessServiceV2.get_by_id(
                             payload.boundary_map, 
                         )

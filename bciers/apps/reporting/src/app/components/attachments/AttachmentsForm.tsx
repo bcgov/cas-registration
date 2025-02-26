@@ -76,7 +76,7 @@ const AttachmentsForm: React.FC<Props> = ({
       if (canContinue) router.push(saveAndContinueUrl);
       else return;
     }
-    // brianna
+    // brianna django ninja knows what to do with FormData
     const formData = new FormData();
     setIsSaving(true);
 

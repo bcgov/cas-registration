@@ -49,9 +49,9 @@ const FileWidget = ({
   const [isUploading, setIsUploading] = useState(false);
   // brianna initial state will need to be the get file
   // const [file, setFile] = useState<File | undefined>(undefined);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState(value);
   console.log("value", value);
-  const [oldFileId, setOldFileId] = useState(value);
+  // const [oldFileId, setOldFileId] = useState(value);
 
   const { data: session } = useSession();
   const isCasInternal =
@@ -86,10 +86,10 @@ const FileWidget = ({
         return;
       }
 
-      if (oldFileId) {
-        console.log(`ID ${oldFileId} was deleted`);
-        // delete it
-      }
+      // if (oldFileId) {
+      //   console.log(`ID ${oldFileId} was deleted`);
+      //   // delete it
+      // }
 
       const formData = new FormData();
 
@@ -106,11 +106,12 @@ const FileWidget = ({
         setIsUploading(false);
       } else {
         console.log("response.id.toString()", response.id.toString());
+        // brianna onChange is what sets the value
         onChange(response.id.toString());
         // using file.name instead of something from the response because 1) don't want to add useEffect, 2) we don't store filename separrately from file in db and I don't want to retrieve the whole thing
         setFileName(file.name);
         setIsUploading(false);
-        setOldFileId(response.id);
+        // setOldFileId(response.id);
       }
     }
   };
