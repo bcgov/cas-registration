@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Optional, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -12,16 +12,16 @@ from ..schema.report_person_responsible import ReportPersonResponsibleIn, Report
 
 @router.get(
     "/report-version/{version_id}/person-responsible",
-    response={200: ReportPersonResponsibleOut, custom_codes_4xx: Message},
+    response={200: Optional[ReportPersonResponsibleOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=authorize("approved_industry_user"),
 )
 def get_report_person_responsible_by_version_id(
     request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], ReportPersonResponsibleOut]:
+) -> Tuple[Literal[200], Optional[ReportPersonResponsible]]:
     report_person_responsible = ReportContactService.get_report_person_responsible_by_version_id(version_id)
-    return 200, report_person_responsible  # type: ignore
+    return 200, report_person_responsible
 
 
 @router.post(
