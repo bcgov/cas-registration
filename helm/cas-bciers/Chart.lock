@@ -7,6 +7,6 @@ dependencies:
   version: 1.0.7
 - name: cas-logging-sidecar
   repository: https://bcgov.github.io/cas-pipeline/
-  version: 0.1.0
-digest: sha256:effbd25eb5ec1efd10fff0ba2add52e1f4fb95c4c125b17b4ae18ff7f64641f6
-generated: "2025-02-20T14:03:59.854005-08:00"
+  version: 0.3.1
+digest: sha256:f58ece0261db675cc02ab7d085f4a99c5f9791075011bb6a255ae2503de5c9c2
+generated: "2025-02-26T14:04:30.068096907-07:00"
