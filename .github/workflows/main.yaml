@@ -39,8 +39,8 @@ jobs:
     uses: ./.github/workflows/build-administration.yaml
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
-  build-coam:
-    uses: ./.github/workflows/build-coam.yaml
+  build-compliance:
+    uses: ./.github/workflows/build-compliance.yaml
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
@@ -73,21 +73,22 @@ jobs:
       nx_app_port: 4001
       nx_project: administration
     secrets: inherit
-  test-coam-e2e:
-    needs: [build-backend, build-dashboard-e2e, build-coam, check-nx-affected]
+  test-compliance-e2e:
+    needs:
+      [build-backend, build-dashboard-e2e, build-compliance, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      image_url: "ghcr.io/bcgov/cas-coam-frontend"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'coam') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      image_url: "ghcr.io/bcgov/cas-compliance-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
       nx_app_port: 7000
-      nx_project: coam
+      nx_project: compliance
     secrets: inherit
   test-dashboard-e2e:
     needs:
       [
         build-administration,
         build-backend,
-        build-coam,
+        build-compliance,
         build-dashboard-e2e,
         build-registration,
         build-reporting,
