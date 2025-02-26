@@ -81,7 +81,7 @@ class ComplianceService:
             if compliance_data.excess_emissions > Decimal('0'):
                 ComplianceObligation.objects.create(
                     compliance_summary=summary,
-                    amount=compliance_data.excess_emissions,
+                    emissions_amount_tco2e=compliance_data.excess_emissions,
                     status=ComplianceObligation.ObligationStatus.PENDING,
                     penalty_status=ComplianceObligation.PenaltyStatus.PENDING,
                 )
