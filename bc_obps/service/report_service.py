@@ -110,3 +110,8 @@ class ReportService:
     @staticmethod
     def get_report_type_by_version_id(version_id: int) -> ReportVersion:
         return ReportVersion.objects.get(id=version_id)
+
+    @staticmethod
+    def get_registration_purpose_by_version_id(version_id: int) -> dict:
+        registration_purpose = ReportOperation.objects.get(report_version__id=version_id).registration_purpose
+        return {"registration_purpose": registration_purpose}

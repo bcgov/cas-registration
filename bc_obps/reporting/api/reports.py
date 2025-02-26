@@ -111,3 +111,15 @@ def get_regulated_products_by_version_id(
 def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
     report_type = ReportService.get_report_type_by_version_id(version_id)
     return 200, report_type
+
+
+@router.get(
+    "/report-version/{version_id}/registration_purpose",
+    response={200: dict, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Fetches the registration purpose for the operation associated with the given report version ID.""",
+    auth=authorize("approved_industry_user"),
+)
+def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
+    response_data = ReportService.get_registration_purpose_by_version_id(version_id)
+    return 200, response_data

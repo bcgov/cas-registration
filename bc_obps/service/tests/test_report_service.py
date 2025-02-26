@@ -201,3 +201,16 @@ class TestReportService(TestCase):
             mock_report_operation.operation_bcghgid = data.operation_bcghgid
             mock_report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
             mock_report_operation.operation_report_type = data.operation_report_type
+
+    def test_get_registration_purpose_by_version_id_returns_correct_data(self):
+        """
+        Test that the service retrieves the correct registration purpose
+        for a given report version ID.
+        """
+        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        self.report_operation = make_recipe(
+            'reporting.tests.utils.report_operation', report_version=self.report_version
+        )
+        retrieved_data = ReportService.get_registration_purpose_by_version_id(version_id=self.report_version.id)
+        self.assertIsNotNone(retrieved_data)
+        self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)

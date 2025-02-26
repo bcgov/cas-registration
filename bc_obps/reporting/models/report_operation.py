@@ -50,10 +50,7 @@ class ReportOperation(TimeStampedModel):
         null=True,
     )
     registration_purpose = models.CharField(
-        max_length=1000,
-        db_comment="The Registration purpose of the operation",
-        blank=True,
-        null=True,
+        max_length=1000, db_comment="The Registration purpose of the operation", default='OBPS Regulated Operation'
     )
 
     # We don't create a backwards relation since this is a registration model
