@@ -1,4 +1,4 @@
-from typing import Literal, Tuple, Optional
+from typing import Literal, Optional
 from django.http import HttpRequest
 
 from common.permissions import authorize
@@ -9,18 +9,6 @@ from reporting.service.report_additional_data import ReportAdditionalDataService
 from .router import router
 from ..models import ReportAdditionalData
 from ..schema.report_additional_data import ReportAdditionalDataOut, ReportAdditionalDataIn
-
-
-@router.get(
-    "/report-version/{version_id}/registration_purpose",
-    response={200: dict, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Fetches the registration purpose for the operation associated with the given report version ID.""",
-    auth=authorize("approved_industry_user"),
-)
-def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
-    response_data = ReportAdditionalDataService.get_registration_purpose_by_version_id(version_id)
-    return 200, response_data
 
 
 @router.post(

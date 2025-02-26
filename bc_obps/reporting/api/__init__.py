@@ -10,7 +10,7 @@ from .facility_report import save_facility_report_list
 from .fuel import get_fuel_data
 from .report_person_responsible import get_report_person_responsible_by_version_id
 from .report_person_responsible import save_report_contact
-from .report_additional_data import get_registration_purpose_by_version_id
+from .reports import get_registration_purpose_by_version_id
 from .reports import get_regulated_products_by_version_id
 from .reports import get_report_type_by_version
 from .gas_type import get_gas_type

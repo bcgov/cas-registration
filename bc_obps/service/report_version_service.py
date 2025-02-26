@@ -19,8 +19,6 @@ class ReportVersionService:
         operation = report.operation
         operator = report.operator
 
-        print('operation', operation)
-
         report_operation = ReportOperation.objects.create(
             operator_legal_name=operator.legal_name,
             operator_trade_name=operator.trade_name,
@@ -31,7 +29,7 @@ class ReportVersionService:
                 operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
             ),
             report_version=report_version,
-            registration_purpose=operation.registration_purpose,
+            registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
         )
 
         for contact in operation.contacts.all():

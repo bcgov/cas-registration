@@ -12,30 +12,6 @@ class TestReportAdditionalDataApi(CommonTestSetup):
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
 
-    """Tests for the get_registration_purpose_by_version_id endpoint."""
-
-    @patch(
-        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
-    )
-    def test_get_registration_purpose_by_version_id_returns_expected_data(
-        self, mock_get_registration_purpose: MagicMock
-    ):
-        expected_data = {"registration_purpose": "Annual Emissions Report"}
-        mock_get_registration_purpose.return_value = expected_data
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy(
-                "get_registration_purpose_by_version_id",
-                kwargs={"version_id": self.report_version.id},
-            ),
-        )
-
-        assert response.status_code == 200
-        assert response.json() == expected_data
-        mock_get_registration_purpose.assert_called_once_with(self.report_version.id)
-
     """Tests for the save_report_additional_data endpoint."""
 
     @patch("reporting.service.report_additional_data.ReportAdditionalDataService.save_report_additional_data")
