@@ -28,7 +28,7 @@ jobs:
       - name: Start Services with Docker Compose
         run: |
           echo "Starting services..."
-          docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
+          docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d --wait
           echo "Waiting for services to be ready..."
 
       # Check running containers
