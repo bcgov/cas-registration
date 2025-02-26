@@ -15,7 +15,11 @@ class TestReportActivityEndpoint(CommonTestSetup):
         super().setup_method()
 
         # Create basic test data
-        self.facility_report = make_recipe('reporting.tests.utils.facility_report')
+        valid_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2025)
+        self.facility_report = make_recipe(
+            'reporting.tests.utils.facility_report',
+            report_version__report__reporting_year_id=valid_year.reporting_year,
+        )
         self.activity = make_recipe('reporting.tests.utils.activity')
 
         # Create endpoint
