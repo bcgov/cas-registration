@@ -90,7 +90,7 @@ class TestComplianceService:
 
         mock_create_obligation.assert_called_once_with(
             compliance_summary=mock_summary,
-            amount=Decimal('10.0'),
+            emissions_amount_tco2e=Decimal('10.0'),
             status=ComplianceObligation.ObligationStatus.PENDING,
         )
 
