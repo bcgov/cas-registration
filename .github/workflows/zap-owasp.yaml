@@ -14,6 +14,7 @@ env:
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -31,10 +32,17 @@ jobs:
           docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
           echo "Waiting for services to be ready..."
 
+      - name: ssh into it
+        run: |
+          wget -qO /usr/local/bin/devtunnel https://aka.ms/TunnelsCliDownload/linux-x64 && chmod +x /usr/local/bin/devtunnel
+          npm -g i wetty@2.5.0
+          sudo wetty -c bash -b / &
+          devtunnel user login -g -d
+          devtunnel host -p 3000
+
       # Check running containers
       - name: Check Running Containers
         run: docker ps -a
-
 
       # Debug Backend Readiness
       - name: Debug Backend Readiness
