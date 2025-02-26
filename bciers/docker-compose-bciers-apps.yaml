@@ -23,19 +23,21 @@ services:
       ENVIRONMENT: dev
       CI: "true"
     depends_on:
-      - db
+      - db # Ensures the database is up before the backend starts
     network_mode: host
+    # Healthcheck to ensure the API is ready before reporting healthy
     healthcheck:
       test: curl --fail http://127.0.0.1:8000/api || exit 1
       interval: 10s
-      timeout: 30s
+      timeout: 10s
       retries: 20
-      start_period: 120s
+      start_period: 60s
 
   dashboard:
+    # Use the dashboard-e2e image which has nextjs rewrite hosts built in
     image: ghcr.io/bcgov/cas-dash-e2e-frontend:${GITHUB_SHA}
     environment:
-      CI: "true"
+      CI: "true" # This is used to disable secureCookie in the dashboard route.ts file
       PORT: 3000
       HOSTNAME: localhost
       NEXTAUTH_URL_INTERNAL: http://localhost:3000
@@ -46,15 +48,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      backend:
-        condition: service_healthy  # Wait for backend health check
+      - backend
     network_mode: host
-    healthcheck:
-      test: curl --fail http://127.0.0.1:3000 || exit 1
-      interval: 10s
-      timeout: 30s
-      retries: 20
-      start_period: 120s
 
   administration:
     image: ghcr.io/bcgov/cas-admin-frontend:${GITHUB_SHA}
@@ -69,16 +64,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     network_mode: host
-    healthcheck:
-      test: [curl --fail http://127.0.0.1:3000 || exit 1]
-      interval: 10s
-      timeout: 30s
-      retries: 20
-      start_period: 120s
-    
 
   compliance:
     image: ghcr.io/bcgov/cas-compliance-frontend:${GITHUB_SHA}
@@ -93,15 +80,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     network_mode: host
-    healthcheck:
-      test: [curl --fail http://127.0.0.1:3000 || exit 1]
-      interval: 10s
-      timeout: 30s
-      retries: 20
-      start_period: 120s
 
   registration:
     image: ghcr.io/bcgov/cas-reg-frontend:${GITHUB_SHA}
@@ -116,15 +96,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     network_mode: host
-    healthcheck:
-      test: [curl --fail http://127.0.0.1:3000 || exit 1]
-      interval: 10s
-      timeout: 30s
-      retries: 20
-      start_period: 120s
 
   reporting:
     image: ghcr.io/bcgov/cas-rep-frontend:${GITHUB_SHA}
@@ -139,15 +112,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     network_mode: host
-    healthcheck:
-      test: [curl --fail http://127.0.0.1:3000 || exit 1]
-      interval: 10s
-      timeout: 30s
-      retries: 20
-      start_period: 120s
 
 volumes:
   db:
