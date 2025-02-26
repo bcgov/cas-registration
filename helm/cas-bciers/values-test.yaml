@@ -75,7 +75,7 @@ reportingFrontend:
       memory: 128Mi
 
 complianceFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
