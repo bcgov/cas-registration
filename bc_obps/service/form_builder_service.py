@@ -35,6 +35,7 @@ def handle_methodologies(
     config_element_for_methodologies: List[ConfigurationElement],
     gas_type_one_of: Dict,
     index: int,
+    facility_type: str,
 ) -> None:
     methodology_enum: List[str] = []
     methodology_map: Dict[int, str] = {}
@@ -91,6 +92,11 @@ def handle_methodologies(
 
         methodology_one_of["methodology"]["oneOf"].append(methodology_object)
 
+    # Check if facility is LFO medium or large aggregate for "not applicable" options
+    if facility_type == 'Small Aggregate' or facility_type == "Medium Facility":
+        methodology_enum.append("Not Applicable")
+        methodology_one_of["methodology"]["oneOf"].append({'properties': {'methodology': {'enum': ['Not Applicable']}}})
+
     # Update gas_type_one_of with computed values
     gas_type_one_of["gasType"]["oneOf"][index]["properties"]["methodology"]["properties"]["methodology"][
         "enum"
@@ -106,10 +112,10 @@ def handle_gas_types(
     activity_id: int,
     source_type_id: int,
     config_id: int,
+    facility_type: str,
 ) -> None:
     # Convert QuerySet to a list for efficient iteration without extra database hits
     config_elements_list = list(config_element_for_gas_types)
-
     # Use a dictionary to keep track of gas type's chemical_formula and cas_number
     gas_type_map: Dict[int, Dict[str, str]] = {
         ce.gas_type_id: {
@@ -206,6 +212,7 @@ def handle_gas_types(
             config_element_for_methodologies,
             gas_type_one_of,
             index,
+            facility_type,
         )
 
 
@@ -253,6 +260,7 @@ def build_source_type_schema(
     config_id: int,
     activity_id: int,
     source_type_id: int,
+    facility_type: str,
 ) -> Dict:
 
     form_builder_cache = caches["form_builder"]
@@ -296,6 +304,7 @@ def build_source_type_schema(
         activity_id,
         source_type_id,
         config_id,
+        facility_type,
     )
 
     json_schema = handle_source_type_schema(source_type_schema, gas_type_enum, gas_type_one_of)
@@ -312,14 +321,13 @@ def build_source_type_schema(
 # report_date is mandatory & determines the valid schemas & WCI configuration for the point in time that the report was created
 
 
-def build_schema(config_id: int, activity: int, source_types: List[str] | List[int]) -> str:
+def build_schema(config_id: int, activity: int, source_types: List[str] | List[int], facility_type: str) -> str:
     # Get activity schema
     activity_schema = ActivityJsonSchema.objects.only("json_schema").get(
         activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
     )
 
     rjsf_schema: Dict = activity_schema.json_schema
-
     # Fetch valid config elements for the activity
     valid_config_elements = (
         ConfigurationElement.objects.select_related("source_type")
@@ -342,7 +350,7 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
             }
             rjsf_schema["properties"]["sourceTypes"]["properties"][
                 first_valid_config_elements.source_type.json_key
-            ] = build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id)
+            ] = build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id, facility_type)
 
     # If there are multiple config elements for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
@@ -368,14 +376,16 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
             valid_config_element = valid_config_elements.get(source_type__id=source_type)
             rjsf_schema["properties"]["sourceTypes"]["properties"][
                 valid_config_element.source_type.json_key
-            ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id)
+            ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id, facility_type)
 
     return json.dumps({"schema": rjsf_schema})
 
 
 class FormBuilderService:
     @classmethod
-    def build_form_schema(cls, activity: int, report_version_id: int, source_types: List[str] | List[int]) -> str:
+    def build_form_schema(
+        cls, activity: int, report_version_id: int, source_types: List[str] | List[int], facility_type: str
+    ) -> str:
         """
         Generates a form schema based on the provided activity, report version, and source types.
 
@@ -384,6 +394,7 @@ class FormBuilderService:
             report_version_id (int): The ID of the report version to determine the valid reporting period.
             source_types (List[str] | List[int]): A list of source types, which can be either strings or integers,
                                                   that are used to customize the form schema.
+            facility_type (str): The type of facility for LFO specific methodologies
 
         Returns:
             str: A string representation of the generated form schema.
@@ -403,5 +414,5 @@ class FormBuilderService:
         report_date = get_report_valid_date_from_version_id(report_version_id)
         # Get config objects
         config = Configuration.objects.only("id").get(valid_from__lte=report_date, valid_to__gte=report_date)
-        schema = build_schema(config.id, activity, source_types)
+        schema = build_schema(config.id, activity, source_types, facility_type)
         return schema

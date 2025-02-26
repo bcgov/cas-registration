@@ -15,8 +15,8 @@ from registration.schema import Message
     auth=authorize("approved_authorized_roles"),
 )
 def build_form_schema(
-    request: HttpRequest,
-    activity: int,
-    report_version_id: int,
+    request: HttpRequest, activity: int, report_version_id: int, facility_type: str
 ) -> Tuple[int, str]:
-    return 200, FormBuilderService.build_form_schema(activity, report_version_id, request.GET.getlist('source_types[]'))
+    return 200, FormBuilderService.build_form_schema(
+        activity, report_version_id, request.GET.getlist('source_types[]'), facility_type
+    )
