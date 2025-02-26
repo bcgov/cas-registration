@@ -40,17 +40,7 @@ def get_compliance_summaries_list(request: HttpRequest) -> QuerySet[ComplianceSu
 def get_compliance_summary(request: HttpRequest, summary_id: int) -> Tuple[Literal[200], ComplianceSummary]:
     """Get a compliance summary by ID"""
     user_guid = get_current_user_guid(request)
-    user = UserDataAccessService.get_by_guid(user_guid)
-
-    # Get all operations the user has access to
-    operations = OperationDataAccessService.get_all_operations_for_user(user).filter(
-        status=Operation.Statuses.REGISTERED
-    )
-
-    # Get the compliance summary if it belongs to one of the user's operations
-    summary = get_object_or_404(
-        ComplianceSummary.objects.select_related(
-            'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
-        ).filter(id=summary_id, report__operation__in=operations)
-    )
+    summary = ComplianceDashboardService.get_compliance_summary_by_id(user_guid, summary_id)
+    if not summary:
+        return get_object_or_404(ComplianceSummary, id=summary_id)
     return 200, summary
