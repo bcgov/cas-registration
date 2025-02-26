@@ -57,7 +57,7 @@ class ComplianceSummary(TimeStampedModel):
     compliance_status = models.CharField(
         max_length=50,
         choices=ComplianceStatus.choices,
-        db_comment="The compliance status (e.g., PARTIALLY_MET, FULLY_MET, EARNED_CREDITS)",
+        db_comment="The compliance status (e.g., OBLIGATION_NOT_MET, OBLIGATION_FULLY_MET, EARNED_CREDITS)",
     )
 
     history = HistoricalRecords(
