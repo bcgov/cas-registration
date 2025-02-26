@@ -31,6 +31,12 @@ jobs:
           docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
           echo "Waiting for services to be ready..."
 
+      # Debug Backend Readiness
+      - name: Debug Backend Readiness
+        run: |
+          sleep 60  # Give it extra time to start
+          curl -v http://127.0.0.1:8000/api || true  # Show response for debugging
+
       # Wait for the backend API to be healthy
       - name: Wait for Backend API Readiness
         run: |
@@ -41,7 +47,7 @@ jobs:
         run: |
           timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -q "200"; do sleep 3; done' || { echo "Dashboard is not ready"; exit 1; }
 
-      #Check for running containers
+      # Check for running containers
       - name: Check Running Containers
         run: docker ps --filter "status=running"
 
