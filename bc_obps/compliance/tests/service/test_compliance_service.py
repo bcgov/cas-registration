@@ -75,7 +75,7 @@ class TestComplianceService:
             credited_emissions=Decimal('0.0'),
             reduction_factor=Decimal('0.95'),
             tightening_rate=Decimal('0.01'),
-            compliance_status=ComplianceSummary.ComplianceStatus.PARTIALLY_MET,
+            compliance_status=ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET,
         )
 
         mock_create_product.assert_called_once_with(
@@ -91,20 +91,20 @@ class TestComplianceService:
         mock_create_obligation.assert_called_once_with(
             compliance_summary=mock_summary,
             emissions_amount_tco2e=Decimal('10.0'),
-            status=ComplianceObligation.ObligationStatus.PENDING,
+            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
         )
 
         assert result == mock_summary
 
     def test_determine_compliance_status(self):
-        # Test PARTIALLY_MET
+        # Test OBLIGATION_NOT_MET
         status = ComplianceService._determine_compliance_status(Decimal('10.0'), Decimal('0.0'))
-        assert status == ComplianceSummary.ComplianceStatus.PARTIALLY_MET
+        assert status == ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET
 
         # Test EARNED_CREDITS
         status = ComplianceService._determine_compliance_status(Decimal('0.0'), Decimal('10.0'))
         assert status == ComplianceSummary.ComplianceStatus.EARNED_CREDITS
 
-        # Test FULLY_MET
+        # Test OBLIGATION_FULLY_MET
         status = ComplianceService._determine_compliance_status(Decimal('0.0'), Decimal('0.0'))
-        assert status == ComplianceSummary.ComplianceStatus.FULLY_MET
+        assert status == ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET

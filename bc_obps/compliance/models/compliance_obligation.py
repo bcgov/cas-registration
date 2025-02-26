@@ -8,9 +8,8 @@ class ComplianceObligation(TimeStampedModel):
     """Model to store compliance obligations"""
 
     class ObligationStatus(models.TextChoices):
-        PENDING = "PENDING", "Pending"
-        FULFILLED = "FULFILLED", "Fulfilled"
-        PARTIALLY_FULFILLED = "PARTIALLY_FULFILLED", "Partially Fulfilled"
+        OBLIGATION_NOT_MET = "OBLIGATION_NOT_MET", "Obligation Not Met"
+        OBLIGATION_MET = "OBLIGATION_MET", "Obligation Met"
 
     class PenaltyStatus(models.TextChoices):
         PENDING = "PENDING", "Pending"
@@ -27,8 +26,8 @@ class ComplianceObligation(TimeStampedModel):
     status = models.CharField(
         max_length=50,
         choices=ObligationStatus.choices,
-        default=ObligationStatus.PENDING,
-        db_comment="The status of the obligation (e.g., PENDING, FULFILLED, PARTIALLY_FULFILLED)",
+        default=ObligationStatus.OBLIGATION_NOT_MET,
+        db_comment="The status of the obligation (e.g., OBLIGATION_NOT_MET, OBLIGATION_MET)",
     )
     penalty_status = models.CharField(
         max_length=50,

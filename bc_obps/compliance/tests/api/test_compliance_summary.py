@@ -55,7 +55,7 @@ class TestComplianceSummaryEndpoint:
             credited_emissions=Decimal('0.0'),
             reduction_factor=Decimal('0.95'),
             tightening_rate=Decimal('0.01'),
-            compliance_status=ComplianceSummary.ComplianceStatus.PARTIALLY_MET,
+            compliance_status=ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET,
         )
 
     @pytest.fixture
@@ -76,7 +76,7 @@ class TestComplianceSummaryEndpoint:
             'compliance.ComplianceObligation',
             compliance_summary=mock_compliance_summary,
             emissions_amount_tco2e=Decimal('10.0'),
-            status=ComplianceObligation.ObligationStatus.PENDING,
+            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
         )
 
     def test_get_compliance_summaries(
