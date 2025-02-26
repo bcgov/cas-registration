@@ -1,3 +1,4 @@
+from typing import Optional
 from decimal import Decimal
 from django.db import transaction
 from reporting.models.report_verification import ReportVerification
@@ -14,7 +15,7 @@ class ReportVerificationService:
     @staticmethod
     def get_report_verification_by_version_id(
         report_version_id: int,
-    ) -> ReportVerification:
+    ) -> Optional[ReportVerification]:
         """
         Retrieve a ReportVerification instance for a given report version ID.
 
@@ -24,8 +25,7 @@ class ReportVerificationService:
         Returns:
             ReportVerification instance
         """
-        report_verification = ReportVerification.objects.get(report_version__id=report_version_id)
-        return report_verification
+        return ReportVerification.objects.filter(report_version__id=report_version_id).first()
 
     @staticmethod
     @transaction.atomic

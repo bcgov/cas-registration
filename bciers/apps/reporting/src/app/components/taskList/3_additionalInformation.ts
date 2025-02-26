@@ -35,7 +35,7 @@ export const getAdditionalInformationTaskList: (
     type: "Page",
     title: "Operation emission summary",
     isActive: activeIndex === ActivePage.OperationEmissionSummary,
-    link: `/reports/${versionId}/emission-summary`,
+    link: `/reports/${versionId}/operation-emission-summary`,
   };
 
   const taskList: TaskListElement[] = [additionalReportingDataItem];

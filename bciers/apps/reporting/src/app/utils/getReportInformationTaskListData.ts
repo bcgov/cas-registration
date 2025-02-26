@@ -5,7 +5,7 @@ export const getReportInformationTasklist = async (
   reportVersionId: number,
   facilityId: string,
 ) => {
-  const operationType = await getFacilityReport(reportVersionId);
+  const facilityReport = await getFacilityReport(reportVersionId);
 
   const facilityData = await getFacilityReportDetails(
     reportVersionId,
@@ -14,6 +14,6 @@ export const getReportInformationTasklist = async (
 
   return {
     facilityName: facilityData?.facility_name,
-    operationType: operationType?.operation_type,
+    operationType: facilityReport?.operation_type,
   };
 };

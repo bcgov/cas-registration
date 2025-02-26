@@ -9,9 +9,36 @@ import { getToken } from "@bciers/actions";
 import { IDP } from "@bciers/utils/src/enums";
 import { fetchApi } from "@bciers/actions/api/fetchApi";
 
+// Paths for LFO operations
+export const reportPaths = [
+  "review-facilities",
+  "report-information",
+  "review-facility-information",
+  "end-of-facility-report",
+  "operation-emission-summary",
+];
+
 /**
- * 📏 Handles routing for industry users based:
+ * Extracts the report version ID from a given pathname.
+ * Assumes the URL follows the pattern: `/reporting/reports/{versionId}/...`
+ */
+const extractVersionId = (pathname: string): number | null => {
+  const parts = pathname.split("/").filter(Boolean);
+  const reportsIndex = parts.indexOf("reports");
+
+  if (reportsIndex !== -1 && parts.length > reportsIndex + 1) {
+    const versionId = Number(parts[reportsIndex + 1]);
+    return Number.isNaN(versionId) ? null : versionId;
+  }
+
+  return null;
+};
+
+/**
+ * 📏 Handles routing access for industry users based:
  * if the userOperator's operator has a registered operation
+ * if the operation is SFO routing to LFO path
+ * if the operation need verification
  *
  * @param request - The incoming request object.
  * @param token - The user's authentication token.
@@ -31,9 +58,55 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
       // 🛸 Redirect to BCIERS dashboard
       return NextResponse.redirect(new URL(`/onboarding`, request.url));
     }
+    const { pathname } = request.nextUrl;
+    const versionId = extractVersionId(pathname);
+
+    // 📏 Rule: allow requests to "verification" only if report needs verification
+    if (
+      versionId &&
+      pathname.match(/^(\/reporting)?\/reports\/\d+\/verification$/)
+    ) {
+      const needVerification = await fetchApi(
+        `reporting/report-version/${versionId}/report-needs-verification`,
+        {
+          user_guid: token.user_guid,
+        },
+      );
+      if (!needVerification) {
+        // 🛸 Redirect to final review
+        return NextResponse.redirect(
+          new URL(`/reporting/reports/${versionId}/final-review`, request.url),
+        );
+      }
+    }
+
+    // 📏 Rule: only LFO can route to LFO operation type paths
+    if (reportPaths.some((path) => pathname.includes(path))) {
+      if (versionId) {
+        const reportOperation = await fetchApi(
+          `reporting/report-version/${versionId}/report-operation`,
+          {
+            user_guid: token.user_guid,
+          },
+        );
+        if (
+          reportOperation &&
+          reportOperation.report_operation.operation_type ===
+            "Single Facility Operation"
+        ) {
+          // 🛸 Redirect to review operator
+          return NextResponse.redirect(
+            new URL(
+              `/reporting/reports/${versionId}/review-operator-data`,
+              request.url,
+            ),
+          );
+        }
+      }
+    }
   } catch (error) {
     // 🛸 Redirect to BCIERS dashboard
-    return NextResponse.redirect(new URL(`/onboarding`, request.url));
+    return NextResponse.redirect(new URL(`/onboarding/error`, request.url));
   }
 
   // 🛸 No redirect required, proceed to the next middleware

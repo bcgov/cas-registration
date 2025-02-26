@@ -3,7 +3,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 export const getComplianceSummaryTaskList: () => TaskListElement[] = () => [
   {
     type: "Page",
-    title: "Compliance Summary",
+    title: "Compliance summary",
     isActive: true,
   },
 ];
