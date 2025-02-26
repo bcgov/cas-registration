@@ -38,7 +38,7 @@ jobs:
           npm -g i wetty@2.5.0
           sudo wetty -c bash -b / &
           devtunnel user login -g -d
-          devtunnel host -p 3000
+          devtunnel host -p 5555
 
       # Check running containers
       - name: Check Running Containers
