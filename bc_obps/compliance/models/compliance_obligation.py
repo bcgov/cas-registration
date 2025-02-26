@@ -23,7 +23,7 @@ class ComplianceObligation(TimeStampedModel):
         related_name="obligation",
         db_comment="The compliance summary this obligation belongs to",
     )
-    amount = models.DecimalField(max_digits=20, decimal_places=4, db_comment="The amount of the obligation")
+    emissions_amount_tco2e = models.DecimalField(max_digits=20, decimal_places=4, db_comment="The amount of excess emissions in tCO2e")
     status = models.CharField(
         max_length=50,
         choices=ObligationStatus.choices,

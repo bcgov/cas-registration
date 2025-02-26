@@ -6,7 +6,7 @@
       "created_at": "2024-01-01T00:00:00Z",
       "updated_at": "2024-01-01T00:00:00Z",
       "compliance_summary": 1,
-      "amount": "500.0000",
+      "emissions_amount_tco2e": "500.0000",
       "status": "PARTIALLY_FULFILLED"
     }
   },
@@ -17,7 +17,7 @@
       "created_at": "2024-01-01T00:00:00Z",
       "updated_at": "2024-01-01T00:00:00Z",
       "compliance_summary": 2,
-      "amount": "0.0000",
+      "emissions_amount_tco2e": "0.0000",
       "status": "FULFILLED"
     }
   }

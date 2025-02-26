@@ -75,7 +75,7 @@ class TestComplianceSummaryEndpoint:
         return baker.make(
             'compliance.ComplianceObligation',
             compliance_summary=mock_compliance_summary,
-            amount=Decimal('10.0'),
+            emissions_amount_tco2e=Decimal('10.0'),
             status=ComplianceObligation.ObligationStatus.PENDING,
         )
 
@@ -173,7 +173,7 @@ class TestComplianceSummaryEndpoint:
 
         assert summary['obligation'] is not None
         obligation = summary['obligation']
-        assert Decimal(obligation['amount']) == mock_compliance_obligation.amount
+        assert Decimal(obligation['emissions_amount_tco2e']) == mock_compliance_obligation.emissions_amount_tco2e
         assert obligation['status'] == mock_compliance_obligation.status
 
     def test_get_compliance_summary_by_id_not_found(self, mock_user, mock_user_operator):

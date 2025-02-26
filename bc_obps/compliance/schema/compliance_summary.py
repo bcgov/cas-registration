@@ -17,7 +17,7 @@ class ComplianceProductOut(Schema):
 class ComplianceObligationOut(Schema):
     """Schema for compliance obligation output"""
 
-    amount: Decimal
+    emissions_amount_tco2e: Decimal
     status: str
 
 
