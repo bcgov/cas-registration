@@ -14,15 +14,6 @@ class ReportAdditionalDataService:
         return ReportAdditionalData.objects.filter(report_version__id=report_version_id).first()
 
     @staticmethod
-    def get_registration_purpose_by_version_id(version_id: int) -> dict:
-        registration_purpose = (
-            ReportVersion.objects.select_related('report', 'report__operation')
-            .get(id=version_id)
-            .report.operation.registration_purpose
-        )
-        return {"registration_purpose": registration_purpose}
-
-    @staticmethod
     def save_report_additional_data(version_id: int, data: ReportAdditionalDataIn) -> ReportAdditionalData:
         report_version = ReportVersion.objects.get(pk=version_id)
         report_additional_data, created = ReportAdditionalData.objects.update_or_create(
