@@ -127,13 +127,20 @@ const OperationInformationForm = ({
     const isCreating = !data.formData?.section1?.operation;
     const postEndpoint = `registration/operations`;
     const putEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
-    const body = JSON.stringify(
-      createUnnestedFormData(data.formData, [
-        "section1",
-        "section2",
-        "section3",
-      ]),
-    );
+    const body = createUnnestedFormData(data.formData, [
+      "section1",
+      "section2",
+      "section3",
+    ]);
+    console.log("body", body);
+    const trueFormData = new FormData();
+    for (const key in body) {
+      trueFormData.append(key, body[key]);
+    }
+    for (const [key, value] of trueFormData.entries()) {
+      console.log(`Key: ${key}, Value: ${value}`);
+    }
+
     const response = await actionHandler(
       isCreating ? postEndpoint : putEndpoint,
       isCreating ? "POST" : "PUT",

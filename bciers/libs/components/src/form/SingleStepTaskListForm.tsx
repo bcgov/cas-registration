@@ -19,6 +19,7 @@ interface SingleStepTaskListFormProps {
   formData: { [key: string]: any };
   onCancel: () => void;
   onChange?: (e: IChangeEvent) => void;
+
   onSubmit: (e: IChangeEvent) => any;
   schema: RJSFSchema;
   uiSchema: UiSchema;
@@ -48,6 +49,7 @@ const SingleStepTaskListForm = ({
   showTasklist = true,
   showCancelButton = true,
   customButtonSection,
+  customValidate = undefined,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -118,6 +120,7 @@ const SingleStepTaskListForm = ({
           onChange={handleFormChange}
           // onError={handleError}
           onSubmit={submitHandler}
+          customValidate={customValidate}
           omitExtraData={true}
         >
           {inlineMessage && <div className="mt-10 mb-5">{inlineMessage}</div>}
