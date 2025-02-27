@@ -1,8 +1,23 @@
 [
-  { "date": "March 5,\n2024", "event": "BCIERS opens" },
+  {
+    "date": "Late March 2025",
+    "event": "Registration opens\n• Update Operator information\n• Register operation(s) and facility(s)"
+  },
+  {
+    "date": "Mid April 2025",
+    "event": "Reporting period opens\n• Fill out annual report(s) (emission and compliance reports)"
+  },
+  {
+    "date": "May 31, 2025",
+    "event": "Annual Reports are due\n• Final due date to submit annual report(s) for the 2024 year."
+  },
+  {
+    "date": "Fall 2025",
+    "event": "• Compliance module opens \n• Request Earned Credits \n• Meet compliance obligation"
+  },
 
   {
-    "date": "April 1,\n2024",
-    "event": "BORO IDs issued and can be used to exempt fuel purchases"
+    "date": "November 30, \n2025",
+    "event": "Compliance obligations are due "
   }
 ]
