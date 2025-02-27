@@ -39,6 +39,10 @@ jobs:
           allow_issue_writing: false
           artifact_name: backend_zap_scan
 
+      - name: print
+        run: |
+          cat /zap/wrk/report_json.json
+
       # Run ZAP Scan for Frontend Apps
       - name: ZAP Scan - Dashboard Frontend
         uses: zaproxy/action-baseline@v0.14.0
@@ -99,11 +103,6 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           artifact_name: reporting_zap_scan
-
-      - name: Tear Down Services
-        run: |
-          echo "Stopping services..."
-          docker compose -f ./cas-registration/bciers/docker-compose-bciers-apps.yaml down
 
   # Retry job in case of failure
   retry-on-failure:
