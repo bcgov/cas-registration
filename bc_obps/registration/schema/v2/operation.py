@@ -15,6 +15,7 @@ from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
 from registration.models import Operator, User
 from ninja.types import DictStrAny
+import os
 
 #### Operation schemas
 
@@ -135,7 +136,6 @@ class OperationOutV2(ModelSchema):
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     operator: Optional[OperatorForOperationOut] = None
-    # boundary_map: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
@@ -183,22 +183,17 @@ class OperationOutV2(ModelSchema):
 
 
 class OperationOutWithDocuments(OperationOutV2):
-    boundary_map: UploadedFile = File(...),
-    process_flow_diagram: UploadedFile = File(...),
+    boundary_map: str
+    process_flow_diagram: str
 
-    # @staticmethod
-    # def resolve_boundary_map(obj: Operation) -> Optional[str]:
-    #     boundary_map = obj.get_boundary_map()
-    #     if boundary_map:
-    #         return file_to_data_url(boundary_map)
-    #     return None
+    @staticmethod
+    def resolve_boundary_map(obj: Operation) -> Optional[str]:
+        return os.path.basename(obj.get_boundary_map().file.name)
+       
 
-    # @staticmethod
-    # def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
-    #     process_flow_diagram = obj.get_process_flow_diagram()
-    #     if process_flow_diagram:
-    #         return file_to_data_url(process_flow_diagram)
-    #     return None
+    @staticmethod
+    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
+        return os.path.basename(obj.get_process_flow_diagram().file.name)
 
     # @staticmethod
     # def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
