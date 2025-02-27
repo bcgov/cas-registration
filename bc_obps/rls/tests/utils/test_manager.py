@@ -5,6 +5,24 @@ from rls.utils.manager import RlsManager
 
 
 class TestRlsManager(TestCase):
+    @classmethod
+    def _get_composed_role_identifiers(cls):
+        return Composed(
+            [
+                Identifier('industry_user'),
+                SQL(', '),
+                Identifier('cas_director'),
+                SQL(', '),
+                Identifier('cas_admin'),
+                SQL(', '),
+                Identifier('cas_analyst'),
+                SQL(', '),
+                Identifier('cas_pending'),
+                SQL(', '),
+                Identifier('cas_view_only'),
+            ]
+        )
+
     @patch('django.db.connection.cursor')
     def test_revoke_all_privileges(self, mock_cursor):
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
@@ -18,21 +36,7 @@ class TestRlsManager(TestCase):
             Composed(
                 [
                     SQL('drop owned by '),
-                    Composed(
-                        [
-                            Identifier('industry_user'),
-                            SQL(', '),
-                            Identifier('cas_director'),
-                            SQL(', '),
-                            Identifier('cas_admin'),
-                            SQL(', '),
-                            Identifier('cas_analyst'),
-                            SQL(', '),
-                            Identifier('cas_pending'),
-                            SQL(', '),
-                            Identifier('cas_view_only'),
-                        ]
-                    ),
+                    self._get_composed_role_identifiers(),
                 ]
             )
         )
@@ -40,30 +44,42 @@ class TestRlsManager(TestCase):
             Composed(
                 [
                     SQL('grant usage on schema erc to '),
-                    Composed(
-                        [
-                            Identifier('industry_user'),
-                            SQL(', '),
-                            Identifier('cas_director'),
-                            SQL(', '),
-                            Identifier('cas_admin'),
-                            SQL(', '),
-                            Identifier('cas_analyst'),
-                            SQL(', '),
-                            Identifier('cas_pending'),
-                            SQL(', '),
-                            Identifier('cas_view_only'),
-                        ]
-                    ),
+                    self._get_composed_role_identifiers(),
                 ]
             )
         )
-        mock_cursor_instance.execute.assert_any_call("grant usage on schema erc_history to public")
         mock_cursor_instance.execute.assert_any_call(
-            "grant all privileges on all tables in schema erc_history to public"
+            Composed(
+                [
+                    SQL('grant usage on schema erc_history to '),
+                    self._get_composed_role_identifiers(),
+                ]
+            )
         )
-        mock_cursor_instance.execute.assert_any_call("grant usage on schema common to public")
-        mock_cursor_instance.execute.assert_any_call("grant select on all tables in schema common to public")
+        mock_cursor_instance.execute.assert_any_call(
+            Composed(
+                [
+                    SQL('grant usage on schema public to '),
+                    self._get_composed_role_identifiers(),
+                ]
+            )
+        )
+        mock_cursor_instance.execute.assert_any_call(
+            Composed(
+                [
+                    SQL('grant usage on schema common to '),
+                    self._get_composed_role_identifiers(),
+                ]
+            )
+        )
+        mock_cursor_instance.execute.assert_any_call(
+            Composed(
+                [
+                    SQL('grant select on all tables in schema common to '),
+                    self._get_composed_role_identifiers(),
+                ]
+            )
+        )
 
         # Tables and sequences that need to be granted INSERT and UPDATE privileges
         # These are the tables that have historical records for m2m relationships
@@ -76,7 +92,9 @@ class TestRlsManager(TestCase):
         ]
         for table in tables:
             mock_cursor_instance.execute.assert_any_call(
-                SQL("grant select, insert, update on public.{} to public;").format(Identifier(table))
+                SQL("grant select, insert, update on public.{} to {};").format(
+                    Identifier(table), self._get_composed_role_identifiers()
+                )
             )
         sequences = [
             'registration_historicalfacility_well_authori_m2m_history_id_seq',
@@ -86,7 +104,9 @@ class TestRlsManager(TestCase):
         ]
         for sequence in sequences:
             mock_cursor_instance.execute.assert_any_call(
-                SQL("grant usage, select, update on public.{} to public;").format(Identifier(sequence))
+                SQL("grant usage, select, update on sequence public.{} to {};").format(
+                    Identifier(sequence), self._get_composed_role_identifiers()
+                )
             )
 
     @patch('rls.utils.manager.settings')
