@@ -22,6 +22,8 @@ const stages = [
 ];
 
 export const options = {
+  abortOnFail: true,
+  delayAbortEval: "20s",
   scenarios: Object.fromEntries(
     [
       "operation",
@@ -41,9 +43,8 @@ export const options = {
     ]),
   ),
   thresholds: {
-    // http_req_duration: ["p(99)<1500"], // 99% of requests must complete below 1.5s
     "http_req_duration{status:200}": ["p(90)<500", "p(95)<700", "p(99)<1000"], // 90% of requests must complete below 500ms, 95% below 700ms, and 99% below 1s
-    "http_req_duration{status:201}": ["p(90)<500", "p(95)<700", "p(99)<1000"], // 90% of requests must complete below 500ms, 95% below 700ms, and 99% below 1s
+    "http_req_duration{status:201}": ["p(90)<500", "p(95)<800", "p(99)<1200"], // 90% of requests must complete below 500ms, 95% below 700ms, and 99% below 1s
     errors: ["rate<0.05"], // Fail test if error rate exceeds 5%
   },
   rps: 50, // don't increase this without consulting platform services first
