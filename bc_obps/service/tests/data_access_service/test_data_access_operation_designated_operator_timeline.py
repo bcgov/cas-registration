@@ -57,18 +57,26 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
         # transferred operation
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation',
+                status=Operation.Statuses.REGISTERED,
+            ),
+            end_date="2024-02-27 01:46:20.789146+00:00",
         )
 
-        # closed operations
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
-            _quantity=20,
+        registered_operations = baker.make_recipe(
+            'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, _quantity=20
         )
+
+        for operation in registered_operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                end_date=None,
+            )
 
         timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
             baker.make_recipe('registration.tests.utils.cas_admin')
         )
 
-        assert timeline.count() == 21
+        assert timeline.count() == 20
