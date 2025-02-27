@@ -663,45 +663,17 @@ def init_reporting_field_data(apps, schema_monitor):
         [
             ReportingField(field_name='Fuel Default High Heating Value', field_type='number', field_units=None),
             ReportingField(
-                field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(
                 field_name='Fuel Annual Weighted Average High Heating Value', field_type='number', field_units=None
             ),
             ReportingField(field_name='Unit-Fuel Annual Steam Generated', field_type='number', field_units=None),
             ReportingField(field_name='Boiler Ratio', field_type='number', field_units=None),
-            ReportingField(field_name='Unit-Fuel-CO2 Emission Factor', field_type='number', field_units='kg/GJ'),
             ReportingField(
                 field_name='Fuel Annual Weighted Average Carbon Content (weight fraction)',
                 field_type='number',
                 field_units=None,
             ),
-            ReportingField(
-                field_name='Unit-Fuel-CO2 Measured Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
             ReportingField(field_name='Description', field_type='string', field_units=None),
-            ReportingField(
-                field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-CH4 Measured Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
             ReportingField(field_name='Unit-Fuel Heat Input', field_type='number', field_units=None),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Measured Emission Factor', field_type='number', field_units='kg/fuel units'
-            ),
             ReportingField(
                 field_name='Average of Quarterly chemical oxygen demand', field_type='number', field_units='kg/m3'
             ),
@@ -769,6 +741,46 @@ def init_reporting_field_data(apps, schema_monitor):
                 field_type='number',
                 field_units=None,
             ),
+            ReportingField(field_name='Unit-Fuel-CO2 Default EF', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Unit-Fuel-CO2 Default HHV-Default EF', field_type='number', field_units='kg/GJ'),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Measured HHV-Default EF', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Measured Steam-Default EF', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Measured Steam-Measured EF', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CO2 Site-specific EF', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(field_name='Unit-Fuel-CH4 Default EF', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Unit-Fuel-CH4 Measured EF', field_type='number', field_units='kg/fuel units'),
+            ReportingField(
+                field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-CH4 Site-specific EF', field_type='number', field_units='kg/fuel units'
+            ),
+            ReportingField(field_name='Unit-Fuel-N2O Default EF', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Unit-Fuel-N2O Measured EF', field_type='number', field_units='kg/fuel units'),
+            ReportingField(
+                field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_type='number', field_units='kg/GJ'
+            ),
+            ReportingField(
+                field_name='Unit-Fuel-N2O Site-specific EF', field_type='number', field_units='kg/fuel units'
+            ),
         ]
     )
 
@@ -780,20 +792,17 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
     ReportingField = apps.get_model('reporting', 'ReportingField')
     ReportingField.objects.filter(
         field_name__in=[
-            'Unit-Fuel-CO2 Measured Emission Factor',
-            'Unit-Fuel Heat Input',
-            'Unit-Fuel-CO2 Default Emission Factor',
-            'Unit-Fuel-CH4 Measured Emission Factor',
-            'Unit-Fuel Annual Steam Generated',
-            'Description',
-            'Unit-Fuel-CO2 Emission Factor',
-            'Boiler Ratio',
-            'Unit-Fuel-N2O Default Emission Factor',
-            'Unit-Fuel-CH4 Default Emission Factor',
-            'Fuel Annual Weighted Average High Heating Value',
-            'Unit-Fuel-N2O Measured Emission Factor',
             'Fuel Default High Heating Value',
+            'Fuel Annual Weighted Average High Heating Value',
+            'Unit-Fuel Annual Steam Generated',
+            'Boiler Ratio',
             'Fuel Annual Weighted Average Carbon Content (weight fraction)',
+            'Description',
+            'Unit-Fuel Heat Input',
+            'Average of Quarterly chemical oxygen demand',
+            'Average of Quarterly five-day biochemical oxygen demand',
+            'Average of Quarterly Nitrogen in effluent',
+            'Measured conversion factor',
             'Annual Weighted Average Carbon Content',
             'Annual Weighted Average Molecular Weight',
             'Molar Volume Conversion Factor',
@@ -833,12 +842,28 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
             'Overvoltage Methodology',
             'Overvoltage Emission Factor',
             'Last Date of Overvoltage Emission Factor Measurement',
-            'Average of Quarterly chemical oxygen demand'
-            'Average of Quarterly five-day biochemical oxygen demand'
-            'Average of Quarterly Nitrogen in effluent'
-            'Measured conversion factor',
             'Amount of raw material consumed (t)',
             'Raw material organic carbon content (weight fraction)',
+            'Unit-Fuel-CO2 Default EF',
+            'Unit-Fuel-CO2 Default HHV-Default EF',
+            'Unit-Fuel-CO2 Measured HHV-Default EF',
+            'Unit-Fuel-CO2 Measured Steam-Default EF',
+            'Unit-Fuel-CO2 Measured Steam-Measured EF',
+            'Unit-Fuel-CO2 Site-specific EF',
+            'Unit-Fuel-CH4 Default EF',
+            'Unit-Fuel-CH4 Default HHV-Default EF',
+            'Unit-Fuel-CH4 Heat Input-Default EF',
+            'Unit-Fuel-CH4 Measured EF',
+            'Unit-Fuel-CH4 Measured HHV-Default EF',
+            'Unit-Fuel-CH4 Measured Steam-Default EF',
+            'Unit-Fuel-CH4 Site-specific EF',
+            'Unit-Fuel-N2O Default EF',
+            'Unit-Fuel-N2O Default HHV-Default EF',
+            'Unit-Fuel-N2O Heat Input-Default EF',
+            'Unit-Fuel-N2O Measured EF',
+            'Unit-Fuel-N2O Measured HHV-Default EF',
+            'Unit-Fuel-N2O Measured Steam-Default EF',
+            'Unit-Fuel-N2O Site-specific EF',
         ]
     ).delete()
 
