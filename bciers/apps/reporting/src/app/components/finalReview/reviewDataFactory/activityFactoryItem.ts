@@ -34,10 +34,16 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
           .map(([k]) => `&source_types[]=${k}`)
           .join("")
       : "";
-    const facilityType = (await getFacilityReportDetails(versionId, facilityId)).facility_type;
+    const facilityType = (await getFacilityReportDetails(versionId, facilityId))
+      .facility_type;
 
     const schema = safeJsonParse(
-      await getActivitySchema(versionId, activity.id, sourceTypeQueryString, facilityType),
+      await getActivitySchema(
+        versionId,
+        activity.id,
+        sourceTypeQueryString,
+        facilityType,
+      ),
     ).schema;
     activityReviewData.push({
       schema: schema,
