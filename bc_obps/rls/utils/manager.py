@@ -14,7 +14,6 @@ class RlsManager:
         role_identifiers = [Identifier(role.value) for role in RlsRoles]
         with connection.cursor() as cursor:
             drop_owned_by_query = SQL('drop owned by {}').format(SQL(', ').join(role_identifiers))
-
             grant_erc_usage_query = SQL("grant usage on schema erc to {}").format(SQL(', ').join(role_identifiers))
             grant_public_usage_query = SQL("grant usage on schema public to {}").format(
                 SQL(', ').join(role_identifiers)
@@ -24,16 +23,25 @@ class RlsManager:
             cursor.execute(grant_erc_usage_query)
             cursor.execute(grant_public_usage_query)
 
-            # Grant usage and all privileges on all tables in schema erc_history to public(We don't care about this schema)
-            cursor.execute("grant usage on schema erc_history to public")
-            cursor.execute("grant all privileges on all tables in schema erc_history to public")
+            # Grant usage and all privileges on all tables in schema erc_history to public
+            erc_history_queries = [
+                SQL("grant usage on schema erc_history to {}").format(SQL(', ').join(role_identifiers)),
+                SQL("grant all privileges on all tables in schema erc_history to {}").format(
+                    SQL(', ').join(role_identifiers)
+                ),
+            ]
+            for query in erc_history_queries:
+                cursor.execute(query)
+
             # Grant usage and select privileges on all tables in schema common to public
-            cursor.execute("grant usage on schema common to public")
-            cursor.execute("grant select on all tables in schema common to public")
+            common_schema_queries = [
+                SQL("grant usage on schema common to {}").format(SQL(', ').join(role_identifiers)),
+                SQL("grant select on all tables in schema common to {}").format(SQL(', ').join(role_identifiers)),
+            ]
+            for query in common_schema_queries:
+                cursor.execute(query)
 
             # Tables and sequences that need to be granted INSERT and UPDATE privileges
-            # These are the tables that have historical records for m2m relationships
-            # At the time of writing this, there is no way to specify the schema for these tables in Django model field
             tables = [
                 'registration_historicalfacility_well_authorization_numbers',
                 'registration_historicaloperation_contacts',
@@ -41,22 +49,33 @@ class RlsManager:
                 'registration_historicaloperation_regulated_products',
             ]
             for table in tables:
-                query = SQL("grant select, insert, update on public.{} to public;").format(Identifier(table))
+                query = SQL("grant select, insert, update on public.{} to {};").format(
+                    Identifier(table), SQL(', ').join(role_identifiers)
+                )
                 cursor.execute(query)
+
             sequences = [
                 'registration_historicalfacility_well_authori_m2m_history_id_seq',
                 'registration_historicaloperation_contacts_m2m_history_id_seq',
                 'registration_historicaloperation_activities_m2m_history_id_seq',
                 'registration_historicaloperation_regulated_p_m2m_history_id_seq',
             ]
-            for sequence in sequences:  # We can only use `usage` on sequences
-                query = SQL("grant usage, select, update on public.{} to public;").format(Identifier(sequence))
+            for sequence in sequences:
+                query = SQL("grant usage, select, update on sequence public.{} to {};").format(
+                    Identifier(sequence), SQL(', ').join(role_identifiers)
+                )
                 cursor.execute(query)
 
             if settings.DEBUG:
-                # We need to grant all privileges on all tables in schema public to public in DEBUG mode to be able to run silk profiler
-                cursor.execute("grant usage on schema public to public")
-                cursor.execute("grant all privileges on all tables in schema public to public")
+                # Grant all privileges on all tables in schema public to public in DEBUG mode
+                debug_queries = [
+                    SQL("grant usage on schema public to {}").format(SQL(', ').join(role_identifiers)),
+                    SQL("grant all privileges on all tables in schema public to {}").format(
+                        SQL(', ').join(role_identifiers)
+                    ),
+                ]
+                for query in debug_queries:
+                    cursor.execute(query)
 
     @classmethod
     def apply_rls(cls) -> None:
