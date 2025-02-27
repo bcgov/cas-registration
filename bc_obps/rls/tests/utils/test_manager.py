@@ -76,7 +76,7 @@ class TestRlsManager(TestCase):
         ]
         for table in tables:
             mock_cursor_instance.execute.assert_any_call(
-                SQL("grant select, update on public.{} to public;").format(Identifier(table))
+                SQL("grant select, insert, update on public.{} to public;").format(Identifier(table))
             )
         sequences = [
             'registration_historicalfacility_well_authori_m2m_history_id_seq',

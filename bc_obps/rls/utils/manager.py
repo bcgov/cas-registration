@@ -41,7 +41,7 @@ class RlsManager:
                 'registration_historicaloperation_regulated_products',
             ]
             for table in tables:
-                query = SQL("grant select, update on public.{} to public;").format(Identifier(table))
+                query = SQL("grant select, insert, update on public.{} to public;").format(Identifier(table))
                 cursor.execute(query)
             sequences = [
                 'registration_historicalfacility_well_authori_m2m_history_id_seq',
