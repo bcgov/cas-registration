@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { OperationTypes } from "@bciers/utils/src/enums";
+import userEvent from "@testing-library/user-event";
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -105,6 +106,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         initialData={mockInitialData}
         taskListElements={[]}
         operationType={OperationTypes.LFO}
+        facilityType=""
       />,
     );
 
@@ -141,6 +143,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         }}
         taskListElements={[]}
         operationType={OperationTypes.LFO}
+        facilityType="Large Facility"
       />,
     );
     expect(
@@ -158,6 +161,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         initialData={mockInitialData}
         taskListElements={[]}
         operationType={OperationTypes.LFO}
+        facilityType="Large Facility"
       />,
     );
 
@@ -183,6 +187,7 @@ describe("FacilityEmissionAllocationForm component", () => {
           initialData={mockInitialData}
           taskListElements={[]}
           operationType={OperationTypes.LFO}
+          facilityType="Large Facility"
         />,
       );
       // POST submit and assert the result
@@ -198,6 +203,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         initialData={mockInitialData}
         taskListElements={[]}
         operationType={OperationTypes.LFO}
+        facilityType="Large Facility"
       />,
     );
 
@@ -211,5 +217,31 @@ describe("FacilityEmissionAllocationForm component", () => {
     const expectedRoute = `/reports/${config.mockVersionId}/facilities/${config.mockFacilityId}/production-data`;
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledWith(expectedRoute);
+  });
+
+  it("renders a Not Applicable option for methodology if report type is small or medium", async () => {
+    render(
+      <FacilityEmissionAllocationForm
+        version_id={config.mockVersionId}
+        facility_id={config.mockFacilityId}
+        orderedActivities={[]}
+        initialData={mockInitialData}
+        taskListElements={[]}
+        operationType={"Linear Facility Operation"}
+        facilityType={"Small Aggregate"}
+      />,
+    );
+
+    await waitFor(() => {
+      const txt = screen.getAllByText(/Allocation of Emissions/i)[0];
+      expect(txt).toBeInTheDocument();
+      expect(txt).toBeVisible();
+    });
+    await userEvent.click(
+      screen.getByRole("combobox", { name: /root_allocation_methodology/i }),
+    );
+    const methodology = screen.getAllByText(/Not Applicable/i)[0];
+    expect(methodology).toBeInTheDocument();
+    expect(methodology).toBeVisible();
   });
 });

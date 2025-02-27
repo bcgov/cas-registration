@@ -28,7 +28,8 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       activity.id,
     );
 
-    const facilityType = (await getFacilityReportDetails(versionId, facilityId)).facility_type;
+    const facilityType = (await getFacilityReportDetails(versionId, facilityId))
+      .facility_type;
 
     const sourceTypeQueryString = Object.entries(initData.sourceTypeMap)
       .filter(([, v]) => String(v) in formData)
@@ -36,7 +37,12 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       .join("");
 
     const schema = safeJsonParse(
-      await getActivitySchema(versionId, activity.id, sourceTypeQueryString, facilityType),
+      await getActivitySchema(
+        versionId,
+        activity.id,
+        sourceTypeQueryString,
+        facilityType,
+      ),
     ).schema;
     activityReviewData.push({
       schema: schema,

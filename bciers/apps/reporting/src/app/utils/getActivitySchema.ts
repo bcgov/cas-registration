@@ -4,7 +4,7 @@ export async function getActivitySchema(
   reportVersionId: number,
   activityId: number,
   sourceTypeQueryString: string,
-  facilityType: string
+  facilityType: string,
 ) {
   const endpoint = `reporting/build-form-schema?activity=${activityId}&report_version_id=${reportVersionId}&facility_type=${facilityType}${sourceTypeQueryString}`;
   const response = await actionHandler(endpoint, "GET");
