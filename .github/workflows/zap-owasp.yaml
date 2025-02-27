@@ -29,7 +29,6 @@ jobs:
         run: |
           echo "Starting services..."
           docker compose -f ./bciers/docker-compose-bciers-apps.yaml up -d --wait
-          echo "Waiting for services to be ready..."
 
       # Run ZAP Scan for Backend API
       - name: ZAP Scan - Backend API
