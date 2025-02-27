@@ -4,12 +4,12 @@ on:
   workflow_call:
 
 env:
-  PGUSER: postgres
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   KEYCLOAK_LOGIN_URL: ${{ secrets.KEYCLOAK_LOGIN_URL }}
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   zap-scan:
@@ -19,50 +19,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Install Docker and Docker Compose
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
       # Start all services using Docker Compose
       - name: Start Services with Docker Compose
         run: |
           echo "Starting services..."
-          docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d
+          docker compose -f ./bciers/docker-compose-bciers-apps.yaml up -d --wait
           echo "Waiting for services to be ready..."
-
-      # - name: ssh into it
-      #   run: |
-      #     wget -qO /usr/local/bin/devtunnel https://aka.ms/TunnelsCliDownload/linux-x64 && chmod +x /usr/local/bin/devtunnel
-      #     npm -g i wetty@2.5.0
-      #     sudo wetty -p 5555 -c bash -b / &
-      #     devtunnel user login -g -d
-      #     devtunnel host -p 5555
-
-      # # Check running containers
-      # - name: Check Running Containers
-      #   run: docker ps -a
-
-      # # Debug Backend Readiness
-      # - name: Debug Backend Readiness
-      #   run: |
-      #     sleep 60  # Give it extra time to start
-      #     curl -v http://127.0.0.1:8000/api || true  # Show response for debugging
-
-      # # Wait for the backend API to be healthy
-      # - name: Wait for Backend API Readiness
-      #   run: |
-      #     timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api | grep -q "200"; do sleep 3; done' || { echo "Backend API is not ready"; exit 1; }
-
-      # # Wait for Frontend Readiness (Dashboard)
-      # - name: Wait for Dashboard Readiness
-      #   run: |
-      #     timeout 90s bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000 | grep -q "200"; do sleep 3; done' || { echo "Dashboard is not ready"; exit 1; }
-
-      # Check for running containers
-      - name: Check Running Containers
-        run: docker ps --filter "status=running"
 
       # Run ZAP Scan for Backend API
       - name: ZAP Scan - Backend API
@@ -76,6 +38,15 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           artifact_name: backend_zap_scan
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend_zap_scan
+          path: backend_zap_scan
+
+      - name: Dispaly artifact structure
+        run: |
+          ls -R backend_zap_scan
 
       # Run ZAP Scan for Frontend Apps
       - name: ZAP Scan - Dashboard Frontend
@@ -137,11 +108,6 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           artifact_name: reporting_zap_scan
-
-      - name: Tear Down Services
-        run: |
-          echo "Stopping services..."
-          docker-compose -f ./cas-registration/bciers/docker-compose-bciers-apps.yaml down
 
   # Retry job in case of failure
   retry-on-failure:
