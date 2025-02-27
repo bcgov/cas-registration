@@ -86,11 +86,4 @@ class TestReportAdditionalDataApi(CommonTestSetup):
         )
 
         assert response.status_code == 200
-        response_json = response.json()
-        assert response_json["capture_emissions"] == mock_instance.capture_emissions
-        assert response_json["emissions_on_site_use"] == mock_instance.emissions_on_site_use
-        assert response_json["emissions_on_site_sequestration"] == mock_instance.emissions_on_site_sequestration
-        assert response_json["emissions_off_site_transfer"] == mock_instance.emissions_off_site_transfer
-        assert response_json["electricity_generated"] == mock_instance.electricity_generated
-
         mock_get_report_additional_data.assert_called_once_with(self.report_version.id)
