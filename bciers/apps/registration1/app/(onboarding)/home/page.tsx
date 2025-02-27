@@ -4,12 +4,11 @@
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid/Grid";
 import events from "@/app/data/home/events.json";
-import { signIn } from "next-auth/react";
-import { getEnvValue } from "@bciers/actions";
 import {
   bcObpsLink,
   bcObpsGuidanceLink,
   carbonTaxExemptionLink,
+  ghgRegulatorEmail,
 } from "@bciers/utils/src/urls";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
@@ -24,14 +23,6 @@ e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
 export default function Page() {
   const headerStyle = "text-bc-bg-blue text-2xl";
   const tableBorder = "border border-solid border-bc-bg-dark-grey";
-
-  const handleIdirLogin = () => {
-    try {
-      signIn("keycloak", undefined, { kc_idp_hint: "idir" });
-    } catch (error) {
-      console.error("Error during IDIR login:", error);
-    }
-  };
 
   const handleBceidSignupClick = async () => {
     // We don't have a build solution for the env variables in the frontend yet,
@@ -69,10 +60,7 @@ export default function Page() {
           BCIERS is currently undergoing scheduled updates until mid-March.
           During this time, user log-in will be temporarily unavailable. If you
           require urgent support, please reach out to{" "}
-          <Link href={"mailto:GHGRegulator@gov.bc.ca"}>
-            GHGRegulator@gov.bc.ca
-          </Link>
-          .
+          <Link href={ghgRegulatorEmail}>GHGRegulator@gov.bc.ca</Link>.
         </div>
       </Note>
       <Grid
@@ -242,7 +230,7 @@ export default function Page() {
             <Button
               variant="outlined"
               className="w-full md:max-w-[70%]"
-              onClick={handleIdirLogin}
+              disabled
             >
               Log in with IDIR
             </Button>
