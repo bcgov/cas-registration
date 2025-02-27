@@ -39,9 +39,14 @@ jobs:
           allow_issue_writing: false
           artifact_name: backend_zap_scan
 
-      - name: print
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend_zap_scan
+          path: backend_zap_scan
+
+      - name: Dispaly artifact structure
         run: |
-          cat /zap/wrk/report_json.json
+          ls -R backend_zap_scan
 
       # Run ZAP Scan for Frontend Apps
       - name: ZAP Scan - Dashboard Frontend
