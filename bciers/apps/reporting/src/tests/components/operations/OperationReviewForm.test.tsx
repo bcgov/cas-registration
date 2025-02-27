@@ -3,6 +3,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import OperationReviewForm from "@reporting/src/app/components/operations/OperationReviewForm";
+import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -18,32 +19,48 @@ const mockActionHandler = actionHandler as vi.MockedFunction<
   typeof actionHandler
 >;
 
-const defaultProps = {
-  formData: {
-    activities: [1],
-    regulated_products: [1],
-    operation_representative_name: [4],
-    operation_type: "Test Operation",
-    operator_legal_name: "test operator",
-  },
-  version_id: 1,
-  reportType: { report_type: "Annual Report" },
-  reportingYear: {
-    reporting_year: 2024,
-    report_due_date: "2024-12-31",
-    reporting_window_end: "2024-12-31",
-  },
-  allActivities: [{ id: 1, name: "Activity 1" }],
-  allRegulatedProducts: [{ id: 1, name: "Product 1" }],
-  registrationPurpose: "Test Purpose",
-  facilityReport: {
-    facility_id: "2344",
-    operation_type: "Single Facility Operation",
-  },
-  allRepresentatives: [
-    { id: 4, representative_name: "Shon Doe", selected_for_report: true },
-  ],
+const formData = {
+  operator_legal_name: "Bravo Technologies - has partner operator",
+  operator_trade_name: "Bravo Technologies",
+  operation_name: "Banana LFO - Registered",
+  operation_type: "Linear Facility Operation",
+  operation_bcghgid: "23219990004",
+  bc_obps_regulated_operation_id: "24-0015",
+  activities: [1],
+  regulated_products: [1],
+  operation_representative_name: [69, 70],
 };
+
+const activities = [
+  { id: 1, name: "Activity 1", applicable_to: "sfo" },
+  { id: 2, name: "Activity 2", applicable_to: "sfo" },
+];
+
+const regulatedProducts = [
+  { id: 1, name: "Product 1", unit: "BCRCT", is_regulated: true },
+  {
+    id: 2,
+    name: "Product 2",
+    unit: "Tonne cement equivalent",
+    is_regulated: true,
+  },
+];
+
+const allRepresentatives = [
+  { id: 69, representative_name: "Bill Blue", selected_for_report: true },
+  { id: 70, representative_name: "Bob Brown", selected_for_report: true },
+];
+
+const reportType = { report_type: "Simple Report" };
+const schema = buildOperationReviewSchema(
+  formData,
+  "Reporting Operation",
+  "Dec 31 2025",
+  activities,
+  regulatedProducts,
+  allRepresentatives,
+  reportType,
+);
 
 describe("OperationReviewForm Component", () => {
   beforeEach(() => {
@@ -51,27 +68,30 @@ describe("OperationReviewForm Component", () => {
     mockActionHandler.mockResolvedValue(true); // Mock successful action handler
   });
 
-  const renderForm = (overrideProps = {}) =>
-    render(<OperationReviewForm {...defaultProps} {...overrideProps} />);
+  const renderForm = () => {
+    render(
+      <OperationReviewForm
+        formData={formData}
+        version_id={1}
+        taskListElements={[]}
+        schema={schema}
+      />,
+    );
+  };
 
-  it(
-    "renders the form with the correct content",
-    {
-      timeout: 10000,
-    },
-    async () => {
-      renderForm();
+  it("renders the form with the correct content", async () => {
+    renderForm();
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("Review Operation Information"),
-        ).toBeInTheDocument();
-      });
+    await waitFor(() => {
+      expect(
+        screen.getByText("Review Operation Information"),
+      ).toBeInTheDocument();
+    });
 
-      expect(screen.getByText(/Back/i)).toBeInTheDocument();
-      expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
-    },
-  );
+    expect(screen.getByText(/Back/i)).toBeInTheDocument();
+    expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
+  });
+
   it(
     "submits the form and navigates to the next page",
     {
@@ -80,47 +100,7 @@ describe("OperationReviewForm Component", () => {
     async () => {
       const { push } = useRouter();
 
-      render(
-        <OperationReviewForm
-          formData={{
-            activities: [1],
-            regulated_products: [1],
-            operation_representative_name: [
-              {
-                id: 4,
-                representative_name: "Shon Doe",
-                selected_for_report: true,
-              },
-            ],
-            operation_bcghgid: "your-bcghg-id",
-            operation_name: "Operation Name",
-            operation_type: "Test Operation",
-            operator_legal_name: "test operator",
-          }}
-          version_id={1}
-          reportType={{ report_type: "Annual Report" }}
-          reportingYear={{
-            reporting_year: 2024,
-            report_due_date: "2024-12-31",
-            reporting_window_end: "2024-12-31",
-          }}
-          allActivities={[{ id: 1, name: "Activity 1" }]}
-          allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-          registrationPurpose="Test Purpose"
-          facilityReport={{
-            facility_id: "fake-guid",
-            operation_type: "Single Facility Operation",
-          }}
-          allRepresentatives={[
-            {
-              id: 4,
-              representative_name: "Shon Doe",
-              selected_for_report: true,
-            },
-          ]}
-          showRegulatedProducts={true}
-        />,
-      );
+      renderForm();
 
       // Simulate form submission
       fireEvent.click(screen.getByText(/Save & Continue/i));
@@ -132,9 +112,7 @@ describe("OperationReviewForm Component", () => {
           ),
           expect.any(String),
           expect.any(String),
-          expect.objectContaining({
-            body: expect.any(String),
-          }),
+          expect.objectContaining({ body: expect.any(String) }),
         );
         expect(push).toHaveBeenCalledWith("/reports/1/person-responsible");
       });
@@ -142,18 +120,13 @@ describe("OperationReviewForm Component", () => {
   );
 
   it("displays helper text for Simple Report", async () => {
-    renderForm({
-      formData: {
-        ...defaultProps.formData,
-        operation_report_type: "Simple Report",
-      },
-      reportType: { report_type: "Simple Report" },
-    });
+    renderForm();
 
     await waitFor(() => {
       expect(
         screen.getByText(
           /Simple Reports are submitted by reporting operations/i,
+          { exact: false },
         ),
       ).toBeInTheDocument();
     });
@@ -163,44 +136,14 @@ describe("OperationReviewForm Component", () => {
     mockActionHandler.mockResolvedValue(1234);
     const { push } = useRouter();
 
-    render(
-      <OperationReviewForm
-        formData={{
-          activities: [1],
-          regulated_products: [1],
-          operation_report_type: "Annual Report",
-        }}
-        version_id={1}
-        reportType={{ report_type: "Annual Report" }}
-        reportingYear={{
-          reporting_year: 2024,
-          report_due_date: "2024-12-31",
-          reporting_window_end: "2024-12-31",
-        }}
-        allActivities={[{ id: 1, name: "Activity 1" }]}
-        allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-        registrationPurpose="Test Purpose"
-        facilityReport={{
-          facility_id: "fake-guid",
-          operation_type: "Single Facility Operation",
-        }}
-        allRepresentatives={[
-          {
-            id: 4,
-            representative_name: "Shon Doe",
-            selected_for_report: true,
-          },
-        ]}
-        showRegulatedProducts={true}
-      />,
-    );
+    renderForm();
 
     const reportTypeSelect = screen.getByLabelText(
       /Select what type of report you are filling/i,
     );
 
     fireEvent.change(reportTypeSelect, {
-      target: { value: "Simple Report" },
+      target: { value: "Annual Report" },
     });
 
     expect(
@@ -216,56 +159,24 @@ describe("OperationReviewForm Component", () => {
   });
 
   it("shows modal when switching report type and reverts report type when clicking cancel", async () => {
-    render(
-      <OperationReviewForm
-        formData={{
-          activities: [1],
-          regulated_products: [1],
-          operation_report_type: "Annual Report",
-        }}
-        version_id={1}
-        reportType={{ report_type: "Annual Report" }}
-        reportingYear={{
-          reporting_year: 2024,
-          report_due_date: "2024-12-31",
-          reporting_window_end: "2024-12-31",
-        }}
-        allActivities={[{ id: 1, name: "Activity 1" }]}
-        allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-        registrationPurpose="Test Purpose"
-        facilityReport={{
-          facility_id: "fake-guid",
-          operation_type: "Single Facility Operation",
-        }}
-        allRepresentatives={[
-          {
-            id: 4,
-            representative_name: "Shon Doe",
-            selected_for_report: true,
-          },
-        ]}
-        showRegulatedProducts={true}
-      />,
+    renderForm();
+
+    fireEvent.change(
+      screen.getByLabelText(/Select what type of report you are filling/i),
+      {
+        target: { value: "Annual Report" },
+      },
     );
 
-    const reportTypeSelect = screen.getByLabelText(
-      /Select what type of report you are filling/i,
-    );
-
-    await waitFor(() => {
-      fireEvent.change(reportTypeSelect, {
-        target: { value: "Simple Report" },
-      });
-    });
-
-    await waitFor(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(
       screen.queryByText(/Are you sure you want to change your report type/i),
     ).not.toBeVisible();
-    expect(screen.queryByText(/Simple Report/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/Annual Report/i)).toBeVisible();
+
+    const reportTypeSelect = screen.getByLabelText(
+      /Select what type of report you are filling/i,
+    );
+    expect(reportTypeSelect).toHaveValue("Simple Report");
   });
 });
