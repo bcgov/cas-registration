@@ -1441,14 +1441,17 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
         )
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
         )
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
         )
 
         timeline = OperationServiceV2.list_operations_timeline(
@@ -1470,6 +1473,7 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
             operation=baker.make_recipe(
                 'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='11111111111'))
             ),
@@ -1477,6 +1481,7 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
             operation=baker.make_recipe(
                 'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='15555555555'))
             ),
@@ -1484,6 +1489,7 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
             operation=baker.make_recipe(
                 'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='29999999999'))
             ),
