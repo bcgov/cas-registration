@@ -75,7 +75,8 @@ export default async function ActivityInit({
   }
 
   // Get facility type for not applicable methodology in LFO small and medium facilities
-  const facilityType = (await getFacilityReportDetails(versionId, facilityId)).facility_type;
+  const facilityType = (await getFacilityReportDetails(versionId, facilityId))
+    .facility_type;
 
   const fetchSchema = async () => {
     const schema = await actionHandler(

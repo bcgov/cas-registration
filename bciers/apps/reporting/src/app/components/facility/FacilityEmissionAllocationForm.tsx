@@ -12,6 +12,8 @@ import { IChangeEvent } from "@rjsf/core";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { RJSFSchema } from "@rjsf/utils";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -22,6 +24,9 @@ interface Props {
   navigationInformation: NavigationInformation;
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
+  taskListElements: TaskListElement[];
+  operationType: string;
+  facilityType: string;
 }
 
 interface FormData {
@@ -125,6 +130,7 @@ export default function FacilityEmissionAllocationForm({
   navigationInformation,
   isPulpAndPaper,
   overlappingIndustrialProcessEmissions,
+  facilityType,
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
@@ -145,8 +151,22 @@ export default function FacilityEmissionAllocationForm({
     },
   }));
 
-  // State for submit button disable
+  // If facility type is small or medium, add not applicable as an option
+  const modifiedEmissionAllocationSchema = emissionAllocationSchema;
+  if (
+    ["Small Aggregate", "Medium Facility"].includes(facilityType) &&
+    modifiedEmissionAllocationSchema.properties
+  ) {
+    const object = {
+      type: "string",
+      title: "Methodology",
+      enum: ["Not Applicable", "OBPS Allocation Calculator", "Other"],
+    };
+    modifiedEmissionAllocationSchema.properties.allocation_methodology =
+      object as RJSFSchema;
+  }
 
+  // State for submit button disable
   const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
@@ -271,7 +291,7 @@ export default function FacilityEmissionAllocationForm({
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
-      schema={emissionAllocationSchema}
+      schema={modifiedEmissionAllocationSchema}
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}

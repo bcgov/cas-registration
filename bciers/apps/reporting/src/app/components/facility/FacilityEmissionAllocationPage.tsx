@@ -6,6 +6,7 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getOverlappingIndustrialProcessEmissions } from "../../utils/getOverlappingIndProcessEmissions";
+import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 
 export default async function FacilityEmissionAllocationPage({
   version_id,
@@ -17,6 +18,10 @@ export default async function FacilityEmissionAllocationPage({
   );
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const initialData = await getEmissionAllocations(version_id, facility_id);
+  const operationType = tasklistData?.operationType;
+  // Get facility type for not applicable methodology in LFO small and medium facilities
+  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
+    .facility_type;
 
   // These values are used when reporting the pulp & paper activity
   let isPulpAndPaper = false;
@@ -54,6 +59,9 @@ export default async function FacilityEmissionAllocationPage({
       overlappingIndustrialProcessEmissions={
         overlappingIndustrialProcessEmissions
       }
+      taskListElements={taskListElements}
+      operationType={operationType}
+      facilityType={facilityType}
     />
   );
 }
