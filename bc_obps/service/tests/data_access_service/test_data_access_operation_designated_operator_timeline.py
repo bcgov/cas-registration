@@ -28,11 +28,20 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
             operator=approved_user_operator.operator,
         )
 
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+        # active, registered operations
+        registered_operations = baker.make_recipe(
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
             _quantity=20,
         )
+        for operation in registered_operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                operator=approved_user_operator.operator,
+                end_date=None,
+            )
 
         # someone else's operations - should not be returned
         baker.make_recipe(
@@ -64,10 +73,10 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
             end_date="2024-02-27 01:46:20.789146+00:00",
         )
 
+        # active operations
         registered_operations = baker.make_recipe(
             'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, _quantity=20
         )
-
         for operation in registered_operations:
             baker.make_recipe(
                 'registration.tests.utils.operation_designated_operator_timeline',
