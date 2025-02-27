@@ -110,6 +110,7 @@ describe("OperationReviewForm Component", () => {
               selected_for_report: true,
             },
           ]}
+          showRegulatedProducts={true}
         />,
       );
 
@@ -182,6 +183,7 @@ describe("OperationReviewForm Component", () => {
             selected_for_report: true,
           },
         ]}
+        showRegulatedProducts={true}
       />,
     );
 
@@ -234,6 +236,7 @@ describe("OperationReviewForm Component", () => {
             selected_for_report: true,
           },
         ]}
+        showRegulatedProducts={true}
       />,
     );
 
