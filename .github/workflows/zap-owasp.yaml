@@ -10,6 +10,7 @@ env:
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   KEYCLOAK_LOGIN_URL: ${{ secrets.KEYCLOAK_LOGIN_URL }}
   GH_TOKEN: ${{ github.token }}
+  ZAP_FAILURE_RISK_LEVEL: 3
 
 jobs:
   zap-scan:
@@ -38,15 +39,6 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           artifact_name: backend_zap_scan
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: backend_zap_scan
-          path: backend_zap_scan
-
-      - name: Dispaly artifact structure
-        run: |
-          ls -R backend_zap_scan
 
       # Run ZAP Scan for Frontend Apps
       - name: ZAP Scan - Dashboard Frontend
@@ -108,6 +100,12 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           artifact_name: reporting_zap_scan
+
+      - uses: actions/download-artifact@v4
+
+      - name: Dispaly artifact structure
+        run: |
+          ls -R .
 
   # Retry job in case of failure
   retry-on-failure:
