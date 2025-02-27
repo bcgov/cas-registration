@@ -1,3 +1,4 @@
+/* eslint-disable */
 import http from "k6/http";
 import { Rate } from "k6/metrics";
 import { check, fail } from "k6";
@@ -42,6 +43,11 @@ function makeRequest(
   errorMessage,
 ) {
   const res = http.request(method, url, payload, params);
+
+  // This is just for debugging purposes
+  if (![200, 201].includes(res.status))
+    console.log(res.body, "-------------------------------------------");
+
   const success = check(res, {
     [`${errorMessage} - Status ${successStatusCode}`]: (r) =>
       r.status === successStatusCode,
