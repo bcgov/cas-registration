@@ -2,6 +2,11 @@ name: ZAP OWASP Scan Code
 
 on:
   workflow_call:
+    inputs:
+      zap_fail_on_risk_level:
+        description: "Risk level of found errors, on or above which this action will fail. 0: Informational, 1: Low, 2: Medium, 3: High."
+        required: true
+        type: number
 
 env:
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -10,7 +15,6 @@ env:
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   KEYCLOAK_LOGIN_URL: ${{ secrets.KEYCLOAK_LOGIN_URL }}
   GH_TOKEN: ${{ github.token }}
-  ZAP_FAILURE_RISK_LEVEL: 3
 
 jobs:
   zap-scan:
@@ -111,20 +115,15 @@ jobs:
           find ./zap/ -type f | \
           grep "report_json.json" | \
           xargs cat | \
-          jq '. as $parent | .site[].alerts[] | select(.riskcode | tonumber >= 2) | { host: $parent.site[0]."@name", error: .name, risk: .riskdesc, alertRef: .pluginid, urls: [.instances[].uri] | join(", ") }' \
+          jq --arg failure_level "${{ inputs.zap_fail_on_risk_level }}" '. as $parent | .site[].alerts[] | select(.riskcode | tonumber >= ( $failure_level | tonumber )) | { host: $parent.site[0]."@name", error: .name, risk: .riskdesc, alertRef: .pluginid, urls: [.instances[].uri] | join(", ") }' \
           > errors.txt
 
           if [ -s errors.txt ]; then
-            # Errors were found
+
+            echo "Found errors with severity/risk level higher than $ZAP_FAILURE_RISK_LEVEL,"
+            echo "for more information, consult the logs of the individual zap actions."
+
+            echo "Errors found:"
             cat errors.txt
             exit 1
           fi
-
-  # Retry job in case of failure
-  retry-on-failure:
-    needs: zap-scan
-    if: failure() || (needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled())
-    runs-on: ubuntu-latest
-    steps:
-      - name: Retry ZAP Scan
-        run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}
