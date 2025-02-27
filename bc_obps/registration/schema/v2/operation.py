@@ -87,36 +87,17 @@ class OperationInformationIn(ModelSchema):
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
     date_of_first_shipment: Optional[str] = Field(None, alias="date_of_first_shipment")
-    # boundary_map: UploadedFile = File(...)
-    # process_flow_diagram: UploadedFile = File(...)
-    # new_entrant_application: UploadedFile = File(...)
-
-    # @field_validator("boundary_map")
-    # @classmethod
-    # def validate_boundary_map(cls, value: str) -> ContentFile:
-    #     breakpoint()
-    #     return data_url_to_file(value)
-
-    # @field_validator("process_flow_diagram")
-    # @classmethod
-    # def validate_process_flow_diagram(cls, value: str) -> ContentFile:
-    #     return data_url_to_file(value)
-
-    # @field_validator("new_entrant_application")
-    # @classmethod
-    # def validate_new_entrant_application(cls, value: Optional[str]) -> Optional[ContentFile]:
-    #     if value:
-    #         return data_url_to_file(value)
-    #     return None
 
     class Meta:
         model = Operation
         fields = ["name", 'type']
 
+
 class OperationInformationInWithDocuments(OperationInformationIn):
     boundary_map: UploadedFile = File(...)
     process_flow_diagram: UploadedFile = File(...)
     new_entrant_application: UploadedFile = File(...)
+
 
 class OperationInformationInUpdate(OperationInformationIn):
     operation_representatives: List[int]

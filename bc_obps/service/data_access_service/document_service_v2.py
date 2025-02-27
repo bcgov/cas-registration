@@ -32,28 +32,28 @@ class DocumentDataAccessServiceV2:
         )
 
         return document
-    
+
     @classmethod
     def set_document(
         cls,
         operation_id: UUID,
         user_guid: UUID,
-        document_type: str,
-        document_file: UploadedFile,
+        type: str,
+        file: UploadedFile,
     ) -> None:
 
-        if document_file.size and document_file.size > MAX_UPLOAD_SIZE:
+        if file.size and file.size > MAX_UPLOAD_SIZE:
             raise ValidationError(f"File document cannot exceed {MAX_UPLOAD_SIZE} bytes.")
 
-        existing_document = cls.get_operation_document_by_type_if_authorized(user_guid, operation_id, document_type)
-        # if there is an existing  document, delete it
-        if existing_document:
-            existing_document.delete()
+        # existing_document = DocumentServiceV2.get_operation_document_by_type_if_authorized(user_guid, operation_id, document_type)
+        # # if there is an existing  document, delete it
+        # if existing_document:
+        #     existing_document.delete()
 
         document = Document(
             operation_id=operation_id,
-            file=document_file,
-            document_type=document_type,
+            file=file,
+            type=DocumentType.objects.get(name=type),
         )
         document.save()
         return document
