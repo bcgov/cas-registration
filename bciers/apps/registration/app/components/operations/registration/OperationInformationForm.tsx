@@ -127,32 +127,42 @@ const OperationInformationForm = ({
     const isCreating = !data.formData?.section1?.operation;
     const postEndpoint = `registration/operations`;
     const putEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
-    const body = JSON.stringify(
-      createUnnestedFormData(data.formData, [
-        "section1",
-        "section2",
-        "section3",
-      ]),
-    );
+    const body = createUnnestedFormData(data.formData, [
+      "section1",
+      "section2",
+      "section3",
+    ]);
+    console.log("body", body);
+    const trueFormData = new FormData();
+    for (const key in body) {
+      // if (key !== "boundary_map" && key !== "process_flow_diagrom")
+      trueFormData.append(key, body[key]);
+    }
+
+    for (const [key, value] of trueFormData.entries()) {
+      console.log(`Key: ${key}, Value: ${value}`);
+    }
+
     const response = await actionHandler(
       isCreating ? postEndpoint : putEndpoint,
       isCreating ? "POST" : "PUT",
       "",
       {
-        body,
+        body: trueFormData,
       },
     ).then((resolve) => {
       if (resolve?.error) {
         return { error: resolve.error };
       } else if (resolve?.id) {
         // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
-        const nextStepUrl = `/register-an-operation/${resolve.id}/${
-          step + 1
-        }?operations_title=${encodeURIComponent(resolve.name)}`;
-        router.push(nextStepUrl);
+        // const nextStepUrl = `/register-an-operation/${resolve.id}/${
+        //   step + 1
+        // }?operations_title=${encodeURIComponent(resolve.name)}`;
+        // router.push(nextStepUrl);
         return resolve;
       }
     });
+    console.log("response", response.json());
     return response;
   };
   const handleSelectOperationChange = async (data: any) => {

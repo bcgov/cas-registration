@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Callable, Generator, Union
+from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
 from registration.models.facility import Facility
 from registration.schema.v1.facility import FacilityIn
@@ -219,19 +219,18 @@ class OperationServiceV2:
         user_guid: UUID,
         payload: OperationInformationIn,
     ) -> Operation:
+        include_keys = {
+            'name',
+            'type',
+            'naics_code_id',
+            'secondary_naics_code_id',
+            'tertiary_naics_code_id',
+            'date_of_first_shipment',
+            'registration_purpose',
+            'opt_in',
+        }
 
-        operation_data = payload.dict(
-            include={
-                'name',
-                'type',
-                'naics_code_id',
-                'secondary_naics_code_id',
-                'tertiary_naics_code_id',
-                'date_of_first_shipment',
-                'registration_purpose',
-                'opt_in',
-            }
-        )
+        operation_data = {key: payload[key] for key in include_keys if key in payload}
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
         operation_data['operator_id'] = user_operator.operator_id
 
@@ -250,51 +249,33 @@ class OperationServiceV2:
                 'start_date': datetime.now(ZoneInfo("UTC")),
             },
         )
-
         # create documents
-        operation_documents = [
-            doc
-            for doc in [
-                *(
-                    [
-                        DocumentDataAccessServiceV2.create_document(
-                            user_guid,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                            'boundary_map',
-                            operation.id,
-                        )
-                    ]
-                    if payload.boundary_map
-                    else []
-                ),
-                *(
-                    [
-                        DocumentDataAccessServiceV2.create_document(
-                            user_guid,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                            'process_flow_diagram',
-                            operation.id,
-                        )
-                    ]
-                    if payload.process_flow_diagram
-                    else []
-                ),
-                *(
-                    DocumentDataAccessServiceV2.create_document(
-                        user_guid,
-                        payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                        'new_entrant_application',
-                        operation.id,
-                    )
-                    if payload.new_entrant_application
-                    else []
-                ),
-            ]
-        ]
-        operation.documents.add(*operation_documents)
+        if payload.get('boundary_map'):
+            DocumentDataAccessServiceV2.set_document(
+                operation_id=operation.id,
+                user_guid=user_guid,
+                type='boundary_map',
+                file=payload['boundary_map'],  # type: ignore # mypy is not aware of the schema validator
+            )
+
+        if payload.get('process_flow_diagram'):
+            DocumentDataAccessServiceV2.set_document(
+                operation_id=operation.id,
+                user_guid=user_guid,
+                type='process_flow_diagram',
+                file=payload['process_flow_diagram'],  # type: ignore # mypy is not aware of the schema validator
+            )
+            # brianna why would this ever be in create?
+        if payload.get('new_entrant_application'):
+            DocumentDataAccessServiceV2.set_document(
+                operation_id=operation.id,
+                user_guid=user_guid,
+                type='new_entrant_application',
+                file=payload['new_entrant_application'],  # type: ignore # mypy is not aware of the schema validator
+            )
 
         # handle multiple operators
-        multiple_operators_data = payload.multiple_operators_array
+        multiple_operators_data = payload.get('multiple_operators_array')
         cls.upsert_multiple_operators(operation, multiple_operators_data, user_guid)
 
         # handle purposes
@@ -311,9 +292,8 @@ class OperationServiceV2:
         cls,
         user_guid: UUID,
         operation_id: UUID | None,
-        payload: Union[OperationInformationIn, OperationInformationInUpdate],
+        payload,
     ) -> Operation:
-
         # can't optimize this much more without looking at files--the extra hits to operation are in the middleware, and the multi hits to document are from the resolvers
         operation: Operation
         if operation_id:

@@ -2,7 +2,11 @@ from typing import List, Literal, Optional
 from registration.constants import V2
 from registration.models.operation import Operation
 from typing import Tuple
-from registration.schema.v2.operation import OperationCreateOut, OperationInformationIn
+from registration.schema.v2.operation import (
+    OperationCreateOut,
+    OperationInformationIn,
+    OperationInformationInWithDocuments,
+)
 from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -10,7 +14,7 @@ from common.api.utils import get_current_user_guid
 from ..router import router
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from ninja import Query
+from ninja import Query, File, Form, UploadedFile
 from django.db.models import QuerySet
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
@@ -71,6 +75,16 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
     auth=authorize("approved_industry_user"),
 )
 def register_create_operation_information(
-    request: HttpRequest, payload: OperationInformationIn
+    request: HttpRequest,
+    details: Form[OperationInformationIn],
+    boundary_map: UploadedFile = File(...),  # File fields as separate params
+    process_flow_diagram: UploadedFile = File(...),
 ) -> Tuple[Literal[201], Operation]:
-    return 201, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload)
+    payload: OperationInformationInWithDocuments = details.dict()
+    payload['boundary_map'] = boundary_map
+    payload['process_flow_diagram'] = process_flow_diagram
+    return 201, OperationServiceV2.register_operation_information(
+        get_current_user_guid(request),
+        None,
+        payload,
+    )
