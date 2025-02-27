@@ -6,6 +6,7 @@ import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllo
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
+import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 
 // ✨ Mocks
 vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
@@ -20,6 +21,9 @@ vi.mock("@reporting/src/app/utils/getEmissionAllocations", () => ({
 }));
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
+}));
+vi.mock("@reporting/src/app/utils/getFacilityReportDetails", () => ({
+  getFacilityReportDetails: vi.fn(),
 }));
 
 // 🏷 Constants
@@ -174,6 +178,9 @@ const emissionAllocations = {
     },
   ],
 };
+const justFacilityReportTypeLarge = {
+  facility_type: "Large Facility",
+};
 describe("The FacilityEmissionAllocationPage component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -193,6 +200,9 @@ describe("The FacilityEmissionAllocationPage component", () => {
     );
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       dummyNavigationInformation,
+    );
+    (getFacilityReportDetails as ReturnType<typeof vi.fn>).mockReturnValueOnce(
+      justFacilityReportTypeLarge,
     );
     // Render the page with the `versionId` prop
     render(

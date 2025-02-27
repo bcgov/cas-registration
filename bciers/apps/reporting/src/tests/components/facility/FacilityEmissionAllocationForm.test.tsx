@@ -2,7 +2,12 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
+<<<<<<< HEAD
 import { dummyNavigationInformation } from "../taskList/utils";
+=======
+import { OperationTypes } from "@bciers/utils/src/enums";
+import userEvent from "@testing-library/user-event";
+>>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -105,7 +110,13 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
+<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
+=======
+        taskListElements={[]}
+        operationType={OperationTypes.LFO}
+        facilityType=""
+>>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
       />,
     );
 
@@ -140,7 +151,13 @@ describe("FacilityEmissionAllocationForm component", () => {
             },
           ],
         }}
+<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
+=======
+        taskListElements={[]}
+        operationType={OperationTypes.LFO}
+        facilityType="Large Facility"
+>>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
       />,
     );
     expect(
@@ -156,7 +173,13 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
+<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
+=======
+        taskListElements={[]}
+        operationType={OperationTypes.LFO}
+        facilityType="Large Facility"
+>>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
       />,
     );
 
@@ -180,7 +203,13 @@ describe("FacilityEmissionAllocationForm component", () => {
           facility_id={config.mockFacilityId}
           orderedActivities={[]}
           initialData={mockInitialData}
+<<<<<<< HEAD
           navigationInformation={dummyNavigationInformation}
+=======
+          taskListElements={[]}
+          operationType={OperationTypes.LFO}
+          facilityType="Large Facility"
+>>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
         />,
       );
       // POST submit and assert the result
@@ -194,7 +223,13 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
+<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
+=======
+        taskListElements={[]}
+        operationType={OperationTypes.LFO}
+        facilityType="Large Facility"
+>>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
       />,
     );
 
@@ -207,5 +242,31 @@ describe("FacilityEmissionAllocationForm component", () => {
     // Assert that the router's push method was called with the expected route
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledWith("back");
+  });
+
+  it("renders a Not Applicable option for methodology if report type is small or medium", async () => {
+    render(
+      <FacilityEmissionAllocationForm
+        version_id={config.mockVersionId}
+        facility_id={config.mockFacilityId}
+        orderedActivities={[]}
+        initialData={mockInitialData}
+        taskListElements={[]}
+        operationType={"Linear Facility Operation"}
+        facilityType={"Small Aggregate"}
+      />,
+    );
+
+    await waitFor(() => {
+      const txt = screen.getAllByText(/Allocation of Emissions/i)[0];
+      expect(txt).toBeInTheDocument();
+      expect(txt).toBeVisible();
+    });
+    await userEvent.click(
+      screen.getByRole("combobox", { name: /root_allocation_methodology/i }),
+    );
+    const methodology = screen.getAllByText(/Not Applicable/i)[0];
+    expect(methodology).toBeInTheDocument();
+    expect(methodology).toBeVisible();
   });
 });
