@@ -1,3 +1,4 @@
+/* eslint-disable */
 export { default as transferEvent } from "./transfer-event.js";
 export { default as operation } from "./operation.js";
 export { default as operator } from "./operator.js";

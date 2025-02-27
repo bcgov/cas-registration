@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { SERVER_HOST } from "../../setup/constants.js";
 import { getUserParams, makeRequest } from "../../setup/helpers.js";
-import { crypto } from "k6/experimental/webcrypto";
+import { uuidv4 } from "https://jslib.k6.io/k6-utils/1.4.0/index.js";
 
 const operatorIdWithAdmin = "04384911-264a-4510-b582-11ee704b8e41";
 const operatorIdWithNoAdmin = "7e8b72dc-4196-427f-a553-7879748139e1";
@@ -20,7 +20,7 @@ function createUser() {
     bceid_business_name: "Test Business",
   });
 
-  const newUserGuid = crypto.randomUUID();
+  const newUserGuid = uuidv4();
 
   const params = {
     headers: {
