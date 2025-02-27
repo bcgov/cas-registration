@@ -40,7 +40,7 @@ export const operationReviewSchema: RJSFSchema = {
 
     operator_legal_name: { type: "string", title: "Operator legal name" },
     operator_trade_name: {
-      type: "string" || null,
+      type: ["string", "null"],
       title: "Operator trade name",
     },
     operation_name: { type: "string", title: "Operation name" },
