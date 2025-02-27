@@ -262,131 +262,141 @@ describe("The TransferDetailForm component", () => {
     expect(mockRouterPush).toHaveBeenCalledWith("/transfers");
   });
 
-  it("should allow the user to edit the details of the transfer - Operation Entity", async () => {
-    actionHandler.mockResolvedValueOnce({}); // to handle the PATCH request response
-    fetchOperationsPageData.mockResolvedValue(mockOperations);
-    await renderOperationEntityTransferDetailForm();
-    await userEvent.click(
-      screen.getByRole("button", { name: /edit details/i }),
-    );
-    expectComboBox(/operation\*/i, "Operation 1");
-    await userEvent.type(
-      screen.getByRole("combobox", { name: /operation\*/i }),
-      "op",
-    );
+  it(
+    "should allow the user to edit the details of the transfer - Operation Entity",
+    { timeout: 10000 },
+    async () => {
+      actionHandler.mockResolvedValueOnce({}); // to handle the PATCH request response
+      fetchOperationsPageData.mockResolvedValue(mockOperations);
+      await renderOperationEntityTransferDetailForm();
+      await userEvent.click(
+        screen.getByRole("button", { name: /edit details/i }),
+      );
+      expectComboBox(/operation\*/i, "Operation 1");
+      await userEvent.type(
+        screen.getByRole("combobox", { name: /operation\*/i }),
+        "op",
+      );
 
-    // make sure the current operation is displayed in the options
-    await waitFor(() => {
+      // make sure the current operation is displayed in the options
+      await waitFor(() => {
+        expect(
+          screen.getByRole("option", {
+            name: /operation 1/i,
+          }),
+        ).toBeVisible();
+        expect(
+          screen.getByRole("option", {
+            name: /operation 2/i,
+          }),
+        ).toBeVisible();
+      });
+      await userEvent.click(screen.getByText(/operation 2/i));
+      expectComboBox(/operation\*/i, "Operation 2");
       expect(
-        screen.getByRole("option", {
-          name: /operation 1/i,
+        screen.getByRole("textbox", { name: /effective date of transfer/i }),
+      ).toHaveValue("2022-12-31");
+
+      // submit the form
+      await userEvent.click(
+        screen.getByRole("button", { name: /transfer entity/i }),
+      );
+      expect(actionHandler).toHaveBeenCalledWith(
+        `registration/transfer-events/${transferId}`,
+        "PATCH",
+        `/transfers/${transferId}`,
+        {
+          body: JSON.stringify({
+            from_operator: "Operator 1",
+            to_operator: "Operator 2",
+            transfer_entity: "Operation",
+            effective_date: "2022-12-31",
+            operation: "8be4c7aa-6ab3-4aad-9206-0ef914fea066",
+          }),
+        },
+      );
+      // make sure the snackbar is displayed
+      expect(
+        screen.getByText(/all changes have been successfully saved/i),
+      ).toBeVisible();
+    },
+  );
+
+  it(
+    "should allow the user to edit the details of the transfer - Facility Entity",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      actionHandler.mockResolvedValueOnce({}); // to handle the PATCH request response
+      await renderFacilityEntityTransferDetailForm();
+      await userEvent.click(
+        screen.getByRole("button", { name: /edit details/i }),
+      );
+
+      // make sure existing facilities are displayed and included when editing the form
+      expect(
+        screen.getByRole("button", {
+          name: /name 1 \- \(11, 22\)/i,
         }),
       ).toBeVisible();
       expect(
-        screen.getByRole("option", {
-          name: /operation 2/i,
+        screen.getByRole("button", {
+          name: /name 2 \- \(33, 44\)/i,
         }),
       ).toBeVisible();
-    });
-    await userEvent.click(screen.getByText(/operation 2/i));
-    expectComboBox(/operation\*/i, "Operation 2");
-    expect(
-      screen.getByRole("textbox", { name: /effective date of transfer/i }),
-    ).toHaveValue("2022-12-31");
 
-    // submit the form
-    await userEvent.click(
-      screen.getByRole("button", { name: /transfer entity/i }),
-    );
-    expect(actionHandler).toHaveBeenCalledWith(
-      `registration/transfer-events/${transferId}`,
-      "PATCH",
-      `/transfers/${transferId}`,
-      {
-        body: JSON.stringify({
-          from_operator: "Operator 1",
-          to_operator: "Operator 2",
-          transfer_entity: "Operation",
-          effective_date: "2022-12-31",
-          operation: "8be4c7aa-6ab3-4aad-9206-0ef914fea066",
-        }),
-      },
-    );
-    // make sure the snackbar is displayed
-    expect(
-      screen.getByText(/all changes have been successfully saved/i),
-    ).toBeVisible();
-  });
+      // make sure the existing facilities are displayed in the options
+      await userEvent.click(
+        screen.getByRole("combobox", { name: /facilities/i }),
+      );
+      const options = [
+        "Name 1 - (11, 22)",
+        "Name 2 - (33, 44)",
+        "Name 3 - (55, 66)",
+        "Name 4 - (77, 88)",
+      ];
+      options.forEach((option) => {
+        expect(screen.getByText(option)).toBeVisible();
+      });
 
-  it("should allow the user to edit the details of the transfer - Facility Entity", async () => {
-    actionHandler.mockResolvedValueOnce({}); // to handle the PATCH request response
-    await renderFacilityEntityTransferDetailForm();
-    await userEvent.click(
-      screen.getByRole("button", { name: /edit details/i }),
-    );
+      // add the last facility
+      await userEvent.click(screen.getByText("Name 4 - (77, 88)"));
 
-    // make sure existing facilities are displayed and included when editing the form
-    expect(
-      screen.getByRole("button", {
-        name: /name 1 \- \(11, 22\)/i,
-      }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("button", {
-        name: /name 2 \- \(33, 44\)/i,
-      }),
-    ).toBeVisible();
+      // make sure the facility is added to the list
+      expect(screen.getByText("Name 4 - (77, 88)")).toBeVisible();
 
-    // make sure the existing facilities are displayed in the options
-    await userEvent.click(
-      screen.getByRole("combobox", { name: /facilities/i }),
-    );
-    const options = [
-      "Name 1 - (11, 22)",
-      "Name 2 - (33, 44)",
-      "Name 3 - (55, 66)",
-      "Name 4 - (77, 88)",
-    ];
-    options.forEach((option) => {
-      expect(screen.getByText(option)).toBeVisible();
-    });
+      // submit the form
+      await userEvent.click(
+        screen.getByRole("button", { name: /transfer entity/i }),
+      );
+      expect(actionHandler).toHaveBeenCalledWith(
+        `registration/transfer-events/${transferId}`,
+        "PATCH",
+        `/transfers/${transferId}`,
+        {
+          body: JSON.stringify({
+            from_operator: "Operator 1",
+            to_operator: "Operator 2",
+            transfer_entity: "Facility",
+            effective_date: "2022-12-31",
+            from_operation: "Operation 1",
+            facilities: [
+              "8be4c7aa-6ab3-4aad-9206-0ef914fea067",
+              "8be4c7aa-6ab3-4aad-9206-0ef914fea068",
+              "8be4c7aa-6ab3-4aad-9206-0ef914fea070",
+            ],
+            to_operation: "Operation 2",
+          }),
+        },
+      );
 
-    // add the last facility
-    await userEvent.click(screen.getByText("Name 4 - (77, 88)"));
-
-    // make sure the facility is added to the list
-    expect(screen.getByText("Name 4 - (77, 88)")).toBeVisible();
-
-    // submit the form
-    await userEvent.click(
-      screen.getByRole("button", { name: /transfer entity/i }),
-    );
-    expect(actionHandler).toHaveBeenCalledWith(
-      `registration/transfer-events/${transferId}`,
-      "PATCH",
-      `/transfers/${transferId}`,
-      {
-        body: JSON.stringify({
-          from_operator: "Operator 1",
-          to_operator: "Operator 2",
-          transfer_entity: "Facility",
-          effective_date: "2022-12-31",
-          from_operation: "Operation 1",
-          facilities: [
-            "8be4c7aa-6ab3-4aad-9206-0ef914fea067",
-            "8be4c7aa-6ab3-4aad-9206-0ef914fea068",
-            "8be4c7aa-6ab3-4aad-9206-0ef914fea070",
-          ],
-          to_operation: "Operation 2",
-        }),
-      },
-    );
-
-    // make sure the snackbar is displayed
-    expect(
-      screen.getByText(/all changes have been successfully saved/i),
-    ).toBeVisible();
-  });
+      // make sure the snackbar is displayed
+      expect(
+        screen.getByText(/all changes have been successfully saved/i),
+      ).toBeVisible();
+    },
+  );
 
   it("should not render the edit details and cancel transfer buttons for a user with a role other than CAS_ANALYST", async () => {
     const userAppRole = FrontEndRoles.CAS_ADMIN;

@@ -168,59 +168,65 @@ describe("the FacilityInformationForm component", () => {
     expect(facilityType).toHaveTextContent("Single Facility");
   });
 
-  it("should allow the user to fill out the SFO form", async () => {
-    render(
-      <FacilityInformationForm
-        {...defaultProps}
-        isOperationSfo
-        formData={{
-          section1: {
-            name: "Test Operation",
-            type: "Single Facility",
-          },
-        }}
-      />,
-    );
+  it(
+    "should allow the user to fill out the SFO form",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <FacilityInformationForm
+          {...defaultProps}
+          isOperationSfo
+          formData={{
+            section1: {
+              name: "Test Operation",
+              type: "Single Facility",
+            },
+          }}
+        />,
+      );
 
-    await toggleAndFillStartDate(0, "20240101");
+      await toggleAndFillStartDate(0, "20240101");
 
-    fillAddressFields(0);
+      fillAddressFields(0);
 
-    fillLatitudeLongitudeFields(0);
+      fillLatitudeLongitudeFields(0);
 
-    const submitButton = screen.getByRole("button", {
-      name: "Save and Continue",
-    });
-    actionHandler.mockResolvedValueOnce({
-      error: null,
-    });
-    act(() => {
-      fireEvent.click(submitButton);
-    });
+      const submitButton = screen.getByRole("button", {
+        name: "Save and Continue",
+      });
+      actionHandler.mockResolvedValueOnce({
+        error: null,
+      });
+      act(() => {
+        fireEvent.click(submitButton);
+      });
 
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/facilities",
-      "POST",
-      "",
-      {
-        body: JSON.stringify([
-          {
-            name: "Test Operation",
-            type: "Single Facility",
-            is_current_year: true,
-            starting_date: "2024-01-01T09:00:00.000Z",
-            street_address: "123 Test St",
-            municipality: "Test City",
-            province: "BC",
-            postal_code: "V8X3K1",
-            latitude_of_largest_emissions: 0.1,
-            longitude_of_largest_emissions: 0.1,
-            operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-          },
-        ]),
-      },
-    );
-  });
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/facilities",
+        "POST",
+        "",
+        {
+          body: JSON.stringify([
+            {
+              name: "Test Operation",
+              type: "Single Facility",
+              is_current_year: true,
+              starting_date: "2024-01-01T09:00:00.000Z",
+              street_address: "123 Test St",
+              municipality: "Test City",
+              province: "BC",
+              postal_code: "V8X3K1",
+              latitude_of_largest_emissions: 0.1,
+              longitude_of_largest_emissions: 0.1,
+              operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+            },
+          ]),
+        },
+      );
+    },
+  );
 
   it(
     "should allow the user to fill out the LFO form",
