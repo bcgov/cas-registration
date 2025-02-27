@@ -62,7 +62,7 @@ class ReportOperationIn(Schema):
     operation_type: str
     operation_bcghgid: str
     bc_obps_regulated_operation_id: str
-    activities: List[str]
-    regulated_products: List[str]
+    activities: List[int]
+    regulated_products: List[int]
     operation_report_type: str
     operation_representative_name: List[int]
