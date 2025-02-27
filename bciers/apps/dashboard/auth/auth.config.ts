@@ -2,6 +2,7 @@ import type { DefaultSession, NextAuthConfig } from "next-auth";
 import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
 import { Errors, IDP } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
+import { mockSession, mockToken } from "@/dashboard/auth/mockSession";
 
 /*
 📌 Module Augmentation
@@ -35,6 +36,7 @@ declare module "next-auth" {
        */
     } & DefaultSession["user"];
   }
+
   /** Returned by getToken from "@auth/core/jwt */
   interface JWT {
     /** OpenID ID Token */
@@ -79,6 +81,8 @@ export default {
   },
   callbacks: {
     async jwt({ token, account, profile, trigger }) {
+      // Set custom token when bypassing Keycloak
+      if (process.env.NEXT_PUBLIC_BYPASS_AUTH) return mockToken;
       try {
         // 🧩 custom properties are configured through module augmentation
         if (profile) {
@@ -153,6 +157,8 @@ export default {
       return token;
     },
     async session({ token, session }) {
+      // Set custom session when bypassing Keycloak
+      if (process.env.NEXT_PUBLIC_BYPASS_AUTH) return mockSession as any;
       // By default, for security, only a subset of the token is returned...
       //💡 if you want to make a nextauth JWT property available to the client session...
       // you have to explicitly forward it here to make it available to the client
