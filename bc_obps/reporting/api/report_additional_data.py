@@ -21,8 +21,8 @@ from ..schema.report_additional_data import ReportAdditionalDataOut, ReportAddit
 def save_report_additional_data(
     request: HttpRequest, version_id: int, payload: ReportAdditionalDataIn
 ) -> tuple[Literal[201], ReportAdditionalData]:
-    report_contact = ReportAdditionalDataService.save_report_additional_data(version_id, payload)
-    return 201, report_contact
+    report_additional_data = ReportAdditionalDataService.save_report_additional_data(version_id, payload)
+    return 201, report_additional_data
 
 
 @router.get(

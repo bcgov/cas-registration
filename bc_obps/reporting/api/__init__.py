@@ -31,3 +31,5 @@ from .report_emission_allocations import get_emission_allocations, save_emission
 from .compliance_data import get_compliance_summary_data
 from .submit import submit_report_version
 from .report_review_facilties import get_selected_facilities
+from .report_additional_data import get_report_additional_data_by_version_id
+from .report_additional_data import save_report_additional_data
