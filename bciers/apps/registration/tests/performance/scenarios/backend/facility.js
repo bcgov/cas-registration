@@ -5,6 +5,7 @@ import {
   randomString,
 } from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
 import { getUserParams, makeRequest } from "../../setup/helpers.js";
+import { sleep } from "k6";
 
 const mockOperationId = "556ceeb0-7e24-4d89-b639-61f625f82084";
 
@@ -87,6 +88,7 @@ function fetchFacilities() {
 export default function () {
   const facilityId = createFacility();
   updateFacility(facilityId);
-  assignBCGHGId(facilityId);
   fetchFacilities();
+  sleep(1); // Mimic user behavior to avoid duplicate BC GHG ID error
+  assignBCGHGId(facilityId);
 }

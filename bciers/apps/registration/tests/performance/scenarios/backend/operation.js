@@ -2,6 +2,7 @@
 import { SERVER_HOST, MOCK_DATA_URL } from "../../setup/constants.js";
 import { getUserParams, makeRequest } from "../../setup/helpers.js";
 import { createFacility } from "./facility.js";
+import { sleep } from "k6";
 
 function createOperation(operationType) {
   const payload = JSON.stringify({
@@ -234,6 +235,7 @@ export default function () {
       getNewEntrantApplication(operationId);
     }
     submitOperation(operationId);
+    sleep(1); // Mimic user behavior to avoid duplicate BC GHG ID error
     assignIds(operationId); // This must happen after submitting the operation
     updateOperation(operationId); // This must happen as the last step because it changes the operation type
   });

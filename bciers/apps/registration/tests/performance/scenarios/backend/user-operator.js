@@ -5,7 +5,7 @@ import {
   randomIntBetween,
   randomString,
 } from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
-import { crypto } from "k6/experimental/webcrypto";
+import { uuidv4 } from "https://jslib.k6.io/k6-utils/1.4.0/index.js";
 
 // We need to have distinct users to be able to create operators and user operators
 function createUser() {
@@ -21,7 +21,7 @@ function createUser() {
     bceid_business_name: "Test Business",
   });
 
-  const newUserGuid = crypto.randomUUID();
+  const newUserGuid = uuidv4();
 
   const params = {
     headers: {
@@ -89,66 +89,6 @@ const createOperatorAndUserOperator = (newUserGuid) => {
     "Operator and UserOperator creation failed",
   );
   return JSON.parse(res.body).user_operator_id;
-};
-
-// TODO: Remove this if not being used
-const updateOperatorAndUserOperator = (newUserGuid, userOperatorId) => {
-  const payload = JSON.stringify({
-    legal_name: `Updated Legal Name ${randomString(5)}`, // to avoid duplicate legal names
-    trade_name: "Updated Trade Name",
-    business_structure: "Sole Proprietorship",
-    cra_business_number: randomIntBetween(100000000, 999999999),
-    bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
-      1000000,
-      9999999,
-    )}`,
-    parent_operators_array: [
-      {
-        po_legal_name: "Updated Parent Operator Legal Name",
-        po_trade_name: "Updated  Parent Operator Trade Name",
-        po_cra_business_number: 987654321,
-        po_bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
-          1000000,
-          9999999,
-        )}`,
-        po_business_structure: "BC Corporation",
-        po_website: "http://www.updatedparent.com",
-        po_physical_street_address: "Updated 456 Test St",
-        po_physical_municipality: "Updated TestVille",
-        po_physical_province: "BC",
-        po_physical_postal_code: "V1V 1V1",
-        po_mailing_address_same_as_physical: true,
-        operator_index: 1,
-      },
-    ],
-    physical_street_address: "Updated 123 Test St",
-    physical_municipality: "Updated TestVille",
-    physical_province: "ON",
-    physical_postal_code: "V2V 2V2",
-    mailing_street_address: "Updated 321 Test St",
-    mailing_municipality: "Updated TestVille2",
-    mailing_province: "BC",
-    mailing_postal_code: "V3V 3V3",
-    website: "http://www.updatedtest.com",
-    mailing_address_same_as_physical: false,
-    operator_has_parent_operators: true,
-  });
-
-  const params = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: JSON.stringify({ user_guid: newUserGuid }),
-    },
-  };
-
-  makeRequest(
-    "PUT",
-    `${SERVER_HOST}/user-operators/${userOperatorId}`,
-    payload,
-    params,
-    200,
-    "Operator and UserOperator update failed",
-  );
 };
 
 const currentUsersOperatorHasRegisteredOperation = () => {
@@ -260,8 +200,8 @@ const updateUserOperatorStatus = (userOperatorId) => {
   });
 
   makeRequest(
-    "PUT",
-    `${SERVER_HOST}/user-operators/${userOperatorId}/update-status`,
+    "PATCH",
+    `${SERVER_HOST}/user-operators/${userOperatorId}/status`,
     payload,
     getUserParams("cas_director"),
     200,
@@ -283,7 +223,6 @@ const fetchUserOperators = () => {
 export default function () {
   const newUserGuid = createUser();
   const newUserOperatorId = createOperatorAndUserOperator(newUserGuid);
-  updateOperatorAndUserOperator(newUserGuid, newUserOperatorId);
   currentUsersOperatorHasRegisteredOperation();
   currentUsersOperatorHasRequiredFields();
   currentUserIsApprovedAdmin();

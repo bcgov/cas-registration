@@ -2,8 +2,6 @@
 import { SERVER_HOST } from "../../setup/constants.js";
 import { getUserParams, makeRequest } from "../../setup/helpers.js";
 
-import { fail } from "k6";
-
 const fromOperatorId = "a35fb5ad-edd9-4465-982e-81b824644d07";
 const toOperatorId = "685d581b-5698-411f-ae00-de1d97334a71";
 const operationId = "8494e89c-489b-441b-a05d-e935b1d82487";
@@ -68,8 +66,11 @@ function fetchTransferEvents() {
 }
 
 export default function () {
-  const transferEventId = createTransferEvent();
-  updateTransferEvent(transferEventId);
-  deleteTransferEvent(transferEventId);
+  // Following functions are commented out because we cannot test them easily in the current setup
+  // Since we are using the same operationId for all requests, we cannot create multiple transfer events at the same time
+  // const transferEventId = createTransferEvent();
+  // updateTransferEvent(transferEventId);
+  // deleteTransferEvent(transferEventId);
+
   fetchTransferEvents();
 }
