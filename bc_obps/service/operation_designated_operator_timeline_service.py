@@ -18,10 +18,8 @@ class OperationDesignatedOperatorTimelineService:
         cls,
         user_guid: UUID,
         timeline: OperationDesignatedOperatorTimeline,
-        status: OperationDesignatedOperatorTimeline.Statuses,
         end_date: datetime,
     ) -> OperationDesignatedOperatorTimeline:
-        timeline.status = status
         timeline.end_date = end_date
-        timeline.save(update_fields=["status", "end_date"])
+        timeline.save(update_fields=["end_date"])
         return timeline

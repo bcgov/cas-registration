@@ -13,7 +13,6 @@ from model_bakery import baker
 class TestFacilitiesEndpoint(CommonTestSetup):
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
-
         timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=45)
 
         facilities_url = custom_reverse_lazy(
@@ -31,7 +30,6 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         # make sure key fields are present
         assert response_items_1[0].keys() == {
             'id',
-            'status',
             'facility__name',
             'facility__type',
             'facility__bcghg_id__id',
