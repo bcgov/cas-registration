@@ -220,6 +220,7 @@ class OperationServiceV2:
         payload: OperationInformationIn,
     ) -> Operation:
 
+        # brianna here
         operation_data = payload.dict(
             include={
                 'name',
@@ -250,48 +251,33 @@ class OperationServiceV2:
                 'start_date': datetime.now(ZoneInfo("UTC")),
             },
         )
-
         # create documents
-        operation_documents = [
-            doc
-            for doc in [
-                *(
-                    [
-                        DocumentDataAccessServiceV2.create_document(
-                            user_guid,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                            'boundary_map',
-                            operation.id,
+        if payload.boundary_map:
+                        breakpoint()
+                        DocumentDataAccessServiceV2.set_document(
+                            operation_id=operation.id,
+                            user_guid=user_guid,
+                            document_type='boundary_map',
+                            document_file=payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
                         )
-                    ]
-                    if payload.boundary_map
-                    else []
-                ),
-                *(
-                    [
-                        DocumentDataAccessServiceV2.create_document(
-                            user_guid,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                            'process_flow_diagram',
-                            operation.id,
+                
+                   
+        if payload.process_flow_diagram:
+                        DocumentDataAccessServiceV2.set_document(
+                            operation_id=operation.id,
+                            user_guid=user_guid,
+                            document_type='process_flow_diagram',
+                            document_file=payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
                         )
-                    ]
-                    if payload.process_flow_diagram
-                    else []
-                ),
-                *(
-                    DocumentDataAccessServiceV2.create_document(
-                        user_guid,
-                        payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                        'new_entrant_application',
-                        operation.id,
-                    )
-                    if payload.new_entrant_application
-                    else []
-                ),
-            ]
-        ]
-        operation.documents.add(*operation_documents)
+        if payload.new_entrant_application:
+                    DocumentDataAccessServiceV2.set_document(
+                            operation_id=operation.id,
+                            user_guid=user_guid,
+                            document_type='new_entrant_application',
+                            document_file=payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
+                        )
+                    
+       
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
@@ -311,9 +297,9 @@ class OperationServiceV2:
         cls,
         user_guid: UUID,
         operation_id: UUID | None,
-        payload: Union[OperationInformationIn, OperationInformationInUpdate],
+        payload,
+       
     ) -> Operation:
-
         # can't optimize this much more without looking at files--the extra hits to operation are in the middleware, and the multi hits to document are from the resolvers
         operation: Operation
         if operation_id:

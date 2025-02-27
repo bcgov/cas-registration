@@ -113,6 +113,10 @@ class OperationInformationIn(ModelSchema):
         model = Operation
         fields = ["name", 'type']
 
+class OperationInformationInWithDocuments(OperationInformationIn):
+    boundary_map: UploadedFile = File(...)
+    process_flow_diagram: UploadedFile = File(...)
+    new_entrant_application: UploadedFile = File(...)
 
 class OperationInformationInUpdate(OperationInformationIn):
     operation_representatives: List[int]

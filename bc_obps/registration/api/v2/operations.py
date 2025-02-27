@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 from registration.constants import V2
 from registration.models.operation import Operation
 from typing import Tuple
-from registration.schema.v2.operation import OperationCreateOut, OperationInformationIn
+from registration.schema.v2.operation import OperationCreateOut, OperationInformationIn, OperationInformationInWithDocuments
 from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -77,4 +77,8 @@ def register_create_operation_information(
     process_flow_diagram: UploadedFile = File(...),
 ) -> Tuple[Literal[201], Operation]:
     breakpoint()
-    return 201, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, details)
+    payload: OperationInformationInWithDocuments = details.dict()
+    payload['boundary_map'] = boundary_map
+    payload['process_flow_diagram'] = process_flow_diagram
+    breakpoint()
+    return 201, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload,)
