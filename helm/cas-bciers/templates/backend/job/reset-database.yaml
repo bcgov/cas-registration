@@ -62,7 +62,7 @@ spec:
             - |
               psql -c "drop schema if exists public cascade;";
               psql -c "create schema public;";
-              psql -c "grant all on schema public to $(APP_USER);";
+              psql -c "grant all privileges on schema public to $(APP_USER) with grant option;";
               psql -c "drop schema if exists erc cascade;";
               psql -c "drop schema if exists erc_history cascade;";
               psql -c "drop schema if exists common cascade;";
