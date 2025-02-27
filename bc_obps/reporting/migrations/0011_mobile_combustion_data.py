@@ -183,7 +183,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Default Emission Factor', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Default EF', field_units='kg/fuel units')
     )
     # CO2 - Site-specific EF - Unit-Fuel-CO2 Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -196,7 +196,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Site-specific EF', field_units='kg/fuel units')
     )
     # CO2 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
@@ -232,7 +232,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default EF', field_units='kg/fuel units')
     )
     # CH4 - Site-specific EF - Unit-Fuel-CH4 Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -245,7 +245,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Emission Factor', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Site-specific EF', field_units='kg/fuel units')
     )
     # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
@@ -280,7 +280,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default EF', field_units='kg/fuel units')
     )
     # N2O - Site-specific EF - Unit-Fuel-CO2 Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -293,7 +293,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Emission Factor', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Site-specific EF', field_units='kg/fuel units')
     )
     # N2O - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
