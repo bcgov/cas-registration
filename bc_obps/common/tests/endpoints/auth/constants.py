@@ -286,7 +286,6 @@ ENDPOINTS = {
         {
             "method": "put",
             "endpoint_name": "update_operator_and_user_operator",
-            "kwargs": {"user_operator_id": MOCK_UUID},
         },
         {
             "method": "put",
