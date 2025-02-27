@@ -107,14 +107,14 @@ CONFIG_REPORTING_FIELDS = [
         "methodologies": ["Default HHV/Default EF"],
         "reporting_fields": [
             {"name": "Fuel Default High Heating Value"},
-            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-CH4 Default HHV-Default EF", "units": "kg/GJ"},
         ],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
         "gas_types": ["CH4"],
         "methodologies": ["Default EF"],
-        "reporting_fields": [{"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/fuel units"}],
+        "reporting_fields": [{"name": "Unit-Fuel-CH4 Default EF", "units": "kg/fuel units"}],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
@@ -122,14 +122,14 @@ CONFIG_REPORTING_FIELDS = [
         "methodologies": ["Measured HHV/Default EF"],
         "reporting_fields": [
             {"name": "Fuel Annual Weighted Average High Heating Value"},
-            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-CH4 Measured HHV-Default EF", "units": "kg/GJ"},
         ],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
         "gas_types": ["CH4"],
         "methodologies": ["Measured EF"],
-        "reporting_fields": [{"name": "Unit-Fuel-CH4 Measured Emission Factor", "units": "kg/fuel units"}],
+        "reporting_fields": [{"name": "Unit-Fuel-CH4 Measured EF", "units": "kg/fuel units"}],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
@@ -138,7 +138,7 @@ CONFIG_REPORTING_FIELDS = [
         "reporting_fields": [
             {"name": "Unit-Fuel Annual Steam Generated"},
             {"name": "Boiler Ratio"},
-            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-CH4 Measured Steam-Default EF", "units": "kg/GJ"},
         ],
     },
     {
@@ -147,7 +147,7 @@ CONFIG_REPORTING_FIELDS = [
         "methodologies": ["Heat Input/Default EF"],
         "reporting_fields": [
             {"name": "Unit-Fuel Heat Input"},
-            {"name": "Unit-Fuel-CH4 Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-CH4 Heat Input-Default EF", "units": "kg/GJ"},
         ],
     },
     {
@@ -168,14 +168,14 @@ CONFIG_REPORTING_FIELDS = [
         "methodologies": ["Default HHV/Default EF"],
         "reporting_fields": [
             {"name": "Fuel Default High Heating Value"},
-            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-N2O Default HHV-Default EF", "units": "kg/GJ"},
         ],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
         "gas_types": ["N2O"],
         "methodologies": ["Default EF"],
-        "reporting_fields": [{"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/fuel units"}],
+        "reporting_fields": [{"name": "Unit-Fuel-N2O Default EF", "units": "kg/fuel units"}],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
@@ -183,14 +183,14 @@ CONFIG_REPORTING_FIELDS = [
         "methodologies": ["Measured HHV/Default EF"],
         "reporting_fields": [
             {"name": "Fuel Annual Weighted Average High Heating Value"},
-            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-N2O Measured HHV-Default EF", "units": "kg/GJ"},
         ],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
         "gas_types": ["N2O"],
         "methodologies": ["Measured EF"],
-        "reporting_fields": [{"name": "Unit-Fuel-N2O Measured Emission Factor", "units": "kg/fuel units"}],
+        "reporting_fields": [{"name": "Unit-Fuel-N2O Measured EF", "units": "kg/fuel units"}],
     },
     {
         "source_type": "Fuel combustion for electricity generation",
@@ -199,7 +199,7 @@ CONFIG_REPORTING_FIELDS = [
         "reporting_fields": [
             {"name": "Unit-Fuel Annual Steam Generated"},
             {"name": "Boiler Ratio"},
-            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-N2O Measured Steam-Default EF", "units": "kg/GJ"},
         ],
     },
     {
@@ -208,7 +208,7 @@ CONFIG_REPORTING_FIELDS = [
         "methodologies": ["Heat Input/Default EF"],
         "reporting_fields": [
             {"name": "Unit-Fuel Heat Input"},
-            {"name": "Unit-Fuel-N2O Default Emission Factor", "units": "kg/GJ"},
+            {"name": "Unit-Fuel-N2O Heat Input-Default EF", "units": "kg/GJ"},
         ],
     },
     {
