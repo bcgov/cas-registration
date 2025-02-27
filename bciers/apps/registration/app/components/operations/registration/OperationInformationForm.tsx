@@ -138,6 +138,13 @@ const OperationInformationForm = ({
       // if (key !== "boundary_map" && key !== "process_flow_diagrom")
       trueFormData.append(key, body[key]);
     }
+    // if they haven't uploaded a new file we only show the filename to save fetching a full file, and then on submission update we do nothing with it?
+    if (typeof trueFormData["boundary_map"] === "string") {
+      trueFormData.delete("boundary_map");
+    }
+    if (typeof trueFormData["process_flow_diagram"] === "string") {
+      trueFormData.delete("process_flow_diagram");
+    }
 
     for (const [key, value] of trueFormData.entries()) {
       console.log(`Key: ${key}, Value: ${value}`);
@@ -155,14 +162,13 @@ const OperationInformationForm = ({
         return { error: resolve.error };
       } else if (resolve?.id) {
         // this form step needs a custom push (can't use the push in MultiStepBase) because the resolve.id is in the url
-        // const nextStepUrl = `/register-an-operation/${resolve.id}/${
-        //   step + 1
-        // }?operations_title=${encodeURIComponent(resolve.name)}`;
-        // router.push(nextStepUrl);
+        const nextStepUrl = `/register-an-operation/${resolve.id}/${
+          step + 1
+        }?operations_title=${encodeURIComponent(resolve.name)}`;
+        router.push(nextStepUrl);
         return resolve;
       }
     });
-    console.log("response", response.json());
     return response;
   };
   const handleSelectOperationChange = async (data: any) => {

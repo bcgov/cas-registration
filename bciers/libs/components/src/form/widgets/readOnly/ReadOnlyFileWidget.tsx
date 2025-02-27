@@ -2,10 +2,6 @@
 
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import { useEffect, useState } from "react";
-import {
-  extractFileInfo,
-  FilesInfo,
-} from "@bciers/components/form/widgets/FileWidget";
 
 const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
   id,
@@ -23,17 +19,20 @@ const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  console.log("value in readonly", value);
   return (
     <div id={id} className="read-only-widget">
       {value ? (
-        <FilesInfo
-          filesInfo={extractFileInfo(fileInfo)}
-          preview={options.filePreview}
-          registry={registry}
-        />
+        <ul className="m-0 py-0 flex flex-col justify-start">
+          <li>
+            {/* brianna gotta make this work */}
+            <a download={""} href={"#"} className="file-download">
+              {value.name}
+            </a>
+          </li>
+        </ul>
       ) : (
-        <>No attachment was uploaded</>
+        <span className="ml-4 text-lg">No attachment was uploaded</span>
       )}
     </div>
   );

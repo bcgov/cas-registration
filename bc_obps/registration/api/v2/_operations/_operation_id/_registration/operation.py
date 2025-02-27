@@ -2,7 +2,7 @@ from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from service.operation_service import OperationService
-from registration.schema.v2.operation import OperationInformationIn, OperationUpdateOut, OperationRegistrationOut
+from registration.schema.v2.operation import OperationInformationIn, OperationOutWithDocuments, OperationUpdateOut, OperationRegistrationOut
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
 from common.permissions import authorize
@@ -16,7 +16,7 @@ from registration.schema.generic import Message
 ##### GET #####
 @router.get(
     "/operations/{uuid:operation_id}/registration/operation",
-    response={200: OperationRegistrationOut, custom_codes_4xx: Message},
+    response={200: OperationOutWithDocuments, custom_codes_4xx: Message},
     tags=V2,
     description="""Gets the registration purpose, regulated products (if applicable), and select data of a specific operation by its ID.
     The endpoint ensures that only authorized industry users can access operations belonging to their operator. Unauthorized access attempts raise an error.""",

@@ -96,7 +96,7 @@ class OperationInformationIn(ModelSchema):
 class OperationInformationInWithDocuments(OperationInformationIn):
     boundary_map: UploadedFile = File(...)
     process_flow_diagram: UploadedFile = File(...)
-    new_entrant_application: UploadedFile = File(...)
+    new_entrant_application: UploadedFile = File(None)
 
 
 class OperationInformationInUpdate(OperationInformationIn):
@@ -135,14 +135,11 @@ class OperationOutV2(ModelSchema):
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     operator: Optional[OperatorForOperationOut] = None
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
-    registration_purpose: Optional[str] = None
+    # boundary_map: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
     date_of_first_shipment: Optional[str] = None
-    new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     operation_representatives: Optional[List[int]] = []
 
@@ -186,26 +183,29 @@ class OperationOutV2(ModelSchema):
 
 
 class OperationOutWithDocuments(OperationOutV2):
-    @staticmethod
-    def resolve_boundary_map(obj: Operation) -> Optional[str]:
-        boundary_map = obj.get_boundary_map()
-        if boundary_map:
-            return file_to_data_url(boundary_map)
-        return None
+    boundary_map: UploadedFile = File(...),
+    process_flow_diagram: UploadedFile = File(...),
 
-    @staticmethod
-    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
-        process_flow_diagram = obj.get_process_flow_diagram()
-        if process_flow_diagram:
-            return file_to_data_url(process_flow_diagram)
-        return None
+    # @staticmethod
+    # def resolve_boundary_map(obj: Operation) -> Optional[str]:
+    #     boundary_map = obj.get_boundary_map()
+    #     if boundary_map:
+    #         return file_to_data_url(boundary_map)
+    #     return None
 
-    @staticmethod
-    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
-        new_entrant_application = obj.get_new_entrant_application()
-        if new_entrant_application:
-            return file_to_data_url(new_entrant_application)
-        return None
+    # @staticmethod
+    # def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
+    #     process_flow_diagram = obj.get_process_flow_diagram()
+    #     if process_flow_diagram:
+    #         return file_to_data_url(process_flow_diagram)
+    #     return None
+
+    # @staticmethod
+    # def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
+    #     new_entrant_application = obj.get_new_entrant_application()
+    #     if new_entrant_application:
+    #         return file_to_data_url(new_entrant_application)
+    #     return None
 
 
 class OperationCreateOut(ModelSchema):

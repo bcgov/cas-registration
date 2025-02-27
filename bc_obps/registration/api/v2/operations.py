@@ -80,9 +80,9 @@ def register_create_operation_information(
     boundary_map: UploadedFile = File(...),  # File fields as separate params
     process_flow_diagram: UploadedFile = File(...),
 ) -> Tuple[Literal[201], Operation]:
-    payload: OperationInformationInWithDocuments = details.dict()
-    payload['boundary_map'] = boundary_map
-    payload['process_flow_diagram'] = process_flow_diagram
+
+    payload = OperationInformationInWithDocuments(**details.dict(), boundary_map=boundary_map,process_flow_diagram=process_flow_diagram)
+
     return 201, OperationServiceV2.register_operation_information(
         get_current_user_guid(request),
         None,
