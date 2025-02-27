@@ -68,19 +68,25 @@ class TestRlsManager(TestCase):
         # Tables and sequences that need to be granted INSERT and UPDATE privileges
         # These are the tables that have historical records for m2m relationships
         # At the time of writing this, there is no way to specify the schema for these tables in Django model field
-        tables_and_sequences = [
+        tables = [
             'registration_historicalfacility_well_authorization_numbers',
-            'registration_historicalfacility_well_authori_m2m_history_id_seq',
             'registration_historicaloperation_contacts',
-            'registration_historicaloperation_contacts_m2m_history_id_seq',
             'registration_historicaloperation_activities',
-            'registration_historicaloperation_activities_m2m_history_id_seq',
             'registration_historicaloperation_regulated_products',
+        ]
+        for table in tables:
+            mock_cursor_instance.execute.assert_any_call(
+                SQL("grant select, update on public.{} to public;").format(Identifier(table))
+            )
+        sequences = [
+            'registration_historicalfacility_well_authori_m2m_history_id_seq',
+            'registration_historicaloperation_contacts_m2m_history_id_seq',
+            'registration_historicaloperation_activities_m2m_history_id_seq',
             'registration_historicaloperation_regulated_p_m2m_history_id_seq',
         ]
-        for item in tables_and_sequences:
+        for sequence in sequences:
             mock_cursor_instance.execute.assert_any_call(
-                SQL("grant insert, update, select on public.{} to public;").format(Identifier(item))
+                SQL("grant usage, select, update on public.{} to public;").format(Identifier(sequence))
             )
 
     @patch('rls.utils.manager.settings')
