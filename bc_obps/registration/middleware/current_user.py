@@ -4,7 +4,6 @@ from typing import Callable, Optional
 from uuid import UUID
 from django.core.cache import cache
 from django.http import JsonResponse, HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404
 from registration.constants import USER_CACHE_PREFIX
 from registration.models import User
 
@@ -45,7 +44,7 @@ class CurrentUserMiddleware:
             raise ValueError(f"Failed to extract user GUID: {e}")
 
     @staticmethod
-    def get_or_cache_user(user_guid: UUID) -> User:
+    def get_or_cache_user(user_guid: UUID) -> Optional[User]:
         """
         Retrieves the full user object from the cache or database.
         """
@@ -53,7 +52,9 @@ class CurrentUserMiddleware:
         user: Optional[User] = cache.get(cache_key)
 
         if not user:
-            user = get_object_or_404(User, user_guid=user_guid)
-            cache.set(cache_key, user, 300)  # Cache for 5 minutes
-
+            try:
+                user = User.objects.get(user_guid=user_guid)
+                cache.set(cache_key, user, 300)  # Cache for 5 minutes
+            except User.DoesNotExist:
+                pass  # Gracefully handle the case where the user does not exist
         return user
