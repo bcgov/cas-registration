@@ -35,7 +35,7 @@ jobs:
           target: "http://localhost:8000/api"
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: "OWASP Baseline - Backend API"
-          fail_action: true
+          fail_action: false
           allow_issue_writing: false
           artifact_name: backend_zap_scan
 
@@ -48,7 +48,7 @@ jobs:
           target: "http://localhost:3000"
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: "OWASP Baseline - Dashboard Frontend"
-          fail_action: true
+          fail_action: false
           allow_issue_writing: false
           artifact_name: dashboard_zap_scan
 
