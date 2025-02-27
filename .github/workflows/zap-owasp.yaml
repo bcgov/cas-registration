@@ -19,17 +19,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Install Docker and Docker Compose
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
+      # # Install Docker and Docker Compose
+      # - name: Install Docker Compose
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y docker-compose
 
       # Start all services using Docker Compose
       - name: Start Services with Docker Compose
         run: |
           echo "Starting services..."
-          docker-compose -f ./bciers/docker-compose-bciers-apps.yaml up -d --wait
+          docker compose -f ./bciers/docker-compose-bciers-apps.yaml up -d --wait
           echo "Waiting for services to be ready..."
 
       # - name: ssh into it
