@@ -134,6 +134,7 @@ const OperationInformationForm = ({
         "section3",
       ]),
     );
+    console.log("in handle submit body", body);
     const response = await actionHandler(
       isCreating ? postEndpoint : putEndpoint,
       isCreating ? "POST" : "PUT",
@@ -222,7 +223,7 @@ const OperationInformationForm = ({
     setPendingFormState({});
     setIsConfirmPurposeChangeModalOpen(false);
   };
-
+  console.log("confirmedformstate", confirmedFormState);
   return (
     <>
       <ConfirmChangeOfRegistrationPurposeModal
@@ -239,6 +240,7 @@ const OperationInformationForm = ({
         step={step}
         steps={steps}
         error={error}
+        formContext={{ operationId: confirmedFormState?.id }}
         onChange={(e: IChangeEvent) => {
           let newSelectedOperation = e.formData?.section1?.operation;
           let newSelectedPurpose = e.formData?.section1?.registration_purpose;

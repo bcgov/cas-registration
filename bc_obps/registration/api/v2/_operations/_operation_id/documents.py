@@ -1,54 +1,52 @@
 from typing import List, Literal, Tuple
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
-from django.db import transaction
+from django.db import  transaction
 from django.http import HttpRequest
 from ninja import File, Form, UploadedFile
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report_attachment import ReportAttachmentOut
 from reporting.service.report_attachment_service import ReportAttachmentService
+from service.document_service_v2 import DocumentServiceV2
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from .router import router
+from registration.api.router import router
 
 
 @router.post(
-    "report-version/{report_version_id}/attachments",
+    "registration/{operation_id}/documents",
     response={200: List[ReportAttachmentOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Saves the reporting attachments, passed as text in the payload.""",
+    description="""Saves the operation registration attachments, passed as text in the payload.""",
     auth=authorize("approved_industry_user"),
 )
 @transaction.atomic()
-def save_report_attachments(
+def save_registration_document(
     request: HttpRequest,
-    report_version_id: int,
-    file_types: Form[List[str]], # can put this in a schema like the other form, we probably already have one
-    files: List[UploadedFile] = File(...), # this is django ninja streaming files for us
-) -> Tuple[Literal[200], List[ReportAttachmentOut]]:
-
-    if len(file_types) != len(files):
-        raise IndexError("file_types and files parameters must be of the same length")
+    operation_id: int,
+    document_type: str,
+    file: UploadedFile = File(...),
+) -> Tuple[Literal[200], ReportAttachmentOut]:
+    breakpoint()
 
     user_guid = get_current_user_guid(request)
 
-    for index, file_type in enumerate(file_types):
-        file = files[index]
-        ReportAttachmentService.set_attachment(report_version_id, user_guid, file_type, file)
+    DocumentServiceV2.create_or_replace_operation_document(user_guid, operation_id, file, document_type)
 
-    return get_report_attachments(request, report_version_id)
+    return get_registration_document(request, operation_id)
 
 
 @router.get(
-    "report-version/{report_version_id}/attachments",
+    "registration/{operation_id}/attachments",
     response={200: List[ReportAttachmentOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns the list of file attachments for a report version.""",
     auth=authorize("approved_industry_user"),
 )
-def get_report_attachments(
+def get_registration_document(
     request: HttpRequest,
-    report_version_id: int,
+    operation_id: int,
+    document_type: str,
 ) -> Tuple[Literal[200], List[ReportAttachmentOut]]:
 
-    return 200, ReportAttachmentService.get_attachments(report_version_id)  # type: ignore
+    return 200, DocumentServiceV2.get_operation_document_by_type_if_authorized(get_current_user_guid(request),operation_id, document_type)  

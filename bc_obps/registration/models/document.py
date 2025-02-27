@@ -6,6 +6,7 @@ from registration.models import DocumentType, TimeStampedModel
 from simple_history.models import HistoricalRecords
 from django.core.files.storage import default_storage
 from registration.models.rls_configs.document import Rls as DocumentRls
+import os
 
 
 class Document(TimeStampedModel):
@@ -45,3 +46,7 @@ class Document(TimeStampedModel):
             default_storage.delete(self.file.name)
 
         super().delete(*args, **kwargs)
+
+    @property
+    def filename(self):
+        return os.path.basename(self.file.name)

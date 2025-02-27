@@ -22,6 +22,7 @@
       "@/compliance/*": ["apps/compliance/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/registration/*": ["apps/registration/*"],
+      "@/reporting/*": ["apps/reporting/*"],
       "@bciers/actions": ["libs/actions/src/index.ts"],
       "@bciers/actions/*": ["libs/actions/src/*"],
       "@bciers/actions/server": ["libs/actions/src/server.ts"],
