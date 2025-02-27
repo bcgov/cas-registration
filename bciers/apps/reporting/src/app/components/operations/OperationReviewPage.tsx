@@ -7,6 +7,11 @@ import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistration
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import OperationReviewForm from "./OperationReviewForm";
+import {
+  ELECTRICITY_IMPORT_OPERATION,
+  POTENTIAL_REPORTING_OPERATION,
+  REPORTING_OPERATION,
+} from "@reporting/src/app/utils/constants";
 
 export default async function OperationReviewPage({
   version_id,
@@ -26,6 +31,13 @@ export default async function OperationReviewPage({
       reportOperation.report_operation_representatives,
   };
   const allRepresentatives = reportOperation.report_operation_representatives;
+  const showRegulatedProducts = ![
+    ELECTRICITY_IMPORT_OPERATION,
+    REPORTING_OPERATION,
+    POTENTIAL_REPORTING_OPERATION,
+  ].includes(registrationPurposeString);
+
+  console.log("showRegulatedProducts", showRegulatedProducts);
 
   return (
     <OperationReviewForm
@@ -38,6 +50,7 @@ export default async function OperationReviewPage({
       registrationPurpose={registrationPurposeString}
       facilityReport={facilityReport}
       allRepresentatives={allRepresentatives}
+      showRegulatedProducts={showRegulatedProducts}
     />
   );
 }
