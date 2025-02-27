@@ -10,11 +10,12 @@ env:
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   KEYCLOAK_LOGIN_URL: ${{ secrets.KEYCLOAK_LOGIN_URL }}
   GH_TOKEN: ${{ github.token }}
+  ZAP_FAILURE_RISK_LEVEL: 3
 
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -37,16 +38,7 @@ jobs:
           issue_title: "OWASP Baseline - Backend API"
           fail_action: false
           allow_issue_writing: false
-          artifact_name: backend_zap_scan
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: backend_zap_scan
-          path: backend_zap_scan
-
-      - name: Dispaly artifact structure
-        run: |
-          ls -R backend_zap_scan
+          artifact_name: zap_scan_backend
 
       # Run ZAP Scan for Frontend Apps
       - name: ZAP Scan - Dashboard Frontend
@@ -59,7 +51,7 @@ jobs:
           issue_title: "OWASP Baseline - Dashboard Frontend"
           fail_action: false
           allow_issue_writing: false
-          artifact_name: dashboard_zap_scan
+          artifact_name: zap_scan_dashboard
 
       - name: ZAP Scan - Administration Frontend
         uses: zaproxy/action-baseline@v0.14.0
@@ -71,7 +63,7 @@ jobs:
           issue_title: "OWASP Baseline - Administration Frontend"
           fail_action: false
           allow_issue_writing: false
-          artifact_name: administration_zap_scan
+          artifact_name: zap_scan_administration
 
       - name: ZAP Scan - Registration Frontend
         uses: zaproxy/action-baseline@v0.14.0
@@ -83,7 +75,7 @@ jobs:
           issue_title: "OWASP Baseline - Registration Frontend"
           fail_action: false
           allow_issue_writing: false
-          artifact_name: registration_zap_scan
+          artifact_name: zap_scan_registration
 
       - name: ZAP Scan - Compliance Frontend
         uses: zaproxy/action-baseline@v0.14.0
@@ -95,7 +87,7 @@ jobs:
           issue_title: "OWASP Baseline - Compliance Frontend"
           fail_action: false
           allow_issue_writing: false
-          artifact_name: compliance_zap_scan
+          artifact_name: zap_scan_compliance
 
       - name: ZAP Scan - Reporting Frontend
         uses: zaproxy/action-baseline@v0.14.0
@@ -107,7 +99,26 @@ jobs:
           issue_title: "OWASP Baseline - Reporting Frontend"
           fail_action: false
           allow_issue_writing: false
-          artifact_name: reporting_zap_scan
+          artifact_name: zap_scan_reporting
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: zap
+          pattern: zap_scan*
+
+      - name: Check error severity
+        run: |
+          find ./zap/ -type f | \
+          grep "report_json.json" | \
+          xargs cat | \
+          jq '. as $parent | .site[].alerts[] | select(.riskcode | tonumber >= 2) | { host: $parent.site[0]."@name", error: .name, risk: .riskdesc, alertRef: .pluginid, urls: [.instances[].uri] | join(", ") }' \
+          > errors.txt
+
+          if [ -s errors.txt ]; then
+            # Errors were found
+            cat errors.txt
+            exit 1
+          fi
 
   # Retry job in case of failure
   retry-on-failure:
