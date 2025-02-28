@@ -54,4 +54,4 @@ compliance_obligation = Recipe(
     status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
     penalty_status=ComplianceObligation.PenaltyStatus.NONE,
     obligation_deadline="2025-11-30",
-) 
+)

@@ -11,7 +11,11 @@ interface Props {
 }
 
 export default function ComplianceSummaries({ initialData }: Props) {
-  if (!initialData || initialData.rows.length === 0 || initialData.row_count === 0) {
+  if (
+    !initialData ||
+    initialData.rows.length === 0 ||
+    initialData.row_count === 0
+  ) {
     return <div>No compliance summaries data in database.</div>;
   }
 

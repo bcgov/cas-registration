@@ -58,7 +58,7 @@ class ComplianceSummary(TimeStampedModel):
     def compliance_status(self):
         """
         Compute compliance status based on excess_emissions and credited_emissions.
-        
+
         Returns:
             str: One of the ComplianceStatus choices
         """
