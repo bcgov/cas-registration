@@ -104,6 +104,12 @@ class OperationInformationInWithDocuments(OperationInformationIn):
 class OperationInformationInUpdate(OperationInformationIn):
     operation_representatives: List[int]
 
+class OperationInformationInUpdateWithDocuments(OperationInformationInUpdate):
+    boundary_map: UploadedFile = File(None)
+    process_flow_diagram: UploadedFile = File(None)
+    new_entrant_application: UploadedFile = File(None)
+    # brianna optedin
+
 
 class OptedInOperationDetailOut(ModelSchema):
     class Meta:

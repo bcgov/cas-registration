@@ -26,6 +26,26 @@ interface OperationInformationFormProps {
   steps: string[];
 }
 
+export const convertRjsfFormData = (rjsfFormData: { [key: string]: any }) => {
+  const formData = new FormData();
+  for (const key in rjsfFormData) {
+    // if (key !== "boundary_map" && key !== "process_flow_diagrom")
+    formData.append(key, rjsfFormData[key]);
+  }
+  // if they haven't uploaded a new file we only show the filename to save fetching a full file, and then on submission update we do nothing with it?
+  if (typeof formData["boundary_map"] === "string") {
+    formData.delete("boundary_map");
+  }
+  if (typeof formData["process_flow_diagram"] === "string") {
+    formData.delete("process_flow_diagram");
+  }
+
+  for (const [key, value] of formData.entries()) {
+    console.log(`Key: ${key}, Value: ${value}`);
+  }
+  return formData;
+};
+
 const OperationInformationForm = ({
   rawFormData,
   schema: initialSchema,
@@ -124,38 +144,24 @@ const OperationInformationForm = ({
   }
 
   const handleSubmit = async (data: { formData?: any }) => {
+    console.log("in handleSubmit registration");
+    debugger;
     const isCreating = !data.formData?.section1?.operation;
-    const postEndpoint = `registration/operations`;
-    const putEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
-    const body = createUnnestedFormData(data.formData, [
-      "section1",
-      "section2",
-      "section3",
-    ]);
-    console.log("body", body);
-    const trueFormData = new FormData();
-    for (const key in body) {
-      // if (key !== "boundary_map" && key !== "process_flow_diagrom")
-      trueFormData.append(key, body[key]);
-    }
-    // if they haven't uploaded a new file we only show the filename to save fetching a full file, and then on submission update we do nothing with it?
-    if (typeof trueFormData["boundary_map"] === "string") {
-      trueFormData.delete("boundary_map");
-    }
-    if (typeof trueFormData["process_flow_diagram"] === "string") {
-      trueFormData.delete("process_flow_diagram");
-    }
-
-    for (const [key, value] of trueFormData.entries()) {
-      console.log(`Key: ${key}, Value: ${value}`);
-    }
+    const createEndpoint = `registration/operations`;
+    const editEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
 
     const response = await actionHandler(
-      isCreating ? postEndpoint : putEndpoint,
+      isCreating ? createEndpoint : editEndpoint,
       "POST",
       "",
       {
-        body: trueFormData,
+        body: convertRjsfFormData(
+          createUnnestedFormData(data.formData, [
+            "section1",
+            "section2",
+            "section3",
+          ]),
+        ),
       },
     ).then((resolve) => {
       if (resolve?.error) {
@@ -165,7 +171,7 @@ const OperationInformationForm = ({
         const nextStepUrl = `/register-an-operation/${resolve.id}/${
           step + 1
         }?operations_title=${encodeURIComponent(resolve.name)}`;
-        router.push(nextStepUrl);
+        // router.push(nextStepUrl);
         return resolve;
       }
     });
@@ -275,7 +281,7 @@ const OperationInformationForm = ({
           setConfirmedFormState(e.formData);
         }}
         uiSchema={currentUiSchema}
-        customValidate={customValidate}
+        // customValidate={customValidate}
       />
     </>
   );
