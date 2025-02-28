@@ -21,12 +21,6 @@ class ContactOut(ModelSchema):
         populate_by_name = True
 
 
-class ContactListOut(ModelSchema):
-    class Meta:
-        model = Contact
-        fields = ['id', 'first_name', 'last_name', 'email']
-
-
 class OperationRepresentativeListOut(Schema):
     id: int = Field(..., alias="pk")
     full_name: str
