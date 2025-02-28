@@ -1,12 +1,14 @@
 from django.apps import AppConfig
 
 
-class ComplianceConfig(AppConfig):
+class EventsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'compliance'
+    name = 'events'
+    verbose_name = 'Application Events'
     
     def ready(self):
         """
         Import signals when the app is ready.
         """
-        from . import signals  # noqa: F401
+        # Import signals module to register handlers
+        pass

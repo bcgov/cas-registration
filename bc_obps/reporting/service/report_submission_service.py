@@ -4,8 +4,7 @@ from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_verification_service import ReportVerificationService
-from compliance.service.compliance_summary_service import ComplianceSummaryService
-
+from events.signals import report_submitted
 
 class ReportSubmissionService:
     """
@@ -50,7 +49,11 @@ class ReportSubmissionService:
         report_version.status = ReportVersion.ReportVersionStatus.Submitted
         report_version.save()
 
-        # Create compliance summary for the submitted report
-        ComplianceSummaryService.create_compliance_summary(version_id, user_guid)
+        # Send a signal that the report has been submitted
+        report_submitted.send(
+            sender=ReportSubmissionService,
+            version_id=version_id,
+            user_guid=user_guid
+        )
 
         return report_version
