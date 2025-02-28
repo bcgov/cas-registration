@@ -14,9 +14,8 @@ class OperationDesignatedOperatorTimelineService:
         ).first()
 
     @classmethod
-    def set_timeline_status_and_end_date(
+    def set_timeline_end_date(
         cls,
-        user_guid: UUID,
         timeline: OperationDesignatedOperatorTimeline,
         end_date: datetime,
     ) -> OperationDesignatedOperatorTimeline:

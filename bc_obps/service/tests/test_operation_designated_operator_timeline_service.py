@@ -1,7 +1,6 @@
 from zoneinfo import ZoneInfo
 import pytest
 from datetime import datetime
-from uuid import uuid4
 from model_bakery import baker
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 
@@ -31,16 +30,13 @@ class TestOperationDesignatedOperatorTimelineService:
         assert result_not_found is None
 
     @staticmethod
-    def test_set_timeline_status_and_end_date():
+    def test_set_timeline_end_date():
         timeline = baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
         )
         end_date = datetime.now(ZoneInfo("UTC"))
-        user_guid = uuid4()
 
-        updated_timeline = OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date(
-            user_guid, timeline, end_date
-        )
+        updated_timeline = OperationDesignatedOperatorTimelineService.set_timeline_end_date(timeline, end_date)
 
         assert updated_timeline.end_date == end_date
         assert updated_timeline.operator_id == timeline.operator_id
