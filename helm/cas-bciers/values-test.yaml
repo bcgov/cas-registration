@@ -18,7 +18,7 @@ backend:
       memory: 512Mi
 
 administrationFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -37,7 +37,7 @@ administrationFrontend:
       memory: 128Mi
 
 registrationFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -56,7 +56,7 @@ registrationFrontend:
       memory: 128Mi
 
 reportingFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -94,7 +94,7 @@ complianceFrontend:
       memory: 128Mi
 
 dashboardFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -121,3 +121,10 @@ growthbook:
 
 download-dags:
   airflowEndpoint: https://cas-airflow-test.apps.silver.devops.gov.bc.ca
+
+cas-logging-sidecar:
+  host: ~
+  index: "cas-bciers-test-logs"
+  prefix: "cas-bciers"
+  tag: "oc-cas-bciers"
+  logName: "cas-bciers-test-logs"
