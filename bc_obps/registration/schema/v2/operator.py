@@ -4,7 +4,7 @@ from registration.schema.v2.partner_operator import PartnerOperatorIn, PartnerOp
 from registration.models.parent_operator import ParentOperator
 from registration.schema.v2.parent_operator import ParentOperatorIn, ParentOperatorOut
 from registration.models.operator import Operator
-from registration.schema.v1.business_structure import validate_business_structure
+from registration.schema.v2.business_structure import validate_business_structure
 from registration.schema.validators import validate_cra_business_number
 from ninja import ModelSchema, FilterSchema, Field, Schema
 from pydantic import field_validator
