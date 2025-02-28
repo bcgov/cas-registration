@@ -76,7 +76,10 @@ const verifySuccessPage = async () => {
 
   const linkToForm = screen.getByRole("link", { name: "Link to form" });
   expect(linkToForm).toBeVisible();
-  expect(linkToForm).toHaveAttribute("href", "https://submit.digital.gov.bc.ca/app/form/submit?f=d26fb011-2846-44ed-9f5c-26e2756a758f");
+  expect(linkToForm).toHaveAttribute(
+    "href",
+    "https://submit.digital.gov.bc.ca/app/form/submit?f=d26fb011-2846-44ed-9f5c-26e2756a758f",
+  );
   expect(screen.getByRole("link", { name: "Back to Dashboard" })).toBeVisible();
 };
 
