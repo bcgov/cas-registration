@@ -1,6 +1,6 @@
 from typing import Optional
 from uuid import UUID
-from ninja import ModelSchema, Field, FilterSchema, Schema
+from ninja import ModelSchema, Field, FilterSchema
 from registration.models import Contact
 
 
@@ -19,15 +19,6 @@ class ContactOut(ModelSchema):
         model = Contact
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
         populate_by_name = True
-
-
-class OperationRepresentativeListOut(Schema):
-    id: int = Field(..., alias="pk")
-    full_name: str
-
-    @staticmethod
-    def resolve_full_name(obj: Contact) -> str:
-        return f"{obj.first_name} {obj.last_name}"
 
 
 class ContactFilterSchema(FilterSchema):

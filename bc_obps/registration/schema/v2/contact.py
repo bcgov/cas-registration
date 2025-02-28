@@ -1,5 +1,7 @@
 from typing import Optional
-from ninja import ModelSchema, Field
+from ninja import ModelSchema, Field, Schema
+from pydantic import Field
+
 from registration.models import Contact
 from ninja import FilterSchema
 from uuid import UUID
@@ -49,3 +51,12 @@ class ContactFilterSchemaV2(FilterSchema):
     last_name: Optional[str] = Field(None, json_schema_extra={'q': 'last_name__icontains'})
     email: Optional[str] = Field(None, json_schema_extra={'q': 'email__icontains'})
     operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
+
+
+class OperationRepresentativeListOut(Schema):
+    id: int = Field(..., alias="pk")
+    full_name: str
+
+    @staticmethod
+    def resolve_full_name(obj: Contact) -> str:
+        return f"{obj.first_name} {obj.last_name}"
