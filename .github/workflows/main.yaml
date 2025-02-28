@@ -59,9 +59,20 @@ jobs:
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
   zap-owasp:
-    # We will need to set up the BCIERS apps to get zap scanned
-    needs: [build-backend, build-registration1, check-nx-affected]
+    needs:
+      [
+        build-administration,
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-registration,
+        build-reporting,
+        check-nx-affected,
+      ]
     uses: ./.github/workflows/zap-owasp.yaml
+    with:
+      zap_fail_on_risk_level: 3
+    secrets: inherit
   trivy:
     uses: ./.github/workflows/trivy.yaml
   codeql:

@@ -2,55 +2,127 @@ name: ZAP OWASP Scan Code
 
 on:
   workflow_call:
+    inputs:
+      zap_fail_on_risk_level:
+        description: "Risk level of found errors, on or above which this action will fail. 0: Informational, 1: Low, 2: Medium, 3: High."
+        required: true
+        type: number
 
 env:
-  PGUSER: postgres
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  KEYCLOAK_LOGIN_URL: ${{ secrets.KEYCLOAK_LOGIN_URL }}
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   zap-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: run app locally
-        uses: ./.github/actions/run-registration1-app
-        with:
-          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-      - name: ZAP Frontend Scan
-        uses: zaproxy/action-baseline@v0.14.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "http://localhost:3000/"
-          rules_file_name: ".zap/rules-frontend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Frontend
-          fail_action: false
-          allow_issue_writing: false
-          artifact_name: frontend_zap_scan
-      - name: ZAP Backend Scan
-        uses: zaproxy/action-baseline@v0.14.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "http://0.0.0.0:8000/"
-          rules_file_name: ".zap/rules-backend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Backend
-          fail_action: false
-          allow_issue_writing: false
-          artifact_name: backend_zap_scan
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  # Retry the workflow due to secondary rate limiting errors causing frequent failures
-  retry-on-failure:
-    needs: zap-scan
-    if: failure() || needs.zap-scan.result != 'success' && fromJSON(github.run_attempt) < 3 && !cancelled()
-    runs-on: ubuntu-latest
-    steps:
-      - env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-          GH_DEBUG: api
-        run: gh workflow run retry-workflow.yaml -F run_id=${{ github.run_id }}
+      # Start all services using Docker Compose
+      - name: Start Services with Docker Compose
+        run: |
+          echo "Starting services..."
+          docker compose -f ./bciers/docker-compose-bciers-apps.yaml up -d --wait
+
+      # Run ZAP Scan for Backend API
+      - name: ZAP Scan - Backend API
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:8000/api"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Backend API"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap_scan_backend
+
+      # Run ZAP Scan for Frontend Apps
+      - name: ZAP Scan - Dashboard Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:3000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Dashboard Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap_scan_dashboard
+
+      - name: ZAP Scan - Administration Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:4001"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Administration Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap_scan_administration
+
+      - name: ZAP Scan - Registration Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:4000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Registration Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap_scan_registration
+
+      - name: ZAP Scan - Compliance Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:7000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Compliance Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap_scan_compliance
+
+      - name: ZAP Scan - Reporting Frontend
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:5000"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: "OWASP Baseline - Reporting Frontend"
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap_scan_reporting
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: zap
+          pattern: zap_scan*
+
+      - name: Check error severity
+        run: |
+          find ./zap/ -type f | \
+          grep "report_json.json" | \
+          xargs cat | \
+          jq --arg failure_level "${{ inputs.zap_fail_on_risk_level }}" '. as $parent | .site[].alerts[] | select(.riskcode | tonumber >= ( $failure_level | tonumber )) | { host: $parent.site[0]."@name", error: .name, risk: .riskdesc, alertRef: .pluginid, urls: [.instances[].uri] | join(", ") }' \
+          > errors.txt
+
+          if [ -s errors.txt ]; then
+
+            echo "Found errors with severity/risk level higher than $${{ inputs.zap_fail_on_risk_level }},"
+            echo "for more information, consult the logs of the individual zap actions."
+
+            echo "Errors found:"
+            cat errors.txt
+            exit 1
+          fi
