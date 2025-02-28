@@ -71,6 +71,8 @@ LOCAL_APPS = [
     "reporting",
     "common",
     "rls",
+    "compliance",
+    "events",
 ]
 
 RLS_GRANT_APPS = [

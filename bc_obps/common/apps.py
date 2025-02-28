@@ -14,3 +14,4 @@ class CommonConfig(AppConfig):
 
     def ready(self):
         pre_migrate.connect(create_common_schema, sender=self)
+        from . import signals  # noqa: F401
