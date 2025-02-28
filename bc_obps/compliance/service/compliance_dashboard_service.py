@@ -1,5 +1,5 @@
 from uuid import UUID
-from django.db.models import QuerySet, OuterRef, Subquery
+from django.db.models import QuerySet, OuterRef, Subquery, F, Max
 from compliance.models.compliance_summary import ComplianceSummary
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
@@ -20,16 +20,22 @@ class ComplianceDashboardService:
         user = UserDataAccessService.get_by_guid(user_guid)
 
         # Get the latest compliance summary for each operation
+        # First, get the latest submitted report version for each operation
         compliance_summary_subquery = (
-            ComplianceSummary.objects.filter(report__operation_id=OuterRef("id"))
+            ComplianceSummary.objects.filter(
+                report__operation_id=OuterRef("id"),
+                current_report_version__is_latest_submitted=True,
+                current_report_version__status='Submitted'
+            )
             .select_related('report', 'report__operation', 'compliance_period', 'obligation')
             .order_by('-compliance_period__end_date')
+            .values('id')[:1]  # Take only the first one (most recent compliance period)
         )
 
         operations = (
             OperationDataAccessService.get_all_operations_for_user(user)
             .filter(status=Operation.Statuses.REGISTERED)
-            .annotate(compliance_summary_id=Subquery(compliance_summary_subquery.values('id')[:1]))
+            .annotate(compliance_summary_id=Subquery(compliance_summary_subquery))
         )
 
         # Get all compliance summaries for the filtered operations
