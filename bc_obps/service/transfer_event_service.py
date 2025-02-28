@@ -239,7 +239,7 @@ class TransferEventService:
             )
 
             if current_timeline:
-                FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
+                FacilityDesignatedOperationTimelineService.set_timeline_end_date(
                     current_timeline,
                     event.effective_date,
                 )
@@ -267,7 +267,7 @@ class TransferEventService:
         )
 
         if current_timeline:
-            OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date(
+            OperationDesignatedOperatorTimelineService.set_timeline_end_date(
                 current_timeline,
                 event.effective_date,
             )

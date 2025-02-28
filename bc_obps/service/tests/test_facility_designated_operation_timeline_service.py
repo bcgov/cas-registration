@@ -52,6 +52,8 @@ class TestGetTimeline:
             operation=users_operation,
             _quantity=10,
         )
+        # mimic transferred facilities
+
         # random timeline
         baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
 
@@ -138,15 +140,13 @@ class TestFacilityDesignatedOperationTimelineService:
         assert result_not_found is None
 
     @staticmethod
-    def test_set_timeline_status_and_end_date():
+    def test_set_timeline_end_date():
         timeline = baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline',
         )
         end_date = datetime.now(ZoneInfo("UTC"))
 
-        updated_timeline = FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
-            timeline, end_date
-        )
+        updated_timeline = FacilityDesignatedOperationTimelineService.set_timeline_end_date(timeline, end_date)
 
         assert updated_timeline.end_date == end_date
         assert updated_timeline.facility_id == timeline.facility_id

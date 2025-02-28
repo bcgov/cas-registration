@@ -448,7 +448,7 @@ class TestTransferEventService:
 
     @staticmethod
     @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.get_current_timeline")
-    @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date")
+    @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.set_timeline_end_date")
     @patch(
         "service.transfer_event_service.FacilityDesignatedOperationTimelineDataAccessService.create_facility_designated_operation_timeline"
     )
@@ -488,7 +488,7 @@ class TestTransferEventService:
         mock_get_current_timeline.assert_any_call(transfer_event.from_operation.id, facility_1.id)
         mock_get_current_timeline.assert_any_call(transfer_event.from_operation.id, facility_2.id)
 
-        # Verify that set_timeline_status_and_end_date was called for facility_1 (existing timeline)
+        # Verify that set_timeline_end_date was called for facility_1 (existing timeline)
         mock_set_timeline.assert_called_once_with(
             timeline_1,
             transfer_event.effective_date,
@@ -521,7 +521,7 @@ class TestTransferEventService:
         )
 
     @patch("service.transfer_event_service.OperationDesignatedOperatorTimelineService.get_current_timeline")
-    @patch("service.transfer_event_service.OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date")
+    @patch("service.transfer_event_service.OperationDesignatedOperatorTimelineService.set_timeline_end_date")
     @patch(
         "service.transfer_event_service.OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline"
     )
@@ -550,7 +550,7 @@ class TestTransferEventService:
         # Verify that get_current_timeline was called for the operation and operator
         mock_get_current_timeline.assert_called_once_with(transfer_event.from_operator.id, transfer_event.operation.id)
 
-        # Verify that set_timeline_status_and_end_date was called since the timeline exists
+        # Verify that set_timeline_end_date was called since the timeline exists
         mock_set_timeline.assert_called_once_with(
             mock_get_current_timeline.return_value,
             transfer_event.effective_date,
@@ -575,7 +575,7 @@ class TestTransferEventService:
             },
         )
 
-        # Verify that set_timeline_status_and_end_date was not called, since the timeline did not exist
+        # Verify that set_timeline_end_date was not called, since the timeline did not exist
         mock_set_timeline.assert_not_called()
         mock_update_operator.assert_called_once_with(
             user_guid,

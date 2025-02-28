@@ -47,7 +47,7 @@ class FacilityDesignatedOperationTimelineService:
         ).first()
 
     @classmethod
-    def set_timeline_status_and_end_date(
+    def set_timeline_end_date(
         cls,
         timeline: FacilityDesignatedOperationTimeline,
         end_date: datetime,
