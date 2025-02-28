@@ -337,7 +337,6 @@
   },
   {
     "model": "registration.user",
-    "pk": 20,
     "fields": {
       "user_guid": "00000000-0000-0000-0000-000000000018",
       "bceid_business_name": "Alpha Enterprises",
@@ -348,6 +347,34 @@
       "position_title": "Manager",
       "email": "annicka.awesome@example.com",
       "phone_number": "+16044011234"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "b92f41af-5d7b-4c9c-a807-2f3e49acd57a",
+      "business_guid": "00000000-0000-0000-0000-000000000000",
+      "bceid_business_name": "BCGOV",
+      "first_name": "CAS",
+      "last_name": "DIRECTOR",
+      "position_title": "Code Monkey",
+      "email": "somebody@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "cas_director"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "35d7f946-b4ee-40a7-9781-18e06032f52a",
+      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "first_name": "Industry User",
+      "last_name": "Reporter",
+      "position_title": "Reporter",
+      "email": "email@email.com",
+      "phone_number": "+16044015432",
+      "app_role": "industry_user"
     }
   }
 ]
