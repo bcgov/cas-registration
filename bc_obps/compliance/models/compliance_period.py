@@ -1,14 +1,33 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
-
+from reporting.models.reporting_year import ReportingYear
 
 class CompliancePeriod(TimeStampedModel):
-    """Model to store compliance periods"""
+    """
+    Model to store compliance periods
+    
+    According to BC Greenhouse Gas Emission Reporting Regulation (249/2015),
+    compliance periods typically align with calendar years, with specific
+    deadlines for compliance submissions.
+    """
 
-    start_date = models.DateField(db_comment="The start date of the compliance period")
-    end_date = models.DateField(db_comment="The end date of the compliance period")
-    compliance_deadline = models.DateField(db_comment="The deadline date for compliance submissions")
+    start_date = models.DateField(
+        blank=False, null=False, db_comment="Start date of the compliance period, UTC-based"
+    )
+    end_date = models.DateField(
+        blank=False, null=False, db_comment="End date of the compliance period, UTC-based"
+    )
+    compliance_deadline = models.DateField(
+        blank=False, null=False, db_comment="Deadline date for compliance submissions, UTC-based"
+    )
+
+    reporting_year = models.ForeignKey(
+        ReportingYear,
+        on_delete=models.PROTECT,
+        related_name='compliance_period',
+        db_comment="The associated reporting year for this compliance period"
+    )
 
     history = HistoricalRecords(
         table_name='erc_history"."compliance_period_history',
@@ -18,3 +37,4 @@ class CompliancePeriod(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store compliance periods"
         db_table = 'erc"."compliance_period'
+        ordering = ['-end_date']
