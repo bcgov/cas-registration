@@ -398,49 +398,19 @@ class OperationServiceV2:
             operation.contacts.set(payload.operation_representatives)
 
         # create or replace documents
-        operation_documents = [
-            doc
-            for doc, created in [
-                *(
-                    [
-                        DocumentServiceV2.create_or_replace_operation_document(
-                            user_guid,
-                            operation.id,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                            'boundary_map',
-                        )
-                    ]
-                    if payload.boundary_map
-                    else []
-                ),
-                *(
-                    [
-                        DocumentServiceV2.create_or_replace_operation_document(
-                            user_guid,
-                            operation.id,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                            'process_flow_diagram',
-                        )
-                    ]
-                    if payload.process_flow_diagram
-                    else []
-                ),
-                *(
-                    [
-                        DocumentServiceV2.create_or_replace_operation_document(
-                            user_guid,
-                            operation.id,
-                            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                            'new_entrant_application',
-                        )
-                    ]
-                    if payload.new_entrant_application
-                    else []
-                ),
-            ]
-            if created
-        ]
-        operation.documents.add(*operation_documents)
+        DocumentServiceV2.create_or_replace_operation_document(
+                operation_id=operation.id,
+                user_guid=user_guid,
+                type='boundary_map',
+                file=payload.boundary_map, 
+            )
+      
+        DocumentServiceV2.create_or_replace_operation_document(
+                operation_id=operation.id,
+                user_guid=user_guid,
+                type='process_flow_diagram',
+                file=payload.process_flow_diagram, 
+            )
 
         # # this is not handled by changing registration purpose
         if (

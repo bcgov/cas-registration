@@ -1,8 +1,9 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from ninja import File, Form, UploadedFile
 from service.operation_service import OperationService
-from registration.schema.v2.operation import OperationInformationIn, OperationOutWithDocuments, OperationUpdateOut, OperationRegistrationOut
+from registration.schema.v2.operation import OperationInformationIn, OperationInformationInWithDocuments, OperationOutWithDocuments, OperationUpdateOut, OperationRegistrationOut
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
 from common.permissions import authorize
@@ -28,7 +29,7 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 
 
 ##### PUT #####
-
+# brianna here!
 
 @router.put(
     "/operations/{uuid:operation_id}/registration/operation",
@@ -39,6 +40,10 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
     auth=authorize('approved_industry_user'),
 )
 def register_edit_operation_information(
-    request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
+    request: HttpRequest, operation_id: UUID, details: Form[OperationInformationIn],
+    boundary_map: UploadedFile = File(...),  
+    process_flow_diagram: UploadedFile = File(...),
 ) -> Tuple[Literal[200], Operation]:
+    breakpoint()
+    payload = OperationInformationInWithDocuments(**details.dict(), boundary_map=boundary_map,process_flow_diagram=process_flow_diagram)
     return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)

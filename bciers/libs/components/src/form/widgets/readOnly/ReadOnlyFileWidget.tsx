@@ -27,7 +27,7 @@ const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
           <li>
             {/* brianna gotta make this work */}
             <a download={""} href={"#"} className="file-download">
-              {value}
+              {value.name}
             </a>
           </li>
         </ul>

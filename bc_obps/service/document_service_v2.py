@@ -32,5 +32,5 @@ class DocumentServiceV2:
             existing_document.delete()
 
         # create the new documeent
-        document = DocumentDataAccessServiceV2.create_document(user_guid, file_data, document_type, operation_id)
+        document = DocumentDataAccessServiceV2.create_document(operation_id=operation_id,type=document_type, file=file_data, )
         return document, True

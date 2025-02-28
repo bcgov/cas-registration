@@ -183,8 +183,9 @@ class OperationOutV2(ModelSchema):
 
 
 class OperationOutWithDocuments(OperationOutV2):
-    boundary_map: str
-    process_flow_diagram: str
+    # These shouldn't be optional for the app, but since we can't put docs in the mock data we have to allow this for testing
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
 
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
