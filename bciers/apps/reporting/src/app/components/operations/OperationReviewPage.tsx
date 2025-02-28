@@ -17,6 +17,7 @@ import {
   POTENTIAL_REPORTING_OPERATION,
   REPORTING_OPERATION,
 } from "@reporting/src/app/utils/constants";
+import { ReportingPage } from "../taskList/pageList";
 
 export default async function OperationReviewPage({
   version_id,
@@ -54,12 +55,14 @@ export default async function OperationReviewPage({
     showRegulatedProducts,
   );
 
+  const navigationInformation = await getNavInfo(ReportingPage.ReviewOperatorInfo)
+
   return (
     <OperationReviewForm
       formData={reportOperation}
       version_id={version_id}
       schema={schema}
-      taskListElements={taskListElements}
+      navigationInformation={navigationInformation}
     />
   );
 }
