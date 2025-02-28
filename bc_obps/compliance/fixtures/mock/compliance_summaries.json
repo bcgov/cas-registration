@@ -15,8 +15,7 @@
       "excess_emissions": "500.0000",
       "credited_emissions": "0.0000",
       "reduction_factor": "0.9500",
-      "tightening_rate": "0.0100",
-      "compliance_status": "OBLIGATION_NOT_MET"
+      "tightening_rate": "0.0100"
     }
   },
   {
@@ -35,8 +34,7 @@
       "excess_emissions": "0.0000",
       "credited_emissions": "300.0000",
       "reduction_factor": "0.9500",
-      "tightening_rate": "0.0100",
-      "compliance_status": "EARNED_CREDITS"
+      "tightening_rate": "0.0100"
     }
   }
 ]

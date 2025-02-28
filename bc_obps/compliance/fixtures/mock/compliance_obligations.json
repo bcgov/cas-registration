@@ -7,7 +7,9 @@
       "updated_at": "2024-01-01T00:00:00Z",
       "compliance_summary": 1,
       "emissions_amount_tco2e": "500.0000",
-      "status": "PARTIALLY_FULFILLED"
+      "status": "PARTIALLY_FULFILLED",
+      "penalty_status": "NONE",
+      "obligation_deadline": "2024-11-30"
     }
   },
   {
@@ -18,7 +20,9 @@
       "updated_at": "2024-01-01T00:00:00Z",
       "compliance_summary": 2,
       "emissions_amount_tco2e": "0.0000",
-      "status": "FULFILLED"
+      "status": "FULFILLED",
+      "penalty_status": "NONE",
+      "obligation_deadline": "2024-11-30"
     }
   }
 ]
