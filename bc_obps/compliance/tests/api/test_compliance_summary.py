@@ -3,6 +3,9 @@ import pytest
 from django.test import Client
 from model_bakery import baker
 from compliance.models import ComplianceSummary, ComplianceObligation
+from compliance.tests.utils.baker_recipes import compliance_summary, compliance_product, compliance_obligation
+from registration.tests.utils.baker_recipes import operation, user_operator
+from reporting.tests.utils.baker_recipes import report_version
 
 
 class TestComplianceSummaryEndpoint:
@@ -13,82 +16,27 @@ class TestComplianceSummaryEndpoint:
     def mock_user(self):
         return baker.make('registration.User')
 
-    @pytest.fixture
-    def mock_operation(self):
-        return baker.make('registration.Operation', bcghg_id__identifier='BC1234')
-
-    @pytest.fixture
-    def mock_user_operator(self, mock_user, mock_operation):
-        return baker.make(
-            'registration.UserOperator', user=mock_user, operator=mock_operation.operator, status='Approved'
-        )
-
-    @pytest.fixture
-    def mock_compliance_period(self):
-        return baker.make(
-            'compliance.CompliancePeriod',
-            start_date='2024-01-01',
-            end_date='2024-12-31',
-            compliance_deadline='2025-06-30',
-        )
-
-    @pytest.fixture
-    def mock_report(self, mock_operation):
-        return baker.make('reporting.Report', operation=mock_operation)
-
-    @pytest.fixture
-    def mock_report_version(self, mock_report):
-        return baker.make('reporting.ReportVersion', report=mock_report)
-
-    @pytest.fixture
-    def mock_compliance_summary(self, mock_report, mock_report_version, mock_compliance_period):
-        return baker.make(
-            'compliance.ComplianceSummary',
-            report=mock_report,
-            current_report_version=mock_report_version,
-            compliance_period=mock_compliance_period,
-            emissions_attributable_for_reporting=Decimal('100.0'),
-            reporting_only_emissions=Decimal('10.0'),
-            emissions_attributable_for_compliance=Decimal('90.0'),
-            emission_limit=Decimal('80.0'),
-            excess_emissions=Decimal('10.0'),
-            credited_emissions=Decimal('0.0'),
-            reduction_factor=Decimal('0.95'),
-            tightening_rate=Decimal('0.01'),
-            compliance_status=ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET,
-        )
-
-    @pytest.fixture
-    def mock_compliance_product(self, mock_compliance_summary):
-        return baker.make(
-            'compliance.ComplianceProduct',
-            compliance_summary=mock_compliance_summary,
-            annual_production=Decimal('1000.0'),
-            apr_dec_production=Decimal('750.0'),
-            emission_intensity=Decimal('0.1'),
-            allocated_industrial_process_emissions=Decimal('50.0'),
-            allocated_compliance_emissions=Decimal('40.0'),
-        )
-
-    @pytest.fixture
-    def mock_compliance_obligation(self, mock_compliance_summary):
-        return baker.make(
-            'compliance.ComplianceObligation',
-            compliance_summary=mock_compliance_summary,
-            emissions_amount_tco2e=Decimal('10.0'),
-            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
-        )
-
-    def test_get_compliance_summaries(
-        self,
-        mock_user,
-        mock_user_operator,
-        mock_compliance_summary,
-        mock_compliance_product,
-        mock_compliance_obligation,
-    ):
+    def test_get_compliance_summaries(self, mock_user):
         # Arrange
         self.client.force_login(mock_user)
+        
+        # Create test data using recipes
+        op = baker.make_recipe('registration.tests.utils.operation', bcghg_id__identifier='BC1234')
+        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
+        
+        # Create compliance summary with related objects
+        mock_compliance_summary = baker.make_recipe(
+            'compliance.tests.utils.compliance_summary',
+            report__operation=op,
+            compliance_status=ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        
+        baker.make_recipe('compliance.tests.utils.compliance_product', compliance_summary=mock_compliance_summary)
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_summary=mock_compliance_summary,
+            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
+        )
 
         # Act
         response = self.client.get(self.endpoint_under_test)
@@ -110,9 +58,11 @@ class TestComplianceSummaryEndpoint:
         # Assert
         assert response.status_code == 401
 
-    def test_get_compliance_summaries_no_data(self, mock_user, mock_user_operator):
+    def test_get_compliance_summaries_no_data(self, mock_user):
         # Arrange
         self.client.force_login(mock_user)
+        op = baker.make_recipe('registration.tests.utils.operation')
+        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
 
         # Act
         response = self.client.get(self.endpoint_under_test)
@@ -122,16 +72,31 @@ class TestComplianceSummaryEndpoint:
         data = response.json()
         assert len(data) == 0
 
-    def test_get_compliance_summary_by_id(
-        self,
-        mock_user,
-        mock_user_operator,
-        mock_compliance_summary,
-        mock_compliance_product,
-        mock_compliance_obligation,
-    ):
+    def test_get_compliance_summary_by_id(self, mock_user):
         # Arrange
         self.client.force_login(mock_user)
+        
+        # Create test data using recipes
+        op = baker.make_recipe('registration.tests.utils.operation', bcghg_id__identifier='BC1234')
+        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
+        
+        # Create compliance summary with related objects
+        mock_compliance_summary = baker.make_recipe(
+            'compliance.tests.utils.compliance_summary',
+            report__operation=op,
+            compliance_status=ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        
+        mock_compliance_product = baker.make_recipe(
+            'compliance.tests.utils.compliance_product', 
+            compliance_summary=mock_compliance_summary
+        )
+        
+        mock_compliance_obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_summary=mock_compliance_summary,
+            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
+        )
 
         # Act
         response = self.client.get(f"{self.endpoint_under_test}/{mock_compliance_summary.id}")
@@ -176,9 +141,11 @@ class TestComplianceSummaryEndpoint:
         assert Decimal(obligation['emissions_amount_tco2e']) == mock_compliance_obligation.emissions_amount_tco2e
         assert obligation['status'] == mock_compliance_obligation.status
 
-    def test_get_compliance_summary_by_id_not_found(self, mock_user, mock_user_operator):
+    def test_get_compliance_summary_by_id_not_found(self, mock_user):
         # Arrange
         self.client.force_login(mock_user)
+        op = baker.make_recipe('registration.tests.utils.operation')
+        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
 
         # Act
         response = self.client.get(f"{self.endpoint_under_test}/999")
@@ -186,7 +153,10 @@ class TestComplianceSummaryEndpoint:
         # Assert
         assert response.status_code == 404
 
-    def test_get_compliance_summary_by_id_unauthorized(self, mock_compliance_summary):
+    def test_get_compliance_summary_by_id_unauthorized(self):
+        # Arrange
+        mock_compliance_summary = baker.make_recipe('compliance.tests.utils.compliance_summary')
+        
         # Act
         response = self.client.get(f"{self.endpoint_under_test}/{mock_compliance_summary.id}")
 
