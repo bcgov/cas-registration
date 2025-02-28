@@ -29,8 +29,7 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 
 
 ##### PUT #####
-# brianna here!
-
+# https://stackoverflow.com/questions/77083771/django-ninja-update-a-filefield
 @router.post(
     "/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
@@ -42,8 +41,9 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 def register_edit_operation_information(
     request: HttpRequest, operation_id: UUID,
     details: Form[OperationInformationIn],
-    boundary_map: UploadedFile = File(...),
-    process_flow_diagram: UploadedFile = File(...),
+    # documents are optional because if the user hasn't given us an updated document, we don't have to do anything
+    boundary_map: UploadedFile = File(None),
+    process_flow_diagram: UploadedFile = File(None),
 ) -> Tuple[Literal[200], Operation]:
-    payload = OperationInformationInWithDocuments(**details.dict(), boundary_map=boundary_map,process_flow_diagram=process_flow_diagram)
+    payload = OperationInformationInWithDocuments(**details.dict(), **({'boundary_map': boundary_map} if boundary_map else {}),**({'process_flow_diagram': process_flow_diagram} if process_flow_diagram else {}))
     return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)

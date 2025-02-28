@@ -398,19 +398,20 @@ class OperationServiceV2:
             operation.contacts.set(payload.operation_representatives)
 
         # create or replace documents
-        DocumentServiceV2.create_or_replace_operation_document(
-                operation_id=operation.id,
-                user_guid=user_guid,
-                type='boundary_map',
-                file=payload.boundary_map, 
-            )
-      
-        DocumentServiceV2.create_or_replace_operation_document(
-                operation_id=operation.id,
-                user_guid=user_guid,
-                type='process_flow_diagram',
-                file=payload.process_flow_diagram, 
-            )
+        if payload.boundary_map:
+            DocumentServiceV2.create_or_replace_operation_document(
+                    operation_id=operation.id,
+                    user_guid=user_guid,
+                    type='boundary_map',
+                    file=payload.boundary_map, 
+                )
+        if payload.process_flow_diagram:
+            DocumentServiceV2.create_or_replace_operation_document(
+                    operation_id=operation.id,
+                    user_guid=user_guid,
+                    type='process_flow_diagram',
+                    file=payload.process_flow_diagram, 
+                )
 
         # # this is not handled by changing registration purpose
         if (

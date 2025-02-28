@@ -139,12 +139,12 @@ const OperationInformationForm = ({
       trueFormData.append(key, body[key]);
     }
     // if they haven't uploaded a new file we only show the filename to save fetching a full file, and then on submission update we do nothing with it?
-    // if (typeof trueFormData["boundary_map"] === "string") {
-    //   trueFormData.delete("boundary_map");
-    // }
-    // if (typeof trueFormData["process_flow_diagram"] === "string") {
-    //   trueFormData.delete("process_flow_diagram");
-    // }
+    if (typeof trueFormData["boundary_map"] === "string") {
+      trueFormData.delete("boundary_map");
+    }
+    if (typeof trueFormData["process_flow_diagram"] === "string") {
+      trueFormData.delete("process_flow_diagram");
+    }
 
     for (const [key, value] of trueFormData.entries()) {
       console.log(`Key: ${key}, Value: ${value}`);
@@ -183,7 +183,7 @@ const OperationInformationForm = ({
     setConfirmedFormState(combinedData);
     setKey(Math.random()); // NOSONAR
   };
-
+  console.log("confirmedformstate", confirmedFormState);
   const handleSelectedPurposeChange = (data: any) => {
     const newSelectedPurpose: RegistrationPurposes =
       data.section1?.registration_purpose;

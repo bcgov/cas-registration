@@ -21,15 +21,51 @@ import { useSession } from "next-auth/react";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 
-const addNameToDataURL = (dataURL: string, name: string) => {
+// make the widget handle file separately from rest of form data. Widget takes away everything file-related from rjsf (rjsf just sends a filename that we ignore or something, widget intercepts the file object). User might have expectation that file is uploaded right away, not a problem? Other expectation is that submit doesn't take forever. We should upload file on widget, file gets linked to form when we hit submit. Widget would block submission if file not uploaded. Could do a progress bar, configure widget however we like. Stick reporting's attachment element into widget (ish), how to get this to play nice with rjsf/ui schema TBD. Diasble form submission if widget is in progress of uploading stuff. Could tie to form validation.
+// file here we're going from a file to a dataurl, which we then have to come back from in the ninja schema
+
+function addNameToDataURL(dataURL: string, name: string) {
   if (dataURL === null) {
     return null;
   }
   return dataURL.replace(";base64", `;name=${encodeURIComponent(name)};base64`);
-};
+}
 
-// make the widget handle file separately from rest of form data. Widget takes away everything file-related from rjsf (rjsf just sends a filename that we ignore or something, widget intercepts the file object). User might have expectation that file is uploaded right away, not a problem? Other expectation is that submit doesn't take forever. We should upload file on widget, file gets linked to form when we hit submit. Widget would block submission if file not uploaded. Could do a progress bar, configure widget however we like. Stick reporting's attachment element into widget (ish), how to get this to play nice with rjsf/ui schema TBD. Diasble form submission if widget is in progress of uploading stuff. Could tie to form validation.
-// file here we're going from a file to a dataurl, which we then have to come back from in the ninja schema
+function convertToDataUri(file: File): Promise<string | null> {
+  const { name } = file;
+  return new Promise((resolve, reject) => {
+    const reader = new window.FileReader();
+    reader.onerror = reject;
+    reader.onload = (event) => {
+      if (typeof event.target?.result === "string") {
+        resolve(addNameToDataURL(event.target.result, name));
+      } else {
+        resolve(null);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+export const handleValue = (value: string | File) => {
+  // the value can either be a string (the url retrieved from GCS for an existing file) or a file (new file the user has selected)
+  let extractedFileName;
+  let downloadUrl;
+  if (value && typeof value === "string") {
+    downloadUrl = value;
+    const match = value.match(/\/documents\/([^?]+)/);
+    extractedFileName = match ? match[1] : "";
+  }
+  if (value && value instanceof File) {
+    convertToDataUri(value).then((res) => {
+      // brianna this is too slow
+      downloadUrl = res;
+      console.log("down", downloadUrl);
+    });
+    extractedFileName = value.name;
+  }
+  return { downloadUrl, extractedFileName };
+};
 
 const FileWidget = ({
   id,
@@ -49,8 +85,15 @@ const FileWidget = ({
   const [isUploading, setIsUploading] = useState(false);
   // brianna initial state will need to be the get file
   // const [file, setFile] = useState<File | undefined>(undefined);
-  const [fileName, setFileName] = useState(value);
-  console.log("value", value);
+
+  const { downloadUrl, extractedFileName } = handleValue(value);
+  console.log("extractedFileName", extractedFileName);
+  console.log("downloadUrl", downloadUrl);
+
+  const [fileName, setFileName] = useState(extractedFileName);
+  console.log();
+  console.log("value in filewidget", value);
+  console.log("extractedFileName", extractedFileName);
   // const [oldFileId, setOldFileId] = useState(value);
 
   const { data: session } = useSession();
@@ -73,6 +116,8 @@ const FileWidget = ({
 
     return response;
   }
+
+  // /operations/{uuid:operation_id}/documents/{uuid:document_type}
 
   const handleChange = async (evt: ChangeEvent<HTMLInputElement>) => {
     if (!evt.target.files) {
@@ -127,8 +172,13 @@ const FileWidget = ({
       {fileName ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
-            {/* brianna gotta make this work */}
-            <a download={fileName} href={"#"} className="file-download">
+            {/* brianna gotta make this work, I think we need to use dataurl for before it's uploaded */}
+            <a
+              download={fileName}
+              href={downloadUrl}
+              className="file-download"
+              target="_blank"
+            >
               {fileName}
             </a>
           </li>

@@ -96,8 +96,8 @@ class OperationInformationIn(ModelSchema):
 
 
 class OperationInformationInWithDocuments(OperationInformationIn):
-    boundary_map: UploadedFile = File(...)
-    process_flow_diagram: UploadedFile = File(...)
+    boundary_map: UploadedFile = File(None)
+    process_flow_diagram: UploadedFile = File(None)
     new_entrant_application: UploadedFile = File(None)
 
 
@@ -185,17 +185,21 @@ class OperationOutV2(ModelSchema):
 
 class OperationOutWithDocuments(OperationOutV2):
     # These shouldn't be optional for the app, but since we can't put docs in the mock data we have to allow this for testing
+    # boundary_map: UploadedFile = File(...)
+    # process_flow_diagram: UploadedFile = File(...)
     boundary_map: Optional[str] = None
     process_flow_diagram: Optional[str] = None
 
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
-        return os.path.basename(obj.get_boundary_map().file.name)
+        # return os.path.basename(obj.get_boundary_map().file.name)
+        return str(obj.get_boundary_map().file.url)
        
 
     @staticmethod
     def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
-        return os.path.basename(obj.get_process_flow_diagram().file.name)
+        # return os.path.basename(obj.get_process_flow_diagram().file.name)
+        return str(obj.get_process_flow_diagram().file.url)
 
     # @staticmethod
     # def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
