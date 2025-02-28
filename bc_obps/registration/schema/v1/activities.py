@@ -2,7 +2,7 @@ from ninja import ModelSchema
 from registration.models import Activity
 
 
-class ActivitySchema(ModelSchema):
+class ActivitySchemaOut(ModelSchema):
     """
     Schema for the ActivitySchema model
     """
