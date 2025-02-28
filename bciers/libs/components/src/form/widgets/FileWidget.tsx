@@ -49,7 +49,7 @@ function convertToDataUri(file: File): Promise<string | null> {
 
 export const handleValue = (value: string | File) => {
   let extractedFileName: string = "";
-  let downloadUrl: string | null = null;
+  let downloadUrl: string | undefined = undefined;
 
   if (typeof value === "string") {
     downloadUrl = value;
