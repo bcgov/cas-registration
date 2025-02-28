@@ -1,3 +1,34 @@
+# [1.23.0](https://github.com/bcgov/cas-registration/compare/v1.22.0...v1.23.0) (2025-02-28)
+
+### Bug Fixes
+
+- add CAS_PENDING role to app_role grants mapping ([1aedbbe](https://github.com/bcgov/cas-registration/commit/1aedbbea23122bd01b4380f57a0a42896a8ee17d))
+- add serviceaccount to administration pod ([2364259](https://github.com/bcgov/cas-registration/commit/23642597117cb7915398fbaf1311badb00ac225c))
+- bumps @octokit/request-error from 5.1.0 to 5.1.1 ([34ecad9](https://github.com/bcgov/cas-registration/commit/34ecad9b6c415aab3c55f39fb8be1819acb47026))
+- revise formatting for partila template input parameters ([8fb4116](https://github.com/bcgov/cas-registration/commit/8fb411674552c482c84718c743b5961e22e0de80))
+- roles now have access to the public schema, as this is where the triggers are set ([bd30910](https://github.com/bcgov/cas-registration/commit/bd309107ba28606e0add4836c96db2e2ddac1d9c))
+- separate table and sequence privilege grants ([a4ddb2f](https://github.com/bcgov/cas-registration/commit/a4ddb2f4829d39530891c06fd863189459b8c3ae))
+- use reporting_year to determine activity configurations ([c2d3af9](https://github.com/bcgov/cas-registration/commit/c2d3af9b1f9d1413a5c1b1e43ee72d654a292458))
+
+### Features
+
+- Add cement production reporting activity migration, data, and json ([5dd1f99](https://github.com/bcgov/cas-registration/commit/5dd1f99487652e1ea2d2bd5feae4f7bfdbb1b307))
+- add compliance and payment summaries ([aed0298](https://github.com/bcgov/cas-registration/commit/aed029877b2b10b8987ef28e2a0797a5c516e523))
+- allow changing registration purpose ([f78de1d](https://github.com/bcgov/cas-registration/commit/f78de1d6f868a3074ee9ef2ae643a4774c8d77a1))
+- coal storage activity ([2180f01](https://github.com/bcgov/cas-registration/commit/2180f0187ae256a72635c44a993dbf47431b7654))
+- fix carbon registry link ([c6a5c68](https://github.com/bcgov/cas-registration/commit/c6a5c6853a9195e7214d9790774a67740c3e71ba))
+- fix to use defaultPageFactory ([e20a7fe](https://github.com/bcgov/cas-registration/commit/e20a7fe75e9d935fc60aef1cd51ba9371af4d225))
+- lead production activity ([06d0d04](https://github.com/bcgov/cas-registration/commit/06d0d04833e7bd723a359aa2f74479007cf2bddc))
+- lime manufacturing ([017635d](https://github.com/bcgov/cas-registration/commit/017635d8dc1c04c1a54ade9f063456f8a3de79e2))
+- petroleum refining activity ([e6009f0](https://github.com/bcgov/cas-registration/commit/e6009f038a927de63393ae26fc69cb7195227e25))
+- reporting RLS configs ([e66d021](https://github.com/bcgov/cas-registration/commit/e66d021545254eb94b7c17cfbba26d68d9b2c5e9))
+- zinc production activity ([671c447](https://github.com/bcgov/cas-registration/commit/671c44725a20e86a4df76c46d37d1c6250d25177))
+- zinc production activity ([a966be9](https://github.com/bcgov/cas-registration/commit/a966be9000dbcedef2941dc6047441e08cd8bbe6))
+
+### Reverts
+
+- Revert "chore: attempt at a modal widget" ([81ef2c7](https://github.com/bcgov/cas-registration/commit/81ef2c7c8f4f8493ac0f0094c2fdd578a7d5cf1f))
+
 # [1.22.0](https://github.com/bcgov/cas-registration/compare/v1.21.0...v1.22.0) (2025-02-19)
 
 ### Bug Fixes
