@@ -62,8 +62,7 @@ export default function Page() {
       container
       spacing={2}
       sx={{
-        marginTop: "24px",
-        marginBottom: "48px",
+        marginBottom: "24px",
       }}
     >
       <Grid
@@ -130,7 +129,7 @@ export default function Page() {
         <section className="flex flex-col  bg-bc-bg-light-grey my-10 py-6 px-4">
           <h2 className={headerStyle}>Contact us</h2>
           <p>
-            If you have any questions, please email us at <br />
+            If you have any questions, please email us at{" "}
             <a
               href="mailto:GHGRegulator@gov.bc.ca"
               className="text-black font-bold no-underline"
@@ -163,7 +162,7 @@ export default function Page() {
           >
             Log in with Business BCeID
           </Button>
-          <p>
+          <p className="mt-2">
             Don’t have a Business BCeID?{" "}
             <button
               className="border-none bg-transparent text-lg text-bc-link-blue cursor-pointer"
@@ -173,7 +172,7 @@ export default function Page() {
             </button>
           </p>
         </section>
-        <h2 className={headerStyle}>Key Dates</h2>
+        <h2 className={`${headerStyle} mt-2`}>Key Dates</h2>
         <table className={`table-auto w-full border-collapse ${tableBorder}`}>
           <colgroup>
             <col className="w-[30%]" />
@@ -188,10 +187,12 @@ export default function Page() {
           <tbody>
             {events.map((row, index) => (
               <tr key={index}>
-                <td className={`px-2 py-6 ${tableBorder} whitespace-pre-line`}>
+                <td
+                  className={`px-2 py-2 ${tableBorder} whitespace-pre-line font-bold`}
+                >
                   {row.date}
                 </td>
-                <td className={`px-2 py-6 ${tableBorder} whitespace-pre-line`}>
+                <td className={`px-2 py-2 ${tableBorder} whitespace-pre-line`}>
                   {row.event}
                 </td>
               </tr>
