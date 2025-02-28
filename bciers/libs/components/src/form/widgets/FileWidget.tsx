@@ -65,53 +65,17 @@ export const handleValue = (value: string | File) => {
   return { downloadUrl, extractedFileName };
 };
 
-// Custom hook to handle the value
-// const useHandleValue = (value: string | File) => {
-//   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
-//   const [extractedFileName, setExtractedFileName] = useState<string>("");
-
-//   useEffect(() => {
-//     const handleAsyncValue = async () => {
-//       const { downloadUrl, extractedFileName } = await handleValue(value);
-//       setDownloadUrl(downloadUrl);
-//       setExtractedFileName(extractedFileName);
-//     };
-
-//     handleAsyncValue(); // Trigger the async function
-//   }, [value]); // Re-run when `value` changes
-
-//   return { downloadUrl, extractedFileName };
-// };
-
 const FileWidget = ({
   id,
   disabled,
   readonly,
   required,
-  multiple,
-  label,
   onChange,
   value,
   options,
-  registry,
-  formContext,
 }: WidgetProps) => {
-  // operationId can be undefined we're creating a new operation
-  // const operationId = formContext?.operationId;
-  const [isUploading, setIsUploading] = useState(false);
-  // brianna initial state will need to be the get file
-  // const [file, setFile] = useState<File | undefined>(undefined);
-
   const { downloadUrl, extractedFileName } = handleValue(value);
-  console.log("extractedFileName", extractedFileName);
-  console.log("downloadUrl", downloadUrl);
-
   const [fileName, setFileName] = useState(extractedFileName);
-  const [url, setUrl] = useState(downloadUrl);
-  console.log("filename", fileName);
-  console.log("value in filewidget", value);
-  console.log("extractedFileName", extractedFileName);
-  // const [oldFileId, setOldFileId] = useState(value);
 
   const { data: session } = useSession();
   const isCasInternal =
@@ -123,18 +87,6 @@ const FileWidget = ({
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
-
-  async function postDocuments(fileData: FormData) {
-    const endpoint = `registration/documents`;
-
-    const response = await actionHandler(endpoint, "POST", "", {
-      body: fileData,
-    });
-
-    return response;
-  }
-
-  // /operations/{uuid:operation_id}/documents/{uuid:document_type}
 
   const handleChange = async (evt: ChangeEvent<HTMLInputElement>) => {
     if (!evt.target.files) {
@@ -157,9 +109,6 @@ const FileWidget = ({
   const disabledColour =
     disabled || readonly ? "text-bc-bg-dark-grey" : "text-bc-link-blue";
 
-  if (isUploading) {
-    return <div>Loading...</div>;
-  }
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
     <div className="py-4 flex">
@@ -189,7 +138,6 @@ const FileWidget = ({
       {fileName ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
-            {/* brianna gotta make this work, I think we need to use dataurl for before it's uploaded */}
             <a
               download={fileName}
               href={downloadUrl}
