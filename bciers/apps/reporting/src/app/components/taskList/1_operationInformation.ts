@@ -1,53 +1,53 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { OperationTypes } from "@bciers/utils/src/enums";
-
-export enum ActivePage {
-  "ReviewOperatorInfo" = 0,
-  "PersonResponsible",
-  "ReviewFacilities",
-}
+import { ReportingFlow } from "./types";
+import { ReportingPage } from "./pageList";
 
 export const getOperationInformationTaskList: (
   versionId: number,
-  activeIndex?: ActivePage,
-  operationType?: OperationTypes,
+  flow: ReportingFlow,
+  activePage: ReportingPage
 ) => TaskListElement[] = (
-  versionId,
-  activeIndex = 0,
-  operationType = OperationTypes.SFO,
+  versionId,flow,activePage
 ) => {
-  const facilityReviewItem: TaskListElement[] =
-    operationType !== OperationTypes.LFO
-      ? []
-      : [
-          {
-            type: "Page",
-            title: "Review facilities",
-            link: `/reports/${versionId}/facilities/review-facilities`,
-            isActive: activeIndex === ActivePage.ReviewFacilities,
-          },
-        ];
+
+  const elements = [
+    {
+      element:
+      {
+        type: "Page",
+        title: "Review operation information",
+        link: `/reports/${versionId}/review-operator-data`,
+        isActive: activePage === ReportingPage.ReviewOperatorInfo,
+      },
+      
+    },
+    {
+      element:{
+        type: "Page",
+        title: "Person responsible",
+        link: `/reports/${versionId}/person-responsible`,
+        isActive: activePage === ReportingPage.PersonResponsible,
+      }
+    },
+    {
+      flows: [ReportingFlow.LFO, ReportingFlow.ReportingOnlyLFO, ReportingFlow.SimpleReport],
+      element: {
+        type: "Page",
+        title: "Review facilities",
+        link: `/reports/${versionId}/facilities/review-facilities`,
+        isActive: activePage === ReportingPage.ReviewFacilities,
+      }
+    }
+  ]
+
+
 
   return [
     {
       type: "Section",
       title: "Operation information",
       isExpanded: true,
-      elements: [
-        {
-          type: "Page",
-          title: "Review operation information",
-          link: `/reports/${versionId}/review-operation-information`,
-          isActive: activeIndex === ActivePage.ReviewOperatorInfo,
-        },
-        {
-          type: "Page",
-          title: "Person responsible",
-          link: `/reports/${versionId}/person-responsible`,
-          isActive: activeIndex === ActivePage.PersonResponsible,
-        },
-        ...facilityReviewItem,
-      ],
+      elements: elements,
     },
   ];
 };

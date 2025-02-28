@@ -9,19 +9,20 @@ import { actionHandler } from "@bciers/actions";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { useRouter } from "next/navigation";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { NavigationInformation } from "../taskList/types";
 
 interface Props {
   formData: any;
   version_id: number;
   schema: RJSFSchema;
-  taskListElements: TaskListElement[];
+  navigationInformation : NavigationInformation
 }
 
 export default function OperationReviewForm({
   formData,
   version_id,
   schema,
-  taskListElements,
+  navigationInformation
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
@@ -107,7 +108,7 @@ export default function OperationReviewForm({
       <MultiStepFormWithTaskList
         initialStep={0}
         steps={multiStepHeaderSteps}
-        taskListElements={taskListElements}
+        taskListElements={navigationInformation.taskList}
         schema={schema}
         uiSchema={operationReviewUiSchema}
         formData={formDataState}
