@@ -10,6 +10,11 @@ class CompliancePeriod(TimeStampedModel):
     According to BC Greenhouse Gas Emission Reporting Regulation (249/2015),
     compliance periods typically align with calendar years, with specific
     deadlines for compliance submissions.
+    
+    Note: Compliance periods are seeded through migrations rather than created
+    dynamically in code. This allows business areas to control special cases
+    as the program evolves year after year without encoding logic in the code.
+    See compliance/fixtures/README.md for more information.
     """
 
     start_date = models.DateField(
