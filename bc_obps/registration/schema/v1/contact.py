@@ -31,12 +31,3 @@ class ContactFilterSchema(FilterSchema):
     operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operators__id'})
 
 
-class ContactIn(ModelSchema):
-    street_address: Optional[str] = None
-    municipality: Optional[str] = None
-    province: Optional[str] = None
-    postal_code: Optional[str] = None
-
-    class Meta:
-        model = Contact
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
