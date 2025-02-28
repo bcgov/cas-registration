@@ -60,3 +60,14 @@ class OperationRepresentativeListOut(Schema):
     @staticmethod
     def resolve_full_name(obj: Contact) -> str:
         return f"{obj.first_name} {obj.last_name}"
+
+
+class ContactIn(ModelSchema):
+    street_address: Optional[str] = None
+    municipality: Optional[str] = None
+    province: Optional[str] = None
+    postal_code: Optional[str] = None
+
+    class Meta:
+        model = Contact
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']

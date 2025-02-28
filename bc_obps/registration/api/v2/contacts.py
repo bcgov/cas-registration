@@ -1,13 +1,13 @@
 from typing import List, Literal, Optional, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.schema.v2.contact import ContactFilterSchemaV2, ContactListOut
+from registration.schema.v2.contact import ContactFilterSchemaV2, ContactListOut, ContactIn
 from registration.utils import CustomPagination
 from registration.constants import CONTACT_TAGS
 from ninja.pagination import paginate
 from common.api.utils import get_current_user_guid
 from registration.models.contact import Contact
-from registration.schema.v1.contact import ContactIn, ContactOut
+from registration.schema.v1.contact import ContactOut
 from service.contact_service_v2 import ContactServiceV2
 from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx

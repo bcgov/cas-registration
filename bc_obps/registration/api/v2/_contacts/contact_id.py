@@ -3,7 +3,8 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import CONTACT_TAGS
 from registration.models.contact import Contact
-from registration.schema.v1.contact import ContactIn, ContactOut
+from registration.schema.v1.contact import ContactOut
+from registration.schema.v2.contact import ContactIn
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.schema.generic import Message
