@@ -1,0 +1,127 @@
+
+backend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  environment: prod
+
+  resources:
+    limits:
+      memory: 1024Mi
+    requests:
+      cpu: 150m
+      memory: 512Mi
+
+administrationFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: industrialemissions.gov.bc.ca
+    path: "/administration"
+
+  environment: prod
+
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 128Mi
+
+registrationFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: industrialemissions.gov.bc.ca
+    path: "/registration"
+
+  environment: prod
+
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 128Mi
+
+reportingFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: industrialemissions.gov.bc.ca
+    path: "/reporting"
+
+  environment: prod
+
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 128Mi
+
+complianceFrontend:
+  replicaCount: 1
+
+  image:
+    tag: "latest"
+
+  route:
+    host: industrialemissions.gov.bc.ca
+    path: "/compliance"
+
+  environment: prod
+
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 128Mi
+
+dashboardFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: industrialemissions.gov.bc.ca
+    path: "/"
+
+  environment: prod
+
+  auth:
+    keycloakAuthUrl: https://loginproxy.gov.bc.ca/auth
+    siteminderAuthUrl: https://logon7.gov.bc.ca
+
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 128Mi
+
+growthbook:
+  clientKey: sdk-9Vyna67jpIYdjMa
+
+download-dags:
+  airflowEndpoint: https://cas-airflow-prod.apps.silver.devops.gov.bc.ca
+
+cas-logging-sidecar:
+  host: ~
+  index: "cas-bciers-prod-logs"
+  prefix: "cas-bciers"
+  tag: "oc-cas-bciers"
+  logName: "cas-bciers-prod-logs"
