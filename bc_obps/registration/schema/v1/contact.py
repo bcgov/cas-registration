@@ -4,22 +4,6 @@ from ninja import ModelSchema, Field, FilterSchema
 from registration.models import Contact
 
 
-class ContactOut(ModelSchema):
-    street_address: Optional[str] = Field(None, alias="address.street_address")
-    municipality: Optional[str] = Field(None, alias="address.municipality")
-    province: Optional[str] = Field(None, alias="address.province")
-    postal_code: Optional[str] = Field(None, alias="address.postal_code")
-    places_assigned: Optional[list] = None
-
-    @staticmethod
-    def resolve_phone_number(obj: Contact) -> str:
-        return str(obj.phone_number)
-
-    class Meta:
-        model = Contact
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
-        populate_by_name = True
-
 
 class ContactFilterSchema(FilterSchema):
     # NOTE: we could simply use the `q` parameter to filter by related fields but,
