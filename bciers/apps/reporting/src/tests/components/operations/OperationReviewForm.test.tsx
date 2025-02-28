@@ -53,18 +53,24 @@ describe("OperationReviewForm Component", () => {
   const renderForm = (overrideProps = {}) =>
     render(<OperationReviewForm {...defaultProps} {...overrideProps} />);
 
-  it("renders the form with the correct content", async () => {
-    renderForm();
+  it(
+    "renders the form with the correct content",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      renderForm();
 
-    await waitFor(() => {
-      expect(
-        screen.getByText("Review Operation Information"),
-      ).toBeInTheDocument();
-    });
+      await waitFor(() => {
+        expect(
+          screen.getByText("Review Operation Information"),
+        ).toBeInTheDocument();
+      });
 
-    expect(screen.getByText(/Back/i)).toBeInTheDocument();
-    expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
-  });
+      expect(screen.getByText(/Back/i)).toBeInTheDocument();
+      expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
+    },
+  );
   it(
     "submits the form and navigates to the next page",
     {

@@ -46,6 +46,10 @@ export default function Bread({
   const searchParams = useSearchParams();
   const crumbTitles = Object.fromEntries(searchParams.entries());
 
+  // Not showing breadcrumbs on the onboarding page
+  const showBreadcrumb = paths !== "/onboarding";
+  if (!showBreadcrumb) return null;
+
   // 🛠️ Function to check if a link is the last link
   const isLastBreadcrumbItem = (link: string, index: number) => {
     const lastLinkValues = ["register-an-operation"];
