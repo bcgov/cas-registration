@@ -6,6 +6,7 @@ from reporting.service.compliance_service import ComplianceService as ReportComp
 from compliance.models import ComplianceSummary, ComplianceProduct
 from compliance.service.compliance_period_service import CompliancePeriodService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
+from django.core.exceptions import ValidationError
 
 
 class ComplianceSummaryService:
@@ -28,10 +29,13 @@ class ComplianceSummaryService:
         with transaction.atomic():
             report_version = ReportVersion.objects.select_related('report').get(id=report_version_id)
 
-            # Get or create compliance period
-            compliance_period = CompliancePeriodService.get_or_create_compliance_period(
-                report_version.report.reporting_year_id
-            )
+            # Get compliance period
+            try:
+                compliance_period = CompliancePeriodService.get_compliance_period(
+                    report_version.report.reporting_year_id
+                )
+            except CompliancePeriod.DoesNotExist:
+                raise ValidationError(f"No compliance period exists for reporting year {report_version.report.reporting_year_id}")
 
             # Get compliance data from reporting service
             compliance_data = ReportComplianceService.get_calculated_compliance_data(report_version_id)
