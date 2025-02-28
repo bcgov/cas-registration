@@ -755,31 +755,27 @@ def init_reporting_field_data(apps, schema_monitor):
             ReportingField(
                 field_name='Unit-Fuel-CO2 Site-specific EF', field_type='number', field_units='kg/fuel units'
             ),
-            ReportingField(field_name='Unit-Fuel-CH4 Default EF', field_type='number', field_units='kg/fuel units'),
-            ReportingField(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_type='number', field_units='kg/GJ'),
-            ReportingField(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_type='number', field_units='kg/GJ'),
-            ReportingField(field_name='Unit-Fuel-CH4 Measured EF', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Unit-Fuel-CH4 Default EF', field_type='number', field_units='g/fuel units'),
+            ReportingField(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_type='number', field_units='g/GJ'),
+            ReportingField(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_type='number', field_units='g/GJ'),
+            ReportingField(field_name='Unit-Fuel-CH4 Measured EF', field_type='number', field_units='g/fuel units'),
+            ReportingField(field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_type='number', field_units='g/GJ'),
             ReportingField(
-                field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_type='number', field_units='kg/GJ'
+                field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_type='number', field_units='g/GJ'
             ),
             ReportingField(
-                field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_type='number', field_units='kg/GJ'
+                field_name='Unit-Fuel-CH4 Site-specific EF', field_type='number', field_units='g/fuel units'
+            ),
+            ReportingField(field_name='Unit-Fuel-N2O Default EF', field_type='number', field_units='g/fuel units'),
+            ReportingField(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_type='number', field_units='g/GJ'),
+            ReportingField(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_type='number', field_units='g/GJ'),
+            ReportingField(field_name='Unit-Fuel-N2O Measured EF', field_type='number', field_units='g/fuel units'),
+            ReportingField(field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_type='number', field_units='g/GJ'),
+            ReportingField(
+                field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_type='number', field_units='g/GJ'
             ),
             ReportingField(
-                field_name='Unit-Fuel-CH4 Site-specific EF', field_type='number', field_units='kg/fuel units'
-            ),
-            ReportingField(field_name='Unit-Fuel-N2O Default EF', field_type='number', field_units='kg/fuel units'),
-            ReportingField(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_type='number', field_units='kg/GJ'),
-            ReportingField(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_type='number', field_units='kg/GJ'),
-            ReportingField(field_name='Unit-Fuel-N2O Measured EF', field_type='number', field_units='kg/fuel units'),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_type='number', field_units='kg/GJ'
-            ),
-            ReportingField(
-                field_name='Unit-Fuel-N2O Site-specific EF', field_type='number', field_units='kg/fuel units'
+                field_name='Unit-Fuel-N2O Site-specific EF', field_type='number', field_units='g/fuel units'
             ),
         ]
     )
