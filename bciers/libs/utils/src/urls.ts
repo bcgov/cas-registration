@@ -27,4 +27,5 @@ export const newEntrantApril1OrLater =
 
 export const ghgRegulatorEmail = "mailto:GHGRegulator@gov.bc.ca";
 
-export const reportAnEventLink = "https://submit.digital.gov.bc.ca/app/form/submit?f=d26fb011-2846-44ed-9f5c-26e2756a758f"
+export const reportAnEventLink =
+  "https://submit.digital.gov.bc.ca/app/form/submit?f=d26fb011-2846-44ed-9f5c-26e2756a758f";
