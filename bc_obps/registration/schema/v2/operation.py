@@ -94,6 +94,7 @@ class OperationInformationIn(ModelSchema):
         fields = ["name", 'type']
 
 
+
 class OperationInformationInWithDocuments(OperationInformationIn):
     boundary_map: UploadedFile = File(...)
     process_flow_diagram: UploadedFile = File(...)

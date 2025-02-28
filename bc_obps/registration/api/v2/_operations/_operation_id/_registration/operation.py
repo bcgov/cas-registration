@@ -31,7 +31,7 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 ##### PUT #####
 # brianna here!
 
-@router.put(
+@router.post(
     "/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=V2,
@@ -40,10 +40,10 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
     auth=authorize('approved_industry_user'),
 )
 def register_edit_operation_information(
-    request: HttpRequest, operation_id: UUID, details: Form[OperationInformationIn],
-    boundary_map: UploadedFile = File(...),  
+    request: HttpRequest, operation_id: UUID,
+    details: Form[OperationInformationIn],
+    boundary_map: UploadedFile = File(...),
     process_flow_diagram: UploadedFile = File(...),
 ) -> Tuple[Literal[200], Operation]:
-    breakpoint()
     payload = OperationInformationInWithDocuments(**details.dict(), boundary_map=boundary_map,process_flow_diagram=process_flow_diagram)
     return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)
