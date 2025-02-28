@@ -5,7 +5,13 @@ from .compliance_summary import ComplianceSummary
 
 
 class ComplianceObligation(TimeStampedModel):
-    """Model to store compliance obligations"""
+    """
+    Model to store compliance obligations
+    
+    According to BC Greenhouse Gas Emission Reporting Regulation (249/2015) section 19(1)(b),
+    operators with excess emissions must submit a compliance report for excess emissions
+    by November 30 of the calendar year following the compliance period.
+    """
 
     class ObligationStatus(models.TextChoices):
         OBLIGATION_NOT_MET = "OBLIGATION_NOT_MET", "Obligation Not Met"
@@ -34,6 +40,11 @@ class ComplianceObligation(TimeStampedModel):
         choices=PenaltyStatus.choices,
         default=PenaltyStatus.NONE,
         db_comment="The status of the penalty (e.g., NONE, ACCRUING, PAID)",
+    )
+    obligation_deadline = models.DateField(
+        blank=False, 
+        null=False, 
+        db_comment="Deadline date for meeting excess emissions obligations (November 30 of the following year), UTC-based"
     )
 
     history = HistoricalRecords(
