@@ -4,6 +4,31 @@ const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
+  console.log("errors", errors);
+  errors = errors.filter((error) => {
+    // in Administration boundary_map and process_flow_diagram are in section1, and in Registration they're in section2
+    if (
+      [
+        ".section1.boundary_map",
+        ".section1.process_flow_diagram",
+        ".section2.boundary_map",
+        ".section2.process_flow_diagram",
+      ].includes(error.property)
+    ) {
+      if (
+        // Sometimes these fields are a string, but sometimes they're a File
+        error.message === "must be string"
+      ) {
+        return false;
+      }
+    }
+    if (error?.property) {
+      if (error.message === "must be equal to constant") {
+        return false; // This will exclude the error from the array
+      }
+    }
+    return true; // Keep all other errors
+  });
   return errors.map((error) => {
     if (error?.property) {
       if (error.message === "must be equal to constant") {
@@ -17,6 +42,7 @@ const customTransformErrors = (
         error.message = customFormatsErrorMessages.cra_business_number;
         return error;
       }
+
       if (
         ["statutory_declaration", "new_entrant_application"].includes(
           error.property,

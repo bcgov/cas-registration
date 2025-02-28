@@ -2,6 +2,7 @@ from typing import Literal, Tuple
 from uuid import UUID
 from registration.schema.v2.operation import (
     OperationInformationInUpdate,
+    OperationInformationInUpdateWithDocuments,
     OperationOutV2,
     OperationOutWithDocuments,
 )
@@ -14,6 +15,7 @@ from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import Operation
 from registration.schema.generic import Message
+from ninja import File, Form, UploadedFile
 
 
 ##### GET #####
@@ -42,13 +44,14 @@ def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200
     auth=authorize("approved_authorized_roles"),
 )
 def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
+    # breakpoint()
     return 200, OperationServiceV2.get_if_authorized_v2(get_current_user_guid(request), operation_id)
 
 
 ##### PUT ######
 
 
-@router.put(
+@router.post(
     "/operations/{uuid:operation_id}",
     response={200: OperationOutV2, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
@@ -56,6 +59,14 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
     auth=authorize("approved_industry_user"),
 )
 def update_operation(
-    request: HttpRequest, operation_id: UUID, payload: OperationInformationInUpdate
+    request: HttpRequest, operation_id: UUID,  
+    details: Form[OperationInformationInUpdate],
+    # documents are optional because if the user hasn't given us an updated document, we don't have to do anything
+    boundary_map: UploadedFile = File(None),
+    process_flow_diagram: UploadedFile = File(None),
+    new_entrant_application: UploadedFile = File(None)
+    # brianna do the optin too
 ) -> Tuple[Literal[200], Operation]:
+    # validation errors
+    payload = OperationInformationInUpdateWithDocuments(**details.dict(), **({'boundary_map': boundary_map} if boundary_map else {}),**({'process_flow_diagram': process_flow_diagram} if process_flow_diagram else {}),**({'new_entrant_application': new_entrant_application} if new_entrant_application else {}))
     return 200, OperationServiceV2.update_operation(get_current_user_guid(request), payload, operation_id)

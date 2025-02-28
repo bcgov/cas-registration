@@ -1,8 +1,9 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from ninja import File, Form, UploadedFile
 from service.operation_service import OperationService
-from registration.schema.v2.operation import OperationInformationIn, OperationUpdateOut, OperationRegistrationOut
+from registration.schema.v2.operation import OperationInformationIn, OperationInformationInWithDocuments, OperationOutWithDocuments, OperationUpdateOut, OperationRegistrationOut
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
 from common.permissions import authorize
@@ -16,7 +17,7 @@ from registration.schema.generic import Message
 ##### GET #####
 @router.get(
     "/operations/{uuid:operation_id}/registration/operation",
-    response={200: OperationRegistrationOut, custom_codes_4xx: Message},
+    response={200: OperationOutWithDocuments, custom_codes_4xx: Message},
     tags=V2,
     description="""Gets the registration purpose, regulated products (if applicable), and select data of a specific operation by its ID.
     The endpoint ensures that only authorized industry users can access operations belonging to their operator. Unauthorized access attempts raise an error.""",
@@ -28,9 +29,8 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 
 
 ##### PUT #####
-
-
-@router.put(
+# https://stackoverflow.com/questions/77083771/django-ninja-update-a-filefield
+@router.post(
     "/operations/{uuid:operation_id}/registration/operation",
     response={200: OperationUpdateOut, custom_codes_4xx: Message},
     tags=V2,
@@ -39,6 +39,11 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
     auth=authorize('approved_industry_user'),
 )
 def register_edit_operation_information(
-    request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
+    request: HttpRequest, operation_id: UUID,
+    details: Form[OperationInformationIn],
+    # documents are optional because if the user hasn't given us an updated document, we don't have to do anything
+    boundary_map: UploadedFile = File(None),
+    process_flow_diagram: UploadedFile = File(None),
 ) -> Tuple[Literal[200], Operation]:
+    payload = OperationInformationInWithDocuments(**details.dict(), **({'boundary_map': boundary_map} if boundary_map else {}),**({'process_flow_diagram': process_flow_diagram} if process_flow_diagram else {}))
     return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)

@@ -6,7 +6,7 @@ from registration.schema.v1.multiple_operator import MultipleOperatorOut
 from registration.models.contact import Contact
 from registration.schema.v1.operator import OperatorForOperationOut
 from registration.schema.v2.multiple_operator import MultipleOperatorIn
-from ninja import Field, ModelSchema, Schema
+from ninja import Field, ModelSchema, Schema, UploadedFile, File
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from pydantic import field_validator
@@ -15,6 +15,7 @@ from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
 from registration.models import Operator, User
 from ninja.types import DictStrAny
+import os
 
 #### Operation schemas
 
@@ -81,40 +82,33 @@ class OperationInformationIn(ModelSchema):
     registration_purpose: Optional[Operation.Purposes] = None
     regulated_products: Optional[List[int]] = None
     activities: Optional[List[int]] = None
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
     naics_code_id: Optional[int] = None
     opt_in: Optional[bool] = False
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
     date_of_first_shipment: Optional[str] = Field(None, alias="date_of_first_shipment")
-    new_entrant_application: Optional[str] = None
-
-    @field_validator("boundary_map")
-    @classmethod
-    def validate_boundary_map(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
-    @field_validator("process_flow_diagram")
-    @classmethod
-    def validate_process_flow_diagram(cls, value: str) -> ContentFile:
-        return data_url_to_file(value)
-
-    @field_validator("new_entrant_application")
-    @classmethod
-    def validate_new_entrant_application(cls, value: Optional[str]) -> Optional[ContentFile]:
-        if value:
-            return data_url_to_file(value)
-        return None
 
     class Meta:
         model = Operation
         fields = ["name", 'type']
 
 
+
+class OperationInformationInWithDocuments(OperationInformationIn):
+    boundary_map: UploadedFile = File(None)
+    process_flow_diagram: UploadedFile = File(None)
+    new_entrant_application: UploadedFile = File(None)
+
+
 class OperationInformationInUpdate(OperationInformationIn):
     operation_representatives: List[int]
+
+class OperationInformationInUpdateWithDocuments(OperationInformationInUpdate):
+    boundary_map: UploadedFile = File(None)
+    process_flow_diagram: UploadedFile = File(None)
+    new_entrant_application: UploadedFile = File(None)
+    # brianna optedin
 
 
 class OptedInOperationDetailOut(ModelSchema):
@@ -149,14 +143,10 @@ class OperationOutV2(ModelSchema):
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     operator: Optional[OperatorForOperationOut] = None
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
-    registration_purpose: Optional[str] = None
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
     operation_has_multiple_operators: Optional[bool] = False
     opted_in_operation: Optional[OptedInOperationDetailOut] = None
     date_of_first_shipment: Optional[str] = None
-    new_entrant_application: Optional[str] = None
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
     operation_representatives: Optional[List[int]] = []
 
@@ -200,26 +190,29 @@ class OperationOutV2(ModelSchema):
 
 
 class OperationOutWithDocuments(OperationOutV2):
+    # These shouldn't be optional for the app, but since we can't put docs in the mock data we have to allow this for testing
+    # boundary_map: UploadedFile = File(...)
+    # process_flow_diagram: UploadedFile = File(...)
+    boundary_map: Optional[str] = None
+    process_flow_diagram: Optional[str] = None
+
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
-        boundary_map = obj.get_boundary_map()
-        if boundary_map:
-            return file_to_data_url(boundary_map)
-        return None
+        # return os.path.basename(obj.get_boundary_map().file.name)
+        return str(obj.get_boundary_map().file.url)
+       
 
     @staticmethod
     def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
-        process_flow_diagram = obj.get_process_flow_diagram()
-        if process_flow_diagram:
-            return file_to_data_url(process_flow_diagram)
-        return None
+        # return os.path.basename(obj.get_process_flow_diagram().file.name)
+        return str(obj.get_process_flow_diagram().file.url)
 
-    @staticmethod
-    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
-        new_entrant_application = obj.get_new_entrant_application()
-        if new_entrant_application:
-            return file_to_data_url(new_entrant_application)
-        return None
+    # @staticmethod
+    # def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
+    #     new_entrant_application = obj.get_new_entrant_application()
+    #     if new_entrant_application:
+    #         return file_to_data_url(new_entrant_application)
+    #     return None
 
 
 class OperationCreateOut(ModelSchema):

@@ -22,7 +22,10 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
+import { convertRjsfFormData } from "@/registration/app/components/operations/registration/OperationInformationForm";
 
+// could change the page out of an rjsf form to just a regular form
+// use rjsf to render everything but submission isn't via rjsf--we grab the formdata from rjsf and make our own formdata
 const OperationInformationForm = ({
   formData,
   operationId,
@@ -67,13 +70,17 @@ const OperationInformationForm = ({
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
+    console.log("in handleSubmit administration");
+    console.log("formdata", formData);
     setError(undefined);
     const response = await actionHandler(
       `registration/operations/${operationId}`,
-      "PUT",
+      "POST",
       "",
       {
-        body: JSON.stringify(data.formData),
+        // brianna instead of doing this, the body could be FormData type
+        // build a form data object hefIre in handlesubmit, iterate over the keys like line 83 in AttachmentsForm, FormData can handle real file objects. Saves us from having to parse/load the dataurl on the server. getting download working isn't a big lift. see how many 20MB files we can upload at the same time in load testing. Might be some django ninja stuff to do
+        body: convertRjsfFormData(formData),
       },
     );
 
@@ -157,6 +164,7 @@ const OperationInformationForm = ({
           }
         }}
         onCancel={() => router.push("/operations")}
+        // customValidate={customValidate}
         formContext={{
           operationId,
           isRegulatedOperation: regulatedOperationPurposes.includes(
