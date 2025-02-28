@@ -48,24 +48,40 @@ function convertToDataUri(file: File): Promise<string | null> {
 }
 
 export const handleValue = (value: string | File) => {
-  // the value can either be a string (the url retrieved from GCS for an existing file) or a file (new file the user has selected)
-  let extractedFileName;
-  let downloadUrl;
-  if (value && typeof value === "string") {
+  let extractedFileName: string = "";
+  let downloadUrl: string | null = null;
+
+  if (typeof value === "string") {
     downloadUrl = value;
     const match = value.match(/\/documents\/([^?]+)/);
     extractedFileName = match ? match[1] : "";
   }
-  if (value && value instanceof File) {
-    convertToDataUri(value).then((res) => {
-      // brianna this is too slow
-      downloadUrl = res;
-      console.log("down", downloadUrl);
-    });
+
+  if (value instanceof File) {
     extractedFileName = value.name;
+    downloadUrl = URL.createObjectURL(value);
   }
+
   return { downloadUrl, extractedFileName };
 };
+
+// Custom hook to handle the value
+// const useHandleValue = (value: string | File) => {
+//   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
+//   const [extractedFileName, setExtractedFileName] = useState<string>("");
+
+//   useEffect(() => {
+//     const handleAsyncValue = async () => {
+//       const { downloadUrl, extractedFileName } = await handleValue(value);
+//       setDownloadUrl(downloadUrl);
+//       setExtractedFileName(extractedFileName);
+//     };
+
+//     handleAsyncValue(); // Trigger the async function
+//   }, [value]); // Re-run when `value` changes
+
+//   return { downloadUrl, extractedFileName };
+// };
 
 const FileWidget = ({
   id,
@@ -91,7 +107,8 @@ const FileWidget = ({
   console.log("downloadUrl", downloadUrl);
 
   const [fileName, setFileName] = useState(extractedFileName);
-  console.log();
+  const [url, setUrl] = useState(downloadUrl);
+  console.log("filename", fileName);
   console.log("value in filewidget", value);
   console.log("extractedFileName", extractedFileName);
   // const [oldFileId, setOldFileId] = useState(value);
