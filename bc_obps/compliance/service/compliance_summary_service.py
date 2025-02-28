@@ -1,6 +1,7 @@
 from uuid import UUID
 from django.db import transaction
 from decimal import Decimal
+from bc_obps.compliance.models.compliance_period import CompliancePeriod
 from reporting.models import ReportVersion, ReportProduct
 from reporting.service.compliance_service import ComplianceService as ReportComplianceService
 from compliance.models import ComplianceSummary, ComplianceProduct
