@@ -119,7 +119,7 @@ jobs:
 
           if [ -s errors.txt ]; then
 
-            echo "Found errors with severity/risk level higher than $ZAP_FAILURE_RISK_LEVEL,"
+            echo "Found errors with severity/risk level higher than $${{ inputs.zap_fail_on_risk_level }},"
             echo "for more information, consult the logs of the individual zap actions."
 
             echo "Errors found:"
