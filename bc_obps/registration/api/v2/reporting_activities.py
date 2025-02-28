@@ -6,7 +6,7 @@ from ..router import router
 from typing import List, Literal, Tuple
 from registration.models import Activity
 from registration.schema.v1 import (
-    ActivitySchema,
+    ActivitySchemaOut,
 )
 from django.db.models import QuerySet
 
@@ -15,7 +15,7 @@ from django.db.models import QuerySet
 
 @router.get(
     "/reporting_activities",
-    response=List[ActivitySchema],
+    response=List[ActivitySchemaOut],
     tags=ACTIVITY_TAGS,
     description="""Retrieves a list of reporting activities.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
