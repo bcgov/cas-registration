@@ -7,7 +7,8 @@
       "updated_at": "2024-01-01T00:00:00Z",
       "start_date": "2023-01-01",
       "end_date": "2023-12-31",
-      "compliance_deadline": "2024-06-30"
+      "compliance_deadline": "2024-06-30",
+      "reporting_year": 2023
     }
   },
   {
@@ -18,7 +19,8 @@
       "updated_at": "2024-01-01T00:00:00Z",
       "start_date": "2024-01-01",
       "end_date": "2024-12-31",
-      "compliance_deadline": "2025-06-30"
+      "compliance_deadline": "2025-06-30",
+      "reporting_year": 2024
     }
   }
 ]
