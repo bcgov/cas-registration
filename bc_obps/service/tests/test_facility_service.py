@@ -12,6 +12,7 @@ from registration.models import (
     UserOperator,
     WellAuthorizationNumber,
 )
+from registration.enums.enums import OperationTypes, FacilityTypes
 from registration.tests.utils.helpers import TestUtils
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.tests.utils.bakers import (
@@ -80,7 +81,7 @@ class TestGetIfAuthorized:
         payload = [
             FacilityIn(
                 name='Test Facility 1',
-                type='Single Facility',
+                type=FacilityTypes.SINGLE_FACILITY.value,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -97,12 +98,12 @@ class TestGetIfAuthorized:
         owning_operation: Operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
-            type="Linear Facilities Operation",
+            type=OperationTypes.LFO.value,
         )
         payload = [
             FacilityIn(
                 name='Test Facility 1',
-                type='Medium Facility',
+                type=FacilityTypes.MEDIUM_FACILITY.value,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -113,7 +114,7 @@ class TestGetIfAuthorized:
                 province='AB',
                 postal_code='H0H0H0',
                 name='Test Facility 2',
-                type='Medium Facility',
+                type=FacilityTypes.MEDIUM_FACILITY.value,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -121,7 +122,7 @@ class TestGetIfAuthorized:
             ),
             FacilityIn(
                 name='Test Facility 3',
-                type='Single Facility',
+                type=FacilityTypes.SMALL_AGGREGATE.value,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -144,7 +145,7 @@ class TestCreateFacilityWithDesignatedOperation:
 
         payload = FacilityIn(
             name='zip',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -163,19 +164,19 @@ class TestCreateFacilityWithDesignatedOperation:
         owning_operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
-            type='Single Facility Operation',
+            type=OperationTypes.SFO,
         )
 
         payload = FacilityIn(
             name='doraemon',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
         )
         payload2 = FacilityIn(
             name='shinchan',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -208,7 +209,7 @@ class TestCreateFacilityWithDesignatedOperation:
             province='AB',
             postal_code='H0H0H0',
             name='zip',
-            type='Large Facility',
+            type=FacilityTypes.LARGE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -307,7 +308,7 @@ class TestUpdateFacility:
         user, owning_operation, facility = TestUpdateFacility._setup_facility(user_role="cas_pending")
         payload = FacilityIn(
             name='zip',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -324,7 +325,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -353,7 +354,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type='Large Facility',
+            type=FacilityTypes.LARGE_FACILITY.value,
             well_authorization_numbers=[1, 2, 3],
             is_current_year=True,
             starting_date="2024-07-07T09:00:00.000Z",
@@ -398,7 +399,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -428,7 +429,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -454,7 +455,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -486,7 +487,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type='Single Facility',
+            type=FacilityTypes.SINGLE_FACILITY.value,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,

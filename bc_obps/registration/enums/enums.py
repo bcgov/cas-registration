@@ -31,6 +31,14 @@ class OperationTypes(Enum):
     EIO = "Electricity Import Operation"
 
 
+class FacilityTypes(Enum):
+    SINGLE_FACILITY = "Single Facility"
+    LARGE_FACILITY = "Large Facility"
+    MEDIUM_FACILITY = "Medium Facility"
+    SMALL_AGGREGATE = "Small Aggregate"
+    ELECTRICITY_IMPORT = "Electricity Import"
+
+
 class RegistrationTableNames(Enum):
     ACTIVITY = "activity"
     ADDRESS = "address"
