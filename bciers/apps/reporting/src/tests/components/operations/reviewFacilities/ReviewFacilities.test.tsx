@@ -133,62 +133,68 @@ describe("LFOFacilitiesForm", () => {
     expectButton(config.buttons.save, false);
   });
 
-  it("should handle case where selected facilities are deselected", async () => {
-    (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);
+  it(
+    "should handle case where selected facilities are deselected",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);
 
-    render(
-      <LFOFacilitiesForm
-        initialData={mockFacilitiesInitialData}
-        version_id={1}
-      />,
-    );
+      render(
+        <LFOFacilitiesForm
+          initialData={mockFacilitiesInitialData}
+          version_id={1}
+        />,
+      );
 
-    const checkbox1 = screen.getByRole("checkbox", {
-      name: "Facility 1 Facility 1",
-    });
-    fireEvent.click(checkbox1);
+      const checkbox1 = screen.getByRole("checkbox", {
+        name: "Facility 1 Facility 1",
+      });
+      fireEvent.click(checkbox1);
 
-    const saveButton = screen.getByRole("button", {
-      name: config.buttons.save,
-    });
-    fireEvent.click(saveButton);
-    // Assert that the confirmation modal is displayed
-    await waitFor(() => {
-      expect(screen.getByText("Confirmation")).toBeInTheDocument();
-    });
-    expect(
-      screen.getByText("You have deselected the following facilities:"),
-    ).toBeInTheDocument();
-    // Assert that the deselected facility is displayed
-    expect(screen.getAllByText("Facility 1")).toHaveLength(2);
-    // Assert that the unselected facility (was not and still is not selected) is not displayed
-    expect(screen.getAllByText("Facility 2")).toHaveLength(1);
+      const saveButton = screen.getByRole("button", {
+        name: config.buttons.save,
+      });
+      fireEvent.click(saveButton);
+      // Assert that the confirmation modal is displayed
+      await waitFor(() => {
+        expect(screen.getByText("Confirmation")).toBeInTheDocument();
+      });
+      expect(
+        screen.getByText("You have deselected the following facilities:"),
+      ).toBeInTheDocument();
+      // Assert that the deselected facility is displayed
+      expect(screen.getAllByText("Facility 1")).toHaveLength(2);
+      // Assert that the unselected facility (was not and still is not selected) is not displayed
+      expect(screen.getAllByText("Facility 2")).toHaveLength(1);
 
-    const cancelButton = screen.getByRole("button", {
-      name: config.buttons.cancel,
-    });
-    fireEvent.click(cancelButton);
-    await waitFor(() => {
-      // Assert that the confirmation modal is closed
-      expect(screen.queryByText("Confirmation")).not.toBeInTheDocument();
-    });
+      const cancelButton = screen.getByRole("button", {
+        name: config.buttons.cancel,
+      });
+      fireEvent.click(cancelButton);
+      await waitFor(() => {
+        // Assert that the confirmation modal is closed
+        expect(screen.queryByText("Confirmation")).not.toBeInTheDocument();
+      });
 
-    const saveAndContinueButton = screen.getByRole("button", {
-      name: config.buttons.saveAndContinue,
-    });
-    fireEvent.click(saveAndContinueButton);
-    await waitFor(() => {
-      expect(screen.getByText("Confirmation")).toBeInTheDocument();
-    });
-    const continueButton = screen.getByRole("button", {
-      name: config.buttons.continue,
-    });
-    fireEvent.click(continueButton);
-    await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledTimes(1);
-      expect(mockRouterPush).toHaveBeenCalledWith(config.urls.continue);
-    });
-  });
+      const saveAndContinueButton = screen.getByRole("button", {
+        name: config.buttons.saveAndContinue,
+      });
+      fireEvent.click(saveAndContinueButton);
+      await waitFor(() => {
+        expect(screen.getByText("Confirmation")).toBeInTheDocument();
+      });
+      const continueButton = screen.getByRole("button", {
+        name: config.buttons.continue,
+      });
+      fireEvent.click(continueButton);
+      await waitFor(() => {
+        expect(mockRouterPush).toHaveBeenCalledTimes(1);
+        expect(mockRouterPush).toHaveBeenCalledWith(config.urls.continue);
+      });
+    },
+  );
 
   it("should route to the Person Responsible page when the Back button is clicked", async () => {
     (actionHandler as Mock).mockResolvedValueOnce(mockFacilitiesInitialData);

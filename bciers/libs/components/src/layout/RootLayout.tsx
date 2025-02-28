@@ -6,11 +6,13 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import { auth } from "@/dashboard/auth";
 import SessionProvider from "@/dashboard/auth/SessionProvider";
-import { theme } from "@bciers/components";
-import { NextAppDirEmotionCacheProvider } from "@bciers/components";
-import { Footer } from "@bciers/components";
-import { Header } from "@bciers/components";
-import { Bread } from "@bciers/components";
+import {
+  theme,
+  NextAppDirEmotionCacheProvider,
+  Footer,
+  Header,
+  Bread,
+} from "@bciers/components";
 import { Main } from "@bciers/components/server";
 
 const rootMetadata: Metadata = {

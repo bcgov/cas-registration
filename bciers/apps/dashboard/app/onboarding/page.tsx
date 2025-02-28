@@ -62,8 +62,7 @@ export default function Page() {
       container
       spacing={2}
       sx={{
-        marginTop: "24px",
-        marginBottom: "48px",
+        marginBottom: "24px",
       }}
     >
       <Grid
@@ -79,75 +78,58 @@ export default function Page() {
         }}
       >
         <section>
-          <p>
-            Welcome to the B.C. Industrial Emissions Reporting System (BCIERS),
-            a web application for industrial operators to participate in the
-            B.C. Output-Based Pricing System (B.C. OBPS).
-          </p>
-
-          <p>
-            Operators who are eligible to participate in the B.C. OBPS will need
-            to use this web application to start the registration process.
-          </p>
-
-          <p>
-            Before getting started, take a moment to review the detailed{" "}
-            <a
-              href={bcObpsGuidanceLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              guidance
-            </a>
-            .
-          </p>
-          <p>
-            BCIERS will enable operators to apply for a B.C. OBPS Regulated
-            Operation ID (BORO ID) for each industrial operation that is
-            eligible to participate in the B.C. OBPS. A BORO ID is needed to
-            claim a carbon tax exemption under the Carbon Tax Act starting April
-            1, 2024.
-          </p>
-        </section>
-        <section>
-          <h2 className={headerStyle}>
-            How to apply for a B.C. OBPS Regulated Operation ID
-          </h2>
+          <h1 className={`${headerStyle} text-3xl`}>
+            Welcome to the B.C. Industrial Emissions Reporting System
+          </h1>
+          This web application is intended for use by:
           <ol>
-            <li>Log in as an industrial operator with your Business BCeID.</li>
-            <li>Activate your industrial operator profile.</li>
             <li>
-              Submit an application for each of your industrial operations.
+              Industrial operators that have an obligation to register and
+              report under the Greenhouse Gas Industrial Reporting and Control
+              Act (GGIRCA)
+            </li>
+            <li>
+              Participants in the B.C. Output Based Pricing System (B.C. OBPS),
+              to meet their compliance obligations.
             </li>
           </ol>
-          <p>
-            Upon review, each eligible industrial operation will receive a BORO
-            ID.
-          </p>
-          <p>
-            To check eligibility, and for further information about the B.C.
-            OBPS, please visit the{" "}
-            <a href={bcObpsLink} target="_blank" rel="noopener noreferrer">
-              program website.
-            </a>
-          </p>
-          <p>
-            Please visit the{" "}
-            <a
-              href={carbonTaxExemptionLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              carbon tax exemption
-            </a>{" "}
-            webpage to learn more about claiming an exemption from the carbon
-            tax.
-          </p>
         </section>
-        <section className="flex flex-col items-center bg-bc-bg-light-grey my-10 py-8">
+        <section>
+          <h2 className={headerStyle}>Helpful links</h2>
+          <ul>
+            <li>
+              Before getting started, please review the{" "}
+              <a
+                href={bcObpsGuidanceLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                B.C. OBPS Program and Reporting Guidance.
+              </a>
+            </li>
+            <li>
+              For information on the B.C. OBPS, please visit the{" "}
+              <a href={bcObpsLink} target="_blank" rel="noopener noreferrer">
+                Program page.
+              </a>
+            </li>
+            <li>
+              For information on claiming an exemption from the carbon tax,
+              please visit the{" "}
+              <a
+                href={carbonTaxExemptionLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Carbon Tax Exemption page.
+              </a>
+            </li>
+          </ul>
+        </section>
+        <section className="flex flex-col  bg-bc-bg-light-grey my-10 py-6 px-4">
           <h2 className={headerStyle}>Contact us</h2>
-          <p className="text-center">
-            If you have any questions, please email us at <br />
+          <p>
+            If you have any questions, please email us at{" "}
             <a
               href="mailto:GHGRegulator@gov.bc.ca"
               className="text-black font-bold no-underline"
@@ -169,8 +151,8 @@ export default function Page() {
           },
         }}
       >
-        <section className="flex flex-col items-center">
-          <h2 className={`${headerStyle} w-full text-center`}>
+        <section className="flex flex-col ">
+          <h2 className={`${headerStyle} w-full `}>
             Log in as Industrial Operator
           </h2>
           <Button
@@ -180,7 +162,7 @@ export default function Page() {
           >
             Log in with Business BCeID
           </Button>
-          <p>
+          <p className="mt-2">
             Don’t have a Business BCeID?{" "}
             <button
               className="border-none bg-transparent text-lg text-bc-link-blue cursor-pointer"
@@ -190,7 +172,7 @@ export default function Page() {
             </button>
           </p>
         </section>
-        <h2 className={headerStyle}>Key Dates</h2>
+        <h2 className={`${headerStyle} mt-2`}>Key Dates</h2>
         <table className={`table-auto w-full border-collapse ${tableBorder}`}>
           <colgroup>
             <col className="w-[30%]" />
@@ -205,16 +187,20 @@ export default function Page() {
           <tbody>
             {events.map((row, index) => (
               <tr key={index}>
-                <td className={`px-2 py-6 ${tableBorder} whitespace-pre-line`}>
+                <td
+                  className={`px-2 py-2 ${tableBorder} whitespace-pre-line font-bold`}
+                >
                   {row.date}
                 </td>
-                <td className={`px-2 py-6 ${tableBorder}`}>{row.event}</td>
+                <td className={`px-2 py-2 ${tableBorder} whitespace-pre-line`}>
+                  {row.event}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <section className="flex flex-col items-center mt-8">
-          <h2 className={`${headerStyle} w-full text-center`}>
+        <section className="flex flex-col  mt-8">
+          <h2 className={`${headerStyle} w-full `}>
             Log in as Government Employee
           </h2>
           <Button
