@@ -1,6 +1,5 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import React from "react";
 import { actionHandler, useSession } from "@bciers/testConfig/mocks";
 import { submissionSchema } from "@/registration/app/data/jsonSchema/operationRegistration/submission";
 import RegistrationSubmissionForm from "apps/registration/app/components/operations/registration/RegistrationSubmissionForm";
@@ -69,14 +68,16 @@ const verifySuccessPage = async () => {
     expect(screen.getByText("Registration complete")).toBeVisible();
   });
 
-  expect(screen.getByRole("alert")).toHaveTextContent(
-    "If yes, and you have not reported it yet, please report it in the Report a Change page. Otherwise, no further action is required and this registration is complete.",
+  const submissionMessage = screen.getByTestId("submission-message");
+  expect(submissionMessage).toBeVisible();
+  expect(submissionMessage).toHaveTextContent(
+    "The Greenhouse Gas Emission Reporting Regulation requires an operator to report the following events:",
   );
 
-  expect(screen.getByRole("link", { name: "Report a change" })).toBeVisible();
-  expect(
-    screen.getByRole("link", { name: "Return to Dashboard" }),
-  ).toBeVisible();
+  const linkToForm = screen.getByRole("link", { name: "Link to form" });
+  expect(linkToForm).toBeVisible();
+  expect(linkToForm).toHaveAttribute("href", "https://submit.digital.gov.bc.ca/app/form/submit?f=d26fb011-2846-44ed-9f5c-26e2756a758f");
+  expect(screen.getByRole("link", { name: "Back to Dashboard" })).toBeVisible();
 };
 
 describe("the RegistrationSubmissionForm component", () => {
@@ -143,56 +144,5 @@ describe("the RegistrationSubmissionForm component", () => {
       ).not.toBeInTheDocument();
       expect(screen.getByText(/Before clicking 'Submit'/i)).toBeVisible();
     });
-  });
-
-  it("should render the Submission message with the correct years (older date)", async () => {
-    // Using old date to show this is working
-    const date = new Date(2000, 8, 12);
-    vi.setSystemTime(date);
-
-    render(<RegistrationSubmissionForm {...defaultProps} />);
-
-    await checkAllCheckboxesAndSubmit();
-
-    await verifySuccessPage();
-
-    const submissionDateMessage = screen.getByTestId("submission-date-message");
-    expect(submissionDateMessage).toHaveTextContent(
-      "Did your operation or facility have any of the following changes in 1999 or 2000?",
-    );
-  });
-
-  it("should render the message with the correct years (recent date)", async () => {
-    const newerDate = new Date(2024, 8, 12);
-    vi.setSystemTime(newerDate);
-
-    render(<RegistrationSubmissionForm {...defaultProps} />);
-
-    await checkAllCheckboxesAndSubmit();
-
-    await verifySuccessPage();
-
-    const submissionDateMessage = screen.getByTestId("submission-date-message");
-
-    expect(submissionDateMessage).toHaveTextContent(
-      "Did your operation or facility have any of the following changes in 2023 or 2024?",
-    );
-  });
-
-  it("should render the Submission message with the correct years (future date)", async () => {
-    const futureDate = new Date(2035, 8, 12);
-    vi.setSystemTime(futureDate);
-
-    render(<RegistrationSubmissionForm {...defaultProps} />);
-
-    await checkAllCheckboxesAndSubmit();
-
-    await verifySuccessPage();
-
-    const submissionDateMessage = screen.getByTestId("submission-date-message");
-
-    expect(submissionDateMessage).toHaveTextContent(
-      "Did your operation or facility have any of the following changes in 2034 or 2035?",
-    );
   });
 });
