@@ -3,8 +3,6 @@ from ninja import ModelSchema, Field
 from registration.models import Contact
 from ninja import FilterSchema
 from uuid import UUID
-
-
 from ninja import Schema
 
 
@@ -35,7 +33,7 @@ class ContactWithPlacesAssigned(ContactOut):
     places_assigned: Optional[list[PlacesAssigned]] = []
 
 
-class ContactListOutV2(ModelSchema):
+class ContactListOut(ModelSchema):
     operator__legal_name: str = Field(..., alias="operator.legal_name")
 
     class Meta:

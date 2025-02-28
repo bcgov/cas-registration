@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.schema.v2.contact import ContactFilterSchemaV2, ContactListOutV2
+from registration.schema.v2.contact import ContactFilterSchemaV2, ContactListOut
 from registration.utils import CustomPagination
 from registration.constants import CONTACT_TAGS
 from ninja.pagination import paginate
@@ -18,7 +18,7 @@ from registration.schema.generic import Message
 
 @router.get(
     "/contacts",
-    response={200: List[ContactListOutV2], custom_codes_4xx: Message},
+    response={200: List[ContactListOut], custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves a paginated list of contacts based on the provided filters.
     The endpoint allows authorized users to view and sort contacts associated to an operator filtered by various criteria such as first name, last name and email.""",
