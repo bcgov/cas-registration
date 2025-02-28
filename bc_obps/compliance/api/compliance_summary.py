@@ -10,9 +10,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
 from registration.constants import PAGE_SIZE
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
-from service.data_access_service.user_service import UserDataAccessService
-from service.data_access_service.operation_service import OperationDataAccessService
-from registration.models.operation import Operation
 from .router import router
 
 

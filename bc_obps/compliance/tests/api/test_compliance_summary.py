@@ -3,9 +3,6 @@ import pytest
 from django.test import Client
 from model_bakery import baker
 from compliance.models import ComplianceSummary, ComplianceObligation
-from compliance.tests.utils.baker_recipes import compliance_summary, compliance_product, compliance_obligation
-from registration.tests.utils.baker_recipes import operation, user_operator
-from reporting.tests.utils.baker_recipes import report_version
 
 
 class TestComplianceSummaryEndpoint:
@@ -19,18 +16,20 @@ class TestComplianceSummaryEndpoint:
     def test_get_compliance_summaries(self, mock_user):
         # Arrange
         self.client.force_login(mock_user)
-        
+
         # Create test data using recipes
         op = baker.make_recipe('registration.tests.utils.operation', bcghg_id__identifier='BC1234')
-        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
-        
+        baker.make_recipe(
+            'registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved'
+        )
+
         # Create compliance summary with related objects
         mock_compliance_summary = baker.make_recipe(
             'compliance.tests.utils.compliance_summary',
             report__operation=op,
             compliance_status=ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET,
         )
-        
+
         baker.make_recipe('compliance.tests.utils.compliance_product', compliance_summary=mock_compliance_summary)
         baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
@@ -62,7 +61,9 @@ class TestComplianceSummaryEndpoint:
         # Arrange
         self.client.force_login(mock_user)
         op = baker.make_recipe('registration.tests.utils.operation')
-        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
+        baker.make_recipe(
+            'registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved'
+        )
 
         # Act
         response = self.client.get(self.endpoint_under_test)
@@ -75,23 +76,24 @@ class TestComplianceSummaryEndpoint:
     def test_get_compliance_summary_by_id(self, mock_user):
         # Arrange
         self.client.force_login(mock_user)
-        
+
         # Create test data using recipes
         op = baker.make_recipe('registration.tests.utils.operation', bcghg_id__identifier='BC1234')
-        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
-        
+        baker.make_recipe(
+            'registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved'
+        )
+
         # Create compliance summary with related objects
         mock_compliance_summary = baker.make_recipe(
             'compliance.tests.utils.compliance_summary',
             report__operation=op,
             compliance_status=ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET,
         )
-        
+
         mock_compliance_product = baker.make_recipe(
-            'compliance.tests.utils.compliance_product', 
-            compliance_summary=mock_compliance_summary
+            'compliance.tests.utils.compliance_product', compliance_summary=mock_compliance_summary
         )
-        
+
         mock_compliance_obligation = baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
             compliance_summary=mock_compliance_summary,
@@ -145,7 +147,9 @@ class TestComplianceSummaryEndpoint:
         # Arrange
         self.client.force_login(mock_user)
         op = baker.make_recipe('registration.tests.utils.operation')
-        baker.make_recipe('registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved')
+        baker.make_recipe(
+            'registration.tests.utils.user_operator', user=mock_user, operator=op.operator, status='Approved'
+        )
 
         # Act
         response = self.client.get(f"{self.endpoint_under_test}/999")
@@ -156,7 +160,7 @@ class TestComplianceSummaryEndpoint:
     def test_get_compliance_summary_by_id_unauthorized(self):
         # Arrange
         mock_compliance_summary = baker.make_recipe('compliance.tests.utils.compliance_summary')
-        
+
         # Act
         response = self.client.get(f"{self.endpoint_under_test}/{mock_compliance_summary.id}")
 

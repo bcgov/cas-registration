@@ -5,6 +5,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.service.report_verification_service import ReportVerificationService
 from events.signals import report_submitted
 
+
 class ReportSubmissionService:
     """
     A service to submit reports and handle the errors
@@ -39,10 +40,6 @@ class ReportSubmissionService:
         report_version.save()
 
         # Send a signal that the report has been submitted
-        report_submitted.send(
-            sender=ReportSubmissionService,
-            version_id=version_id,
-            user_guid=user_guid
-        )
+        report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
 
         return report_version

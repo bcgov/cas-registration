@@ -52,4 +52,4 @@ The compliance period fixture follows this format:
 ]
 ```
 
-Special cases, such as different deadlines or date ranges, can be handled by adjusting the values in the fixture. 
+Special cases, such as different deadlines or date ranges, can be handled by adjusting the values in the fixture.

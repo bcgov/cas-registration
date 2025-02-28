@@ -2,7 +2,7 @@ from decimal import Decimal
 import pytest
 from unittest.mock import patch, MagicMock
 from uuid import UUID
-from compliance.models import ComplianceSummary, ComplianceObligation
+from compliance.models import ComplianceSummary
 from compliance.service.compliance_summary_service import ComplianceSummaryService
 
 
@@ -60,7 +60,7 @@ class TestComplianceSummaryService:
         mock_get_compliance_data.return_value = mock_compliance_data
         mock_summary = MagicMock()
         mock_create_summary.return_value = mock_summary
-        
+
         # Mock report products
         mock_report_product = MagicMock()
         mock_report_product.product.name = "Test Product"

@@ -20,8 +20,10 @@ export const fetchComplianceSummariesPageData = async (params: {
     throw new Error(`Failed to fetch compliance summaries: ${data.error}`);
   }
 
-  if (!data || typeof data !== 'object' || !Array.isArray(data.items)) {
-    throw new Error('Invalid response format from compliance summaries endpoint');
+  if (!data || typeof data !== "object" || !Array.isArray(data.items)) {
+    throw new Error(
+      "Invalid response format from compliance summaries endpoint",
+    );
   }
 
   return {

@@ -1,5 +1,5 @@
 from uuid import UUID
-from django.db.models import QuerySet, OuterRef, Subquery, F, Max
+from django.db.models import QuerySet, OuterRef, Subquery
 from compliance.models.compliance_summary import ComplianceSummary
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
@@ -25,7 +25,7 @@ class ComplianceDashboardService:
             ComplianceSummary.objects.filter(
                 report__operation_id=OuterRef("id"),
                 current_report_version__is_latest_submitted=True,
-                current_report_version__status='Submitted'
+                current_report_version__status='Submitted',
             )
             .select_related('report', 'report__operation', 'compliance_period', 'obligation')
             .order_by('-compliance_period__end_date')
@@ -44,16 +44,16 @@ class ComplianceDashboardService:
             .filter(id__in=[op.compliance_summary_id for op in operations if op.compliance_summary_id])
             .order_by('-compliance_period__end_date', 'report__operation__name')
         )
-        
+
     @classmethod
     def get_compliance_summary_by_id(cls, user_guid: UUID, summary_id: int) -> Optional[ComplianceSummary]:
         """
         Fetches a specific compliance summary by ID if it belongs to one of the user's operations
-        
+
         Args:
             user_guid: The GUID of the user requesting the summary
             summary_id: The ID of the compliance summary to retrieve
-            
+
         Returns:
             The requested ComplianceSummary object or None if not found
         """
@@ -66,8 +66,12 @@ class ComplianceDashboardService:
 
         # Get the compliance summary if it belongs to one of the user's operations
         try:
-            return ComplianceSummary.objects.select_related(
-                'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
-            ).filter(id=summary_id, report__operation__in=operations).get()
+            return (
+                ComplianceSummary.objects.select_related(
+                    'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
+                )
+                .filter(id=summary_id, report__operation__in=operations)
+                .get()
+            )
         except ComplianceSummary.DoesNotExist:
             return None

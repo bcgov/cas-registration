@@ -34,4 +34,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(init_compliance_periods, reverse_init_compliance_periods),
-    ] 
+    ]

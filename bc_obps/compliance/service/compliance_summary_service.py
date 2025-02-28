@@ -19,11 +19,11 @@ class ComplianceSummaryService:
     def create_compliance_summary(cls, report_version_id: int, user_guid: UUID) -> ComplianceSummary:
         """
         Creates a compliance summary for a submitted report version
-        
+
         Args:
             report_version_id (int): The ID of the report version
             user_guid (UUID): The UUID of the user creating the summary
-            
+
         Returns:
             ComplianceSummary: The created compliance summary
         """
@@ -36,7 +36,9 @@ class ComplianceSummaryService:
                     report_version.report.reporting_year_id
                 )
             except CompliancePeriod.DoesNotExist:
-                raise ValidationError(f"No compliance period exists for reporting year {report_version.report.reporting_year_id}")
+                raise ValidationError(
+                    f"No compliance period exists for reporting year {report_version.report.reporting_year_id}"
+                )
 
             # Get compliance data from reporting service
             compliance_data = ReportComplianceService.get_calculated_compliance_data(report_version_id)
@@ -68,18 +70,18 @@ class ComplianceSummaryService:
             # Create compliance obligation if there are excess emissions
             if compliance_data.excess_emissions > Decimal('0'):
                 ComplianceObligationService.create_compliance_obligation(
-                    summary.id, 
-                    compliance_data.excess_emissions,
-                    report_version.report.reporting_year_id
+                    summary.id, compliance_data.excess_emissions, report_version.report.reporting_year_id
                 )
 
             return summary
-    
+
     @classmethod
-    def _create_compliance_products(cls, summary: ComplianceSummary, report_version_id: int, product_data_list: list) -> None:
+    def _create_compliance_products(
+        cls, summary: ComplianceSummary, report_version_id: int, product_data_list: list
+    ) -> None:
         """
         Creates compliance products for a compliance summary
-        
+
         Args:
             summary (ComplianceSummary): The compliance summary
             report_version_id (int): The ID of the report version
@@ -103,32 +105,32 @@ class ComplianceSummaryService:
                 allocated_industrial_process_emissions=product_data.allocated_industrial_process_emissions,
                 allocated_compliance_emissions=product_data.allocated_compliance_emissions,
             )
-    
+
     @classmethod
     def get_compliance_summary(cls, summary_id: int) -> ComplianceSummary:
         """
         Gets a compliance summary by ID
-        
+
         Args:
             summary_id (int): The ID of the compliance summary
-            
+
         Returns:
             ComplianceSummary: The compliance summary
-            
+
         Raises:
             ComplianceSummary.DoesNotExist: If the compliance summary doesn't exist
         """
         return ComplianceSummary.objects.get(id=summary_id)
-    
+
     @staticmethod
     def _determine_compliance_status(excess_emissions: Decimal, credited_emissions: Decimal) -> str:
         """
         Determines the compliance status based on emissions
-        
+
         Args:
             excess_emissions (Decimal): The excess emissions
             credited_emissions (Decimal): The credited emissions
-            
+
         Returns:
             str: The compliance status
         """
@@ -137,4 +139,4 @@ class ComplianceSummaryService:
         elif credited_emissions > Decimal('0'):
             return ComplianceSummary.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET 
+            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET

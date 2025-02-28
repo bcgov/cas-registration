@@ -58,7 +58,7 @@ def handle_my_signal(sender, **kwargs):
 # In your_app/apps.py
 class YourAppConfig(AppConfig):
     name = 'your_app'
-    
+
     def ready(self):
         # Import signals to register handlers
         from . import signals  # noqa: F401
@@ -68,4 +68,4 @@ class YourAppConfig(AppConfig):
 
 - `report_submitted`: Sent when a report is submitted
 
-See `events/signals.py` for the complete list of signals and their parameters. 
+See `events/signals.py` for the complete list of signals and their parameters.
