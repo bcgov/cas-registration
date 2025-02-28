@@ -1,5 +1,5 @@
 from typing import Optional
-from registration.schema.v1.business_structure import validate_business_structure
+from registration.schema.v2.business_structure import validate_business_structure
 from ninja import ModelSchema, Field
 from pydantic import field_validator
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX
