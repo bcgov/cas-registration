@@ -2,7 +2,7 @@ import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader"
 import Check from "@bciers/components/icons/Check";
 import Link from "next/link";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
-import {ghgRegulatorEmail, reportAnEventLink} from "@bciers/utils/src/urls";
+import { ghgRegulatorEmail, reportAnEventLink } from "@bciers/utils/src/urls";
 
 interface SubmissionProps {
   step: number;
@@ -36,7 +36,9 @@ const Submission = ({
           </ul>
           <p className="mb-0">
             To report any of these events, please use the following link:{" "}
-            <Link href={reportAnEventLink} target="_blank">Link to form</Link>
+            <Link href={reportAnEventLink} target="_blank">
+              Link to form
+            </Link>
           </p>
           <p className="mt-0">
             Staff will review the information provided and administer changes in

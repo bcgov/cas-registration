@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {reportAnEventLink} from "@bciers/utils/src/urls";
+import { reportAnEventLink } from "@bciers/utils/src/urls";
 
 // 🧩 Main component
 export default async function ExternalTransferPage() {
@@ -15,10 +15,7 @@ export default async function ExternalTransferPage() {
         <li>A transfer of control and direction to the operator</li>
       </ul>
       To report any of these events, please click report an event below.
-      <Link
-        className="link-button-blue my-8"
-        href={reportAnEventLink}
-      >
+      <Link className="link-button-blue my-8" href={reportAnEventLink}>
         Report an Event
       </Link>
       Staff will review the information provided and administer changes in
