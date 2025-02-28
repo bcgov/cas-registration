@@ -1128,7 +1128,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_units='g/GJ')
     )
     # CH4 - Default EF - Unit-Fuel-CH4 Default Emission Factor
     ConfigurationElement.objects.get(
@@ -1141,7 +1141,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default EF', field_units='g/fuel units')
     )
     # CH4 - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
     ConfigurationElement.objects.get(
@@ -1169,7 +1169,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_units='g/GJ')
     )
     # CH4 - Measured EF - Unit-Fuel-CH4 Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -1182,7 +1182,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured EF', field_units='g/fuel units')
     )
     # CH4 - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
     ConfigurationElement.objects.get(
@@ -1219,7 +1219,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_units='g/GJ')
     )
     # CH4 - Heat Input/Default EF - Unit-Fuel Heat Input
     ConfigurationElement.objects.get(
@@ -1243,7 +1243,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_units='g/GJ')
     )
     # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
@@ -1292,7 +1292,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_units='g/GJ')
     )
     # N2O - Default EF - Unit-Fuel-N2O Default Emission Factor
     ConfigurationElement.objects.get(
@@ -1305,7 +1305,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default EF', field_units='g/fuel units')
     )
     # N2O - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
     ConfigurationElement.objects.get(
@@ -1333,7 +1333,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_units='g/GJ')
     )
     # N2O - Measured EF - Unit-Fuel-N2O Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -1346,7 +1346,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured EF', field_units='g/fuel units')
     )
     # N2O - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
     ConfigurationElement.objects.get(
@@ -1383,7 +1383,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_units='g/GJ')
     )
     # N2O - Heat Input/Default EF - Unit-Fuel Heat Input
     ConfigurationElement.objects.get(
@@ -1407,7 +1407,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_units='g/GJ')
     )
     # N2O - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
@@ -1625,7 +1625,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_units='g/GJ')
     )
     # CH4 - Default EF - Unit-Fuel-CH4 Default Emission Factor
     ConfigurationElement.objects.get(
@@ -1638,7 +1638,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default EF', field_units='g/fuel units')
     )
     # CH4 - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
     ConfigurationElement.objects.get(
@@ -1666,7 +1666,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_units='g/GJ')
     )
     # CH4 - Measured EF - Unit-Fuel-CH4 Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -1679,7 +1679,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured EF', field_units='g/fuel units')
     )
     # CH4 - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
     ConfigurationElement.objects.get(
@@ -1716,7 +1716,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_units='g/GJ')
     )
     # CH4 - Heat Input/Default EF - Unit-Fuel Heat Input
     ConfigurationElement.objects.get(
@@ -1740,7 +1740,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_units='g/GJ')
     )
     # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
@@ -1789,7 +1789,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_units='g/GJ')
     )
     # N2O - Default EF - Unit-Fuel-N2O Default Emission Factor
     ConfigurationElement.objects.get(
@@ -1802,7 +1802,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default EF', field_units='g/fuel units')
     )
     # N2O - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
     ConfigurationElement.objects.get(
@@ -1830,7 +1830,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_units='g/GJ')
     )
     # N2O - Measured EF - Unit-Fuel-N2O Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -1843,7 +1843,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured EF', field_units='g/fuel units')
     )
     # N2O - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
     ConfigurationElement.objects.get(
@@ -1880,7 +1880,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_units='g/GJ')
     )
     # N2O - Heat Input/Default EF - Unit-Fuel Heat Input
     ConfigurationElement.objects.get(
@@ -1904,7 +1904,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_units='g/GJ')
     )
     # N2O - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
@@ -2122,7 +2122,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default HHV-Default EF', field_units='g/GJ')
     )
     # CH4 - Default EF - Unit-Fuel-CH4 Default Emission Factor
     ConfigurationElement.objects.get(
@@ -2135,7 +2135,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default EF', field_units='g/fuel units')
     )
     # CH4 - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
     ConfigurationElement.objects.get(
@@ -2163,7 +2163,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured HHV-Default EF', field_units='g/GJ')
     )
     # CH4 - Measured EF - Unit-Fuel-CH4 Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -2176,7 +2176,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured EF', field_units='g/fuel units')
     )
     # CH4 - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
     ConfigurationElement.objects.get(
@@ -2213,7 +2213,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Steam-Default EF', field_units='g/GJ')
     )
     # CH4 - Heat Input/Default EF - Unit-Fuel Heat Input
     ConfigurationElement.objects.get(
@@ -2237,7 +2237,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Heat Input-Default EF', field_units='g/GJ')
     )
     # CH4 - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
@@ -2286,7 +2286,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default HHV-Default EF', field_units='g/GJ')
     )
     # N2O - Default EF - Unit-Fuel-N2O Default Emission Factor
     ConfigurationElement.objects.get(
@@ -2299,7 +2299,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default EF', field_units='g/fuel units')
     )
     # N2O - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
     ConfigurationElement.objects.get(
@@ -2327,7 +2327,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured HHV-Default EF', field_units='g/GJ')
     )
     # N2O - Measured EF - Unit-Fuel-N2O Measured Emission Factor
     ConfigurationElement.objects.get(
@@ -2340,7 +2340,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured EF', field_units='kg/fuel units')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured EF', field_units='g/fuel units')
     )
     # N2O - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
     ConfigurationElement.objects.get(
@@ -2377,7 +2377,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Steam-Default EF', field_units='g/GJ')
     )
     # N2O - Heat Input/Default EF - Unit-Fuel Heat Input
     ConfigurationElement.objects.get(
@@ -2401,7 +2401,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
-        ReportingField.objects.get(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_units='kg/GJ')
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Heat Input-Default EF', field_units='g/GJ')
     )
     # N2O - Alternative Parameter Measurement Methodology - Description
     ConfigurationElement.objects.get(
