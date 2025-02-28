@@ -7,7 +7,8 @@ from uuid import UUID
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
-from registration.schema.v1.contact import ContactFilterSchema, ContactIn, ContactOut
+from registration.schema.v1.contact import ContactFilterSchema, ContactOut
+from registration.schema.v2.contact import ContactIn
 from registration.schema.v2.operation import OperationRepresentativeIn
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
