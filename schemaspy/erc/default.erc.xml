@@ -311,7 +311,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="416" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="300" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -362,7 +362,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="568" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="475" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -2587,6 +2587,43 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="report_verification_visit" remarks="Table to store individual verification visit information" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="visit_name" nullable="false" remarks="The name of the site visited (Facility X, Other, or None)" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="visit_type" nullable="true" remarks="The type of visit conducted (Virtual or In Person)" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="visit_coordinates" nullable="true" remarks="Geographic location of an other facility visited" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="is_other_visit" nullable="false" remarks="Flag to indicate the visit is an other facility visited" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_verification__archived_by_id_3ffba498_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_verification__created_by_id_559a6cd6_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="report_verification_id" nullable="false" remarks="The report verification associated with this visit" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_verification__updated_by_id_1d8c716d_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_verification_visit_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_verification_visit_archived_by_id_3ffba498" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_verification_visit_created_by_id_559a6cd6" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_verification_visit_report_verification_id_86f3be1b" unique="false">
+            <column ascending="true" name="report_verification_id"/>
+         </index>
+         <index name="report_verification_visit_updated_by_id_1d8c716d" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+         <checkConstraint constraint="(((NOT is_other_visit) OR (visit_coordinates IS NOT NULL)))" name="other_facility_must_have_coordinates"/>
+      </table>
       <table name="report_version" remarks="A table representing the multiple versions that a single report can have." schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="report_version_id" foreignKey="facility_report_report_version_id_df06fd00_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="facility_report"/>
@@ -2645,7 +2682,7 @@
             <column ascending="true" name="report_id"/>
          </index>
       </table>
-      <table name="reporting_field" numRows="76" remarks="A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration" schema="erc" type="TABLE">
+      <table name="reporting_field" numRows="88" remarks="A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="reportingfield_id" foreignKey="configuration_elemen_reportingfield_id_89a926f0_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -3019,6 +3056,9 @@
             <child column="archived_by_id" foreignKey="report_verification_archived_by_id_e48ad3cc_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_verification"/>
             <child column="created_by_id" foreignKey="report_verification_created_by_id_feeec302_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_verification"/>
             <child column="updated_by_id" foreignKey="report_verification_updated_by_id_6164417f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_verification"/>
+            <child column="archived_by_id" foreignKey="report_verification__archived_by_id_3ffba498_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_verification_visit"/>
+            <child column="created_by_id" foreignKey="report_verification__created_by_id_559a6cd6_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_verification_visit"/>
+            <child column="updated_by_id" foreignKey="report_verification__updated_by_id_1d8c716d_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_verification_visit"/>
             <child column="archived_by_id" foreignKey="report_version_archived_by_id_4cb54a40_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
             <child column="created_by_id" foreignKey="report_version_created_by_id_435db3c6_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
             <child column="updated_by_id" foreignKey="report_version_updated_by_id_1a053202_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
@@ -3036,9 +3076,6 @@
             <child column="updated_by_id" foreignKey="user_operator_updated_by_id_36b6d082_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
             <child column="user_id" foreignKey="user_operator_user_id_5f245911_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
             <child column="verified_by_id" foreignKey="user_operator_verified_by_id_abba2ab2_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user_operator"/>
-            <child column="archived_by_id" foreignKey="verification_visit_archived_by_id_4f80d4f8_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="verification_visit"/>
-            <child column="created_by_id" foreignKey="verification_visit_created_by_id_9008da31_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="verification_visit"/>
-            <child column="updated_by_id" foreignKey="verification_visit_updated_by_id_ab606c9d_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="verification_visit"/>
             <child column="archived_by_id" foreignKey="well_authorization_n_archived_by_id_08527392_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="well_authorization_number"/>
             <child column="created_by_id" foreignKey="well_authorization_n_created_by_id_1e7bc021_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="well_authorization_number"/>
             <child column="updated_by_id" foreignKey="well_authorization_n_updated_by_id_5515cfed_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="well_authorization_number"/>
@@ -3127,43 +3164,6 @@
          <index name="user_operator_verified_by_id_abba2ab2" unique="false">
             <column ascending="true" name="verified_by_id"/>
          </index>
-      </table>
-      <table name="verification_visit" remarks="Table to store individual verification visit information" schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="visit_name" nullable="false" remarks="The name of the site visited (Facility X, Other, or None)" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="visit_type" nullable="true" remarks="The type of visit conducted (Virtual or In Person)" size="10" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="visit_coordinates" nullable="true" remarks="Geographic location of an other facility visited" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="is_other_visit" nullable="false" remarks="Flag to indicate the visit is an other facility visited" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="user_guid" foreignKey="verification_visit_archived_by_id_4f80d4f8_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="user_guid" foreignKey="verification_visit_created_by_id_9008da31_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="report_verification_id" nullable="false" remarks="The report verification associated with this visit" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="user_guid" foreignKey="verification_visit_updated_by_id_ab606c9d_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
-         </column>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
-         <index name="verification_visit_pkey" unique="true">
-            <column ascending="true" name="id"/>
-         </index>
-         <index name="verification_visit_archived_by_id_4f80d4f8" unique="false">
-            <column ascending="true" name="archived_by_id"/>
-         </index>
-         <index name="verification_visit_created_by_id_9008da31" unique="false">
-            <column ascending="true" name="created_by_id"/>
-         </index>
-         <index name="verification_visit_report_verification_id_9c927c00" unique="false">
-            <column ascending="true" name="report_verification_id"/>
-         </index>
-         <index name="verification_visit_updated_by_id_ab606c9d" unique="false">
-            <column ascending="true" name="updated_by_id"/>
-         </index>
-         <checkConstraint constraint="(((NOT is_other_visit) OR (visit_coordinates IS NOT NULL)))" name="other_facility_must_have_coordinates"/>
       </table>
       <table name="well_authorization_number" remarks="A table containing well authorization numbers. Authorization numbers are assigned by the British Columbia Energy Regulator: https://www.bc-er.ca/what-we-regulate/oil-gas/wells/. Facilities can have multiple well authorization numbers." schema="erc" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>

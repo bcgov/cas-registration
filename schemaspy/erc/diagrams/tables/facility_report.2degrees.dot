@@ -179,6 +179,9 @@ digraph "twoDegreesRelationshipsDiagram" {
   "report_verification":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_verification":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
   "report_verification":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_version":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_version":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_version":"report_id":w -> "report":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
@@ -212,9 +215,6 @@ digraph "twoDegreesRelationshipsDiagram" {
   "user_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "user_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "user_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "well_authorization_number":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "well_authorization_number":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "well_authorization_number":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -727,6 +727,17 @@ digraph "twoDegreesRelationshipsDiagram" {
     target="_top"
     tooltip="report_verification"
   ];
+  "report_verification_visit" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="142" HEIGHT="16"><B>report_verification_visit</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="report_verification_visit.html"
+    target="_top"
+    tooltip="report_verification_visit"
+  ];
   "report_version" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -825,17 +836,6 @@ digraph "twoDegreesRelationshipsDiagram" {
     URL="user_operator.html"
     target="_top"
     tooltip="user_operator"
-  ];
-  "verification_visit" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="99" HEIGHT="16"><B>verification_visit</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="verification_visit.html"
-    target="_top"
-    tooltip="verification_visit"
   ];
   "well_authorization_number" [
    label=<

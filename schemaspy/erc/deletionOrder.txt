@@ -15,7 +15,7 @@ operation_designated_operator_timeline
 facility_designated_operation_timeline
 document
 report_additional_data
-verification_visit
+report_verification_visit
 emission_category_mapping
 transfer_event_facilities
 temporary_shutdown_event_facilities

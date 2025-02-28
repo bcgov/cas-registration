@@ -60,7 +60,7 @@ restart_event_facilities
 temporary_shutdown_event_facilities
 transfer_event_facilities
 emission_category_mapping
-verification_visit
+report_verification_visit
 report_additional_data
 document
 facility_designated_operation_timeline
