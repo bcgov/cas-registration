@@ -4,7 +4,6 @@ from service.data_access_service.operation_designated_operator_timeline_service 
 )
 import pytest
 from model_bakery import baker
-from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from registration.constants import UNAUTHORIZED_MESSAGE
 
 pytestmark = pytest.mark.django_db
@@ -22,25 +21,31 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
     def test_get_operations_for_industry_user():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
-        # transferred operation - should not be returned
+        # simulating a transferred operation - should not be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
+            end_date="2024-12-25 01:00:00-08",
             operator=approved_user_operator.operator,
         )
 
-        # closed operations
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
+        # active, registered operations
+        registered_operations = baker.make_recipe(
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
             _quantity=20,
         )
+        for operation in registered_operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                operator=approved_user_operator.operator,
+                end_date=None,
+            )
 
         # someone else's operations - should not be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
             _quantity=5,
         )
 
@@ -52,7 +57,6 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
     @staticmethod
     def test_get_operations_for_internal_user():
-
         # non-registered operation - should not be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
@@ -62,20 +66,26 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
         # transferred operation
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
-            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation',
+                status=Operation.Statuses.REGISTERED,
+            ),
+            end_date="2024-02-27 01:46:20.789146+00:00",
         )
 
-        # closed operations
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
-            status=OperationDesignatedOperatorTimeline.Statuses.CLOSED,
-            _quantity=20,
+        # active operations
+        registered_operations = baker.make_recipe(
+            'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, _quantity=20
         )
+        for operation in registered_operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                end_date=None,
+            )
 
         timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
             baker.make_recipe('registration.tests.utils.cas_admin')
         )
 
-        assert timeline.count() == 21
+        assert timeline.count() == 20
