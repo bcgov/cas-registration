@@ -6,7 +6,7 @@ from common.permissions import authorize
 from ..router import router
 from typing import List, Literal, Tuple
 from registration.models import BusinessStructure
-from registration.schema.v1 import BusinessStructureOut
+from registration.schema.v2.business_structure import BusinessStructureOut
 
 
 ##### GET #####
