@@ -4,7 +4,7 @@ import pytest
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.models.facility import Facility
-from registration.schema.v1.facility import FacilityIn
+from registration.schema.v2.facility import FacilityIn
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 from registration.models.contact import Contact
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
