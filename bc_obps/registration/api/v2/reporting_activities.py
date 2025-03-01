@@ -5,9 +5,7 @@ from common.permissions import authorize
 from ..router import router
 from typing import List, Literal, Tuple
 from registration.models import Activity
-from registration.schema.v1 import (
-    ActivitySchemaOut,
-)
+from registration.schema.v2.activities import ActivitySchemaOut
 from django.db.models import QuerySet
 
 ##### GET #####

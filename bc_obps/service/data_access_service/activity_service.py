@@ -1,8 +1,6 @@
 from typing import Optional
 from registration.models import Activity
-from registration.schema.v1 import (
-    ActivitySchemaOut,
-)
+from registration.schema.v2.activities import ActivitySchemaOut
 from django.core.cache import cache
 from django.db.models import QuerySet
 
