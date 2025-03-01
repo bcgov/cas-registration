@@ -1,10 +1,8 @@
 from typing import Iterable, Union
 from uuid import UUID
-
 from registration.schema.v2.operation import OperationListOut
 from service.user_operator_service import UserOperatorService
 from registration.models import Operation, RegulatedProduct, User
-from registration.schema.v1 import OperationOut
 from django.db.models import QuerySet
 from ninja.types import DictStrAny
 
@@ -18,7 +16,12 @@ class OperationDataAccessService:
     def get_by_id_for_operation_out_schema(cls, operation_id: UUID) -> Operation:
         return (
             Operation.objects.only(
-                *OperationOut.Meta.fields,
+                "id",
+                "name",
+                "type",
+                "opt_in",
+                "regulated_products",
+                "status"
                 "naics_code",
                 "point_of_contact__address",
                 "point_of_contact__first_name",
