@@ -42,6 +42,7 @@ interface Props {
     id: number;
     representative_name: string;
   }[];
+  showRegulatedProducts?: boolean;
 }
 
 export default function OperationReviewForm({
@@ -54,6 +55,7 @@ export default function OperationReviewForm({
   registrationPurpose,
   facilityReport,
   allRepresentatives,
+  showRegulatedProducts,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
@@ -93,7 +95,8 @@ export default function OperationReviewForm({
               return activity.name;
             }),
       regulated_products:
-        formDataState.operation_report_type === "Simple Report"
+        formDataState.operation_report_type === "Simple Report" ||
+        !showRegulatedProducts
           ? []
           : formDataObject.regulated_products?.map((productId: any) => {
               const product = allRegulatedProducts.find(
@@ -132,6 +135,7 @@ export default function OperationReviewForm({
           allActivities,
           allRegulatedProducts,
           allRepresentatives,
+          showRegulatedProducts,
         ),
       );
     }

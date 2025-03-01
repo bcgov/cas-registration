@@ -10,6 +10,11 @@ import { formatDate } from "@reporting/src/app/utils/formatDate";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
 import { getRegulatedProducts } from "@bciers/actions/api";
+import {
+  ELECTRICITY_IMPORT_OPERATION,
+  POTENTIAL_REPORTING_OPERATION,
+  REPORTING_OPERATION,
+} from "@reporting/src/app/utils/constants";
 
 const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   const reportingOperationData = await getReportingOperation(versionId);
@@ -25,6 +30,11 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
 
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
+  const showRegulatedProducts = ![
+    ELECTRICITY_IMPORT_OPERATION,
+    REPORTING_OPERATION,
+    POTENTIAL_REPORTING_OPERATION,
+  ].includes(registrationPurpose);
 
   const schema: any = updateSchema(
     operationReviewSchema,
@@ -34,6 +44,7 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
     allActivities,
     allRegulatedProducts,
     reportingOperationData.report_operation_representatives,
+    showRegulatedProducts,
   );
 
   // Purpose note doesn't show up on the final review page
