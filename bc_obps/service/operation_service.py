@@ -8,7 +8,7 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from service.document_service import DocumentService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
-from registration.schema.v1.operation import OperationCreateIn, OperationFilterSchema, OperationUpdateIn
+from registration.schema.v1.operation import OperationFilterSchema, OperationUpdateIn
 from service.data_access_service.operation_service import OperationDataAccessService
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -240,33 +240,3 @@ class OperationService:
             "data": [(operation) for operation in paginator.page(page).object_list],
             "row_count": paginator.count,
         }
-
-    @classmethod
-    @transaction.atomic()
-    def create_operation(cls, user_guid: UUID, payload: OperationCreateIn) -> Dict[str, Union[str, UUID]]:
-        user = UserDataAccessService.get_by_guid(user_guid)
-        user_operator: UserOperator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-
-        payload_dict = payload.dict(
-            exclude={
-                "regulated_products",
-                "naics_code",
-            }
-        )
-        payload_dict['operator_id'] = user_operator.operator_id
-        payload_dict['naics_code_id'] = payload.naics_code  # type: ignore[attr-defined]
-        # check that the operation doesn't already exist
-        bcghg_id: Optional[str] = payload.bcghg_id
-        if bcghg_id:
-            operation_exists: bool = Operation.objects.only('bcghg_id').filter(bcghg_id_id=bcghg_id).exists()
-            if operation_exists:
-                raise Exception("Operation with this BCGHG ID already exists.")
-
-        operation: Operation = OperationDataAccessService.create_operation(user_guid, payload_dict, payload.regulated_products)  # type: ignore[attr-defined]
-
-        # Not needed for MVP
-        # operation.activities.set(payload.activities)
-        # if payload.operation_has_multiple_operators:
-        #     create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
-
-        return {"name": operation.name, "id": operation.id}
