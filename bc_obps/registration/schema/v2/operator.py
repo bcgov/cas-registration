@@ -1,14 +1,12 @@
 from typing import List, Optional
 from registration.models.partner_operator import PartnerOperator
 from registration.schema.v2.partner_operator import PartnerOperatorIn, PartnerOperatorOut
-from registration.models.parent_operator import ParentOperator
 from registration.schema.v2.parent_operator import ParentOperatorIn, ParentOperatorOut
-from registration.models.operator import Operator
 from registration.schema.v2.business_structure import validate_business_structure
 from registration.schema.validators import validate_cra_business_number
 from ninja import ModelSchema, FilterSchema, Field, Schema
 from pydantic import field_validator
-from registration.models import BusinessStructure, Operator
+from registration.models import BusinessStructure, Operator, ParentOperator
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
 )
@@ -138,3 +136,55 @@ class OperatorSearchOut(ModelSchema):
         model = Operator
         fields = ["id", "legal_name"]
         from_attributes = True
+
+
+class OperatorForOperationOut(ModelSchema):
+    """
+    Schema specifically for the operator field in the OperationOut schema
+    This is used to optimize the queries and reduce the number of queries
+    """
+
+    physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
+    physical_municipality: Optional[str] = Field(None, alias="physical_address.municipality")
+    physical_province: Optional[str] = Field(None, alias="physical_address.province")
+    physical_postal_code: Optional[str] = Field(None, alias="physical_address.postal_code")
+    mailing_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
+    mailing_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
+    mailing_province: Optional[str] = Field(None, alias="mailing_address.province")
+    mailing_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
+    mailing_address_same_as_physical: bool
+    operator_has_parent_operators: bool
+    parent_operators_array: Optional[List[ParentOperatorOut]] = None
+
+    @staticmethod
+    def resolve_parent_operators_array(obj: Operator) -> Optional[List[ParentOperator]]:
+        if obj.parent_operators.exists():
+            return [
+                parent_operator
+                for parent_operator in obj.parent_operators.select_related(
+                    "physical_address", "mailing_address", "business_structure"
+                )
+            ]
+        return None
+
+    @staticmethod
+    def resolve_mailing_address_same_as_physical(obj: Operator) -> bool:
+        if not obj.mailing_address or not obj.physical_address:
+            return False
+        return obj.mailing_address_id == obj.physical_address_id
+
+    @staticmethod
+    def resolve_operator_has_parent_operators(obj: Operator) -> bool:
+        return obj.parent_operators.exists()
+
+    class Meta:
+        model = Operator
+        fields = [
+            "id",
+            "legal_name",
+            "trade_name",
+            "cra_business_number",
+            "bc_corporate_registry_number",
+            "business_structure",
+            "website",
+        ]

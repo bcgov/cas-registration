@@ -3,7 +3,7 @@ from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from typing import List, Optional, Literal
 from registration.models.contact import Contact
-from registration.schema.v1.operator import OperatorForOperationOut
+from registration.schema.v2.operator import OperatorForOperationOut
 from registration.schema.v2.multiple_operator import MultipleOperatorIn, MultipleOperatorOut
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
