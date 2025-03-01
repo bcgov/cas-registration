@@ -2,7 +2,7 @@ from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
-from registration.schema.v1.operator import OperatorFromUserOperatorOut
+from registration.schema.v2.operator import OperatorFromUserOperatorOut
 from service.data_access_service.user_service import UserDataAccessService
 from common.api.utils import get_current_user_guid
 from registration.schema.generic import Message
