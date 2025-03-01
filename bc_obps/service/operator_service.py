@@ -4,7 +4,7 @@ from registration.models import ParentOperator, User, Operator
 from typing import List, Optional, Union
 from django.db.models import QuerySet
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.schema.v1 import OperatorSearchOut
+from registration.schema.v2.operator import OperatorSearchOut
 from uuid import UUID
 from registration.models import (
     Operation,

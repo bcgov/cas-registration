@@ -8,7 +8,7 @@ from registration.schema.v2.business_structure import validate_business_structur
 from registration.schema.validators import validate_cra_business_number
 from ninja import ModelSchema, FilterSchema, Field, Schema
 from pydantic import field_validator
-from registration.models import BusinessStructure
+from registration.models import BusinessStructure, Operator
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
 )
@@ -131,3 +131,10 @@ class ConfirmSelectedOperatorOut(ModelSchema):
     class Meta:
         model = Operator
         fields = ["id", "legal_name", "trade_name", "cra_business_number"]
+
+
+class OperatorSearchOut(ModelSchema):
+    class Meta:
+        model = Operator
+        fields = ["id", "legal_name"]
+        from_attributes = True

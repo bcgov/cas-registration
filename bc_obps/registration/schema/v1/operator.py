@@ -1,16 +1,9 @@
 from typing import List, Optional
 from uuid import UUID
-from ninja import Field, Schema
+from ninja import Field
 from ninja import ModelSchema
 from registration.models import Operator, ParentOperator
 from .parent_operator import ParentOperatorOut
-
-
-class OperatorSearchOut(ModelSchema):
-    class Meta:
-        model = Operator
-        fields = ["id", "legal_name"]
-        from_attributes = True
 
 
 class OperatorExternalDashboardUsersTileData(ModelSchema):
