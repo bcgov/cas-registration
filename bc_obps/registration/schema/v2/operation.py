@@ -304,3 +304,9 @@ class OperationListOut(ModelSchema):
         model = Operation
         fields = ['id', 'name', 'submission_date', 'status']
         from_attributes = True
+
+
+class OperationUpdateStatusOut(ModelSchema):
+    class Meta:
+        model = Operation
+        fields = ["id", "status"]
