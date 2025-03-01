@@ -1,11 +1,13 @@
 from typing import List, Optional
+from uuid import UUID
+
 from registration.models.partner_operator import PartnerOperator
 from registration.schema.v2.partner_operator import PartnerOperatorIn, PartnerOperatorOut
 from registration.schema.v2.parent_operator import ParentOperatorIn, ParentOperatorOut
 from registration.schema.v2.business_structure import validate_business_structure
 from registration.schema.validators import validate_cra_business_number
 from ninja import ModelSchema, FilterSchema, Field, Schema
-from pydantic import field_validator
+from pydantic import field_validator, Field
 from registration.models import BusinessStructure, Operator, ParentOperator
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
@@ -188,3 +190,25 @@ class OperatorForOperationOut(ModelSchema):
             "business_structure",
             "website",
         ]
+
+
+class OperatorExternalDashboardUsersTileData(ModelSchema):
+    """
+    Schema for fields from the Operator model that are needed in ExternalDashboardUsersTileData
+    """
+
+    class Meta:
+        model = Operator
+        fields = ["legal_name"]
+
+
+class OperatorFromUserOperatorOut(ModelSchema):
+    """
+    Schema for the Operator associated with a UserOperator
+    """
+
+    operator_id: UUID = Field(..., alias="id")
+
+    class Meta:
+        model = Operator
+        fields = ["status"]

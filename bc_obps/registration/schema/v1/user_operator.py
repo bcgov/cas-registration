@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from registration.schema.validators import validate_cra_business_number
-from registration.schema.v1.operator import OperatorExternalDashboardUsersTileData
+from registration.schema.v2.operator import OperatorExternalDashboardUsersTileData
 from registration.schema.v1.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
 from pydantic import field_validator
