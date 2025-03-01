@@ -7,15 +7,6 @@ from pydantic import field_validator
 from ninja.types import DictStrAny
 from django.core.files.base import ContentFile
 
-#### Operation schemas
-
-
-class OperationCreateOut(ModelSchema):
-    class Meta:
-        model = Operation
-        fields = ["id", "name"]
-
-
 class OperationCreateIn(ModelSchema):
     # Not using Multiple operators for MVP
     # operation_has_multiple_operators: Optional[bool] = False
@@ -26,12 +17,6 @@ class OperationCreateIn(ModelSchema):
         model = Operation
         fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products']
         populate_by_name = True
-
-
-class OperationUpdateOut(ModelSchema):
-    class Meta:
-        model = Operation
-        fields = ["name"]
 
 
 class OperationUpdateIn(ModelSchema):
@@ -121,28 +106,10 @@ class OperationOut(ModelSchema):
         from_attributes = True
 
 
-# Not using Multiple operators for MVP
-# from .multiple_operator import MultipleOperatorOut
-# OperationOut.update_forward_refs()
-
-
-class OperationUpdateStatusIn(ModelSchema):
-    class Meta:
-        model = Operation
-        fields = ["status"]
-        from_attributes = True
-
-
 class OperationUpdateStatusOut(ModelSchema):
     class Meta:
         model = Operation
         fields = ["id", "status"]
-
-
-class OperationPaginatedOut(Schema):
-    data: List[OperationListOut]
-    row_count: int
-
 
 class OperationFilterSchema(FilterSchema):
     bcghg_id: Optional[str] = None
