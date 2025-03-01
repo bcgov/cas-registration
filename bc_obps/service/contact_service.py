@@ -5,7 +5,6 @@ from uuid import UUID
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
-from registration.schema.v1.contact import ContactFilterSchema
 from registration.schema.v2.contact import ContactIn, ContactOut
 from registration.schema.v2.operation import OperationRepresentativeIn
 from service.data_access_service.address_service import AddressDataAccessService
@@ -20,20 +19,6 @@ class ContactWithPlacesAssigned(ContactOut):
 
 
 class ContactService:
-    @classmethod
-    def list_contacts(
-        cls,
-        user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
-        filters: ContactFilterSchema = Query(...),
-    ) -> QuerySet[Contact]:
-        user = UserDataAccessService.get_by_guid(user_guid)
-        sort_direction = "-" if sort_order == "desc" else ""
-        sort_by = f"{sort_direction}{sort_field}"
-        base_qs = ContactDataAccessService.get_all_contacts_for_user(user)
-        return filters.filter(base_qs).order_by(sort_by)
-
     @classmethod
     def list_operation_representatives(
         cls,
