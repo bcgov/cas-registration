@@ -2,10 +2,9 @@ from uuid import UUID
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from typing import List, Optional, Literal
-from registration.schema.v1.multiple_operator import MultipleOperatorOut
 from registration.models.contact import Contact
-from registration.schema.v1.operator import OperatorForOperationOut
-from registration.schema.v2.multiple_operator import MultipleOperatorIn
+from registration.schema.v2.operator import OperatorForOperationOut
+from registration.schema.v2.multiple_operator import MultipleOperatorIn, MultipleOperatorOut
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
@@ -278,14 +277,6 @@ class OperationNewEntrantApplicationOut(ModelSchema):
         fields = ['date_of_first_shipment']
 
 
-class OperationNewEntrantApplicationRemove(ModelSchema):
-    id: int
-
-    class Meta:
-        model = Operation
-        fields = ['id']
-
-
 class OperationRepresentativeOut(ModelSchema):
     class Meta:
         model = Contact
@@ -302,3 +293,20 @@ class OperationBcghgIdOut(ModelSchema):
     class Meta:
         model = BcGreenhouseGasId
         fields = ['id']
+
+
+class OperationListOut(ModelSchema):
+    operator: str = Field(..., alias="operator.legal_name")
+    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+
+    class Meta:
+        model = Operation
+        fields = ['id', 'name', 'submission_date', 'status']
+        from_attributes = True
+
+
+class OperationUpdateStatusOut(ModelSchema):
+    class Meta:
+        model = Operation
+        fields = ["id", "status"]

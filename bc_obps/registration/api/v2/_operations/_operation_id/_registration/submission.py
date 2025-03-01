@@ -1,8 +1,7 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from registration.schema.v2.operation import OperationRegistrationSubmissionIn
-from registration.schema.v1.operation import OperationUpdateStatusOut
+from registration.schema.v2.operation import OperationRegistrationSubmissionIn, OperationUpdateStatusOut
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
 from common.permissions import authorize

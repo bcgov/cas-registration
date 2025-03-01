@@ -5,7 +5,7 @@ from registration.constants import OPERATOR_TAGS
 from service.operator_service import OperatorService
 from registration.models import Operator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.v1 import OperatorSearchOut
+from registration.schema.v2.operator import OperatorSearchOut
 from registration.schema.generic import Message
 from django.db.models import QuerySet
 from registration.api.router import router

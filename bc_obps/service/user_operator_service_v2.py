@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from uuid import UUID
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from registration.schema.v1.contact import ContactIn
+from registration.schema.v2.contact import ContactIn
 from registration.schema.v1.user_operator import UserOperatorStatusUpdate
 from registration.schema.v2.operator import OperatorIn
 from registration.utils import update_model_instance

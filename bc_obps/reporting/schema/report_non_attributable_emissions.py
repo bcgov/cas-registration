@@ -1,8 +1,7 @@
 from typing import List, Optional
-from ninja import ModelSchema, Schema
+from ninja import ModelSchema, Schema, Field
 from reporting.models import ReportNonAttributableEmissions
 from pydantic import alias_generators
-from pydantic import Field
 
 
 def to_camel(string: str) -> str:

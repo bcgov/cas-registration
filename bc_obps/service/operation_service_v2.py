@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.models.facility import Facility
-from registration.schema.v1.facility import FacilityIn
+from registration.schema.v2.facility import FacilityIn
 from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 from service.contact_service_v2 import ContactServiceV2
 from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2

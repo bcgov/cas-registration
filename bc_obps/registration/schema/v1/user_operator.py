@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from registration.schema.validators import validate_cra_business_number
-from registration.schema.v1.operator import OperatorExternalDashboardUsersTileData
+from registration.schema.v2.operator import OperatorExternalDashboardUsersTileData
 from registration.schema.v1.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
 from pydantic import field_validator
@@ -9,7 +9,7 @@ from common.constants import AUDIT_FIELDS
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, Contact, UserOperator
 from .parent_operator import ParentOperatorIn, ParentOperatorOut
-from .business_structure import validate_business_structure
+from registration.schema.v2.business_structure import validate_business_structure
 
 
 class PendingUserOperatorOut(ModelSchema):

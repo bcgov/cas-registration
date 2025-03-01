@@ -1,7 +1,7 @@
 from typing import Optional
 from django.db.models import QuerySet
 from registration.models import NaicsCode
-from registration.schema.v1 import NaicsCodeSchema
+from registration.schema.v2.naics import NaicsCodeSchema
 from django.core.cache import cache
 
 ##### GET #####
