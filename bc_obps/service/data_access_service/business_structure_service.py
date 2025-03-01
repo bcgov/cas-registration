@@ -1,6 +1,6 @@
 from typing import Optional
 from registration.models import BusinessStructure
-from registration.schema.v1 import BusinessStructureOut
+from registration.schema.v2.business_structure import BusinessStructureOut
 from django.core.cache import cache
 from django.db.models import QuerySet
 
