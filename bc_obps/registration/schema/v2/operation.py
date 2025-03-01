@@ -8,7 +8,7 @@ from registration.schema.v2.multiple_operator import MultipleOperatorIn, Multipl
 from ninja import Field, ModelSchema, Schema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from pydantic import field_validator
+from pydantic import field_validator, Field
 from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
@@ -301,3 +301,14 @@ class OperationBcghgIdOut(ModelSchema):
     class Meta:
         model = BcGreenhouseGasId
         fields = ['id']
+
+
+class OperationListOut(ModelSchema):
+    operator: str = Field(..., alias="operator.legal_name")
+    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+
+    class Meta:
+        model = Operation
+        fields = ['id', 'name', 'submission_date', 'status']
+        from_attributes = True

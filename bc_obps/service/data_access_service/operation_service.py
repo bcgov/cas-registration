@@ -1,7 +1,7 @@
 from typing import Iterable, Union
 from uuid import UUID
 
-from registration.schema.v1.operation import OperationListOut
+from registration.schema.v2.operation import OperationListOut
 from service.user_operator_service import UserOperatorService
 from registration.models import Operation, RegulatedProduct, User
 from registration.schema.v1 import OperationOut
