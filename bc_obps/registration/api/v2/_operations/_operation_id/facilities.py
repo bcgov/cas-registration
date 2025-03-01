@@ -2,7 +2,7 @@ from uuid import UUID
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.utils import CustomPagination
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
-from registration.schema.v1.facility_designated_operation_timeline import (
+from registration.schema.v2.facility_designated_operation_timeline import (
     FacilityDesignatedOperationTimelineFilterSchema,
     FacilityDesignatedOperationTimelineOut,
 )
