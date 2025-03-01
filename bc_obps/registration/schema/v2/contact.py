@@ -1,11 +1,8 @@
 from typing import Optional
 from ninja import ModelSchema, Field, Schema
-from pydantic import Field
-
 from registration.models import Contact
 from ninja import FilterSchema
 from uuid import UUID
-from ninja import Schema
 
 
 class ContactOut(ModelSchema):

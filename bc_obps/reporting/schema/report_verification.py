@@ -1,6 +1,5 @@
 from typing import List, Optional
-from ninja import ModelSchema
-from pydantic import Field
+from ninja import ModelSchema, Field
 
 from reporting.models import ReportVerification, ReportVerificationVisit
 
