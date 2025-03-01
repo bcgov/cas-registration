@@ -13,6 +13,7 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -124,7 +125,7 @@ export default function FacilityEmissionAllocationForm({
 
   // 🛸 Set up routing urls
   const backUrl = `/reports/${version_id}/facilities/${facility_id}/production-data`;
-  const isLinearOperation = operationType === "Linear Facility Operation";
+  const isLinearOperation = operationType === OperationTypes.LFO;
   const saveAndContinueUrl = isLinearOperation
     ? `/reports/${version_id}/facilities/${facility_id}/end-of-facility-report`
     : `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;

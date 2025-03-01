@@ -26,9 +26,17 @@ class AccessRequestTypes(Enum):
 
 
 class OperationTypes(Enum):
-    LFO = "Linear Facility Operation"
+    LFO = "Linear Facilities Operation"
     SFO = "Single Facility Operation"
     EIO = "Electricity Import Operation"
+
+
+class FacilityTypes(Enum):
+    SINGLE_FACILITY = "Single Facility"
+    LARGE_FACILITY = "Large Facility"
+    MEDIUM_FACILITY = "Medium Facility"
+    SMALL_AGGREGATE = "Small Aggregate"
+    ELECTRICITY_IMPORT = "Electricity Import"
 
 
 class RegistrationTableNames(Enum):

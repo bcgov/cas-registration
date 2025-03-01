@@ -103,7 +103,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={"Linear Facilities Operation"}
       />,
     );
 
@@ -139,7 +139,7 @@ describe("FacilityEmissionAllocationForm component", () => {
           ],
         }}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={"Linear Facilities Operation"}
       />,
     );
     expect(
@@ -156,7 +156,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={"Linear Facilities Operation"}
       />,
     );
 
@@ -181,7 +181,7 @@ describe("FacilityEmissionAllocationForm component", () => {
           orderedActivities={[]}
           initialData={mockInitialData}
           taskListElements={[]}
-          operationType={"Linear Facility Operation"}
+          operationType={"Linear Facilities Operation"}
         />,
       );
       // POST submit and assert the result
@@ -196,7 +196,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={"Linear Facilities Operation"}
       />,
     );
 
