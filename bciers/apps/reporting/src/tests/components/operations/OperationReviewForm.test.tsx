@@ -83,6 +83,7 @@ describe("OperationReviewForm Component", () => {
         <OperationReviewForm
           formData={{
             activities: [1],
+            registration_purpose: "Test Purpose",
             regulated_products: [1],
             operation_representative_name: [
               {
@@ -104,7 +105,6 @@ describe("OperationReviewForm Component", () => {
           }}
           allActivities={[{ id: 1, name: "Activity 1" }]}
           allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-          registrationPurpose="Test Purpose"
           facilityReport={{
             facility_id: "fake-guid",
             operation_type: "Single Facility Operation",
@@ -166,6 +166,7 @@ describe("OperationReviewForm Component", () => {
           activities: [1],
           regulated_products: [1],
           operation_report_type: "Annual Report",
+          registration_purpose: "Test Purpose",
         }}
         version_id={1}
         reportType={{ report_type: "Annual Report" }}
@@ -176,7 +177,6 @@ describe("OperationReviewForm Component", () => {
         }}
         allActivities={[{ id: 1, name: "Activity 1" }]}
         allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-        registrationPurpose="Test Purpose"
         facilityReport={{
           facility_id: "fake-guid",
           operation_type: "Single Facility Operation",
@@ -218,6 +218,7 @@ describe("OperationReviewForm Component", () => {
           activities: [1],
           regulated_products: [1],
           operation_report_type: "Annual Report",
+          registration_purpose: "Test Purpose",
         }}
         version_id={1}
         reportType={{ report_type: "Annual Report" }}
@@ -228,7 +229,6 @@ describe("OperationReviewForm Component", () => {
         }}
         allActivities={[{ id: 1, name: "Activity 1" }]}
         allRegulatedProducts={[{ id: 1, name: "Product 1" }]}
-        registrationPurpose="Test Purpose"
         facilityReport={{
           facility_id: "fake-guid",
           operation_type: "Single Facility Operation",

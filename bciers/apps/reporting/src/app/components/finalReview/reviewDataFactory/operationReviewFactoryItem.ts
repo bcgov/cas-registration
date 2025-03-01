@@ -7,7 +7,6 @@ import { ReviewDataFactoryItem } from "./factory";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
 import { getRegulatedProducts } from "@bciers/actions/api";
 
@@ -20,16 +19,12 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
     "MMM DD YYYY",
   );
 
-  const registrationPurpose = (await getRegistrationPurpose(versionId))
-    .registration_purpose;
-
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
 
   const schema: any = updateSchema(
     operationReviewSchema,
     reportingOperationData,
-    registrationPurpose,
     reportingWindowEnd,
     allActivities,
     allRegulatedProducts,
