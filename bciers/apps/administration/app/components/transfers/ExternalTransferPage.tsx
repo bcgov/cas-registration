@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { reportAnEventLink } from "@bciers/utils/src/urls";
 
 // 🧩 Main component
 export default async function ExternalTransferPage() {
@@ -14,12 +15,7 @@ export default async function ExternalTransferPage() {
         <li>A transfer of control and direction to the operator</li>
       </ul>
       To report any of these events, please click report an event below.
-      <Link
-        className="link-button-blue my-8"
-        href={
-          "https://submit.digital.gov.bc.ca/app/form/submit?f=d26fb011-2846-44ed-9f5c-26e2756a758f"
-        }
-      >
+      <Link className="link-button-blue my-8" href={reportAnEventLink}>
         Report an Event
       </Link>
       Staff will review the information provided and administer changes in
