@@ -3,7 +3,6 @@ from uuid import UUID
 from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
 from service.data_access_service.document_service import DocumentDataAccessService
 from registration.models import Document
-from registration.utils import files_have_same_hash
 from django.core.files.base import ContentFile
 
 
@@ -19,7 +18,7 @@ class DocumentServiceV2:
 
     @classmethod
     def create_or_replace_operation_document(
-        cls, user_guid: UUID, operation_id: UUID, file_data: ContentFile, document_type: str
+        cls, user_guid: UUID, document_id: UUID, file_data: ContentFile, document_type: str
     ) -> Tuple[Document, bool]:
         """
         This function receives a document and operation id.
@@ -28,13 +27,11 @@ class DocumentServiceV2:
         :returns:c Tuple[Document, bool] where the bool is True if a new document was created, False if an existing document was updated
         """
         existing_document = cls.get_operation_document_by_type_if_authorized(user_guid, operation_id, document_type)
-        # if there is an existing  document, check if the new one is different
+        # if there is an existing  document, delete it
         if existing_document:
-            # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
-            if not files_have_same_hash(file_data, existing_document.file):
-                existing_document.delete()
-            else:
-                return existing_document, False
-        # if there is no existing document, create a new one
+            existing_document.delete()
+
+        # create the new documeent
         document = DocumentDataAccessServiceV2.create_document(user_guid, file_data, document_type, operation_id)
         return document, True
+
