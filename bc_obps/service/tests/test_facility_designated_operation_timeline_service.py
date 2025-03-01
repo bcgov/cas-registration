@@ -3,7 +3,7 @@ from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import FacilityDesignatedOperationTimeline
-from registration.schema.v1.facility_designated_operation_timeline import (
+from registration.schema.v2.facility_designated_operation_timeline import (
     FacilityDesignatedOperationTimelineFilterSchema,
 )
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
