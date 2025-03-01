@@ -2,7 +2,6 @@ from typing import List, Optional
 from uuid import UUID
 from ninja import Field, Schema
 from ninja import ModelSchema
-from common.constants import AUDIT_FIELDS
 from registration.models import Operator, ParentOperator
 from .parent_operator import ParentOperatorOut
 
@@ -12,53 +11,6 @@ class OperatorSearchOut(ModelSchema):
         model = Operator
         fields = ["id", "legal_name"]
         from_attributes = True
-
-
-class ConfirmSelectedOperatorOut(ModelSchema):
-    physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
-
-    class Meta:
-        model = Operator
-        fields = ["id", "legal_name", "trade_name", "cra_business_number"]
-
-
-class OperatorOut(ModelSchema):
-    """
-    Schema for the Operator model
-    """
-
-    physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
-    physical_municipality: Optional[str] = Field(None, alias="physical_address.municipality")
-    physical_province: Optional[str] = Field(None, alias="physical_address.province")
-    physical_postal_code: Optional[str] = Field(None, alias="physical_address.postal_code")
-    mailing_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
-    mailing_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
-    mailing_province: Optional[str] = Field(None, alias="mailing_address.province")
-    mailing_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
-    operator_has_parent_operators: bool
-    parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="parent_operators")
-
-    @staticmethod
-    def resolve_operator_has_parent_operators(obj: Operator) -> bool:
-        return obj.parent_operators.exists()
-
-    class Meta:
-        model = Operator
-        exclude = [*AUDIT_FIELDS]
-
-
-class OperatorIn(ModelSchema):
-    """
-    Schema for the Operator model
-    """
-
-    class Meta:
-        model = Operator
-        fields = ['status']
-
-
-class SelectOperatorIn(Schema):
-    operator_id: UUID
 
 
 class OperatorExternalDashboardUsersTileData(ModelSchema):

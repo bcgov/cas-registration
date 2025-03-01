@@ -1,24 +1,17 @@
-from registration.emails import send_operator_access_request_email
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.schema.v1.parent_operator import ParentOperatorIn
 from service.email.email_service import EmailService
-from registration.models import ParentOperator, User, Operator, UserOperator
+from registration.models import ParentOperator, User, Operator
 from typing import List, Optional, Union
-from datetime import datetime
 from django.db.models import QuerySet
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.schema.v1 import OperatorSearchOut
 from uuid import UUID
-from registration.schema.v1 import OperatorIn
-from django.db import transaction
-from registration.utils import set_verification_columns
 from registration.models import (
     Operation,
     BusinessStructure,
     MultipleOperator,
     Address,
 )
-from zoneinfo import ZoneInfo
 from ninja.types import DictStrAny
 
 email_service = EmailService()
@@ -128,52 +121,6 @@ class OperatorService:
                         "mailing_address": mailing_address,
                     },
                 )
-
-    @classmethod
-    def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn) -> Operator:
-        """
-        Update the status of an operator and perform additional actions based on the new status.
-
-        Args:
-            user_guid: The GUID of the user performing the update.
-            operator_id: The ID of the operator to update.
-            updated_data: The updated data for the operator.
-
-        Returns:
-            Operator: The updated operator object.
-        """
-        operator: Operator = OperatorDataAccessService.get_operator_by_id(operator_id)
-        with transaction.atomic():
-            operator.status = updated_data.status  # type: ignore[attr-defined]
-            if operator.is_new and operator.status == Operator.Statuses.DECLINED:
-                # If the operator is new and declined, we need to decline all user operators tied to this operator
-                user_operators_to_decline: QuerySet[UserOperator] = UserOperator.objects.filter(operator_id=operator_id)
-                user_operators_to_decline.update(
-                    status=UserOperator.Statuses.DECLINED,
-                    verified_at=datetime.now(ZoneInfo("UTC")),
-                    verified_by=user_guid,
-                )
-                for user_operator in user_operators_to_decline:
-                    user_operator.refresh_from_db()
-                    user: User = user_operator.user
-                    # Send email to all declined user operators to notify them of the decline of the operator and their access request
-                    send_operator_access_request_email(
-                        AccessRequestStates.DECLINED,
-                        # We send NEW_OPERATOR_AND_ADMIN email to the user who initially created the operator and ADMIN email to all other users
-                        AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
-                        if operator.created_by == user
-                        else AccessRequestTypes.ADMIN,
-                        operator.legal_name,
-                        user.get_full_name(),
-                        user.email,
-                    )
-
-            if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
-                operator.is_new = False
-                set_verification_columns(operator, user_guid)
-
-            operator.save()
-            return operator
 
     # Function to save multiple operators so we can reuse it in put/post routes
     @classmethod
