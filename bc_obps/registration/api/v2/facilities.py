@@ -3,7 +3,7 @@ from typing import List, Literal, Tuple
 from django.http import HttpRequest
 from registration.constants import FACILITY_TAGS
 from registration.models.facility import Facility
-from registration.schema.v1.facility import FacilityIn, FacilityOut
+from registration.schema.v2.facility import FacilityIn, FacilityOut
 from service.facility_service import FacilityService
 from common.api.utils import get_current_user_guid
 from ..router import router
