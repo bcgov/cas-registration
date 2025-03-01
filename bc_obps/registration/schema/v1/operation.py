@@ -7,17 +7,6 @@ from pydantic import field_validator
 from ninja.types import DictStrAny
 from django.core.files.base import ContentFile
 
-class OperationCreateIn(ModelSchema):
-    # Not using Multiple operators for MVP
-    # operation_has_multiple_operators: Optional[bool] = False
-    # multiple_operators_array: Optional[list] = None
-    bcghg_id: Optional[str] = None
-
-    class Meta:
-        model = Operation
-        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products']
-        populate_by_name = True
-
 
 class OperationUpdateIn(ModelSchema):
     first_name: Optional[str] = None
