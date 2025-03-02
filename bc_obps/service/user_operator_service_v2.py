@@ -3,7 +3,6 @@ from uuid import UUID
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.schema.v2.contact import ContactIn
-from registration.schema.v1.user_operator import UserOperatorStatusUpdate
 from registration.schema.v2.operator import OperatorIn
 from registration.utils import update_model_instance
 from service.contact_service import ContactService
@@ -14,7 +13,7 @@ from registration.models import Operator, User, UserOperator
 from django.db import transaction
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.operator_service_v2 import OperatorServiceV2
-from registration.schema.v2.user_operator import UserOperatorFilterSchema
+from registration.schema.v2.user_operator import UserOperatorFilterSchema, UserOperatorStatusUpdate
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from ninja import Query
