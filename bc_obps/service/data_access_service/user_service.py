@@ -1,6 +1,6 @@
 from typing import Dict
 from uuid import UUID
-from registration.schema.v1.user import UserIn, UserOut, UserUpdateIn
+from registration.schema.v2.user import UserIn, UserUpdateIn, UserOut
 from registration.models import AppRole, Operator, UserOperator, User
 
 

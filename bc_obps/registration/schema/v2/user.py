@@ -1,6 +1,19 @@
 from typing import Optional
-from ninja import Field, ModelSchema
-from registration.models import AppRole, User
+
+from ninja import ModelSchema
+from pydantic import Field
+
+from registration.models import User, AppRole
+
+
+class UserExternalDashboardUsersTileData(ModelSchema):
+    """
+    Schema for fields from the User model that are needed in ExternalDashboardUsersTileData
+    """
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email", "user_guid"]
 
 
 class UserIn(ModelSchema):
@@ -44,13 +57,3 @@ class UserOut(ModelSchema):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name"]
-
-
-class UserExternalDashboardUsersTileData(ModelSchema):
-    """
-    Schema for fields from the User model that are needed in ExternalDashboardUsersTileData
-    """
-
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "email", "user_guid"]

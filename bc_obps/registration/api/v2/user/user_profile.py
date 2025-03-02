@@ -6,7 +6,7 @@ from common.api.utils import get_current_user_guid
 from registration.constants import USER_TAGS
 from service.data_access_service.user_service import UserDataAccessService
 from registration.models import User
-from registration.schema.v1 import UserOut, UserUpdateIn
+from registration.schema.v2.user import UserUpdateIn, UserOut
 from registration.schema.generic import Message
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
