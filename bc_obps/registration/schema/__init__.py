@@ -1,4 +1,4 @@
-# ruff: noqa
+# ruff: noqa: F403
 from .activities import *
 from .business_structure import *
 from .contact import *

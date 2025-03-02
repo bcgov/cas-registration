@@ -1,6 +1,6 @@
 from typing import Optional
 from registration.constants import MISC_TAGS
-from ..router import router
+from registration.api.router import router
 from django.core.management import call_command
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
