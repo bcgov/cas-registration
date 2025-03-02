@@ -1,5 +1,4 @@
 from typing import Optional
-from uuid import UUID
 from ninja import Field, ModelSchema
 from registration.models import AppRole, User
 
@@ -55,15 +54,3 @@ class UserExternalDashboardUsersTileData(ModelSchema):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "user_guid"]
-
-
-class UserContactPageOut(ModelSchema):
-    selected_user: UUID = Field(..., alias="user_guid")
-
-    @staticmethod
-    def resolve_phone_number(obj: User) -> str:
-        return str(obj.phone_number)
-
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
