@@ -1,10 +1,9 @@
 import json
 from typing import Literal, Tuple
 from django.http import HttpRequest
-from registration.schema.v1.user import UserIn
+from registration.schema.v2.user import UserIn, UserOut
 from registration.constants import USER_TAGS
 from registration.models import User
-from registration.schema.v1 import UserOut
 from registration.schema.generic import Message
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
