@@ -4,10 +4,7 @@ from django.http import HttpRequest
 from uuid import UUID
 from registration.constants import USER_OPERATOR_TAGS
 from common.api.utils import get_current_user_guid
-from registration.schema.v1 import (
-    UserOperatorOut,
-    UserOperatorStatusUpdate,
-)
+from registration.schema.v2.user_operator import UserOperatorStatusUpdate, UserOperatorOut
 from registration.schema.generic import Message
 from registration.models import UserOperator
 from service.error_service.custom_codes_4xx import custom_codes_4xx

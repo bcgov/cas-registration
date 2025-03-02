@@ -3,7 +3,7 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
-from registration.schema.v1.user_operator import RequestAccessOut
+from registration.schema.v2.user_operator import RequestAccessOut
 from common.api.utils import get_current_user_guid
 from service.application_access_service import ApplicationAccessService
 from registration.schema import Message
