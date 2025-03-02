@@ -2,6 +2,10 @@
   "name": "Pulp and paper production",
   "type": "object",
   "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    },
     "carbonates": {
       "type": "array",
       "title": "Carbonates",

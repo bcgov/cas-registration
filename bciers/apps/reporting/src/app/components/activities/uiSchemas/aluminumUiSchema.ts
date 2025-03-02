@@ -19,6 +19,9 @@ const uiSchema = {
     "coverGasFromElectrolysisCells",
     "sourceTypes",
   ],
+  id: {
+    "ui:widget": "hidden",
+  },
   smelterTechType: {
     "ui:widget": MultiSelectWidget,
     "ui:placeholder": "Select Smelter Technology Type(s)",

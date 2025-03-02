@@ -27,6 +27,9 @@ const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": ["coverGasFromElectrolysisCells", "sourceTypes"],
+  id: {
+    "ui:widget": "hidden",
+  },
   sourceTypes: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {

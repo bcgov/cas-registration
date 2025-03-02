@@ -10,6 +10,9 @@ import {
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  id: {
+    "ui:widget": "hidden",
+  },
   fuelCombustionForElectricityGeneration: sourceTypeCheckboxUiSchema,
   acidgasScrubbersAndReagents: sourceTypeCheckboxUiSchema,
   coolingUnits: sourceTypeCheckboxUiSchema,

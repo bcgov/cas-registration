@@ -2,6 +2,10 @@
   "title": "Petroleum refining",
   "type": "object",
   "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    },
     "feedstocks": {
       "type": "array",
       "title": "Feedstocks",

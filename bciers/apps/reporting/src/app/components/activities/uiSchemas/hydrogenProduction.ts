@@ -7,6 +7,9 @@ import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTempl
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  id: {
+    "ui:widget": "hidden",
+  },
   otherTransformationOfHydrocarbonFeedstock: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxWidgetLeft,
