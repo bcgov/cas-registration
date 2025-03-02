@@ -1,8 +1,6 @@
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.models.facility import Facility
-from registration.schema.v2.facility import FacilityIn
-from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 from service.contact_service_v2 import ContactServiceV2
 from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
 from service.data_access_service.operation_designated_operator_timeline_service import (
@@ -16,7 +14,6 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
 from registration.models.contact import Contact
 from registration.models.multiple_operator import MultipleOperator
-from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.multiple_operator_service import MultipleOperatorService
 from registration.models.user_operator import UserOperator
@@ -33,14 +30,17 @@ from service.data_access_service.opted_in_operation_detail_service import OptedI
 from service.document_service_v2 import DocumentServiceV2
 from service.facility_service import FacilityService
 from service.operation_service import OperationService
-from registration.schema.v2.operation import (
+from registration.schema import (
     OperationInformationIn,
     OperationInformationInUpdate,
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
+    OperationRepresentativeIn,
+    FacilityIn,
+    OperationTimelineFilterSchema,
+    MultipleOperatorIn
 )
-from registration.schema.v2.operation import OperationRepresentativeIn
 from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo

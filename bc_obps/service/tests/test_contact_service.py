@@ -1,6 +1,6 @@
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
-from registration.schema.v2.contact import ContactIn
+from registration.schema import ContactIn
 import pytest
 from registration.models.app_role import AppRole
 from registration.tests.utils.bakers import (

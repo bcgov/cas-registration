@@ -1,7 +1,6 @@
 from typing import Optional
 from registration.models.business_structure import BusinessStructure
-from registration.schema.v2.business_structure import validate_business_structure
-from registration.schema.validators import validate_cra_business_number
+from registration.schema import validate_business_structure, validate_cra_business_number
 from ninja import Field, ModelSchema
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models import MultipleOperator

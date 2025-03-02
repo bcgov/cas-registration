@@ -2,17 +2,17 @@ from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.models.contact import Contact
-from registration.schema.v2.operation import (
+from registration.schema import (
     OperationRepresentativeIn,
     OperationRepresentativeOut,
     OperationRepresentativeRemove,
+    Message,
 )
 from service.operation_service_v2 import OperationServiceV2
 from registration.constants import V2
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from common.permissions import authorize
-from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 

@@ -1,6 +1,6 @@
 from uuid import UUID
 from service.operation_service import OperationService
-from registration.schema.v2.operation import OptedInOperationDetailIn
+from registration.schema import OptedInOperationDetailIn
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.operation import Operation
 from registration.utils import update_model_instance

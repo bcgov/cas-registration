@@ -5,11 +5,7 @@ from uuid import UUID
 from registration.models import UserOperator
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models.partner_operator import PartnerOperator
-from registration.schema.v2.operator import OperatorExternalDashboardUsersTileData
-from registration.schema.v2.partner_operator import PartnerOperatorOut
-from registration.models.parent_operator import ParentOperator
-from registration.schema.v2.parent_operator import ParentOperatorOut, ParentOperatorOutV1
-from registration.schema.v2.user import UserExternalDashboardUsersTileData
+from registration.schema import OperatorExternalDashboardUsersTileData, PartnerOperatorOut, ParentOperator, ParentOperatorOut, ParentOperatorOutV1, UserExternalDashboardUsersTileData
 
 
 class UserOperatorOperatorOut(Schema):

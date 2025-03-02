@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.schema.v2.contact import ContactFilterSchemaV2, ContactListOut, ContactIn, ContactOut
+from registration.schema import ContactFilterSchemaV2, ContactListOut, ContactIn, ContactOut, Message
 from registration.utils import CustomPagination
 from registration.constants import CONTACT_TAGS
 from ninja.pagination import paginate
@@ -12,7 +12,6 @@ from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet
-from registration.schema.generic import Message
 
 
 @router.get(

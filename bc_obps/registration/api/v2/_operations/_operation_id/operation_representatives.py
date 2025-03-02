@@ -7,8 +7,7 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from registration.models.contact import Contact
-from registration.schema.v2.contact import OperationRepresentativeListOut
-from registration.schema.generic import Message
+from registration.schema import OperationRepresentativeListOut, Message
 from service.contact_service import ContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 

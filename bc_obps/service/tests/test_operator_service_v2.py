@@ -2,9 +2,7 @@ from registration.models.address import Address
 from registration.models.partner_operator import PartnerOperator
 from registration.models.parent_operator import ParentOperator
 from registration.models.operator import Operator
-from registration.schema.v2.operator import OperatorIn
-from registration.schema.v2.parent_operator import ParentOperatorIn
-from registration.schema.v2.partner_operator import PartnerOperatorIn
+from registration.schema import OperatorIn, ParentOperatorIn, PartnerOperatorIn
 from service.operator_service_v2 import OperatorServiceV2
 import pytest
 from registration.models.app_role import AppRole

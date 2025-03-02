@@ -3,10 +3,9 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import CONTACT_TAGS
 from registration.models.contact import Contact
-from registration.schema.v2.contact import ContactIn, ContactOut
+from registration.schema import ContactIn, ContactOut, Message
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
-from registration.schema.generic import Message
 from service.contact_service_v2 import ContactServiceV2, ContactWithPlacesAssigned
 from service.contact_service import ContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx

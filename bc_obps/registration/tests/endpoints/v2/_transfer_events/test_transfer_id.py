@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 from uuid import uuid4
 import pytest
 from registration.models import AppRole, TransferEvent
-from registration.schema.v2.transfer_event import TransferEventUpdateIn
+from registration.schema import TransferEventUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker

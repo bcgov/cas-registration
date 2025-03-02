@@ -1,6 +1,6 @@
 import json
 import uuid
-from registration.schema.v2.user import UserIn, UserUpdateIn
+from registration.schema import UserIn, UserUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.enums.enums import IdPs
 from registration.utils import custom_reverse_lazy

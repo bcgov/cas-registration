@@ -5,8 +5,7 @@ from model_bakery import baker
 
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import Operator, User, UserOperator, Contact
-from registration.schema.v2.operator import OperatorIn
-from registration.schema.v2.user_operator import UserOperatorFilterSchema, UserOperatorStatusUpdate
+from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from service.user_operator_service_v2 import UserOperatorServiceV2
 
 pytestmark = pytest.mark.django_db

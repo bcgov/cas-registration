@@ -10,7 +10,7 @@ from registration.models import FacilityDesignatedOperationTimeline, OperationDe
 from registration.models.event.transfer_event import TransferEvent
 from typing import Optional
 from ninja import Query
-from registration.schema.v2.transfer_event import (
+from registration.schema import (
     TransferEventCreateIn,
     TransferEventFilterSchema,
     TransferEventUpdateIn,

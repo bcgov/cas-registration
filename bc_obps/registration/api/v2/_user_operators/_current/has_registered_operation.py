@@ -8,7 +8,7 @@ from service.data_access_service.user_service import UserDataAccessService
 from common.permissions import authorize
 from django.core.exceptions import ObjectDoesNotExist
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
+from registration.schema import Message
 
 
 @router.get(

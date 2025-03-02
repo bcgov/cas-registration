@@ -1,12 +1,11 @@
 from common.permissions import authorize
 from registration.models.operator import Operator
 from service.operator_service_v2 import OperatorServiceV2
-from registration.schema.v2.operator import OperatorIn, OperatorOut
+from registration.schema import OperatorIn, OperatorOut, Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
-from registration.schema.generic import Message
 from registration.api.router import router
 from service.data_access_service.user_service import UserDataAccessService
 

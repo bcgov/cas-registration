@@ -1,5 +1,5 @@
 from typing import Optional
-from registration.schema.validators import validate_cra_business_number
+from registration.schema import validate_cra_business_number
 from ninja import ModelSchema, Field
 from pydantic import field_validator
 from registration.models import ParentOperator

@@ -1,7 +1,7 @@
 from typing import Optional
 from registration.models.parent_operator import ParentOperator
 from registration.models.partner_operator import PartnerOperator
-from registration.schema.v2.partner_operator import PartnerOperatorIn
+from registration.schema import PartnerOperatorIn, OperatorIn, OperatorFilterSchema, ParentOperatorIn
 from service.data_access_service.partner_operator_service import PartnerOperatorService
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.parent_operator_service import ParentOperatorService
@@ -14,8 +14,6 @@ from django.db import transaction
 from registration.models import (
     Address,
 )
-from registration.schema.v2.operator import OperatorIn, OperatorFilterSchema
-from registration.schema.v2.parent_operator import ParentOperatorIn
 from django.db.models import QuerySet
 
 

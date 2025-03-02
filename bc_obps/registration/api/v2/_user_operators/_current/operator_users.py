@@ -5,8 +5,7 @@ from registration.constants import USER_OPERATOR_TAGS
 from registration.models.user_operator import UserOperator
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from django.db.models import QuerySet, Q
-from registration.schema.v2.user_operator import UserOperatorUsersOut
-from registration.schema.generic import Message
+from registration.schema import UserOperatorUsersOut, Message
 from typing import List, Literal, Tuple
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
