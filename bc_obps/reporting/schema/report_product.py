@@ -1,6 +1,6 @@
 from typing import List
 from ninja import Field, ModelSchema, Schema
-from registration.schema.v1.regulated_products import RegulatedProductSchema
+from registration.schema.v2.regulated_products import RegulatedProductSchema
 from reporting.models.report_product import ReportProduct
 
 
