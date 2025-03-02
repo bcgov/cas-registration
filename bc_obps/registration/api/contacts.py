@@ -8,7 +8,7 @@ from ninja.pagination import paginate
 from common.api.utils import get_current_user_guid
 from registration.models.contact import Contact
 from service.contact_service_v2 import ContactServiceV2
-from ..router import router
+from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet

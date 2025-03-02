@@ -7,7 +7,7 @@ from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
-from ..router import router
+from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet

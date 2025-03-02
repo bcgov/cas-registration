@@ -4,7 +4,7 @@ from registration.models.operator import Operator
 from service.operator_service_v2 import OperatorServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
-from ..router import router
+from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet

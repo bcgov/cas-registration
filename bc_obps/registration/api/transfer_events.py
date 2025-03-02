@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from registration.utils import CustomPagination
 from registration.constants import TRANSFER_EVENT_TAGS
 from ninja.pagination import paginate
-from ..router import router
+from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet

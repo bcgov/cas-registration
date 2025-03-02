@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from registration.constants import NAICS_CODE_TAGS
 from service.data_access_service.naics_code_service import NaicsCodeDataAccessService
 from common.permissions import authorize
-from ..router import router
+from registration.api.router import router
 from typing import List, Literal, Tuple
 from registration.models import NaicsCode
 from registration.schema import NaicsCodeSchema

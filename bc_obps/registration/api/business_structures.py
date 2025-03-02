@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from registration.constants import BUSINESS_STRUCTURE_TAGS
 from service.data_access_service.business_structure_service import BusinessStructureDataAccessService
 from common.permissions import authorize
-from ..router import router
+from registration.api.router import router
 from typing import List, Literal, Tuple
 from registration.models import BusinessStructure
 from registration.schema import BusinessStructureOut

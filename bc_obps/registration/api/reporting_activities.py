@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from registration.constants import ACTIVITY_TAGS
 from service.data_access_service.activity_service import ActivityDataAccessService
 from common.permissions import authorize
-from ..router import router
+from registration.api.router import router
 from typing import List, Literal, Tuple
 from registration.models import Activity
 from registration.schema import ActivitySchemaOut
