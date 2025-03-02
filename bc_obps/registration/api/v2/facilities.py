@@ -3,12 +3,11 @@ from typing import List, Literal, Tuple
 from django.http import HttpRequest
 from registration.constants import FACILITY_TAGS
 from registration.models.facility import Facility
-from registration.schema.v2.facility import FacilityIn, FacilityOut
+from registration.schema import FacilityIn, FacilityOut, Message
 from service.facility_service import FacilityService
 from common.api.utils import get_current_user_guid
 from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
 
 
 ##### POST #####

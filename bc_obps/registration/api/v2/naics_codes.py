@@ -6,7 +6,7 @@ from common.permissions import authorize
 from ..router import router
 from typing import List, Literal, Tuple
 from registration.models import NaicsCode
-from registration.schema.v2.naics import NaicsCodeSchema
+from registration.schema import NaicsCodeSchema
 
 ##### GET #####
 

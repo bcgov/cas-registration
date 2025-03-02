@@ -1,6 +1,6 @@
 from typing import List, Literal, Optional, Tuple
 from registration.models.event.transfer_event import TransferEvent
-from registration.schema.v2.transfer_event import TransferEventFilterSchema, TransferEventListOut
+from registration.schema import TransferEventFilterSchema, TransferEventListOut, Message, TransferEventCreateIn, TransferEventOut
 from service.transfer_event_service import TransferEventService
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -10,10 +10,8 @@ from ninja.pagination import paginate
 from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
-from registration.schema.generic import Message
 from django.db.models import QuerySet
 from common.api.utils import get_current_user_guid
-from registration.schema.v2.transfer_event import TransferEventCreateIn, TransferEventOut
 
 
 @router.get(

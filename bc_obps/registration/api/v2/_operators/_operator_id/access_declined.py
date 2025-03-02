@@ -4,7 +4,7 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
 from service.data_access_service.user_service import UserDataAccessService
-from registration.schema.generic import Message
+from registration.schema import Message
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from common.api.utils import get_current_user_guid

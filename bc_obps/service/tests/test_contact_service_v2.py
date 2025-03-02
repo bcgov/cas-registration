@@ -1,5 +1,5 @@
 import pytest
-from registration.schema.v2.contact import ContactFilterSchemaV2
+from registration.schema import ContactFilterSchemaV2
 from service.contact_service_v2 import ContactServiceV2, PlacesAssigned
 from model_bakery import baker
 from registration.models.business_role import BusinessRole

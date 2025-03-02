@@ -1,20 +1,15 @@
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
-
-
 from registration.models.contact import Contact
-from registration.schema.v2.contact import ContactFilterSchemaV2, ContactWithPlacesAssigned, PlacesAssigned, ContactIn
+from registration.schema import ContactFilterSchemaV2, ContactWithPlacesAssigned, PlacesAssigned, ContactIn, OperationRepresentativeIn
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.contact_service_v2 import ContactDataAccessServiceV2
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from django.db import transaction
 from typing import cast, Union, Dict
-
-
 from registration.models.business_role import BusinessRole
-from registration.schema.v2.operation import OperationRepresentativeIn
 from service.data_access_service.address_service import AddressDataAccessService
 
 

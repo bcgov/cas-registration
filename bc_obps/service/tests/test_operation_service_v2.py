@@ -4,8 +4,6 @@ import pytest
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.models.facility import Facility
-from registration.schema.v2.facility import FacilityIn
-from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema
 from registration.models.contact import Contact
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -16,20 +14,20 @@ from registration.models.business_role import BusinessRole
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
-from registration.schema.v2.operation import (
+from registration.schema import (
+    FacilityIn,
     OperationInformationInUpdate,
     OperationRepresentativeIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeRemove,
+    OperationTimelineFilterSchema,
+    MultipleOperatorIn,
+    OperationInformationIn,
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
 from service.operation_service_v2 import OperationServiceV2
 from registration.models.multiple_operator import MultipleOperator
-from registration.schema.v2.multiple_operator import MultipleOperatorIn
 from registration.models.operation import Operation
-from registration.schema.v2.operation import (
-    OperationInformationIn,
-)
 from registration.tests.constants import MOCK_DATA_URL
 from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline

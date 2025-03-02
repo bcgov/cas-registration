@@ -2,8 +2,8 @@ from uuid import UUID
 from ninja.types import DictStrAny
 from typing import List
 from registration.models.operation import Operation
-from registration.schema.v2.operation_timeline import OperationTimelineListOut
-
+from registration.schema import OperationTimelineListOut
+from registration.enums.enums import OperationTypes
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from service.user_operator_service import UserOperatorService

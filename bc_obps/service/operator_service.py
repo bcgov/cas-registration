@@ -3,7 +3,7 @@ from registration.models import Operator
 from typing import List, Optional, Union
 from django.db.models import QuerySet
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.schema.v2.operator import OperatorSearchOut
+from registration.schema import OperatorSearchOut
 
 email_service = EmailService()
 

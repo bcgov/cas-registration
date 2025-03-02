@@ -4,8 +4,7 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from service.data_access_service.user_service import UserDataAccessService
-from registration.schema.v2.user_operator import IsApprovedUserOperator
-from registration.schema.generic import Message
+from registration.schema import IsApprovedUserOperator, Message
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 

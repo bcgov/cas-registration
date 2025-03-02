@@ -1,12 +1,8 @@
 from typing import List, Optional
 from uuid import UUID
-
 from registration.models.partner_operator import PartnerOperator
-from registration.schema.v2.partner_operator import PartnerOperatorIn, PartnerOperatorOut
-from registration.schema.v2.parent_operator import ParentOperatorIn, ParentOperatorOut
-from registration.schema.v2.business_structure import validate_business_structure
-from registration.schema.validators import validate_cra_business_number
-from ninja import ModelSchema, FilterSchema, Field, Schema
+from registration.schema import PartnerOperatorIn, PartnerOperatorOut, ParentOperatorIn, ParentOperatorOut, validate_business_structure, validate_cra_business_number
+from ninja import ModelSchema, FilterSchema, Schema
 from pydantic import field_validator, Field
 from registration.models import BusinessStructure, Operator, ParentOperator
 from registration.constants import (

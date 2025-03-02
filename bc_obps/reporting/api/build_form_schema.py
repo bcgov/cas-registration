@@ -4,8 +4,7 @@ from common.permissions import authorize
 from .router import router
 from django.http import HttpRequest
 from typing import Tuple
-
-from registration.schema.generic import Message
+from registration.schema import Message
 
 ##### GET #####
 

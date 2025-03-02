@@ -2,7 +2,7 @@ import pytest
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
 from registration.models.operation import Operation, OptedInOperationDetail
 from model_bakery import baker
-from registration.schema.v2.operation import OptedInOperationDetailIn
+from registration.schema import OptedInOperationDetailIn
 
 pytestmark = pytest.mark.django_db
 

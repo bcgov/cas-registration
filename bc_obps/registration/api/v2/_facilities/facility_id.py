@@ -2,13 +2,12 @@ from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.constants import FACILITY_TAGS
-from registration.schema.v2.facility import FacilityIn, FacilityOut
+from registration.schema import FacilityIn, FacilityOut, Message
 from service.facility_service import FacilityService
 from common.api.utils import get_current_user_guid
 from common.permissions import authorize
 from registration.api.router import router
 from registration.models import Facility
-from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 

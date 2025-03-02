@@ -3,12 +3,11 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
-from registration.schema.v2.operator import OperatorOut
+from registration.schema import OperatorOut, Message
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.api.router import router
 from registration.models import Operator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
 
 
 @router.get(

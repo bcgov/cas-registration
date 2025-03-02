@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import TransferEvent, FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline
-from registration.schema.v2.transfer_event import TransferEventFilterSchema, TransferEventCreateIn
+from registration.schema import TransferEventFilterSchema, TransferEventCreateIn
 from service.transfer_event_service import TransferEventService
 import pytest
 from model_bakery import baker

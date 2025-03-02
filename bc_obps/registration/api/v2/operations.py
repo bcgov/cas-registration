@@ -2,20 +2,18 @@ from typing import List, Literal, Optional
 from registration.constants import V2
 from registration.models.operation import Operation
 from typing import Tuple
-from registration.schema.v2.operation import OperationCreateOut, OperationInformationIn
+from registration.schema import OperationCreateOut, OperationInformationIn, Message, OperationTimelineFilterSchema, OperationTimelineListOut
 from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from ..router import router
-from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from registration.schema.v2.operation_timeline import OperationTimelineFilterSchema, OperationTimelineListOut
 
 
 ##### GET #####

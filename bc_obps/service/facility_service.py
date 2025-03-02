@@ -8,7 +8,7 @@ from service.data_access_service.facility_designated_operation_timeline_service 
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.facility_service import FacilityDataAccessService
 from registration.models import Facility
-from registration.schema.v2.facility import FacilityIn
+from registration.schema import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
 
 from service.data_access_service.operation_service import OperationDataAccessService

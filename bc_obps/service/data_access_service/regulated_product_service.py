@@ -1,8 +1,6 @@
 from typing import Optional
 from registration.models import RegulatedProduct
-from registration.schema.v2.regulated_products import (
-    RegulatedProductSchema,
-)
+from registration.schema import RegulatedProductSchema
 from django.core.cache import cache
 from django.db.models import QuerySet
 
