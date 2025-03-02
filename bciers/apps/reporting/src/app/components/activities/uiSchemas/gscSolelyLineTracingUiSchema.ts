@@ -4,6 +4,9 @@ import { gscTemplate, sourceTypeCheckboxUiSchema } from "./common";
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  id: {
+    "ui:widget": "hidden",
+  },
   gscWithProductionOfUsefulEnergy: sourceTypeCheckboxUiSchema,
   sourceTypes: {
     "ui:FieldTemplate": FieldTemplate,

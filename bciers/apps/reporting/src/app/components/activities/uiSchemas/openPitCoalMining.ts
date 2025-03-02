@@ -7,6 +7,9 @@ import ReadOnlyWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyWid
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  id: {
+    "ui:widget": "hidden",
+  },
   coalExposedDuringMining: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxWidgetLeft,

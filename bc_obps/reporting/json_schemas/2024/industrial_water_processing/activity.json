@@ -1,5 +1,10 @@
 {
   "title": "Industrial wastewater processing",
   "type": "object",
-  "properties": {}
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    }
+  }
 }

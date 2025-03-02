@@ -218,7 +218,8 @@ export default function ActivityForm({
       continueUrl={createUrl(true)}
       validator={customizeValidator({})}
       customValidate={customValidate}
-      omitExtraData={false}
+      omitExtraData={true}
+      liveOmit={true}
     />
   );
 }

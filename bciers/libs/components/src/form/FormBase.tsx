@@ -55,6 +55,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     disabled,
     formData,
     omitExtraData,
+    liveOmit,
     formRef,
     onChange,
     onSubmit,
@@ -96,6 +97,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       onChange={handleChange}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
+      liveOmit={liveOmit ?? false}
       onSubmit={handleSubmit}
       showErrorList={false}
       transformErrors={transformErrors}

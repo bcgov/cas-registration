@@ -2,5 +2,10 @@
   "title": "Lime manufacturing",
   "type": "object",
   "required": ["sourceTypes"],
-  "properties": {}
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    }
+  }
 }

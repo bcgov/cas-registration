@@ -1,5 +1,10 @@
 {
   "title": "Liquefied Natural Gas activities",
   "type": "object",
-  "properties": {}
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    }
+  }
 }

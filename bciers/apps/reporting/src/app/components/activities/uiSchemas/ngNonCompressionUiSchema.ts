@@ -13,6 +13,9 @@ import { InlineFieldTemplate } from "@bciers/components/form/fields";
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  id: {
+    "ui:widget": "hidden",
+  },
   naturalGasPneumatciHighBleedDeviceVenting: sourceTypeCheckboxUiSchema,
   naturalGasPneumaticPumpVenting: sourceTypeCheckboxUiSchema,
   naturalGasPneumaticLowBleedDeviceVenting: sourceTypeCheckboxUiSchema,

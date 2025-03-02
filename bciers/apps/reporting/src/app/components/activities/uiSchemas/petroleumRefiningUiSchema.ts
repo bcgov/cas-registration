@@ -6,6 +6,9 @@ import { emissionsOnlyUiSchema, sourceTypeCheckboxUiSchema } from "./common";
 const feedstockUiSchema = {
   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
   "ui:FieldTemplate": FieldTemplate,
+  id: {
+    "ui:widget": "hidden",
+  },
   "ui:options": {
     arrayAddLabel: "Add Feedstock",
     title: "Feedstocks",

@@ -1,7 +1,12 @@
 {
   "title": "Cement Production",
   "type": "object",
-  "properties": {},
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    }
+  },
   "definitions": {
     "month": {
       "type": "object",
