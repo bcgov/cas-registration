@@ -15,6 +15,7 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
+import { IChangeEvent } from "@rjsf/core";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -150,29 +151,30 @@ export default function ActivityForm({
   };
 
   // 🛠️ Function to submit user form data to API
-  const submitHandler = async () => {
+  const submitHandler = async (e: IChangeEvent) => {
     setErrorList([]);
-
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
-    const selectedSourceTypeData = Object.keys(formState.sourceTypes);
+    // Ensure we use the filtered formData with omitted extra data
+    const filteredData = e.formData;
+    const selectedSourceTypeData = Object.keys(filteredData.sourceTypes);
 
     // Only filter the keys where the checkBox for that source type is checked IF there is more than one source type
     const selectedSourceTypeDataFiltered =
       sourceTypeCount > 1
-        ? selectedSourceTypeData.filter((slug) => formState[slug])
+        ? selectedSourceTypeData.filter((slug) => filteredData[slug])
         : selectedSourceTypeData;
 
     // Only for selected source types we grab the form data
     const selectedSourceTypeDataReduced = selectedSourceTypeDataFiltered.reduce(
       (filteredSourceTypeData, slug) => {
-        filteredSourceTypeData[slug] = formState.sourceTypes[slug];
+        filteredSourceTypeData[slug] = filteredData.sourceTypes[slug];
         return filteredSourceTypeData;
       },
       {} as any,
     );
 
     const submittedData = {
-      ...formState,
+      ...filteredData,
       sourceTypes: selectedSourceTypeDataReduced,
     };
 
@@ -182,9 +184,6 @@ export default function ActivityForm({
       "",
       {
         body: JSON.stringify({
-          /* formState needs to be used instead of the data passed to the handler, since this is a controlled component;
-             otherwise the data passed to the handler lags behind the changes.
-             See FormBase implementation comments for more details. */
           activity_data: submittedData,
         }),
       },
@@ -218,7 +217,6 @@ export default function ActivityForm({
       continueUrl={createUrl(true)}
       validator={customizeValidator({})}
       customValidate={customValidate}
-      omitExtraData={false}
     />
   );
 }
