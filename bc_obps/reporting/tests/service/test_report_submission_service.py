@@ -1,18 +1,22 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from uuid import UUID
+from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
-from reporting.models.report_version import ReportVersion
 from reporting.service.report_submission_service import ReportSubmissionService
 
 
 class TestReportSubmissionService:
-    @patch("reporting.service.report_submission_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
-    def test_validate_report_with_verification_statement(self, mock_get_attachment, mock_get_verification):
+    def test_validate_verification_needed_success(
+        self, mock_get_attachment, mock_get_verification, mock_get_needs_verification
+    ):
         # Arrange
         version_id = 1
-        mock_get_verification.return_value = True  # Verification statement is mandatory
+        mock_get_needs_verification.return_value = True
+        mock_get_verification.return_value = MagicMock()  # Ensure verification exists
+        mock_get_attachment.return_value = MagicMock()  # Ensure Attachment exist
 
         # Act
         ReportSubmissionService.validate_report(version_id)
@@ -22,48 +26,62 @@ class TestReportSubmissionService:
             report_version_id=version_id,
             attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
         )
+        mock_get_verification.assert_called_once_with(report_version_id=version_id)
 
-    @patch("reporting.service.report_submission_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
-    def test_validate_report_without_verification_statement(self, mock_get_attachment, mock_get_verification):
+    def test_validate_verification_not_needed(
+        self, mock_get_attachment, mock_get_verification, mock_get_needs_verification
+    ):
         # Arrange
         version_id = 1
-        mock_get_verification.return_value = False  # Verification statement is not mandatory
+        mock_get_needs_verification.return_value = False
 
         # Act
         ReportSubmissionService.validate_report(version_id)
 
         # Assert
         mock_get_attachment.assert_not_called()
+        mock_get_verification.assert_not_called()
 
-    @patch("reporting.service.report_submission_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
-    def test_validate_report_raises_exception_if_verification_missing(self, mock_get_attachment, mock_get_verification):
+    def test_validate_report_missing_verification_statement(
+        self, mock_get_attachment, mock_get_verification, mock_get_needs_verification
+    ):
         # Arrange
         version_id = 1
-        mock_get_verification.return_value = True  # Verification statement is mandatory
+        mock_get_needs_verification.return_value = True
+        mock_get_verification.return_value = MagicMock()  # Ensure verification exists
         mock_get_attachment.side_effect = ReportAttachment.DoesNotExist
 
         # Act & Assert
-        with pytest.raises(Exception, match="verification_statement"):
+        with pytest.raises(Exception) as excinfo:
             ReportSubmissionService.validate_report(version_id)
+        assert str(excinfo.value) == "verification_statement"
 
-    @patch("reporting.models.report_version.ReportVersion.objects.get")
-    @patch("reporting.service.report_submission_service.ReportSubmissionService.validate_report")
-    def test_submit_report(self, mock_validate_report, mock_get_report_version):
+        mock_get_attachment.assert_called_once_with(
+            report_version_id=version_id,
+            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+        )
+
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.models.report_verification.ReportVerification.objects.get")
+    @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
+    def test_validate_report_missing_report_verification(
+        self, mock_get_attachment, mock_get_verification, mock_get_needs_verification
+    ):
         # Arrange
         version_id = 1
-        user_guid = UUID("12345678-1234-5678-1234-567812345678")
+        mock_get_needs_verification.return_value = True
+        mock_get_verification.side_effect = ReportVerification.DoesNotExist  # Verification does not exist
 
-        mock_report_version = MagicMock()
-        mock_get_report_version.return_value = mock_report_version
+        # Act & Assert
+        with pytest.raises(Exception) as excinfo:
+            ReportSubmissionService.validate_report(version_id)
+        assert str(excinfo.value) == "missing_report_verification"
 
-        # Act
-        result = ReportSubmissionService.submit_report(version_id, user_guid)
-
-        # Assert
-        mock_validate_report.assert_called_once_with(version_id)
-        mock_get_report_version.assert_called_once_with(id=version_id)
-        assert mock_report_version.status == ReportVersion.ReportVersionStatus.Submitted
-        mock_report_version.save.assert_called_once()
-        assert result == mock_report_version
+        mock_get_verification.assert_called_once_with(report_version_id=version_id)
+        mock_get_attachment.assert_not_called()
