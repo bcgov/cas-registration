@@ -19,7 +19,7 @@ class Activity(BaseModel):
     applicable_to = models.CharField(
         max_length=1000,
         choices=Applicability.choices,
-        db_comment="Which type of facility the activity applies to. An activity can be valid for only a Single Facility Operation, only a Linear Facility Operation or it can apply to both",
+        db_comment="Which type of facility the activity applies to. An activity can be valid for only a Single Facility Operation, only a Linear Facilities Operation or it can apply to both",
     )
     slug = models.CharField(
         max_length=50,

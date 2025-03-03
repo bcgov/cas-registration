@@ -11,6 +11,7 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface AdditionalReportingDataProps {
   versionId: number;
@@ -51,7 +52,7 @@ export default function AdditionalReportingDataForm({
   const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
   const saveAndContinueUrl = isNewEntrant
     ? `new-entrant-information`
-    : operationType === "Linear Facility Operation"
+    : operationType === OperationTypes.LFO
     ? "operation-emission-summary"
     : "compliance-summary";
 
