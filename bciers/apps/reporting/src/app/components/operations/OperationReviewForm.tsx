@@ -137,7 +137,11 @@ export default function OperationReviewForm({
       );
     }
     if (facilityReport?.facility_id) {
-      setOperationType(facilityReport.operation_type);
+      setOperationType(
+        OperationTypes[
+          facilityReport.operation_type as keyof typeof OperationTypes
+        ],
+      );
     }
   }, [
     formData,
