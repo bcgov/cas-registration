@@ -12,7 +12,7 @@ from registration.models import (
     UserOperator,
     WellAuthorizationNumber,
 )
-from registration.enums.enums import OperationTypes, FacilityTypes
+from registration.enums.enums import OperationTypes
 from registration.tests.utils.helpers import TestUtils
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.tests.utils.bakers import (
@@ -81,7 +81,7 @@ class TestGetIfAuthorized:
         payload = [
             FacilityIn(
                 name='Test Facility 1',
-                type=FacilityTypes.SINGLE_FACILITY.value,
+                type=Facility.Types.SINGLE_FACILITY,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -103,7 +103,7 @@ class TestGetIfAuthorized:
         payload = [
             FacilityIn(
                 name='Test Facility 1',
-                type=FacilityTypes.MEDIUM_FACILITY.value,
+                type=Facility.Types.MEDIUM_FACILITY,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -114,7 +114,7 @@ class TestGetIfAuthorized:
                 province='AB',
                 postal_code='H0H0H0',
                 name='Test Facility 2',
-                type=FacilityTypes.MEDIUM_FACILITY.value,
+                type=Facility.Types.MEDIUM_FACILITY,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -122,7 +122,7 @@ class TestGetIfAuthorized:
             ),
             FacilityIn(
                 name='Test Facility 3',
-                type=FacilityTypes.SMALL_AGGREGATE.value,
+                type=Facility.Types.SMALL_AGGREGATE,
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
@@ -145,7 +145,7 @@ class TestCreateFacilityWithDesignatedOperation:
 
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -169,14 +169,14 @@ class TestCreateFacilityWithDesignatedOperation:
 
         payload = FacilityIn(
             name='doraemon',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
         )
         payload2 = FacilityIn(
             name='shinchan',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -209,7 +209,7 @@ class TestCreateFacilityWithDesignatedOperation:
             province='AB',
             postal_code='H0H0H0',
             name='zip',
-            type=FacilityTypes.LARGE_FACILITY.value,
+            type=Facility.Types.LARGE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -308,7 +308,7 @@ class TestUpdateFacility:
         user, owning_operation, facility = TestUpdateFacility._setup_facility(user_role="cas_pending")
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -325,7 +325,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -354,7 +354,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.LARGE_FACILITY.value,
+            type=Facility.Types.LARGE_FACILITY,
             well_authorization_numbers=[1, 2, 3],
             is_current_year=True,
             starting_date="2024-07-07T09:00:00.000Z",
@@ -399,7 +399,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -429,7 +429,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -455,7 +455,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
@@ -487,7 +487,7 @@ class TestUpdateFacility:
 
         payload = FacilityIn(
             name='zip',
-            type=FacilityTypes.SINGLE_FACILITY.value,
+            type=Facility.Types.SINGLE_FACILITY,
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
