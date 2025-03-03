@@ -163,7 +163,7 @@ describe("The attachments form", () => {
       fireEvent.click(screen.getByText("Save & Continue"));
     });
 
-    expect(mockPostAttachments).toHaveBeenCalled();
+    expect(mockPostAttachments).not.toHaveBeenCalled();
     expect(screen.queryByText("Must be present")).not.toBeInTheDocument();
   });
 

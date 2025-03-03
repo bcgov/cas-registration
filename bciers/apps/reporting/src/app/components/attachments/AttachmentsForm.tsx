@@ -32,7 +32,7 @@ const AttachmentsForm: React.FC<Props> = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const [error, setError] = useState<string>();
+  const [errors, setErrors] = useState<string[]>();
   const [validationErrors, setValidationErrors] = useState<{
     [fileType: string]: string;
   }>({});
@@ -73,7 +73,7 @@ const AttachmentsForm: React.FC<Props> = ({
 
     if (Object.keys(pendingUploadFiles).length === 0) {
       // Nothing to submit
-      if (canContinue) router.push(saveAndContinueUrl);
+      if (canContinue) return router.push(saveAndContinueUrl);
       else return;
     }
 
@@ -88,13 +88,14 @@ const AttachmentsForm: React.FC<Props> = ({
     const response = await postAttachments(version_id, formData);
 
     if (response.error) {
-      setError(response.error);
+      setErrors([response.error]);
+    } else {
+      if (canContinue) {
+        setIsRedirecting(true);
+        router.push(saveAndContinueUrl);
+      }
     }
 
-    if (canContinue) {
-      setIsRedirecting(true);
-      router.push(saveAndContinueUrl);
-    }
     setIsSaving(false);
   };
 
@@ -137,7 +138,7 @@ const AttachmentsForm: React.FC<Props> = ({
         cancelUrl="#"
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
-        error={error}
+        errors={errors}
         isSaving={isSaving}
         isRedirecting={isRedirecting}
         noFormSave={() => handleSubmit(false)}

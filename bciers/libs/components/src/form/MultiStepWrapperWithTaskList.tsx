@@ -3,13 +3,13 @@
 import React from "react";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { Alert, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
-import ReportingStepButtons from "./components/ReportingStepButtons";
-
+import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
+import FormAlerts from "@bciers/components/form/FormAlerts";
 /**
  * Similar to the MultiStepFormWithTaskList,
- * except doesn't display a for, but can be used as a wrapper for any other page for a consistent look.
+ * except doesn't display a form, but can be used as a wrapper for any other page for a consistent look.
  */
 
 interface Props {
@@ -23,7 +23,7 @@ interface Props {
   continueUrl: string;
   saveButtonText?: string;
   submittingButtonText?: string;
-  error?: string;
+  errors?: string[];
   isSaving?: boolean;
   isRedirecting?: boolean;
   noFormSave?: () => void;
@@ -39,7 +39,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   backUrl,
   continueUrl,
   submittingButtonText,
-  error,
+  errors,
   isSaving,
   isRedirecting,
   noFormSave,
@@ -50,11 +50,6 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
       <div className="container mx-auto p-4" data-testid="facility-review">
         <MultiStepHeader stepIndex={initialStep} steps={steps} />
       </div>
-      {error && (
-        <div className="min-h-6">
-          <Alert severity="error">{error}</Alert>
-        </div>
-      )}
       <div className="w-full flex">
         {/* Make the task list hidden on small screens and visible on medium and up */}
         <div className="hidden md:block">
@@ -72,6 +67,9 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
             isSaving={isSaving}
             noSaveButton={noSaveButton}
           />
+
+          {/* Render form alerts */}
+          <FormAlerts errors={errors} />
         </div>
       </div>
     </Box>
