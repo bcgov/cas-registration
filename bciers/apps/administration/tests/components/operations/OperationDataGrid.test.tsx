@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import OperationDataGrid from "apps/administration/app/components/operations/OperationDataGrid";
 import React from "react";
-import { OperationStatus } from "@bciers/utils/src/enums";
+import { OperationStatus, OperationTypes } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import { expect } from "vitest";
 
@@ -23,7 +23,7 @@ const mockResponse = {
       operator__legal_name: "FakeOperator",
       operation__name: "Operation 1",
       operation__bcghg_id: "12111130001",
-      operation__type: "Single Facility Operation",
+      operation__type: OperationTypes.SFO,
       sfo_facility_id: null,
       sfo_facility_name: null,
       status: "Active",
@@ -37,7 +37,7 @@ const mockResponse = {
       operator__legal_name: "FakeOperator",
       operation__name: "Operation 2",
       operation__bcghg_id: "12111130002",
-      operation__type: "Linear Facilities Operation",
+      operation__type: OperationTypes.LFO,
       sfo_facility_id: null,
       sfo_facility_name: null,
       status: "Active",
@@ -52,7 +52,7 @@ const mockResponse = {
       operator__legal_name: "FakeOperator",
       operation__name: "Operation 3",
       operation__bcghg_id: "12111130003",
-      operation__type: "Single Facility Operation",
+      operation__type: OperationTypes.SFO,
       sfo_facility_id: null,
       sfo_facility_name: null,
       status: "Closed",
@@ -66,7 +66,7 @@ const mockResponse = {
       operator__legal_name: "FakeOperator",
       operation__name: "Operation 4",
       operation__bcghg_id: "12111130004",
-      operation__type: "Single Facility Operation",
+      operation__type: OperationTypes.SFO,
       status: "Active",
       sfo_facility_id: "facility-test-id",
       sfo_facility_name: "Facility Test Name",

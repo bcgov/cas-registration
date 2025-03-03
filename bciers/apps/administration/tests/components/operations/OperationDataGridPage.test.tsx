@@ -6,6 +6,7 @@ import {
 } from "@bciers/testConfig/mocks";
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
 import { auth } from "@bciers/testConfig/mocks";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 useRouter.mockReturnValue({
   query: {},
@@ -23,7 +24,7 @@ const mockResponse = {
       operator: "FakeOperator",
       name: "Operation 1",
       bcghg_id: "12111130001",
-      type: "Single Facility Operation",
+      type: OperationTypes.SFO,
       status: "Draft",
       bc_obps_regulated_operation: "N/A",
     },
@@ -32,7 +33,7 @@ const mockResponse = {
       operator: "FakeOperator",
       name: "Operation 2",
       bcghg_id: "12111130002",
-      type: "Linear Facilities Operation",
+      type: OperationTypes.LFO,
       status: "Registered",
       bc_obps_regulated_operation: "24-0001",
     },
