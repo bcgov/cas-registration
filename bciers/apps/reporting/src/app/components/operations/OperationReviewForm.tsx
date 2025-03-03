@@ -18,6 +18,7 @@ import {
 } from "@reporting/src/app/components/taskList/1_operationInformation";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { useRouter } from "next/navigation";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface Props {
   formData: any;
@@ -60,7 +61,7 @@ export default function OperationReviewForm({
   const [schema, setSchema] = useState<RJSFSchema>(operationReviewSchema);
   const [uiSchema, setUiSchema] = useState<RJSFSchema>(operationReviewUiSchema);
   const [formDataState, setFormDataState] = useState<any>(formData);
-  const [operationType, setOperationType] = useState("");
+  const [operationType, setOperationType] = useState<OperationTypes>();
   const [errors, setErrors] = useState<string[]>();
 
   // 🛸 Set up routing urls
