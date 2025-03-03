@@ -5,7 +5,7 @@ import FormBase, { FormPropsWithTheme } from "./FormBase";
 import Form from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import ReportingStepButtons from "./components/ReportingStepButtons";
-import { Alert } from "@mui/material";
+import FormAlerts from "@bciers/components/form/FormAlerts";
 import { useRouter } from "next/navigation";
 
 export interface NavigationFormProps
@@ -20,7 +20,7 @@ export interface NavigationFormProps
   onSubmit?: (data: any, navigateAfterSubmit: boolean) => Promise<boolean>;
   buttonText?: string;
   onChange?: (data: any) => void;
-  errors?: any[];
+  errors?: string[];
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
   noSaveButton?: boolean;
@@ -126,15 +126,8 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         buttonText={buttonText}
         noSaveButton={noSaveButton}
       />
-      {errors && errors.length > 0 && (
-        <div key="form-alerts" className="min-h-[48px] box-border mt-4">
-          {errors.map((e, index) => (
-            <Alert key={index} severity="error">
-              {e}
-            </Alert>
-          ))}
-        </div>
-      )}
+      {/* Render form alerts */}
+      <FormAlerts errors={errors} />
     </FormBase>
   );
 };
