@@ -152,8 +152,8 @@ class TestReportService(TestCase):
             operation_type="Updated Operation Type",
             operation_bcghgid="Updated BC GHID",
             bc_obps_regulated_operation_id="Updated Regulated Operation ID",
-            activities=["Magnesium production", "Hydrogen production"],
-            regulated_products=["Cement equivalent", "Mining: gold-equivalent"],
+            activities=[18, 14],
+            regulated_products=[2, 13],
             operation_representative_name=[1, 2],
             operation_report_type="New Report Type",
         )
