@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from typing import Dict, Literal, Tuple
 from registration.api.router import router
 from registration.constants import USER_OPERATOR_TAGS
-from service.operator_service_v2 import OperatorServiceV2
+from service.operator_service import OperatorService
 from common.api.utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 from common.permissions import authorize
@@ -26,7 +26,7 @@ def get_current_user_operator_has_required_fields(request: HttpRequest) -> Tuple
         # Retrieve the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
         # Use the service to check if the operator has all required fields filled
-        has_required_fields = OperatorServiceV2.has_required_fields(operator)
+        has_required_fields = OperatorService.has_required_fields(operator)
         return 200, {"has_required_fields": has_required_fields}
     except ObjectDoesNotExist:
         # Handle the case where no user_operator is found for the user

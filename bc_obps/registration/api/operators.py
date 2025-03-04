@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional
 from registration.schema import OperatorFilterSchema, OperatorListOut, Message
 from registration.models.operator import Operator
-from service.operator_service_v2 import OperatorServiceV2
+from service.operator_service import OperatorService
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.router import router
@@ -28,4 +28,4 @@ def list_operators(
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[Operator]:
-    return OperatorServiceV2.list_operators(sort_field, sort_order, filters)
+    return OperatorService.list_operators(sort_field, sort_order, filters)

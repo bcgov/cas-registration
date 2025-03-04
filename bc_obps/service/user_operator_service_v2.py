@@ -11,7 +11,7 @@ from service.data_access_service.operator_service import OperatorDataAccessServi
 from registration.models import Operator, User, UserOperator
 from django.db import transaction
 from registration.constants import UNAUTHORIZED_MESSAGE
-from service.operator_service_v2 import OperatorServiceV2
+from service.operator_service import OperatorService
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from ninja import Query
@@ -76,7 +76,7 @@ class UserOperatorServiceV2:
             user_operator.save()
 
         # update the user operator operator with data in the request payload
-        OperatorServiceV2.update_operator(user_guid, payload)
+        OperatorService.update_operator(user_guid, payload)
 
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
