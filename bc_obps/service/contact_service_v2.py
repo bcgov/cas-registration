@@ -1,6 +1,7 @@
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.contact import Contact
 from registration.schema import ContactFilterSchemaV2, ContactWithPlacesAssigned, PlacesAssigned, ContactIn, OperationRepresentativeIn
 from service.data_access_service.contact_service import ContactDataAccessService
@@ -11,6 +12,7 @@ from django.db import transaction
 from typing import cast, Union, Dict
 from registration.models.business_role import BusinessRole
 from service.data_access_service.address_service import AddressDataAccessService
+from service.operation_service_v2 import OperationServiceV2
 
 
 class ContactServiceV2:
@@ -30,17 +32,25 @@ class ContactServiceV2:
         return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
+    def list_operation_representatives(
+            cls,
+            operation_id: UUID,
+            user_guid: UUID,
+    ) -> QuerySet[Contact]:
+        operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
+        return operation.contacts.order_by('-created_at')
+
+    @classmethod
     @transaction.atomic()
     def create_contact(cls, user_guid: UUID, payload: Union[ContactIn, OperationRepresentativeIn]) -> Contact:
         contact_data: dict = payload.dict(include={*ContactIn.Meta.fields})
         # `business_role` is a mandatory field in the DB but we don't collect it from the user
         # so we set it to a default value here and we can change it later if needed
         contact_data['business_role'] = BusinessRole.objects.get(role_name="Operation Representative")
-
-        contact_data['operator'] = UserDataAccessService.get_operator_by_user(user_guid)
-
+        operator_id = UserDataAccessService.get_user_operator_by_user(user_guid).operator.id
+        contact_data['operator_id'] = operator_id
         contact: Contact
-        contact = ContactDataAccessServiceV2.update_or_create_v2(None, contact_data, user_guid)
+        contact = ContactDataAccessServiceV2.update_or_create_v2(None, contact_data)
 
         # Create address
         address_data = payload.dict(
@@ -59,13 +69,13 @@ class ContactServiceV2:
     def update_contact(
         cls, user_guid: UUID, contact_id: int, payload: Union[ContactIn, OperationRepresentativeIn]
     ) -> Contact:
+        # Make sure user has access to the contact
+        if not ContactDataAccessService.user_has_access(user_guid, contact_id):
+            raise Exception(UNAUTHORIZED_MESSAGE)
 
         # UPDATE CONTACT
         contact_data: Dict = payload.dict(include={*ContactIn.Meta.fields})
-
-        contact_data['operator'] = UserDataAccessService.get_operator_by_user(user_guid)
-
-        contact = ContactDataAccessServiceV2.update_or_create_v2(contact_id, contact_data, user_guid)
+        contact = ContactDataAccessServiceV2.update_or_create_v2(contact_id, contact_data)
         # UPDATE ADDRESS
         address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
         if any(address_data.values()):  # if any address data is provided
