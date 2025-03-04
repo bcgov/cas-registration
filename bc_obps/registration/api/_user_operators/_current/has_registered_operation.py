@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from typing import Dict, Literal, Tuple
 from registration.api.router import router
 from registration.constants import USER_OPERATOR_TAGS
-from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
+from service.data_access_service.operation_service import OperationDataAccessService
 from common.api.utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 from common.permissions import authorize
@@ -26,7 +26,7 @@ def get_current_user_operator_has_registered_operation(request: HttpRequest) -> 
         # Retrieve the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
         # Use the service to check if the operator has a registered operation
-        has_registered_operation = OperationDataAccessServiceV2.check_current_users_registered_operation(operator.id)
+        has_registered_operation = OperationDataAccessService.check_current_users_registered_operation(operator.id)
         return 200, {"has_registered_operation": has_registered_operation}
     except ObjectDoesNotExist:
         # Handle the case where no user_operator is found for the user
