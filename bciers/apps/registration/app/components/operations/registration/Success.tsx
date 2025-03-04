@@ -1,8 +1,8 @@
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import Check from "@bciers/components/icons/Check";
-import { Alert } from "@mui/material";
 import Link from "next/link";
-import { allOperationRegistrationSteps } from "./enums";
+import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
+import { ghgRegulatorEmail, reportAnEventLink } from "@bciers/utils/src/urls";
 
 interface SubmissionProps {
   step: number;
@@ -13,52 +13,47 @@ const Submission = ({
   step,
   steps = allOperationRegistrationSteps,
 }: SubmissionProps) => {
-  const currentYear = new Date().getFullYear();
-  const previousYear = currentYear - 1;
   return (
     <>
       <MultiStepHeader stepIndex={step - 1} steps={steps} />
       <h2 className="form-heading mt-0">Submission</h2>
-      <section className="flex flex-col items-center justify-center max-w-[600px] mx-auto mt-4">
+      <section className="flex flex-col items-center justify-center max-w-[600px] mx-auto mt-10">
         <div className="flex flex-col items-center justify-center">
           {Check}
           <h3 className="mb-2 mt-4">Registration complete</h3>
-          <p className="m-0">This operation has been registered</p>
+          <p className="m-0">This operation has been registered.</p>
         </div>
-        <div className="mt-6">
-          <p className="m-0" data-testid="submission-date-message">
-            Did your operation or facility have any of the following changes in{" "}
-            {previousYear} or {currentYear}?
+        <section>
+          <p className="mt-6 mb-0" data-testid="submission-message">
+            The Greenhouse Gas Emission Reporting Regulation requires an
+            operator to report the following events:
           </p>
-        </div>
-        <ul>
-          <li>a closing or temporary shutdown</li>
-          <li>an acquisition or a divestment</li>
-          <li>
-            a change in the operator having control and direction or a transfer
-            of control and direction to the operator
-          </li>
-        </ul>
-        <Alert
-          severity="warning"
-          sx={{
-            padding: "20px 24px",
-            color: "text.primary",
-            fontSize: "16px",
-          }}
-        >
-          If yes, and you have not reported it yet, please report it in the
-          Report a Change page. Otherwise, no further action is required and
-          this registration is complete.
-        </Alert>
-        <div className="flex flex-col items-center justify-center">
-          <Link className="link-button-blue my-4" href="/tbd">
-            Report a change
-          </Link>
-          <Link className="link-button-outlined" href="/">
-            Return to Dashboard
-          </Link>
-        </div>
+          <ul className="pl-6 my-0">
+            <li>A closure or temporary shutdown;</li>
+            <li>An acquisition or divestment;</li>
+            <li>A change in the operator having control or direction; or</li>
+            <li>A transfer of control and direction to the operator</li>
+          </ul>
+          <p className="mb-0">
+            To report any of these events, please use the following link:{" "}
+            <Link href={reportAnEventLink} target="_blank">
+              Link to form
+            </Link>
+          </p>
+          <p className="mt-0">
+            Staff will review the information provided and administer changes in
+            BCIERS as needed. For questions reach out to{" "}
+            <Link href={ghgRegulatorEmail}>GHGRegulator@gov.bc.ca</Link>.
+          </p>
+          <p>
+            If you did not have any of these events, no further action is
+            required and this registration is complete, and you may return back
+            to the dashboard.
+          </p>
+        </section>
+        <Link className="link-button-outlined" href="/">
+          Back to Dashboard
+        </Link>
       </section>
     </>
   );
