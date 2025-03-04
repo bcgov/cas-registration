@@ -4,7 +4,6 @@ from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.schema import ContactIn, OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from registration.utils import update_model_instance
-from service.contact_service import ContactService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
@@ -180,6 +179,7 @@ class UserOperatorService:
                     phone_number=str(user_operator.user.phone_number),  # ContactIn expects a string,
                     position_title=user_operator.user.position_title,
                 )
+                from service.contact_service import ContactService # to avoid circular import
                 # Create a contact record for the user_operator and add it to the operator's contacts
                 ContactService.create_contact(user_operator.user_id, contact_payload)
 
