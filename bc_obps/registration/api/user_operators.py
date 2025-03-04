@@ -7,7 +7,7 @@ from registration.models import UserOperator
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple, Optional, List
-from registration.constants import USER_OPERATOR_TAGS_V2
+from registration.constants import USER_OPERATOR_TAGS
 from registration.schema import OperatorIn, Message, UserOperatorOperatorOut, UserOperatorListOut, UserOperatorFilterSchema
 from service.user_operator_service_v2 import UserOperatorServiceV2
 from ninja.pagination import paginate, PageNumberPagination
@@ -16,7 +16,7 @@ from ninja.pagination import paginate, PageNumberPagination
 @router.get(
     "/user-operators",
     response={200: List[UserOperatorListOut], custom_codes_4xx: Message},
-    tags=USER_OPERATOR_TAGS_V2,
+    tags=USER_OPERATOR_TAGS,
     description="""Retrieves a paginated list of user operators.
     The endpoint allows authorized IRC roles to view user operators, sorted by various fields such as creation date,
     user details, and operator legal name.""",
@@ -38,7 +38,7 @@ def list_user_operators(
 @router.post(
     "/user-operators",
     response={201: UserOperatorOperatorOut, custom_codes_4xx: Message},
-    tags=USER_OPERATOR_TAGS_V2,
+    tags=USER_OPERATOR_TAGS,
     description="""Creates a new operator and a new user-operator for the current user.
     The endpoint ensures that only authorized industry users can create a new operator and user-operator.
     It sets the operator's status to 'Approved' and the user operator's role to 'admin' and status to 'Approved`.""",

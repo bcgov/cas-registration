@@ -8,12 +8,13 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from service.data_access_service.user_service import UserDataAccessService
+from registration.constants import USER_OPERATOR_TAGS
 
 ## GET
 @router.get(
     "/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},
-    tags=["V2"],
+    tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about the current user-operator and their associated operator.
     Declined user-operators are excluded from the results.""",
     exclude_none=True,  # To exclude None values from the response (used for parent and partner arrays)
@@ -28,7 +29,7 @@ def get_current_operator_and_user_operator(request: HttpRequest) -> Tuple[Litera
 @router.put(
     "/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},
-    tags=["V2"],
+    tags=USER_OPERATOR_TAGS,
     description="""Updates the current user's operator.
     The endpoint ensures that industry users can only update their own operators.
     The updated data is saved.""",

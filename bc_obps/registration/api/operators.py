@@ -10,14 +10,14 @@ from ninja import Query
 from django.db.models import QuerySet
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
-
+from registration.constants import OPERATOR_TAGS
 ##### GET #####
 
 
 @router.get(
     "/operators",
     response={200: List[OperatorListOut], custom_codes_4xx: Message},
-    tags=["V2"],
+    tags=OPERATOR_TAGS,
     auth=authorize("authorized_irc_user"),
 )
 @paginate(CustomPagination)
