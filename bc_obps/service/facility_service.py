@@ -158,9 +158,9 @@ class FacilityService:
     @transaction.atomic()
     def create_facility_with_designated_operation(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
         """Create a facility with designated operation details."""
-        from service.operation_service_v2 import OperationServiceV2
+        from service.operation_service import OperationService
 
-        operation = OperationServiceV2.get_if_authorized_v2(user_guid, payload.operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(user_guid, payload.operation_id, ['id', 'operator_id'])
 
         # Validate that SFO and EIO can only have one facility
         if operation.facilities.count() > 0 and operation.type != Operation.Types.LFO:

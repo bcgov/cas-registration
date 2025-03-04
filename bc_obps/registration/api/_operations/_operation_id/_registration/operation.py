@@ -1,9 +1,8 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
-from service.operation_service import OperationService
 from registration.schema import OperationInformationIn, OperationUpdateOut, OperationRegistrationOut, Message
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
@@ -40,4 +39,4 @@ def register_get_operation_information(request: HttpRequest, operation_id: UUID)
 def register_edit_operation_information(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationIn
 ) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)
+    return 200, OperationService.register_operation_information(get_current_user_guid(request), operation_id, payload)

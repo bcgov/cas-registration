@@ -9,7 +9,7 @@ from registration.schema import (
     OperationNewEntrantApplicationOut,
     Message
 )
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from registration.models import Operation
@@ -29,7 +29,7 @@ from registration.api.router import router
     exclude_none=True,  # Exclude None values from the response so that frontend can uses default value for date_of_first_shipment
 )
 def get_operation_new_entrant_application(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.get_if_authorized_v2(
+    return 200, OperationService.get_if_authorized(
         get_current_user_guid(request), operation_id, ['id', 'operator_id']
     )
 
@@ -44,6 +44,6 @@ def get_operation_new_entrant_application(request: HttpRequest, operation_id: UU
 def create_or_replace_new_entrant_application(
     request: HttpRequest, operation_id: UUID, payload: OperationNewEntrantApplicationIn
 ) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.create_or_replace_new_entrant_application(
+    return 200, OperationService.create_or_replace_new_entrant_application(
         get_current_user_guid(request), operation_id, payload
     )

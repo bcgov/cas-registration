@@ -3,7 +3,7 @@ from uuid import UUID
 from django.http import HttpRequest
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.schema import OperationBoroIdOut, Message
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
@@ -19,7 +19,7 @@ from registration.api.router import router
     auth=authorize('cas_director'),
 )
 def operation_boro_id(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], BcObpsRegulatedOperation | None]:
-    return 200, OperationServiceV2.generate_boro_id(
+    return 200, OperationService.generate_boro_id(
         get_current_user_guid(request),
         operation_id,
     )

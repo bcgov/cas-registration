@@ -8,7 +8,7 @@ from registration.schema import (
     OperationRepresentativeRemove,
     Message,
 )
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
@@ -27,7 +27,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 def create_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeIn
 ) -> Tuple[Literal[201], Contact]:
-    return 201, OperationServiceV2.create_operation_representative(
+    return 201, OperationService.create_operation_representative(
         get_current_user_guid(request), operation_id, payload
     )
 
@@ -43,6 +43,6 @@ def create_operation_representative(
 def remove_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeRemove
 ) -> Tuple[Literal[200], OperationRepresentativeRemove]:
-    return 200, OperationServiceV2.remove_operation_representative(
+    return 200, OperationService.remove_operation_representative(
         get_current_user_guid(request), operation_id, payload
     )

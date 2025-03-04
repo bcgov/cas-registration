@@ -1,4 +1,4 @@
-from service.tests.test_operation_service_v2 import set_up_valid_mock_operation
+from service.tests.test_operation_service import set_up_valid_mock_operation
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
