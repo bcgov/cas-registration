@@ -29,6 +29,7 @@ const formData = {
   activities: [1],
   regulated_products: [1],
   operation_representative_name: [69, 70],
+  operation_report_type: "Simple Report",
 };
 
 const activities = [
