@@ -97,7 +97,7 @@ describe("The Breadcrumb component", () => {
         "Dashboard",
         "Reporting",
         "Reports",
-        "Review Operator Data",
+        "Review Operation Information",
       ],
     },
     {
