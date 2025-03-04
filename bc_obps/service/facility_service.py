@@ -10,14 +10,13 @@ from service.data_access_service.facility_service import FacilityDataAccessServi
 from registration.models import Facility
 from registration.schema import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
-
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.data_access_service.address_service import AddressDataAccessService
 from registration.models.operation import Operation
 from registration.models import User
 from registration.models import WellAuthorizationNumber
-
+from registration.enums.enums import OperationTypes
 from django.db import transaction
 from django.utils import timezone
 from registration.models import Address

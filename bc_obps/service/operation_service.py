@@ -20,7 +20,7 @@ from registration.models.user_operator import UserOperator
 from registration.models import Operation, User
 from ninja import Query
 from django.db import transaction
-from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
+from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
@@ -57,7 +57,7 @@ class OperationService:
         if only_fields:
             operation = Operation.objects.only(*only_fields).get(id=operation_id)
         else:
-            operation = OperationDataAccessServiceV2.get_by_id(operation_id)
+            operation = OperationDataAccessService.get_by_id(operation_id)
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
             if not operation.user_has_access(user.user_guid):
@@ -233,7 +233,7 @@ class OperationService:
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
         operation_data['operator_id'] = user_operator.operator_id
 
-        operation = OperationDataAccessServiceV2.create_operation_v2(
+        operation = OperationDataAccessService.create_operation(
             user_guid,
             operation_data,
             payload.activities if hasattr(payload, "activities") and payload.activities else [],
