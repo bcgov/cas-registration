@@ -153,6 +153,8 @@ describe("operationColumns function", () => {
     render(<WrapperComponent />);
     await user.click(screen.getByText("Continue"));
 
-    expect(mockPush).toHaveBeenCalledWith(`reports/15/review-operator-data`);
+    expect(mockPush).toHaveBeenCalledWith(
+      `reports/15/review-operation-information`,
+    );
   });
 });

@@ -66,10 +66,6 @@ export default function OperationReviewForm({
     setFormDataState(updatedFormData);
   };
 
-  if (!formData) {
-    return <div>No version ID found (TBD)</div>;
-  }
-
   const confirmReportTypeChange = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/change-report-type`;
@@ -78,10 +74,11 @@ export default function OperationReviewForm({
     });
 
     if (response && !response.error) {
-      router.push(`/reports/${response}/review-operator-data`);
+      router.push(`/reports/${response}/review-operation-information`);
     }
   };
   const cancelReportTypeChange = () => {
+    setFormDataState((prevState: any) => ({ ...prevState }));
     setPendingChangeReportType(undefined);
   };
 
@@ -94,8 +91,9 @@ export default function OperationReviewForm({
         onConfirm={confirmReportTypeChange}
         confirmText="Change report type"
       >
-        Are you sure you want to change your report type? If you proceed, all of
-        the form data you have entered will be lost.
+        Are you sure you want to change your report type to{" "}
+        <strong>{pendingChangeReportType}</strong>? If you proceed, all of the
+        form data you have entered will be lost.
       </SimpleModal>
       <MultiStepFormWithTaskList
         initialStep={0}

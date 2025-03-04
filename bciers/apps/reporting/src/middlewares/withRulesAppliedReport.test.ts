@@ -130,7 +130,7 @@ describe("withRulesAppliedReport middleware", () => {
   });
 
   it.each(reportPaths)(
-    "redirects registered operation SFO from LFO path '%s' to /review-operator-data path",
+    "redirects registered operation SFO from LFO path '%s' to /review-operation-information path",
     async (lfoPath) => {
       getToken.mockResolvedValue(mockIndustryUserToken);
       const nextUrl = new NextURL(
@@ -163,7 +163,10 @@ describe("withRulesAppliedReport middleware", () => {
 
       expect(NextResponse.redirect).toHaveBeenCalledOnce();
       expect(NextResponse.redirect).toHaveBeenCalledWith(
-        new URL(`/reporting/reports/${versionId}/review-operator-data`, domain),
+        new URL(
+          `/reporting/reports/${versionId}/review-operation-information`,
+          domain,
+        ),
       );
       expect(result?.status).toBe(307);
     },

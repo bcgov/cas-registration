@@ -22,10 +22,10 @@ Goals:
 
 ## Operation Information
 
-| Page                  | URL                                          | Comments |
-| --------------------- | -------------------------------------------- | -------- |
-| Operation Information | `/reports/{version_id}/review-operator-data` |          |
-| Review Facilities     | `/reports/{version_id}/review-facilities`    |          |
+| Page                  | URL                                                  | Comments |
+| --------------------- | ---------------------------------------------------- | -------- |
+| Operation Information | `/reports/{version_id}/review-operation-information` |          |
+| Review Facilities     | `/reports/{version_id}/review-facilities`            |          |
 
 ## Facilities Information (emissions report)
 

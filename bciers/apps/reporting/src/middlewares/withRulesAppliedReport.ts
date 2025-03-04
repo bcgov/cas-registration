@@ -97,7 +97,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
           // 🛸 Redirect to review operator
           return NextResponse.redirect(
             new URL(
-              `/reporting/reports/${versionId}/review-operator-data`,
+              `/reporting/reports/${versionId}/review-operation-information`,
               request.url,
             ),
           );

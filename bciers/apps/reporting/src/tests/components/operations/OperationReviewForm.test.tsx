@@ -154,7 +154,9 @@ describe("OperationReviewForm Component", () => {
     fireEvent.click(screen.getByRole("button", { name: "Change report type" }));
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith("/reports/1234/review-operator-data");
+      expect(push).toHaveBeenCalledWith(
+        "/reports/1234/review-operation-information",
+      );
     });
   });
 
