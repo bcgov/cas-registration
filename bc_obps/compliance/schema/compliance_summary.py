@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List
+from typing import List, Any, Union, cast
 from ninja import Schema
 
 
@@ -32,19 +32,19 @@ class ComplianceSummaryListOut(Schema):
     obligation_id: int | None
 
     @staticmethod
-    def resolve_operation_name(obj) -> str:
-        return obj.report.operation.name
+    def resolve_operation_name(obj: Any) -> str:
+        return cast(str, obj.report.operation.name)
 
     @staticmethod
-    def resolve_reporting_year(obj) -> int:
-        return obj.compliance_period.end_date.year
+    def resolve_reporting_year(obj: Any) -> int:
+        return cast(int, obj.compliance_period.end_date.year)
 
     @staticmethod
-    def resolve_excess_emissions(obj) -> Decimal:
-        return round(obj.excess_emissions)
+    def resolve_excess_emissions(obj: Any) -> Decimal:
+        return cast(Decimal, round(obj.excess_emissions))
 
     @staticmethod
-    def resolve_obligation_id(obj) -> int | None:
+    def resolve_obligation_id(obj: Any) -> Union[int, None]:
         return obj.obligation.id if hasattr(obj, 'obligation') and obj.obligation else None
 
 
@@ -68,17 +68,17 @@ class ComplianceSummaryOut(Schema):
     obligation: ComplianceObligationOut | None
 
     @staticmethod
-    def resolve_operation_name(obj) -> str:
-        return obj.report.operation.name
+    def resolve_operation_name(obj: Any) -> str:
+        return cast(str, obj.report.operation.name)
 
     @staticmethod
-    def resolve_operation_bcghg_id(obj) -> str:
-        return obj.report.operation.bcghg_id.identifier
+    def resolve_operation_bcghg_id(obj: Any) -> str:
+        return cast(str, obj.report.operation.bcghg_id.identifier)
 
     @staticmethod
-    def resolve_reporting_year(obj) -> int:
-        return obj.compliance_period.end_date.year
+    def resolve_reporting_year(obj: Any) -> int:
+        return cast(int, obj.compliance_period.end_date.year)
 
     @staticmethod
-    def resolve_excess_emissions(obj) -> Decimal:
-        return round(obj.excess_emissions)
+    def resolve_excess_emissions(obj: Any) -> Decimal:
+        return cast(Decimal, round(obj.excess_emissions))

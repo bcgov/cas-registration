@@ -39,5 +39,5 @@ def get_compliance_summary(request: HttpRequest, summary_id: int) -> Tuple[Liter
     user_guid = get_current_user_guid(request)
     summary = ComplianceDashboardService.get_compliance_summary_by_id(user_guid, summary_id)
     if not summary:
-        return get_object_or_404(ComplianceSummary, id=summary_id)
+        summary = get_object_or_404(ComplianceSummary, id=summary_id)
     return 200, summary

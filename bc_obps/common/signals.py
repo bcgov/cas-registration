@@ -5,12 +5,13 @@ Signal handlers for the common app.
 from django.dispatch import receiver
 from events.signals import report_submitted
 import logging
+from typing import Any, Type
 
 logger = logging.getLogger(__name__)
 
 
 @receiver(report_submitted)
-def log_report_submission(sender, **kwargs):
+def log_report_submission(sender: Type[Any], **kwargs: Any) -> None:
     """
     Example handler that logs when a report is submitted.
 

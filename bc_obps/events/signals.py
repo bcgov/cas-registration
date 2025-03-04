@@ -25,6 +25,6 @@ from django.dispatch import Signal
 
 # Reporting signals
 report_submitted = Signal()
-report_submitted.providing_args = ['version_id', 'user_guid']
+# Signal parameters: 'version_id', 'user_guid'
 
 # Add more signals as needed for different app domains

@@ -58,7 +58,7 @@ class ComplianceSummary(TimeStampedModel):
     )
 
     @property
-    def compliance_status(self):
+    def compliance_status(self) -> str:
         """
         Compute compliance status based on excess_emissions and credited_emissions.
 

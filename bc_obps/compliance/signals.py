@@ -1,10 +1,11 @@
 from django.dispatch import receiver
 from compliance.service.compliance_summary_service import ComplianceSummaryService
 from events.signals import report_submitted
+from typing import Any, Type
 
 
 @receiver(report_submitted)
-def handle_report_submission(sender, **kwargs):
+def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
     """
     Signal handler that creates a compliance summary when a report is submitted.
 

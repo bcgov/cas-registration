@@ -61,7 +61,6 @@ class ComplianceSummaryService:
                 credited_emissions=compliance_data.credited_emissions,
                 reduction_factor=compliance_data.regulatory_values.reduction_factor,
                 tightening_rate=compliance_data.regulatory_values.tightening_rate,
-                compliance_status=compliance_status,
             )
 
             # Create compliance products
