@@ -8,14 +8,14 @@ from service.operation_service_v2 import OperationServiceV2
 from registration.api.router import router
 from common.permissions import authorize
 from django.db.models import QuerySet
-
+from registration.constants import OPERATION_TAGS
 ##### GET #####
 
 
 @router.get(
     "/operations/current",
     response={200: List[OperationCurrentOut], custom_codes_4xx: Message},
-    tags=["V2"],
+    tags=OPERATION_TAGS,
     auth=authorize('approved_industry_user'),
     description="""Gets the list of operations associated with the current user's operator that are not yet registered.
     The endpoint ensures that only authorized industry users can get unregistered operations belonging to their operator. Unauthorized access attempts raise an error.""",

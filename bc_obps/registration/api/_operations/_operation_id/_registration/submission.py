@@ -3,7 +3,7 @@ from uuid import UUID
 from django.http import HttpRequest
 from registration.schema import OperationRegistrationSubmissionIn, OperationUpdateStatusOut, Message
 from service.operation_service_v2 import OperationServiceV2
-from registration.constants import V2
+from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -14,7 +14,7 @@ from registration.api.router import router
 @router.patch(
     "/operations/{uuid:operation_id}/registration/submission",
     response={200: OperationUpdateStatusOut, custom_codes_4xx: Message},
-    tags=V2,
+    tags=OPERATION_TAGS,
     description="""Updates the status of an operation to 'Registered' when the registration is submitted.
     The endpoint ensures that only authorized industry users can update operations belonging to their operator.""",
     auth=authorize('approved_industry_user'),

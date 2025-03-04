@@ -1,5 +1,5 @@
 from typing import List, Literal, Optional
-from registration.constants import V2
+from registration.constants import OPERATION_TAGS
 from registration.models.operation import Operation
 from typing import Tuple
 from registration.schema import OperationCreateOut, OperationInformationIn, Message, OperationTimelineFilterSchema, OperationTimelineListOut
@@ -22,7 +22,7 @@ from registration.models.operation_designated_operator_timeline import Operation
 @router.get(
     "/operations",
     response={200: List[OperationTimelineListOut], custom_codes_4xx: Message},
-    tags=V2,
+    tags=OPERATION_TAGS,
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(CustomPagination)
@@ -50,7 +50,7 @@ REGISTRATION_PURPOSES_LITERALS = Literal[
 @router.get(
     "/operations/registration-purposes",
     response={200: List[REGISTRATION_PURPOSES_LITERALS], custom_codes_4xx: Message},
-    tags=V2,
+    tags=OPERATION_TAGS,
     description="""Retrieves a list of strings representing the valid options for an operation's registration purpose (aka registration category).""",
     auth=authorize("approved_authorized_roles"),
 )
@@ -63,7 +63,7 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 @router.post(
     "/operations",
     response={201: OperationCreateOut, custom_codes_4xx: Message},
-    tags=["V2"],
+    tags=OPERATION_TAGS,
     description="""Creates a new operation for the current user and starts the registration process.
     It associates the new operation with the current user's approved user-operator.""",
     auth=authorize("approved_industry_user"),
