@@ -10,7 +10,7 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import Operation
@@ -30,7 +30,7 @@ from registration.models import Operation
     auth=authorize("approved_authorized_roles"),
 )
 def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.get_if_authorized_v2(get_current_user_guid(request), operation_id)
+    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
 
 @router.get(
@@ -42,7 +42,7 @@ def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200
     auth=authorize("approved_authorized_roles"),
 )
 def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.get_if_authorized_v2(get_current_user_guid(request), operation_id)
+    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
 
 ##### PUT ######
@@ -58,4 +58,4 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 def update_operation(
     request: HttpRequest, operation_id: UUID, payload: OperationInformationInUpdate
 ) -> Tuple[Literal[200], Operation]:
-    return 200, OperationServiceV2.update_operation(get_current_user_guid(request), payload, operation_id)
+    return 200, OperationService.update_operation(get_current_user_guid(request), payload, operation_id)

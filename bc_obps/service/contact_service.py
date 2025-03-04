@@ -12,7 +12,7 @@ from django.db import transaction
 from typing import cast, Union, Dict
 from registration.models.business_role import BusinessRole
 from service.data_access_service.address_service import AddressDataAccessService
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 
 
 class ContactService:
@@ -37,7 +37,7 @@ class ContactService:
             operation_id: UUID,
             user_guid: UUID,
     ) -> QuerySet[Contact]:
-        operation = OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         return operation.contacts.order_by('-created_at')
 
     @classmethod

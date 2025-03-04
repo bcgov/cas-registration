@@ -3,7 +3,7 @@ from registration.constants import OPERATION_TAGS
 from registration.models.operation import Operation
 from typing import Tuple
 from registration.schema import OperationCreateOut, OperationInformationIn, Message, OperationTimelineFilterSchema, OperationTimelineListOut
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
@@ -34,7 +34,7 @@ def list_operations(
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[OperationDesignatedOperatorTimeline]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return OperationServiceV2.list_operations_timeline(get_current_user_guid(request), sort_field, sort_order, filters)
+    return OperationService.list_operations_timeline(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
 REGISTRATION_PURPOSES_LITERALS = Literal[
@@ -71,4 +71,4 @@ def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[
 def register_create_operation_information(
     request: HttpRequest, payload: OperationInformationIn
 ) -> Tuple[Literal[201], Operation]:
-    return 201, OperationServiceV2.register_operation_information(get_current_user_guid(request), None, payload)
+    return 201, OperationService.register_operation_information(get_current_user_guid(request), None, payload)

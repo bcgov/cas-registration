@@ -13,9 +13,9 @@ class DocumentService:
     def get_operation_document_by_type_if_authorized(
         cls, user_guid: UUID, operation_id: UUID, document_type: str
     ) -> Document | None:
-        from service.operation_service_v2 import OperationServiceV2
+        from service.operation_service import OperationService
 
-        OperationServiceV2.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
+        OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         return DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
 
     @classmethod

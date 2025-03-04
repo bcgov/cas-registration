@@ -25,7 +25,7 @@ from registration.schema import (
     OperationInformationIn,
 )
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.operation import Operation
 from registration.tests.constants import MOCK_DATA_URL
@@ -100,7 +100,7 @@ class TestOperationServiceV2:
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
         )
-        OperationServiceV2.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
+        OperationService.register_operation_information(approved_user_operator.user.user_guid, operation.id, payload)
 
         operation.refresh_from_db()  # refresh the operation object to get the updated audit columns
         assert operation.updated_at is not None
@@ -123,7 +123,7 @@ class TestOperationServiceV2:
         assert operation.opted_in_operation is not None
         assert OptedInOperationDetail.objects.count() == 1
 
-        OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
+        OperationService.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
 
         assert operation.opt_in is False
@@ -150,7 +150,7 @@ class TestOperationServiceV2:
         assert OptedInOperationDetail.objects.count() == 1
         detail_id = operation.opted_in_operation.id
 
-        OperationServiceV2.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
+        OperationService.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
         operation.refresh_from_db()
 
         assert operation.opt_in is False
@@ -179,7 +179,7 @@ class TestOperationServiceV2:
         # operation for a different user_operator
         baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.PENDING)
 
-        result = OperationServiceV2.list_current_users_unregistered_operations(approved_user_operator.user.user_guid)
+        result = OperationService.list_current_users_unregistered_operations(approved_user_operator.user.user_guid)
         assert Operation.objects.count() == 3
         assert len(result) == 1
         assert result[0] == users_unregistered_operation
@@ -191,7 +191,7 @@ class TestOperationServiceV2:
         users_operation.operator = approved_user_operator.operator
         users_operation.save()
 
-        updated_operation = OperationServiceV2.update_status(
+        updated_operation = OperationService.update_status(
             approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
         )
         updated_operation.refresh_from_db()
@@ -214,7 +214,7 @@ class TestOperationServiceV2:
         users_operation.contacts.set([])
 
         with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
-            OperationServiceV2.update_status(
+            OperationService.update_status(
                 approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
             )
 
@@ -232,7 +232,7 @@ class TestOperationServiceV2:
         )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationServiceV2.update_status(
+            OperationService.update_status(
                 approved_user_operator.user.user_guid, operation.id, Operation.Statuses.REGISTERED
             )
 
@@ -252,7 +252,7 @@ class TestOperationServiceV2:
             postal_code='H0H0H0',
         )
 
-        OperationServiceV2.create_operation_representative(approved_user_operator.user.user_guid, operation.id, payload)
+        OperationService.create_operation_representative(approved_user_operator.user.user_guid, operation.id, payload)
         operation.refresh_from_db()
 
         assert approved_user_operator.operator.contacts.count() == 1
@@ -289,7 +289,7 @@ class TestOperationServiceV2:
         )
 
         with pytest.raises(Exception):
-            OperationServiceV2.create_operation_representative(
+            OperationService.create_operation_representative(
                 approved_user_operator.user.user_guid, operation.id, bad_payload
             )
         # good payload, using the same first_name, last_name and email when existing_contact_id is provided
@@ -306,7 +306,7 @@ class TestOperationServiceV2:
             postal_code='H0H0H0',
         )
 
-        OperationServiceV2.create_operation_representative(
+        OperationService.create_operation_representative(
             approved_user_operator.user.user_guid, operation.id, good_payload
         )
         operation.refresh_from_db()
@@ -326,7 +326,7 @@ class TestOperationServiceV2:
         )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationServiceV2.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
+            OperationService.update_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id, {})
 
     @staticmethod
     def test_create_or_replace_new_entrant_application():
@@ -340,7 +340,7 @@ class TestOperationServiceV2:
             new_entrant_application=MOCK_DATA_URL,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
         )
-        operation = OperationServiceV2.create_or_replace_new_entrant_application(
+        operation = OperationService.create_or_replace_new_entrant_application(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )
         operation.refresh_from_db()
@@ -360,7 +360,7 @@ class TestRegisterOperationInformation:
             type=Operation.Types.EIO,
         )
         # check operation
-        operation = OperationServiceV2.register_operation_information(
+        operation = OperationService.register_operation_information(
             approved_user_operator.user.user_guid, None, payload
         )
         operation.refresh_from_db()
@@ -390,7 +390,7 @@ class TestRegisterOperationInformation:
             type=Operation.Types.EIO,
         )
         # check operation updates
-        operation = OperationServiceV2.register_operation_information(
+        operation = OperationService.register_operation_information(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )
         operation.refresh_from_db()
@@ -417,7 +417,7 @@ class TestRegisterOperationInformation:
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
         )
-        operation = OperationServiceV2.register_operation_information(
+        operation = OperationService.register_operation_information(
             approved_user_operator.user.user_guid, None, payload
         )
         operation.refresh_from_db()
@@ -449,7 +449,7 @@ class TestRegisterOperationInformation:
             boundary_map=MOCK_DATA_URL,
         )
         # check operation updates
-        operation = OperationServiceV2.register_operation_information(
+        operation = OperationService.register_operation_information(
             approved_user_operator.user.user_guid, users_operation.id, payload
         )
         operation.refresh_from_db()
@@ -475,7 +475,7 @@ class TestRegisterOperationInformation:
         )
         users_operation.documents.add(new_entrant_application)
 
-        assert OperationServiceV2.is_operation_new_entrant_information_complete(users_operation)
+        assert OperationService.is_operation_new_entrant_information_complete(users_operation)
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_no_date():
@@ -490,7 +490,7 @@ class TestRegisterOperationInformation:
         )
         users_operation.documents.add(new_entrant_application)
 
-        assert not OperationServiceV2.is_operation_new_entrant_information_complete(users_operation)
+        assert not OperationService.is_operation_new_entrant_information_complete(users_operation)
 
     @staticmethod
     def test_is_operation_new_entrant_information_complete_no_application():
@@ -502,7 +502,7 @@ class TestRegisterOperationInformation:
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_BEFORE_MARCH_31_2024,
         )
 
-        assert not OperationServiceV2.is_operation_new_entrant_information_complete(users_operation)
+        assert not OperationService.is_operation_new_entrant_information_complete(users_operation)
 
 
 class TestOperationServiceV2CreateOperation:
@@ -521,7 +521,7 @@ class TestOperationServiceV2CreateOperation:
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
         )
-        operation = OperationServiceV2._create_operation_v2(approved_user_operator.user.user_guid, payload)
+        operation = OperationService._create_operation(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.regulated_products.count() == 2
@@ -574,7 +574,7 @@ class TestOperationServiceV2CreateOperation:
                 mo_postal_code='H0H0H0',
             ),
         ]
-        operation = OperationServiceV2._create_operation_v2(approved_user_operator.user.user_guid, payload)
+        operation = OperationService._create_operation(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert MultipleOperator.objects.count() == 2
@@ -594,7 +594,7 @@ class TestOperationServiceV2CreateOperation:
             process_flow_diagram=MOCK_DATA_URL,
             boundary_map=MOCK_DATA_URL,
         )
-        operation = OperationServiceV2._create_operation_v2(approved_user_operator.user.user_guid, payload)
+        operation = OperationService._create_operation(approved_user_operator.user.user_guid, payload)
 
         operation.refresh_from_db()
         assert operation.opted_in_operation is not None
@@ -609,7 +609,7 @@ class TestOperationServiceV2CreateOperation:
             type=Operation.Types.EIO,
         )
         # check operation
-        operation = OperationServiceV2._create_operation_v2(approved_user_operator.user.user_guid, payload)
+        operation = OperationService._create_operation(approved_user_operator.user.user_guid, payload)
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
@@ -648,7 +648,7 @@ class TestOperationServiceV2UpdateOperation:
             boundary_map=MOCK_DATA_URL,
         )
         with pytest.raises(Exception):
-            OperationServiceV2.update_operation(user.user_guid, payload)
+            OperationService.update_operation(user.user_guid, payload)
 
     @staticmethod
     def test_update_operation():
@@ -671,7 +671,7 @@ class TestOperationServiceV2UpdateOperation:
             boundary_map=MOCK_DATA_URL,
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid, payload, existing_operation.id
         )
         operation.refresh_from_db()
@@ -701,7 +701,7 @@ class TestOperationServiceV2UpdateOperation:
             boundary_map=MOCK_DATA_URL,
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid, payload, existing_operation.id
         )
         operation.refresh_from_db()
@@ -735,7 +735,7 @@ class TestOperationServiceV2UpdateOperation:
             new_entrant_application=MOCK_DATA_URL,
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid, payload, existing_operation.id
         )
         operation.refresh_from_db()
@@ -793,7 +793,7 @@ class TestOperationServiceV2UpdateOperation:
                 mo_postal_code='H0H0H0',
             ),
         ]
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid,
             payload,
             existing_operation.id,
@@ -834,7 +834,7 @@ class TestOperationServiceV2UpdateOperation:
             operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
         )
 
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid,
             payload,
             existing_operation.id,
@@ -872,7 +872,7 @@ class TestOperationServiceV2UpdateOperation:
             operation_representatives=[contact.id for contact in contacts],
         )
 
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid,
             payload,
             existing_operation.id,
@@ -907,7 +907,7 @@ class TestOperationServiceV2UpdateOperation:
             operation_representatives=[contact.id for contact in contacts],
         )
 
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid,
             payload,
             existing_operation.id,
@@ -949,7 +949,7 @@ class TestOperationServiceV2UpdateOperation:
             operation_representatives=[contact.id for contact in contacts],
         )
 
-        operation = OperationServiceV2.update_operation(
+        operation = OperationService.update_operation(
             approved_user_operator.user.user_guid,
             payload,
             existing_operation.id,
@@ -984,7 +984,7 @@ class TestCreateOrUpdateEio:
             operation_id=operation.id,
         )
 
-        OperationServiceV2._create_or_update_eio(user_guid, operation, payload)
+        OperationService._create_or_update_eio(user_guid, operation, payload)
         mock_create_facilities_with_designated_operations.assert_called_with(user_guid, [payload])
 
     @staticmethod
@@ -1015,7 +1015,7 @@ class TestCreateOrUpdateEio:
             name=name,
             type=Facility.Types.ELECTRICITY_IMPORT,
         )
-        OperationServiceV2._create_or_update_eio(approved_user_operator.user.user_guid, operation, payload)
+        OperationService._create_or_update_eio(approved_user_operator.user.user_guid, operation, payload)
 
         mock_update_facility.assert_called_once_with(approved_user_operator.user.user_guid, facility.id, payload)
 
@@ -1084,7 +1084,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.registration_purpose = None
 
         with pytest.raises(Exception, match="Operation must have a registration purpose."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_no_operation_rep():
@@ -1092,7 +1092,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.contacts.all().delete()
 
         with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_no_facilities():
@@ -1100,7 +1100,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         FacilityDesignatedOperationTimeline.objects.filter(operation=operation).delete()
 
         with pytest.raises(Exception, match="Operation must have at least one facility."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_no_activities():
@@ -1108,7 +1108,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.activities.all().delete()
 
         with pytest.raises(Exception, match="Operation must have at least one reporting activity."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_no_documents():
@@ -1116,7 +1116,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.documents.all().delete()
 
         with pytest.raises(Exception, match="Operation must have a process flow diagram and a boundary map."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_one_of_the_documents_is_missing():
@@ -1124,12 +1124,12 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')).delete()
 
         with pytest.raises(Exception, match="Operation must have a process flow diagram and a boundary map."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_do_not_raise_exception_if_data_complete_new_entrant():
         operation = set_up_valid_mock_operation(Operation.Purposes.NEW_ENTRANT_OPERATION)
-        OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+        OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_no_new_entrant_info():
@@ -1141,7 +1141,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
             Exception,
             match="Operation must have a signed statutory declaration and date of first shipment if it is a new entrant.",
         ):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_no_opt_in_info():
@@ -1151,7 +1151,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.save()
 
         with pytest.raises(Exception, match="Operation must have completed opt-in information if it is opted in."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_raises_exception_if_incomplete_opt_in_info():
@@ -1161,13 +1161,13 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
         operation.save()
 
         with pytest.raises(Exception, match="Operation must have completed opt-in information if it is opted in."):
-            OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
     def test_do_not_raise_exception_if_data_complete_opt_in():
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
         # test will pass if no exception raised
-        OperationServiceV2.raise_exception_if_operation_missing_registration_information(operation)
+        OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
 
 class TestHandleChangeOfRegistrationPurpose:
@@ -1198,7 +1198,7 @@ class TestHandleChangeOfRegistrationPurpose:
             type=Operation.Types.SFO,
             activities=[1, 2, 3],
         )
-        returned_payload = OperationServiceV2.handle_change_of_registration_purpose(
+        returned_payload = OperationService.handle_change_of_registration_purpose(
             approved_user_operator.user.user_guid, operation, submitted_payload
         )
 
@@ -1238,7 +1238,7 @@ class TestHandleChangeOfRegistrationPurpose:
             type=Operation.Types.SFO,
             activities=[1, 2, 3],
         )
-        returned_payload = OperationServiceV2.handle_change_of_registration_purpose(
+        returned_payload = OperationService.handle_change_of_registration_purpose(
             approved_user_operator.user.user_guid, operation, submitted_payload
         )
 
@@ -1271,7 +1271,7 @@ class TestHandleChangeOfRegistrationPurpose:
             boundary_map=MOCK_DATA_URL,
             process_flow_diagram=MOCK_DATA_URL,
         )
-        returned_payload = OperationServiceV2.handle_change_of_registration_purpose(
+        returned_payload = OperationService.handle_change_of_registration_purpose(
             approved_user_operator.user.user_guid, operation, submitted_payload
         )
 
@@ -1304,7 +1304,7 @@ class TestHandleChangeOfRegistrationPurpose:
             activities=activity_pks,
             naics_code_id=operation.naics_code_id,
         )
-        returned_payload = OperationServiceV2.handle_change_of_registration_purpose(
+        returned_payload = OperationService.handle_change_of_registration_purpose(
             approved_user_operator.user.user_guid, operation, submitted_payload
         )
 
@@ -1324,7 +1324,7 @@ class TestGenerateBoroId:
             status=Operation.Statuses.REGISTERED,
         )
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
-        OperationServiceV2.generate_boro_id(cas_director.user_guid, operation.id)
+        OperationService.generate_boro_id(cas_director.user_guid, operation.id)
         operation.refresh_from_db()
         assert operation.bc_obps_regulated_operation is not None
         assert operation.bc_obps_regulated_operation.issued_by == cas_director
@@ -1341,7 +1341,7 @@ class TestGenerateBoroId:
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
 
         with pytest.raises(Exception, match="Non-regulated operations cannot be issued BORO ID."):
-            OperationServiceV2.generate_boro_id(cas_director.user_guid, operation.id)
+            OperationService.generate_boro_id(cas_director.user_guid, operation.id)
 
     @staticmethod
     def test_raises_exception_if_operation_is_not_registered():
@@ -1355,7 +1355,7 @@ class TestGenerateBoroId:
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
 
         with pytest.raises(Exception, match="Operations must be registered before they can be issued a BORO ID."):
-            OperationServiceV2.generate_boro_id(cas_director.user_guid, operation.id)
+            OperationService.generate_boro_id(cas_director.user_guid, operation.id)
 
     @staticmethod
     def test_raises_exception_if_user_unauthorized():
@@ -1366,7 +1366,7 @@ class TestGenerateBoroId:
             status=Operation.Statuses.REGISTERED,
         )
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationServiceV2.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
+            OperationService.generate_boro_id(approved_user_operator.user.user_guid, operation.id)
 
 
 class TestRemoveOperationRepresentative:
@@ -1381,7 +1381,7 @@ class TestRemoveOperationRepresentative:
         operation.contacts.add(contact1, contact2)
         operation.save()
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationServiceV2.remove_operation_representative(user.user_guid, operation.id, {id: contact1.id})
+            OperationService.remove_operation_representative(user.user_guid, operation.id, {id: contact1.id})
 
     @staticmethod
     def test_removes_operation_representative():
@@ -1392,7 +1392,7 @@ class TestRemoveOperationRepresentative:
         operation.contacts.add(contact1, contact2)
         operation.save()
 
-        OperationServiceV2.remove_operation_representative(
+        OperationService.remove_operation_representative(
             approved_user_operator.user.user_guid, operation.id, OperationRepresentativeRemove(id=contact2.id)
         )
         operation.refresh_from_db()
@@ -1412,7 +1412,7 @@ class TestUpdateOperationsOperator:
         operation = MagicMock()
         operator_id = uuid4()
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationServiceV2.update_operator(cas_admin.user_guid, operation, operator_id)
+            OperationService.update_operator(cas_admin.user_guid, operation, operator_id)
 
     @staticmethod
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
@@ -1421,7 +1421,7 @@ class TestUpdateOperationsOperator:
         mock_get_by_guid.return_value = cas_analyst
         operation = baker.make_recipe('registration.tests.utils.operation')
         operator = baker.make_recipe('registration.tests.utils.operator')
-        OperationServiceV2.update_operator(cas_analyst.user_guid, operation, operator.id)
+        OperationService.update_operator(cas_analyst.user_guid, operation, operator.id)
         assert operation.operator == operator
 
 
@@ -1430,7 +1430,7 @@ class TestListOperationTimeline:
     def test_raise_exception_if_user_unapproved():
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationServiceV2.list_operations_timeline(
+            OperationService.list_operations_timeline(
                 user.user_guid,
                 sort_field="created_at",
                 sort_order="desc",
@@ -1456,7 +1456,7 @@ class TestListOperationTimeline:
             status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
         )
 
-        timeline = OperationServiceV2.list_operations_timeline(
+        timeline = OperationService.list_operations_timeline(
             approved_user_operator.user.user_guid,
             sort_field="created_at",
             sort_order="desc",
@@ -1496,7 +1496,7 @@ class TestListOperationTimeline:
             ),
         )
 
-        timeline = OperationServiceV2.list_operations_timeline(
+        timeline = OperationService.list_operations_timeline(
             approved_user_operator.user.user_guid, sort_field="created_at", sort_order="desc", filters=filters
         )
         assert timeline.count() == 2
