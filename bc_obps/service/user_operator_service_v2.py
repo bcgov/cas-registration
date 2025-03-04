@@ -4,7 +4,7 @@ from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.schema import ContactIn, OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from registration.utils import update_model_instance
-from service.contact_service_v2 import ContactServiceV2
+from service.contact_service import ContactService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
@@ -152,7 +152,7 @@ class UserOperatorServiceV2:
                     position_title=user_operator.user.position_title,
                 )
                 # Create a contact record for the user_operator and add it to the operator's contacts
-                ContactServiceV2.create_contact(user_operator.user_id, contact_payload)
+                ContactService.create_contact(user_operator.user_id, contact_payload)
 
             access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
 

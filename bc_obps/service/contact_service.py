@@ -15,9 +15,9 @@ from service.data_access_service.address_service import AddressDataAccessService
 from service.operation_service_v2 import OperationServiceV2
 
 
-class ContactServiceV2:
+class ContactService:
     @classmethod
-    def list_contacts_v2(
+    def list_contacts(
         cls,
         user_guid: UUID,
         sort_field: Optional[str],
@@ -92,7 +92,7 @@ class ContactServiceV2:
         return contact
 
     @classmethod
-    def get_with_places_assigned_v2(cls, contact_id: int) -> Optional[ContactWithPlacesAssigned]:
+    def get_with_places_assigned(cls, contact_id: int) -> Optional[ContactWithPlacesAssigned]:
         contact = ContactDataAccessService.get_by_id(contact_id)
         places_assigned = []
         if contact:

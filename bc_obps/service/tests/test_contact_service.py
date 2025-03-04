@@ -1,6 +1,6 @@
 import pytest
 from registration.schema import ContactFilterSchemaV2
-from service.contact_service_v2 import ContactServiceV2, PlacesAssigned
+from service.contact_service import ContactService, PlacesAssigned
 from model_bakery import baker
 from registration.models.business_role import BusinessRole
 
@@ -20,10 +20,10 @@ class TestListContactService:
         )  # one operator has two contacts
 
         assert (
-            ContactServiceV2.list_contacts_v2(
+                ContactService.list_contacts(
                 user_guid=user.user_guid, sort_field="created_at", sort_order="desc", filters=ContactFilterSchemaV2()
             ).count()
-            == 3
+                == 3
         )
 
 
@@ -41,7 +41,7 @@ class TestContactService:
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         operation.contacts.set([contact])
 
-        result = ContactServiceV2.get_with_places_assigned_v2(contact.id)
+        result = ContactService.get_with_places_assigned(contact.id)
         assert result.places_assigned == [
             PlacesAssigned(
                 role_name=contact.business_role.role_name, operation_name=operation.name, operation_id=operation.id
@@ -58,7 +58,7 @@ class TestContactService:
         # add contact to operator (they have to be associated with the operator or will throw unauthorized)
         approved_user_operator.operator.contacts.set([contact])
 
-        result = ContactServiceV2.get_with_places_assigned_v2(contact.id)
+        result = ContactService.get_with_places_assigned(contact.id)
         assert not hasattr(result, 'places_assigned')
 
     @staticmethod
@@ -69,7 +69,7 @@ class TestContactService:
             Exception,
             match=f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
         ):
-            ContactServiceV2.raise_exception_if_contact_missing_address_information(contact.id)
+            ContactService.raise_exception_if_contact_missing_address_information(contact.id)
 
     @staticmethod
     def test_raises_exception_if_operation_rep_missing_required_fields():
@@ -94,4 +94,4 @@ class TestContactService:
                 Exception,
                 match=f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.',
             ):
-                ContactServiceV2.raise_exception_if_contact_missing_address_information(contact.id)
+                ContactService.raise_exception_if_contact_missing_address_information(contact.id)
