@@ -3,7 +3,7 @@ from registration.models.partner_operator import PartnerOperator
 from registration.models.parent_operator import ParentOperator
 from registration.models.operator import Operator
 from registration.schema import OperatorIn, ParentOperatorIn, PartnerOperatorIn
-from service.operator_service_v2 import OperatorServiceV2
+from service.operator_service import OperatorService
 import pytest
 from registration.models.app_role import AppRole
 from registration.models.user import User
@@ -39,7 +39,7 @@ class TestUpdateOperatorV2:
             province=operator.mailing_address.province,
             postal_code=operator.mailing_address.postal_code,
         )
-        OperatorServiceV2.update_operator(user.user_guid, payload)
+        OperatorService.update_operator(user.user_guid, payload)
         assert Operator.objects.count() == 1
         updated_operator = Operator.objects.first()
         assert updated_operator.legal_name == 'Legal Name Example'
@@ -73,7 +73,7 @@ class TestUpdateOperatorV2:
             province='AB',
             postal_code='H0H0H0',
         )
-        OperatorServiceV2.update_operator(user.user_guid, payload)
+        OperatorService.update_operator(user.user_guid, payload)
         assert Operator.objects.count() == 1
         updated_operator = Operator.objects.first()
         assert updated_operator.legal_name == 'Legal Name Example'
@@ -126,7 +126,7 @@ class TestUpdateOperatorV2:
                 partner_bc_corporate_registry_number='ghj1234567',
             ),
         ]
-        OperatorServiceV2.update_operator(user.user_guid, payload)
+        OperatorService.update_operator(user.user_guid, payload)
         assert Operator.objects.count() == 1
         updated_operator = Operator.objects.get(legal_name='Legal Name Example')
         assert updated_operator.partner_operators.count() == 2
@@ -161,7 +161,7 @@ class TestUpdateOperatorV2:
             mailing_address=operator.mailing_address.id,
         )
 
-        OperatorServiceV2.update_operator(user.user_guid, payload)
+        OperatorService.update_operator(user.user_guid, payload)
         assert Operator.objects.count() == 1
         updated_operator = Operator.objects.get(legal_name='Legal Name Example')
         assert updated_operator.partner_operators.count() == 0
@@ -218,7 +218,7 @@ class TestUpdateOperatorV2:
                 po_postal_code='H0H0H0',
             ),
         ]
-        OperatorServiceV2.update_operator(user.user_guid, payload)
+        OperatorService.update_operator(user.user_guid, payload)
         assert Operator.objects.count() == 1
         updated_operator = Operator.objects.get(legal_name='Legal Name Example')
         assert updated_operator.mailing_address.street_address == 'balloons'
@@ -270,7 +270,7 @@ class TestUpdateOperatorV2:
                 foreign_tax_id_number='5',
             ),
         ]
-        OperatorServiceV2.update_operator(user.user_guid, payload)
+        OperatorService.update_operator(user.user_guid, payload)
         # the parent operator address record should have been archived, so only the operator address is left
         assert Address.objects.count() == 1
 
@@ -305,7 +305,7 @@ class TestUpdateOperatorV2:
             postal_code='H0H0H0',
         )
 
-        OperatorServiceV2.update_operator(user.user_guid, payload)
+        OperatorService.update_operator(user.user_guid, payload)
         assert Operator.objects.count() == 1
         updated_operator = Operator.objects.get(legal_name='Legal Name Example')
         assert updated_operator.parent_operators.count() == 0
@@ -315,7 +315,7 @@ class TestOperatorHasRequiredFields:
     @staticmethod
     def test_operator_has_all_required_fields():
         operator = baker.make_recipe('registration.tests.utils.operator')
-        assert OperatorServiceV2.has_required_fields(operator) is True
+        assert OperatorService.has_required_fields(operator) is True
 
     @staticmethod
     def test_operator_does_not_have_all_required_fields():
@@ -323,4 +323,4 @@ class TestOperatorHasRequiredFields:
         operator = baker.make_recipe(
             'registration.tests.utils.operator', legal_name=' '
         )  # Set legal_name to an empty string
-        assert OperatorServiceV2.has_required_fields(operator) is False
+        assert OperatorService.has_required_fields(operator) is False

@@ -1,6 +1,6 @@
 from common.permissions import authorize
 from registration.models.operator import Operator
-from service.operator_service_v2 import OperatorServiceV2
+from service.operator_service import OperatorService
 from registration.schema import OperatorIn, OperatorOut, Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple
@@ -39,4 +39,4 @@ def update_operator_and_user_operator(
     request: HttpRequest,
     payload: OperatorIn,
 ) -> Tuple[Literal[200], Operator]:
-    return 200, OperatorServiceV2.update_operator(get_current_user_guid(request), payload)
+    return 200, OperatorService.update_operator(get_current_user_guid(request), payload)
