@@ -27,6 +27,9 @@ export default function OperationReviewForm({
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [errors, setErrors] = useState<string[]>();
+  const [apiError, setApiError] = useState<string | null>(
+    '"Failed to change the report type. Please try again."',
+  );
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
@@ -75,8 +78,11 @@ export default function OperationReviewForm({
 
     if (response && !response.error) {
       router.push(`/reports/${response}/review-operation-information`);
+    } else {
+      setApiError("Failed to change the report type. Please try again.");
     }
   };
+
   const cancelReportTypeChange = () => {
     setFormDataState(formData);
     setPendingChangeReportType(undefined);
@@ -91,9 +97,15 @@ export default function OperationReviewForm({
         onConfirm={confirmReportTypeChange}
         confirmText="Change report type"
       >
-        Are you sure you want to change your report type to{" "}
-        <strong>{pendingChangeReportType}</strong>? If you proceed, all of the
-        form data you have entered will be lost.
+        {apiError ? (
+          <div style={{ color: "red" }}>{apiError}</div>
+        ) : (
+          <>
+            Are you sure you want to change your report type to{" "}
+            <strong>{pendingChangeReportType}</strong>? If you proceed, all of
+            the form data you have entered will be lost.
+          </>
+        )}
       </SimpleModal>
       <MultiStepFormWithTaskList
         initialStep={0}
