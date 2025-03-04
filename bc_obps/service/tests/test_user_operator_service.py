@@ -59,7 +59,7 @@ class TestUserOperatorServiceV2:
         # make sure only irc user can access this
         industry_user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            UserOperatorService.list_user_operators_v2(
+            UserOperatorService.list_user_operators(
                 user_guid=industry_user.user_guid, filters=filters_1, sort_field="created_at", sort_order="asc"
             )
 
@@ -102,7 +102,7 @@ class TestUserOperatorServiceV2:
             operator__legal_name="",
         )
         cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
-        user_operators_with_admin_access_status = UserOperatorService.list_user_operators_v2(
+        user_operators_with_admin_access_status = UserOperatorService.list_user_operators(
             user_guid=cas_admin.user_guid, filters=filters_2, sort_field="created_at", sort_order="asc"
         )
         assert user_operators_with_admin_access_status.count() == 5
@@ -112,14 +112,14 @@ class TestUserOperatorServiceV2:
         filters_3 = filters_2.model_copy(
             update={"status": ""}
         )  # making a copy of filters_2 and updating status to empty string
-        user_operators_sorted_by_user_friendly_id = UserOperatorService.list_user_operators_v2(
+        user_operators_sorted_by_user_friendly_id = UserOperatorService.list_user_operators(
             user_guid=cas_admin.user_guid, filters=filters_3, sort_field="user_friendly_id", sort_order="asc"
         )
         assert (
             user_operators_sorted_by_user_friendly_id.first().user_friendly_id
             < user_operators_sorted_by_user_friendly_id.last().user_friendly_id
         )
-        user_operators_sorted_by_status = UserOperatorService.list_user_operators_v2(
+        user_operators_sorted_by_status = UserOperatorService.list_user_operators(
             user_guid=cas_admin.user_guid, filters=filters_3, sort_field="status", sort_order="asc"
         )
         assert user_operators_sorted_by_status.first().status == UserOperator.Statuses.APPROVED

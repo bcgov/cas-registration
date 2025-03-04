@@ -110,7 +110,7 @@ class UserOperatorService:
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
     @classmethod
-    def list_user_operators_v2(
+    def list_user_operators(
         cls,
         user_guid: UUID,
         sort_field: Optional[str],
