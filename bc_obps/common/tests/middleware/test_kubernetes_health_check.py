@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 from django.test import TestCase, RequestFactory
-from registration.middleware.kubernetes_health_check import KubernetesHealthCheckMiddleware
+from common.middleware.kubernetes_health_check import KubernetesHealthCheckMiddleware
 
 
 class TestKubernetesHealthCheckMiddleware(TestCase):
