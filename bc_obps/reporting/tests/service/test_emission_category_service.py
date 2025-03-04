@@ -5,7 +5,7 @@ from reporting.models.report_source_type import ReportSourceType
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
 from decimal import Decimal
-from model_bakery.baker import make
+from model_bakery.baker import make, make_recipe
 
 
 class TestEmissionCategoryService(TestCase):
@@ -382,3 +382,129 @@ class TestEmissionCategoryService(TestCase):
             'attributable_for_threshold': Decimal('300.4151'),
             'reporting_only': Decimal('154.4151'),
         }
+
+    def test_industrial_process_excluded_biomass_overlap_by_facility(self):
+        test_infrastructure = TestInfrastructure.build()
+        act_st_1 = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeOne",
+        )
+        act_st_2 = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeTwo",
+        )
+        report_activity = test_infrastructure.make_report_activity()
+        report_source_type_one = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st_1,
+            source_type=act_st_1.source_type,
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+        report_source_type_two = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st_2,
+            source_type=act_st_2.source_type,
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+
+        report_emission = make(
+            ReportEmission,
+            report_source_type=report_source_type_one,
+            report_version=test_infrastructure.report_version,
+            json_data={"equivalentEmission": 10},
+        )
+
+        report_emission_2 = make(
+            ReportEmission,
+            report_source_type=report_source_type_one,
+            report_version=test_infrastructure.report_version,
+            json_data={"equivalentEmission": 5},
+        )
+
+        report_emission_3 = make(
+            ReportEmission,
+            report_source_type=report_source_type_two,
+            report_version=test_infrastructure.report_version,
+            json_data={"equivalentEmission": 25},
+        )
+
+        report_emission_4 = make(
+            ReportEmission,
+            report_source_type=report_source_type_two,
+            report_version=test_infrastructure.report_version,
+            json_data={"equivalentEmission": 50},
+        )
+
+        # id 1 = Flaring - should be ignored
+        report_emission.emission_categories.set([1])
+        # emissions 2 & 3 should be counted as they have the correct overlapping emission categories
+        report_emission_2.emission_categories.set([3, 11])
+        report_emission_3.emission_categories.set([3, 10])
+        # id 3 = Industrial Process, should be ignored as it does not have an overlap with excluded biomass categories
+        report_emission_4.emission_categories.set([3, 12])
+
+        overlapping_return_value = EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_facility(
+            test_infrastructure.facility_report.id
+        )
+        assert overlapping_return_value == Decimal('30.0000')
+
+        report_emission_2.emission_categories.set([3])
+        report_emission_3.emission_categories.set([3])
+        overlapping_return_value = EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_facility(
+            test_infrastructure.facility_report.id
+        )
+        assert overlapping_return_value == Decimal('0.0000')
+
+    # Same test as above, except the values are split across different facility reports
+    def test_industrial_process_excluded_biomass_overlap_by_report_version(self):
+        report_source_type_one = make_recipe(
+            "reporting.tests.utils.report_source_type",
+        )
+        report_source_type_two = make_recipe(
+            "reporting.tests.utils.report_source_type", report_version=report_source_type_one.report_version
+        )
+
+        report_emission = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_source_type=report_source_type_one,
+            report_version=report_source_type_one.report_version,
+            json_data={"equivalentEmission": 10},
+        )
+
+        report_emission_2 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_source_type=report_source_type_one,
+            report_version=report_source_type_one.report_version,
+            json_data={"equivalentEmission": 5},
+        )
+
+        report_emission_3 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_source_type=report_source_type_two,
+            report_version=report_source_type_two.report_version,
+            json_data={"equivalentEmission": 25},
+        )
+
+        report_emission_4 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_source_type=report_source_type_two,
+            report_version=report_source_type_two.report_version,
+            json_data={"equivalentEmission": 50},
+        )
+
+        # id 1 = Flaring - should be ignored
+        report_emission.emission_categories.set([1])
+        # emissions 2 & 3 should be counted as they have the correct overlapping emission categories
+        report_emission_2.emission_categories.set([3, 11])
+        report_emission_3.emission_categories.set([3, 10])
+        # id 3 = Industrial Process, should be ignored as it does not have an overlap with excluded biomass categories
+        report_emission_4.emission_categories.set([3, 12])
+
+        overlapping_return_value = (
+            EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_report_version(
+                report_source_type_one.report_version_id
+            )
+        )
+        assert overlapping_return_value == Decimal('30.0000')
