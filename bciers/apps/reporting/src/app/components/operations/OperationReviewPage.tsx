@@ -37,8 +37,6 @@ export default async function OperationReviewPage({
     POTENTIAL_REPORTING_OPERATION,
   ].includes(registrationPurposeString);
 
-  console.log("showRegulatedProducts", showRegulatedProducts);
-
   return (
     <OperationReviewForm
       formData={transformedOperation}

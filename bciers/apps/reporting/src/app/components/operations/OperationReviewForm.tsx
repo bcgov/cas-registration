@@ -43,7 +43,7 @@ interface Props {
     id: number;
     representative_name: string;
   }[];
-  showRegulatedProducts?: boolean;
+  showRegulatedProducts: boolean;
 }
 
 export default function OperationReviewForm({
