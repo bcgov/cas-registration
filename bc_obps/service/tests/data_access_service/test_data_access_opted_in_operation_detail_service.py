@@ -31,7 +31,6 @@ class TestDataAccessOptedInOperationService:
             meets_notification_to_director_on_criteria_change=False,
         )
         opted_in_operation_detail = OptedInOperationDataAccessService.update_opted_in_operation_detail(
-            approved_user_operator.user.user_guid,
             users_operation.opted_in_operation.id,
             opted_in_operation_detail_payload,
         )

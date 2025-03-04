@@ -10,7 +10,6 @@ class OptedInOperationDataAccessService:
     @classmethod
     def update_opted_in_operation_detail(
         cls,
-        user_guid: UUID,
         opted_in_operation_detail_id: int,
         opted_in_operation_detail_data: OptedInOperationDetailIn,
     ) -> OptedInOperationDetail:

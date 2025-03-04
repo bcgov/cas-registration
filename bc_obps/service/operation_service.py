@@ -110,7 +110,7 @@ class OperationService:
         if not operation.opted_in_operation:
             raise Exception("Operation does not have an opted-in operation.")
         return OptedInOperationDataAccessService.update_opted_in_operation_detail(
-            user_guid, operation.opted_in_operation.id, payload
+            operation.opted_in_operation.id, payload
         )
 
     @classmethod
