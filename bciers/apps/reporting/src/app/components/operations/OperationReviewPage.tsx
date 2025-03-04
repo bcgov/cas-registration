@@ -37,6 +37,7 @@ export default async function OperationReviewPage({
       reportOperation.report_operation_representatives
         .filter((rep: { selected_for_report: any }) => rep.selected_for_report)
         .map((rep: { id: any }) => rep.id) || [],
+    operation_report_type: reportType.report_type,
   };
 
   const allRepresentatives = reportOperation.report_operation_representatives;

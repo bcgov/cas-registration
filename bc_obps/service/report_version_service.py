@@ -9,6 +9,7 @@ from reporting.models import ReportOperationRepresentative
 
 class ReportVersionService:
     @staticmethod
+    @transaction.atomic
     def create_report_version(
         report: Report,
         report_type: str = "Annual Report",

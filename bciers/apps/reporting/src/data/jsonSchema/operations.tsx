@@ -21,11 +21,7 @@ export const buildOperationReviewSchema = (
   ({
     type: "object",
     title: "Review Operation Information",
-    required: [
-      "operation_representative_name",
-      "operation_bcghgid",
-      "operation_name",
-    ],
+    required: ["operation_representative_name", "operation_name"],
     properties: {
       purpose_note: {
         type: "object",
@@ -36,7 +32,6 @@ export const buildOperationReviewSchema = (
         title:
           "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
         enum: ["Annual Report", "Simple Report"],
-        default: reportType.report_type,
         description:
           reportType.report_type === "Simple Report"
             ? reportTypeHelperText
