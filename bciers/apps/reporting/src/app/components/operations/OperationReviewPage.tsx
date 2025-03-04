@@ -31,14 +31,6 @@ export default async function OperationReviewPage({
   const facilityReport = await getFacilityReport(version_id);
 
   const registrationPurposeString = registrationPurpose?.registration_purpose;
-  const transformedOperation = {
-    ...reportOperation.report_operation,
-    operation_representative_name:
-      reportOperation.report_operation_representatives
-        .filter((rep: { selected_for_report: any }) => rep.selected_for_report)
-        .map((rep: { id: any }) => rep.id) || [],
-    operation_report_type: reportType.report_type,
-  };
 
   const allRepresentatives = reportOperation.report_operation_representatives;
   const showRegulatedProducts = ![
@@ -57,7 +49,7 @@ export default async function OperationReviewPage({
     "MMM DD YYYY",
   );
   const schema = buildOperationReviewSchema(
-    transformedOperation,
+    reportOperation,
     registrationPurposeString,
     reportingWindowEnd,
     allActivities,
@@ -69,7 +61,7 @@ export default async function OperationReviewPage({
 
   return (
     <OperationReviewForm
-      formData={transformedOperation}
+      formData={reportOperation}
       version_id={version_id}
       schema={schema}
       taskListElements={taskListElements}

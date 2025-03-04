@@ -16,7 +16,7 @@ from reporting.schema.report_operation import ReportOperationIn, ReportOperation
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
-from ..models import ReportingYear, ReportVersion, ReportOperationRepresentative
+from ..models import ReportingYear, ReportVersion
 from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
 
 
@@ -41,13 +41,9 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=authorize("approved_authorized_roles"),
 )
-def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
-    report_operation_representative = ReportOperationRepresentative.objects.filter(report_version__id=version_id)
-    report_operation = ReportService.get_report_operation_by_version_id(version_id)
-    return 200, {
-        "report_operation": report_operation,
-        "report_operation_representatives": report_operation_representative,
-    }
+def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> dict:
+    report_service = ReportService.get_report_operation_by_version_id(version_id)
+    return report_service
 
 
 @router.post(

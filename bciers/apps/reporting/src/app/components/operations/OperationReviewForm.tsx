@@ -78,7 +78,7 @@ export default function OperationReviewForm({
     }
   };
   const cancelReportTypeChange = () => {
-    setFormDataState((prevState: any) => ({ ...prevState }));
+    setFormDataState(formData);
     setPendingChangeReportType(undefined);
   };
 
