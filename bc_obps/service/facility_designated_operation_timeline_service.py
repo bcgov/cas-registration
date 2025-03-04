@@ -52,7 +52,6 @@ class FacilityDesignatedOperationTimelineService:
     @classmethod
     def set_timeline_status_and_end_date(
         cls,
-        user_guid: UUID,
         timeline: FacilityDesignatedOperationTimeline,
         status: FacilityDesignatedOperationTimeline.Statuses,
         end_date: datetime,
