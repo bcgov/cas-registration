@@ -6,7 +6,7 @@ from model_bakery import baker
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import Operator, User, UserOperator, Contact
 from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
-from service.user_operator_service_v2 import UserOperatorServiceV2
+from service.user_operator_service import UserOperatorService
 
 pytestmark = pytest.mark.django_db
 
@@ -35,7 +35,7 @@ class TestUserOperatorServiceV2:
             bc_corporate_registry_number=payload.bc_corporate_registry_number,
             status=Operator.Statuses.APPROVED,
         )
-        UserOperatorServiceV2.save_operator(payload, operator_instance, user.user_guid)
+        UserOperatorService.save_operator(payload, operator_instance, user.user_guid)
         assert len(Operator.objects.all()) == 1
         assert Operator.objects.first().legal_name == payload.legal_name
         assert Operator.objects.first().trade_name == payload.trade_name
@@ -59,7 +59,7 @@ class TestUserOperatorServiceV2:
         # make sure only irc user can access this
         industry_user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            UserOperatorServiceV2.list_user_operators_v2(
+            UserOperatorService.list_user_operators_v2(
                 user_guid=industry_user.user_guid, filters=filters_1, sort_field="created_at", sort_order="asc"
             )
 
@@ -102,7 +102,7 @@ class TestUserOperatorServiceV2:
             operator__legal_name="",
         )
         cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
-        user_operators_with_admin_access_status = UserOperatorServiceV2.list_user_operators_v2(
+        user_operators_with_admin_access_status = UserOperatorService.list_user_operators_v2(
             user_guid=cas_admin.user_guid, filters=filters_2, sort_field="created_at", sort_order="asc"
         )
         assert user_operators_with_admin_access_status.count() == 5
@@ -112,14 +112,14 @@ class TestUserOperatorServiceV2:
         filters_3 = filters_2.model_copy(
             update={"status": ""}
         )  # making a copy of filters_2 and updating status to empty string
-        user_operators_sorted_by_user_friendly_id = UserOperatorServiceV2.list_user_operators_v2(
+        user_operators_sorted_by_user_friendly_id = UserOperatorService.list_user_operators_v2(
             user_guid=cas_admin.user_guid, filters=filters_3, sort_field="user_friendly_id", sort_order="asc"
         )
         assert (
             user_operators_sorted_by_user_friendly_id.first().user_friendly_id
             < user_operators_sorted_by_user_friendly_id.last().user_friendly_id
         )
-        user_operators_sorted_by_status = UserOperatorServiceV2.list_user_operators_v2(
+        user_operators_sorted_by_status = UserOperatorService.list_user_operators_v2(
             user_guid=cas_admin.user_guid, filters=filters_3, sort_field="status", sort_order="asc"
         )
         assert user_operators_sorted_by_status.first().status == UserOperator.Statuses.APPROVED
@@ -138,7 +138,7 @@ class TestUserOperatorServiceV2:
             province="AB",
             postal_code="H0H0H0",
         )
-        UserOperatorServiceV2.create_operator_and_user_operator(user_guid=user.user_guid, payload=payload)
+        UserOperatorService.create_operator_and_user_operator(user_guid=user.user_guid, payload=payload)
         assert UserOperator.objects.count() == 1
         assert Operator.objects.count() == 1
         assert Operator.objects.first().status == "Approved"
@@ -155,7 +155,7 @@ class TestUpdateStatusAndCreateContact:
         pending_user_operator = baker.make_recipe('registration.tests.utils.user_operator')
 
         with pytest.raises(Exception, match='Your user is not associated with this operator.'):
-            UserOperatorServiceV2.update_status_and_create_contact(
+            UserOperatorService.update_status_and_create_contact(
                 pending_user_operator.id,
                 UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.ADMIN),
                 approved_admin_user_operator.user.user_guid,
@@ -172,7 +172,7 @@ class TestUpdateStatusAndCreateContact:
 
         pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
 
-        UserOperatorServiceV2.update_status_and_create_contact(
+        UserOperatorService.update_status_and_create_contact(
             pending_user_operator.id,
             UserOperatorStatusUpdate(status='Declined', role=UserOperator.Roles.ADMIN),
             approved_admin_user_operator.user.user_guid,
@@ -195,7 +195,7 @@ class TestUpdateStatusAndCreateContact:
         )
 
         previously_approved_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
-        UserOperatorServiceV2.update_status_and_create_contact(
+        UserOperatorService.update_status_and_create_contact(
             previously_approved_user_operator.id,
             UserOperatorStatusUpdate(status='Pending', role=UserOperator.Roles.PENDING),
             approved_admin_user_operator.user.user_guid,
@@ -230,7 +230,7 @@ class TestUpdateStatusAndCreateContact:
 
         pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
 
-        UserOperatorServiceV2.update_status_and_create_contact(
+        UserOperatorService.update_status_and_create_contact(
             pending_user_operator.id,
             UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.ADMIN),
             approved_admin_user_operator.user.user_guid,

@@ -9,7 +9,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple, Optional, List
 from registration.constants import USER_OPERATOR_TAGS
 from registration.schema import OperatorIn, Message, UserOperatorOperatorOut, UserOperatorListOut, UserOperatorFilterSchema
-from service.user_operator_service_v2 import UserOperatorServiceV2
+from service.user_operator_service import UserOperatorService
 from ninja.pagination import paginate, PageNumberPagination
 
 ## GET
@@ -31,7 +31,7 @@ def list_user_operators(
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[UserOperator]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return UserOperatorServiceV2.list_user_operators_v2(get_current_user_guid(request), sort_field, sort_order, filters)
+    return UserOperatorService.list_user_operators_v2(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
 ## POST
@@ -47,7 +47,7 @@ def list_user_operators(
 def create_operator_and_user_operator(
     request: HttpRequest, payload: OperatorIn
 ) -> Tuple[Literal[201], UserOperatorOperatorOut]:
-    user_operator_data = UserOperatorServiceV2.create_operator_and_user_operator(
+    user_operator_data = UserOperatorService.create_operator_and_user_operator(
         get_current_user_guid(request), payload
     )
 

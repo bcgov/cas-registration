@@ -1,10 +1,11 @@
 from typing import Iterable, Union
 from uuid import UUID
 from registration.schema import OperationListOut
-from service.user_operator_service import UserOperatorService
 from registration.models import Operation, RegulatedProduct, User
 from django.db.models import QuerySet
 from ninja.types import DictStrAny
+
+from service.user_operator_service import UserOperatorService
 
 
 class OperationDataAccessService:

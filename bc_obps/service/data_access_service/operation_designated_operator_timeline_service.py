@@ -6,10 +6,10 @@ from registration.schema import OperationTimelineListOut
 from registration.enums.enums import OperationTypes
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from service.user_operator_service import UserOperatorService
 from registration.models import User
 from django.db.models import QuerySet
 from django.db.models import Subquery, OuterRef, UUIDField, CharField
+from service.user_operator_service import UserOperatorService
 
 
 class OperationDesignatedOperatorTimelineDataAccessService:

@@ -2,9 +2,7 @@ from datetime import datetime
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
-from registration.schema import (
-    FacilityDesignatedOperationTimelineFilterSchema,
-)
+from registration.schema import FacilityDesignatedOperationTimelineFilterSchema
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from registration.models import User

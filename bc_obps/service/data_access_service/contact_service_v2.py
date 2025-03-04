@@ -1,6 +1,4 @@
 from typing import Dict, Optional, Any
-from uuid import UUID
-
 from registration.models import BusinessRole, Contact
 from django.db.models import QuerySet
 from registration.models.user import User
