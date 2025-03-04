@@ -32,7 +32,7 @@ export default async function TransfersDataGridPage({
       <h2 className="text-bc-primary-blue">Transfers</h2>
       {isCasAnalyst && (
         <div className="text-right mb-4">
-          <Link href={`/transfers/transfer-entity`}>
+          <Link href={"/transfers/transfer-entity"}>
             {/* textTransform to remove uppercase text */}
             <Button variant="contained" sx={{ textTransform: "none" }}>
               Make a Transfer
