@@ -134,7 +134,7 @@ class OperatorService:
         address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
         mailing_address = AddressDataAccessService.upsert_address_from_data(address_data, payload.mailing_address)
         operator_data['mailing_address'] = mailing_address
-        operator = OperatorDataAccessService.update_operator(user_guid, operator_id, operator_data)
+        operator = OperatorDataAccessService.update_operator(operator_id, operator_data)
 
         # partner operators
         cls.upsert_partner_operators(operator, partner_operator_data, user_guid)
