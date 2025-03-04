@@ -21,13 +21,12 @@ from registration.models import Operation, User
 from ninja import Query
 from django.db import transaction
 from service.data_access_service.operation_service_v2 import OperationDataAccessServiceV2
-from service.document_service import DocumentService
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
-from service.document_service_v2 import DocumentServiceV2
+from service.document_service import DocumentService
 from service.facility_service import FacilityService
 from service.operation_service import OperationService
 from registration.schema import (
@@ -129,7 +128,7 @@ class OperationServiceV2:
         (
             new_entrant_application_document,
             new_entrant_application_document_created,
-        ) = DocumentServiceV2.create_or_replace_operation_document(
+        ) = DocumentService.create_or_replace_operation_document(
             user_guid,
             operation_id,
             payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
@@ -432,7 +431,7 @@ class OperationServiceV2:
             for doc, created in [
                 *(
                     [
-                        DocumentServiceV2.create_or_replace_operation_document(
+                        DocumentService.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
                             payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
@@ -444,7 +443,7 @@ class OperationServiceV2:
                 ),
                 *(
                     [
-                        DocumentServiceV2.create_or_replace_operation_document(
+                        DocumentService.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
                             payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
@@ -456,7 +455,7 @@ class OperationServiceV2:
                 ),
                 *(
                     [
-                        DocumentServiceV2.create_or_replace_operation_document(
+                        DocumentService.create_or_replace_operation_document(
                             user_guid,
                             operation.id,
                             payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
