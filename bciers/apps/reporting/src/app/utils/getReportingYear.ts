@@ -8,10 +8,7 @@ export const getReportingYear = async (): Promise<{
   const endpoint = "reporting/reporting-year";
   const response = await actionHandler(endpoint, "GET");
   if (response.error) {
-    throw new Error(
-      `Failed to fetch the reporting for report year.\n` +
-        "Please check if the provided ID(s) are correct and try again.",
-    );
+    throw new Error(`Failed to fetch the reporting for report year`);
   }
   return response;
 };

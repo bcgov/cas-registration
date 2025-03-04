@@ -72,3 +72,55 @@ class ReportVersionService:
         new_report_version = ReportVersionService.create_report_version(report_version.report, new_report_type)
 
         return new_report_version
+
+    @staticmethod
+    @transaction.atomic
+    def clone_report_version(report_version: ReportVersion) -> ReportVersion:
+        """
+        Creates a new report version based on an existing report version, incrementing the version number.
+        """
+        # Create a new report version as a Draft
+        new_report_version = ReportVersion.objects.create(
+            report=report_version.report,
+            report_type=report_version.report_type,
+            status=ReportVersion.ReportVersionStatus.Draft,  # New version always starts as a draft
+            is_latest_submitted=False,  # Cloned version should not be marked as latest submitted
+        )
+
+        # Clone ReportOperation
+        old_report_operation = ReportOperation.objects.get(report_version=report_version)
+        new_report_operation = ReportOperation.objects.create(
+            operator_legal_name=old_report_operation.operator_legal_name,
+            operator_trade_name=old_report_operation.operator_trade_name,
+            operation_name=old_report_operation.operation_name,
+            operation_type=old_report_operation.operation_type,
+            operation_bcghgid=old_report_operation.operation_bcghgid,
+            bc_obps_regulated_operation_id=old_report_operation.bc_obps_regulated_operation_id,
+            report_version=new_report_version,
+        )
+        new_report_operation.activities.set(old_report_operation.activities.all())
+        new_report_operation.regulated_products.set(old_report_operation.regulated_products.all())
+
+        # Clone ReportOperationRepresentatives
+        representatives = ReportOperationRepresentative.objects.filter(report_version=report_version)
+        for rep in representatives:
+            ReportOperationRepresentative.objects.create(
+                report_version=new_report_version,
+                representative_name=rep.representative_name,
+                selected_for_report=rep.selected_for_report,
+            )
+
+        # Clone FacilityReport
+        facility_reports = FacilityReport.objects.filter(report_version=report_version)
+        for facility_report in facility_reports:
+            new_facility_report = FacilityReport.objects.create(
+                facility=facility_report.facility,
+                facility_name=facility_report.facility_name,
+                facility_type=facility_report.facility_type,
+                facility_bcghgid=facility_report.facility_bcghgid,
+                report_version=new_report_version,
+                is_completed=False,
+            )
+            new_facility_report.activities.set(facility_report.activities.all())
+
+        return new_report_version

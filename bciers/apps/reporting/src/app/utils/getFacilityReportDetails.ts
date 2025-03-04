@@ -8,8 +8,7 @@ export async function getFacilityReportDetails(
   const response = await actionHandler(endpoint, "GET");
   if (response.error) {
     throw new Error(
-      `Failed to fetch the facility details for report version ${reportVersionId}, facility ${facilityId}.\n` +
-        "Please check if the provided ID(s) are correct and try again.",
+      `Failed to fetch the facility details for report version ${reportVersionId}, facility ${facilityId}`,
     );
   }
   return response;
