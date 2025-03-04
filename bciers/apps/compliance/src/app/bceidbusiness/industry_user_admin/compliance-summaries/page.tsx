@@ -9,4 +9,14 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 const title = "Compliance Summaries";
 export const metadata = generateMetadata(title);
 
-export default defaultPageFactory(ComplianceNavigationPage);
+function ComplianceSummariesWithNavigation({ searchParams }: { searchParams?: ComplianceSummariesSearchParams }) {
+  return (
+    <ComplianceNavigationPage activeTab={0}>
+      <Suspense fallback={<Loading />}>
+        <ComplianceSummariesPage searchParams={searchParams || {}} />
+      </Suspense>
+    </ComplianceNavigationPage>
+  );
+}
+
+export default defaultPageFactory(ComplianceSummariesWithNavigation);

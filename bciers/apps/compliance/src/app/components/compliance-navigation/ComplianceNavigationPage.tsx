@@ -1,12 +1,15 @@
 import { Tabs } from "@bciers/components/tabs/Tabs";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
+import { ReactNode } from "react";
 
 interface ComplianceNavigationPageProps {
   activeTab: number;
+  children?: ReactNode;
 }
 
 export default function ComplianceNavigationPage({
   activeTab,
+  children,
 }: ComplianceNavigationPageProps) {
   const tabs = [
     { label: "Compliance Summaries", href: "/compliance-summaries" },
@@ -32,6 +35,7 @@ export default function ComplianceNavigationPage({
           activeTab={activeTab}
           aria-label="compliance navigation tabs"
         />
+        {children}
       </div>
     </div>
   );

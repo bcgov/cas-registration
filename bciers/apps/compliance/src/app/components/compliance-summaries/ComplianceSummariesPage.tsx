@@ -17,9 +17,6 @@ export default async function ComplianceSummariesPage({
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Compliance Summaries</h2>
-      </div>
       <div className="flex flex-col">
         <div className="mb-5">
           <div className="mb-2">
