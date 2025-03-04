@@ -259,7 +259,9 @@ class ReportActivitySaveService:
             },
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
-        EmissionCategoryMappingService.apply_emission_categories(report_source_type, report_fuel, report_emission)
+        EmissionCategoryMappingService.apply_emission_categories(
+            report_source_type, report_fuel, report_emission, emission_data["methodology"]
+        )
 
         self.save_methodology(report_emission, emission_data["methodology"])
 
