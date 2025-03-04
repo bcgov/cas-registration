@@ -25,12 +25,6 @@ class AccessRequestTypes(Enum):
     NEW_OPERATOR_AND_ADMIN = "New Operator And Admin"
 
 
-class OperationTypes(Enum):
-    LFO = "Linear Facilities Operation"
-    SFO = "Single Facility Operation"
-    EIO = "Electricity Import Operation"
-
-
 class RegistrationTableNames(Enum):
     ACTIVITY = "activity"
     ADDRESS = "address"

@@ -12,8 +12,8 @@ from registration.models import (
     User,
     UserOperator,
     WellAuthorizationNumber,
+    Operation,
 )
-from registration.enums.enums import OperationTypes
 from model_bakery import baker
 from django.test import Client
 from phonenumber_field.modelfields import PhoneNumberField
@@ -192,7 +192,7 @@ class TestUtils:
         point_of_contact = contact_baker()
         return {
             "name": "Springfield Nuclear Power Plant",
-            "type": OperationTypes.SFO.value,
+            "type": Operation.Types.SFO,
             "naics_code_id": naics_code.id,
             "regulated_products": [product.id for product in regulated_products],
             "point_of_contact_id": point_of_contact.id,
@@ -212,7 +212,7 @@ class TestUtils:
         registration_purpose = select_random_registration_purpose()
         return {
             "name": "Springfield Nuclear Power Plant",
-            "type": OperationTypes.SFO.value,
+            "type": Operation.Types.SFO,
             "naics_code_id": naics_code.id,
             "activities": [activity.id for activity in activities],
             "regulated_products": [product.id for product in regulated_products],
@@ -236,7 +236,7 @@ class TestUtils:
         return {
             "name": "New name",
             "point_of_contact_id": point_of_contact.id,
-            "type": OperationTypes.SFO.value,
+            "type": Operation.Types.SFO,
             "naics_code_id": naics_code.id,
             "regulated_products": [product.id],
             "point_of_contact": point_of_contact.id,

@@ -200,7 +200,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         owning_operation = operation_baker(owning_operator.id)
         mock_facility = {
             'name': 'zip',
-            'type': 'Single Facility',
+            'type': Facility.Types.SINGLE_FACILITY,
             'latitude_of_largest_emissions': 5,
             'longitude_of_largest_emissions': 5,
             'operation_id': owning_operation.id,

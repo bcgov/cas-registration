@@ -12,7 +12,6 @@ from registration.models import (
     UserOperator,
     WellAuthorizationNumber,
 )
-from registration.enums.enums import OperationTypes
 from registration.tests.utils.helpers import TestUtils
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.tests.utils.bakers import (
@@ -98,7 +97,7 @@ class TestGetIfAuthorized:
         owning_operation: Operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
-            type=OperationTypes.LFO.value,
+            type=Operation.Types.LFO,
         )
         payload = [
             FacilityIn(
@@ -164,7 +163,7 @@ class TestCreateFacilityWithDesignatedOperation:
         owning_operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
-            type=OperationTypes.SFO,
+            type=Operation.Types.SFO,
         )
 
         payload = FacilityIn(
