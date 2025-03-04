@@ -5,7 +5,6 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.contact import Contact
 from registration.schema import ContactFilterSchemaV2, ContactWithPlacesAssigned, PlacesAssigned, ContactIn, OperationRepresentativeIn
 from service.data_access_service.contact_service import ContactDataAccessService
-from service.data_access_service.contact_service_v2 import ContactDataAccessServiceV2
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from django.db import transaction
@@ -27,7 +26,7 @@ class ContactService:
         user = UserDataAccessService.get_by_guid(user_guid)
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        base_qs = ContactDataAccessServiceV2.get_all_contacts_for_user_v2(user)
+        base_qs = ContactDataAccessService.get_all_contacts_for_user(user)
 
         return filters.filter(base_qs).order_by(sort_by)
 
@@ -50,7 +49,7 @@ class ContactService:
         operator_id = UserDataAccessService.get_user_operator_by_user(user_guid).operator.id
         contact_data['operator_id'] = operator_id
         contact: Contact
-        contact = ContactDataAccessServiceV2.update_or_create_v2(None, contact_data)
+        contact = ContactDataAccessService.update_or_create(None, contact_data)
 
         # Create address
         address_data = payload.dict(
@@ -75,7 +74,7 @@ class ContactService:
 
         # UPDATE CONTACT
         contact_data: Dict = payload.dict(include={*ContactIn.Meta.fields})
-        contact = ContactDataAccessServiceV2.update_or_create_v2(contact_id, contact_data)
+        contact = ContactDataAccessService.update_or_create(contact_id, contact_data)
         # UPDATE ADDRESS
         address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
         if any(address_data.values()):  # if any address data is provided
