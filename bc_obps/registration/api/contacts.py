@@ -7,7 +7,7 @@ from registration.constants import CONTACT_TAGS
 from ninja.pagination import paginate
 from common.api.utils import get_current_user_guid
 from registration.models.contact import Contact
-from service.contact_service_v2 import ContactServiceV2
+from service.contact_service import ContactService
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
@@ -31,7 +31,7 @@ def list_contacts(
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[Contact]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return ContactServiceV2.list_contacts_v2(get_current_user_guid(request), sort_field, sort_order, filters)
+    return ContactService.list_contacts(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
 #### POST #####
@@ -43,4 +43,4 @@ def list_contacts(
     auth=authorize("approved_industry_user"),
 )
 def create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:
-    return 201, ContactServiceV2.create_contact(get_current_user_guid(request), payload)
+    return 201, ContactService.create_contact(get_current_user_guid(request), payload)

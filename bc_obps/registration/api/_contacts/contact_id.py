@@ -6,9 +6,9 @@ from registration.models.contact import Contact
 from registration.schema import ContactIn, ContactOut, Message
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
-from service.contact_service_v2 import ContactServiceV2, ContactWithPlacesAssigned
 from service.contact_service import ContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.schema import ContactWithPlacesAssigned
 
 
 @router.get(
@@ -21,7 +21,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("approved_authorized_roles"),
 )
 def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Optional[ContactWithPlacesAssigned]]:
-    return 200, ContactServiceV2.get_with_places_assigned_v2(contact_id)
+    return 200, ContactService.get_with_places_assigned(contact_id)
 
 
 @router.put(
@@ -32,4 +32,4 @@ def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Op
     auth=authorize("approved_industry_user"),
 )
 def update_contact(request: HttpRequest, contact_id: int, payload: ContactIn) -> Tuple[Literal[200], Contact]:
-    return 200, ContactServiceV2.update_contact(get_current_user_guid(request), contact_id, payload)
+    return 200, ContactService.update_contact(get_current_user_guid(request), contact_id, payload)

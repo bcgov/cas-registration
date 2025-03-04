@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.models.facility import Facility
-from service.contact_service_v2 import ContactServiceV2
+from service.contact_service import ContactService
 from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
@@ -160,9 +160,9 @@ class OperationServiceV2:
                 ]
             ):
                 raise Exception("Cannot update first name, last name, or email of existing contact.")
-            contact = ContactServiceV2.update_contact(user_guid, existing_contact_id, payload)
+            contact = ContactService.update_contact(user_guid, existing_contact_id, payload)
         else:
-            contact = ContactServiceV2.create_contact(user_guid, payload)
+            contact = ContactService.create_contact(user_guid, payload)
         operation.contacts.add(contact)
         return contact
 
@@ -422,7 +422,7 @@ class OperationServiceV2:
         if operation.status == Operation.Statuses.REGISTERED and isinstance(payload, OperationInformationInUpdate):
             # operation representatives are only mandatory to register (vs. simply update) and operation
             for contact_id in payload.operation_representatives:
-                ContactServiceV2.raise_exception_if_contact_missing_address_information(contact_id)
+                ContactService.raise_exception_if_contact_missing_address_information(contact_id)
 
             operation.contacts.set(payload.operation_representatives)
 
