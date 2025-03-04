@@ -223,7 +223,7 @@ class FacilityService:
                 existing_address.delete()
 
         # Update the facility in the data access layer with the new data
-        facility = FacilityDataAccessService.update_facility(facility_id, user_guid, facility_data)
+        facility = FacilityDataAccessService.update_facility(facility_id, facility_data)
 
         # Process well authorization numbers and link them to the facility
         cls.handle_well_authorization_numbers(user_guid, payload, facility)

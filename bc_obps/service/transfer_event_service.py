@@ -240,7 +240,6 @@ class TransferEventService:
 
             if current_timeline:
                 FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
-                    user_guid,
                     current_timeline,
                     FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
                     event.effective_date,
@@ -271,7 +270,6 @@ class TransferEventService:
 
         if current_timeline:
             OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date(
-                user_guid,
                 current_timeline,
                 OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
                 event.effective_date,
