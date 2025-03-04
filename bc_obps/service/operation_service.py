@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.models.facility import Facility
 from service.contact_service import ContactService
-from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
+from service.data_access_service.document_service import DocumentDataAccessServiceV2
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )

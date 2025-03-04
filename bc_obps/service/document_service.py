@@ -1,7 +1,6 @@
 from typing import Tuple
 from uuid import UUID
-from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
-from service.data_access_service.document_service import DocumentDataAccessService
+from service.data_access_service.document_service import DocumentDataAccessServiceV2
 from registration.models import Document, Operation
 from registration.utils import files_have_same_hash
 from django.core.files.base import ContentFile
@@ -16,7 +15,7 @@ class DocumentService:
         from service.operation_service import OperationService
 
         OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
-        return DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
+        return DocumentDataAccessServiceV2.get_operation_document_by_type(operation_id, document_type)
 
     @classmethod
     def create_or_replace_operation_document(
@@ -50,7 +49,7 @@ class DocumentService:
         :returns: bool to indicate whether the document was successfully archived or deleted.
         """
         operation = OperationDataAccessService.get_by_id(operation_id)
-        document = DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
+        document = DocumentDataAccessServiceV2.get_operation_document_by_type(operation_id, document_type)
         if document and operation.status == Operation.Statuses.REGISTERED:
             document.set_archive(user_guid)
             return True
