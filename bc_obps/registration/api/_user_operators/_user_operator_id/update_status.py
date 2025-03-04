@@ -8,7 +8,7 @@ from registration.schema import UserOperatorStatusUpdate, UserOperatorOut, Messa
 from registration.models import UserOperator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.router import router
-from service.user_operator_service_v2 import UserOperatorServiceV2
+from service.user_operator_service import UserOperatorService
 
 
 @router.patch(
@@ -23,6 +23,6 @@ from service.user_operator_service_v2 import UserOperatorServiceV2
 def update_user_operator_status(
     request: HttpRequest, user_operator_id: UUID, payload: UserOperatorStatusUpdate
 ) -> Tuple[Literal[200], UserOperator]:
-    return 200, UserOperatorServiceV2.update_status_and_create_contact(
+    return 200, UserOperatorService.update_status_and_create_contact(
         user_operator_id, payload, get_current_user_guid(request)
     )

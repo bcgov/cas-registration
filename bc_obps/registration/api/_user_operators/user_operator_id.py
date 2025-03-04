@@ -3,13 +3,13 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
 from registration.schema import UserOperatorOutV2, Message
-from service.user_operator_service import UserOperatorService
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import UserOperator
 from uuid import UUID
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from service.user_operator_service import UserOperatorService
 
 
 # GET
