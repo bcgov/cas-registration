@@ -32,4 +32,4 @@ def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Op
     auth=authorize("approved_industry_user"),
 )
 def update_contact(request: HttpRequest, contact_id: int, payload: ContactIn) -> Tuple[Literal[200], Contact]:
-    return 200, ContactService.update_contact(get_current_user_guid(request), contact_id, payload)
+    return 200, ContactServiceV2.update_contact(get_current_user_guid(request), contact_id, payload)

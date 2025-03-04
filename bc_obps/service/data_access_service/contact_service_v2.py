@@ -14,7 +14,7 @@ class ContactDataAccessServiceV2:
 
     @classmethod
     def update_or_create_v2(
-        cls, existing_contact_id: Optional[int], updated_data: Dict[str, Optional[str]], user_guid: UUID
+        cls, existing_contact_id: Optional[int], updated_data: Dict[str, Optional[str]]
     ) -> Contact:
         data: Dict[str, Any] = {
             "pk": existing_contact_id,
@@ -26,8 +26,9 @@ class ContactDataAccessServiceV2:
             "business_role": updated_data.get(
                 "business_role", BusinessRole.objects.get(role_name="Operation Representative")
             ),
-            "operator": updated_data["operator"],
         }
+        if updated_data.get("operator_id"):
+            data["operator_id"] = updated_data["operator_id"]
         contact: Contact
         contact, _ = Contact.custom_update_or_create(
             self=Contact,
