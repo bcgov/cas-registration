@@ -31,7 +31,7 @@ def list_user_operators(
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[UserOperator]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return UserOperatorService.list_user_operators_v2(get_current_user_guid(request), sort_field, sort_order, filters)
+    return UserOperatorService.list_user_operators(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
 ## POST
