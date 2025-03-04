@@ -23,7 +23,7 @@ from .router import router
     "/operations",
     response={200: List[ReportingDashboardOperationOut], custom_codes_4xx: Message},
     tags=DASHBOARD_TAGS,
-    description="""Returns a list of operators for the current reporting year, for the current user. Populates
+    description="""Returns a list of operators for the current user, current reporting year, current report version. Populates
     the main reporting dashboard page.""",
     auth=authorize("approved_authorized_roles"),
 )
