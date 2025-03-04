@@ -1,4 +1,4 @@
-from service.data_access_service.document_service_v2 import DocumentDataAccessServiceV2
+from service.data_access_service.document_service import DocumentDataAccessServiceV2
 from registration.utils import data_url_to_file
 from registration.models.document import Document
 from registration.models.operation import Operation
