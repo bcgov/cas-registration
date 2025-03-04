@@ -5,4 +5,4 @@ class ComplianceTableNames(Enum):
     COMPLIANCE_PERIOD = "compliance_period"
     COMPLIANCE_SUMMARY = "compliance_summary"
     COMPLIANCE_OBLIGATION = "compliance_obligation"
-    COMPLIANCE_PRODUCT = "compliance_product" 
+    COMPLIANCE_PRODUCT = "compliance_product"

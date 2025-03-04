@@ -26,4 +26,4 @@ class Rls:
         ],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_SUMMARY) 
+    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_SUMMARY)
