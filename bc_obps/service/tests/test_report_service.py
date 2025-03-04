@@ -63,7 +63,7 @@ class TestReportService(TestCase):
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
 
             operation = operation_baker(
-                type="lfo",
+                type=Operation.Types.LFO,
                 bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
             )
             operation.activities.add(
@@ -140,7 +140,7 @@ class TestReportService(TestCase):
                 )
 
     def test_save_report_operation_updates_fields_and_relationships(self):
-        operation = operation_baker(type="lfo")
+        operation = operation_baker(type=Operation.Types.LFO)
         reporting_year = reporting_year_baker(reporting_year=2101)
         report_version = report_baker(operation=operation, reporting_year=reporting_year)
 

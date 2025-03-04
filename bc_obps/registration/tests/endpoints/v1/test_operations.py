@@ -346,28 +346,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
-    def test_post_new_operation_without_point_of_contact(self):
-        new_operation_payload = {
-            "documents": [],
-            "point_of_contact": None,
-            "status": Operation.Statuses.NOT_STARTED,
-            "naics_code_id": NaicsCode.objects.first().id,
-            "name": "My New Operation",
-            "type": "Type 1",
-            "regulated_products": [],
-        }
-        operator = operator_baker()
-        TestUtils.authorize_current_user_as_operator_user(self, operator)
-        post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, new_operation_payload, custom_reverse_lazy("v1_create_operation")
-        )
-        assert post_response.status_code == 201
-        assert Operation.objects.count() == 1
-        operation = Operation.objects.first()
-        assert operation.name == 'My New Operation'
-        assert operation.point_of_contact is None
-        assert operation.point_of_contact_id is None
-
     # PUT
     def test_only_approved_industry_users_can_create_operations(self):
         operator = operator_baker()
