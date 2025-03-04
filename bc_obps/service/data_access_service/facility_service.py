@@ -33,7 +33,6 @@ class FacilityDataAccessService:
     def update_facility(
         cls,
         facility_id: UUID,
-        user_guid: UUID,
         facility_data: DictStrAny,
     ) -> Facility:
         facility = cls.get_by_id(facility_id)
