@@ -7,6 +7,9 @@ const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:title": "Pulp and paper production",
+  id: {
+    "ui:widget": "hidden",
+  },
   carbonates: {
     "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
     "ui:FieldTemplate": SourceTypeBoxTemplate,

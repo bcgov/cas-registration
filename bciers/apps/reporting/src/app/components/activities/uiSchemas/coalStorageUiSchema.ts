@@ -7,6 +7,9 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  id: {
+    "ui:widget": "hidden",
+  },
   storedCoalPiles: sourceTypeCheckboxUiSchema,
   sourceTypes: {
     "ui:FieldTemplate": FieldTemplate,

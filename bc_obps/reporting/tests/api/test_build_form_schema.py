@@ -88,8 +88,9 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response_object['schema']['title'] == 'General stationary combustion excluding line tracing'
         # No source types passed (and no mandatory single source type). Return only the activity schema
         assert 'sourceTypes' not in response_object['schema']['properties']
+        # There is 1 id property
         # There are 2 source type options in the general stationary combustion activity schema
-        assert len(response_object['schema']['properties'].keys()) == 2
+        assert len(response_object['schema']['properties'].keys()) == 3
 
     def test_returns_source_type_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
@@ -107,7 +108,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert 'sourceTypes' in response_object['schema']['properties']
         # One source type passed as parameter, one source type schema returned
         assert len(response_object['schema']['properties']['sourceTypes']['properties'].keys()) == 1
-        source_type_key = list(response_object['schema']['properties'].keys())[0]
+        source_type_key = [key for key in response_object['schema']['properties'] if key != "id"][0]
         # Created an array object for units
         assert (
             'units'
