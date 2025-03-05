@@ -91,7 +91,7 @@ class UserOperatorService:
             status=Operator.Statuses.APPROVED,
             is_new=False,
         )
-        operator: Operator = cls.save_operator(payload, operator_instance, user_guid)
+        operator: Operator = cls.save_operator(payload, operator_instance)
 
         # create/save user operator instance as an approved admin
         user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
