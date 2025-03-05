@@ -7,6 +7,7 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
+import { getFacilityReportDetails } from "../../utils/getFacilityReportDetails";
 
 export default async function ProductionDataPage({
   version_id,
@@ -47,6 +48,8 @@ export default async function ProductionDataPage({
       await getOverlappingIndustrialProcessEmissions(version_id, facility_id);
   }
 
+  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
+    .facility_type;
   const navInfo = await getNavigationInformation(
     HeaderStep.ReportInformation,
     ReportingPage.ProductionData,
@@ -70,6 +73,7 @@ export default async function ProductionDataPage({
       overlappingIndustrialProcessEmissions={
         overlappingIndustrialProcessEmissions
       }
+      facilityType={facilityType}
     />
   );
 }

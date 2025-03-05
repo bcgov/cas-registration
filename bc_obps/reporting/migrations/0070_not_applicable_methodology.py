@@ -28,6 +28,7 @@ def reverse_additional_methodology_data(apps, schema_monitor):
         ]
     ).delete()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [('reporting', '0069_rename_db_table_name_to_match_model')]
