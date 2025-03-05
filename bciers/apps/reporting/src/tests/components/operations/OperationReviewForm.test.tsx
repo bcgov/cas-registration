@@ -147,9 +147,13 @@ describe("OperationReviewForm Component", () => {
       target: { value: "Annual Report" },
     });
 
-    expect(
-      screen.getByText(/Are you sure you want to change your report type/i),
-    ).toBeVisible();
+    // Ensure the modal has been triggered by checking for its visibility.
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Are you sure you want to change your report type/i),
+      ).toBeVisible();
+    });
+
     expect(screen.getByText(/Change Report Type/i)).toBeVisible();
 
     fireEvent.click(screen.getByRole("button", { name: "Change report type" }));
@@ -173,9 +177,12 @@ describe("OperationReviewForm Component", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
-    expect(
-      screen.queryByText(/Are you sure you want to change your report type/i),
-    ).not.toBeVisible();
+    // Wait for the modal to disappear after cancellation
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Are you sure you want to change your report type/i),
+      ).not.toBeInTheDocument(); // Use not.toBeInTheDocument() for checking absence
+    });
 
     const reportTypeSelect = screen.getByLabelText(
       /Select what type of report you are filling/i,
