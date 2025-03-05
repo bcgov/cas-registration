@@ -490,7 +490,6 @@ class TestTransferEventService:
 
         # Verify that set_timeline_status_and_end_date was called for facility_1 (existing timeline)
         mock_set_timeline.assert_called_once_with(
-            user_guid,
             timeline_1,
             FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,
@@ -556,7 +555,6 @@ class TestTransferEventService:
 
         # Verify that set_timeline_status_and_end_date was called since the timeline exists
         mock_set_timeline.assert_called_once_with(
-            user_guid,
             mock_get_current_timeline.return_value,
             OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,
