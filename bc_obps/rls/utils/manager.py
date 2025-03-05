@@ -36,7 +36,9 @@ class RlsManager:
             # Grant usage and select privileges on all tables in schema common to public
             common_schema_queries = [
                 SQL("grant usage on schema common to {}").format(SQL(', ').join(role_identifiers)),
-                SQL("grant select, insert on all tables in schema common to {}").format(SQL(', ').join(role_identifiers)),
+                SQL("grant select, insert on all tables in schema common to {}").format(
+                    SQL(', ').join(role_identifiers)
+                ),
             ]
             for query in common_schema_queries:
                 cursor.execute(query)
