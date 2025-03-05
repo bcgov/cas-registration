@@ -1,6 +1,7 @@
 from unittest.mock import patch, MagicMock
 from model_bakery import baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.models import Operation
 from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.bakers import report_version_baker
 
@@ -37,7 +38,7 @@ class TestReportVersionEndpoint(CommonTestSetup):
             "operator_legal_name": "new legal name",
             "operator_trade_name": "new trade name",
             "operation_name": "new operation name",
-            "operation_type": "LFO",
+            "operation_type": Operation.Types.LFO,
             "operation_bcghgid": "new operation bcghgid",
             "bc_obps_regulated_operation_id": "new bc obps regulated operation id",
             "activities": [],

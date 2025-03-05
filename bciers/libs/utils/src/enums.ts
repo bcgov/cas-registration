@@ -37,7 +37,7 @@ export enum OperationStatus {
 
 export enum OperationTypes {
   SFO = "Single Facility Operation",
-  LFO = "Linear Facility Operation",
+  LFO = "Linear Facilities Operation",
   EIO = "Electricity Import Operation",
 }
 

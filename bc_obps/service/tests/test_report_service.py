@@ -2,8 +2,7 @@ from unittest import mock
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from model_bakery import baker
-from registration.models.regulated_product import RegulatedProduct
-from registration.models.activity import Activity
+from registration.models import RegulatedProduct, Activity, Operation
 from registration.tests.utils.bakers import (
     bc_obps_regulated_operation_baker,
     operation_baker,
@@ -26,7 +25,7 @@ class TestReportService(TestCase):
 
     def test_throws_if_year_doesnt_exist(self):
         operator = operator_baker({"trade_name": "test_trade_name"})
-        operation = operation_baker(operator_id=operator.id, type="sfo")
+        operation = operation_baker(operator_id=operator.id, type=Operation.Types.SFO)
 
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
             ReportService.create_report(operation.id, reporting_year=2000)
@@ -37,7 +36,7 @@ class TestReportService(TestCase):
         )
 
     def test_throws_if_report_already_exists(self):
-        operation = operation_baker(type="lfo")
+        operation = operation_baker(type=Operation.Types.LFO)
         reporting_year = reporting_year_baker(reporting_year=2002)
         _ = report_baker(operation=operation, reporting_year=reporting_year)
 
@@ -64,7 +63,7 @@ class TestReportService(TestCase):
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
 
             operation = operation_baker(
-                type="lfo",
+                type=Operation.Types.LFO,
                 bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
             )
             operation.activities.add(
@@ -141,7 +140,7 @@ class TestReportService(TestCase):
                 )
 
     def test_save_report_operation_updates_fields_and_relationships(self):
-        operation = operation_baker(type="lfo")
+        operation = operation_baker(type=Operation.Types.LFO)
         reporting_year = reporting_year_baker(reporting_year=2101)
         report_version = report_baker(operation=operation, reporting_year=reporting_year)
 

@@ -13,7 +13,6 @@ from model_bakery import baker
 class TestFacilitiesEndpoint(CommonTestSetup):
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
-
         timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=45)
 
         facilities_url = custom_reverse_lazy(
@@ -156,7 +155,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         facility_instance = baker.make_recipe('registration.tests.utils.facility')
         mock_facility = {
             'name': facility_instance.name,
-            'type': 'Large Facility',
+            'type': Facility.Types.LARGE_FACILITY,
             'latitude_of_largest_emissions': 5,
             'longitude_of_largest_emissions': 5,
             'operation_id': owning_operation.id,
@@ -177,7 +176,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         owning_operation = operation_baker(owning_operator.id)
         mock_facility = {
             'name': 'zip',
-            'type': 'Large Facility',
+            'type': Facility.Types.LARGE_FACILITY,
             'latitude_of_largest_emissions': 5,
             'longitude_of_largest_emissions': 5,
             'operation_id': owning_operation.id,
@@ -201,7 +200,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         owning_operation = operation_baker(owning_operator.id)
         mock_facility = {
             'name': 'zip',
-            'type': 'Single Facility',
+            'type': Facility.Types.SINGLE_FACILITY,
             'latitude_of_largest_emissions': 5,
             'longitude_of_largest_emissions': 5,
             'operation_id': owning_operation.id,

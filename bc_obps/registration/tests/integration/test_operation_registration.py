@@ -2,7 +2,6 @@ import pytest
 from django.db.models import Q
 from model_bakery import baker
 
-from registration.enums.enums import OperationTypes
 from registration.models import FacilityDesignatedOperationTimeline, Operation
 from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -10,7 +9,7 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestOperationRegistration(CommonTestSetup):
-    def _prepare_test_data(self, operation_type: OperationTypes):
+    def _prepare_test_data(self, operation_type: Operation.Types):
         self.approved_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', user=self.user
         )
@@ -28,7 +27,7 @@ class TestOperationRegistration(CommonTestSetup):
             type=operation_type,
         )
         # add some facilities so we can test that they are not overridden
-        if operation_type == OperationTypes.LFO:
+        if operation_type == Operation.Types.LFO:
             baker.make_recipe(
                 'registration.tests.utils.facility_designated_operation_timeline',
                 operation=self.operation,
@@ -45,9 +44,8 @@ class TestOperationRegistration(CommonTestSetup):
             Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
         ]
 
-    def _set_operation_information(self, purpose: Operation.Purposes, operation_type: OperationTypes):
-
-        if operation_type == OperationTypes.EIO:
+    def _set_operation_information(self, purpose: Operation.Purposes, operation_type: Operation.Types):
+        if operation_type == Operation.Types.EIO:
             operation_information_payload = {
                 "registration_purpose": purpose,
                 "name": f"{purpose} name",
@@ -186,7 +184,7 @@ class TestOperationRegistration(CommonTestSetup):
         self.operation.refresh_from_db()
         self.updated_at = self.operation.updated_at  # save the updated_at timestamp to compare later
 
-    @pytest.mark.parametrize("operation_type", [OperationTypes.SFO.value, OperationTypes.LFO.value])
+    @pytest.mark.parametrize("operation_type", [Operation.Types.SFO, Operation.Types.LFO])
     @pytest.mark.parametrize(
         "purpose", [p for p in Operation.Purposes if p != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION]
     )  # EIOs have OperationTypes.EIO so are tested separately below
@@ -257,7 +255,7 @@ class TestOperationRegistration(CommonTestSetup):
             )
 
         # make sure we have the facility
-        if operation_type == OperationTypes.LFO:
+        if operation_type == Operation.Types.LFO:
             # for LFO  5 existing facilities + 1 new facility
             assert (
                 FacilityDesignatedOperationTimeline.objects.filter(
@@ -265,7 +263,7 @@ class TestOperationRegistration(CommonTestSetup):
                 ).count()
                 == 6
             )
-        elif operation_type == OperationTypes.SFO:
+        elif operation_type == Operation.Types.SFO:
             # for SFO we only have the new facility
             assert (
                 FacilityDesignatedOperationTimeline.objects.filter(
@@ -297,9 +295,9 @@ class TestOperationRegistration(CommonTestSetup):
 
     def test_operation_registration_workflow_EIO(self):
         #### prepare test data
-        self._prepare_test_data(OperationTypes.EIO)
+        self._prepare_test_data(Operation.Types.EIO)
         #### Operation Information Form ####
-        self._set_operation_information(Operation.Purposes.ELECTRICITY_IMPORT_OPERATION, OperationTypes.EIO)
+        self._set_operation_information(Operation.Purposes.ELECTRICITY_IMPORT_OPERATION, Operation.Types.EIO)
         #### Operation Representative Form ####
         self._set_operation_representative()
         #### Registration Submission ####
@@ -307,7 +305,7 @@ class TestOperationRegistration(CommonTestSetup):
 
         # Assertions
         assert self.operation.name == f'{Operation.Purposes.ELECTRICITY_IMPORT_OPERATION} name'
-        assert self.operation.type == OperationTypes.EIO.value
+        assert self.operation.type == Operation.Types.EIO
         assert self.operation.operator_id == self.approved_user_operator.operator_id
         assert self.operation.bcghg_id_id == self.bcghg_id.id
         assert self.operation.opt_in is False

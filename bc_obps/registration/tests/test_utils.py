@@ -349,24 +349,8 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
         operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
         assert operation.bcghg_id == existing_id
 
-    def test_does_not_generate_for_operation_if_type_is_invalid(self):
-        operation: Operation = baker.make_recipe('registration.tests.utils.operation', type='Not my type')
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
-        with pytest.raises(ValueError, match='Invalid operation type: Not my type'):
-            operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
-
-    def test_does_not_generate_for_facility_if_type_is_invalid(self):
-        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
-        timeline.end_date = None
-        timeline.save()
-        timeline.operation.type = 'Not my type'
-        timeline.operation.save()
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
-        with pytest.raises(ValueError, match='Invalid operation type: Not my type'):
-            timeline.facility.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
-
     def test_generate_unique_bcghg_id_for_operation(self):
-        operation: Operation = baker.make_recipe('registration.tests.utils.operation', type='Linear Facility Operation')
+        operation: Operation = baker.make_recipe('registration.tests.utils.operation', type=Operation.Types.LFO)
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         operation.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
         expected_id = f'2{operation.naics_code.naics_code}0001'
@@ -376,7 +360,7 @@ class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
         timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
         timeline.end_date = None
         timeline.save()
-        timeline.operation.type = 'Linear Facility Operation'
+        timeline.operation.type = Operation.Types.LFO
         timeline.operation.save()
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         timeline.facility.generate_unique_bcghg_id(user_guid=cas_director.user_guid)

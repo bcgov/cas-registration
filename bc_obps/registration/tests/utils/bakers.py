@@ -86,7 +86,7 @@ def operator_baker(custom_properties=None) -> Operator:
 
 def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operation, List[Operation]]:
     if "type" not in properties:
-        properties["type"] = cycle(["sfo", "lfo"])
+        properties["type"] = cycle([choice for choice in Operation.Types])
 
     if "registration_purpose" not in properties:
         properties["registration_purpose"] = cycle([choice for choice in Operation.Purposes])

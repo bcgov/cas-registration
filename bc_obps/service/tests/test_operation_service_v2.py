@@ -96,7 +96,7 @@ class TestOperationServiceV2:
         payload = OperationInformationIn(
             registration_purpose='Reporting Operation',
             name="string",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
@@ -359,7 +359,7 @@ class TestRegisterOperationInformation:
         payload = OperationInformationIn(
             registration_purpose='Electricity Import Operation',
             name="TestEIO",
-            type="Electricity Import Operation",
+            type=Operation.Types.EIO,
         )
         # check operation
         operation = OperationServiceV2.register_operation_information(
@@ -383,13 +383,13 @@ class TestRegisterOperationInformation:
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            type="Electricity Import Operation",
+            type=Operation.Types.EIO,
             registration_purpose='Electricity Import Operation',
         )
         payload = OperationInformationIn(
             registration_purpose='Electricity Import Operation',
             name="UpdatedEIO",
-            type="Electricity Import Operation",
+            type=Operation.Types.EIO,
         )
         # check operation updates
         operation = OperationServiceV2.register_operation_information(
@@ -413,7 +413,7 @@ class TestRegisterOperationInformation:
         payload = OperationInformationIn(
             registration_purpose='Reporting Operation',
             name="string",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
@@ -442,7 +442,7 @@ class TestRegisterOperationInformation:
         payload = OperationInformationIn(
             registration_purpose='Potential Reporting Operation',
             name="string",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -515,7 +515,7 @@ class TestOperationServiceV2CreateOperation:
             registration_purpose='Reporting Operation',
             regulated_products=[1, 2],
             name="string",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -545,7 +545,7 @@ class TestOperationServiceV2CreateOperation:
         payload = OperationInformationIn(
             registration_purpose='Reporting Operation',
             name="string",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -590,7 +590,7 @@ class TestOperationServiceV2CreateOperation:
         payload = OperationInformationIn(
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             name="string",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
@@ -608,7 +608,7 @@ class TestOperationServiceV2CreateOperation:
         payload = OperationInformationIn(
             registration_purpose='Electricity Import Operation',
             name="TestEIO",
-            type="Electricity Import Operation",
+            type=Operation.Types.EIO,
         )
         # check operation
         operation = OperationServiceV2._create_operation_v2(approved_user_operator.user.user_guid, payload)
@@ -643,7 +643,7 @@ class TestOperationServiceV2UpdateOperation:
         payload = OperationInformationIn(
             registration_purpose='Reporting Operation',
             name="string",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             activities=[1],
             process_flow_diagram=MOCK_DATA_URL,
@@ -664,7 +664,7 @@ class TestOperationServiceV2UpdateOperation:
         payload = OperationInformationInUpdate(
             registration_purpose='Potential Reporting Operation',
             name="Test Update Operation Name",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=1,
             tertiary_naics_code_id=2,
@@ -694,7 +694,7 @@ class TestOperationServiceV2UpdateOperation:
         payload = OperationInformationInUpdate(
             registration_purpose='OBPS Regulated Operation',
             name="Test Update Operation Name",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=2,
             secondary_naics_code_id=3,
             tertiary_naics_code_id=4,
@@ -726,7 +726,7 @@ class TestOperationServiceV2UpdateOperation:
         payload = OperationInformationInUpdate(
             registration_purpose='New Entrant Operation',
             name="Test Update Operation Name",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=2,
             secondary_naics_code_id=3,
             tertiary_naics_code_id=4,
@@ -763,7 +763,7 @@ class TestOperationServiceV2UpdateOperation:
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -826,7 +826,7 @@ class TestOperationServiceV2UpdateOperation:
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -864,7 +864,7 @@ class TestOperationServiceV2UpdateOperation:
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -899,7 +899,7 @@ class TestOperationServiceV2UpdateOperation:
             registration_purpose='Electricity Import Operation',
             regulated_products=[1],
             name="I am updated",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -941,7 +941,7 @@ class TestOperationServiceV2UpdateOperation:
             registration_purpose='Opted-in Operation',
             regulated_products=[1],
             name="I am updated",
-            type="SFO",
+            type=Operation.Types.SFO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -977,10 +977,13 @@ class TestCreateOrUpdateEio:
             'registration.tests.utils.operation',
             registration_purpose=registration_purpose,
             name=name,
-            type="Electricity Import Operation",
+            type=Operation.Types.EIO,
         )
         payload = FacilityIn(
-            registration_purpose=registration_purpose, name=name, type="Electricity Import", operation_id=operation.id
+            registration_purpose=registration_purpose,
+            name=name,
+            type=Facility.Types.ELECTRICITY_IMPORT,
+            operation_id=operation.id,
         )
 
         OperationServiceV2._create_or_update_eio(user_guid, operation, payload)
@@ -989,7 +992,6 @@ class TestCreateOrUpdateEio:
     @staticmethod
     @patch("service.facility_service.FacilityService.update_facility")
     def test_update_eio(mock_update_facility):
-
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         registration_purpose = 'Electricity Import Operation'
@@ -1000,7 +1002,7 @@ class TestCreateOrUpdateEio:
             'registration.tests.utils.operation',
             registration_purpose=registration_purpose,
             name=name,
-            type="Electricity Import Operation",
+            type=Operation.Types.EIO,
             operator=approved_user_operator.operator,
         )
         facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
@@ -1013,7 +1015,7 @@ class TestCreateOrUpdateEio:
             operation_id=operation.id,
             registration_purpose=registration_purpose,
             name=name,
-            type="Electricity Import",
+            type=Facility.Types.ELECTRICITY_IMPORT,
         )
         OperationServiceV2._create_or_update_eio(approved_user_operator.user.user_guid, operation, payload)
 
@@ -1195,7 +1197,7 @@ class TestHandleChangeOfRegistrationPurpose:
         submitted_payload = OperationInformationIn(
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
             name='Updated Operation',
-            type="SFO",
+            type=Operation.Types.SFO,
             activities=[1, 2, 3],
         )
         returned_payload = OperationServiceV2.handle_change_of_registration_purpose(
@@ -1235,7 +1237,7 @@ class TestHandleChangeOfRegistrationPurpose:
         submitted_payload = OperationInformationIn(
             registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
             name="Updated Operation",
-            type="SFO",
+            type=Operation.Types.SFO,
             activities=[1, 2, 3],
         )
         returned_payload = OperationServiceV2.handle_change_of_registration_purpose(
@@ -1262,7 +1264,7 @@ class TestHandleChangeOfRegistrationPurpose:
         submitted_payload = OperationInformationIn(
             registration_purpose=Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
             name="Updated Operation",
-            type="SFO",
+            type=Operation.Types.EIO,
             # submitting a bunch of irrelevant data just to confirm it gets removed
             activities=operation.activities,
             regulated_products=[1, 2, 3],
@@ -1300,7 +1302,7 @@ class TestHandleChangeOfRegistrationPurpose:
         submitted_payload = OperationInformationIn(
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
             name="Updated Operation",
-            type="SFO",
+            type=Operation.Types.SFO,
             activities=activity_pks,
             naics_code_id=operation.naics_code_id,
         )

@@ -11,6 +11,7 @@ import {
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface Props {
   versionId: number;
@@ -48,7 +49,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   operationType,
 }) => {
   const step =
-    operationType === "Linear Facility Operation"
+    operationType === OperationTypes.LFO
       ? "operation-emission-summary"
       : "additional-reporting-data";
   const backUrl = `/reports/${versionId}/${step}`;
