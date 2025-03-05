@@ -11,8 +11,8 @@ export const operationReviewSchema: RJSFSchema = {
   title: "Review Operation Information",
   required: [
     "operation_representative_name",
-    "operation_bcghgid",
     "operation_name",
+    "operator_legal_name",
   ],
 
   properties: {
@@ -39,7 +39,10 @@ export const operationReviewSchema: RJSFSchema = {
     },
 
     operator_legal_name: { type: "string", title: "Operator legal name" },
-    operator_trade_name: { type: "string", title: "Operator trade name" },
+    operator_trade_name: {
+      type: ["string", "null"],
+      title: "Operator trade name",
+    },
     operation_name: { type: "string", title: "Operation name" },
     operation_type: {
       type: "string",
@@ -185,6 +188,7 @@ export const updateSchema = (
   allActivities: any[],
   allRegulatedProducts: any[],
   allRepresentatives: any[],
+  showRegulatedProducts: boolean,
 ) => {
   return {
     ...prevSchema,
@@ -246,18 +250,21 @@ export const updateSchema = (
                   enumNames: allActivities.map((activity) => activity.name),
                 },
               },
-              regulated_products: {
-                type: "array",
-                title: "Regulated products",
-                minItems: 1,
-                items: {
-                  type: "number",
-                  enum: allRegulatedProducts.map((product) => product.id),
-                  enumNames: allRegulatedProducts.map(
-                    (product) => product.name,
-                  ),
+
+              ...(showRegulatedProducts && {
+                regulated_products: {
+                  type: "array",
+                  title: "Regulated products",
+                  minItems: 1,
+                  items: {
+                    type: "number",
+                    enum: allRegulatedProducts.map((product) => product.id),
+                    enumNames: allRegulatedProducts.map(
+                      (product) => product.name,
+                    ),
+                  },
                 },
-              },
+              }),
             },
           },
         ],
