@@ -72,7 +72,7 @@ export const buildProductionDataSchema = (
           production_methodology: {
             title: "Production Quantification Methodology",
             type: "string",
-            enum: ["OBPS Calculator", "other"],
+            enum: ["Not Applicable", "OBPS Calculator", "other"],
             default: "OBPS Calculator",
           },
           storage_quantity_start_of_period: {
