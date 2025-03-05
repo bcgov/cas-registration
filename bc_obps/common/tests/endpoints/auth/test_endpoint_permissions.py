@@ -65,14 +65,10 @@ class TestEndpointPermissions(TestCase):
             "openapi-json",
             "openapi-view",
             "setup",
-            "v1_setup",
             # Below are endpoints that are accessible to all users so new users can be created
             "create_user_profile",
-            "v1_create_user_profile",
             "get_user_profile",
-            "v1_get_user_profile",
             "get_user_role",
-            "v1_get_user_role",
             # TODO: Pending on the answer from Reporting Team
             "get_activities",
             "get_fuel_data",

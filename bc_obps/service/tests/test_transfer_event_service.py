@@ -529,7 +529,7 @@ class TestTransferEventService:
     @patch(
         "service.transfer_event_service.OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline"
     )
-    @patch("service.operation_service_v2.OperationServiceV2.update_operator")
+    @patch("service.operation_service.OperationService.update_operator")
     def test_process_operation_transfer(
         self,
         mock_update_operator,

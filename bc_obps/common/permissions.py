@@ -115,15 +115,6 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
             'authorized_app_roles': ["cas_director", "cas_analyst", "industry_user"],
             'authorized_user_operator_roles': ["admin"],
         },
-        "v1_authorized_irc_user_write": {
-            'authorized_app_roles': list(
-                AppRole.objects.filter(role_name__in=["cas_analyst", "cas_admin"]).values_list("role_name", flat=True)
-            ),
-        },
-        "v1_authorized_irc_user_and_industry_admin_user_write": {
-            'authorized_app_roles': ["cas_admin", "cas_analyst", "industry_user"],
-            'authorized_user_operator_roles': ["admin"],
-        },
         "cas_analyst": {
             'authorized_app_roles': list(
                 AppRole.objects.filter(role_name="cas_analyst").values_list("role_name", flat=True)
@@ -158,8 +149,6 @@ def authorize(
         "cas_director",
         "cas_director_analyst_and_industry_admin_user",
         "authorized_irc_user_and_industry_admin_user",
-        "v1_authorized_irc_user_write",
-        "v1_authorized_irc_user_and_industry_admin_user_write",
         "cas_analyst",
     ]
 ) -> Callable[[HttpRequest], bool]:

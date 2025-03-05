@@ -271,7 +271,7 @@ class TestCreateUserOperator(CommonTestSetup):
 class TestListUserOperators(CommonTestSetup):
     url = custom_reverse_lazy("list_user_operators")
 
-    def test_list_user_operators_v2_paginated(self):
+    def test_list_user_operators_paginated(self):
         for _ in range(50):
             baker.make_recipe(
                 'registration.tests.utils.user_operator',
@@ -322,7 +322,7 @@ class TestListUserOperators(CommonTestSetup):
         page_2_first_user_operator_reverse = UserOperator.objects.get(pk=page_2_response_id_reverse)
         assert page_2_first_user_operator.user_friendly_id > page_2_first_user_operator_reverse.user_friendly_id
 
-    def test_list_user_operators_v2_with_filter(self):
+    def test_list_user_operators_with_filter(self):
         baker.make_recipe(
             'registration.tests.utils.user_operator',
             role=UserOperator.Roles.ADMIN,
@@ -385,7 +385,7 @@ class TestListUserOperators(CommonTestSetup):
         assert response_items_2[0].get('user__first_name') == first_name_to_filter
         assert response_items_2[0].get('user__last_name') == last_name_to_filter
 
-    def test_list_user_operators_v2_returns_valid_data(self):
+    def test_list_user_operators_returns_valid_data(self):
         approved_admin_user_operators = []
         for _ in range(2):
             # add 2 approved admin user operators to test the endpoint

@@ -19,7 +19,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         subsequent_user_operator = baker.make(UserOperator, operator=operator)
         mock_send_operator_access_request_email = mocker.patch(
-            "service.user_operator_service_v2.send_operator_access_request_email"
+            "service.user_operator_service.send_operator_access_request_email"
         )
         response = TestUtils.mock_patch_with_auth_role(
             self,
@@ -82,7 +82,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
 
         mock_send_operator_access_request_email = mocker.patch(
-            "service.user_operator_service_v2.send_operator_access_request_email"
+            "service.user_operator_service.send_operator_access_request_email"
         )
         response = TestUtils.mock_patch_with_auth_role(
             self,
@@ -120,7 +120,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         operator.refresh_from_db()
         user_operator = user_operator_baker({'operator': operator, 'user': operator.created_by})
         mock_send_operator_access_request_email = mocker.patch(
-            "service.user_operator_service_v2.send_operator_access_request_email"
+            "service.user_operator_service.send_operator_access_request_email"
         )
         response_2 = TestUtils.mock_patch_with_auth_role(
             self,
@@ -163,7 +163,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         user_operator.save(update_fields=["user_id", "operator_id"])
 
         mock_send_operator_access_request_email = mocker.patch(
-            "service.user_operator_service_v2.send_operator_access_request_email"
+            "service.user_operator_service.send_operator_access_request_email"
         )
         # Now decline the user_operator and make sure the contacts are deleted
         response = TestUtils.mock_patch_with_auth_role(

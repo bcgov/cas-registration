@@ -15,7 +15,7 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    @patch("service.operation_service_v2.OperationServiceV2.list_operations_timeline", autospec=True)
+    @patch("service.operation_service.OperationService.list_operations_timeline", autospec=True)
     def test_returns_data_as_provided_by_the_service(self, mock_list_operations_timeline: MagicMock):
         """
         Testing that the API endpoint fetches the operation timeline data.

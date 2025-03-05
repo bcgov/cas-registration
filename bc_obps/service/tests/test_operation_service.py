@@ -654,7 +654,7 @@ class TestOperationServiceV2UpdateOperation:
     def test_update_operation():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
@@ -684,7 +684,7 @@ class TestOperationServiceV2UpdateOperation:
     def test_update_operation_with_no_regulated_products():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             status=Operation.Statuses.REGISTERED,
@@ -715,7 +715,7 @@ class TestOperationServiceV2UpdateOperation:
     def test_update_operation_with_new_entrant_application_data():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'utils.operation',
+            'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
