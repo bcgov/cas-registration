@@ -1,10 +1,8 @@
 from itertools import cycle
-
 import pytest
 from model_bakery import baker
-
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import Operator, User, UserOperator, Contact
+from registration.models import Operator, UserOperator, Contact
 from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from service.user_operator_service import UserOperatorService
 
@@ -14,8 +12,6 @@ pytestmark = pytest.mark.django_db
 class TestUserOperatorServiceV2:
     @staticmethod
     def test_save_operator():
-
-        user = baker.make(User)
         payload = OperatorIn(
             legal_name="Example Legal Name",
             trade_name="Example Trade Name",
