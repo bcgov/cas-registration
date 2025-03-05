@@ -1,12 +1,14 @@
 "use client";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import DeselectAllButton from "./DeselectAllButton";
+import { createRoot } from "react-dom/client";
 
 interface Props {
   report_version_id: number;
@@ -15,6 +17,7 @@ interface Props {
   initialData: ProductData[];
   schema: RJSFSchema;
   taskListElements: TaskListElement[];
+  facilityType: string;
 }
 
 const ProductionDataForm: React.FC<Props> = ({
@@ -24,6 +27,7 @@ const ProductionDataForm: React.FC<Props> = ({
   allowedProducts,
   initialData,
   taskListElements,
+  facilityType,
 }) => {
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
@@ -50,6 +54,43 @@ const ProductionDataForm: React.FC<Props> = ({
     });
   };
 
+  // If facility type is small or medium, add not applicable as an option to production quantity
+  const modifiedSchema = schema;
+  if (modifiedSchema.definitions) {
+    const object = {  // From productionData.tsx
+      title: "Production Quantification Methodology",
+      type: "string",
+      enum: ["OBPS Allocation Calculator", "Other"],
+      default: "OBPS Calculator",
+    };
+    if (["Small Aggregate", "Medium Facility"].includes(facilityType))
+      object.enum.push("Not Applicable");
+    const item = modifiedSchema.definitions.productionDataItem as any; // Typecast because of angry properties field
+    item.properties.production_methodology = object as RJSFSchema;
+  }
+
+  // Add button to deselect other checkboxes if small or medium
+  useEffect(() => {
+    const checkboxes = document.querySelector(".checkboxes");
+    const div = document.createElement("div");
+    if (
+      ["Small Aggregate", "Medium Facility"].includes(facilityType) &&
+      checkboxes
+    ) {
+      checkboxes.appendChild(div); // Add div to checkbox list
+      const root = createRoot(div); // Make div root for react
+      root.render(<DeselectAllButton />); // Render JSX button
+
+      // The only way I found to avoid adding duplicates on page change with dev remounting
+      setTimeout(() => {
+        const buttons = document.querySelectorAll("#deselectButton");
+        if (buttons.length > 1) {
+          buttons[1].remove();
+        }
+      }, 10);
+    }
+  }, []);
+
   const onSubmit = async (data: any) => {
     const response = await postProductionData(
       report_version_id,
@@ -74,7 +115,7 @@ const ProductionDataForm: React.FC<Props> = ({
       initialStep={1}
       steps={multiStepHeaderSteps}
       taskListElements={taskListElements}
-      schema={schema}
+      schema={modifiedSchema}
       uiSchema={productionDataUiSchema}
       formData={formData}
       baseUrl={"#"}

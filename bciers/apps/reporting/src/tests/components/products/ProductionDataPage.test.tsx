@@ -13,6 +13,9 @@ vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
 vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
   getOrderedActivities: vi.fn().mockReturnValue([]),
 }));
+vi.mock("@reporting/src/app/utils/getFacilityReportDetails", () => ({
+  getFacilityReportDetails: vi.fn().mockReturnValue([]),
+}));
 
 const getProductionDataMock = getProductionData as ReturnType<typeof vi.fn>;
 

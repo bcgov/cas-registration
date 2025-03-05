@@ -8,6 +8,7 @@ import {
 } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
+import { getFacilityReportDetails } from "../../utils/getFacilityReportDetails";
 
 export default async function ProductionDataPage({
   version_id,
@@ -33,6 +34,8 @@ export default async function ProductionDataPage({
   );
 
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
+  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
+    .facility_type;
   const taskListElements = getFacilitiesInformationTaskList(
     version_id,
     facility_id,
@@ -50,6 +53,7 @@ export default async function ProductionDataPage({
       initialData={response.report_products}
       schema={schema}
       taskListElements={taskListElements}
+      facilityType={facilityType}
     />
   );
 }
