@@ -483,3 +483,51 @@ class TestSaveReportEmission(TestCase):
 
         assert len(return_value.emission_categories.all()) == 1
         assert return_value.emission_categories.get(category_type="basic").category_name == "Emissions from wastewater"
+
+    def test_pulp_and_paper_exception(self):
+        pulp_paper_activity_id = 23
+        pulping_source_type_id = 49
+        test_infrastructure = TestInfrastructure.build()
+        act_st = test_infrastructure.make_activity_source_type(
+            source_type__json_key="sourceTypeWithUnitAndFuel",
+            has_unit=True,
+            has_fuel=True,
+        )
+        report_activity = test_infrastructure.make_report_activity(activity_id=pulp_paper_activity_id)
+        report_source_type = make(
+            ReportSourceType,
+            activity_source_type_base_schema=act_st,
+            source_type=SourceType.objects.get(pk=pulping_source_type_id),
+            report_activity=report_activity,
+            report_version=test_infrastructure.report_version,
+            json_data={"test_report_source_type": "yes"},
+        )
+        make_recipe("reporting.tests.utils.gas_type", chemical_formula="GGIRCA")
+
+        service_under_test = ReportActivitySaveService(
+            report_activity.report_version.id,
+            report_activity.facility_report.facility.id,
+            report_activity.activity.id,
+            test_infrastructure.user.user_guid,
+        )
+
+        return_value = service_under_test.save_emission(
+            report_source_type,
+            None,
+            None,
+            {
+                "test_emission_prop": "something",
+                "gasType": "GGIRCA",
+                "emission": 1,
+                "methodology": {
+                    "methodology": "Replacement Methodology",
+                    'description': 'test description',
+                    'isWoodyBiomass': True,
+                },
+            },
+        )
+        assert len(return_value.emission_categories.all()) == 2
+        assert (
+            return_value.emission_categories.get(category_type="fuel_excluded").category_name
+            == "CO2 emissions from excluded woody biomass"
+        )

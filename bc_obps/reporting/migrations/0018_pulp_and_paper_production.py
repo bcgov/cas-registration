@@ -192,6 +192,7 @@ def init_reporting_field_data(apps, schema_monitor):
                 field_type='number',
                 field_units=None,
             ),
+            ReportingField(field_name='Is Woody Biomass', field_type='boolean', field_units=None),
         ]
     )
 
@@ -328,6 +329,16 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
     )
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Pulp and paper production').id,
+        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Is Woody Biomass', field_units__isnull=True),
+    )
     # CO2 - Replacement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
@@ -338,6 +349,16 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
+    )
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Pulp and paper production').id,
+        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Is Woody Biomass', field_units__isnull=True),
     )
 
     # CH4
@@ -385,6 +406,16 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
     )
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Pulp and paper production').id,
+        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Is Woody Biomass', field_units__isnull=True),
+    )
     # CH4 - Replacement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
@@ -395,6 +426,16 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
+    )
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Pulp and paper production').id,
+        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Is Woody Biomass', field_units__isnull=True),
     )
 
     # N2O
@@ -442,6 +483,16 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
     )
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Pulp and paper production').id,
+        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Is Woody Biomass', field_units__isnull=True),
+    )
     # N2O - Replacement Methodology
     ConfigurationElement.objects.get(
         activity_id=Activity.objects.get(name='Pulp and paper production').id,
@@ -452,6 +503,16 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(
         ReportingField.objects.get(field_name='Description', field_units__isnull=True),
+    )
+    ConfigurationElement.objects.get(
+        activity_id=Activity.objects.get(name='Pulp and paper production').id,
+        source_type_id=SourceType.objects.get(name='Pulping and chemical recovery').id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2023-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Is Woody Biomass', field_units__isnull=True),
     )
 
 
