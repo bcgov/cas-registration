@@ -24,6 +24,7 @@ const defaultProps = {
     regulated_products: [1],
     operation_representative_name: [4],
     operation_type: "Test Operation",
+    operator_legal_name: "test operator",
   },
   version_id: 1,
   reportType: { report_type: "Annual Report" },
@@ -94,6 +95,7 @@ describe("OperationReviewForm Component", () => {
             operation_bcghgid: "your-bcghg-id",
             operation_name: "Operation Name",
             operation_type: "Test Operation",
+            operator_legal_name: "test operator",
           }}
           version_id={1}
           reportType={{ report_type: "Annual Report" }}
