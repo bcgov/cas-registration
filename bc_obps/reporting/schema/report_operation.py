@@ -4,7 +4,7 @@ from reporting.models import ReportOperationRepresentative
 from reporting.models.report_operation import ReportOperation
 from pydantic import alias_generators
 
-from typing import List
+from typing import List, Optional
 
 
 def to_camel(string: str) -> str:
@@ -57,7 +57,7 @@ class ReportOperationIn(Schema):
     """
 
     operator_legal_name: str
-    operator_trade_name: str
+    operator_trade_name: Optional[str] = None
     operation_name: str
     operation_type: str
     operation_bcghgid: str
@@ -66,18 +66,3 @@ class ReportOperationIn(Schema):
     regulated_products: List[str]
     operation_report_type: str
     operation_representative_name: List[int]
-
-    class Meta:
-        alias_generator = to_snake
-        fields = [
-            'operator_legal_name',
-            'operator_trade_name',
-            'operation_name',
-            'operation_type',
-            'operation_bcghgid',
-            'bc_obps_regulated_operation_id',
-            'activities',
-            'regulated_products',
-            'operation_representative_name',
-            'operation_report_type',
-        ]
