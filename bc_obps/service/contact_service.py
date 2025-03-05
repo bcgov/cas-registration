@@ -15,6 +15,15 @@ from service.data_access_service.address_service import AddressDataAccessService
 
 class ContactService:
     @classmethod
+    def get_if_authorized(cls, user_guid: UUID, contact_id: int) -> Optional[Contact]:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        user_contacts = ContactDataAccessService.get_all_contacts_for_user(user)
+        contact = user_contacts.filter(id=contact_id).first()
+        if user.is_industry_user() and not contact:
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        return contact
+
+    @classmethod
     def list_contacts(
         cls,
         user_guid: UUID,
@@ -91,8 +100,8 @@ class ContactService:
         return contact
 
     @classmethod
-    def get_with_places_assigned(cls, contact_id: int) -> Optional[ContactWithPlacesAssigned]:
-        contact = ContactDataAccessService.get_by_id(contact_id)
+    def get_with_places_assigned(cls, user_guid: UUID, contact_id: int) -> Optional[ContactWithPlacesAssigned]:
+        contact = cls.get_if_authorized(user_guid, contact_id)
         places_assigned = []
         if contact:
             role_name = contact.business_role.role_name

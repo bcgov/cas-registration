@@ -21,7 +21,7 @@ from registration.schema import ContactWithPlacesAssigned
     auth=authorize("approved_authorized_roles"),
 )
 def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Optional[ContactWithPlacesAssigned]]:
-    return 200, ContactService.get_with_places_assigned(contact_id)
+    return 200, ContactService.get_with_places_assigned(get_current_user_guid(request), contact_id)
 
 
 @router.put(
