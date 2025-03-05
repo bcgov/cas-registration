@@ -36,7 +36,7 @@ from registration.schema import (
     OperationRepresentativeIn,
     FacilityIn,
     OperationTimelineFilterSchema,
-    MultipleOperatorIn
+    MultipleOperatorIn,
 )
 from django.db.models import Q
 from datetime import datetime

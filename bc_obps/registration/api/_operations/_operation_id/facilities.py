@@ -5,7 +5,7 @@ from service.facility_designated_operation_timeline_service import FacilityDesig
 from registration.schema import (
     FacilityDesignatedOperationTimelineFilterSchema,
     FacilityDesignatedOperationTimelineOut,
-    Message
+    Message,
 )
 from common.permissions import authorize
 from registration.api.router import router

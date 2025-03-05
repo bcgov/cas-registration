@@ -1036,8 +1036,8 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
         # Check that the method returns True when there is a registered operation
         assert Operation.objects.count() == 1
         assert (
-                OperationDataAccessService.check_current_users_registered_operation(approved_user_operator.operator.id)
-                is True
+            OperationDataAccessService.check_current_users_registered_operation(approved_user_operator.operator.id)
+            is True
         )
 
         # Create an operation with a different status
@@ -1051,8 +1051,8 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
         # Ensure the method still returns True with mixed statuses
         assert Operation.objects.count() == 2
         assert (
-                OperationDataAccessService.check_current_users_registered_operation(approved_user_operator.operator.id)
-                is True
+            OperationDataAccessService.check_current_users_registered_operation(approved_user_operator.operator.id)
+            is True
         )
 
     def test_check_current_users_registered_operation_returns_false(self):
@@ -1070,8 +1070,8 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
         # Check that the method returns False when there is no registered operation
         assert Operation.objects.count() == 1
         assert (
-                OperationDataAccessService.check_current_users_registered_operation(approved_user_operator.operator.id)
-                is False
+            OperationDataAccessService.check_current_users_registered_operation(approved_user_operator.operator.id)
+            is False
         )
 
 

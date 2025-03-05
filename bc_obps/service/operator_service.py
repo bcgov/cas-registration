@@ -16,7 +16,6 @@ from django.db.models import QuerySet
 
 
 class OperatorService:
-
     @classmethod
     def get_operators_by_cra_number_or_legal_name(
         cls, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
@@ -36,7 +35,6 @@ class OperatorService:
             except Exception:
                 raise Exception("No matching operator found. Retry or add operator.")
         return []
-
 
     @classmethod
     def has_required_fields(cls, operator: Operator) -> bool:

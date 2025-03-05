@@ -11,6 +11,7 @@ from django.db.models import QuerySet
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
 from registration.constants import OPERATOR_TAGS
+
 ##### GET #####
 
 

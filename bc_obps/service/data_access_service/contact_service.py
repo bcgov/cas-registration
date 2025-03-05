@@ -19,9 +19,7 @@ class ContactDataAccessService:
         return user_operator.operator.contacts.filter(id=contact_id).exists()
 
     @classmethod
-    def update_or_create(
-        cls, existing_contact_id: Optional[int], updated_data: Dict[str, Optional[str]]
-    ) -> Contact:
+    def update_or_create(cls, existing_contact_id: Optional[int], updated_data: Dict[str, Optional[str]]) -> Contact:
         data: Dict[str, Any] = {
             "pk": existing_contact_id,
             "first_name": updated_data["first_name"],

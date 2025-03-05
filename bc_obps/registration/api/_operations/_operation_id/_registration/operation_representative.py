@@ -27,9 +27,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 def create_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeIn
 ) -> Tuple[Literal[201], Contact]:
-    return 201, OperationService.create_operation_representative(
-        get_current_user_guid(request), operation_id, payload
-    )
+    return 201, OperationService.create_operation_representative(get_current_user_guid(request), operation_id, payload)
 
 
 @router.put(
@@ -43,6 +41,4 @@ def create_operation_representative(
 def remove_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeRemove
 ) -> Tuple[Literal[200], OperationRepresentativeRemove]:
-    return 200, OperationService.remove_operation_representative(
-        get_current_user_guid(request), operation_id, payload
-    )
+    return 200, OperationService.remove_operation_representative(get_current_user_guid(request), operation_id, payload)
