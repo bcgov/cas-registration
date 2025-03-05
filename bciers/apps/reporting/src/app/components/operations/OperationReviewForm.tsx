@@ -83,6 +83,7 @@ export default function OperationReviewForm({
 
   const cancelReportTypeChange = () => {
     setFormDataState(formData);
+    setApiError(null);
     setPendingChangeReportType(undefined);
   };
 
