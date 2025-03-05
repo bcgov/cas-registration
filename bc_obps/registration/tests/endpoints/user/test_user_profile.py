@@ -56,7 +56,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
         content = response.json()
 
         # Assert
-        assert response.status_code == 200
+        assert response.status_code == 201
 
         # Additional Assertions
         assert 'app_role' in content and content["app_role"]["role_name"] == "industry_user"
@@ -104,7 +104,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
         content = response.json()
 
         # Assert
-        assert response.status_code == 200
+        assert response.status_code == 201
 
         # Additional Assertions (If BYPASS_ROLE_ASSIGNMENT is True, app_role should be cas_analyst, otherwise cas_pending)
 
