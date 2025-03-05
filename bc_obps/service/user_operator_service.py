@@ -48,7 +48,7 @@ class UserOperatorService:
     # Function to create operator instance
     @classmethod
     @transaction.atomic()
-    def save_operator(cls, updated_data: OperatorIn, operator_instance: Operator, user_guid: UUID) -> Operator:
+    def save_operator(cls, updated_data: OperatorIn, operator_instance: Operator) -> Operator:
         # fields to update on the Operator model
         operator_related_fields = [
             "legal_name",

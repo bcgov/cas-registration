@@ -35,7 +35,7 @@ class TestUserOperatorServiceV2:
             bc_corporate_registry_number=payload.bc_corporate_registry_number,
             status=Operator.Statuses.APPROVED,
         )
-        UserOperatorService.save_operator(payload, operator_instance, user.user_guid)
+        UserOperatorService.save_operator(payload, operator_instance)
         assert len(Operator.objects.all()) == 1
         assert Operator.objects.first().legal_name == payload.legal_name
         assert Operator.objects.first().trade_name == payload.trade_name
