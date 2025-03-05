@@ -6,6 +6,7 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -37,7 +38,7 @@ describe("the FacilityInformationPage component", () => {
       await FacilityInformationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         operationName: "Test Operation",
-        operationType: "Linear Facility Operation",
+        operationType: OperationTypes.LFO,
         searchParams: {},
         step: 2,
         steps: allOperationRegistrationSteps,
@@ -62,7 +63,7 @@ describe("the FacilityInformationPage component", () => {
       await FacilityInformationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         operationName: "Test Operation",
-        operationType: "Single Facility Operation",
+        operationType: OperationTypes.SFO,
         searchParams: {},
         step: 2,
         steps: allOperationRegistrationSteps,
@@ -106,7 +107,7 @@ describe("the FacilityInformationPage component", () => {
       await FacilityInformationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         operationName: "Test Operation",
-        operationType: "Linear Facility Operation",
+        operationType: OperationTypes.LFO,
         searchParams: {},
         step: 2,
         steps: allOperationRegistrationSteps,
@@ -129,7 +130,7 @@ describe("the FacilityInformationPage component", () => {
       await FacilityInformationPage({
         operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         operationName: "Test Operation",
-        operationType: "Linear Facility Operation",
+        operationType: OperationTypes.LFO,
         searchParams: {},
         step: 2,
         steps: allOperationRegistrationSteps,

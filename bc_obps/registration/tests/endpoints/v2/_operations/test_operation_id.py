@@ -17,7 +17,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         "registration_purpose": "Reporting Operation",
         "regulated_products": [1],
         "name": "op name",
-        "type": "SFO",
+        "type": Operation.Types.SFO,
         "naics_code_id": 1,
         "secondary_naics_code_id": 2,
         "tertiary_naics_code_id": 3,

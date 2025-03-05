@@ -2,6 +2,7 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -103,7 +104,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={OperationTypes.LFO}
       />,
     );
 
@@ -139,7 +140,7 @@ describe("FacilityEmissionAllocationForm component", () => {
           ],
         }}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={OperationTypes.LFO}
       />,
     );
     expect(
@@ -156,7 +157,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={OperationTypes.LFO}
       />,
     );
 
@@ -181,7 +182,7 @@ describe("FacilityEmissionAllocationForm component", () => {
           orderedActivities={[]}
           initialData={mockInitialData}
           taskListElements={[]}
-          operationType={"Linear Facility Operation"}
+          operationType={OperationTypes.LFO}
         />,
       );
       // POST submit and assert the result
@@ -196,7 +197,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         taskListElements={[]}
-        operationType={"Linear Facility Operation"}
+        operationType={OperationTypes.LFO}
       />,
     );
 

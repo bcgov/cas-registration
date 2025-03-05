@@ -49,11 +49,16 @@ class Operation(TimeStampedModel):
         ON_OR_BEFORE_MARCH_31_2024 = "On or before March 31, 2024"
         ON_OR_AFTER_APRIL_1_2024 = "On or after April 1, 2024"
 
+    class Types(models.TextChoices):
+        LFO = "Linear Facilities Operation"
+        SFO = "Single Facility Operation"
+        EIO = "Electricity Import Operation"
+
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
     )
     name = models.CharField(max_length=1000, db_comment="The name of an operation")
-    type = models.CharField(max_length=1000, db_comment="The type of an operation")
+    type = models.CharField(max_length=1000, choices=Types, db_comment="The type of an operation")
     operator = models.ForeignKey(
         Operator,
         on_delete=models.PROTECT,

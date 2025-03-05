@@ -17,7 +17,6 @@ from service.data_access_service.address_service import AddressDataAccessService
 from registration.models.operation import Operation
 from registration.models import User
 from registration.models import WellAuthorizationNumber
-from registration.enums.enums import OperationTypes
 
 from django.db import transaction
 from django.utils import timezone
@@ -164,7 +163,7 @@ class FacilityService:
         operation = OperationServiceV2.get_if_authorized_v2(user_guid, payload.operation_id, ['id', 'operator_id'])
 
         # Validate that SFO and EIO can only have one facility
-        if operation.facilities.count() > 0 and operation.type != OperationTypes.LFO.value:
+        if operation.facilities.count() > 0 and operation.type != Operation.Types.LFO:
             raise Exception(
                 "This type of operation (SFO or EIO) can only have one facility, this page should not be accessible"
             )

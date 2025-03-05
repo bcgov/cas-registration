@@ -8,6 +8,7 @@ import {
   StatutoryDeclarationUploadFieldTitle,
 } from "@/app/components/form/titles/operationsTitles";
 import { userOperatorPage1, userOperatorUiSchema } from "./userOperator";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -28,7 +29,7 @@ const operationPage1: RJSFSchema = {
     type: {
       type: "string",
       title: "Operation Type",
-      enum: ["Single Facility Operation", "Linear Facilities Operation"],
+      enum: [OperationTypes.SFO, OperationTypes.LFO],
     },
     naics_code_id: {
       type: "number",

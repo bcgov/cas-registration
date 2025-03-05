@@ -6,6 +6,7 @@ import {
   getFacility,
 } from "@bciers/testConfig/mocks";
 import FacilityPage from "apps/administration/app/components/facilities/FacilityPage";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 useSession.mockReturnValue({
   get: vi.fn(),
@@ -114,7 +115,7 @@ describe("Facilities component", () => {
     });
     getOperation.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-      type: "Linear Facility Operation",
+      type: OperationTypes.LFO,
     });
     render(
       await FacilityPage({

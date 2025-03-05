@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import Activity, RegulatedProduct
+from registration.models import Activity, RegulatedProduct, Operation
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models import ReportOperation
 from reporting.tests.utils.bakers import report_version_baker
@@ -15,7 +15,7 @@ class ReportOperationModelTest(BaseTestCase):
             operator_legal_name="Legal Name",
             operator_trade_name="Trade Name",
             operation_name="Operation Name",
-            operation_type="sfo",
+            operation_type=Operation.Types.SFO,
             operation_bcghgid="A fake BC GHG ID",
             bc_obps_regulated_operation_id="123456789",
             report_version=report_version_baker(report_operation=None),

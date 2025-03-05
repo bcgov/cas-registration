@@ -4,7 +4,6 @@ from typing import List
 from registration.models.operation import Operation
 from registration.schema.v2.operation_timeline import OperationTimelineListOut
 
-from registration.enums.enums import OperationTypes
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from service.user_operator_service import UserOperatorService
@@ -46,7 +45,9 @@ class OperationDesignatedOperatorTimelineDataAccessService:
 
         facilities_subquery = (
             FacilityDesignatedOperationTimeline.objects.filter(
-                operation_id=OuterRef('operation'), operation_id__type=OperationTypes.SFO.value, end_date__isnull=True
+                operation_id=OuterRef('operation'),
+                operation_id__type=Operation.Types.SFO,
+                end_date__isnull=True,
             )
             .only('facility__pk', 'facility__name')
             .order_by('start_date')

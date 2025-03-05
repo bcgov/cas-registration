@@ -14,6 +14,7 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import { useRouter } from "next/navigation";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 interface Props {
   initialData: any;
@@ -64,7 +65,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
   const taskListElements = getOperationInformationTaskList(
     version_id,
     ActivePage.ReviewFacilities,
-    "Linear Facility Operation",
+    OperationTypes.LFO,
   );
 
   // takes the form data and returns an array of facility_ids that are being selected. uses the intial form data as source of id-name mapping
