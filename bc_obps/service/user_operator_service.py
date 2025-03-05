@@ -18,7 +18,6 @@ from registration.utils import set_verification_columns
 
 
 class UserOperatorService:
-
     @classmethod
     def check_if_user_eligible_to_access_user_operator(cls, user_guid: UUID, user_operator_id: UUID) -> Optional[bool]:
         """
@@ -39,14 +38,12 @@ class UserOperatorService:
         # internal users are always allowed to access user operators. (Though the authorize function prevents them from accessing certain external-only endpoints)
         return None
 
-
     @classmethod
     def get_current_user_approved_user_operator_or_raise(cls, user: User) -> UserOperator:
         user_operator = UserOperatorDataAccessService.get_approved_user_operator(user)
         if not user_operator:
             raise Exception(UNAUTHORIZED_MESSAGE)
         return user_operator
-
 
     # Function to create operator instance
     @classmethod
@@ -179,7 +176,8 @@ class UserOperatorService:
                     phone_number=str(user_operator.user.phone_number),  # ContactIn expects a string,
                     position_title=user_operator.user.position_title,
                 )
-                from service.contact_service import ContactService # to avoid circular import
+                from service.contact_service import ContactService  # to avoid circular import
+
                 # Create a contact record for the user_operator and add it to the operator's contacts
                 ContactService.create_contact(user_operator.user_id, contact_payload)
 

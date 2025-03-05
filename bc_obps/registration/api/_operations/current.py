@@ -9,6 +9,7 @@ from registration.api.router import router
 from common.permissions import authorize
 from django.db.models import QuerySet
 from registration.constants import OPERATION_TAGS
+
 ##### GET #####
 
 

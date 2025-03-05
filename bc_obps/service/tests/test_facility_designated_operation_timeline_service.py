@@ -1,5 +1,4 @@
 from datetime import datetime
-from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import FacilityDesignatedOperationTimeline

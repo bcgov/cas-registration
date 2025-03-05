@@ -2,7 +2,13 @@ from typing import List, Literal, Optional
 from registration.constants import OPERATION_TAGS
 from registration.models.operation import Operation
 from typing import Tuple
-from registration.schema import OperationCreateOut, OperationInformationIn, Message, OperationTimelineFilterSchema, OperationTimelineListOut
+from registration.schema import (
+    OperationCreateOut,
+    OperationInformationIn,
+    Message,
+    OperationTimelineFilterSchema,
+    OperationTimelineListOut,
+)
 from service.operation_service import OperationService
 from common.permissions import authorize
 from django.http import HttpRequest

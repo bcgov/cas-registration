@@ -1,11 +1,6 @@
 from typing import Literal, Tuple
 from uuid import UUID
-from registration.schema import (
-    OperationInformationInUpdate,
-    OperationOutV2,
-    OperationOutWithDocuments,
-    Message
-)
+from registration.schema import OperationInformationInUpdate, OperationOutV2, OperationOutWithDocuments, Message
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS

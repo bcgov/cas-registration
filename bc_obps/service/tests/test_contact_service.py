@@ -20,10 +20,10 @@ class TestListContactService:
         )  # one operator has two contacts
 
         assert (
-                ContactService.list_contacts(
+            ContactService.list_contacts(
                 user_guid=user.user_guid, sort_field="created_at", sort_order="desc", filters=ContactFilterSchemaV2()
             ).count()
-                == 3
+            == 3
         )
 
 

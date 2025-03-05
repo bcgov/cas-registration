@@ -1,7 +1,6 @@
 from zoneinfo import ZoneInfo
 import pytest
 from datetime import datetime
-from uuid import uuid4
 from model_bakery import baker
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 from registration.models import OperationDesignatedOperatorTimeline

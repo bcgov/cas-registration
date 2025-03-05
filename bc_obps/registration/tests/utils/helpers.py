@@ -16,7 +16,6 @@ from registration.constants import BASE_ENDPOINT
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 
 
-
 class TestUtils:
     # initialize the APIClient app
     client = Client()

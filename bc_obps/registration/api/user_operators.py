@@ -8,7 +8,13 @@ from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple, Optional, List
 from registration.constants import USER_OPERATOR_TAGS
-from registration.schema import OperatorIn, Message, UserOperatorOperatorOut, UserOperatorListOut, UserOperatorFilterSchema
+from registration.schema import (
+    OperatorIn,
+    Message,
+    UserOperatorOperatorOut,
+    UserOperatorListOut,
+    UserOperatorFilterSchema,
+)
 from service.user_operator_service import UserOperatorService
 from ninja.pagination import paginate, PageNumberPagination
 
@@ -47,8 +53,6 @@ def list_user_operators(
 def create_operator_and_user_operator(
     request: HttpRequest, payload: OperatorIn
 ) -> Tuple[Literal[201], UserOperatorOperatorOut]:
-    user_operator_data = UserOperatorService.create_operator_and_user_operator(
-        get_current_user_guid(request), payload
-    )
+    user_operator_data = UserOperatorService.create_operator_and_user_operator(get_current_user_guid(request), payload)
 
     return 201, UserOperatorOperatorOut(**user_operator_data)

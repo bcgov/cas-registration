@@ -1,6 +1,12 @@
 from typing import List, Literal, Optional, Tuple
 from registration.models.event.transfer_event import TransferEvent
-from registration.schema import TransferEventFilterSchema, TransferEventListOut, Message, TransferEventCreateIn, TransferEventOut
+from registration.schema import (
+    TransferEventFilterSchema,
+    TransferEventListOut,
+    Message,
+    TransferEventCreateIn,
+    TransferEventOut,
+)
 from service.transfer_event_service import TransferEventService
 from common.permissions import authorize
 from django.http import HttpRequest

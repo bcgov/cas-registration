@@ -3,7 +3,13 @@ from django.db.models import QuerySet
 from uuid import UUID
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.contact import Contact
-from registration.schema import ContactFilterSchemaV2, ContactWithPlacesAssigned, PlacesAssigned, ContactIn, OperationRepresentativeIn
+from registration.schema import (
+    ContactFilterSchemaV2,
+    ContactWithPlacesAssigned,
+    PlacesAssigned,
+    ContactIn,
+    OperationRepresentativeIn,
+)
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
@@ -40,11 +46,12 @@ class ContactService:
 
     @classmethod
     def list_operation_representatives(
-            cls,
-            operation_id: UUID,
-            user_guid: UUID,
+        cls,
+        operation_id: UUID,
+        user_guid: UUID,
     ) -> QuerySet[Contact]:
-        from service.operation_service import OperationService # to avoid circular imports
+        from service.operation_service import OperationService  # to avoid circular imports
+
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         return operation.contacts.order_by('-created_at')
 

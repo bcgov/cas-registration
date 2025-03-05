@@ -4,6 +4,7 @@ from uuid import UUID
 from typing import List, Optional
 import decimal
 
+
 class FacilityIn(ModelSchema):
     street_address: Optional[str] = None
     municipality: Optional[str] = None

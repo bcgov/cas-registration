@@ -33,6 +33,7 @@ class ParentOperatorIn(ModelSchema):
         fields = ["id"]
         populate_by_name = True
 
+
 class ParentOperatorOutV1(ModelSchema):
     """
     Schema for the Parent Operator part of the user operator form
@@ -61,6 +62,7 @@ class ParentOperatorOutV1(ModelSchema):
     class Meta:
         model = ParentOperator
         fields = ["operator_index"]
+
 
 class ParentOperatorOut(ModelSchema):
     """

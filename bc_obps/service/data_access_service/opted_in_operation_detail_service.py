@@ -27,6 +27,7 @@ class OptedInOperationDataAccessService:
     @classmethod
     def archive_or_delete_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> None:
         from service.operation_service import OperationService
+
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         if operation.opted_in_operation:
             opted_in_operation_detail_id = operation.opted_in_operation.id
