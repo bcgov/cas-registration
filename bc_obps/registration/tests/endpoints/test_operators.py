@@ -7,7 +7,7 @@ from registration.utils import custom_reverse_lazy
 class TestOperatorsEndpoint(CommonTestSetup):
     endpoint = custom_reverse_lazy("list_operators")
 
-    def test_operators_endpoint_list_operators_v2_paginated(self):
+    def test_operators_endpoint_list_operators_paginated(self):
         # Create 60 operators with unique corp numbers
         for i in range(60):
             operator_baker()
@@ -46,7 +46,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
         assert page_2_id != page_2_id_reverse
 
-    def test_operators_endpoint_list_operators_v2_with_filter(self):
+    def test_operators_endpoint_list_operators_with_filter(self):
         operator_baker({"legal_name": 'Pecorino Romano'})
         operator_baker({"cra_business_number": '118675309'})
         for i in range(60):

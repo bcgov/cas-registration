@@ -60,7 +60,7 @@ class TestContactIdEndpoint(CommonTestSetup):
 
         response = TestUtils.mock_get_with_auth_role(
             self,
-            endpoint=custom_reverse_lazy("v1_get_contact", kwargs={"contact_id": contact.id}),
+            endpoint=custom_reverse_lazy("get_contact", kwargs={"contact_id": contact.id}),
             role_name="industry_user",
         )
         assert response.status_code == 401
@@ -77,7 +77,7 @@ class TestContactIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             self.valid_contact_data,
-            custom_reverse_lazy("v1_update_contact", kwargs={"contact_id": contact.id}),
+            custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
         )
         assert response.status_code == 401
         assert response.json().get('message') == 'Unauthorized.'
@@ -100,7 +100,7 @@ class TestContactIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             contact_data,
-            custom_reverse_lazy("v1_update_contact", kwargs={"contact_id": contact.id}),
+            custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
         )
         assert response.status_code == 422
         assert response.json().get('message') == 'Email: Enter a valid email address.'
@@ -119,7 +119,7 @@ class TestContactIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             self.valid_contact_data,
-            custom_reverse_lazy("v1_update_contact", kwargs={"contact_id": contact.id}),
+            custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
         )
         assert response.status_code == 200
 
@@ -161,7 +161,7 @@ class TestContactIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             contact_data_no_address,
-            custom_reverse_lazy("v1_update_contact", kwargs={"contact_id": contact.id}),
+            custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
         )
         assert response.status_code == 200
         assert Contact.objects.count() == 1
@@ -193,7 +193,7 @@ class TestContactIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             self.valid_contact_data,
-            custom_reverse_lazy("v1_update_contact", kwargs={"contact_id": contact.id}),
+            custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
         )
         assert response.status_code == 200
         assert Contact.objects.count() == 1

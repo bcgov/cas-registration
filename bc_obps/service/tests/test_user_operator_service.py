@@ -45,7 +45,7 @@ class TestUserOperatorServiceV2:
         assert Operator.objects.first().status == Operator.Statuses.APPROVED
 
     @staticmethod
-    def test_list_user_operators_v2_industry_users_are_not_authorized():
+    def test_list_user_operators_industry_users_are_not_authorized():
         filters_1 = UserOperatorFilterSchema(
             user_friendly_id="1",
             status="pending",
@@ -64,7 +64,7 @@ class TestUserOperatorServiceV2:
             )
 
     @staticmethod
-    def test_list_user_operators_v2():
+    def test_list_user_operators():
 
         # add some user operators
         baker.make_recipe(
@@ -126,7 +126,7 @@ class TestUserOperatorServiceV2:
         assert user_operators_sorted_by_status.last().status == UserOperator.Statuses.PENDING
 
     @staticmethod
-    def test_create_operator_and_user_operator_v2():
+    def test_create_operator_and_user_operator():
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         payload = OperatorIn(
             legal_name="Test",
