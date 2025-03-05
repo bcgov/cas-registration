@@ -61,6 +61,7 @@ const schema = buildOperationReviewSchema(
   regulatedProducts,
   allRepresentatives,
   reportType,
+  true,
 );
 
 describe("OperationReviewForm Component", () => {
