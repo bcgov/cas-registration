@@ -49,6 +49,12 @@ const uiSchema = {
             methodology: {
               "ui:FieldTemplate": InlineFieldTemplate,
             },
+            isWoodyBiomass: {
+              "ui:options": {
+                label: true,
+                title: "This emission is categorized as 'Woody biomass'",
+              },
+            },
           },
         },
       },
