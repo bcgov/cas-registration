@@ -4,6 +4,7 @@ from reporting.models.report_product import ReportProduct
 from reporting.models import NaicsRegulatoryValue, ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
+from reporting.service.emission_category_service import EmissionCategoryService
 from decimal import Decimal
 from django.db.models import Sum
 from typing import Dict, List
@@ -201,6 +202,22 @@ class ComplianceService:
             industrial_process = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
                 report_version_id, rp.product_id, [3]
             )  # ID=3 is Industrial Emissions category
+
+            # Handle Pulp & Paper specific edge case:
+            # Subtract the sum of emissions that were categorized as industrial_process & (woody_biomass or other_excluded_biomass) from
+            # the industrial_process emission total attributed to the product "Pulp and paper: chemical pulp".
+            if (
+                rp.report_version.report.operation.naics_code
+                and rp.report_version.report.operation.naics_code.naics_code.startswith('322')
+                and rp.product.name == 'Pulp and paper: chemical pulp'
+            ):
+                overlapping_industrial_process_emissions = (
+                    EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_report_version(
+                        report_version_id
+                    )
+                )
+                industrial_process = industrial_process - overlapping_industrial_process_emissions
+
             production_totals = ComplianceService.get_report_product_aggregated_totals(report_version_id, rp.product_id)
             allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
                 report_version_id,
