@@ -57,6 +57,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [key, resetKey] = useKey();
   const formRef = useRef<Form>(null);
+  const shouldNavigateRef = useRef(false);
   const router = useRouter();
 
   const handleFormSave = async (data: any, navigateAfterSubmit: boolean) => {
@@ -93,8 +94,13 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
 
   // Essentially a manual call to `submit()` with a context
   const onSaveAndContinue = async () => {
-    if (formRef.current?.validateForm())
-      await handleFormSave(formRef.current.state, true);
+    if (formRef.current) {
+      if (formRef.current.validateForm()) {
+        shouldNavigateRef.current = true; // Set the flag to true before submitting
+        // Calls Form submit() method, ensuring omitExtraData is enforced since onSubmit function receives the cleaned formData.
+        await formRef.current.submit();
+      }
+    }
   };
 
   return (
@@ -102,7 +108,10 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
       {...props}
       key={key}
       formRef={formRef}
-      onSubmit={(data) => handleFormSave(data, false)}
+      onSubmit={(data) => {
+        handleFormSave(data, shouldNavigateRef.current);
+        shouldNavigateRef.current = false; // Reset after submission
+      }}
     >
       <ReportingStepButtons
         key="form-buttons"
