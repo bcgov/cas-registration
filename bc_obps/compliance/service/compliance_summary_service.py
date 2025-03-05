@@ -43,11 +43,6 @@ class ComplianceSummaryService:
             # Get compliance data from reporting service
             compliance_data = ReportComplianceService.get_calculated_compliance_data(report_version_id)
 
-            # Determine compliance status
-            compliance_status = cls._determine_compliance_status(
-                compliance_data.excess_emissions, compliance_data.credited_emissions
-            )
-
             # Create compliance summary
             summary = ComplianceSummary.objects.create(
                 report=report_version.report,
