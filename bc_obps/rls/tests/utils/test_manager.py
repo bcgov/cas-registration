@@ -75,7 +75,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('grant select on all tables in schema common to '),
+                    SQL('grant select, insert on all tables in schema common to '),
                     self._get_composed_role_identifiers(),
                 ]
             )
