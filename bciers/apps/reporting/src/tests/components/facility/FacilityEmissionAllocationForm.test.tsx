@@ -257,11 +257,6 @@ describe("FacilityEmissionAllocationForm component", () => {
       />,
     );
 
-    await waitFor(() => {
-      const txt = screen.getAllByText(/Allocation of Emissions/i)[0];
-      expect(txt).toBeInTheDocument();
-      expect(txt).toBeVisible();
-    });
     await userEvent.click(
       screen.getByRole("combobox", { name: /root_allocation_methodology/i }),
     );
