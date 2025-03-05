@@ -32,11 +32,6 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_operator_users"},
         {
             "method": "get",
-            "endpoint_name": "get_user",
-            "kwargs": {"user_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
             "endpoint_name": "operation_registration_get_opted_in_operation_detail",
             "kwargs": {"operation_id": MOCK_UUID},
         },
