@@ -52,7 +52,7 @@ export default function SelectOperatorForm() {
       >
         {errorList.length > 0 &&
           errorList.map((e: any) => (
-            <Alert key={e.message} severity="error">
+            <Alert key={e.message} severity="error" className="mt-2">
               {e.message}
             </Alert>
           ))}
