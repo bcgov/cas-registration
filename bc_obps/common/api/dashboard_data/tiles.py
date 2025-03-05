@@ -5,7 +5,7 @@ from uuid import UUID
 from common.api.router import router
 from common.constants import TAG_DASHBOARD_TILES
 from common.models import DashboardData
-from common.schema.v1 import DashboardDataSchemaOut
+from common.schema import DashboardDataSchemaOut
 from common.api.utils import get_current_user_guid
 from registration.models import AppRole
 from common.permissions import authorize

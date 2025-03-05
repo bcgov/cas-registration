@@ -1,4 +1,4 @@
-# ruff: noqa: F403
-from .v1 import *
-from . import create_superuser  # noqa: F401
-from .router import router  # django_ninja router object  # noqa: F401
+# ruff: noqa: F401
+from .dashboard_data import tiles
+from . import create_superuser
+from .router import router  # django_ninja router object
