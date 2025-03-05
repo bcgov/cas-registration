@@ -17,6 +17,7 @@ class ReportProduct(TimeStampedModel):
     class ProductionMethodologyChoices(models.TextChoices):
         OBPS_CALCULATOR = ("OBPS Calculator",)
         OTHER = "other"
+        NOT_APPLICABLE = "Not Applicable"
 
     report_version = models.ForeignKey(
         ReportVersion,
