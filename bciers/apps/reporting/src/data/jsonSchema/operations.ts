@@ -11,8 +11,8 @@ export const operationReviewSchema: RJSFSchema = {
   title: "Review Operation Information",
   required: [
     "operation_representative_name",
-    "operation_bcghgid",
     "operation_name",
+    "operator_legal_name",
   ],
 
   properties: {
