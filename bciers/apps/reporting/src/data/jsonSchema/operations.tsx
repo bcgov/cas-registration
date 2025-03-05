@@ -7,6 +7,7 @@ import {
 } from "./reviewOperationInformationText";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import selectWidget from "@bciers/components/form/widgets/SelectWidget";
+import { SIMPLE_REPORT } from "@reporting/src/app/utils/constants";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
@@ -17,11 +18,16 @@ export const buildOperationReviewSchema = (
   allRegulatedProducts: any[],
   allRepresentatives: any[],
   reportType: { report_type: string },
+  showRegulatedProducts: boolean,
 ) =>
   ({
     type: "object",
     title: "Review Operation Information",
-    required: ["operation_representative_name", "operation_name"],
+    required: [
+      "operation_representative_name",
+      "operation_name",
+      "operator_legal_name",
+    ],
     properties: {
       purpose_note: {
         type: "object",
@@ -33,9 +39,7 @@ export const buildOperationReviewSchema = (
           "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
         enum: ["Annual Report", "Simple Report"],
         description:
-          reportType.report_type === "Simple Report"
-            ? reportTypeHelperText
-            : "",
+          reportType.report_type === SIMPLE_REPORT ? reportTypeHelperText : "",
       },
 
       operation_representative_name: {
@@ -61,7 +65,10 @@ export const buildOperationReviewSchema = (
       },
 
       operator_legal_name: { type: "string", title: "Operator legal name" },
-      operator_trade_name: { type: "string", title: "Operator trade name" },
+      operator_trade_name: {
+        type: ["string", "null"],
+        title: "Operator trade name",
+      },
       operation_name: { type: "string", title: "Operation name" },
       operation_type: {
         type: "string",
@@ -95,18 +102,20 @@ export const buildOperationReviewSchema = (
                   enumNames: allActivities.map((activity) => activity.name),
                 },
               },
-              regulated_products: {
-                type: "array",
-                title: "Regulated products",
-                minItems: 1,
-                items: {
-                  type: "number",
-                  enum: allRegulatedProducts.map((product) => product.id),
-                  enumNames: allRegulatedProducts.map(
-                    (product) => product.name,
-                  ),
+              ...(showRegulatedProducts && {
+                regulated_products: {
+                  type: "array",
+                  title: "Regulated products",
+                  minItems: 1,
+                  items: {
+                    type: "number",
+                    enum: allRegulatedProducts.map((product) => product.id),
+                    enumNames: allRegulatedProducts.map(
+                      (product) => product.name,
+                    ),
+                  },
                 },
-              },
+              }),
             },
           },
           {
