@@ -3,7 +3,7 @@ PSQL=psql -h localhost
 DB_NAME=registration
 MANAGE_PY = manage.py
 SCHEMA_NAME=erc
-PYTEST=pytest --rootdir=bc_obps
+PYTEST=pytest --rootdir=bc_obps --import-mode=importlib
 
 # If the VIRTUAL_ENV is specified, we can assume we're in a poetry shell, otherwise
 # we need to execute "poetry run"
