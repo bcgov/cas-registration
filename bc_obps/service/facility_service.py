@@ -16,7 +16,6 @@ from service.data_access_service.address_service import AddressDataAccessService
 from registration.models.operation import Operation
 from registration.models import User
 from registration.models import WellAuthorizationNumber
-from registration.enums.enums import OperationTypes
 from django.db import transaction
 from django.utils import timezone
 from registration.models import Address
