@@ -27,9 +27,7 @@ export default function OperationReviewForm({
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [errors, setErrors] = useState<string[]>();
-  const [apiError, setApiError] = useState<string | null>(
-    '"Failed to change the report type. Please try again."',
-  );
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // 🛸 Set up routing urls
   const backUrl = `/reports`;
