@@ -90,6 +90,15 @@ export const createOperationRepresentativeSchema = (
     existingOperationRepresentatives &&
     existingOperationRepresentatives.length !== 0;
 
+  // Ensure options exist to populate anyOf, otherwise set to undefined
+  let existingContactsAnyOf;
+  if (Array.isArray(allContactOptions) && allContactOptions.length > 0) {
+    existingContactsAnyOf = allContactOptions.map((contact) => ({
+      title: `${contact.first_name} ${contact.last_name}`,
+      const: contact.id,
+    }));
+  }
+
   const operationRepresentativeSchema: RJSFSchema = {
     title: "Operation Representative",
     type: "object",
@@ -118,11 +127,7 @@ export const createOperationRepresentativeSchema = (
             existing_contact_id: {
               type: "number",
               title: "Select Existing Contact (Optional)",
-              anyOf: allContactOptions.map((contact) => ({
-                type: "number",
-                title: `${contact.first_name} ${contact.last_name}`,
-                const: contact.id,
-              })),
+              ...(existingContactsAnyOf && { anyOf: existingContactsAnyOf }),
             },
             ...newOperationRepresentativeSchema.properties,
           },

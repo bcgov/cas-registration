@@ -48,7 +48,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
     expect(operationRepresentativeTestField).toBeVisible();
   });
 
-  it("should show the operation reprentatives when formData provided", () => {
+  it("should show the operation representatives when formData provided", () => {
     const { container } = render(
       <FormBase
         schema={operationRepresentativeWidgetSchema}
