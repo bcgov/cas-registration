@@ -79,18 +79,3 @@ def change_report_version_type(
 ) -> Tuple[Literal[201], int]:
     report_version = ReportVersionService.change_report_version_type(version_id, payload.report_type)
     return 201, report_version.id
-
-
-@router.post(
-    "/report-version/{version_id}/create-supplementary-report-version",
-    response={201: int, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Creates a new supplementary report version based on an existing submitted report version.
-    This endpoint allows the creation of a new draft version of a previously submitted emissions report.""",
-    auth=authorize("approved_industry_user"),
-)
-def create_supplementary_report_version(
-    request: HttpRequest, version_id: int
-) -> Tuple[Literal[201], int]:
-    report_version = ReportVersionService.create_supplementary_report_version_version(version_id)
-    return 201, report_version.id
