@@ -266,6 +266,7 @@ export default function FacilityEmissionAllocationForm({
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}
+      saveButtonDisabled={submitButtonDisabled}
       backUrl={backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
