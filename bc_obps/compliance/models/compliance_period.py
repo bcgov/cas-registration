@@ -4,6 +4,7 @@ from simple_history.models import HistoricalRecords
 from reporting.models.reporting_year import ReportingYear
 from .rls_configs.compliance_period import Rls as CompliancePeriodRls
 
+
 class CompliancePeriod(TimeStampedModel):
     """
     Model to store compliance periods
@@ -40,6 +41,5 @@ class CompliancePeriod(TimeStampedModel):
         db_table_comment = "A table to store compliance periods"
         db_table = 'erc"."compliance_period'
         ordering = ['-end_date']
-
 
     Rls = CompliancePeriodRls

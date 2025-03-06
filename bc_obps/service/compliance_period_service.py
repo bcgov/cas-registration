@@ -51,4 +51,4 @@ class CompliancePeriodService:
         Raises:
             CompliancePeriod.DoesNotExist: If no compliance period exists for the year
         """
-        return CompliancePeriod.objects.get(reporting_year_id=year) 
+        return CompliancePeriod.objects.get(reporting_year_id=year)

@@ -86,4 +86,4 @@ class TestComplianceSummaryService:
 
         # Test OBLIGATION_FULLY_MET
         status = ComplianceSummaryService._determine_compliance_status(Decimal('0.0'), Decimal('0.0'))
-        assert status == ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET 
+        assert status == ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET

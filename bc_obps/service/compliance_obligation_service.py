@@ -127,4 +127,4 @@ class ComplianceObligationService:
         Raises:
             ComplianceObligation.DoesNotExist: If no obligation exists for the summary
         """
-        return ComplianceObligation.objects.get(compliance_summary_id=compliance_summary_id) 
+        return ComplianceObligation.objects.get(compliance_summary_id=compliance_summary_id)

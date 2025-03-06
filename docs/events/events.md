@@ -68,4 +68,4 @@ class YourAppConfig(AppConfig):
 
 - `report_submitted`: Sent when a report is submitted
 
-See `events/signals.py` for the complete list of signals and their parameters. 
+See `events/signals.py` for the complete list of signals and their parameters.

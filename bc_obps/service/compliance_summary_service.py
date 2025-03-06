@@ -133,4 +133,4 @@ class ComplianceSummaryService:
         elif credited_emissions > Decimal('0'):
             return ComplianceSummary.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET 
+            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET

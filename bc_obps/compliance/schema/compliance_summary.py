@@ -1,6 +1,6 @@
 from decimal import Decimal
 from typing import List, Any, Union, cast
-from ninja import Schema, ModelSchema
+from ninja import ModelSchema
 
 from compliance.models.compliance_product import ComplianceProduct
 from compliance.models.compliance_obligation import ComplianceObligation
@@ -11,7 +11,7 @@ class ComplianceProductOut(ModelSchema):
     """Schema for compliance product output"""
 
     product_name: str
-    
+
     class Meta:
         model = ComplianceProduct
         fields = [
@@ -21,7 +21,7 @@ class ComplianceProductOut(ModelSchema):
             'allocated_industrial_process_emissions',
             'allocated_compliance_emissions',
         ]
-        
+
     @staticmethod
     def resolve_product_name(obj: Any) -> str:
         return cast(str, obj.report_product.product.name)
@@ -40,7 +40,7 @@ class ComplianceObligationOut(ModelSchema):
 
 class ComplianceSummaryListOut(ModelSchema):
     """Schema for compliance summary list output"""
-    
+
     operation_name: str
     reporting_year: int
     compliance_status: str
@@ -72,7 +72,7 @@ class ComplianceSummaryListOut(ModelSchema):
 
 class ComplianceSummaryOut(ModelSchema):
     """Schema for compliance summary output"""
-    
+
     operation_name: str
     operation_bcghg_id: str
     reporting_year: int

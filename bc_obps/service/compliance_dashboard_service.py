@@ -74,4 +74,4 @@ class ComplianceDashboardService:
                 .get()
             )
         except ComplianceSummary.DoesNotExist:
-            return None 
+            return None
