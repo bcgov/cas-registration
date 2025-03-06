@@ -155,6 +155,18 @@ class UserModelTest(BaseTestCase):
             ("reportoperationrepresentative_created", "report operation representative", None, None),
             ("reportoperationrepresentative_updated", "report operation representative", None, None),
             ("reportoperationrepresentative_archived", "report operation representative", None, None),
+            ("complianceperiod_created", "compliance period", None, None),
+            ("complianceperiod_updated", "compliance period", None, None),
+            ("complianceperiod_archived", "compliance period", None, None),
+            ("compliancesummary_created", "compliance summary", None, None),
+            ("compliancesummary_updated", "compliance summary", None, None),
+            ("compliancesummary_archived", "compliance summary", None, None),
+            ("complianceproduct_created", "compliance product", None, None),
+            ("complianceproduct_updated", "compliance product", None, None),
+            ("complianceproduct_archived", "compliance product", None, None),
+            ("complianceobligation_created", "compliance obligation", None, None),
+            ("complianceobligation_updated", "compliance obligation", None, None),
+            ("complianceobligation_archived", "compliance obligation", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):

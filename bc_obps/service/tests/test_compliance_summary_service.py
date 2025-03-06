@@ -5,6 +5,8 @@ from uuid import UUID
 from compliance.models import ComplianceSummary
 from service.compliance_summary_service import ComplianceSummaryService
 
+pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
+
 
 class TestComplianceSummaryService:
     @pytest.fixture
