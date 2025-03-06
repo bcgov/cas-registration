@@ -5,25 +5,15 @@ from rls.utils.helpers import generate_rls_grants
 
 class Rls:
     role_grants_mapping = {
-        # Industry users can view their own compliance products
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT],
-        # CAS staff can manage compliance products
-        RlsRoles.CAS_DIRECTOR: [
+        RlsRoles.INDUSTRY_USER: [
             RlsOperations.SELECT,
             RlsOperations.INSERT,
             RlsOperations.UPDATE,
             RlsOperations.DELETE,
         ],
-        RlsRoles.CAS_ADMIN: [
-            RlsOperations.SELECT,
-            RlsOperations.INSERT,
-            RlsOperations.UPDATE,
-        ],
-        RlsRoles.CAS_ANALYST: [
-            RlsOperations.SELECT,
-            RlsOperations.INSERT,
-            RlsOperations.UPDATE,
-        ],
+        RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
+        RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
+        RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_PRODUCT)

@@ -1,5 +1,5 @@
 from django.dispatch import receiver
-from compliance.service.compliance_summary_service import ComplianceSummaryService
+from service.compliance_summary_service import ComplianceSummaryService
 from events.signals import report_submitted
 from typing import Any, Type
 

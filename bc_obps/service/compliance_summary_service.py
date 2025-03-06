@@ -5,8 +5,8 @@ from compliance.models.compliance_period import CompliancePeriod
 from reporting.models import ReportVersion, ReportProduct
 from reporting.service.compliance_service import ComplianceService as ReportComplianceService
 from compliance.models import ComplianceSummary, ComplianceProduct
-from compliance.service.compliance_period_service import CompliancePeriodService
-from compliance.service.compliance_obligation_service import ComplianceObligationService
+from service.compliance_period_service import CompliancePeriodService
+from service.compliance_obligation_service import ComplianceObligationService
 from django.core.exceptions import ValidationError
 
 
@@ -133,4 +133,4 @@ class ComplianceSummaryService:
         elif credited_emissions > Decimal('0'):
             return ComplianceSummary.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET
+            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET 

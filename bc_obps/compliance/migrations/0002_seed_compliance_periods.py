@@ -10,7 +10,7 @@ def init_compliance_periods(apps, schema_editor):
     from django.core.management import call_command
 
     fixture_files = [
-        'compliance/fixtures/mock/compliance_periods.json',
+        'compliance/fixtures/production/compliance_periods.json',
     ]
 
     # Load the fixtures

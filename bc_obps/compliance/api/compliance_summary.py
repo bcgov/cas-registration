@@ -8,7 +8,7 @@ from compliance.models import ComplianceSummary
 from compliance.schema.compliance_summary import ComplianceSummaryOut, ComplianceSummaryListOut
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
-from compliance.service.compliance_dashboard_service import ComplianceDashboardService
+from service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from .router import router
 
@@ -39,5 +39,5 @@ def get_compliance_summary(request: HttpRequest, summary_id: int) -> Tuple[Liter
     user_guid = get_current_user_guid(request)
     summary = ComplianceDashboardService.get_compliance_summary_by_id(user_guid, summary_id)
     if not summary:
-        summary = get_object_or_404(ComplianceSummary, id=summary_id)
+        return get_object_or_404(ComplianceSummary.objects.none(), id=summary_id)
     return 200, summary

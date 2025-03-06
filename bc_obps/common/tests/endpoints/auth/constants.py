@@ -24,6 +24,36 @@ ENDPOINTS = {
         },
     ],
     "approved_industry_user": [
+        {"method": "post", "endpoint_name": "v1_create_operation"},
+        {"method": "post", "endpoint_name": "v1_create_contact"},
+        {
+            "method": "put",
+            "endpoint_name": "v1_update_operation",
+            "kwargs": {"operation_id": MOCK_UUID},
+        },
+        {"method": "get", "endpoint_name": "get_compliance_summaries_list"},
+        {
+            "method": "get",
+            "endpoint_name": "get_compliance_summary",
+            "kwargs": {"summary_id": MOCK_INT},
+        },
+        {
+            "method": "put",
+            "endpoint_name": "v1_update_operator_and_user_operator",
+            "kwargs": {"user_operator_id": MOCK_UUID},
+        },
+        {"method": "get", "endpoint_name": "v1_is_current_user_approved_admin"},
+        {"method": "get", "endpoint_name": "v1_get_operator_users"},
+        {
+            "method": "put",
+            "endpoint_name": "v1_update_contact",
+            "kwargs": {"contact_id": MOCK_UUID},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "v1_get_user",
+            "kwargs": {"user_id": MOCK_UUID},
+        },
         {
             "method": "get",
             "endpoint_name": "get_current_operator_and_user_operator",

@@ -16,7 +16,6 @@ export default async function ComplianceSummariesPage({
   };
 
   return (
-    <>
       <div className="flex flex-col">
         <div className="mb-5">
           <div className="mb-2">
@@ -35,6 +34,5 @@ export default async function ComplianceSummariesPage({
         </div>
         <ComplianceSummaries initialData={transformedData} />
       </div>
-    </>
   );
 }
