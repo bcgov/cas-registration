@@ -6,6 +6,8 @@ from reporting.service.reporting_dashboard_service import ReportingDashboardServ
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
 from service.report_service import ReportService
 from reporting.models.report_version import ReportVersion
+from typing import Optional
+from reporting.schema.operation import ReportingDashboardOperationFilterSchema
 
 
 @pytest.mark.django_db
@@ -24,6 +26,11 @@ class TestReportingDashboardService:
         year = reporting_year_baker(reporting_year=5091)
         operator = operator_baker()
         operations = operation_baker(operator_id=operator.id, _quantity=4)
+
+        sort_field: Optional[str] = "name"
+        sort_order: Optional[str] = "asc"
+        filters = ReportingDashboardOperationFilterSchema()  # Provide actual test data
+
 
         # Create reports for first two operations
         r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
@@ -44,7 +51,7 @@ class TestReportingDashboardService:
         for op in operations:
             op.save()
 
-        result = ReportingDashboardService.get_operations_for_reporting_dashboard(user.user_guid, 5091).values()
+        result = ReportingDashboardService.get_operations_for_reporting_dashboard(user.user_guid, 5091, sort_field, sort_order, filters).values()
         result_list = list(result)
 
         assert len(result_list) == 3

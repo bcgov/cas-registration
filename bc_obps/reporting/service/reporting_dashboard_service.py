@@ -5,6 +5,9 @@ from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
+from ninja import Query
+from typing import Optional
+from reporting.schema.operation import ReportingDashboardOperationFilterSchema
 
 
 class ReportingDashboardService:
@@ -13,11 +16,21 @@ class ReportingDashboardService:
     """
 
     @classmethod
-    def get_operations_for_reporting_dashboard(cls, user_guid: UUID, reporting_year: int) -> QuerySet[Operation]:
+    def get_operations_for_reporting_dashboard(
+        cls,
+        user_guid: UUID,
+        reporting_year: int,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: ReportingDashboardOperationFilterSchema = Query(...),
+    ) -> QuerySet[Operation]:    
         """
         Fetches all operations for the user, and annotates it with the associated report data required for the API call
         """
         user = UserDataAccessService.get_by_guid(user_guid)
+
+        sort_direction = "-" if sort_order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}"
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_subquery = (
@@ -33,7 +46,7 @@ class ReportingDashboardService:
             )
         )
 
-        return (
+        queryset = (
             OperationDataAccessService.get_all_operations_for_user(user)
             .filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
             .annotate(
@@ -42,3 +55,5 @@ class ReportingDashboardService:
                 report_status=report_subquery.values("latest_version_status"),
             )
         )
+
+        return filters.filter(queryset).order_by(sort_by)
