@@ -64,7 +64,7 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert response_json["operation_bcghgid"] == data["operation_bcghgid"]
         assert response_json["bc_obps_regulated_operation_id"] == data["bc_obps_regulated_operation_id"]
 
-    @patch("service.report_version_service.ReportVersionService.change_report_version_type")
+    @patch("reporting.service.report_version_service.ReportVersionService.change_report_version_type")
     def test_change_report_version_type(self, mock_change_version_service_method: MagicMock):
         mock_change_version_service_method.return_value = baker.make_recipe(
             "reporting.tests.utils.report_version",
