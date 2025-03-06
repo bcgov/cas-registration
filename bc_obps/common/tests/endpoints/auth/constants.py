@@ -203,8 +203,12 @@ ENDPOINTS = {
             "method": "post",
             "endpoint_name": "register_create_operation_information",
         },
-        {"method": "post", "endpoint_name": "start_report"},
-        {"method": "post", "endpoint_name": "create_supplementary_report_version"},
+        {   "method": "post", "endpoint_name": "start_report"},
+        {
+            "method": "post",
+            "endpoint_name": "create_supplementary_report_version",
+            "kwargs": {"version_id": MOCK_INT},
+        },
         {
             "method": "post",
             "endpoint_name": "save_report",

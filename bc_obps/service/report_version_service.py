@@ -82,7 +82,7 @@ class ReportVersionService:
         report_version = ReportVersion.objects.get(id=report_version_id)
 
         # Check if the report status is "Submitted"
-        if report_version.status != ReportVersion.ReportVersionStatus.SUBMITTED:            
+        if report_version.status != ReportVersion.ReportVersionStatus.Submitted:            
             raise Exception("report_version_not_submitted")
         
         # Create a new report version as a Draft

@@ -1,8 +1,11 @@
 # ruff: noqa: F401
 from .router import router
 from .reports import  (
-    start_report,
+    start_report,get_reporting_year
+)
+from .report_version import  (
     create_supplementary_report_version,
+    change_report_version_type,
     get_regulated_products_by_version_id,
     get_regulated_products_by_version_id,
     get_report_type_by_version,
