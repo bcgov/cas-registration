@@ -90,11 +90,10 @@ export const createOperationRepresentativeSchema = (
     existingOperationRepresentatives &&
     existingOperationRepresentatives.length !== 0;
 
-  // We must make sure that we already have
+  // Ensure options exist to populate anyOf, otherwise set to undefined
   let existingContactsAnyOf;
   if (Array.isArray(allContactOptions) && allContactOptions.length > 0) {
     existingContactsAnyOf = allContactOptions.map((contact) => ({
-      // type: "number",
       title: `${contact.first_name} ${contact.last_name}`,
       const: contact.id,
     }));
