@@ -89,11 +89,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
             user_guid: token.user_guid,
           },
         );
-        if (
-          reportOperation &&
-          reportOperation.report_operation.operation_type ===
-            "Single Facility Operation"
-        ) {
+        if (reportOperation?.operation_type === "Single Facility Operation") {
           // 🛸 Redirect to review operator
           return NextResponse.redirect(
             new URL(

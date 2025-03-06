@@ -77,7 +77,7 @@ describe("VerificationPage component", () => {
       { type: "Page", title: "Verification", isActive: true },
     ];
     const mockReportOperation = {
-      report_operation: { operation_type: "Single Facility Operation" },
+      operation_type: "Single Facility Operation",
     };
 
     mockGetReportVerification.mockResolvedValue(mockInitialData);
