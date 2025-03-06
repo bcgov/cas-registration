@@ -54,7 +54,7 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   return [
     {
       schema: schema,
-      data: formData,
+      data: reportingOperationData,
       uiSchema: operationReviewUiSchema,
     },
   ];
