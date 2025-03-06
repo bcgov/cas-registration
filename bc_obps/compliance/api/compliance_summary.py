@@ -8,19 +8,19 @@ from compliance.models import ComplianceSummary
 from compliance.schema.compliance_summary import ComplianceSummaryOut, ComplianceSummaryListOut
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
-from registration.constants import PAGE_SIZE
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
+from registration.schema.generic import Message
 from .router import router
 
 
 @router.get(
     "/summaries",
-    response={200: List[ComplianceSummaryListOut], custom_codes_4xx: str},
+    response={200: List[ComplianceSummaryListOut], custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get all compliance summaries for the current user's operations",
     auth=authorize("approved_industry_user"),
 )
-@paginate(PageNumberPagination, page_size=PAGE_SIZE)
+@paginate(PageNumberPagination)
 def get_compliance_summaries_list(request: HttpRequest) -> QuerySet[ComplianceSummary]:
     """Get all compliance summaries for the current user's operations"""
     user_guid = get_current_user_guid(request)
@@ -29,7 +29,7 @@ def get_compliance_summaries_list(request: HttpRequest) -> QuerySet[ComplianceSu
 
 @router.get(
     "/summaries/{summary_id}",
-    response={200: ComplianceSummaryOut, custom_codes_4xx: str},
+    response={200: ComplianceSummaryOut, custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get a compliance summary by ID",
     auth=authorize("approved_industry_user"),
