@@ -30,10 +30,6 @@ export default function OperationReviewForm({
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
 
-  // 🛸 Set up routing urls
-  const backUrl = `/reports`;
-  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
-
   const router = useRouter();
 
   const saveHandler = async () => {
@@ -114,8 +110,8 @@ export default function OperationReviewForm({
         formData={formDataState}
         onSubmit={saveHandler}
         onChange={onChangeHandler}
-        backUrl={backUrl}
-        continueUrl={saveAndContinueUrl}
+        backUrl={navigationInformation.backUrl}
+        continueUrl={navigationInformation.continueUrl}
         errors={errors}
       />
     </>

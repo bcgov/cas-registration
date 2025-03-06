@@ -2,27 +2,27 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 
 export enum ReportingPage {
   // 1
-  ReviewOperatorInfo,
-  PersonResponsible,
-  ReviewFacilities,
+  ReviewOperatorInfo = "ReviewOperatorInfo",
+  PersonResponsible = "PersonResponsible",
+  ReviewFacilities = "ReviewFacilities",
   // 2
-  ReviewInformation,
-  Activities,
-  NonAttributableEmission,
-  EmissionSummary,
-  ProductionData,
-  AllocationOfEmissions,
+  ReviewInformation = "ReviewInformation",
+  Activities = "Activities",
+  NonAttributableEmission = "NonAttributableEmission",
+  EmissionSummary = "EmissionSummary",
+  ProductionData = "ProductionData",
+  AllocationOfEmissions = "AllocationOfEmissions",
   // 3
-  AdditionalReportingData,
-  NewEntrantInformation,
-  OperationEmissionSummary,
+  AdditionalReportingData = "AdditionalReportingData",
+  NewEntrantInformation = "NewEntrantInformation",
+  OperationEmissionSummary = "OperationEmissionSummary",
   // 4
-  ComplianceSummary,
+  ComplianceSummary = "ComplianceSummary",
   // 5
-  Verification,
-  Attachments,
-  FinalReview,
-  SignOff,
+  Verification = "Verification",
+  Attachments = "Attachments",
+  FinalReview = "FinalReview",
+  SignOff = "SignOff",
 }
 
 export enum ReportingFlow {
@@ -34,10 +34,6 @@ export enum ReportingFlow {
   ReportingOnlyLFO = "Reporting Only - LFO",
 }
 
-export type ReportingFlowDescription = {
-  [key in HeaderStep]?: ReportingPage[];
-};
-
 export enum HeaderStep {
   OperationInformation = "Operation Information",
   ReportInformation = "Report Information",
@@ -45,6 +41,10 @@ export enum HeaderStep {
   ComplianceSummary = "Compliance Summary",
   SignOffSubmit = "Sign-off & Submit",
 }
+
+export type ReportingFlowDescription = {
+  [key in HeaderStep]?: ReportingPage[];
+};
 
 export type NavigationInformation = {
   // We might want to add the multistep header in here too
@@ -58,11 +58,17 @@ export type TaskListPageFactory = (
   reportVersionId: number,
   context?: Object,
 ) => {
-  // The tasklist element associated with the page
   element: TaskListElement;
-
-  // The factory can generate its own forward and back links
-  // This would be used for example if the factory generates sub-pages and a hierarchy
   continueUrl?: string;
   backUrl?: string;
 };
+
+export type AsyncTaskListPageFactory = (
+  activePage: ReportingPage,
+  reportVersionId: number,
+  context?: Object,
+) => Promise<{
+  element: TaskListElement;
+  continueUrl?: string;
+  backUrl?: string;
+}>;
