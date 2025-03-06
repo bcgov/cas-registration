@@ -38,7 +38,7 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   ].includes(registrationPurpose);
 
   const schema: any = buildOperationReviewSchema(
-    formData,
+    reportingOperationData,
     registrationPurpose,
     reportingWindowEnd,
     allActivities,

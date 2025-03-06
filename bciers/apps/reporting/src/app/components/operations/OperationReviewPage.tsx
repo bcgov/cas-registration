@@ -56,7 +56,7 @@ export default async function OperationReviewPage({
     allRegulatedProducts,
     allRepresentatives,
     reportType,
-    showRegulatedProducts
+    showRegulatedProducts,
   );
 
   return (
