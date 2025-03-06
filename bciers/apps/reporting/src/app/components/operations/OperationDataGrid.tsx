@@ -8,7 +8,7 @@ import { fetchOperationsPageData } from "./fetchOperationsPageData";
 import operationColumns from "@reporting/src/app/components/datagrid/models/operations/operationColumns";
 import { OperationRow } from "./types";
 
-const ReportingOperationDataGrid = ({
+const OperationDataGrid = ({
   initialData,
 }: {
   initialData: {
@@ -41,4 +41,4 @@ const ReportingOperationDataGrid = ({
   );
 };
 
-export default ReportingOperationDataGrid;
+export default OperationDataGrid;
