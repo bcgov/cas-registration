@@ -42,7 +42,7 @@ const ActionCell = (params: GridRenderCellParams) => {
       reportingYearObj.reporting_year,
     );
     if (typeof newReportId === "number")
-      router.push(`reports/${newReportId}/review-operator-data`);
+      router.push(`reports/${newReportId}/review-operation-information`);
   };
 
   let buttonText = "Start";
@@ -53,12 +53,12 @@ const ActionCell = (params: GridRenderCellParams) => {
     if (reportStatus === ReportOperationStatus.DRAFT) {
       buttonText = "Continue";
       buttonAction = async () =>
-        router.push(`reports/${reportVersionId}/review-operator-data`);
+        router.push(`reports/${reportVersionId}/review-operation-information`);
       buttonDisabled = false;
     } else if (reportStatus === ReportOperationStatus.SUBMITTED) {
       buttonText = "View Details";
       buttonAction = async () =>
-        router.push(`reports/${reportVersionId}/review-operator-data`);
+        router.push(`reports/${reportVersionId}/review-operation-information`);
       buttonDisabled = false;
     }
   }

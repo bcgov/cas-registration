@@ -33,7 +33,6 @@ class ReportOperationOut(ModelSchema):
             'activities',
             'regulated_products',
         ]
-        orm_mode = True
 
 
 class ReportOperationRepresentativeSchema(ModelSchema):
@@ -42,13 +41,10 @@ class ReportOperationRepresentativeSchema(ModelSchema):
         fields = ["id", "representative_name", "selected_for_report"]
 
 
-class ReportOperationSchemaOut(Schema):
-    """
-    Schema for the report operation with representative details.
-    """
-
-    report_operation: ReportOperationOut
+class ReportOperationSchemaOut(ReportOperationOut):
     report_operation_representatives: List[ReportOperationRepresentativeSchema]
+    operation_representative_name: List[int]  # IDs of selected representatives
+    operation_report_type: str
 
 
 class ReportOperationIn(Schema):
@@ -62,7 +58,7 @@ class ReportOperationIn(Schema):
     operation_type: str
     operation_bcghgid: str
     bc_obps_regulated_operation_id: str
-    activities: List[str]
-    regulated_products: List[str]
+    activities: List[int]
+    regulated_products: List[int]
     operation_report_type: str
     operation_representative_name: List[int]
