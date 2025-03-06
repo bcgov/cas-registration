@@ -27,6 +27,12 @@ function InlineFieldTemplate({
   const inline = options?.inline;
   const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
 
+  // Check for noteDescription in ui:options
+  let noteDescription = options?.noteDescription;
+  if (noteDescription) {
+    noteDescription = <b>Note:</b> + " " + noteDescription; // Modify here, e.g., prepend "Note:"
+  }
+
   return (
     <div className="mb-4 md:mb-2">
       <div
@@ -47,7 +53,6 @@ function InlineFieldTemplate({
           <div
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
           >
-            {" "}
             <p>{options.displayUnit as any}</p>
           </div>
         )}
@@ -69,8 +74,14 @@ function InlineFieldTemplate({
         {isLabel && <div className="w-full lg:w-3/12" />}
         {description || help ? (
           <div className={`relative flex items-center w-full ${cellWidth}`}>
-            {description}
-            {help}
+            {noteDescription ? (
+              <small className="inline-display">{description}</small>
+            ) : (
+              <>
+                {description}
+                {help}
+              </>
+            )}
           </div>
         ) : null}
       </div>

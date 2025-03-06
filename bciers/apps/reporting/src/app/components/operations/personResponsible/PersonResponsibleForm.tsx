@@ -53,7 +53,7 @@ const PersonResponsibleForm = ({
     operationType === OperationTypes.LFO
       ? `/reports/${versionId}/facilities/review-facilities`
       : `/reports/${versionId}/facilities/${facilityId}/activities`;
-  const backUrl = `/reports/${versionId}/review-operator-data`;
+  const backUrl = `/reports/${versionId}/review-operation-information`;
 
   // Update schema whenever selectedContactId or contactFormData changes
   useEffect(() => {

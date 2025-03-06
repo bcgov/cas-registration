@@ -22,9 +22,7 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert response.status_code == 200
         # Test that the endpoint returns the correct data
         response_json = response.json()
-        assert response_json['report_operation']['operator_legal_name'] == str(
-            report_version.report_operation.operator_legal_name
-        )
+        assert response_json['operator_legal_name'] == str(report_version.report_operation.operator_legal_name)
 
     # POST report-operation
     def test_authorized_users_can_post_updates_to_report_version(self):

@@ -37,7 +37,7 @@ export const getOperationInformationTaskList: (
         {
           type: "Page",
           title: "Review operation information",
-          link: `/reports/${versionId}/review-operator-data`,
+          link: `/reports/${versionId}/review-operation-information`,
           isActive: activeIndex === ActivePage.ReviewOperatorInfo,
         },
         {

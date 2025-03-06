@@ -8,6 +8,12 @@ import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import OperationReviewForm from "./OperationReviewForm";
 import {
+  ActivePage,
+  getOperationInformationTaskList,
+} from "@reporting/src/app/components/taskList/1_operationInformation";
+import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
+import { formatDate } from "@reporting/src/app/utils/formatDate";
+import {
   ELECTRICITY_IMPORT_OPERATION,
   POTENTIAL_REPORTING_OPERATION,
   REPORTING_OPERATION,
@@ -25,30 +31,40 @@ export default async function OperationReviewPage({
   const facilityReport = await getFacilityReport(version_id);
 
   const registrationPurposeString = registrationPurpose?.registration_purpose;
-  const transformedOperation = {
-    ...reportOperation.report_operation,
-    operation_representative_name:
-      reportOperation.report_operation_representatives,
-  };
+
   const allRepresentatives = reportOperation.report_operation_representatives;
   const showRegulatedProducts = ![
     ELECTRICITY_IMPORT_OPERATION,
     REPORTING_OPERATION,
     POTENTIAL_REPORTING_OPERATION,
   ].includes(registrationPurposeString);
+  const taskListElements = getOperationInformationTaskList(
+    version_id,
+    ActivePage.ReviewOperatorInfo,
+    facilityReport.operation_type,
+  );
+
+  const reportingWindowEnd = formatDate(
+    reportingYear.reporting_window_end,
+    "MMM DD YYYY",
+  );
+  const schema = buildOperationReviewSchema(
+    reportOperation,
+    registrationPurposeString,
+    reportingWindowEnd,
+    allActivities,
+    allRegulatedProducts,
+    allRepresentatives,
+    reportType,
+    showRegulatedProducts,
+  );
 
   return (
     <OperationReviewForm
-      formData={transformedOperation}
+      formData={reportOperation}
       version_id={version_id}
-      reportType={reportType}
-      allActivities={allActivities}
-      reportingYear={reportingYear}
-      allRegulatedProducts={allRegulatedProducts}
-      registrationPurpose={registrationPurposeString}
-      facilityReport={facilityReport}
-      allRepresentatives={allRepresentatives}
-      showRegulatedProducts={showRegulatedProducts}
+      schema={schema}
+      taskListElements={taskListElements}
     />
   );
 }
