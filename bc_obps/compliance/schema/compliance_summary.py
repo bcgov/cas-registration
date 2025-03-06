@@ -1,7 +1,6 @@
 from decimal import Decimal
-from typing import List, Any, Union, cast
-from ninja import ModelSchema
-
+from typing import List, cast, Optional
+from ninja import ModelSchema, Field
 from compliance.models.compliance_product import ComplianceProduct
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_summary import ComplianceSummary
@@ -10,7 +9,7 @@ from compliance.models.compliance_summary import ComplianceSummary
 class ComplianceProductOut(ModelSchema):
     """Schema for compliance product output"""
 
-    product_name: str
+    product_name: str = Field(..., alias="report_product.product.name")
 
     class Meta:
         model = ComplianceProduct
@@ -21,10 +20,6 @@ class ComplianceProductOut(ModelSchema):
             'allocated_industrial_process_emissions',
             'allocated_compliance_emissions',
         ]
-
-    @staticmethod
-    def resolve_product_name(obj: Any) -> str:
-        return cast(str, obj.report_product.product.name)
 
 
 class ComplianceObligationOut(ModelSchema):
@@ -41,10 +36,10 @@ class ComplianceObligationOut(ModelSchema):
 class ComplianceSummaryListOut(ModelSchema):
     """Schema for compliance summary list output"""
 
-    operation_name: str
-    reporting_year: int
+    operation_name: str = Field(..., alias="report.operation.name")
+    reporting_year: int = Field(..., alias="compliance_period.end_date.year")
     compliance_status: str
-    obligation_id: Union[int, None]
+    obligation_id: Optional[int] = Field(None, alias="obligation.id")
 
     class Meta:
         model = ComplianceSummary
@@ -53,32 +48,17 @@ class ComplianceSummaryListOut(ModelSchema):
             'excess_emissions',
         ]
 
-    @staticmethod
-    def resolve_operation_name(obj: Any) -> str:
-        return cast(str, obj.report.operation.name)
-
-    @staticmethod
-    def resolve_reporting_year(obj: Any) -> int:
-        return cast(int, obj.compliance_period.end_date.year)
-
-    @staticmethod
-    def resolve_excess_emissions(obj: Any) -> Decimal:
-        return cast(Decimal, round(obj.excess_emissions))
-
-    @staticmethod
-    def resolve_obligation_id(obj: Any) -> Union[int, None]:
-        return obj.obligation.id if hasattr(obj, 'obligation') and obj.obligation else None
-
 
 class ComplianceSummaryOut(ModelSchema):
     """Schema for compliance summary output"""
 
-    operation_name: str
-    operation_bcghg_id: str
-    reporting_year: int
-    compliance_status: str
+    operation_name: str = Field(..., alias="report.operation.name")
+    operation_bcghg_id: str = Field(..., alias="report.operation.bcghg_id.id")
+    reporting_year: int = Field(..., alias="compliance_period.end_date.year")
+    compliance_status: str = Field(..., alias="compliance_status")
     products: List[ComplianceProductOut]
     obligation: ComplianceObligationOut
+    excess_emissions: Decimal
 
     class Meta:
         model = ComplianceSummary
@@ -88,24 +68,11 @@ class ComplianceSummaryOut(ModelSchema):
             'reporting_only_emissions',
             'emissions_attributable_for_compliance',
             'emission_limit',
-            'excess_emissions',
             'credited_emissions',
             'reduction_factor',
             'tightening_rate',
         ]
 
     @staticmethod
-    def resolve_operation_name(obj: Any) -> str:
-        return cast(str, obj.report.operation.name)
-
-    @staticmethod
-    def resolve_operation_bcghg_id(obj: Any) -> str:
-        return cast(str, obj.report.operation.bcghg_id.identifier)
-
-    @staticmethod
-    def resolve_reporting_year(obj: Any) -> int:
-        return cast(int, obj.compliance_period.end_date.year)
-
-    @staticmethod
-    def resolve_excess_emissions(obj: Any) -> Decimal:
+    def resolve_excess_emissions(obj: ComplianceSummary) -> Decimal:
         return cast(Decimal, round(obj.excess_emissions))
