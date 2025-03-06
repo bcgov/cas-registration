@@ -150,9 +150,7 @@ describe("withRulesAppliedReport middleware", () => {
       // Mock API response for getReportingOperation
       fetch.mockResponseOnce(
         JSON.stringify({
-          report_operation: {
-            operation_type: "Single Facility Operation",
-          },
+          operation_type: "Single Facility Operation",
         }),
       );
 

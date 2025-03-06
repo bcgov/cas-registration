@@ -19,9 +19,7 @@ export default async function VerificationPage({
   // 🚀 Fetch the operation associated with the specified version ID
   const reportOperation = await getReportingOperation(version_id);
   const operationType =
-    reportOperation &&
-    reportOperation.report_operation.operation_type ===
-      "Single Facility Operation"
+    reportOperation?.operation_type === "Single Facility Operation"
       ? "SFO"
       : "LFO";
 
