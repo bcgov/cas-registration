@@ -56,7 +56,6 @@ const allRepresentatives = [
 const reportType = { report_type: "Simple Report" };
 const schema = buildOperationReviewSchema(
   formData,
-  "Reporting Operation",
   "Dec 31 2025",
   activities,
   regulatedProducts,
