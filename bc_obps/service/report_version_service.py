@@ -75,10 +75,16 @@ class ReportVersionService:
 
     @staticmethod
     @transaction.atomic
-    def clone_report_version(report_version: ReportVersion) -> ReportVersion:
+    def create_supplementary_report_version_version(report_version_id: int) -> ReportVersion:
         """
         Creates a new report version based on an existing report version, incrementing the version number.
         """
+        report_version = ReportVersion.objects.get(id=report_version_id)
+
+        # Check if the report status is "Submitted"
+        if report_version.status != ReportVersion.ReportVersionStatus.SUBMITTED:            
+            raise Exception("report_version_not_submitted")
+        
         # Create a new report version as a Draft
         new_report_version = ReportVersion.objects.create(
             report=report_version.report,

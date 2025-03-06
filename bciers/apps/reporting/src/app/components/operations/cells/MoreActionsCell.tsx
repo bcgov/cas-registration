@@ -4,14 +4,15 @@ import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
-import postSupplementaryReport from "@reporting/src/app/utils/postSupplementaryReport";
+import postSupplementaryReportVersion from "@reporting/src/app/utils/postSupplementaryReportVersion";
 
 const MoreActionsCell = (params: GridRenderCellParams) => {
   const [pending, startTransition] = useTransition();
-
+  const reportVersionId = params?.row?.report_version_id;
   const reportId = params?.row?.report_id;
   const reportStatus = params?.row?.report_status;
 
@@ -27,8 +28,11 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
     setAnchorEl(null);
   };
 
-  const handleSupplementaryReport = async (reportVersionId: number) => {
-    await postSupplementaryReport(reportVersionId);
+  const handleSupplementaryReportVersion = async (reportVersionId: number) => {
+    const response = await postSupplementaryReportVersion(reportVersionId);
+    if (response && !response.error) {
+      router.push(`/reports/${response}/review-operation-information`);
+    }
   };
 
   return (
@@ -55,23 +59,29 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
           <MenuItem
             disabled={pending}
             onClick={() => {
-              handleClose(); // Close the menu first
               // use transition to display an error to users with the error boundary
               startTransition(async () => {
-                await handleSupplementaryReport(reportId);
+                await handleSupplementaryReportVersion(reportVersionId);
+                handleClose(); // Close the menu AFTER the report is created
               });
             }}
           >
-            Create Supplementary Report
+            {pending ? (
+              <CircularProgress size={20} />
+            ) : (
+              "Create Supplementary Report"
+            )}
           </MenuItem>
         )}
-        <MenuItem
-          onClick={async () =>
-            router.push(`reports/${reportId}/report-history`)
-          }
-        >
-          Report History
-        </MenuItem>
+        {!pending && (
+          <MenuItem
+            onClick={async () =>
+              router.push(`reports/${reportId}/report-history`)
+            }
+          >
+            Report History
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );

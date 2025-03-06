@@ -33,6 +33,18 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
     return 201, report_version_id
 
+@router.post(
+    "/report-version/{version_id}/create-supplementary-report-version",
+    response={201: int, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""...""",
+    auth=authorize("approved_industry_user"),
+)
+def create_supplementary_report_version(
+    request: HttpRequest, version_id: int
+) -> Tuple[Literal[201], int]:
+    report_version = ReportVersionService.create_supplementary_report_version_version(version_id)
+    return 201, report_version.id
 
 @router.get(
     "/report-version/{version_id}/report-operation",
