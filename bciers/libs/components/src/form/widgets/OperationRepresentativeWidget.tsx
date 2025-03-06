@@ -47,8 +47,8 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   const options = mapOptions(fieldSchema);
   const selectedOptions = options.filter((option) => value.includes(option.id));
 
-  const displayOptions = selectedOptions.map((option) => (
-    <>
+  const displayOptions = selectedOptions.map((option, index) => (
+    <span key={index}>
       {option.label}
       <IconButton aria-label="delete">
         <DeleteOutlineIcon
@@ -67,7 +67,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
           }}
         />
       </IconButton>
-    </>
+    </span>
   ));
 
   return (
