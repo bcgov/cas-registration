@@ -56,7 +56,7 @@ class ReportOperationIn(Schema):
     operator_trade_name: Optional[str] = None
     operation_name: str
     operation_type: str
-    operation_bcghgid: str
+    operation_bcghgid: Optional[str] = None
     bc_obps_regulated_operation_id: str
     activities: List[int]
     regulated_products: List[int]
