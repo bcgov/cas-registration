@@ -3,7 +3,6 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import OperationReviewForm from "./OperationReviewForm";
@@ -27,17 +26,14 @@ export default async function OperationReviewPage({
   const allRegulatedProducts = await getRegulatedProducts();
   const reportingYear = await getReportingYear();
   const reportType = await getReportType(version_id);
-  const registrationPurpose = await getRegistrationPurpose(version_id);
   const facilityReport = await getFacilityReport(version_id);
-
-  const registrationPurposeString = registrationPurpose?.registration_purpose;
 
   const allRepresentatives = reportOperation.report_operation_representatives;
   const showRegulatedProducts = ![
     ELECTRICITY_IMPORT_OPERATION,
     REPORTING_OPERATION,
     POTENTIAL_REPORTING_OPERATION,
-  ].includes(registrationPurposeString);
+  ].includes(reportOperation.registration_purpose);
   const taskListElements = getOperationInformationTaskList(
     version_id,
     ActivePage.ReviewOperatorInfo,
@@ -50,7 +46,6 @@ export default async function OperationReviewPage({
   );
   const schema = buildOperationReviewSchema(
     reportOperation,
-    registrationPurposeString,
     reportingWindowEnd,
     allActivities,
     allRegulatedProducts,
