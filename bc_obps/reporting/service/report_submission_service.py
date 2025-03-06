@@ -1,5 +1,6 @@
 from uuid import UUID
-
+from django.core.exceptions import ObjectDoesNotExist
+from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_verification_service import ReportVerificationService
@@ -15,12 +16,22 @@ class ReportSubmissionService:
         """
         Future implementation could create a specific exception housing all the issues a report would have
         Django-ninja could then have a special way of parsing that error with a custom error code.
+
+        Validates that the report meets necessary requirements before submission:
+        - If report verification is required, ensures that a `ReportVerification` entry exists.
+        - If a verification statement is required, ensures the presence of a corresponding attachment.
         """
         try:
-            # Check if verification statement is mandatory
-            isVerificationStatementMandatory = ReportVerificationService.get_report_needs_verification(version_id)
+            # Check if verification is mandatory
+            isVerificationMandatory = ReportVerificationService.get_report_needs_verification(version_id)
 
-            if isVerificationStatementMandatory:
+            if isVerificationMandatory:
+                # Check for the ReportVerification entry
+                try:
+                    ReportVerification.objects.get(report_version_id=version_id)  # attempt to get the object.
+                except ObjectDoesNotExist:
+                    raise Exception("missing_report_verification")
+
                 # Check for the attachment only if mandatory
                 ReportAttachment.objects.get(
                     report_version_id=version_id,
