@@ -66,7 +66,7 @@ const ProductionDataForm: React.FC<Props> = ({
     const object = {  // From productionData.tsx
       title: "Production Quantification Methodology",
       type: "string",
-      enum: ["OBPS Allocation Calculator", "Other"],
+      enum: ["OBPS Calculator", "other"],
       default: "OBPS Calculator",
     };
     if (["Small Aggregate", "Medium Facility"].includes(facilityType))
