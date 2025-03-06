@@ -6,10 +6,10 @@ from compliance.models import CompliancePeriod, ComplianceSummary, CompliancePro
 def compliance_period_baker(**kwargs) -> CompliancePeriod:
     """
     Create a CompliancePeriod instance with default values.
-    
+
     Args:
         **kwargs: Override default values for CompliancePeriod fields
-        
+
     Returns:
         CompliancePeriod: A CompliancePeriod instance
     """
@@ -18,25 +18,26 @@ def compliance_period_baker(**kwargs) -> CompliancePeriod:
         "end_date": "2024-12-31",
         "compliance_deadline": "2025-06-30",
     }
-    
+
     # If reporting_year is not provided, create one
     if "reporting_year" not in kwargs:
         from reporting.tests.utils.bakers import reporting_year_baker
+
         kwargs["reporting_year"] = reporting_year_baker()
-    
+
     # Update defaults with provided kwargs
     defaults.update(kwargs)
-    
+
     return baker.make(CompliancePeriod, **defaults)
 
 
 def compliance_summary_baker(**kwargs) -> ComplianceSummary:
     """
     Create a ComplianceSummary instance with default values.
-    
+
     Args:
         **kwargs: Override default values for ComplianceSummary fields
-        
+
     Returns:
         ComplianceSummary: A ComplianceSummary instance
     """
@@ -50,36 +51,36 @@ def compliance_summary_baker(**kwargs) -> ComplianceSummary:
         "reduction_factor": Decimal("0.95"),
         "tightening_rate": Decimal("0.01"),
     }
-    
+
     # If report is not provided, create one
     if "report" not in kwargs:
         from reporting.tests.utils.bakers import report_baker
+
         kwargs["report"] = report_baker()
-    
+
     # If current_report_version is not provided, create one
     if "current_report_version" not in kwargs:
         from reporting.tests.utils.bakers import report_version_baker
+
         kwargs["current_report_version"] = report_version_baker(report=kwargs["report"])
-    
+
     # If compliance_period is not provided, create one
     if "compliance_period" not in kwargs:
-        kwargs["compliance_period"] = compliance_period_baker(
-            reporting_year=kwargs["report"].reporting_year
-        )
-    
+        kwargs["compliance_period"] = compliance_period_baker(reporting_year=kwargs["report"].reporting_year)
+
     # Update defaults with provided kwargs
     defaults.update(kwargs)
-    
+
     return baker.make(ComplianceSummary, **defaults)
 
 
 def compliance_product_baker(**kwargs) -> ComplianceProduct:
     """
     Create a ComplianceProduct instance with default values.
-    
+
     Args:
         **kwargs: Override default values for ComplianceProduct fields
-        
+
     Returns:
         ComplianceProduct: A ComplianceProduct instance
     """
@@ -90,31 +91,32 @@ def compliance_product_baker(**kwargs) -> ComplianceProduct:
         "allocated_industrial_process_emissions": Decimal("50.0"),
         "allocated_compliance_emissions": Decimal("40.0"),
     }
-    
+
     # If compliance_summary is not provided, create one
     if "compliance_summary" not in kwargs:
         kwargs["compliance_summary"] = compliance_summary_baker()
-    
+
     # If report_product is not provided, create one
     if "report_product" not in kwargs:
         from reporting.tests.utils.bakers import report_product_baker
+
         kwargs["report_product"] = report_product_baker(
             report_version=kwargs["compliance_summary"].current_report_version
         )
-    
+
     # Update defaults with provided kwargs
     defaults.update(kwargs)
-    
+
     return baker.make(ComplianceProduct, **defaults)
 
 
 def compliance_obligation_baker(**kwargs) -> ComplianceObligation:
     """
     Create a ComplianceObligation instance with default values.
-    
+
     Args:
         **kwargs: Override default values for ComplianceObligation fields
-        
+
     Returns:
         ComplianceObligation: A ComplianceObligation instance
     """
@@ -124,12 +126,12 @@ def compliance_obligation_baker(**kwargs) -> ComplianceObligation:
         "penalty_status": ComplianceObligation.PenaltyStatus.NONE,
         "obligation_deadline": "2025-11-30",
     }
-    
+
     # If compliance_summary is not provided, create one
     if "compliance_summary" not in kwargs:
         kwargs["compliance_summary"] = compliance_summary_baker()
-    
+
     # Update defaults with provided kwargs
     defaults.update(kwargs)
-    
+
     return baker.make(ComplianceObligation, **defaults)
