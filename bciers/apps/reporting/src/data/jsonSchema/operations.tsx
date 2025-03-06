@@ -12,7 +12,6 @@ const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
   formDataState: any,
-  registrationPurpose: string,
   reportingWindowEnd: string,
   allActivities: any[],
   allRegulatedProducts: any[],
@@ -78,7 +77,6 @@ export const buildOperationReviewSchema = (
       registration_purpose: {
         type: "string",
         title: "Registration Purpose",
-        default: registrationPurpose || "",
       },
       operation_bcghgid: { type: ["string", "null"], title: "BCGHG ID" },
       bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },

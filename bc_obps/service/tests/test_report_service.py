@@ -2,6 +2,8 @@ from unittest import mock
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from model_bakery import baker
+from model_bakery.baker import make_recipe
+
 from registration.models import RegulatedProduct, Activity, Operation
 from registration.tests.utils.bakers import (
     bc_obps_regulated_operation_baker,
