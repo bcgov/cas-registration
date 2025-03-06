@@ -1,8 +1,8 @@
 "use client";
 import { GridColDef } from "@mui/x-data-grid";
-import ReportingOperationStatusCell from "@reporting/src/app/components/operations/cells/ReportingOperationStatusCell";
+import StatusCell from "@reporting/src/app/components/operations/cells/StatusCell";
 import ActionCell from "@reporting/src/app/components/operations/cells/ActionCell";
-import MoreCell from "@reporting/src/app/components/operations/cells/MoreActions";
+import MoreActionsCell from "@reporting/src/app/components/operations/cells/MoreActionsCell";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -17,7 +17,7 @@ const operationColumns = (): GridColDef[] => {
     {
       field: "report_status",
       headerName: "Status",
-      renderCell: ReportingOperationStatusCell,
+      renderCell: StatusCell,
       align: "center",
       headerAlign: "center",
       width: 200,
@@ -33,7 +33,7 @@ const operationColumns = (): GridColDef[] => {
     {
       field: "more",
       headerName: "More Actions",
-      renderCell: MoreCell,
+      renderCell: MoreActionsCell,
       sortable: false,
       width: 120,
       flex: 1,

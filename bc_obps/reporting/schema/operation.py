@@ -16,8 +16,6 @@ class ReportingDashboardOperationOut(ModelSchema):
 
 
 class ReportingDashboardOperationFilterSchema(FilterSchema):
-    bcghg_id: Optional[str] = None
-    name: Optional[str] = None
-    report_status: Optional[str] = None
-    sort_field: Optional[str] = "created_at"
-    sort_order: Optional[str] = "desc"
+    bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
+    name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
+    report_status: Optional[str] = Field(None, json_schema_extra={'q': 'report_status__icontains'})

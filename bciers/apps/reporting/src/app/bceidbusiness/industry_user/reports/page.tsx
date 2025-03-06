@@ -1,17 +1,4 @@
-// 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
-import { OperationsSearchParams } from "@reporting/src/app/components/operations/types";
-import OperationsPage from "apps/reporting/src/app/components/operations/OperationsPage";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "apps/reporting/src/app/components/operations/OperationsPage";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: OperationsSearchParams;
-}) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <OperationsPage searchParams={searchParams} />
-    </Suspense>
-  );
-}
+export default defaultPageFactory(Page);

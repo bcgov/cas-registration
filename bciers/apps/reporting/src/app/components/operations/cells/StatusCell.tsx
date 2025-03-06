@@ -7,9 +7,7 @@ import {
   BC_GOV_SEMANTICS_GREEN,
 } from "@bciers/styles";
 
-export default function ReportingOperationStatusCell(
-  params: GridRenderCellParams,
-) {
+export default function StatusCell(params: GridRenderCellParams) {
   const colorMap = new Map<string, string>([
     [ReportOperationStatus.NOT_STARTED, BC_GOV_PRIMARY_BRAND_COLOR_BLUE],
     [ReportOperationStatus.DRAFT, BC_GOV_PRIMARY_BRAND_COLOR_BLUE],
