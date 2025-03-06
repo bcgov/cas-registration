@@ -80,7 +80,7 @@ export const buildOperationReviewSchema = (
         title: "Registration Purpose",
         default: registrationPurpose || "",
       },
-      operation_bcghgid: { type: "string", title: "BCGHG ID" },
+      operation_bcghgid: { type: ["string", "null"], title: "BCGHG ID" },
       bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
     },
 
