@@ -60,8 +60,6 @@ export default function OperationReviewForm({
         updatedFormData.operation_report_type
     ) {
       setPendingChangeReportType(updatedFormData.operation_report_type);
-      updatedFormData.operation_report_type =
-        formDataState.operation_report_type;
     }
 
     setFormDataState(updatedFormData);
