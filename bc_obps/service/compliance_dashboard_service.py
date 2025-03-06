@@ -41,7 +41,7 @@ class ComplianceDashboardService:
         # Get all compliance summaries for the filtered operations
         return (
             ComplianceSummary.objects.select_related('report', 'report__operation', 'compliance_period', 'obligation')
-            .filter(id__in=[op.compliance_summary_id for op in operations if op.compliance_summary_id])
+            .filter(id__in=[op.compliance_summary_id for op in operations if hasattr(op, 'compliance_summary_id')])
             .order_by('-compliance_period__end_date', 'report__operation__name')
         )
 
@@ -65,13 +65,6 @@ class ComplianceDashboardService:
         )
 
         # Get the compliance summary if it belongs to one of the user's operations
-        try:
-            return (
-                ComplianceSummary.objects.select_related(
-                    'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
-                )
-                .filter(id=summary_id, report__operation__in=operations)
-                .get()
-            )
-        except ComplianceSummary.DoesNotExist:
-            return None
+        return ComplianceSummary.objects.select_related(
+            'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
+        ).get(id=summary_id, report__operation__in=operations)
