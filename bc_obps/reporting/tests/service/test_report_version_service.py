@@ -2,7 +2,7 @@ from common.tests.utils.model_inspection import get_cascading_models
 from model_bakery import baker
 import pytest
 from reporting.models.report_version import ReportVersion
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 
 pytestmark = pytest.mark.django_db
 

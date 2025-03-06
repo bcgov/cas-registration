@@ -12,7 +12,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 from django.forms.models import model_to_dict
 
 
