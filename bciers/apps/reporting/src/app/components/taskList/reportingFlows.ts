@@ -1,3 +1,4 @@
+import { getReportingOperation } from "../../utils/getReportingOperation";
 import {
   HeaderStep,
   ReportingFlow,
@@ -34,6 +35,12 @@ export const reportingFlows: {
   // More to come
 };
 
-export async function getFlow(/*reportVersionId: number*/): Promise<ReportingFlow> {
+export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
+  const reportOperationData = await getReportingOperation(reportVersionId);
+  //const factilityReport = await getFacilityReport(reportVersionId);
+
+  const operationType = reportOperationData.operation_type;
+
+  if (operationType === "Single Facility Operation") return ReportingFlow.SFO;
   return ReportingFlow.SFO;
 }
