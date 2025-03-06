@@ -1,4 +1,4 @@
-import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
+import { getBasicGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 import { ReviewDataFactoryItem } from "./factory";
 import { generateUpdatedSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { getAllEmissionCategories } from "@reporting/src/app/utils/getAllEmissionCategories";
@@ -8,7 +8,7 @@ const nonAttributableEmissionsFactoryItem: ReviewDataFactoryItem = async (
   versionId,
   facilityId,
 ) => {
-  const gasTypes = await getAllGasTypes();
+  const gasTypes = await getBasicGasTypes();
   const emissionCategories = await getAllEmissionCategories();
 
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
