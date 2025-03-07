@@ -6,7 +6,7 @@ from reporting.schema.report_verification import ReportVerificationIn
 from reporting.models.report_verification import ReportVerification
 
 
-class TestSaveReportVerificationApi(CommonTestSetup):
+class TestReportVerificationApi(CommonTestSetup):
     def setup_method(self):
         # Create ReportVersion instance
         self.report_version = baker.make_recipe("reporting.tests.utils.report_version")

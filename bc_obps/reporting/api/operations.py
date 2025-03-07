@@ -7,7 +7,6 @@ from django.db.models import QuerySet
 from ninja.pagination import paginate, PageNumberPagination
 
 from common.api.utils import get_current_user_guid
-from registration.constants import PAGE_SIZE
 from registration.models.operation import Operation
 from reporting.schema.generic import Message
 from reporting.constants import DASHBOARD_TAGS

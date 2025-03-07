@@ -56,6 +56,7 @@ class ReportVersion(TimeStampedModel):
                 name="immutable_report_version",
                 operation=pgtrigger.Update,
                 condition=pgtrigger.Q(old__status="Submitted"),
+                # ignore_field_updates=["is_latest_submitted"],
             ),
         ]
 
