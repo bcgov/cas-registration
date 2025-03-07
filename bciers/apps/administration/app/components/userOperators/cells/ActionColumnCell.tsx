@@ -12,15 +12,22 @@ import {
 import { useCallback, useState } from "react";
 import handleAccessRequestStatus from "./handleAccessRequestStatus";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
+import {
+  BC_GOV_COMPONENTS_GREY,
+} from "@bciers/styles";
 
 const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     status: userOperatorStatus,
     id: userOperatorId,
     userRole: userOperatorRole,
   } = params.row;
+
   const buttonsToShow = useCallback(
     (status: string): AccessRequestStatusAction[] => {
       switch (status) {
@@ -57,41 +64,46 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
     [],
   );
 
+  const handleButtonClick = async (item: AccessRequestStatusAction) => {
+    setIsLoading(true);
+
+    const res = await handleAccessRequestStatus(
+      userOperatorId,
+      item.statusTo,
+      userOperatorRole as UserOperatorRoles,
+    );
+
+    if (!res?.error) {
+      setSnackbarMessage(
+        `${res.first_name} ${res.last_name} is now ${res.status.toLowerCase()}`,
+      );
+      setIsSnackbarOpen(true);
+    }
+
+    params.api.updateRows([
+      {
+        ...params.row,
+        userRole:
+          item.statusTo === Status.PENDING ? "reporter" : userOperatorRole,
+        status: res.status,
+      },
+    ]);
+
+    setIsLoading(false);
+  };
+
+
   return (
     <>
       <Stack direction="row" spacing={1}>
         {buttonsToShow(userOperatorStatus).map((item, index) => (
           <Button
-            variant={item.title === "Undo" ? "text" : "outlined"}
+            variant="outlined"
             key={index}
-            onClick={async () => {
-              const res = await handleAccessRequestStatus(
-                userOperatorId,
-                item.statusTo,
-                userOperatorRole as UserOperatorRoles,
-              );
-              if (!res?.error) {
-                setSnackbarMessage(
-                  `${res.first_name} ${
-                    res.last_name
-                  } is now ${res.status.toLowerCase()}`,
-                );
-                setIsSnackbarOpen(true);
-              }
-              params.api.updateRows([
-                {
-                  ...params.row,
-                  // If the user is pending, we want to default the access type dropdown to Reporter
-                  userRole:
-                    item.statusTo === Status.PENDING
-                      ? "reporter"
-                      : userOperatorRole,
-                  status: res.status,
-                },
-              ]);
-            }}
+            onClick={() => handleButtonClick(item)}
             color={item.color}
-            endIcon={item.icon}
+            endIcon={isLoading ? <LoadingSpinner color={BC_GOV_COMPONENTS_GREY} /> : item.icon}
+            disabled={isLoading}
           >
             {item.title}
           </Button>
