@@ -23,7 +23,6 @@ const stages = [
   { duration: "2m", target: 0 }, // 0 VUs
 ];
 
-
 export const options = {
   // abortOnFail: true, // Abort the test if a check fails
   // delayAbortEval: "20s", // Wait 20s before aborting the test - Gives the test time to generate some metrics before aborting
