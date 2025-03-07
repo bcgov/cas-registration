@@ -6,6 +6,7 @@ export enum ReportingPage {
   PersonResponsible = "PersonResponsible",
   ReviewFacilities = "ReviewFacilities",
   // 2
+  FacilitiesTable = "FacilitiesTable",
   ReviewInformation = "ReviewInformation",
   Activities = "Activities",
   NonAttributableEmission = "NonAttributableEmission",
@@ -53,22 +54,26 @@ export type NavigationInformation = {
   backUrl: string;
 };
 
-export type TaskListPageFactory = (
+type SyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
+  facilityId: string,
   context?: Object,
 ) => {
   element: TaskListElement;
   continueUrl?: string;
   backUrl?: string;
 };
-
-export type AsyncTaskListPageFactory = (
+type AsyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
+  facilityId: string,
   context?: Object,
 ) => Promise<{
   element: TaskListElement;
   continueUrl?: string;
   backUrl?: string;
 }>;
+export type TaskListPageFactory =
+  | SyncTaskListPageFactory
+  | AsyncTaskListPageFactory;

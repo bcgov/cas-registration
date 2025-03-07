@@ -1,5 +1,30 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { OperationTypes } from "@bciers/utils/src/enums";
+import { ReportingPage, TaskListPageFactory } from "./types";
+
+export const facilitiesInformationPageFactories: {
+  [Page in ReportingPage]?: TaskListPageFactory;
+} = {
+  [ReportingPage.FacilitiesTable]: (activePage, reportVersionId) => ({
+    element: {
+      type: "Link",
+      text: "Back to facilities table",
+      link: `/reporting/reports/${reportVersionId}/facilities/report-information`,
+      title: "Back to facilities table",
+    },
+  }),
+  [ReportingPage.Activities]: (activePage, reportVersionId, facilityId) => {
+    // Todo: update with the bottom stuff. This one is a doozy
+    return {
+      element: {
+        type: "Page",
+        title: "Activities",
+        link: `/reports/${reportVersionId}/facilities/${facilityId}/activities`,
+        isActive: activePage === ReportingPage.Activities,
+      },
+    };
+  },
+};
 
 export type ActivityData = { id: number; name: string; slug: string };
 
