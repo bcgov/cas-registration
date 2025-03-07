@@ -3,24 +3,6 @@ MOCK_VERSION = "1"
 MOCK_INT = 1
 ENDPOINTS = {
     "authorized_roles": [
-        {"method": "get", "endpoint_name": "v1_list_business_structures"},
-        {"method": "get", "endpoint_name": "v1_list_naics_codes"},
-        {"method": "get", "endpoint_name": "v1_list_regulated_products"},
-        {"method": "get", "endpoint_name": "v1_list_reporting_activities"},
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_operators_by_cra_number_or_legal_name",
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_operator",
-            "kwargs": {"operator_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_user_operator_has_admin",
-            "kwargs": {"operator_id": MOCK_UUID},
-        },
         {"method": "get", "endpoint_name": "list_dashboard_data"},
         {"method": "get", "endpoint_name": "list_business_structures"},
         {"method": "get", "endpoint_name": "list_naics_codes"},
@@ -42,30 +24,6 @@ ENDPOINTS = {
         },
     ],
     "approved_industry_user": [
-        {"method": "post", "endpoint_name": "v1_create_operation"},
-        {"method": "post", "endpoint_name": "v1_create_contact"},
-        {
-            "method": "put",
-            "endpoint_name": "v1_update_operation",
-            "kwargs": {"operation_id": MOCK_UUID},
-        },
-        {
-            "method": "put",
-            "endpoint_name": "v1_update_operator_and_user_operator",
-            "kwargs": {"user_operator_id": MOCK_UUID},
-        },
-        {"method": "get", "endpoint_name": "v1_is_current_user_approved_admin"},
-        {"method": "get", "endpoint_name": "v1_get_operator_users"},
-        {
-            "method": "put",
-            "endpoint_name": "v1_update_contact",
-            "kwargs": {"contact_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_user",
-            "kwargs": {"user_id": MOCK_UUID},
-        },
         {
             "method": "get",
             "endpoint_name": "get_current_operator_and_user_operator",
@@ -74,17 +32,8 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_operator_users"},
         {
             "method": "get",
-            "endpoint_name": "get_user",
-            "kwargs": {"user_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
             "endpoint_name": "operation_registration_get_opted_in_operation_detail",
             "kwargs": {"operation_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_current_operator_from_user_operator",
         },
         {"method": "get", "endpoint_name": "list_current_users_operations"},
         {
@@ -328,39 +277,10 @@ ENDPOINTS = {
         },
     ],
     "all_roles": [
-        {"method": "put", "endpoint_name": "v1_update_user_profile"},
         {"method": "get", "endpoint_name": "get_reporting_year"},
         {"method": "put", "endpoint_name": "update_user_profile"},
     ],
     "industry_user": [
-        {"method": "post", "endpoint_name": "v1_create_operator_and_user_operator"},
-        {
-            "method": "post",
-            "endpoint_name": "v1_request_access",
-            "kwargs": {"operator_id": MOCK_UUID},
-        },
-        {
-            "method": "post",
-            "endpoint_name": "v1_request_admin_access",
-            "kwargs": {"operator_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_user_operator_access_declined",
-            "kwargs": {"operator_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_pending_operator_and_user_operator",
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_current_user_operator_has_registered_operation",
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_current_user_operator_has_required_fields",
-        },
         {
             "method": "get",
             "endpoint_name": "get_user_operator_access_declined",
@@ -393,16 +313,11 @@ ENDPOINTS = {
     "approved_industry_admin_user": [
         {
             "method": "get",
-            "endpoint_name": "v1_get_current_user_operator_access_requests",
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_current_user_operator_access_requests",
         },
     ],
     "authorized_irc_user": [
         {"method": "get", "endpoint_name": "list_operators"},
-        {"method": "get", "endpoint_name": "v1_list_user_operators"},
         {"method": "get", "endpoint_name": "list_user_operators"},
         {"method": "get", "endpoint_name": "list_transfer_events"},
         {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
@@ -413,23 +328,6 @@ ENDPOINTS = {
             "endpoint_name": "get_operator",
             "kwargs": {"operator_id": MOCK_UUID},
         },
-        {"method": "get", "endpoint_name": "v1_list_operations"},
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_operation",
-            "kwargs": {"operation_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_user_operator_by_id",
-            "kwargs": {"user_operator_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "v1_get_contact",
-            "kwargs": {"contact_id": MOCK_UUID},
-        },
-        {"method": "get", "endpoint_name": "v1_list_contacts"},
         {"method": "get", "endpoint_name": "list_operations"},
         {"method": "get", "endpoint_name": "list_contacts"},
         {
@@ -528,25 +426,6 @@ ENDPOINTS = {
         {
             "method": "patch",
             "endpoint_name": "update_user_operator_status",
-            "kwargs": {"user_operator_id": MOCK_UUID},
-        },
-    ],
-    "v1_authorized_irc_user_write": [
-        {
-            "method": "put",
-            "endpoint_name": "v1_update_operation_status",
-            "kwargs": {"operation_id": MOCK_UUID},
-        },
-        {
-            "method": "put",
-            "endpoint_name": "v1_update_operator_status",
-            "kwargs": {"operator_id": MOCK_UUID},
-        },
-    ],
-    "v1_authorized_irc_user_and_industry_admin_user_write": [
-        {
-            "method": "put",
-            "endpoint_name": "v1_update_user_operator_status",
             "kwargs": {"user_operator_id": MOCK_UUID},
         },
     ],

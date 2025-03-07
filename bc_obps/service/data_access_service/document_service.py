@@ -16,11 +16,14 @@ class DocumentDataAccessService:
         return document
 
     @classmethod
-    def create_document(cls, user_guid: UUID, file_data: Optional[ContentFile], document_type_name: str) -> Document:
+    def create_document(
+        cls, user_guid: UUID, file_data: Optional[ContentFile], document_type_name: str, operation_id: UUID
+    ) -> Document:
         document = Document.objects.create(
             file=file_data,
             type=DocumentType.objects.get(name=document_type_name),
             created_by_id=user_guid,
+            operation_id=operation_id,
         )
 
         return document

@@ -8,16 +8,14 @@ from service.data_access_service.facility_designated_operation_timeline_service 
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.facility_service import FacilityDataAccessService
 from registration.models import Facility
-from registration.schema.v1.facility import FacilityIn
+from registration.schema import FacilityIn
 from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
-
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.data_access_service.address_service import AddressDataAccessService
 from registration.models.operation import Operation
 from registration.models import User
 from registration.models import WellAuthorizationNumber
-
 from django.db import transaction
 from django.utils import timezone
 from registration.models import Address
@@ -158,9 +156,9 @@ class FacilityService:
     @transaction.atomic()
     def create_facility_with_designated_operation(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
         """Create a facility with designated operation details."""
-        from service.operation_service_v2 import OperationServiceV2
+        from service.operation_service import OperationService
 
-        operation = OperationServiceV2.get_if_authorized_v2(user_guid, payload.operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(user_guid, payload.operation_id, ['id', 'operator_id'])
 
         # Validate that SFO and EIO can only have one facility
         if operation.facilities.count() > 0 and operation.type != Operation.Types.LFO:
@@ -223,7 +221,7 @@ class FacilityService:
                 existing_address.delete()
 
         # Update the facility in the data access layer with the new data
-        facility = FacilityDataAccessService.update_facility(facility_id, user_guid, facility_data)
+        facility = FacilityDataAccessService.update_facility(facility_id, facility_data)
 
         # Process well authorization numbers and link them to the facility
         cls.handle_well_authorization_numbers(user_guid, payload, facility)

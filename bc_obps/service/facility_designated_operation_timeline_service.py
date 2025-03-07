@@ -2,9 +2,7 @@ from datetime import datetime
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
-from registration.schema.v1.facility_designated_operation_timeline import (
-    FacilityDesignatedOperationTimelineFilterSchema,
-)
+from registration.schema import FacilityDesignatedOperationTimelineFilterSchema
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from registration.models import User
@@ -52,7 +50,6 @@ class FacilityDesignatedOperationTimelineService:
     @classmethod
     def set_timeline_status_and_end_date(
         cls,
-        user_guid: UUID,
         timeline: FacilityDesignatedOperationTimeline,
         status: FacilityDesignatedOperationTimeline.Statuses,
         end_date: datetime,

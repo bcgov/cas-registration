@@ -10,7 +10,7 @@ from registration.models import FacilityDesignatedOperationTimeline, OperationDe
 from registration.models.event.transfer_event import TransferEvent
 from typing import Optional
 from ninja import Query
-from registration.schema.v2.transfer_event import (
+from registration.schema import (
     TransferEventCreateIn,
     TransferEventFilterSchema,
     TransferEventUpdateIn,
@@ -26,7 +26,7 @@ from service.data_access_service.user_service import UserDataAccessService
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.facility_service import FacilityService
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
-from service.operation_service_v2 import OperationServiceV2
+from service.operation_service import OperationService
 
 logger = logging.getLogger(__name__)
 
@@ -240,7 +240,6 @@ class TransferEventService:
 
             if current_timeline:
                 FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
-                    user_guid,
                     current_timeline,
                     FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
                     event.effective_date,
@@ -271,7 +270,6 @@ class TransferEventService:
 
         if current_timeline:
             OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date(
-                user_guid,
                 current_timeline,
                 OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
                 event.effective_date,
@@ -289,7 +287,7 @@ class TransferEventService:
         )
 
         # update the operation's operator
-        OperationServiceV2.update_operator(user_guid, event.operation, event.to_operator.id)  # type: ignore # we are sure that operation is not None
+        OperationService.update_operator(user_guid, event.operation, event.to_operator.id)  # type: ignore # we are sure that operation is not None
 
     @classmethod
     def get_if_authorized(cls, user_guid: UUID, transfer_id: UUID) -> TransferEvent:

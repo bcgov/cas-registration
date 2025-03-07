@@ -9,8 +9,8 @@ from registration.tests.utils.bakers import (
     user_operator_baker,
 )
 from registration.models.user_operator import UserOperator
-from service.data_access_service.contact_service import ContactDataAccessService
 from model_bakery import baker
+from service.data_access_service.contact_service import ContactDataAccessService
 
 pytestmark = pytest.mark.django_db
 
