@@ -1,12 +1,8 @@
-import {
-  AsyncTaskListPageFactory,
-  ReportingPage,
-  TaskListPageFactory,
-} from "./types";
+import { ReportingPage, TaskListPageFactory } from "./types";
 import { getFacilityReport } from "../../utils/getFacilityReport";
 
 export const operationInformationPageFactories: {
-  [Page in ReportingPage]?: TaskListPageFactory | AsyncTaskListPageFactory;
+  [Page in ReportingPage]?: TaskListPageFactory;
 } = {
   [ReportingPage.ReviewOperatorInfo]: (activePage, reportVersionId) => ({
     element: {
@@ -32,18 +28,6 @@ export const operationInformationPageFactories: {
       isActive: activePage === ReportingPage.ReviewFacilities,
     },
   }),
-  [ReportingPage.Activities]: async (activePage, reportVersionId) => {
-    const facilityReport = await getFacilityReport(reportVersionId);
-    const facilityId = facilityReport.facility_id;
-    return {
-      element: {
-        type: "Page",
-        title: "Activities",
-        link: `/reports/${reportVersionId}/facilities/${facilityId}/activities`,
-        isActive: activePage === ReportingPage.Activities,
-      },
-    };
-  },
 };
 
 export const operationInformationHeaderStep = {

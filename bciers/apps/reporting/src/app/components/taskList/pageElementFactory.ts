@@ -28,11 +28,12 @@ export const pageElementFactory = (
   page: ReportingPage,
   activePage: ReportingPage,
   reportVersionId: number,
+  context: Object = {},
 ) => {
   const factory = pageFactories[page];
 
   if (!factory)
     throw new Error(`Tasklist page factory not implemented for ${page}`);
 
-  return factory(activePage, reportVersionId);
+  return factory(activePage, reportVersionId, context);
 };
