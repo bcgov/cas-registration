@@ -47,6 +47,15 @@ class ReportSubmissionService:
 
         ReportSubmissionService.validate_report(version_id)
 
+        # Mark the previous latest submitted version as not latest
+        ReportVersion.objects.filter(
+            report=report_version.report,
+            status=ReportVersion.ReportVersionStatus.Submitted,
+            is_latest_submitted=True,
+        ).update(is_latest_submitted=False)
+
+        # Set the new version as lastest submitted and the latest
+        report_version.is_latest_submitted = True
         report_version.status = ReportVersion.ReportVersionStatus.Submitted
         report_version.save()
 

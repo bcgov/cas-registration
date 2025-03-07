@@ -230,9 +230,9 @@ ENDPOINTS = {
         },
         {
             "method": "post",
-            "endpoint_name": "create_supplementary_report_version",
-            "kwargs": {"version_id": MOCK_INT},
-        },  
+            "endpoint_name": "create_report_supplementary_version",
+            "kwargs": {"report_version_id": MOCK_INT},
+        },
         {
             "method": "post",
             "endpoint_name": "change_report_version_type",
