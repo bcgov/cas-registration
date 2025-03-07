@@ -12,6 +12,7 @@ const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
+    "id",
     "smelterTechType",
     "annualEmissions",
     "anodeCathodeBackingGreenCokeCalcination",

@@ -26,7 +26,7 @@ const definitionSchema = {
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:order": ["coverGasFromElectrolysisCells", "sourceTypes"],
+  "ui:order": ["id", "coverGasFromElectrolysisCells", "sourceTypes"],
   id: {
     "ui:widget": "hidden",
   },
