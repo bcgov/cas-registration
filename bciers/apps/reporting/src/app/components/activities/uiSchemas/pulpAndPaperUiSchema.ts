@@ -55,7 +55,8 @@ const uiSchema = {
             isWoodyBiomass: {
               "ui:options": {
                 label: true,
-                title: "This emission is categorized as 'Woody biomass'",
+                title:
+                  "This methodology calculates emissions from spent liquor combustion",
               },
             },
           },
