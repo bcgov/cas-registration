@@ -228,6 +228,6 @@ export default function () {
   currentUserIsApprovedAdmin();
   currentUsersOperatorDetails();
   updateCurrentUsersOperatorDetails();
-  // updateUserOperatorStatus(newUserOperatorId);
+  updateUserOperatorStatus(newUserOperatorId);
   fetchUserOperators();
 }
