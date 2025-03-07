@@ -55,7 +55,7 @@ class ComplianceObligationService:
         Returns:
             date: The excess emissions obligation deadline (November 30 of following year)
         """
-        # Per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
+        # Per section 19(1)(b) of BCGGE Reporting Regulation
         return date(year + 1, 11, 30)
 
     @classmethod
