@@ -1,44 +1,22 @@
 [
   {
     "model": "reporting.report",
-    "pk": 1,
     "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
+      "id": 1,
       "operation_id": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
       "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2025-02-18 20:09:05.41476+00",
       "reporting_year_id": 2024
     }
   },
   {
     "model": "reporting.report",
-    "pk": 2,
     "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
+      "id": 2,
       "operation_id": "002d5a9e-32a6-4191-938c-2c02bfec592d",
       "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2025-02-18 20:09:05.41476+00",
       "reporting_year_id": 2024
-    }
-  },
-  {
-    "model": "reporting.reportversion",
-    "pk": 1,
-    "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
-      "report": 1,
-      "status": "Draft"
-    }
-  },
-  {
-    "model": "reporting.reportversion",
-    "pk": 2,
-    "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
-      "report": 2,
-      "status": "Draft"
     }
   }
 ]
