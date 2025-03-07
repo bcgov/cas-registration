@@ -9,7 +9,7 @@ from service.user_operator_service import UserOperatorService
 pytestmark = pytest.mark.django_db
 
 
-class TestUserOperatorServiceV2:
+class TestUserOperatorService:
     @staticmethod
     def test_save_operator():
         payload = OperatorIn(

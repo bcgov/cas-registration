@@ -4,7 +4,7 @@ from uuid import UUID
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.contact import Contact
 from registration.schema import (
-    ContactFilterSchemaV2,
+    ContactFilterSchema,
     ContactWithPlacesAssigned,
     PlacesAssigned,
     ContactIn,
@@ -35,7 +35,7 @@ class ContactService:
         user_guid: UUID,
         sort_field: Optional[str],
         sort_order: Optional[str],
-        filters: ContactFilterSchemaV2 = Query(...),
+        filters: ContactFilterSchema = Query(...),
     ) -> QuerySet[Contact]:
         user = UserDataAccessService.get_by_guid(user_guid)
         sort_direction = "-" if sort_order == "desc" else ""

@@ -13,7 +13,7 @@ from model_bakery import baker
 pytestmark = pytest.mark.django_db
 
 
-class TestUpdateOperatorV2:
+class TestUpdateOperator:
     @staticmethod
     def test_update_operator_no_address_change():
         user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))

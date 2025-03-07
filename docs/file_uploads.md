@@ -69,7 +69,7 @@ The reverse can be done for the `Out` schema if needed:
 #### Service
 
 ```python
-  DocumentServiceV2.create_or_replace_operation_document(
+  DocumentService.create_or_replace_operation_document(
     user_guid,
     operation.id,
     payload.boundary_map, # type: ignore # mypy is not aware of the schema validator

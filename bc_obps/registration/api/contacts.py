@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
-from registration.schema import ContactFilterSchemaV2, ContactListOut, ContactIn, ContactOut, Message
+from registration.schema import ContactFilterSchema, ContactListOut, ContactIn, ContactOut, Message
 from registration.utils import CustomPagination
 from registration.constants import CONTACT_TAGS
 from ninja.pagination import paginate
@@ -25,7 +25,7 @@ from django.db.models import QuerySet
 @paginate(CustomPagination)
 def list_contacts(
     request: HttpRequest,
-    filters: ContactFilterSchemaV2 = Query(...),
+    filters: ContactFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
