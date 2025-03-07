@@ -105,13 +105,13 @@ perf_test_reg_backend: SERVER_HOST=http://127.0.0.1:8000
 perf_test_reg_backend: SERVER_API_ROUTE=/api/registration
 perf_test_reg_backend: SERVER_ROUTE=$(SERVER_HOST)$(SERVER_API_ROUTE)
 perf_test_reg_backend:
-	@k6 -e SERVER_HOST=$(SERVER_ROUTE) run bciers/apps/registration/tests/performance/backend-load-test.js --out csv=k6_results/test_results_reg_backend.csv
+	@K6_WEB_DASHBOARD=true k6 -e SERVER_HOST=$(SERVER_ROUTE) run bciers/apps/registration/tests/performance/backend-load-test.js --out csv=k6_results/test_results_reg_backend.csv
 
 .PHONY: perf_test_reg_frontend
 perf_test_reg_frontend: ## run frontend performance tests with k6
 perf_test_reg_frontend: APP_HOST=http://localhost:3000
 perf_test_reg_frontend:
-	@k6 -e APP_HOST=$(APP_HOST) run bciers/apps/registration/tests/performance/frontend-load-test.js --out csv=k6_results/test_results_reg_frontend.csv
+	@K6_WEB_DASHBOARD=true k6 -e APP_HOST=$(APP_HOST) run bciers/apps/registration/tests/performance/frontend-load-test.js --out csv=k6_results/test_results_reg_frontend.csv
 
 
 # include .env.devops
