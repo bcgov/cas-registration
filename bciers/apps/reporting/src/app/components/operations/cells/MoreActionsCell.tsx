@@ -11,11 +11,11 @@ import { ReportOperationStatus } from "@bciers/utils/src/enums";
 import postSupplementaryReportVersion from "@reporting/src/app/utils/postSupplementaryReportVersion";
 
 const MoreActionsCell = (params: GridRenderCellParams) => {
-  const [pending, startTransition] = useTransition();
   const reportVersionId = params?.row?.report_version_id;
   const reportId = params?.row?.report_id;
   const reportStatus = params?.row?.report_status;
 
+  const [pending, startTransition] = useTransition();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const router = useRouter();
@@ -28,11 +28,12 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
     setAnchorEl(null);
   };
 
-  const handleSupplementaryReportVersion = async (reportVersionId: number) => {
+  const handleSupplementaryReportVersion = async () => {
     const response = await postSupplementaryReportVersion(reportVersionId);
     if (response && !response.error) {
-      router.push(`/reports/${response}/review-operation-information`);
+      return router.push(`/reports/${response}/review-operation-information`);
     }
+    return null;
   };
 
   return (
@@ -59,9 +60,10 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
           <MenuItem
             disabled={pending}
             onClick={() => {
-              // use transition to display an error to users with the error boundary
+              //❗By defaut errors in event handlers don't bubble to Error Boundaries
+              // Wrapping event handlers in startTransition allows errors to propagate to the Error Boundary.
               startTransition(async () => {
-                await handleSupplementaryReportVersion(reportVersionId);
+                await handleSupplementaryReportVersion();
                 handleClose(); // Close the menu AFTER the report is created
               });
             }}

@@ -23,7 +23,7 @@ class ReportingDashboardService:
         sort_field: Optional[str],
         sort_order: Optional[str],
         filters: ReportingDashboardOperationFilterSchema = Query(...),
-    ) -> QuerySet[Operation]:    
+    ) -> QuerySet[Operation]:
         """
         Fetches all operations for the user, and annotates it with the associated report data required for the API call
         """

@@ -31,7 +31,6 @@ class TestReportingDashboardService:
         sort_order: Optional[str] = "asc"
         filters = ReportingDashboardOperationFilterSchema()  # Provide actual test data
 
-
         # Create reports for first two operations
         r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
         r0_version1 = ReportVersion.objects.get(id=r0_version1_id)
@@ -51,7 +50,9 @@ class TestReportingDashboardService:
         for op in operations:
             op.save()
 
-        result = ReportingDashboardService.get_operations_for_reporting_dashboard(user.user_guid, 5091, sort_field, sort_order, filters).values()
+        result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, filters
+        ).values()
         result_list = list(result)
 
         assert len(result_list) == 3
