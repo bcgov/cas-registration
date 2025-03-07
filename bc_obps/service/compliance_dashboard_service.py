@@ -24,7 +24,6 @@ class ComplianceDashboardService:
         compliance_summary_subquery = (
             ComplianceSummary.objects.filter(
                 report__operation_id=OuterRef("id"),
-                current_report_version__is_latest_submitted=True,
                 current_report_version__status='Submitted',
             )
             .select_related('report', 'report__operation', 'compliance_period', 'obligation')
