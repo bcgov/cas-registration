@@ -63,7 +63,7 @@ class ReportProductModelTest(BaseTestCase):
             ),
             (
                 "compliance_products",
-                "compliance products",
+                "compliance product",
                 None,
                 None,
             ),
