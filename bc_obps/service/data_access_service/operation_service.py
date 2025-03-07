@@ -1,73 +1,61 @@
-from typing import Iterable, Union
+from typing import List, Optional
 from uuid import UUID
-
-from registration.schema.v1.operation import OperationListOut
-from service.user_operator_service import UserOperatorService
-from registration.models import Operation, RegulatedProduct, User
-from registration.schema.v1 import OperationOut
-from django.db.models import QuerySet
+from registration.models import Operation, User, RegulatedProduct, Activity
 from ninja.types import DictStrAny
+from django.db.models import QuerySet
+from registration.schema import OperationListOut
+from service.user_operator_service import UserOperatorService
 
 
 class OperationDataAccessService:
     @classmethod
-    def get_by_id(cls, operation_id: UUID) -> Operation:
-        return Operation.objects.select_related('operator', 'bc_obps_regulated_operation').get(id=operation_id)
+    def get_by_id(cls, operation_id: UUID, only_fields: Optional[List[str]] = None) -> Operation:
+
+        if only_fields:
+            operation: Operation = Operation.objects.only(*only_fields).get(id=operation_id)
+        else:
+            operation = (
+                Operation.objects.select_related(
+                    'created_by',
+                    'updated_by',
+                    'archived_by',
+                    'operator',
+                    'naics_code',
+                    'secondary_naics_code',
+                    'tertiary_naics_code',
+                    'bcghg_id',
+                    'verified_by',
+                    'point_of_contact',
+                    'bc_obps_regulated_operation',
+                    'opted_in_operation',
+                )
+                .prefetch_related("activities", "regulated_products", "contacts", "multiple_operators", "documents")
+                .get(id=operation_id)
+            )
+
+        return operation
 
     @classmethod
-    def get_by_id_for_operation_out_schema(cls, operation_id: UUID) -> Operation:
-        return (
-            Operation.objects.only(
-                *OperationOut.Meta.fields,
-                "naics_code",
-                "point_of_contact__address",
-                "point_of_contact__first_name",
-                "point_of_contact__last_name",
-                "point_of_contact__email",
-                "point_of_contact__position_title",
-                "point_of_contact__phone_number",
-                "bc_obps_regulated_operation__id",
-                "operator__physical_address",
-                "operator__mailing_address",
-                "operator__legal_name",
-                "operator__trade_name",
-                "operator__cra_business_number",
-                "operator__bc_corporate_registry_number",
-                "operator__business_structure",
-                "operator__website",
-                "opted_in_operation",
-            )
-            .select_related(
-                "operator__physical_address",
-                "operator__mailing_address",
-                "point_of_contact__address",
-                "naics_code",
-                "opted_in_operation",
-            )
-            .prefetch_related("operator__parent_operators", "regulated_products")
-            .get(id=operation_id)
-        )
-
-    @classmethod
-    def get_by_id_for_update(cls, operation_id: UUID) -> Operation:
-        return (
-            Operation.objects.only('operator__id', 'point_of_contact__id')
-            .select_related('operator', 'point_of_contact')
-            .prefetch_related('regulated_products')
-            .get(id=operation_id)
-        )
+    def check_current_users_registered_operation(cls, operator_id: UUID) -> bool:
+        """
+        Returns True if the userOperator's operator has at least one operation with status 'Registered', False otherwise.
+        """
+        return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()
 
     @classmethod
     def create_operation(
         cls,
         user_guid: UUID,
         operation_data: DictStrAny,
-        regulated_products: Union[QuerySet[RegulatedProduct], Iterable[RegulatedProduct]],
+        activities: list[int] | list[Activity],
+        regulated_products: list[int] | list[RegulatedProduct],
     ) -> Operation:
         operation = Operation.objects.create(
             **operation_data,
             created_by_id=user_guid,
         )
+
+        operation.activities.set(activities)
         operation.regulated_products.set(regulated_products)
 
         return operation

@@ -1,17 +1,22 @@
-from typing import Dict, Optional, Any
 from uuid import UUID
-
+from typing import Dict, Optional, Any
 from registration.models import BusinessRole, Contact
 from django.db.models import QuerySet
 from registration.models.user import User
-from service.data_access_service.user_service import UserDataAccessService
 from service.user_operator_service import UserOperatorService
+from service.data_access_service.user_service import UserDataAccessService
 
 
 class ContactDataAccessService:
     @classmethod
     def get_by_id(cls, contact_id: int) -> Contact:
         return Contact.objects.get(id=contact_id)
+
+    @classmethod
+    def user_has_access(cls, user_guid: UUID, contact_id: int) -> bool:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+        return user_operator.operator.contacts.filter(id=contact_id).exists()
 
     @classmethod
     def update_or_create(cls, existing_contact_id: Optional[int], updated_data: Dict[str, Optional[str]]) -> Contact:
@@ -42,10 +47,4 @@ class ContactDataAccessService:
         else:
             # fetching all contacts associated with the user's operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return user_operator.operator.contacts.all()
-
-    @classmethod
-    def user_has_access(cls, user_guid: UUID, contact_id: int) -> bool:
-        user = UserDataAccessService.get_by_guid(user_guid)
-        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-        return user_operator.operator.contacts.filter(id=contact_id).exists()
+            return Contact.objects.filter(operator=user_operator.operator)

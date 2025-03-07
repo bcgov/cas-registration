@@ -1,8 +1,6 @@
 from decimal import Decimal
 from typing import List, Optional
-
-from pydantic import Field
-from ninja import ModelSchema, Schema
+from ninja import ModelSchema, Schema, Field
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 
 

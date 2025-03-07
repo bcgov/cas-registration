@@ -1,9 +1,8 @@
 from datetime import datetime
-from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import FacilityDesignatedOperationTimeline
-from registration.schema.v1.facility_designated_operation_timeline import (
+from registration.schema import (
     FacilityDesignatedOperationTimelineFilterSchema,
 )
 from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
@@ -155,10 +154,9 @@ class TestFacilityDesignatedOperationTimelineService:
         )
         new_status = FacilityDesignatedOperationTimeline.Statuses.CLOSED
         end_date = datetime.now(ZoneInfo("UTC"))
-        user_guid = uuid4()
 
         updated_timeline = FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
-            user_guid, timeline, new_status, end_date
+            timeline, new_status, end_date
         )
 
         assert updated_timeline.status == new_status

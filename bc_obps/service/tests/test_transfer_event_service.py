@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import TransferEvent, FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline
-from registration.schema.v2.transfer_event import TransferEventFilterSchema, TransferEventCreateIn
+from registration.schema import TransferEventFilterSchema, TransferEventCreateIn
 from service.transfer_event_service import TransferEventService
 import pytest
 from model_bakery import baker
@@ -490,7 +490,6 @@ class TestTransferEventService:
 
         # Verify that set_timeline_status_and_end_date was called for facility_1 (existing timeline)
         mock_set_timeline.assert_called_once_with(
-            user_guid,
             timeline_1,
             FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,
@@ -529,7 +528,7 @@ class TestTransferEventService:
     @patch(
         "service.transfer_event_service.OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline"
     )
-    @patch("service.operation_service_v2.OperationServiceV2.update_operator")
+    @patch("service.operation_service.OperationService.update_operator")
     def test_process_operation_transfer(
         self,
         mock_update_operator,
@@ -556,7 +555,6 @@ class TestTransferEventService:
 
         # Verify that set_timeline_status_and_end_date was called since the timeline exists
         mock_set_timeline.assert_called_once_with(
-            user_guid,
             mock_get_current_timeline.return_value,
             OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,

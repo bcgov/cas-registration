@@ -15,13 +15,6 @@ class OperatorDataAccessService:
         return Operator.objects.exclude(status=Operator.Statuses.DECLINED)
 
     @classmethod
-    def get_operator_by_user_operator_id(cls, user_operator_id: UUID) -> Operator:
-        from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-
-        user_operator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
-        return Operator.objects.get(id=user_operator.operator.id)
-
-    @classmethod
     def get_operators_business_guid(cls, operator_id: UUID) -> UUID:
         from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
@@ -49,7 +42,6 @@ class OperatorDataAccessService:
     @classmethod
     def update_operator(
         cls,
-        user_guid: UUID,
         operator_id: UUID,
         operator_data: DictStrAny,
     ) -> Operator:

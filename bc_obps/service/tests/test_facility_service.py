@@ -1,7 +1,7 @@
 import re
 import pytest
 from model_bakery import baker
-from registration.schema.v1.facility import FacilityIn
+from registration.schema import FacilityIn
 from registration.models import (
     Address,
     Facility,

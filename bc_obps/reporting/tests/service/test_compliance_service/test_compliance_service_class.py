@@ -1,6 +1,6 @@
 from django.test import TestCase
 from reporting.service.compliance_service import ComplianceService
-from infrastructure import ComplianceTestInfrastructure
+from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
 from decimal import Decimal
 
 

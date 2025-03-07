@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from typing import Tuple
 from reporting.models import FuelType
 from reporting.schema.fuel import FuelTypeSchema
-from registration.schema.generic import Message
+from registration.schema import Message
 
 
 ##### GET #####
