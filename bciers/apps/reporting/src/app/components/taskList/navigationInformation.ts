@@ -8,10 +8,20 @@ import { getFlow, reportingFlows } from "./reportingFlows";
 import { pageElementFactory } from "./pageElementFactory";
 import { headerElementFactory } from "./headerElementFactory";
 
+/**
+ *
+ * @param step
+ * @param page
+ * @param reportVersionId
+ * @param context additional context to pass down to the individual page factories, if required.
+ * @returns navigation information
+ */
+
 export async function getNavigationInformation(
   step: HeaderStep,
   page: ReportingPage,
   reportVersionId: number,
+  context: Object = {},
 ): Promise<NavigationInformation> {
   // get flow
   const flow = await getFlow(reportVersionId);
@@ -21,7 +31,7 @@ export async function getNavigationInformation(
   const pages = flowData[step] as ReportingPage[];
   const tasklistPages = await Promise.all(
     pages.map(async (p) => {
-      return pageElementFactory(p, page, reportVersionId);
+      return pageElementFactory(p, page, reportVersionId, context);
     }),
   );
   const taskList = tasklistPages.map((tlp) => tlp.element);
@@ -59,6 +69,7 @@ export async function getNavigationInformation(
             ReportingPage[lastPageOfPreviousStep],
             page,
             reportVersionId,
+            context,
           )
         ).element.link;
       }
@@ -84,6 +95,7 @@ export async function getNavigationInformation(
             ReportingPage[firstPageOfNextStep],
             page,
             reportVersionId,
+            context,
           )
         ).element.link;
       }

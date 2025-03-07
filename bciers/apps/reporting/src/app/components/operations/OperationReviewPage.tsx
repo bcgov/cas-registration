@@ -3,13 +3,8 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import OperationReviewForm from "./OperationReviewForm";
-import {
-  ActivePage,
-  getOperationInformationTaskList,
-} from "@reporting/src/app/components/taskList/1_operationInformation";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import {
@@ -17,9 +12,8 @@ import {
   POTENTIAL_REPORTING_OPERATION,
   REPORTING_OPERATION,
 } from "@reporting/src/app/utils/constants";
-import { ReportingPage } from "../taskList/pageList";
-import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 
 export default async function OperationReviewPage({
   version_id,
@@ -29,7 +23,6 @@ export default async function OperationReviewPage({
   const allRegulatedProducts = await getRegulatedProducts();
   const reportingYear = await getReportingYear();
   const reportType = await getReportType(version_id);
-  const facilityReport = await getFacilityReport(version_id);
 
   const allRepresentatives = reportOperation.report_operation_representatives;
   const showRegulatedProducts = ![
@@ -37,11 +30,6 @@ export default async function OperationReviewPage({
     REPORTING_OPERATION,
     POTENTIAL_REPORTING_OPERATION,
   ].includes(reportOperation.registration_purpose);
-  const taskListElements = getOperationInformationTaskList(
-    version_id,
-    ActivePage.ReviewOperatorInfo,
-    facilityReport.operation_type,
-  );
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,

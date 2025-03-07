@@ -8,21 +8,20 @@ import { operationReviewUiSchema } from "@reporting/src/data/jsonSchema/operatio
 import { actionHandler } from "@bciers/actions";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { useRouter } from "next/navigation";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { NavigationInformation } from "../taskList/types";
 
 interface Props {
   formData: any;
   version_id: number;
   schema: RJSFSchema;
-  navigationInformation : NavigationInformation
+  navigationInformation: NavigationInformation;
 }
 
 export default function OperationReviewForm({
   formData,
   version_id,
   schema,
-  navigationInformation
+  navigationInformation,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
