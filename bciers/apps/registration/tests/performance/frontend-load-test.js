@@ -6,7 +6,6 @@ import {
   operator,
   registration,
   administration,
-  landingPage,
   operation,
   user,
   userOperator,
@@ -16,8 +15,8 @@ const defaultOptions = {
   executor: "constant-vus",
   // Due to the heavy nature of the front end tests experiment with the number of VUs
   // and maybe try running one scenario at a time to avoid overloading your system and getting errors
-  vus: 1, // If running all 9 scenarios this is 1x9=9 VUs
-  duration: "10000s",
+  vus: 1, // If running all 8 scenarios this is 1x8=8 VUs
+  duration: "600s", // 10 minutes
   options: {
     browser: {
       type: "chromium",
@@ -28,7 +27,6 @@ const defaultOptions = {
 export const options = {
   scenarios: Object.fromEntries(
     [
-      "landingPage",
       "operation",
       "user",
       "userOperator",
@@ -52,7 +50,6 @@ export const options = {
 export default function () {
   const scenarioFunctions = {
     administration,
-    landingPage,
     operation,
     user,
     userOperator,
