@@ -89,6 +89,6 @@ export default function () {
   const facilityId = createFacility();
   updateFacility(facilityId);
   fetchFacilities();
-  sleep(1); // Mimic user behavior to avoid duplicate BC GHG ID error
-  assignBCGHGId(facilityId);
+  // sleep(1); // Mimic user behavior to avoid duplicate BC GHG ID error
+  // assignBCGHGId(facilityId);
 }

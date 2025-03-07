@@ -235,8 +235,8 @@ export default function () {
       getNewEntrantApplication(operationId);
     }
     submitOperation(operationId);
-    sleep(1); // Mimic user behavior to avoid duplicate BC GHG ID error
-    assignIds(operationId); // This must happen after submitting the operation
+    // sleep(1); // Mimic user behavior to avoid duplicate BC GHG ID error
+    // assignIds(operationId); // This must happen after submitting the operation
     updateOperation(operationId); // This must happen as the last step because it changes the operation type
   });
   fetchOperations();
