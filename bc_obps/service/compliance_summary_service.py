@@ -32,7 +32,7 @@ class ComplianceSummaryService:
 
             # Get compliance period
             try:
-                compliance_period = CompliancePeriodService.get_compliance_period(
+                compliance_period = CompliancePeriodService.get_compliance_period_for_year(
                     report_version.report.reporting_year_id
                 )
             except CompliancePeriod.DoesNotExist:

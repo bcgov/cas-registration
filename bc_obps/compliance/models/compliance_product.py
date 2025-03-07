@@ -1,7 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_product import ReportProduct
-from simple_history.models import HistoricalRecords
 from .compliance_summary import ComplianceSummary
 from .rls_configs.compliance_product import Rls as ComplianceProductRls
 
@@ -33,11 +32,6 @@ class ComplianceProduct(TimeStampedModel):
     )
     allocated_compliance_emissions = models.DecimalField(
         max_digits=20, decimal_places=4, db_comment="Allocated emissions for compliance in tCO2e"
-    )
-
-    history = HistoricalRecords(
-        table_name='erc_history"."compliance_product_history',
-        history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
     class Meta(TimeStampedModel.Meta):

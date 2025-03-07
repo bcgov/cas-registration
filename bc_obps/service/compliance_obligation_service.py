@@ -1,7 +1,6 @@
 from datetime import date
 from decimal import Decimal
 from django.db import transaction
-from django.core.exceptions import ValidationError
 from compliance.models import ComplianceObligation, ComplianceSummary
 
 
@@ -77,10 +76,6 @@ class ComplianceObligationService:
         """
         obligation = ComplianceObligation.objects.get(id=obligation_id)
 
-        # Validate status
-        if new_status not in [choice[0] for choice in ComplianceObligation.ObligationStatus.choices]:
-            raise ValidationError(f"Invalid obligation status: {new_status}")
-
         obligation.status = new_status
         obligation.save()
 
@@ -103,10 +98,6 @@ class ComplianceObligationService:
             ValidationError: If the new status is invalid
         """
         obligation = ComplianceObligation.objects.get(id=obligation_id)
-
-        # Validate status
-        if new_status not in [choice[0] for choice in ComplianceObligation.PenaltyStatus.choices]:
-            raise ValidationError(f"Invalid penalty status: {new_status}")
 
         obligation.penalty_status = new_status
         obligation.save()

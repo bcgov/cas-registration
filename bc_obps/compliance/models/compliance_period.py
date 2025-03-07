@@ -1,6 +1,5 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from simple_history.models import HistoricalRecords
 from reporting.models.reporting_year import ReportingYear
 from .rls_configs.compliance_period import Rls as CompliancePeriodRls
 
@@ -30,11 +29,6 @@ class CompliancePeriod(TimeStampedModel):
         on_delete=models.PROTECT,
         related_name='compliance_period',
         db_comment="The associated reporting year for this compliance period",
-    )
-
-    history = HistoricalRecords(
-        table_name='erc_history"."compliance_period_history',
-        history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
     class Meta(TimeStampedModel.Meta):
