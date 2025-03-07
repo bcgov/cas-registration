@@ -8,7 +8,7 @@ function getUserAppRole() {
     "GET",
     `${SERVER_HOST}${url}`,
     null,
-    getUserParams("industry_user_reporter"),
+    getUserParams("industry_user_admin"),
     200,
     "Fetching User App Role failed",
   );
