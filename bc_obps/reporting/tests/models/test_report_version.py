@@ -53,6 +53,12 @@ class ReportVersionTest(BaseTestCase):
                 None,
                 None,
             ),
+            (
+                "compliance_summaries",
+                "compliance summary",
+                None,
+                None,
+            ),
         ]
 
     def test_unique_draft_version_per_report(self):
