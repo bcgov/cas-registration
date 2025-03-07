@@ -12,7 +12,7 @@
 
 4. **Local Testing** - Test that it is working correctly by running tests against your local backend server running at `http://127.0.0.1:8000/`.
 
-   **IMPORTANT**: If running the frontend tests, you will need to disable auth and deploy an image to OpenShift. We implemented a hacky solution and didn't want to merge it into the codebase. You can use this example: [Example Pull Request](https://github.com/bcgov/cas-registration/pull/898).
+   **IMPORTANT**: If running the frontend tests, you will need to disable auth and deploy an image to OpenShift. We implemented a hacky solution and didn't want to merge it into the codebase. You can use this example: [Example Pull Request](https://github.com/bcgov/cas-registration/pull/2924).
 
 5. **Update Makefile** - Change the variable `APP_HOST` or `SERVER_HOST` value in the Makefile to the route being tested, e.g., `https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/home/`.
 
