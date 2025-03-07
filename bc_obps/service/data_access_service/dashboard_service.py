@@ -1,8 +1,7 @@
 import logging
 from typing import Optional
 from uuid import UUID
-from django.db.models import QuerySet
-from django.db.models import Q
+from django.db.models import QuerySet, Q
 from common.models import DashboardData
 from common.schema import DashboardDataSchemaOut
 from service.data_access_service.user_service import UserDataAccessService

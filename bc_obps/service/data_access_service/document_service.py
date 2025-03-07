@@ -4,7 +4,7 @@ from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
 
 
-class DocumentDataAccessServiceV2:
+class DocumentDataAccessService:
     @classmethod
     def get_operation_document_by_type(cls, operation_id: UUID, document_type: str) -> Document | None:
         try:

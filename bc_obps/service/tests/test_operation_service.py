@@ -82,7 +82,7 @@ def set_up_valid_mock_operation(purpose: Operation.Purposes):
     return operation
 
 
-class TestOperationServiceV2:
+class TestOperationService:
     @staticmethod
     def test_assigns_single_selected_purpose():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')

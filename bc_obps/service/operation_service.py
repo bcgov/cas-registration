@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.models.facility import Facility
 from service.contact_service import ContactService
-from service.data_access_service.document_service import DocumentDataAccessServiceV2
+from service.data_access_service.document_service import DocumentDataAccessService
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
@@ -254,7 +254,7 @@ class OperationService:
             for doc in [
                 *(
                     [
-                        DocumentDataAccessServiceV2.create_document(
+                        DocumentDataAccessService.create_document(
                             user_guid,
                             payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
                             'boundary_map',
@@ -266,7 +266,7 @@ class OperationService:
                 ),
                 *(
                     [
-                        DocumentDataAccessServiceV2.create_document(
+                        DocumentDataAccessService.create_document(
                             user_guid,
                             payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
                             'process_flow_diagram',
@@ -277,7 +277,7 @@ class OperationService:
                     else []
                 ),
                 *(
-                    DocumentDataAccessServiceV2.create_document(
+                    DocumentDataAccessService.create_document(
                         user_guid,
                         payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
                         'new_entrant_application',
@@ -414,7 +414,7 @@ class OperationService:
             operation.regulated_products.set(payload.regulated_products)
             if payload.regulated_products
             else operation.regulated_products.clear()
-        )  #  this is hitting some seemingly unrelated ones
+        )
 
         if operation.status == Operation.Statuses.REGISTERED and isinstance(payload, OperationInformationInUpdate):
             # operation representatives are only mandatory to register (vs. simply update) and operation

@@ -1,4 +1,4 @@
-from service.data_access_service.document_service import DocumentDataAccessServiceV2
+from service.data_access_service.document_service import DocumentDataAccessService
 from registration.utils import data_url_to_file
 from registration.models.document import Document
 from registration.models.operation import Operation
@@ -11,7 +11,7 @@ from model_bakery import baker
 pytestmark = pytest.mark.django_db
 
 
-class TestDocumentServiceV2:
+class TestDocumentService:
     @staticmethod
     def test_get_operation_document_by_type_if_authorized():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
@@ -48,7 +48,7 @@ class TestDocumentServiceV2:
     def test_do_not_update_duplicate_operation_document():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        DocumentDataAccessServiceV2.create_document(
+        DocumentDataAccessService.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
         created_at = operation.documents.first().created_at
@@ -69,7 +69,7 @@ class TestDocumentServiceV2:
     def test_update_operation_document():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        DocumentDataAccessServiceV2.create_document(
+        DocumentDataAccessService.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
 
@@ -91,11 +91,11 @@ class TestDocumentServiceV2:
             'registration.tests.utils.operation', operator=approved_user_operator.operator, status=registration_status
         )
         # boundary map
-        b_map = DocumentDataAccessServiceV2.create_document(
+        b_map = DocumentDataAccessService.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'boundary_map', operation.id
         )
         # process flow diagram
-        DocumentDataAccessServiceV2.create_document(
+        DocumentDataAccessService.create_document(
             approved_user_operator.user_id, data_url_to_file(MOCK_DATA_URL), 'process_flow_diagram', operation.id
         )
 

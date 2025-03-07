@@ -40,7 +40,7 @@ class ContactListOut(ModelSchema):
         fields = ['id', 'first_name', 'last_name', 'email']
 
 
-class ContactFilterSchemaV2(FilterSchema):
+class ContactFilterSchema(FilterSchema):
     # NOTE: we could simply use the `q` parameter to filter by related fields but,
     # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy so I'm using the `json_schema_extra` parameter
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error

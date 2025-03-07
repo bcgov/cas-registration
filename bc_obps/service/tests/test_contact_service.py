@@ -1,5 +1,5 @@
 import pytest
-from registration.schema import ContactFilterSchemaV2
+from registration.schema import ContactFilterSchema
 from service.contact_service import ContactService, PlacesAssigned
 from model_bakery import baker
 from registration.models.business_role import BusinessRole
@@ -21,7 +21,7 @@ class TestListContactService:
 
         assert (
             ContactService.list_contacts(
-                user_guid=user.user_guid, sort_field="created_at", sort_order="desc", filters=ContactFilterSchemaV2()
+                user_guid=user.user_guid, sort_field="created_at", sort_order="desc", filters=ContactFilterSchema()
             ).count()
             == 3
         )
