@@ -97,6 +97,7 @@ loadfixtures: ## add all registration fixture files to the db
 loadfixtures:
 	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
 	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_fixtures $(ARGS)
+	# $(POETRY_RUN) python $(MANAGE_PY) load_compliance_fixtures $(ARGS) # TODO: add compliance fixtures separately
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db

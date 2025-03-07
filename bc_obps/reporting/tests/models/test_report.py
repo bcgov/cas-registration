@@ -14,4 +14,5 @@ class ReportTest(BaseTestCase):
             ("operation", "operation", None, None),
             ("reporting_year", "reporting year", None, None),
             ("report_versions", "report version", None, 0),
+            ("compliance_summaries", "compliance summary", None, 0),
         ]

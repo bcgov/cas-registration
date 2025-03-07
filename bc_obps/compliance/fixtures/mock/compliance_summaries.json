@@ -1,0 +1,40 @@
+[
+  {
+    "model": "compliance.compliancesummary",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "report": 1,
+      "current_report_version": 1,
+      "compliance_period": 1,
+      "emissions_attributable_for_reporting": "10000.0000",
+      "reporting_only_emissions": "1000.0000",
+      "emissions_attributable_for_compliance": "9000.0000",
+      "emission_limit": "8500.0000",
+      "excess_emissions": "500.0000",
+      "credited_emissions": "0.0000",
+      "reduction_factor": "0.9500",
+      "tightening_rate": "0.0100"
+    }
+  },
+  {
+    "model": "compliance.compliancesummary",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "report": 2,
+      "current_report_version": 2,
+      "compliance_period": 1,
+      "emissions_attributable_for_reporting": "8000.0000",
+      "reporting_only_emissions": "800.0000",
+      "emissions_attributable_for_compliance": "7200.0000",
+      "emission_limit": "7500.0000",
+      "excess_emissions": "0.0000",
+      "credited_emissions": "300.0000",
+      "reduction_factor": "0.9500",
+      "tightening_rate": "0.0100"
+    }
+  }
+]
