@@ -7,6 +7,8 @@ import {
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
+import { OperationTypes } from "@bciers/utils/src/enums";
+
 // ✨ Mocks
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -29,9 +31,9 @@ const config = {
 };
 
 // Mock operationType
-let mockOperationType = "SFO";
+let mockOperationType = OperationTypes.SFO;
 const getUiSchema = (operationType: string) =>
-  operationType === "SFO" ? sfoUiSchema : lfoUiSchema;
+  operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
 
 // 🏷 Common Fields
 const commonMandatoryFormFields = [
@@ -41,22 +43,22 @@ const commonMandatoryFormFields = [
     key: "verification_body_name",
   },
   // { label: "Accredited by", type: "combobox", key: "accredited_by" },
-  {
-    label: "Scope of verification",
-    type: "combobox",
-    key: "scope_of_verification",
-  },
+  // {
+  //   label: "Scope of verification",
+  //   type: "combobox",
+  //   key: "scope_of_verification",
+  // },
   // { label: "Sites visited", type: "combobox", key: "visit_name" },
   // {
   //   label: "Were there any threats to independence noted",
   //   type: "radio",
   //   key: "threats_to_independence",
   // },
-  {
-    label: "Verification conclusion",
-    type: "combobox",
-    key: "verification_conclusion",
-  },
+  // {
+  //   label: "Verification conclusion",
+  //   type: "combobox",
+  //   key: "verification_conclusion",
+  // },
 ];
 
 // ⛏️ Helper function to render the form
@@ -80,7 +82,7 @@ describe("VerificationForm component", () => {
   });
 
   it("renders the form with SFO UI schema fields", async () => {
-    mockOperationType = "SFO"; // Set to SFO
+    mockOperationType = OperationTypes.SFO; // Set to SFO
     renderVerificationForm(mockOperationType);
     expectField(commonMandatoryFormFields.map((field) => field.label));
     expectButton(config.buttons.cancel);
@@ -88,7 +90,7 @@ describe("VerificationForm component", () => {
   });
 
   it("renders the form with LFO UI schema fields", () => {
-    mockOperationType = "LFO"; // Set to LFO
+    mockOperationType = OperationTypes.LFO; // Set to LFO
     renderVerificationForm(mockOperationType);
     expectField(commonMandatoryFormFields.map((field) => field.label));
     expectButton(config.buttons.cancel);

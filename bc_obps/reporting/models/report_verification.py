@@ -37,10 +37,13 @@ class ReportVerification(TimeStampedModel):
         SUPPLEMENTARY = "Supplementary Report"
         CORRECTED = "Corrected Report"
 
+    # TEMPORARY: Made optional to support #607
     scope_of_verification = models.CharField(
         max_length=50,
-        choices=ScopeOfVerification.choices,
         db_comment="The scope of the verification",
+        # choices=ScopeOfVerification.choices,
+        null=True,  # Allows NULL values temporarily
+        blank=True,  # Allows empty values temporarily
     )
 
     threats_to_independence = models.BooleanField(
@@ -52,10 +55,13 @@ class ReportVerification(TimeStampedModel):
         MODIFIED = "Modified"
         NEGATIVE = "Negative"
 
+    # TEMPORARY: Made optional to support #607
     verification_conclusion = models.CharField(
         max_length=8,
-        choices=VerificationConclusion.choices,
         db_comment="The conclusion of the verification",
+        # choices=VerificationConclusion.choices,
+        null=True,  # Allows NULL values temporarily
+        blank=True,  # Allows empty values temporarily
     )
 
     class Meta(TimeStampedModel.Meta):

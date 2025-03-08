@@ -7,6 +7,7 @@ import { createVerificationSchema } from "@reporting/src/app/components/verifica
 import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 vi.mock("@reporting/src/app/components/verification/VerificationForm", () => ({
   default: vi.fn(),
@@ -77,7 +78,7 @@ describe("VerificationPage component", () => {
       { type: "Page", title: "Verification", isActive: true },
     ];
     const mockReportOperation = {
-      operation_type: "Single Facility Operation",
+      operation_type: OperationTypes.SFO,
     };
 
     mockGetReportVerification.mockResolvedValue(mockInitialData);
@@ -94,7 +95,7 @@ describe("VerificationPage component", () => {
     expect(mockGetReportFacilityList).toHaveBeenCalledWith(mockVersionId);
     expect(mockCreateVerificationSchema).toHaveBeenCalledWith(
       mockFacilityList.facilities,
-      "SFO",
+      OperationTypes.SFO,
     );
     expect(mockGetSignOffAndSubmitSteps).toHaveBeenCalledWith(
       mockVersionId,
@@ -105,7 +106,7 @@ describe("VerificationPage component", () => {
     expect(mockVerificationForm).toHaveBeenCalledWith(
       {
         version_id: mockVersionId,
-        operationType: "SFO",
+        operationType: OperationTypes.SFO,
         verificationSchema: mockVerificationSchema,
         initialData: mockInitialData,
         taskListElements: mockTaskListElements,
