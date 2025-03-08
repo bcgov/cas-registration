@@ -1,5 +1,5 @@
 import { handleAccessRequestStatus } from "apps/administration/tests/components/userOperators/mocks";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import AccessRequestDataGrid from "apps/administration/app/components/userOperators/AccessRequestDataGrid";
 import { expect } from "vitest";
@@ -106,7 +106,7 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getAllByRole("gridcell", { name: "Approved" })).toHaveLength(
       2,
     );
-    expect(screen.getByText(/John Doe is now approved/i));
+    expect(screen.getByText(/John Doe is now approved/i)).toBeVisible();
   });
   it("user can DECLINE the request", async () => {
     handleAccessRequestStatus.mockResolvedValue({
@@ -126,7 +126,7 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getAllByRole("gridcell", { name: "Declined" })).toHaveLength(
       2,
     );
-    expect(screen.getByText(/John Doe is now declined/i));
+    expect(screen.getByText(/John Doe is now declined/i)).toBeVisible();
   });
   it("user can EDIT the request", async () => {
     handleAccessRequestStatus.mockResolvedValue({
@@ -135,8 +135,8 @@ describe("Access Requests DataGrid", () => {
       last_name: "Doe",
     });
     render(<AccessRequestDataGrid initialData={mockInitialData} />);
-    const undoButton = screen.getAllByRole("button", { name: "Edit" })[0];
-    await userEvent.click(undoButton);
+    const editButton = screen.getAllByRole("button", { name: "Edit" })[0];
+    await userEvent.click(editButton);
     expect(handleAccessRequestStatus).toHaveBeenCalledWith(
       "2",
       "Pending",
@@ -146,6 +146,21 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getAllByRole("gridcell", { name: "Pending" })).toHaveLength(
       2,
     );
-    expect(screen.getByText(/John Doe is now pending/i));
+    expect(screen.getByText(/John Doe is now pending/i)).toBeVisible();
+  });
+  it("displays a spinner and disables the button while loading", async () => {
+    handleAccessRequestStatus.mockResolvedValue({
+      status: "Pending",
+      first_name: "John",
+      last_name: "Doe",
+    });
+    render(<AccessRequestDataGrid initialData={mockInitialData} />);
+    const editButton = screen.getAllByRole("button", { name: "Edit" })[0];
+    expect(editButton).toBeEnabled();
+    fireEvent.click(editButton);
+    expect(editButton).toBeDisabled();
+    expect(
+      editButton.querySelector("span svg[aria-label='loading']"),
+    ).toBeVisible();
   });
 });
