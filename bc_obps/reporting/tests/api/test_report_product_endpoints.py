@@ -42,7 +42,25 @@ class TestReportProductEndpoints(CommonTestSetup):
             quantity_throughput_during_period=456,
         )
 
+        # ❌ Report product with a different report version (should NOT be in the response)
+        make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=make_recipe("reporting.tests.utils.report_version"),  # Different report version
+            facility_report=self.facility_report,
+            product_id=3,
+        )
+
+        # ❌ Report product with a different facility (should NOT be in the response)
+        make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=self.facility_report.report_version,
+            facility_report=make_recipe("reporting.tests.utils.facility_report"),  # Different facility
+            product_id=4,
+        )
+
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
+
+        # ✅ Check that only rp1 and rp2 are returned, not different version or different facility
         assert response.json() == {
             "report_products": [
                 {
