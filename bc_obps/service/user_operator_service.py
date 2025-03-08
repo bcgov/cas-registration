@@ -2,12 +2,12 @@ from typing import Dict, Optional
 from uuid import UUID
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from registration.schema import ContactIn, OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
+from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from registration.utils import update_model_instance
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.models import Operator, User, UserOperator
+from registration.models import Operator, User, UserOperator, Contact, BusinessRole
 from django.db import transaction
 from registration.constants import UNAUTHORIZED_MESSAGE
 from service.operator_service import OperatorService
@@ -169,18 +169,17 @@ class UserOperatorService:
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
                 # we only update the role if the user_operator is being approved
                 user_operator.role = updated_role  # type: ignore[assignment]
-                contact_payload = ContactIn(
+                # Create a contact record for the user_operator and add it to the operator's contacts
+                # Using get_or_create to avoid creating duplicate contacts
+                Contact.objects.get_or_create(
                     first_name=user_operator.user.first_name,
                     last_name=user_operator.user.last_name,
                     email=user_operator.user.email,
                     phone_number=str(user_operator.user.phone_number),  # ContactIn expects a string,
                     position_title=user_operator.user.position_title,
+                    business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+                    operator_id=user_operator.operator_id,
                 )
-                from service.contact_service import ContactService  # to avoid circular import
-
-                # Create a contact record for the user_operator and add it to the operator's contacts
-                ContactService.create_contact(user_operator.user_id, contact_payload)
-
             access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
 
             if admin_user.is_irc_user():
