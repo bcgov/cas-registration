@@ -13,9 +13,7 @@ import { useCallback, useState } from "react";
 import handleAccessRequestStatus from "./handleAccessRequestStatus";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
-import {
-  BC_GOV_COMPONENTS_GREY,
-} from "@bciers/styles";
+import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
 
 const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -92,7 +90,6 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
     setIsLoading(false);
   };
 
-
   return (
     <>
       <Stack direction="row" spacing={1}>
@@ -102,7 +99,13 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
             key={index}
             onClick={() => handleButtonClick(item)}
             color={item.color}
-            endIcon={isLoading ? <LoadingSpinner color={BC_GOV_COMPONENTS_GREY} /> : item.icon}
+            endIcon={
+              isLoading ? (
+                <LoadingSpinner color={BC_GOV_COMPONENTS_GREY} />
+              ) : (
+                item.icon
+              )
+            }
             disabled={isLoading}
           >
             {item.title}
