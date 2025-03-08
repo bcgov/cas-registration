@@ -99,19 +99,19 @@ generate_credentials:
 create_state_buckets:
 	./scripts/create-state-buckets.sh $(openshift_nameplate) "ggl-cas-storage"
 
-.PHONY: perf_test
-perf_test: ## run performance tests with k6
-perf_test: SERVER_HOST=http://127.0.0.1:8000
-perf_test: SERVER_API_ROUTE=/api/registration
-perf_test: SERVER_ROUTE=$(SERVER_HOST)$(SERVER_API_ROUTE)
-perf_test:
-	@k6 -e SERVER_HOST=$(SERVER_ROUTE) run bciers/apps/registration1/tests/performance/script.js --out csv=k6_results/test_results.csv
+.PHONY: perf_test_reg_backend
+perf_test_reg_backend: ## run backend performance tests with k6
+perf_test_reg_backend: SERVER_HOST=http://127.0.0.1:8000
+perf_test_reg_backend: SERVER_API_ROUTE=/api/registration
+perf_test_reg_backend: SERVER_ROUTE=$(SERVER_HOST)$(SERVER_API_ROUTE)
+perf_test_reg_backend:
+	@K6_WEB_DASHBOARD=true k6 -e SERVER_HOST=$(SERVER_ROUTE) run bciers/apps/registration/tests/performance/backend-load-test.js --out csv=k6_results/test_results_reg_backend.csv
 
-.PHONY: perf_test_frontend
-perf_test_frontend: ## run frontend performance tests with k6
-perf_test_frontend: APP_HOST=http://localhost:3000
-perf_test_frontend:
-	@k6 -e APP_HOST=$(APP_HOST) run bciers/apps/registration1/tests/performance/frontend_script.js --out csv=k6_results/test_results_frontend.csv
+.PHONY: perf_test_reg_frontend
+perf_test_reg_frontend: ## run frontend performance tests with k6
+perf_test_reg_frontend: APP_HOST=http://localhost:3000
+perf_test_reg_frontend:
+	@K6_WEB_DASHBOARD=true k6 -e APP_HOST=$(APP_HOST) run bciers/apps/registration/tests/performance/frontend-load-test.js --out csv=k6_results/test_results_reg_frontend.csv
 
 
 # include .env.devops

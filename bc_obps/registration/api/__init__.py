@@ -38,7 +38,7 @@ from ._user_operators._current import (
     operator,
     operator_users,
 )
-from ._user_operators._user_operator_id import update_status
+from ._user_operators._user_operator_id import status
 from .user import user_profile, user_app_role
 from . import transfer_events
 from ._transfer_events import transfer_id
