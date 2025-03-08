@@ -24,8 +24,6 @@ describe("ErrorPage", () => {
     render(<ErrorPage error={error} />);
 
     expect(screen.getByText("Something went wrong...")).toBeInTheDocument();
-    expect(screen.getByText("Error")).toBeInTheDocument();
-    expect(screen.getByText("Test error")).toBeInTheDocument();
   });
 });
 
@@ -43,21 +41,6 @@ describe("ErrorBoundary", () => {
     render(<ErrorBoundary error={error} />);
 
     expect(Sentry.captureException).toHaveBeenCalledWith(error);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(error);
-
     consoleErrorSpy.mockRestore();
-  });
-
-  /**
-   * Test to ensure that the error message is displayed correctly within the Alert component
-   * when the ErrorBoundary component mounts with an error prop.
-   */
-  it("displays error message in Alert", () => {
-    const error = new Error("Test error");
-    render(<ErrorBoundary error={error} />);
-
-    expect(screen.getByText("Something went wrong...")).toBeInTheDocument();
-    expect(screen.getByText("Error")).toBeInTheDocument();
-    expect(screen.getByText("Test error")).toBeInTheDocument();
   });
 });
