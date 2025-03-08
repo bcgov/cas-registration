@@ -46,6 +46,7 @@ class ReportOperationSchemaOut(ReportOperationOut):
     report_operation_representatives: List[ReportOperationRepresentativeSchema]
     operation_representative_name: List[int]  # IDs of selected representatives
     operation_report_type: str
+    operation_report_status: str
 
 
 class ReportOperationIn(Schema):
