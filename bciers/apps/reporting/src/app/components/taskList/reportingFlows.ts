@@ -2,7 +2,6 @@ import {
   ELECTRICITY_IMPORT_OPERATION,
   NEW_ENTRANT_REGISTRATION_PURPOSE,
   REPORTING_OPERATION,
-  SIMPLE_REPORT,
 } from "../../utils/constants";
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
 import { getReportingOperation } from "../../utils/getReportingOperation";
@@ -12,7 +11,6 @@ import { lfoReportingOnlyFlow } from "./reportingFlows/lfoReportingOnlyFlow";
 import { sfoFlow } from "./reportingFlows/sfoFlow";
 import { sfoNewEntrantFlow } from "./reportingFlows/sfoNewEntrantFlow";
 import { sfoReportingOnlyFlow } from "./reportingFlows/sfoReportingOnlyFlow";
-import { simpleReportFlow } from "./reportingFlows/simpleReportFlow";
 import { ReportingFlow, ReportingFlowDescription } from "./types";
 
 export const reportingFlows: {
@@ -24,7 +22,6 @@ export const reportingFlows: {
   [ReportingFlow.NewEntrantSFO]: sfoNewEntrantFlow,
   [ReportingFlow.ReportingOnlySFO]: sfoReportingOnlyFlow,
   [ReportingFlow.ReportingOnlyLFO]: lfoReportingOnlyFlow,
-  [ReportingFlow.SimpleReport]: simpleReportFlow,
 };
 
 export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
@@ -33,9 +30,6 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
     .registration_purpose;
 
   const operationType = reportOperationData.operation_type;
-  const reportType = reportOperationData.operation_report_type;
-
-  if (reportType === SIMPLE_REPORT) return ReportingFlow.SimpleReport;
 
   if (registrationPurpose === ELECTRICITY_IMPORT_OPERATION)
     return ReportingFlow.EIO;
