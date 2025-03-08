@@ -21,3 +21,5 @@
 7. **Monitor Deployment** - Keep an eye on the deployment process.
 
 8. **Check Results** - Results will be in the `k6_results` folder in .csv format.
+
+9. **Monitor Results** - We have added [`K6_WEB_DASHBOARD=true`](https://grafana.com/docs/k6/latest/results-output/web-dashboard/) to the make target by default, and it will show `web dashboard: http://127.0.0.1:5665` in the terminal. You can view the results in the browser (with a 10s refresh rate).
