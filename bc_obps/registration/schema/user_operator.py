@@ -10,7 +10,6 @@ from registration.schema import (
     PartnerOperatorOut,
     ParentOperator,
     ParentOperatorOut,
-    ParentOperatorOutV1,
     UserExternalDashboardUsersTileData,
 )
 
@@ -54,7 +53,7 @@ class UserOperatorListOut(ModelSchema):
         fields = ['id', 'user_friendly_id', 'status']
 
 
-class UserOperatorOutV2(ModelSchema):
+class UserOperatorOut(ModelSchema):
     """
     Custom schema for the user operator form
     """
@@ -146,57 +145,17 @@ class RequestAccessOut(Schema):
     operator_id: UUID
 
 
-class UserOperatorOut(ModelSchema):
+class UserOperatorStatusUpdateOut(ModelSchema):
     """
     Custom schema for the user operator form
     """
 
-    operator_status: str = Field(..., alias="operator.status")
-    legal_name: str = Field(..., alias="operator.legal_name")
-    trade_name: Optional[str] = Field("", alias="operator.trade_name")
-    cra_business_number: Optional[int] = Field(None, alias="operator.cra_business_number")
-    bc_corporate_registry_number: Optional[str] = Field(
-        None, pattern=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
-    )
-    business_structure: Optional[str] = Field(None, alias="operator.business_structure.name")
-    physical_street_address: Optional[str] = Field(None, alias="operator.physical_address.street_address")
-    physical_municipality: Optional[str] = Field(None, alias="operator.physical_address.municipality")
-    physical_province: Optional[str] = Field(None, alias="operator.physical_address.province")
-    physical_postal_code: Optional[str] = Field(None, alias="operator.physical_address.postal_code")
-    mailing_street_address: Optional[str] = Field(None, alias="operator.mailing_address.street_address")
-    mailing_municipality: Optional[str] = Field(None, alias="operator.mailing_address.municipality")
-    mailing_province: Optional[str] = Field(None, alias="operator.mailing_address.province")
-    mailing_postal_code: Optional[str] = Field(None, alias="operator.mailing_address.postal_code")
-    website: Optional[str] = Field("", alias="operator.website")
-    mailing_address_same_as_physical: bool
-    operator_id: UUID = Field(..., alias="operator.id")
-    is_new: bool = Field(..., alias="operator.is_new")
-    operator_has_parent_operators: bool
-    parent_operators_array: Optional[List[ParentOperatorOutV1]] = Field(None, alias="operator.parent_operators")
     first_name: str = Field(..., alias="user.first_name")
     last_name: str = Field(..., alias="user.last_name")
-    email: str = Field(..., alias="user.email")
-    phone_number: str = str(Field(None, alias="user.phone_number"))
-    position_title: str = Field(..., alias="user.position_title")
-    bceid_business_name: Optional[str] = Field(None, alias="user.bceid_business_name")
-
-    @staticmethod
-    def resolve_mailing_address_same_as_physical(obj: UserOperator) -> bool:
-        if not obj.operator.mailing_address or not obj.operator.physical_address:
-            return False
-        return obj.operator.mailing_address.id == obj.operator.physical_address.id
-
-    @staticmethod
-    def resolve_operator_has_parent_operators(obj: UserOperator) -> bool:
-        return obj.operator.parent_operators.exists()
-
-    @staticmethod
-    def resolve_phone_number(obj: UserOperator) -> str:
-        return str(obj.user.phone_number)
 
     class Meta:
         model = UserOperator
-        fields = ["role", "status"]
+        fields = ["status"]
 
 
 class ExternalDashboardUsersTileData(ModelSchema):
