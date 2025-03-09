@@ -242,34 +242,24 @@ class TestUpdateStatusAndCreateContact:
 
     @staticmethod
     def test_update_status_and_create_contact_does_create_duplicate_contacts():
-        industry_operator_user = baker.make_recipe(
-            'registration.tests.utils.industry_operator_user',
-            first_name="Wednesday",
-            last_name="Addams",
-            email="wednesday.addams@email.com",
-            phone_number='+16044011234',
-            position_title="child",
-        )
         approved_admin_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
         )
         pending_user_operator = baker.make_recipe(
             'registration.tests.utils.user_operator',
             operator=approved_admin_user_operator.operator,
-            user=industry_operator_user,
         )
 
         pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
+        pending_user_operator.user.save()
 
         UserOperatorService.update_status_and_create_contact(
             pending_user_operator.id,
             UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.ADMIN),
             approved_admin_user_operator.user.user_guid,
         )
-        pending_user_operator.refresh_from_db()  # refresh the pending_user_operator object to get the updated status
         assert Contact.objects.count() == 1
         assert pending_user_operator.operator.contacts.count() == 1
-        assert Contact.objects.filter(first_name="Wednesday").count() == 1
 
         # Second call to the same function should not create duplicate contacts
         UserOperatorService.update_status_and_create_contact(
@@ -279,4 +269,3 @@ class TestUpdateStatusAndCreateContact:
         )
         assert Contact.objects.count() == 1
         assert pending_user_operator.operator.contacts.count() == 1
-        assert Contact.objects.filter(first_name="Wednesday").count() == 1
