@@ -21,7 +21,6 @@ export const newEntrantOperationSchema: RJSFSchema = {
     new_entrant_application: {
       type: "string",
       title: "New Entrant Application and Statutory Declaration",
-      format: "data-url",
     },
   },
   dependencies: {
