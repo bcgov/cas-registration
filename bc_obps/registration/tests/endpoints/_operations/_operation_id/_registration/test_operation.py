@@ -1,23 +1,22 @@
-from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.models import Operation
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
-import json
+from django.core.files.base import ContentFile
 
 
-class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
+class TestPostOperationRegistrationInformationEndpoint(CommonTestSetup):
+
     mock_payload = {
-        "registration_purpose": "Reporting Operation",
-        "regulated_products": [1],
-        "name": "op name",
-        "type": Operation.Types.SFO,
-        "naics_code_id": 1,
-        "secondary_naics_code_id": 2,
-        "tertiary_naics_code_id": 3,
-        "activities": [1],
-        "boundary_map": MOCK_DATA_URL,
-        "process_flow_diagram": MOCK_DATA_URL,
+        'registration_purpose': ['Reporting Operation'],
+        'operation': ['556ceeb0-7e24-4d89-b639-61f625f82084'],
+        'activities': ['31'],
+        'name': ['Barbie'],
+        'type': [Operation.Types.SFO],
+        'naics_code_id': ['20'],
+        'operation_has_multiple_operators': ['false'],
+        'process_flow_diagram': ContentFile(bytes("testtesttesttest", encoding='utf-8'), "testfile.pdf"),
+        'boundary_map': ContentFile(bytes("testtesttesttest", encoding='utf-8'), "testfile.pdf"),
     }
 
     def test_users_cannot_update_other_users_operations(self):
@@ -26,24 +25,21 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
         )
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            json.dumps(self.mock_payload),
+        response = TestUtils.client.post(
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+            data=self.mock_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         assert response.status_code == 401
 
     def test_register_edit_operation_information_endpoint_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            json.dumps(self.mock_payload),
+        response = TestUtils.client.post(
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+            data=self.mock_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
         response_json = response.json()
 
@@ -55,14 +51,10 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
     def test_register_edit_operation_information_endpoint_fail(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {
-                'bad data': 'im bad',
-            },
+        response = TestUtils.client.post(
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
+            data={'bad data': 'im bad'},
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         # Assert

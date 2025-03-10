@@ -3,27 +3,26 @@ from registration.models import (
     UserOperator,
 )
 from registration.models.operation import Operation
-from registration.tests.constants import MOCK_DATA_URL
+from registration.tests.constants import MOCK_FILE
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
-import json
 
 
 class TestOperationIdEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
 
     test_payload = {
-        "registration_purpose": "Reporting Operation",
+        "registration_purpose": ["Reporting Operation"],
         "regulated_products": [1],
-        "name": "op name",
-        "type": Operation.Types.SFO,
-        "naics_code_id": 1,
-        "secondary_naics_code_id": 2,
-        "tertiary_naics_code_id": 3,
+        "name": ["op name"],
+        "type": [Operation.Types.SFO],
+        "naics_code_id": [1],
+        "secondary_naics_code_id": [2],
+        "tertiary_naics_code_id": [3],
         "activities": [1],
-        "boundary_map": MOCK_DATA_URL,
-        "process_flow_diagram": MOCK_DATA_URL,
+        "boundary_map": MOCK_FILE,
+        "process_flow_diagram": MOCK_FILE,
     }
 
     def test_industry_users_can_only_get_their_own_operations(self):
@@ -105,7 +104,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
         response_data = response.json()
         assert response_data.get("id") == str(operation.id)
 
-    def test_operations_endpoint_put_success(self):
+    def test_operations_endpoint_post_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
@@ -113,13 +112,11 @@ class TestOperationIdEndpoint(CommonTestSetup):
             status=Operation.Statuses.REGISTERED,
         )
         contact = baker.make_recipe('registration.tests.utils.contact')
-        self.test_payload["operation_representatives"] = [contact.id]
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            json.dumps(self.test_payload),
+        self.test_payload.update({"operation_representatives": [contact.id]})
+        response = TestUtils.client.post(
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id}),
+            data=self.test_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
         assert response.status_code == 200
         response_data = response.json()

@@ -31,7 +31,7 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
         )
         file = data_url_to_file(MOCK_DATA_URL)
-        new_entrant_application_doc, created = DocumentService.create_or_replace_operation_document(
+        new_entrant_application_doc = DocumentService.create_or_replace_operation_document(
             approved_user_operator.user_id, operation.id, file, "new_entrant_application"
         )
         operation.documents.add(new_entrant_application_doc)

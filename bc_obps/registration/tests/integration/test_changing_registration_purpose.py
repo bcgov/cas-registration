@@ -4,8 +4,8 @@ from copy import deepcopy
 from registration.models import Operation, NaicsCode, DocumentType
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.tests.constants import MOCK_FILE
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.tests.constants import MOCK_DATA_URL
 from registration.utils import custom_reverse_lazy
 
 
@@ -23,7 +23,10 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         }
 
     def _create_new_entrant_payload(self):
-        return {"date_of_first_shipment": "On or after April 1, 2024", "new_entrant_application": MOCK_DATA_URL}
+        return {
+            "date_of_first_shipment": ["On or after April 1, 2024"],
+            "new_entrant_application": MOCK_FILE,
+        }
 
     def _prepare_test_data(self, registration_purpose):
         self.approved_user_operator = baker.make_recipe(
@@ -43,19 +46,19 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         naics_codes = NaicsCode.objects.all()[0:2]
         operation_information_payload = {
             # begin with most basic allowed payload - EIOs will only use this
-            "name": self.operation.name,
-            "type": self.operation.type,
-            "registration_purpose": self.operation.registration_purpose,
+            "name": [self.operation.name],
+            "type": [self.operation.type],
+            "registration_purpose": [self.operation.registration_purpose],
             "activities": [],  # activities is required in payload so needs to be explicitly set, even if it's empty
         }
         if self.operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             operation_information_payload.update(
                 {
-                    "boundary_map": MOCK_DATA_URL,
-                    "process_flow_diagram": MOCK_DATA_URL,
+                    "boundary_map": MOCK_FILE,
+                    "process_flow_diagram": MOCK_FILE,
                     "activities": [2, 3],
-                    "naics_code_id": naics_codes[0].id,
-                    "secondary_naics_code_id": naics_codes[1].id,
+                    "naics_code_id": [naics_codes[0].id],
+                    "secondary_naics_code_id": [naics_codes[1].id],
                 }
             )
         if self.operation.registration_purpose in [
@@ -64,13 +67,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
             Operation.Purposes.NEW_ENTRANT_OPERATION,
         ]:
             operation_information_payload.update({"regulated_products": [1, 2]})
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            operation_information_payload,
+        response = TestUtils.client.post(
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+            data=operation_information_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()
@@ -79,17 +81,17 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         naics_codes = NaicsCode.objects.all()[0:2]
         # begin with most basic allowed payload - EIOs will only use this
         operation_payload = {
-            "name": self.operation.name,
-            "type": self.operation.type,
-            "registration_purpose": new_purpose,
+            "name": [self.operation.name],
+            "type": [self.operation.type],
+            "registration_purpose": [new_purpose],
             "activities": [],  # activities is required in payload so needs to be explicitly set, even if it's empty
         }
         if new_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             # any purpose other than EIO requires these additional fields
             operation_payload.update(
                 {
-                    "boundary_map": MOCK_DATA_URL,
-                    "process_flow_diagram": MOCK_DATA_URL,
+                    "boundary_map": MOCK_FILE,
+                    "process_flow_diagram": MOCK_FILE,
                     "activities": [2, 3],
                     "naics_code_id": self.operation.naics_code_id
                     or naics_codes[0].id,  # if old purpose was EIO, operation won't have any NAICS codes
@@ -103,13 +105,12 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         ]:
             # regulated operations need to report their
             operation_payload.update({"regulated_products": [1, 2]})
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            operation_payload,
+        response = TestUtils.client.post(
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+            data=operation_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()
@@ -135,15 +136,14 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         self.operation.refresh_from_db()
 
     def _set_new_entrant_info(self):
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            self._create_new_entrant_payload(),
+        response = TestUtils.client.post(
             custom_reverse_lazy(
                 "create_or_replace_new_entrant_application", kwargs={'operation_id': self.operation.id}
             ),
+            data=self._create_new_entrant_payload(),
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()
