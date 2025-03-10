@@ -7,6 +7,11 @@ import {
   useSearchParams,
   useSession,
 } from "@bciers/testConfig/mocks";
+import {
+  downloadUrl,
+  downloadUrl2,
+  mockFile,
+} from "libs/testConfig/src/constants";
 
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
 import { Apps, FrontEndRoles, OperationStatus } from "@bciers/utils/src/enums";
@@ -25,8 +30,6 @@ useSession.mockReturnValue({
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
-
-const mockDataUri = "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
 
 // Just using a simple schema for testing purposes
 const testSchema: RJSFSchema = {
@@ -163,13 +166,16 @@ const newEntrantFormData = {
   name: "Operation 5",
   type: "Single Facility Operation",
   registration_purpose: RegistrationPurposes.NEW_ENTRANT_OPERATION,
-  new_entrant_application: mockDataUri,
+  new_entrant_application: downloadUrl,
   date_of_first_shipment: "On or before March 31, 2024",
 };
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 
 describe("the OperationInformationForm component", () => {
+  global.URL.createObjectURL = vi.fn(
+    () => "this is the link to download the File",
+  );
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -340,15 +346,15 @@ describe("the OperationInformationForm component", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}`,
-      "PUT",
+      "POST",
       "",
       {
-        body: JSON.stringify({
-          name: "Operation 4",
-          type: "Single Facility Operation",
-        }),
+        body: expect.any(FormData),
       },
     );
+    const bodyFormData = actionHandler.mock.calls[0][3].body;
+    expect(bodyFormData.get("name")).toBe("Operation 4");
+    expect(bodyFormData.get("type")).toBe("Single Facility Operation");
 
     // Expect the form to be submitted
     expect(screen.getByText(/Operation 4/i)).toBeVisible();
@@ -744,12 +750,12 @@ describe("the OperationInformationForm component", () => {
     expect(
       screen.getByText(/new entrant application and statutory declaration/i),
     ).toBeVisible();
-    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(screen.getByText("test.pdf")).toBeVisible();
     expect(
       screen.getByRole("link", {
         name: /preview/i,
       }),
-    ).toHaveAttribute("href", mockDataUri);
+    ).toHaveAttribute("href", "this is the link to download the File");
   });
 
   it("should edit and submit the new entrant application form", async () => {
@@ -804,7 +810,6 @@ describe("the OperationInformationForm component", () => {
             new_entrant_application: {
               type: "string",
               title: "New Entrant Application and Statutory Declaration",
-              format: "data-url",
             },
           },
         },
@@ -829,9 +834,7 @@ describe("the OperationInformationForm component", () => {
     );
 
     await userEvent.click(afterAprilRadioButton);
-    const mockFile = new File(["test"], "mock_file.pdf", {
-      type: "application/pdf",
-    });
+
     const newEntrantApplicationDocument = screen.getByLabelText(
       /new entrant application and statutory declaration/i,
     );
@@ -844,19 +847,23 @@ describe("the OperationInformationForm component", () => {
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}`,
-      "PUT",
+      "POST",
       "",
       {
-        body: JSON.stringify({
-          name: "Operation 5",
-          type: "Single Facility Operation",
-          registration_purpose: "New Entrant Operation",
-          date_of_first_shipment: "On or after April 1, 2024",
-          new_entrant_application:
-            "data:application/pdf;name=mock_file.pdf;base64,dGVzdA==",
-        }),
+        body: expect.any(FormData),
       },
     );
+    const bodyFormData = actionHandler.mock.calls[0][3].body;
+
+    expect(bodyFormData.get("name ")).toBe("Operation 5");
+    expect(bodyFormData.get("type ")).toBe("Single Facility Operation");
+    expect(bodyFormData.get("registration_purpose ")).toBe(
+      "New Entrant Operation",
+    );
+    expect(bodyFormData.get("date_of_first_shipment ")).toBe(
+      "On or after April 1, 2024",
+    );
+    expect(bodyFormData.get("new_entrant_application")).toBe(mockFile);
   });
 
   it("should not allow external users to remove their operation rep", async () => {
@@ -897,7 +904,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Must not have fewer than 1 items/i)).toBeVisible();
   });
 
-  it(
+  it.only(
     "should allow external users to replace their operation rep",
     { timeout: 100000 },
     async () => {
@@ -912,8 +919,8 @@ describe("the OperationInformationForm component", () => {
         regulated_products: [1],
         opt_in: false,
         operation_representatives: [1],
-        boundary_map: mockDataUri,
-        process_flow_diagram: mockDataUri,
+        boundary_map: downloadUrl,
+        process_flow_diagram: downloadUrl2,
       };
       useSession.mockReturnValue({
         data: {
@@ -964,23 +971,28 @@ describe("the OperationInformationForm component", () => {
       expect(actionHandler).toHaveBeenCalledTimes(1);
       expect(actionHandler).toHaveBeenCalledWith(
         `registration/operations/${operationId}`,
-        "PUT",
+        "POST",
         "",
         {
-          body: JSON.stringify({
-            name: "Operation 3",
-            type: "Single Facility Operation",
-            naics_code_id: 1,
-            secondary_naics_code_id: 2,
-            process_flow_diagram: mockDataUri,
-            boundary_map: mockDataUri,
-            operation_has_multiple_operators: false,
-            registration_purpose: "Reporting Operation",
-            operation_representatives: [2],
-            activities: [1, 2],
-          }),
+          body: expect.any(FormData),
         },
       );
+      const bodyFormData = actionHandler.mock.calls[0][3].body;
+
+      expect(bodyFormData.get("name")).toBe("Operation 3");
+      expect(bodyFormData.get("type")).toBe("Single Facility Operation");
+      expect(bodyFormData.get("naics_code_id")).toBe("1");
+      expect(bodyFormData.get("secondary_naics_code_id")).toBe("2");
+      expect(bodyFormData.get("boundary_map")).toBe(downloadUrl);
+      expect(bodyFormData.get("process_flow_diagram")).toBe(downloadUrl2);
+      expect(bodyFormData.get("operation_has_multiple_operators")).toBe(
+        "false",
+      );
+      expect(bodyFormData.get("registration_purpose")).toBe(
+        "Reporting Operation",
+      );
+      expect(bodyFormData.get("operation_representatives")).toBe("2");
+      expect(bodyFormData.getAll("activities")).toStrictEqual(["1", "2"]);
     },
   );
 

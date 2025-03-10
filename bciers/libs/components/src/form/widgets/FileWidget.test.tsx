@@ -5,22 +5,17 @@ import FormBase from "@bciers/components/form/FormBase";
 import { useSession } from "@bciers/testConfig/mocks";
 import { Session } from "@bciers/testConfig/types";
 import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
+import {
+  downloadUrl,
+  downloadUrl2,
+  mock21MBFile,
+  mockFile,
+  mockFile2,
+  mockFileUnaccepted,
+} from "@bciers/testConfig/constants";
 
 const fileFieldLabel = "FileWidget test field";
 const fileLabelRequired = `${fileFieldLabel}*`;
-export const testDataUri =
-  "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
-export const testDataUri2 =
-  "data:application/pdf;name=testpdf2.pdf;base64,ZHVtbXk=";
-const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
-const mockFile2 = new File(["test2"], "test2.pdf", { type: "application/pdf" });
-const mockFileUnaccepted = new File(["test"], "test.txt", {
-  type: "text/plain",
-});
-
-const mock21MBFile = new File(["test".repeat(20000000)], "test.pdf", {
-  type: "application/pdf",
-});
 
 const alertMock = vi.spyOn(window, "alert");
 
@@ -30,7 +25,6 @@ export const fileFieldSchema = {
   properties: {
     fileTestField: {
       type: "string",
-      format: "data-url",
       title: fileFieldLabel,
     },
   },
@@ -53,6 +47,9 @@ describe("RJSF FileWidget", () => {
         },
       },
     } as Session);
+    global.URL.createObjectURL = vi.fn(
+      () => "this is the link to download the File",
+    );
   });
 
   it("should render a file field", async () => {
@@ -71,13 +68,13 @@ describe("RJSF FileWidget", () => {
       <FormBase
         schema={fileFieldSchema}
         formData={{
-          fileTestField: testDataUri,
+          fileTestField: downloadUrl,
         }}
         uiSchema={fileFieldUiSchema}
       />,
     );
 
-    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(screen.getByText("test.pdf")).toBeVisible();
   });
 
   it("should allow uploading a file", async () => {
@@ -176,7 +173,7 @@ describe("RJSF FileWidget", () => {
       <FormBase
         schema={fileFieldSchema}
         formData={{
-          fileTestField: testDataUri,
+          fileTestField: downloadUrl,
         }}
         uiSchema={fileFieldUiSchema}
       />,
@@ -184,37 +181,29 @@ describe("RJSF FileWidget", () => {
 
     const input = screen.getByLabelText(fileLabelRequired);
 
-    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(screen.getByText("test.pdf")).toBeVisible();
 
     await userEvent.upload(input, mockFile2);
 
     expect(screen.getByText("test2.pdf")).toBeVisible();
   });
 
-  it("should display the file preview link when a file is uploaded", async () => {
+  it("should have the file download link when a file is uploaded", async () => {
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
     const input = screen.getByLabelText(fileLabelRequired);
 
     expect(
-      screen.queryByRole("link", { name: "Preview" }),
+      screen.queryByRole("link", { name: "test.pdf" }),
     ).not.toBeInTheDocument();
 
     await userEvent.upload(input, mockFile);
-    expect(screen.getByRole("link", { name: "Preview" })).toBeVisible();
-  });
-
-  it("should have the correct href for the preview link", async () => {
-    render(
-      <FormBase
-        schema={fileFieldSchema}
-        uiSchema={fileFieldUiSchema}
-        formData={{
-          fileTestField: [testDataUri],
-        }}
-      />,
+    const previewLink = screen.getByRole("link", { name: "test.pdf" });
+    expect(previewLink).toBeVisible();
+    // mocked
+    expect(previewLink).toHaveAttribute(
+      "href",
+      "this is the link to download the File",
     );
-    const previewLink = screen.getByRole("link", { name: "Preview" });
-    expect(previewLink).toHaveAttribute("href", testDataUri);
   });
 
   it("should not render the upload button for internal users", () => {
@@ -248,7 +237,7 @@ describe("RJSF FileWidget", () => {
       <FormBase
         schema={fileFieldSchema}
         formData={{
-          fileTestField: testDataUri,
+          fileTestField: downloadUrl,
         }}
         uiSchema={fileFieldUiSchema}
       />,
@@ -276,7 +265,7 @@ describe("RJSF FileWidget", () => {
           },
         }}
         formData={{
-          fileTestField: [testDataUri, testDataUri2],
+          fileTestField: [downloadUrl, downloadUrl2],
         }}
         uiSchema={fileFieldUiSchema}
       />,

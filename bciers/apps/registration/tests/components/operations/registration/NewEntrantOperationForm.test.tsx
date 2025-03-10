@@ -12,6 +12,7 @@ import { newEntrantOperationSchema } from "@/registration/app/data/jsonSchema/op
 import NewEntrantOperationForm from "@/registration/app/components/operations/registration/NewEntrantOperationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
+import { downloadUrl, mockFile } from "libs/testConfig/src/constants";
 
 useSession.mockReturnValue({
   data: {
@@ -27,13 +28,12 @@ useRouter.mockReturnValue({
   push: mockPush,
 });
 
-export const mockDataUri =
-  "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
-const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
-
 describe("the NewEntrantOperationForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    global.URL.createObjectURL = vi.fn(
+      () => "this is the link to download the File",
+    );
   });
 
   it("should render the NewEntrantOperationForm component", () => {
@@ -67,7 +67,7 @@ describe("the NewEntrantOperationForm component", () => {
     render(
       <NewEntrantOperationForm
         formData={{
-          new_entrant_application: mockDataUri,
+          new_entrant_application: downloadUrl,
         }}
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={newEntrantOperationSchema}
@@ -76,7 +76,7 @@ describe("the NewEntrantOperationForm component", () => {
       />,
     );
 
-    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+    expect(screen.getByText("test.pdf")).toBeVisible();
   });
 
   it("should display the correct url and message for the default date choice", () => {
@@ -193,11 +193,16 @@ describe("the NewEntrantOperationForm component", () => {
 
     expect(actionHandler).toHaveBeenCalledWith(
       "registration/operations/002d5a9e-32a6-4191-938c-2c02bfec592d/registration/new-entrant-application",
-      "PUT",
+      "POST",
       "/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d",
       {
-        body: '{"new_entrant_application":"data:application/pdf;name=test.pdf;base64,dGVzdA==","date_of_first_shipment":"On or before March 31, 2024"}',
+        body: expect.any(FormData),
       },
+    );
+    const formData = actionHandler.mock.calls[0][3].body;
+    expect(formData.get("new_entrant_application")).toBe(mockFile);
+    expect(formData.get("date_of_first_shipment")).toBe(
+      "On or before March 31, 2024",
     );
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
