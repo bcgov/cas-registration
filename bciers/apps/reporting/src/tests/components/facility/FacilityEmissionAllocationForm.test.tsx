@@ -22,6 +22,7 @@ const config = {
   buttons: {
     cancel: "Back",
     saveAndContinue: "Save & Continue",
+    continue: "Continue",
   },
   mockVersionId: 3,
   mockFacilityId: "abc",
@@ -162,7 +163,7 @@ describe("FacilityEmissionAllocationForm component", () => {
     );
     expect(
       screen.getByRole("button", {
-        name: config.buttons.saveAndContinue,
+        name: config.buttons.continue,
       }),
     ).toBeDisabled();
   });
