@@ -15,7 +15,9 @@ class FacilityDesignatedOperationTimelineService:
     def get_timeline_by_operation_id(
         cls, user: User, operation_id: UUID
     ) -> QuerySet[FacilityDesignatedOperationTimeline]:
-        base_queryset = FacilityDesignatedOperationTimeline.objects.filter(operation__id=operation_id).distinct()
+        base_queryset = FacilityDesignatedOperationTimeline.objects.filter(
+            operation__id=operation_id, end_date__isnull=True
+        ).distinct()
 
         if user.is_industry_user():
             UserOperatorService.get_current_user_approved_user_operator_or_raise(user)

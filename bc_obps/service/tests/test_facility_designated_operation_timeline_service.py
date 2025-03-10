@@ -16,14 +16,27 @@ class TestGetTimeline:
     def test_get_timeline_by_operation_id_for_irc_user():
         cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
 
-        timeline_for_selected_operation = baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline', _quantity=10
-        )
-        # timeline for random operation's facilities
-        baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=10)
+        # 10 active facilities for selected operation
+        facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=10)
+        selected_operation = baker.make_recipe('registration.tests.utils.operation')
+        for facility in facilities:
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                facility=facility,
+                end_date=None,
+                operation=selected_operation,
+            )
+
+        # timelines for 10 active facilities for other random operation
+        for _ in range(10):
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                facility=baker.make_recipe('registration.tests.utils.facility'),
+                end_date=None,
+            )
 
         expected_facilities = FacilityDesignatedOperationTimelineService.get_timeline_by_operation_id(
-            cas_admin, timeline_for_selected_operation[0].operation.id
+            cas_admin, selected_operation.id
         )
 
         assert expected_facilities.count() == 10
@@ -46,12 +59,18 @@ class TestGetTimeline:
             'registration.tests.utils.operation', operator=approved_user_operator.operator
         )
         # user's timeline
-        baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline',
-            operation=users_operation,
-            _quantity=10,
-        )
+        for _ in range(10):
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                operation=users_operation,
+                facility=baker.make_recipe('registration.tests.utils.facility', operation=users_operation),
+                end_date=None,
+            )
         # mimic transferred facilities
+        # end_date will be not None, so system infers that these facilities have been transferred
+        baker.make_recipe(
+            'registration.tests.utils.facility_designated_operation_timeline', operation=users_operation, _quantity=5
+        )
 
         # random timeline
         baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
@@ -75,6 +94,7 @@ class TestListTimeline:
                 'registration.tests.utils.facility_designated_operation_timeline',
                 facility=facility,
                 operation=operation,
+                end_date=None,
             )
 
         facilities_list = FacilityDesignatedOperationTimelineService.list_timeline_by_operation_id(
@@ -100,6 +120,7 @@ class TestListTimeline:
                 'registration.tests.utils.facility_designated_operation_timeline',
                 facility=facility,
                 operation=operation,
+                end_date=None,
             )
 
         facilities_list = FacilityDesignatedOperationTimelineService.list_timeline_by_operation_id(
