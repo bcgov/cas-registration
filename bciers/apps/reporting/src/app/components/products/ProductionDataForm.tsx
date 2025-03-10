@@ -12,6 +12,12 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 import DeselectAllButton from "./DeselectAllButton";
 import { createRoot } from "react-dom/client";
 
+interface productionDataItem {
+  properties: {
+    production_methodology: RJSFSchema
+  }
+}
+
 interface Props {
   report_version_id: number;
   facility_id: string;
@@ -82,7 +88,7 @@ const ProductionDataForm: React.FC<Props> = ({
     };
     if (["Small Aggregate", "Medium Facility"].includes(facilityType))
       object.enum.push("Not Applicable");
-    const item = modifiedSchema.definitions.productionDataItem; // Sonarcloud doesn't like 'as any' so bacon will remain
+    const item = modifiedSchema.definitions.productionDataItem as productionDataItem;
     item.properties.production_methodology = object as RJSFSchema;
   }
 
