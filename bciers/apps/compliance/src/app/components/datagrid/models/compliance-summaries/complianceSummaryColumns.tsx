@@ -27,7 +27,6 @@ const complianceSummaryColumns = (): GridColDef[] => {
       headerName: "Outstanding Balance",
       width: 200,
       type: "number",
-      valueGetter: (params) => params.row.excess_emissions,
       valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
