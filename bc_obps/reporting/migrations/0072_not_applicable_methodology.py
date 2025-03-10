@@ -31,7 +31,7 @@ def reverse_additional_methodology_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0069_rename_db_table_name_to_match_model')]
+    dependencies = [('reporting', '0071_alter_reportoperation_registration_purpose')]
 
     operations = [
         migrations.RunPython(
