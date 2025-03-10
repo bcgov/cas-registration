@@ -47,6 +47,7 @@ else:
             os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
         )
     GS_FILE_OVERWRITE = False
+    GS_BLOB_CHUNK_SIZE = int(2.5 * 1024 * 1024)  # 2.5MB
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
