@@ -6,7 +6,6 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils//defaultPageFactoryTypes";
 
@@ -26,9 +25,6 @@ vi.mock("@reporting/src/app/utils/getReportType", () => ({
 vi.mock("@bciers/actions/api", () => ({
   getRegulatedProducts: vi.fn(),
 }));
-vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
-  getRegistrationPurpose: vi.fn(),
-}));
 vi.mock("@reporting/src/app/utils/getFacilityReport", () => ({
   getFacilityReport: vi.fn(),
 }));
@@ -42,7 +38,6 @@ const mockReportingYear = {
   report_due_date: "2024-12-31",
 };
 const mockReportType = { report_type: "Annual Report" };
-const mockRegistrationPurpose = { registration_purpose: "Test Purpose" };
 const mockFacilityReport = {
   facility_id: 2344,
   operation_type: "Single Facility Operation",
@@ -51,6 +46,7 @@ const mockReportOperation = {
   report_operation: {
     operation_representative_name: [4],
     operation_type: "Test Operation",
+    registration_purpose: "Test Purpose",
   },
   report_operation_representatives: [
     { id: 4, representative_name: "Shon Doe" },
@@ -79,9 +75,6 @@ describe("OperationReviewPage Component", () => {
     (getRegulatedProducts as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockRegulatedProducts,
     );
-    (getRegistrationPurpose as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockRegistrationPurpose,
-    );
     (getFacilityReport as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockFacilityReport,
     );
@@ -96,7 +89,6 @@ describe("OperationReviewPage Component", () => {
       expect(getRegulatedProducts).toHaveBeenCalled();
       expect(getReportingYear).toHaveBeenCalled();
       expect(getReportType).toHaveBeenCalledWith(1);
-      expect(getRegistrationPurpose).toHaveBeenCalledWith(1);
       expect(getFacilityReport).toHaveBeenCalledWith(1);
     });
     await waitFor(() => {

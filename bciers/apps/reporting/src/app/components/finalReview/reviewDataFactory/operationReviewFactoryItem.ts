@@ -7,7 +7,6 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import {
@@ -25,9 +24,6 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
     "MMM DD YYYY",
   );
 
-  const registrationPurpose = (await getRegistrationPurpose(versionId))
-    .registration_purpose;
-
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
   const reportType = await getReportType(versionId);
@@ -35,11 +31,10 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
     ELECTRICITY_IMPORT_OPERATION,
     REPORTING_OPERATION,
     POTENTIAL_REPORTING_OPERATION,
-  ].includes(registrationPurpose);
+  ].includes(reportingOperationData.registration_purpose);
 
   const schema: any = buildOperationReviewSchema(
     reportingOperationData,
-    registrationPurpose,
     reportingWindowEnd,
     allActivities,
     allRegulatedProducts,

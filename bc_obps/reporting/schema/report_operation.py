@@ -27,6 +27,7 @@ class ReportOperationOut(ModelSchema):
             'operator_legal_name',
             'operator_trade_name',
             'operation_name',
+            'registration_purpose',
             'operation_type',
             'operation_bcghgid',
             'bc_obps_regulated_operation_id',
@@ -56,6 +57,7 @@ class ReportOperationIn(Schema):
     operator_trade_name: Optional[str] = None
     operation_name: str
     operation_type: str
+    registration_purpose: str
     operation_bcghgid: Optional[str] = None
     bc_obps_regulated_operation_id: str
     activities: List[int]

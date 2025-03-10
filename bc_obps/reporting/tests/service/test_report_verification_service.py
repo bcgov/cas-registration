@@ -42,9 +42,7 @@ class TestReportVerificationService(TestCase):
         )
 
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch(
-        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
-    )
+    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_true_for_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -69,9 +67,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_not_called()
 
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch(
-        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
-    )
+    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_false_for_non_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -95,9 +91,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_not_called()
 
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch(
-        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
-    )
+    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_true_for_reporting_operation_with_high_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -120,9 +114,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_called_once_with(self.report_version.id)
 
     @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
-    @patch(
-        "reporting.service.report_additional_data.ReportAdditionalDataService.get_registration_purpose_by_version_id"
-    )
+    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_false_for_reporting_operation_with_low_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
     ):

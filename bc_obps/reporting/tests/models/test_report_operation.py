@@ -18,6 +18,7 @@ class ReportOperationModelTest(BaseTestCase):
             operation_type=Operation.Types.SFO,
             operation_bcghgid="A fake BC GHG ID",
             bc_obps_regulated_operation_id="123456789",
+            registration_purpose="OBPS Regulated Operation",
             report_version=report_version_baker(report_operation=None),
         )
         cls.test_object.activities.add(Activity.objects.first())
@@ -39,6 +40,7 @@ class ReportOperationModelTest(BaseTestCase):
             ),
             ("activities", "activities", None, 1),
             ("regulated_products", "regulated products", None, 1),
+            ("registration_purpose", "registration purpose", 1000, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):
