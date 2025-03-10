@@ -12,10 +12,10 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 import DeselectAllButton from "./DeselectAllButton";
 import { createRoot } from "react-dom/client";
 
-interface productionDataItem {
+interface ProductionDataItem {
   properties: {
-    production_methodology: RJSFSchema
-  }
+    production_methodology: RJSFSchema;
+  };
 }
 
 interface Props {
@@ -88,7 +88,8 @@ const ProductionDataForm: React.FC<Props> = ({
     };
     if (["Small Aggregate", "Medium Facility"].includes(facilityType))
       object.enum.push("Not Applicable");
-    const item = modifiedSchema.definitions.productionDataItem as productionDataItem;
+    const item = modifiedSchema.definitions
+      .productionDataItem as ProductionDataItem;
     item.properties.production_methodology = object as RJSFSchema;
   }
 
