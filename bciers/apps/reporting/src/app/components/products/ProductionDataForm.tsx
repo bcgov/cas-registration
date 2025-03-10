@@ -62,7 +62,10 @@ const ProductionDataForm: React.FC<Props> = ({
 
   // User must select a product if facility type is not small or medium
   useEffect(() => {
-    if (!["Small Aggregate", "Medium Facility"].includes(facilityType) && formData.product_selection.length < 1) {
+    if (
+      !["Small Aggregate", "Medium Facility"].includes(facilityType) &&
+      formData.product_selection.length < 1
+    ) {
       setErrors(["A product must be selected"]);
     } else setErrors(undefined);
   }, [formData]);
@@ -70,7 +73,8 @@ const ProductionDataForm: React.FC<Props> = ({
   // If facility type is small or medium, add not applicable as an option to production quantity
   const modifiedSchema = schema;
   if (modifiedSchema.definitions) {
-    const object = {  // From productionData.tsx
+    // From productionData.tsx
+    const object = {
       title: "Production Quantification Methodology",
       type: "string",
       enum: ["OBPS Calculator", "other"],
