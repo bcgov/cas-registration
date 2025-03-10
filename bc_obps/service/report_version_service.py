@@ -30,6 +30,7 @@ class ReportVersionService:
                 operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
             ),
             report_version=report_version,
+            registration_purpose=operation.registration_purpose or 'OBPS Regulated Operation',
         )
 
         for contact in operation.contacts.all():

@@ -24,6 +24,7 @@ const formData = {
   operator_trade_name: "Bravo Technologies",
   operation_name: "Banana LFO - Registered",
   operation_type: "Linear Facility Operation",
+  registration_purpose: "Test Purpose",
   operation_bcghgid: "23219990004",
   bc_obps_regulated_operation_id: "24-0015",
   activities: [1],
@@ -55,7 +56,6 @@ const allRepresentatives = [
 const reportType = { report_type: "Simple Report" };
 const schema = buildOperationReviewSchema(
   formData,
-  "Reporting Operation",
   "Dec 31 2025",
   activities,
   regulatedProducts,

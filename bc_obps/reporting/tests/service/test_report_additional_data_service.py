@@ -11,6 +11,9 @@ class TestReportAdditionalDataService(TestCase):
         self.report_additional_data = make_recipe(
             'reporting.tests.utils.report_additional_data', report_version=self.report_version
         )
+        self.report_operation = make_recipe(
+            'reporting.tests.utils.report_operation', report_version=self.report_version
+        )
 
     def test_get_report_report_additional_data_returns_correct_instance(self):
         """

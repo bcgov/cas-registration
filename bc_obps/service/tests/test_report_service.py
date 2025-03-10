@@ -2,6 +2,8 @@ from unittest import mock
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from model_bakery import baker
+from model_bakery.baker import make_recipe
+
 from registration.models import RegulatedProduct, Activity, Operation
 from registration.tests.utils.bakers import (
     bc_obps_regulated_operation_baker,
@@ -156,6 +158,7 @@ class TestReportService(TestCase):
             regulated_products=[2, 13],
             operation_representative_name=[1, 2],
             operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
         )
 
         with (
@@ -200,3 +203,16 @@ class TestReportService(TestCase):
             mock_report_operation.operation_bcghgid = data.operation_bcghgid
             mock_report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
             mock_report_operation.operation_report_type = data.operation_report_type
+
+    def test_get_registration_purpose_by_version_id_returns_correct_data(self):
+        """
+        Test that the service retrieves the correct registration purpose
+        for a given report version ID.
+        """
+        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        self.report_operation = make_recipe(
+            'reporting.tests.utils.report_operation', report_version=self.report_version
+        )
+        retrieved_data = ReportService.get_registration_purpose_by_version_id(version_id=self.report_version.id)
+        self.assertIsNotNone(retrieved_data)
+        self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)
