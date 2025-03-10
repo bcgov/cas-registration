@@ -1,9 +1,8 @@
 from typing import Literal, Tuple
 from uuid import UUID
-from registration.schema import OperationInformationInUpdate, OperationOutV2, OperationOutWithDocuments, Message
 from registration.schema.operation import (
     OperationAdminstrationIn,
-    OperationRegistrationInWithDocuments,
+    OperationAdminstrationInWithDocuments,
     OperationAdministrationOut,
 )
 from common.permissions import authorize
@@ -66,7 +65,8 @@ def update_operation(
     process_flow_diagram: UploadedFile = File(None),
     new_entrant_application: UploadedFile = File(None),
 ) -> Tuple[Literal[200], Operation]:
-    payload = OperationRegistrationInWithDocuments(
+
+    payload = OperationAdminstrationInWithDocuments(
         **details.dict(by_alias=True),
         **({'boundary_map': boundary_map} if boundary_map else {}),
         **({'process_flow_diagram': process_flow_diagram} if process_flow_diagram else {}),

@@ -1,11 +1,11 @@
 import pytest
 
 from registration.models.operation import Operation
+from registration.tests.constants import MOCK_UPLOADED_FILE
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.utils import custom_reverse_lazy, data_url_to_file
+from registration.utils import custom_reverse_lazy
 from model_bakery import baker
-from registration.tests.constants import MOCK_DATA_URL
 from service.document_service import DocumentService
 
 
@@ -30,9 +30,8 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
             operator=approved_user_operator.operator,
             date_of_first_shipment=Operation.DateOfFirstShipmentChoices.ON_OR_AFTER_APRIL_1_2024,
         )
-        file = data_url_to_file(MOCK_DATA_URL)
         new_entrant_application_doc = DocumentService.create_or_replace_operation_document(
-            approved_user_operator.user_id, operation.id, file, "new_entrant_application"
+            operation.id, MOCK_UPLOADED_FILE, "new_entrant_application"
         )
         operation.documents.add(new_entrant_application_doc)
         response = TestUtils.mock_get_with_auth_role(
@@ -47,8 +46,8 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
         # Additional Assertions
         assert response_json['date_of_first_shipment'] == "On or after April 1, 2024"
         # not testing `new_entrant_application` because resolver for a document doesn't work in CI
-        # MOCK_DATA_URL's filename is mock.pdf. When adding files to django, the name is appended, so we just check that 'mock' in the name
-        assert operation.documents.first().file.name.find("mock") != -1
+        # MOCK_UPLOADED_FILE's filename is test.pdf. When adding files to django, the name is appended, so we just check that 'mock' in the name
+        assert operation.documents.first().file.name.find("test1") != -1
 
 
 class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
@@ -70,7 +69,7 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
             self.content_type,
             {
                 "operation_id": operation.id,
-                "new_entrant_application": MOCK_DATA_URL,
+                "new_entrant_application": MOCK_UPLOADED_FILE,
             },
             custom_reverse_lazy("create_or_replace_new_entrant_application", kwargs={'operation_id': operation.id}),
         )
@@ -86,7 +85,7 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
 
         # Act
         payload_with_no_date_of_first_shipment = {
-            "new_entrant_application": MOCK_DATA_URL,
+            "new_entrant_application": MOCK_UPLOADED_FILE,
         }
         response_1 = TestUtils.mock_put_with_auth_role(
             self,
@@ -103,7 +102,7 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         # we have specific date_of_first_shipment choices, so we can't just send a random date
         payload_with_random_date_of_first_shipment = {
             "date_of_first_shipment": "random",
-            "new_entrant_application": MOCK_DATA_URL,
+            "new_entrant_application": MOCK_UPLOADED_FILE,
         }
 
         response_2 = TestUtils.mock_put_with_auth_role(
@@ -123,7 +122,7 @@ class TestPutOperationNewEntrantApplicationSubmissionEndpoint(CommonTestSetup):
         # Act
         valid_payload = {
             "date_of_first_shipment": "On or after April 1, 2024",
-            "new_entrant_application": MOCK_DATA_URL,
+            "new_entrant_application": MOCK_UPLOADED_FILE,
         }
         response_3 = TestUtils.mock_put_with_auth_role(
             self,

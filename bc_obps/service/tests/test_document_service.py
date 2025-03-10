@@ -1,8 +1,7 @@
 from service.data_access_service.document_service import DocumentDataAccessService
-from registration.utils import data_url_to_file
 from registration.models.document import Document
 from registration.models.operation import Operation
-from registration.tests.constants import MOCK_DATA_URL, MOCK_DATA_URL_2, MOCK_UPLOADED_FILE
+from registration.tests.constants import MOCK_UPLOADED_FILE, MOCK_UPLOADED_FILE_2
 from service.document_service import DocumentService
 import pytest
 
@@ -37,30 +36,35 @@ class TestDocumentService:
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         document = DocumentService.create_or_replace_operation_document(
-         operation.id, 'boundary_map', file, 
+            operation.id,
+            file,
+            'boundary_map',
         )
 
         assert Document.objects.count() == 1
         assert document.type.name == 'boundary_map'
-    
 
     @staticmethod
     def test_update_operation_document():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+
         DocumentDataAccessService.create_document(
-            operation.id,'boundary_map', MOCK_UPLOADED_FILE, 
+            operation.id,
+            'boundary_map',
+            MOCK_UPLOADED_FILE,
         )
 
-        updated_file = data_url_to_file(MOCK_DATA_URL_2)
         document = DocumentService.create_or_replace_operation_document(
-            operation.id, 'boundary_map', updated_file, 
+            operation.id,
+            MOCK_UPLOADED_FILE_2,
+            'boundary_map',
         )
 
         assert Document.objects.count() == 1
         assert document.type.name == 'boundary_map'
-        # MOCK_DATA_URL's filename is test.pdf
-        assert document.file.name.find("test") != -1
+        # MOCK_UPLOADED_FILE_2's filename is test2.pdf
+        assert document.file.name.find("test2") != -1
 
     @pytest.mark.parametrize("registration_status", [Operation.Statuses.REGISTERED, Operation.Statuses.DRAFT])
     def test_archive_or_delete_operation_document(self, registration_status):
@@ -70,11 +74,15 @@ class TestDocumentService:
         )
         # boundary map
         b_map = DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, MOCK_UPLOADED_FILE, 'boundary_map', operation.id
+            operation.id,
+            'boundary_map',
+            MOCK_UPLOADED_FILE,
         )
         # process flow diagram
         DocumentDataAccessService.create_document(
-            approved_user_operator.user_id, MOCK_UPLOADED_FILE, 'process_flow_diagram', operation.id
+            operation.id,
+            'process_flow_diagram',
+            MOCK_UPLOADED_FILE,
         )
 
         assert Document.objects.count() == 2

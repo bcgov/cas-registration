@@ -1,12 +1,8 @@
-from typing import Optional
 from uuid import UUID
 from ninja import UploadedFile
 from registration.models import Document, DocumentType
-from django.core.files.base import ContentFile
 from reporting.constants import MAX_UPLOAD_SIZE
-from ninja import UploadedFile
 from pydantic import ValidationError
-from reporting.constants import MAX_UPLOAD_SIZE
 
 
 class DocumentDataAccessService:
@@ -22,7 +18,7 @@ class DocumentDataAccessService:
 
     @classmethod
     def create_document(
-         cls,
+        cls,
         operation_id: UUID,
         type: str,
         file: UploadedFile,

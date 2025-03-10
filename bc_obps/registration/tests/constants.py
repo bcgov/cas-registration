@@ -17,7 +17,7 @@ TRANSFER_EVENT_FIXTURE = ("mock/transfer_event.json",)
 
 MOCK_FILE = (ContentFile(bytes("testtesttesttest", encoding='utf-8'), "testfile.pdf"),)
 
-MOCK_UPLOADED_FILE = SimpleUploadedFile("test.txt", b"Hello, world!", content_type="text/plain")
+MOCK_UPLOADED_FILE = SimpleUploadedFile("test1.txt", b"Hello, world!", content_type="text/plain")
 
 MOCK_UPLOADED_FILE_2 = SimpleUploadedFile("test2.txt", b"Hello, world!", content_type="text/plain")
 

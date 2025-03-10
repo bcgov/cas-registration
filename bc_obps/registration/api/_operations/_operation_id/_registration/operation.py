@@ -5,15 +5,12 @@ from registration.schema.generic import Message
 from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from ninja import File, Form, UploadedFile
-from service.operation_service import OperationService
 from registration.schema.operation import (
     OperationRegistrationIn,
     OperationRegistrationInWithDocuments,
     OperationUpdateOut,
     OperationRegistrationOut,
 )
-from service.operation_service_v2 import OperationServiceV2
-from registration.constants import V2
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -58,5 +55,4 @@ def register_edit_operation_information(
         **({'boundary_map': boundary_map} if boundary_map else {}),
         **({'process_flow_diagram': process_flow_diagram} if process_flow_diagram else {})
     )
-
-    return 200, OperationServiceV2.register_operation_information(get_current_user_guid(request), operation_id, payload)
+    return 200, OperationService.register_operation_information(get_current_user_guid(request), operation_id, payload)

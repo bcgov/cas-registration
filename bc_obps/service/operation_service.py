@@ -1,7 +1,11 @@
-from typing import List, Optional, Tuple, Callable, Generator, Union
+from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
 from registration.models.facility import Facility
-from registration.schema.operation import OperationAdminstrationIn, OperationNewEntrantApplicationInWithDocuments, OperationRegistrationInWithDocuments
+from registration.schema.operation import (
+    OperationAdminstrationInWithDocuments,
+    OperationNewEntrantApplicationInWithDocuments,
+    OperationRegistrationInWithDocuments,
+)
 from service.contact_service import ContactService
 from service.data_access_service.document_service import DocumentDataAccessService
 from service.data_access_service.operation_designated_operator_timeline_service import (
@@ -19,7 +23,7 @@ from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.multiple_operator_service import MultipleOperatorService
 from registration.models.user_operator import UserOperator
 from registration.models import Operation, User
-from ninja import Query, UploadedFile
+from ninja import Query
 from django.db import transaction
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
@@ -29,11 +33,8 @@ from service.data_access_service.opted_in_operation_detail_service import OptedI
 from service.document_service import DocumentService
 from service.facility_service import FacilityService
 from registration.schema import (
-    OperationInformationIn,
-    OperationInformationInUpdate,
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
-    OperationNewEntrantApplicationIn,
     OperationRepresentativeIn,
     FacilityIn,
     OperationTimelineFilterSchema,
@@ -43,6 +44,7 @@ from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from django.core.files.uploadedfile import UploadedFile
 
 
 class OperationService:
@@ -122,10 +124,9 @@ class OperationService:
     def create_or_replace_new_entrant_application(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationInWithDocuments
     ) -> Operation:
-        operation = OperationService.get_if_authorized_v2(user_guid, operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         DocumentService.create_or_replace_operation_document(
             operation_id=operation.id,
-            user_guid=user_guid,
             type='new_entrant_application',
             file=payload.new_entrant_application,
         )
@@ -160,7 +161,9 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def _create_or_update_eio(cls, user_guid: UUID, operation: Operation, payload: OperationRegistrationInWithDocuments) -> None:
+    def _create_or_update_eio(
+        cls, user_guid: UUID, operation: Operation, payload: OperationRegistrationInWithDocuments
+    ) -> None:
         # EIO operations have a facility with the same data as the operation
         eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)  # type: ignore[attr-defined] # name is the fields section of the schema
         facility = operation.facilities.first()
@@ -343,7 +346,7 @@ class OperationService:
     def update_operation(
         cls,
         user_guid: UUID,
-        payload: OperationRegistrationInWithDocuments,
+        payload: OperationRegistrationInWithDocuments | OperationAdminstrationInWithDocuments,
         operation_id: UUID,
     ) -> Operation:
 
@@ -383,7 +386,9 @@ class OperationService:
             else operation.regulated_products.clear()
         )
 
-        if operation.status == Operation.Statuses.REGISTERED and isinstance(payload, OperationAdminstrationIn):
+        if operation.status == Operation.Statuses.REGISTERED and isinstance(
+            payload, OperationAdminstrationInWithDocuments
+        ):
             # operation representatives are only mandatory to register (vs. simply update) and operation
             for contact_id in payload.operation_representatives:
                 ContactService.raise_exception_if_contact_missing_address_information(contact_id)
@@ -394,14 +399,12 @@ class OperationService:
         if payload.boundary_map and isinstance(payload.boundary_map, UploadedFile):
             DocumentService.create_or_replace_operation_document(
                 operation_id=operation.id,
-                user_guid=user_guid,
-                type='boundary_map',
                 file=payload.boundary_map,
+                type='boundary_map',
             )
         if payload.process_flow_diagram and isinstance(payload.process_flow_diagram, UploadedFile):
             DocumentService.create_or_replace_operation_document(
                 operation_id=operation.id,
-                user_guid=user_guid,
                 type='process_flow_diagram',
                 file=payload.process_flow_diagram,
             )
@@ -409,11 +412,9 @@ class OperationService:
         if payload.new_entrant_application and isinstance(payload.new_entrant_application, UploadedFile):
             DocumentService.create_or_replace_operation_document(
                 operation_id=operation.id,
-                user_guid=user_guid,
                 type='new_entrant_application',
                 file=payload.new_entrant_application,
             )
-
 
         # # this is not handled by changing registration purpose
         if (

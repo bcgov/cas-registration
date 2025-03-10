@@ -11,7 +11,6 @@ from registration.schema import (
 from registration.schema.operation import OperationRegistrationInWithDocuments
 from registration.schema.operation import OperationRegistrationIn
 from service.operation_service import OperationService
-from service.operation_service_v2 import OperationServiceV2
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
@@ -86,7 +85,7 @@ def register_create_operation_information(
         **details.dict(by_alias=True), boundary_map=boundary_map, process_flow_diagram=process_flow_diagram
     )
 
-    return 201, OperationServiceV2.register_operation_information(
+    return 201, OperationService.register_operation_information(
         get_current_user_guid(request),
         None,
         payload,

@@ -3,13 +3,13 @@ from uuid import UUID
 from django.http import HttpRequest
 from ninja import File, Form, UploadedFile
 from registration.constants import OPERATION_TAGS
+from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.operation import (
     OperationNewEntrantApplicationInWithDocuments,
     OperationUpdateOut,
     OperationNewEntrantApplicationIn,
     OperationNewEntrantApplicationOut,
-    Message,
 )
 from service.operation_service import OperationService
 from common.permissions import authorize
@@ -51,6 +51,6 @@ def create_or_replace_new_entrant_application(
         date_of_first_shipment=details.date_of_first_shipment,
         **({'new_entrant_application': new_entrant_application} if new_entrant_application else {})
     )
-    return 200, OperationServiceV2.create_or_replace_new_entrant_application(
+    return 200, OperationService.create_or_replace_new_entrant_application(
         get_current_user_guid(request), operation_id, payload
     )

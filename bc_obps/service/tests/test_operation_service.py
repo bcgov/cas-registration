@@ -19,6 +19,7 @@ from registration.schema.operation import (
     OperationRepresentativeIn,
     OperationNewEntrantApplicationInWithDocuments,
     OperationRepresentativeRemove,
+    OperationAdminstrationInWithDocuments,
 )
 from registration.schema.operation_timeline import OperationTimelineFilterSchema
 from service.data_access_service.operation_service import OperationDataAccessService
@@ -508,7 +509,7 @@ class TestRegisterOperationInformation:
         assert not OperationService.is_operation_new_entrant_information_complete(users_operation)
 
 
-class TestOperationServiceV2CreateOperation:
+class TestOperationServiceCreateOperation:
     @staticmethod
     def test_create_operation_without_multiple_operators():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
@@ -622,7 +623,7 @@ class TestOperationServiceV2CreateOperation:
         assert facilities[0].type == Facility.Types.ELECTRICITY_IMPORT
 
 
-class TestOperationServiceV2UpdateOperation:
+class TestOperationServiceUpdateOperation:
     @staticmethod
     def test_raises_error_if_operation_does_not_belong_to_user():
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
@@ -860,7 +861,7 @@ class TestOperationServiceV2UpdateOperation:
             _quantity=3,
         )
 
-        payload = OperationRegistrationInWithDocuments(
+        payload = OperationAdminstrationInWithDocuments(
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",
@@ -1022,7 +1023,7 @@ class TestCreateOrUpdateEio:
         mock_update_facility.assert_called_once_with(approved_user_operator.user.user_guid, facility.id, payload)
 
 
-class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
+class TestOperationServiceCheckCurrentUsersRegisteredOperation:
     def test_check_current_users_registered_operation_returns_true(self):
         # Create a user operator and a registered operation
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')

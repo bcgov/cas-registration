@@ -5,9 +5,8 @@ from typing import List, Optional, Literal
 from registration.models.contact import Contact
 from registration.schema import OperatorForOperationOut, MultipleOperatorIn, MultipleOperatorOut
 from ninja import Field, ModelSchema, Schema
-from typing import Any, List, Optional, Literal
-from registration.models.contact import Contact
-from ninja import Field, ModelSchema, Schema, UploadedFile, File
+from typing import Any
+from ninja import UploadedFile, File
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models import Operator, User
@@ -206,7 +205,11 @@ class OperationNewEntrantApplicationRemove(ModelSchema):
 # Administration schemas
 
 
-class OperationAdminstrationIn(OperationRegistrationInWithDocuments):
+class OperationAdminstrationIn(OperationRegistrationIn):
+    operation_representatives: List[int]
+
+
+class OperationAdminstrationInWithDocuments(OperationRegistrationInWithDocuments):
     operation_representatives: List[int]
 
 
