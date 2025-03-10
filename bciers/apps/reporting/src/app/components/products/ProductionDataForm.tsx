@@ -82,7 +82,7 @@ const ProductionDataForm: React.FC<Props> = ({
     };
     if (["Small Aggregate", "Medium Facility"].includes(facilityType))
       object.enum.push("Not Applicable");
-    const item = modifiedSchema.definitions.productionDataItem as any; // Typecast because of angry properties field
+    const item = modifiedSchema.definitions.productionDataItem; // Sonarcloud doesn't like 'as any' so bacon will remain
     item.properties.production_methodology = object as RJSFSchema;
   }
 
