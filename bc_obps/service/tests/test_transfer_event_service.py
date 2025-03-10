@@ -4,7 +4,7 @@ from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import TransferEvent, FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline
+from registration.models import TransferEvent
 from registration.schema import TransferEventFilterSchema, TransferEventCreateIn
 from service.transfer_event_service import TransferEventService
 import pytest

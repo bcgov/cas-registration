@@ -1,7 +1,6 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import FacilityDesignatedOperationTimeline
 from registration.schema import (
     FacilityDesignatedOperationTimelineFilterSchema,
 )
