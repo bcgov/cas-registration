@@ -111,7 +111,7 @@ export default function FacilityEmissionAllocationForm({
     const object = {
       type: "string",
       title: "Methodology",
-      enum: ["Not Applicable", "OBPS Allocation Calculator", "Other"]
+      enum: ["Not Applicable", "OBPS Allocation Calculator", "Other"],
     };
     modifiedEmissionAllocationSchema.properties.allocation_methodology =
       object as RJSFSchema;

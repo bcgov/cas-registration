@@ -37,6 +37,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         taskListElements={[]}
+        facilityType={""}
       />,
     );
 
@@ -54,6 +55,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         taskListElements={[]}
+        facilityType={""}
       />,
     );
 
@@ -68,9 +70,9 @@ describe("The ProductionDataForm component", () => {
       }),
     );
 
-    expect(mockMultiStepFormWithTaskList).toHaveBeenCalledTimes(2);
+    expect(mockMultiStepFormWithTaskList).toHaveBeenCalledTimes(4);
     expect(
-      mockMultiStepFormWithTaskList.mock.calls[1][0].formData,
+      mockMultiStepFormWithTaskList.mock.calls[3][0].formData,
     ).toStrictEqual({
       product_selection: ["test"],
       production_data: [{ product_id: 2024, product_name: "test" }],
@@ -92,6 +94,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         taskListElements={[]}
+        facilityType={""}
       />,
     );
 
@@ -147,6 +150,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         taskListElements={[]}
+        facilityType={""}
       />,
     );
 
