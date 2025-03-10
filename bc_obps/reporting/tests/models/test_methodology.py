@@ -115,6 +115,7 @@ class TestInitialData(TestCase):
                 "WCI.203(l)",
                 "WCI.203(m)(1)",
                 "WCI.203(m)(2)",
+                "Not Applicable",
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
