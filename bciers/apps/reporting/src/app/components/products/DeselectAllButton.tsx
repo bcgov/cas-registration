@@ -2,7 +2,7 @@
 
 import { Button } from "@mui/material";
 
-const DeselectAllButton: React.FC = ({}) => {
+const DeselectAllButton: React.FC = () => {
   const deselectAll = () => {
     const checkboxes: NodeListOf<HTMLInputElement> = document.querySelectorAll(
       "input[type=checkbox]",
