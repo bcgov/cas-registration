@@ -1,12 +1,12 @@
 "use client";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import { NavigationInformation } from "../taskList/types";
 
 interface Props {
   report_version_id: number;
@@ -14,7 +14,7 @@ interface Props {
   allowedProducts: { product_id: number; product_name: string }[];
   initialData: ProductData[];
   schema: RJSFSchema;
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
 }
 
 const ProductionDataForm: React.FC<Props> = ({
@@ -23,7 +23,7 @@ const ProductionDataForm: React.FC<Props> = ({
   schema,
   allowedProducts,
   initialData,
-  taskListElements,
+  navigationInformation,
 }) => {
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
@@ -66,23 +66,20 @@ const ProductionDataForm: React.FC<Props> = ({
     return true;
   };
 
-  const backUrl = `/reports/${report_version_id}/facilities/${facility_id}/emission-summary`;
-  const saveAndContinueUrl = `/reports/${report_version_id}/facilities/${facility_id}/allocation-of-emissions`;
-
   return (
     <MultiStepFormWithTaskList
       initialStep={1}
       steps={multiStepHeaderSteps}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       schema={schema}
       uiSchema={productionDataUiSchema}
       formData={formData}
       baseUrl={"#"}
       cancelUrl={"#"}
-      backUrl={backUrl}
+      backUrl={navigationInformation.backUrl}
       onSubmit={(data) => onSubmit(data.formData)}
       onChange={(data) => onChange(data.formData)}
-      continueUrl={saveAndContinueUrl}
+      continueUrl={navigationInformation.continueUrl}
       errors={errors}
     />
   );
