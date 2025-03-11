@@ -64,6 +64,7 @@ class ELicensingService:
             Response object from the requests library
         """
         url = f"{self.base_url}{endpoint}"
+        logger.error(f"Making {method} request to {url} with data: {data} and params: {params}")
         headers = self._get_headers()
 
         try:
@@ -324,8 +325,8 @@ class ELicensingService:
         try:
             # Try to query a specific client to test the connection
             client_id = "174044621"
-            # Convert string to dict to match the expected type
-            response = self._make_request(f"/client/{client_id}", method='GET', data={})
+            # Provide a non-empty body as required by the API
+            response = self._make_request(f"/client/{client_id}", method='GET', data={"body": "{}"})
 
             if response.status_code == 200:
                 client_data = response.json()
