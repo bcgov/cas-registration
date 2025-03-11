@@ -1,14 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { ComplianceSummary } from "../../../../components/compliance-summaries/types";
-import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
+import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 
 const complianceSummaryColumns = (): GridColDef[] => {
-  const ActionCell = ActionCellFactory({
-    generateHref: (params: { row: ComplianceSummary }) =>
-      `/compliance-summaries/${params.row.id}`,
-    cellText: "View Details",
-  });
-
   return [
     {
       field: "reporting_year",
