@@ -10,6 +10,8 @@ import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivit
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { OperationTypes } from "@bciers/utils/src/enums";
+import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 
 interface Props {
   versionId: number;
@@ -52,20 +54,32 @@ export default async function ActivityInit({
     currentActivity.id,
   );
 
-  const taskListData = getFacilitiesInformationTaskList(
+  const navigationInformation = await getNavigationInformation(
+    HeaderStep.ReportInformation,
+    ReportingPage.Activities,
     versionId,
     facilityId,
-    orderedActivities,
-    undefined,
-    reportInfoTaskListData?.facilityName,
-    reportInfoTaskListData?.operationType,
+    {
+      facilityName: reportInfoTaskListData?.facilityName,
+      orderedActivities: orderedActivities,
+      currentActivity: currentActivity,
+    },
   );
 
-  const currentActivityTaskListElement = taskListData[0]?.elements?.find(
-    (e) => e.title == currentActivity.name,
-  );
-  if (currentActivityTaskListElement)
-    currentActivityTaskListElement.isActive = true;
+  // const taskListData = getFacilitiesInformationTaskList(
+  //   versionId,
+  //   facilityId,
+  //   orderedActivities,
+  //   undefined,
+  //   reportInfoTaskListData?.facilityName,
+  //   reportInfoTaskListData?.operationType,
+  // );
+
+  // const currentActivityTaskListElement = taskListData[0]?.elements?.find(
+  //   (e) => e.title == currentActivity.name,
+  // );
+  // if (currentActivityTaskListElement)
+  //   currentActivityTaskListElement.isActive = true;
 
   // Determine which source types (if any) are selected in the loaded formData & fetch the jsonSchema accordingly
   const sourceTypeIds = [];
@@ -94,7 +108,7 @@ export default async function ActivityInit({
       activityData={activityDataObject}
       activityFormData={formData}
       currentActivity={currentActivity}
-      taskListData={taskListData}
+      navigationInformation={navigationInformation}
       reportVersionId={versionId}
       facilityId={facilityId}
       initialJsonSchema={safeJsonParse(jsonSchema).schema}

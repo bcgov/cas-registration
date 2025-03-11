@@ -16,6 +16,7 @@ import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidate
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
 import { IChangeEvent } from "@rjsf/core";
+import { NavigationInformation } from "../taskList/types";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -28,7 +29,7 @@ interface Props {
   };
   activityFormData: any;
   currentActivity: { id: number; name: string; slug: string };
-  taskListData: TaskListElement[];
+  navigationInformation: NavigationInformation;
   reportVersionId: number;
   facilityId: UUID;
   initialJsonSchema: RJSFSchema;
@@ -41,7 +42,7 @@ export default function ActivityForm({
   activityData,
   activityFormData,
   currentActivity,
-  taskListData,
+  navigationInformation,
   reportVersionId,
   facilityId,
   initialJsonSchema,
@@ -122,33 +123,33 @@ export default function ActivityForm({
     setFormState(c.formData);
   };
 
-  const createUrl = (isContinue: boolean) => {
-    const activitiesSection = taskListData
-      .flatMap((taskListElement) => taskListElement.elements || [])
-      .find((element) => element.title === "Activities information");
+  // const createUrl = (isContinue: boolean) => {
+  //   const activitiesSection = taskListData
+  //     .flatMap((taskListElement) => taskListElement.elements || [])
+  //     .find((element) => element.title === "Activities information");
 
-    const taskListLength = activitiesSection?.elements?.length;
-    if (taskListLength && step === -1) step = taskListLength - 1;
+  //   const taskListLength = activitiesSection?.elements?.length;
+  //   if (taskListLength && step === -1) step = taskListLength - 1;
 
-    if (step === 0 && !isContinue) {
-      if (isLinearOperation) {
-        return `/reports/${reportVersionId}/facilities/${facilityId}/review-facility-information`;
-      }
-      return `/reports/${reportVersionId}/person-responsible`; // Facility review page
-    }
-    if (taskListLength && step + 1 >= taskListLength && isContinue) {
-      return "non-attributable"; // Activities done, go to Non-attributable emissions
-    }
+  //   if (step === 0 && !isContinue) {
+  //     if (isLinearOperation) {
+  //       return `/reports/${reportVersionId}/facilities/${facilityId}/review-facility-information`;
+  //     }
+  //     return `/reports/${reportVersionId}/person-responsible`; // Facility review page
+  //   }
+  //   if (taskListLength && step + 1 >= taskListLength && isContinue) {
+  //     return "non-attributable"; // Activities done, go to Non-attributable emissions
+  //   }
 
-    const params = new URLSearchParams(
-      searchParams ? searchParams.toString() : "",
-    );
-    const addition = isContinue ? 1 : -1;
-    params.set("step", (step + addition).toString());
-    params.delete("activity_id");
+  //   const params = new URLSearchParams(
+  //     searchParams ? searchParams.toString() : "",
+  //   );
+  //   const addition = isContinue ? 1 : -1;
+  //   params.set("step", (step + addition).toString());
+  //   params.delete("activity_id");
 
-    return `activities?${params.toString()}`;
-  };
+  //   return `activities?${params.toString()}`;
+  // };
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (e: IChangeEvent) => {
@@ -205,7 +206,7 @@ export default function ActivityForm({
     <MultiStepFormWithTaskList
       steps={multiStepHeaderSteps}
       initialStep={1}
-      taskListElements={taskListData}
+      taskListElements={navigationInformation.taskList}
       onSubmit={submitHandler}
       schema={jsonSchema}
       fields={CUSTOM_FIELDS}
@@ -213,8 +214,8 @@ export default function ActivityForm({
       uiSchema={getUiSchema(currentActivity.slug)}
       onChange={debounce(handleFormChange, 200)}
       errors={errorList}
-      backUrl={createUrl(false)}
-      continueUrl={createUrl(true)}
+      backUrl={navigationInformation.backUrl}
+      continueUrl={navigationInformation.continueUrl}
       validator={customizeValidator({})}
       customValidate={customValidate}
     />

@@ -19,6 +19,7 @@ export default async function OperationReviewPage({
   version_id,
 }: HasReportVersion) {
   const reportOperation = await getReportingOperation(version_id);
+  const facilityReport = await getFacilityReport(version_id);
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
   const reportingYear = await getReportingYear();
@@ -49,6 +50,7 @@ export default async function OperationReviewPage({
     HeaderStep.OperationInformation,
     ReportingPage.ReviewOperatorInfo,
     version_id,
+    facilityReport.facility_id,
   );
 
   return (

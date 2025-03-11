@@ -21,7 +21,8 @@ export async function getNavigationInformation(
   step: HeaderStep,
   page: ReportingPage,
   reportVersionId: number,
-  context: Object = {},
+  facilityId: string,
+  context: any = {},
 ): Promise<NavigationInformation> {
   // get flow
   const flow = await getFlow(reportVersionId);
@@ -31,7 +32,7 @@ export async function getNavigationInformation(
   const pages = flowData[step] as ReportingPage[];
   const tasklistPages = await Promise.all(
     pages.map(async (p) => {
-      return pageElementFactory(p, page, reportVersionId, context);
+      return pageElementFactory(p, page, reportVersionId, facilityId, context);
     }),
   );
   const taskList = tasklistPages.map((tlp) => tlp.element);
@@ -69,6 +70,7 @@ export async function getNavigationInformation(
             ReportingPage[lastPageOfPreviousStep],
             page,
             reportVersionId,
+            facilityId,
             context,
           )
         ).element.link;
@@ -95,6 +97,7 @@ export async function getNavigationInformation(
             ReportingPage[firstPageOfNextStep],
             page,
             reportVersionId,
+            facilityId,
             context,
           )
         ).element.link;
@@ -102,7 +105,7 @@ export async function getNavigationInformation(
     }
   }
 
-  const rootElement = headerElementFactory(step);
+  const rootElement = headerElementFactory(step, context);
 
   return {
     taskList: rootElement ? [{ ...rootElement, elements: taskList }] : taskList,

@@ -58,7 +58,7 @@ type SyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
-  context?: Object,
+  context?: any,
 ) => {
   element: TaskListElement;
   continueUrl?: string;
@@ -68,7 +68,7 @@ type AsyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
-  context?: Object,
+  context?: any,
 ) => Promise<{
   element: TaskListElement;
   continueUrl?: string;

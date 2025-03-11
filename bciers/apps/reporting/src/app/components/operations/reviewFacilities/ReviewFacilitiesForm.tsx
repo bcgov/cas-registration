@@ -10,13 +10,7 @@ import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/mul
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import { useRouter } from "next/navigation";
-import { OperationTypes } from "@bciers/utils/src/enums";
-import { getNavigationInformation } from "../../taskList/navigationInformation";
-import {
-  HeaderStep,
-  NavigationInformation,
-  ReportingPage,
-} from "../../taskList/types";
+import { NavigationInformation } from "../../taskList/types";
 
 interface Props {
   initialData: any;
@@ -162,7 +156,7 @@ export default function LFOFacilitiesForm({
       setErrors(undefined);
       // this check uses a state variable because this function can be called by a modal which is disconnected from the child component that bubbles up this value
       if (continueAfterSubmit !== undefined && continueAfterSubmit) {
-        router.push(saveAndContinueUrl);
+        router.push(navigationInformation.continueUrl);
       }
       return true;
     } catch (err) {

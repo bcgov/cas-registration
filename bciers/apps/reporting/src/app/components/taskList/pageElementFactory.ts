@@ -1,33 +1,20 @@
 import { getFacilityReport } from "../../utils/getFacilityReport";
 import { operationInformationPageFactories } from "./1_operationInformation";
-import {
-  AsyncTaskListPageFactory,
-  ReportingPage,
-  TaskListPageFactory,
-} from "./types";
+import { facilitiesInformationPageFactories } from "./2_facilitiesInformation";
+import { ReportingPage, TaskListPageFactory } from "./types";
 
 export const pageFactories: {
-  [Page in ReportingPage]?: TaskListPageFactory | AsyncTaskListPageFactory;
+  [Page in ReportingPage]?: TaskListPageFactory;
 } = {
   ...operationInformationPageFactories,
-  [ReportingPage.Activities]: async (activePage, reportVersionId) => {
-    const facilityReport = await getFacilityReport(reportVersionId);
-    const facilityId = facilityReport.facility_id;
-    return {
-      element: {
-        type: "Page",
-        title: "Activities",
-        link: `/reports/${reportVersionId}/facilities/${facilityId}/activities`,
-        isActive: activePage === ReportingPage.Activities,
-      },
-    };
-  },
+  ...facilitiesInformationPageFactories,
 };
 
 export const pageElementFactory = (
   page: ReportingPage,
   activePage: ReportingPage,
   reportVersionId: number,
+  facilityId: string,
   context: Object = {},
 ) => {
   const factory = pageFactories[page];
@@ -35,5 +22,5 @@ export const pageElementFactory = (
   if (!factory)
     throw new Error(`Tasklist page factory not implemented for ${page}`);
 
-  return factory(activePage, reportVersionId, context);
+  return factory(activePage, reportVersionId, facilityId, context);
 };
