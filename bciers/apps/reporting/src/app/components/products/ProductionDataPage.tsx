@@ -2,12 +2,10 @@ import ProductionDataForm from "@reporting/src/app/components/products/Productio
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { getProductionData } from "@bciers/actions/api";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
-import {
-  ActivePage,
-  getFacilitiesInformationTaskList,
-} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
+import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 
 export default async function ProductionDataPage({
   version_id,
@@ -33,13 +31,16 @@ export default async function ProductionDataPage({
   );
 
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
-  const taskListElements = getFacilitiesInformationTaskList(
+
+  const navInfo = await getNavigationInformation(
+    HeaderStep.ReportInformation,
+    ReportingPage.ProductionData,
     version_id,
     facility_id,
-    orderedActivities,
-    ActivePage.ProductionData,
-    tasklistData?.facilityName,
-    tasklistData?.operationType,
+    {
+      orderedActivities: orderedActivities,
+      facilityName: tasklistData?.facilityName,
+    },
   );
 
   return (
@@ -49,7 +50,7 @@ export default async function ProductionDataPage({
       allowedProducts={allowedProducts}
       initialData={response.report_products}
       schema={schema}
-      taskListElements={taskListElements}
+      navigationInformation={navInfo}
     />
   );
 }
