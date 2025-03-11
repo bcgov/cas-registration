@@ -273,35 +273,10 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       ...userProfileFormData,
     }),
   };
-  const userEmail = (userProfileFormData as UserProfileFormData)?.email;
-  // If tpoint of contact data is an external user, we want to populate the external point of contact fields
-  const isExternalPointOfContact =
-    userEmail !== pointOfContactEmail && pointOfContactEmail !== undefined;
-  // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
-  // to avoid buggy behaviour opening
-  const isMultipleOperatorsArray =
-    formData &&
-    Array.isArray(formData?.multiple_operators_array) &&
-    formData.multiple_operators_array.length > 0;
 
   // We need to convert some of the information received from django into types RJSF can read.  If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things.
   const transformedFormData = {
     ...formData,
-    // Add the correct point of contact data
-
-    ...(isExternalPointOfContact && {
-      external_point_of_contact_first_name: formData?.first_name,
-      external_point_of_contact_last_name: formData?.last_name,
-      external_point_of_contact_email: formData?.email,
-      external_point_of_contact_phone_number: formData?.phone_number,
-      external_point_of_contact_position_title: formData?.position_title,
-    }),
-
-    is_external_point_of_contact: isExternalPointOfContact,
-    // fix for null values not opening the multiple operators form if loading a previously saved form
-    multiple_operators_array: isMultipleOperatorsArray
-      ? formData?.multiple_operators_array
-      : [{}],
   };
 
   let registrationRequestResultJSX;

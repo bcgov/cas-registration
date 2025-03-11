@@ -11,16 +11,16 @@ from service.data_access_service.email_template_service import EmailNotification
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
 
+# Sample data
+operator_legal_name = "Test Operator"
+external_user_full_name = "John Doe"
+external_user_email_address = "send_operator_access_request_email@email.test"
+
 
 class TestSendOperatorAccessRequestEmail:
     def test_send_operator_access_request_email(self, mocker):
         # Mock the send_email_by_template method to prevent sending real emails
         mocked_send_email_by_template = mocker.patch.object(email_service, 'send_email_by_template')
-
-        # Sample data
-        operator_legal_name = "Test Operator"
-        external_user_full_name = "John Doe"
-        external_user_email_address = "send_operator_access_request_email@email.test"
 
         expected_context = {
             "operator_legal_name": operator_legal_name,
@@ -97,66 +97,13 @@ class TestSendBoroIdApplicationEmail:
 
     @pytest.mark.parametrize("opted_in", [True, False])
     @pytest.mark.parametrize("application_state", list(BoroIdApplicationStates))
-    def test_send_boro_id_application_email_with_different_recipients(self, opted_in, application_state, mocker):
-        assert EmailNotification.objects.count() == 0
-        template_name = f"{'Opt-in And ' if opted_in else ''}BORO ID Application {application_state.value}"
-        template_instance = EmailNotificationTemplateService.get_template_by_name(template_name)
-        mocked_send_email_by_template, expected_email_notifications_after_sending = self.mock_email_service(mocker)
-
-        send_boro_id_application_email(
-            application_state,
-            self.operation.operator.legal_name,
-            self.operation.name,
-            opted_in,
-            operation_creator=self.operation.created_by,
-            point_of_contact=self.operation.point_of_contact,
-        )
-
-        assert mocked_send_email_by_template.call_count == 2  # Two calls expected due to different email addresses
-        expected_calls = [
-            mocker.call(
-                template_instance,
-                {
-                    "operator_legal_name": self.operation.operator.legal_name,
-                    "operation_name": self.operation.name,
-                    "external_user_full_name": self.operation.created_by.get_full_name(),
-                    "external_user_email_address": self.operation.created_by.email,
-                },
-                [self.operation.created_by.email],
-            ),
-            mocker.call(
-                template_instance,
-                {
-                    "operator_legal_name": self.operation.operator.legal_name,
-                    "operation_name": self.operation.name,
-                    "external_user_full_name": self.operation.point_of_contact.get_full_name(),
-                    "external_user_email_address": self.operation.point_of_contact.email,
-                },
-                [self.operation.point_of_contact.email],
-            ),
-        ]
-        mocked_send_email_by_template.assert_has_calls(expected_calls, any_order=True)
-        mocked_send_email_by_template.reset_mock()
-
-        # Assert that the email notifications were created
-        for expected_email_notification in expected_email_notifications_after_sending:
-            assert EmailNotification.objects.filter(
-                transaction_id=expected_email_notification['txId'],
-                message_id=expected_email_notification['messages'][0]['msgId'],
-                template=expected_email_notification['template'],
-                recipients_email=[expected_email_notification['recipients']],
-            ).exists()
-
-    @pytest.mark.parametrize("opted_in", [True, False])
-    @pytest.mark.parametrize("application_state", list(BoroIdApplicationStates))
     def test_send_boro_id_application_email_with_the_same_recipients(self, opted_in, application_state, mocker):
         assert EmailNotification.objects.count() == 0
         template_name = f"{'Opt-in And ' if opted_in else ''}BORO ID Application {application_state.value}"
         template_instance = EmailNotificationTemplateService.get_template_by_name(template_name)
         mocked_send_email_by_template, expected_email_notifications_after_sending = self.mock_email_service(mocker)
 
-        # Use the same email address for the operation creator and the point of contact
-        self.operation.created_by = user_baker({'email': self.operation.point_of_contact.email})
+        self.operation.created_by = user_baker({'email': 'email@email.com'})
         self.operation.save()
 
         send_boro_id_application_email(
@@ -165,7 +112,6 @@ class TestSendBoroIdApplicationEmail:
             self.operation.name,
             opted_in,
             operation_creator=self.operation.created_by,
-            point_of_contact=self.operation.point_of_contact,
         )
 
         assert mocked_send_email_by_template.call_count == 1
