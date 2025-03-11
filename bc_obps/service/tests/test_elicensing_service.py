@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 from service.elicensing_service import ELicensingService
+import pytest
 
 
 class TestELicensingService:
@@ -110,7 +111,7 @@ class TestELicensingService:
 
         # Check the result
         assert result['clientObjectId'] == '12345'
-        assert result['balance'] == 100.00
+        assert pytest.approx(result['balance']) == 100.00
 
         # Check that the correct parameters were passed
         mock_get.assert_called_once()

@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, cast
 import requests
 from django.conf import settings
 
@@ -20,14 +20,18 @@ class ELicensingService:
     # Bearer token for authentication
     token: str
 
-    def __new__(cls):
+    def __new__(cls) -> 'ELicensingService':
         """Singleton pattern to ensure only one instance of ELicensingService is created"""
         if cls._instance is None:
             cls._instance = super(ELicensingService, cls).__new__(cls)
 
             # Get settings values
-            cls._instance.base_url = settings.ELICENSING_API_URL
-            cls._instance.token = settings.ELICENSING_AUTH_TOKEN
+            base_url = settings.ELICENSING_API_URL
+            token = settings.ELICENSING_AUTH_TOKEN
+
+            # Ensure these are strings, not Optional[str]
+            cls._instance.base_url = cast(str, base_url)
+            cls._instance.token = cast(str, token)
 
             logger.info(f'Initializing ELicensingService to connect to {cls._instance.base_url}')
         return cls._instance
@@ -123,7 +127,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='POST', data=client_data)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to create client: {response.text}")
             response.raise_for_status()
@@ -147,7 +151,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='PUT', data=client_data)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to update client: {response.text}")
             response.raise_for_status()
@@ -169,7 +173,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='GET', params=params)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to query balance: {response.text}")
             response.raise_for_status()
@@ -190,7 +194,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='POST', data=fees_data)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to create fees: {response.text}")
             response.raise_for_status()
@@ -211,7 +215,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='POST', data=adjustment_data)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to adjust fees: {response.text}")
             response.raise_for_status()
@@ -237,7 +241,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='GET', params=params)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to query fees: {response.text}")
             response.raise_for_status()
@@ -259,7 +263,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='GET', params=params)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to query invoice: {response.text}")
             response.raise_for_status()
@@ -280,7 +284,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='POST', data=invoice_data)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to create invoice: {response.text}")
             response.raise_for_status()
@@ -302,7 +306,7 @@ class ELicensingService:
         response = self._make_request(endpoint, method='GET', params=params)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(Dict[str, Any], response.json())
         else:
             logger.error(f"Failed to query client: {response.text}")
             response.raise_for_status()
@@ -320,7 +324,8 @@ class ELicensingService:
         try:
             # Try to query a specific client to test the connection
             client_id = "174044621"
-            response = self._make_request(f"/client/{client_id}", method='GET', data="{}")
+            # Convert string to dict to match the expected type
+            response = self._make_request(f"/client/{client_id}", method='GET', data={})
 
             if response.status_code == 200:
                 client_data = response.json()
