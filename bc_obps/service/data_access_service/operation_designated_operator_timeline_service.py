@@ -2,7 +2,6 @@ from uuid import UUID
 from ninja.types import DictStrAny
 from typing import List
 from registration.models.operation import Operation
-from registration.schema import OperationTimelineListOut
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from registration.models import User
@@ -33,7 +32,7 @@ class OperationDesignatedOperatorTimelineDataAccessService:
 
         Depending on the user's role, this function returns a queryset of `Operation` objects:
         - IRC users can access all registered operations.
-        - Industry users can only access operations associated with their own operator (operations that have been transferred to another operator are excluded).
+        - Industry users can only access operations associated with their own operator (operations that have a non-null end_date are excluded).
 
         The queryset is annotated with the `sfo_facility_id` and `facility_name` if the
         operation type is SFO and the operation is actively designated for a facility.
@@ -57,7 +56,6 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         sfo_facility_name_subquery = facilities_subquery.values('facility__name')[:1]
 
         only_fields: List[str] = [
-            *OperationTimelineListOut.Meta.fields,
             "operation__name",
             "operation__type",
             "operation__bc_obps_regulated_operation__id",
@@ -80,10 +78,8 @@ class OperationDesignatedOperatorTimelineDataAccessService:
 
         if user.is_irc_user():
             # IRC users only see registered operations
-            return queryset.filter(operation__status=Operation.Statuses.REGISTERED)
+            return queryset.filter(operation__status=Operation.Statuses.REGISTERED, end_date__isnull=True)
         else:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(operator_id=user_operator.operator_id).exclude(
-                status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED
-            )
+            return queryset.filter(operator_id=user_operator.operator_id, end_date__isnull=True)

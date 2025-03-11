@@ -16,5 +16,4 @@ class OperationDesignatedOperatorTimelineModelTest(BaseTestCase):
             ("operator", "operator", None, None),
             ("start_date", "start date", None, None),
             ("end_date", "end date", None, None),
-            ("status", "status", 1000, None),
         ]

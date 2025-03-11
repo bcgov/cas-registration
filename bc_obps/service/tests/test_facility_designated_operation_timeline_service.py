@@ -1,7 +1,6 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import FacilityDesignatedOperationTimeline
 from registration.schema import (
     FacilityDesignatedOperationTimelineFilterSchema,
 )
@@ -17,14 +16,27 @@ class TestGetTimeline:
     def test_get_timeline_by_operation_id_for_irc_user():
         cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
 
-        timeline_for_selected_operation = baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline', _quantity=10
-        )
-        # timeline for random operation's facilities
-        baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=10)
+        # 10 active facilities for selected operation
+        facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=10)
+        selected_operation = baker.make_recipe('registration.tests.utils.operation')
+        for facility in facilities:
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                facility=facility,
+                end_date=None,
+                operation=selected_operation,
+            )
+
+        # timelines for 10 active facilities for other random operation
+        for _ in range(10):
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                facility=baker.make_recipe('registration.tests.utils.facility'),
+                end_date=None,
+            )
 
         expected_facilities = FacilityDesignatedOperationTimelineService.get_timeline_by_operation_id(
-            cas_admin, timeline_for_selected_operation[0].operation.id
+            cas_admin, selected_operation.id
         )
 
         assert expected_facilities.count() == 10
@@ -46,19 +58,20 @@ class TestGetTimeline:
         users_operation = baker.make_recipe(
             'registration.tests.utils.operation', operator=approved_user_operator.operator
         )
-        # user's timeline - 5 transferred, 10 active to make sure the filter is working
+        # user's timeline
+        for _ in range(10):
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                operation=users_operation,
+                facility=baker.make_recipe('registration.tests.utils.facility', operation=users_operation),
+                end_date=None,
+            )
+        # mimic transferred facilities
+        # end_date will be not None, so system infers that these facilities have been transferred
         baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline',
-            operation=users_operation,
-            _quantity=5,
-            status=FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
+            'registration.tests.utils.facility_designated_operation_timeline', operation=users_operation, _quantity=5
         )
-        baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline',
-            operation=users_operation,
-            _quantity=10,
-            status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
-        )
+
         # random timeline
         baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
 
@@ -67,8 +80,6 @@ class TestGetTimeline:
         )
         # the industry user should only be able to see their one
         assert facilities.count() == 10
-        # Make sure the status filter is working
-        assert all(facility.status == FacilityDesignatedOperationTimeline.Statuses.ACTIVE for facility in facilities)
 
 
 class TestListTimeline:
@@ -83,6 +94,7 @@ class TestListTimeline:
                 'registration.tests.utils.facility_designated_operation_timeline',
                 facility=facility,
                 operation=operation,
+                end_date=None,
             )
 
         facilities_list = FacilityDesignatedOperationTimelineService.list_timeline_by_operation_id(
@@ -108,6 +120,7 @@ class TestListTimeline:
                 'registration.tests.utils.facility_designated_operation_timeline',
                 facility=facility,
                 operation=operation,
+                end_date=None,
             )
 
         facilities_list = FacilityDesignatedOperationTimelineService.list_timeline_by_operation_id(
@@ -147,24 +160,18 @@ class TestFacilityDesignatedOperationTimelineService:
         assert result_not_found is None
 
     @staticmethod
-    def test_set_timeline_status_and_end_date():
+    def test_set_timeline_end_date():
         timeline = baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline',
-            status=FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
         )
-        new_status = FacilityDesignatedOperationTimeline.Statuses.CLOSED
         end_date = datetime.now(ZoneInfo("UTC"))
 
-        updated_timeline = FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date(
-            timeline, new_status, end_date
-        )
+        updated_timeline = FacilityDesignatedOperationTimelineService.set_timeline_end_date(timeline, end_date)
 
-        assert updated_timeline.status == new_status
         assert updated_timeline.end_date == end_date
         assert updated_timeline.facility_id == timeline.facility_id
         assert updated_timeline.operation_id == timeline.operation_id
 
         # Verify the changes are saved in the database
         timeline.refresh_from_db()
-        assert timeline.status == new_status
         assert timeline.end_date == end_date

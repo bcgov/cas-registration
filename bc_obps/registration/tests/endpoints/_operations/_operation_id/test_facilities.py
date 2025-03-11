@@ -13,7 +13,17 @@ from model_bakery import baker
 class TestFacilitiesEndpoint(CommonTestSetup):
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
-        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=45)
+        operation = baker.make_recipe('registration.tests.utils.operation')
+        timeline = []
+        for _ in range(45):
+            # create 45 active facilities for the same operation
+            timeline.append(
+                baker.make_recipe(
+                    'registration.tests.utils.facility_designated_operation_timeline',
+                    operation=operation,
+                    end_date=None,
+                )
+            )
 
         facilities_url = custom_reverse_lazy(
             'list_facilities_by_operation_id', kwargs={'operation_id': timeline[0].operation.id}
@@ -30,7 +40,6 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         # make sure key fields are present
         assert response_items_1[0].keys() == {
             'id',
-            'status',
             'facility__name',
             'facility__type',
             'facility__bcghg_id__id',
@@ -76,7 +85,14 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert page_2_first_facility.id > page_2_first_facility_reverse.id
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
-        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', _quantity=15)
+        # create 15 active facilities assigned to 15 different operations
+        timeline = []
+        for _ in range(15):
+            timeline.append(
+                baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', end_date=None)
+            )
+
+        # create a specific named facility and assign it to the first operation in the timeline list
         named_facility = baker.make_recipe(
             'registration.tests.utils.facility', name='Mynameis', type=Facility.Types.MEDIUM_FACILITY
         )
@@ -84,11 +100,15 @@ class TestFacilitiesEndpoint(CommonTestSetup):
             'registration.tests.utils.facility_designated_operation_timeline',
             facility=named_facility,
             operation=timeline[0].operation,
+            end_date=None,
         )
 
         facilities_url = custom_reverse_lazy(
             'list_facilities_by_operation_id', kwargs={'operation_id': timeline[0].operation.id}
         )
+        all_facilities_for_operation_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", facilities_url)
+        assert all_facilities_for_operation_response.status_code == 200
+        assert all_facilities_for_operation_response.json().get('count') == 2
 
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(
@@ -97,7 +117,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert response.status_code == 200
 
         response_items_1 = response.json().get('items')
-        assert len(response_items_1) == 15
+        assert len(response_items_1) == 1
 
         for item in response_items_1:
             assert item.get('facility__type') == Facility.Types.LARGE_FACILITY

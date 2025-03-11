@@ -535,7 +535,6 @@ class TestOperationServiceV2CreateOperation:
         assert timeline_record.operation == operation
         assert timeline_record.operator == approved_user_operator.operator
         assert timeline_record.start_date is not None
-        assert timeline_record.status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
 
     @staticmethod
     def test_create_operation_with_multiple_operators():
@@ -1443,17 +1442,17 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            status=OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN,
+            end_date=None,
         )
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            status=OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
+            end_date=None,
         )
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
-            status=OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
+            end_date=None,
         )
 
         timeline = OperationService.list_operations_timeline(
@@ -1463,9 +1462,7 @@ class TestListOperationTimeline:
             filters=OperationTimelineFilterSchema(),
         )
 
-        assert timeline.count() == 2  # transferred statuses are excluded in the data access service
-        assert timeline[1].status == OperationDesignatedOperatorTimeline.Statuses.ACTIVE
-        assert timeline[0].status == OperationDesignatedOperatorTimeline.Statuses.TEMPORARILY_SHUTDOWN
+        assert timeline.count() == 3
 
     @staticmethod
     def test_gets_filtered_sorted_list_for_industry_user():
@@ -1477,6 +1474,7 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
             operation=baker.make_recipe(
                 'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='11111111111'))
             ),
@@ -1484,6 +1482,7 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
             operation=baker.make_recipe(
                 'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='15555555555'))
             ),
@@ -1491,6 +1490,7 @@ class TestListOperationTimeline:
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operator=approved_user_operator.operator,
+            end_date=None,
             operation=baker.make_recipe(
                 'registration.tests.utils.operation', bcghg_id=(baker.make(BcGreenhouseGasId, id='29999999999'))
             ),
