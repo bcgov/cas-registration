@@ -25,7 +25,6 @@ class OperationDataAccessService:
                     'tertiary_naics_code',
                     'bcghg_id',
                     'verified_by',
-                    'point_of_contact',
                     'bc_obps_regulated_operation',
                     'opted_in_operation',
                 )

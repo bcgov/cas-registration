@@ -33,7 +33,6 @@ class ContactModelTest(BaseTestCase):
             ),  # Replace None with the actual max length if available
             ("business_role", "business role", None, None),
             ("operator", "operator", None, None),
-            # operation model has point-of-contact (fk) and contacts (m2m)
+            # operation model has contacts (m2m)
             ("operations_contacts", "operation", None, None),
-            ("operations", "operation", None, None),
         ]
