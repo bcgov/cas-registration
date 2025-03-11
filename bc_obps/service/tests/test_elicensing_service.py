@@ -111,7 +111,7 @@ class TestELicensingService:
 
         # Check the result
         assert result['clientObjectId'] == '12345'
-        assert pytest.approx(result['balance']) == 100.00
+        assert result['balance'] == pytest.approx(100.00)
 
         # Check that the correct parameters were passed
         mock_get.assert_called_once()
