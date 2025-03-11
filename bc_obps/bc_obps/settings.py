@@ -63,6 +63,10 @@ CHES_CLIENT_SECRET = os.environ.get("CHES_CLIENT_SECRET")
 CHES_TOKEN_ENDPOINT = os.environ.get("CHES_TOKEN_ENDPOINT")
 CHES_API_URL = os.environ.get("CHES_API_URL")
 
+# eLicensing API settings
+ELICENSING_API_URL = os.environ.get("ELICENSING_API_URL")
+ELICENSING_AUTH_TOKEN = os.environ.get("ELICENSING_AUTH_TOKEN")
+
 # Application definition
 
 

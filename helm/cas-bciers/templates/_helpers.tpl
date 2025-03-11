@@ -112,6 +112,16 @@ Define environment variables for the application.
     secretKeyRef:
       key: apiUrl
       name: ches-integration
+- name: ELICENSING_API_URL
+  valueFrom:
+    secretKeyRef:
+      key: apiUrl
+      name: elicensing-integration
+- name: ELICENSING_AUTH_TOKEN
+  valueFrom:
+    secretKeyRef:
+      key: authToken
+      name: elicensing-integration
 - name: DB_USER
   valueFrom:
     secretKeyRef:
