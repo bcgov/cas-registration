@@ -241,7 +241,7 @@ class TestUpdateStatusAndCreateContact:
         assert Contact.objects.filter(first_name="Wednesday").exists()
 
     @staticmethod
-    def test_update_status_and_create_contact_does_create_duplicate_contacts():
+    def test_update_status_and_create_contact_does_not_create_duplicate_contacts():
         approved_admin_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
         )
