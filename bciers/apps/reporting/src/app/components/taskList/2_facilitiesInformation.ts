@@ -58,6 +58,18 @@ export const facilitiesInformationPageFactories: {
       title: "Back to facilities table",
     },
   }),
+  [ReportingPage.ReviewInformation]: (
+    activePage,
+    reportVersionId,
+    facilityId,
+  ) => ({
+    element: {
+      type: "Page",
+      title: "Review facility information",
+      isActive: activePage === ReportingPage.ReviewInformation,
+      link: `/reports/${reportVersionId}/facilities/${facilityId}/review-facility-information`,
+    },
+  }),
   [ReportingPage.Activities]: activitiesPageFactory,
   [ReportingPage.NonAttributableEmission]: (
     activePage,
