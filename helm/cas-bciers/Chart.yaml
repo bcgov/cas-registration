@@ -10,7 +10,7 @@ dependencies:
     version: "0.1.4"
     repository: https://bcgov.github.io/cas-pipeline/
   - name: cas-airflow-dag-trigger
-    version: 1.0.7
+    version: 1.0.9
     repository: https://bcgov.github.io/cas-airflow
     alias: download-dags
     condition: download-dags.enabled
