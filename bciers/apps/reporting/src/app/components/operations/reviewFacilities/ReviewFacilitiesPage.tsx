@@ -12,6 +12,7 @@ export default async function LFOFacilitiesPage({
     HeaderStep.OperationInformation,
     ReportingPage.ReviewFacilities,
     version_id,
+    initialData.current_facilities[0]?.facility_id,
   );
 
   return (
