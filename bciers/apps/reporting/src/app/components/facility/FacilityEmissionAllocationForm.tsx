@@ -12,8 +12,7 @@ import { IChangeEvent } from "@rjsf/core";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { NavigationInformation } from "../taskList/types";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -21,8 +20,7 @@ interface Props {
   facility_id: string;
   orderedActivities: any;
   initialData: any;
-  taskListElements: TaskListElement[];
-  operationType: string;
+  navigationInformation: NavigationInformation;
 }
 
 interface FormData {
@@ -96,8 +94,7 @@ export default function FacilityEmissionAllocationForm({
   version_id,
   facility_id,
   initialData,
-  taskListElements,
-  operationType,
+  navigationInformation,
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
@@ -122,15 +119,6 @@ export default function FacilityEmissionAllocationForm({
 
   const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-
-  // 🛸 Set up routing urls
-  const backUrl = `/reports/${version_id}/facilities/${facility_id}/production-data`;
-  const isLinearOperation = operationType === OperationTypes.LFO;
-  const saveAndContinueUrl = isLinearOperation
-    ? `/reports/${version_id}/facilities/${facility_id}/end-of-facility-report`
-    : `/reports/${version_id}/additional-reporting-data?facility_id=${facility_id}`;
-
-  // 📋 Get the task list elements for the form
 
   // 🔄 Check for allocation mismatch on page load to prevent submit
   useEffect(() => {
@@ -244,15 +232,15 @@ export default function FacilityEmissionAllocationForm({
     <MultiStepFormWithTaskList
       initialStep={1}
       steps={multiStepHeaderSteps}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       schema={emissionAllocationSchema}
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}
-      backUrl={backUrl}
+      backUrl={navigationInformation.backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
-      continueUrl={saveAndContinueUrl}
+      continueUrl={navigationInformation.continueUrl}
       errors={errors}
       formContext={{
         facility_emission_data: formData.basic_emission_allocation_data.concat(
