@@ -5,18 +5,16 @@ import {
   facilityReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/facilities";
 import { actionHandler } from "@bciers/actions";
-import { useSearchParams } from "next/navigation";
-import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { RJSFSchema } from "@rjsf/utils";
+import { NavigationInformation } from "../taskList/types";
 
 interface Props {
   version_id: number;
   facility_id: string;
   activitiesData: ActivityData[];
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
   formsData: object;
   schema: RJSFSchema;
 }
@@ -30,14 +28,11 @@ const FacilityReview: React.FC<Props> = ({
   version_id,
   facility_id,
   activitiesData,
-  taskListElements,
+  navigationInformation,
   formsData,
   schema,
 }) => {
   const [formData, setFormData] = useState<any>(formsData);
-  const queryString = serializeSearchParams(useSearchParams());
-  const backUrl = `/reports/${version_id}/facilities/report-information`;
-  const continueURL = `activities${queryString}`;
   const [errors, setErrors] = useState<string[] | undefined>();
 
   const handleSubmit = async () => {
@@ -82,12 +77,12 @@ const FacilityReview: React.FC<Props> = ({
           ...data.formData,
         }));
       }}
-      continueUrl={continueURL}
+      continueUrl={navigationInformation.continueUrl}
       initialStep={1}
       steps={multiStepHeaderSteps}
-      backUrl={backUrl}
+      backUrl={navigationInformation.backUrl}
       saveButtonDisabled={false}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       errors={errors}
     />
   );
