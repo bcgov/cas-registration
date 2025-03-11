@@ -2,7 +2,6 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
 import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
 import {
-  PointOfContactTitle,
   OptInOperationTitle,
   StatutoryDeclarationDisclaimerTitle,
   StatutoryDeclarationUploadFieldTitle,
@@ -236,7 +235,6 @@ const operationPage1: RJSFSchema = {
 const operationPage2: RJSFSchema = {
   type: "object",
   title: "Point of Contact",
-  required: ["is_external_point_of_contact"],
   properties: {
     is_external_point_of_contact: {
       type: "boolean",
@@ -244,97 +242,7 @@ const operationPage2: RJSFSchema = {
         "Would you like to designate another person to be a point of contact for this application? If approved, this person will receive the BORO ID.",
       default: false,
     },
-    point_of_contact_section: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
-      title: "Point of Contact Information",
-      type: "object",
-      readOnly: true,
-    },
   },
-  allOf: [
-    {
-      if: {
-        properties: {
-          is_external_point_of_contact: {
-            const: true,
-          },
-        },
-      },
-      then: {
-        type: "object",
-        required: [
-          "external_point_of_contact_first_name",
-          "external_point_of_contact_last_name",
-          "external_point_of_contact_position_title",
-          "external_point_of_contact_email",
-          "external_point_of_contact_phone_number",
-        ],
-        properties: {
-          external_point_of_contact_first_name: {
-            type: "string",
-            title: "First Name",
-          },
-          external_point_of_contact_last_name: {
-            type: "string",
-            title: "Last Name",
-          },
-          external_point_of_contact_position_title: {
-            type: "string",
-            title: "Position Title",
-          },
-          external_point_of_contact_email: {
-            type: "string",
-            title: "Email Address",
-            format: "email",
-          },
-          external_point_of_contact_phone_number: {
-            type: "string",
-            title: "Phone Number",
-            format: "phone",
-          },
-        },
-      },
-      else: {
-        type: "object",
-        required: [
-          "email",
-          "phone_number",
-          "first_name",
-          "last_name",
-          "position_title",
-        ],
-        properties: {
-          first_name: {
-            type: "string",
-            title: "First Name",
-            readOnly: true,
-          },
-          last_name: {
-            type: "string",
-            title: "Last Name",
-            readOnly: true,
-          },
-          position_title: {
-            type: "string",
-            title: "Position Title",
-            readOnly: true,
-          },
-          email: {
-            type: "string",
-            title: "Email Address",
-            format: "email",
-            readOnly: true,
-          },
-          phone_number: {
-            type: "string",
-            title: "Phone Number",
-            format: "phone",
-            readOnly: true,
-          },
-        },
-      },
-    },
-  ],
 };
 
 const operationPage3: RJSFSchema = {
@@ -392,7 +300,6 @@ export const operationUiSchema = {
     "opt_in",
     "opt_in_signed_statuatory_declaration",
     "is_external_point_of_contact",
-    "point_of_contact_section",
     "external_point_of_contact_first_name",
     "first_name",
     "external_point_of_contact_last_name",
@@ -446,10 +353,7 @@ export const operationUiSchema = {
   is_external_point_of_contact: {
     "ui:widget": "RadioWidget",
   },
-  point_of_contact_section: {
-    ...subheading,
-    "ui:title": PointOfContactTitle,
-  },
+
   opt_in_section: {
     ...subheading,
   },

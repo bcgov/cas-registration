@@ -91,16 +91,9 @@ def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operat
     if "registration_purpose" not in properties:
         properties["registration_purpose"] = cycle([choice for choice in Operation.Purposes])
 
-    point_of_contact = properties.get("point_of_contact")
-    if point_of_contact:
-        properties.pop("point_of_contact")
-    else:
-        point_of_contact = contact_baker()
-
     if operator_id:
         return baker.make(
             Operation,
-            point_of_contact=point_of_contact,
             naics_code=NaicsCode.objects.first(),
             operator_id=operator_id,
             **properties,
@@ -108,7 +101,6 @@ def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operat
 
     return baker.make(
         Operation,
-        point_of_contact=point_of_contact,
         naics_code=NaicsCode.objects.first(),
         operator=operator_baker(),
         **properties,

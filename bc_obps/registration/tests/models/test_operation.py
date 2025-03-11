@@ -76,7 +76,6 @@ class OperationModelTest(BaseTestCase):
             ("verified_at", "verified at", None, None),
             ("verified_by", "verified by", None, None),
             ("submission_date", "submission date", None, None),
-            ("point_of_contact", "point of contact", None, None),
             ("documents", "document", None, None),
             ("bc_obps_regulated_operation", "bc obps regulated operation", None, None),
             ("operation_has_multiple_operators", "operation has multiple operators", None, None),

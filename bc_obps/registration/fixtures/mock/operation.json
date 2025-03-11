@@ -3,7 +3,6 @@
     "model": "registration.operation",
     "pk": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "name": "Apple LFO - Registered",
       "type": "Linear Facilities Operation",
@@ -20,7 +19,6 @@
     "model": "registration.operation",
     "pk": "002d5a9e-32a6-4191-938c-2c02bfec592d",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Banana LFO - Registered",
       "type": "Linear Facilities Operation",
@@ -39,7 +37,6 @@
     "model": "registration.operation",
     "pk": "556ceeb0-7e24-4d89-b639-61f625f82084",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Barbie LFO - Draft -- no facility",
       "type": "Linear Facilities Operation",
@@ -55,7 +52,6 @@
     "model": "registration.operation",
     "pk": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Bugle SFO - Registered",
       "submission_date": "2023-12-16T15:27:00.000Z",
@@ -75,7 +71,6 @@
     "model": "registration.operation",
     "pk": "c0743c09-82fa-4186-91aa-4b5412e3415c",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-12T15:27:00.000Z",
       "name": "Alien SFO - Registered - no facility",
@@ -95,7 +90,6 @@
     "model": "registration.operation",
     "pk": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": null,
       "name": "Bangles SFO - Registered - has Multiple Operators",
@@ -116,7 +110,6 @@
     "model": "registration.operation",
     "pk": "d99725a7-1c3a-47cb-a59b-e2388ce0fa18",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-14T15:27:00.000Z",
       "name": "Alligator SFO - Registered",
@@ -136,7 +129,6 @@
     "model": "registration.operation",
     "pk": "436dd99a-cb41-4494-91c9-98ab149b557d",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-15T15:27:00.000Z",
       "name": "Anteater LFO - Registered",
@@ -155,7 +147,6 @@
     "model": "registration.operation",
     "pk": "a47b5fb6-1e10-401a-b70e-574bd925db99",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-16T15:27:00.000Z",
       "name": "Arctic LFO - Registered",
@@ -174,7 +165,6 @@
     "model": "registration.operation",
     "pk": "21e70498-c4b0-4525-8443-86faa96206e3",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-17T15:27:00.000Z",
       "name": "Argument LFO - Registered",
@@ -194,7 +184,6 @@
     "model": "registration.operation",
     "pk": "17550cd8-3e73-4e52-aa91-ab90cb3b62b0",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-18T15:27:00.000Z",
       "name": "Art LFO - Registered",
@@ -212,7 +201,6 @@
     "model": "registration.operation",
     "pk": "7d3fc7d1-0504-4ee4-a9c5-447f4b324b57",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-19T15:27:00.000Z",
       "name": "Aeolian LFO - Registered",
@@ -232,7 +220,6 @@
     "model": "registration.operation",
     "pk": "acf5811e-d521-43f7-a5c7-a6d6dd47bb31",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-20T15:27:00.000Z",
       "name": "Anchor LFO - Registered",
@@ -251,7 +238,6 @@
     "model": "registration.operation",
     "pk": "8563da83-0762-4d29-9b22-da5b52ef0f24",
     "fields": {
-      "point_of_contact": 1,
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-21T15:27:00.000Z",
       "name": "Airplane LFO - Registered",
@@ -270,7 +256,6 @@
     "model": "registration.operation",
     "pk": "df62d793-8cfe-4272-a93e-ea9c9139ff82",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-22T15:27:00.000Z",
       "name": "Bojangles LFO - Not Started",
@@ -286,7 +271,6 @@
     "model": "registration.operation",
     "pk": "c5b3643b-c143-42f3-8a2b-03ccc7319cd9",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-23T15:27:00.000Z",
       "name": "Brine LFO - Not Started",
@@ -304,7 +288,6 @@
     "model": "registration.operation",
     "pk": "954c0382-ff61-4e87-a8a0-873586534b54",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-24T15:27:00.000Z",
       "name": "Bling LFO - Draft",
@@ -321,7 +304,6 @@
     "model": "registration.operation",
     "pk": "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-25T15:27:00.000Z",
       "name": "Bees LFO - Registered",
@@ -341,7 +323,6 @@
     "model": "registration.operation",
     "pk": "59d95661-c752-489b-9fd1-0c3fa3454dda",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-26T15:27:00.000Z",
       "name": "Blue LFO - Draft",
@@ -357,7 +338,6 @@
     "model": "registration.operation",
     "pk": "1bd04128-d070-4d3a-940a-0874c4956181",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-27T15:27:00.000Z",
       "name": "Bullet LFO - Registered",
@@ -377,7 +357,6 @@
     "model": "registration.operation",
     "pk": "17f13f4d-29b4-45f4-b025-b21f2e126771",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-28T15:27:00.000Z",
       "name": "Bat LFO - Registered",
@@ -396,7 +375,6 @@
     "model": "registration.operation",
     "pk": "ef9044dd-2a27-4d26-86fe-02e51e0755f7",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Bin LFO - Registered",
       "type": "Linear Facilities Operation",
@@ -414,7 +392,6 @@
     "model": "registration.operation",
     "pk": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Bark LFO - Registered",
       "type": "Linear Facilities Operation",
@@ -432,7 +409,6 @@
     "model": "registration.operation",
     "pk": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Blight EIO - Draft",
       "type": "Electricity Import Operation",
@@ -443,7 +419,6 @@
     "model": "registration.operation",
     "pk": "0ac72fa9-2636-4f54-b378-af6b1a070787",
     "fields": {
-      "point_of_contact": 1,
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Brown LFO - Draft -- no facility",
       "type": "Linear Facilities Operation",
@@ -458,7 +433,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
-      "point_of_contact": 1,
       "name": "Cat LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -472,7 +446,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "7e8b72dc-4196-427f-a553-7879748139e1",
-      "point_of_contact": 1,
       "name": "Dog LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -487,7 +460,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
-      "point_of_contact": 1,
       "name": "Elephant LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -502,7 +474,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
-      "point_of_contact": 1,
       "name": "Fox LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -517,7 +488,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "edb1aff1-f888-4199-ab88-068364496347",
-      "point_of_contact": 1,
       "name": "Giraffe LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -532,7 +502,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
-      "point_of_contact": 1,
       "name": "Horse LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -547,7 +516,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "04384911-264a-4510-b582-11ee704b8e41",
-      "point_of_contact": 1,
       "name": "Iguana LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -562,7 +530,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
-      "point_of_contact": 1,
       "name": "Jaguar LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -577,7 +544,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "bb979661-0782-49b2-9c64-acd8424b692b",
-      "point_of_contact": 1,
       "name": "Kangaroo LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -592,7 +558,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "bb702949-e303-4788-9ba9-806232a5f711",
-      "point_of_contact": 1,
       "name": "Lion LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -607,7 +572,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
-      "point_of_contact": 1,
       "name": "Monkey LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -622,7 +586,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "5c847c75-3b17-414c-97f8-88ba81cb3821",
-      "point_of_contact": 1,
       "name": "Narwhal LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
@@ -637,7 +600,6 @@
     "model": "registration.operation",
     "fields": {
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "point_of_contact": 1,
       "name": "Ostrich LFO - Registered",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
