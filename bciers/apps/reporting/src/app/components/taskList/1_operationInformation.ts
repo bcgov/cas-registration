@@ -1,5 +1,4 @@
 import { ReportingPage, TaskListPageFactory } from "./types";
-import { getFacilityReport } from "../../utils/getFacilityReport";
 
 export const operationInformationPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
