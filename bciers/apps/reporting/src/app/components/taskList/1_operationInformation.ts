@@ -28,9 +28,3 @@ export const operationInformationPageFactories: {
     },
   }),
 };
-
-export const operationInformationHeaderStep = {
-  type: "Section",
-  title: "Operation information",
-  isExpanded: true,
-};

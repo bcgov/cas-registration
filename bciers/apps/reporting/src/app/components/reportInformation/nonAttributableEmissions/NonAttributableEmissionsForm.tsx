@@ -7,8 +7,8 @@ import {
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
+import { NavigationInformation } from "../../taskList/types";
 
 interface ActivityData {
   id: number;
@@ -26,7 +26,7 @@ interface NonAttributableEmissionsProps {
   emissionCategories: { id: number; category_name: string }[];
   gasTypeMap: Record<number, string>;
   emissionCategoryMap: Record<number, string>;
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
 }
 
 export default function NonAttributableEmissionsForm({
@@ -37,7 +37,7 @@ export default function NonAttributableEmissionsForm({
   emissionCategories,
   gasTypeMap,
   emissionCategoryMap,
-  taskListElements,
+  navigationInformation,
 }: NonAttributableEmissionsProps & {
   gasTypeMap: Record<number, string>;
   emissionCategoryMap: Record<number, string>;
@@ -68,9 +68,6 @@ export default function NonAttributableEmissionsForm({
         },
   );
 
-  const saveAndContinueUrl = `/reports/${versionId}/facilities/${facilityId}/emission-summary`;
-  const backUrl = `activities?step=-1`;
-
   const schema = generateUpdatedSchema(gasTypes, emissionCategories);
 
   const handleSubmit = async () => {
@@ -92,15 +89,15 @@ export default function NonAttributableEmissionsForm({
     <MultiStepFormWithTaskList
       initialStep={1}
       steps={multiStepHeaderSteps}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       schema={schema}
       uiSchema={nonAttributableEmissionUiSchema}
       formData={formData}
       cancelUrl="#"
       onChange={(data) => setFormData(data.formData)}
       onSubmit={handleSubmit}
-      backUrl={backUrl}
-      continueUrl={saveAndContinueUrl}
+      backUrl={navigationInformation.backUrl}
+      continueUrl={navigationInformation.continueUrl}
       errors={errors}
     />
   );
