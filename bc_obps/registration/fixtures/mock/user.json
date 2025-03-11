@@ -147,6 +147,7 @@
       "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "app_role": "industry_user",
       "first_name": "Bart",
+      "last_name": "Banker",
       "position_title": "Manager",
       "email": "bart.banker@example.com",
       "phone_number": "+16044011238"
@@ -164,21 +165,6 @@
       "position_title": "Manager",
       "email": "cherise.cyclone@example.com",
       "phone_number": "+16044011238"
-    }
-  },
-  {
-    "model": "registration.user",
-    "fields": {
-      "user_guid": "00000000-0000-0000-0000-000000000006",
-      "business_guid": "7e8b72dc-4196-427f-a553-7879748139e1",
-      "bceid_business_name": "Delta Innovations",
-
-      "app_role": "industry_user",
-      "first_name": "Dina",
-      "last_name": "Dessert",
-      "position_title": "Manager",
-      "email": "dina.dessert@example.com",
-      "phone_number": "+16044011239"
     }
   },
   {
@@ -347,6 +333,20 @@
       "position_title": "Manager",
       "email": "annicka.awesome@example.com",
       "phone_number": "+16044011234"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000019",
+      "business_guid": "7e8b72dc-4196-427f-a553-7879748139e1",
+      "bceid_business_name": "Delta Innovations",
+      "app_role": "industry_user",
+      "first_name": "Dina",
+      "last_name": "Dessert",
+      "position_title": "Manager",
+      "email": "dina.dessert@example.com",
+      "phone_number": "+16044011239"
     }
   },
   {
