@@ -1,5 +1,5 @@
 import { handleAccessRequestStatus } from "apps/administration/tests/components/userOperators/mocks";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import AccessRequestDataGrid from "apps/administration/app/components/userOperators/AccessRequestDataGrid";
 import { expect } from "vitest";
@@ -149,12 +149,25 @@ describe("Access Requests DataGrid", () => {
     expect(screen.getByText(/John Doe is now pending/i)).toBeVisible();
   });
   it("displays a spinner and disables the button while loading", async () => {
+    const modifiedInitialData = {
+      rows: [
+        {
+          id: "1",
+          userFriendlyId: "1",
+          name: "John Smith",
+          email: "john.smith@email.com",
+          business: "Fake Business 1",
+          userRole: "reporter",
+          status: "Declined",
+        },
+      ],
+    };
     handleAccessRequestStatus.mockResolvedValue({
       status: "Pending",
       first_name: "John",
       last_name: "Doe",
     });
-    render(<AccessRequestDataGrid initialData={mockInitialData} />);
+    render(<AccessRequestDataGrid initialData={modifiedInitialData} />);
     const editButton = screen.getAllByRole("button", { name: "Edit" })[0];
     expect(editButton).toBeEnabled();
     fireEvent.click(editButton);
@@ -162,5 +175,13 @@ describe("Access Requests DataGrid", () => {
     expect(
       editButton.querySelector("span svg[aria-label='loading']"),
     ).toBeVisible();
+    expect(handleAccessRequestStatus).toHaveBeenCalled();
+    await waitFor(() => {
+      // Make sure that buttons are visible and enabled again
+      expect(screen.getByRole("button", { name: "Approve" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Decline" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Decline" })).toBeEnabled();
+    });
   });
 });
