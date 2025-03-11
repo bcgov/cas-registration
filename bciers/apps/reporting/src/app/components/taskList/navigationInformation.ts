@@ -7,6 +7,23 @@ import {
 import { getFlow, reportingFlows } from "./reportingFlows";
 import { pageElementFactory } from "./pageElementFactory";
 import { headerElementFactory } from "./headerElementFactory";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+
+/**
+ * Utility function to get the link of a TaskListElement object.
+ *
+ * @param element the tasklist element for which the link needs to be found
+ * @param firstOrLast if there are nested elements, use the link of the first or last one
+ * @returns the link
+ */
+const getTasklistElementLink: (
+  element: TaskListElement,
+  firstOrLast?: "first" | "last",
+) => string | undefined = (element, firstOrLast = "first") => {
+  return (
+    element.elements?.at(firstOrLast === "first" ? 0 : -1)?.link ?? element.link
+  );
+};
 
 /**
  *
@@ -56,7 +73,11 @@ export async function getNavigationInformation(
   let backUrl = tasklistPages[pageIndex].backUrl;
 
   if (backUrl === undefined) {
-    if (pageIndex != 0) backUrl = tasklistPages[pageIndex - 1].element.link;
+    if (pageIndex != 0)
+      backUrl = getTasklistElementLink(
+        tasklistPages[pageIndex - 1].element,
+        "last",
+      );
     else {
       // last element of previous step
       const previousStepIndex = availableFlows.indexOf(step) - 1;
@@ -65,15 +86,15 @@ export async function getNavigationInformation(
         const lastPageOfPreviousStep = flowData[previousStep as HeaderStep]?.at(
           -1,
         ) as ReportingPage;
-        backUrl = (
-          await pageElementFactory(
-            ReportingPage[lastPageOfPreviousStep],
-            page,
-            reportVersionId,
-            facilityId,
-            context,
-          )
-        ).element.link;
+
+        const previousPage = await pageElementFactory(
+          ReportingPage[lastPageOfPreviousStep],
+          page,
+          reportVersionId,
+          facilityId,
+          context,
+        );
+        backUrl = getTasklistElementLink(previousPage.element, "last");
       }
     }
   }
@@ -82,7 +103,10 @@ export async function getNavigationInformation(
 
   if (continueUrl === undefined) {
     if (pageIndex != tasklistPages.length - 1)
-      continueUrl = tasklistPages[pageIndex + 1].element.link;
+      continueUrl = getTasklistElementLink(
+        tasklistPages[pageIndex + 1].element,
+        "first",
+      );
     else {
       // first element of next step
       const nextStepIndex = availableFlows.indexOf(step) + 1;
@@ -92,15 +116,14 @@ export async function getNavigationInformation(
           0,
         ) as ReportingPage;
 
-        continueUrl = (
-          await pageElementFactory(
-            ReportingPage[firstPageOfNextStep],
-            page,
-            reportVersionId,
-            facilityId,
-            context,
-          )
-        ).element.link;
+        const nextPage = await pageElementFactory(
+          ReportingPage[firstPageOfNextStep],
+          page,
+          reportVersionId,
+          facilityId,
+          context,
+        );
+        continueUrl = getTasklistElementLink(nextPage.element, "first");
       }
     }
   }
