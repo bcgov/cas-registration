@@ -15,11 +15,12 @@ class FacilityDesignatedOperationTimelineService:
     def get_timeline_by_operation_id(
         cls, user: User, operation_id: UUID
     ) -> QuerySet[FacilityDesignatedOperationTimeline]:
-        base_queryset = FacilityDesignatedOperationTimeline.objects.filter(operation__id=operation_id).distinct()
+        base_queryset = FacilityDesignatedOperationTimeline.objects.filter(
+            operation__id=operation_id, end_date__isnull=True
+        ).distinct()
 
         if user.is_industry_user():
             UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            base_queryset = base_queryset.exclude(status=FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED)
 
         return base_queryset
 
@@ -48,13 +49,11 @@ class FacilityDesignatedOperationTimelineService:
         ).first()
 
     @classmethod
-    def set_timeline_status_and_end_date(
+    def set_timeline_end_date(
         cls,
         timeline: FacilityDesignatedOperationTimeline,
-        status: FacilityDesignatedOperationTimeline.Statuses,
         end_date: datetime,
     ) -> FacilityDesignatedOperationTimeline:
-        timeline.status = status
         timeline.end_date = end_date
-        timeline.save(update_fields=["status", "end_date"])
+        timeline.save(update_fields=["end_date"])
         return timeline

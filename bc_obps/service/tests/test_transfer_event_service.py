@@ -4,7 +4,7 @@ from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import TransferEvent, FacilityDesignatedOperationTimeline, OperationDesignatedOperatorTimeline
+from registration.models import TransferEvent
 from registration.schema import TransferEventFilterSchema, TransferEventCreateIn
 from service.transfer_event_service import TransferEventService
 import pytest
@@ -448,7 +448,7 @@ class TestTransferEventService:
 
     @staticmethod
     @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.get_current_timeline")
-    @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.set_timeline_status_and_end_date")
+    @patch("service.transfer_event_service.FacilityDesignatedOperationTimelineService.set_timeline_end_date")
     @patch(
         "service.transfer_event_service.FacilityDesignatedOperationTimelineDataAccessService.create_facility_designated_operation_timeline"
     )
@@ -488,10 +488,9 @@ class TestTransferEventService:
         mock_get_current_timeline.assert_any_call(transfer_event.from_operation.id, facility_1.id)
         mock_get_current_timeline.assert_any_call(transfer_event.from_operation.id, facility_2.id)
 
-        # Verify that set_timeline_status_and_end_date was called for facility_1 (existing timeline)
+        # Verify that set_timeline_end_date was called for facility_1 (existing timeline)
         mock_set_timeline.assert_called_once_with(
             timeline_1,
-            FacilityDesignatedOperationTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,
         )
 
@@ -502,7 +501,6 @@ class TestTransferEventService:
                 "facility": facility_2,
                 "operation": transfer_event.to_operation,
                 "start_date": transfer_event.effective_date,
-                "status": FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
             },
         )
 
@@ -512,7 +510,6 @@ class TestTransferEventService:
                 "facility": facility_1,
                 "operation": transfer_event.to_operation,
                 "start_date": transfer_event.effective_date,
-                "status": FacilityDesignatedOperationTimeline.Statuses.ACTIVE,
             },
         )
         # Verify that update_operation_for_facility was called twice, once for each facility
@@ -524,7 +521,7 @@ class TestTransferEventService:
         )
 
     @patch("service.transfer_event_service.OperationDesignatedOperatorTimelineService.get_current_timeline")
-    @patch("service.transfer_event_service.OperationDesignatedOperatorTimelineService.set_timeline_status_and_end_date")
+    @patch("service.transfer_event_service.OperationDesignatedOperatorTimelineService.set_timeline_end_date")
     @patch(
         "service.transfer_event_service.OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline"
     )
@@ -553,10 +550,9 @@ class TestTransferEventService:
         # Verify that get_current_timeline was called for the operation and operator
         mock_get_current_timeline.assert_called_once_with(transfer_event.from_operator.id, transfer_event.operation.id)
 
-        # Verify that set_timeline_status_and_end_date was called since the timeline exists
+        # Verify that set_timeline_end_date was called since the timeline exists
         mock_set_timeline.assert_called_once_with(
             mock_get_current_timeline.return_value,
-            OperationDesignatedOperatorTimeline.Statuses.TRANSFERRED,
             transfer_event.effective_date,
         )
 
@@ -576,11 +572,10 @@ class TestTransferEventService:
                 "operation": transfer_event.operation,
                 "operator": transfer_event.to_operator,
                 "start_date": transfer_event.effective_date,
-                "status": OperationDesignatedOperatorTimeline.Statuses.ACTIVE,
             },
         )
 
-        # Verify that set_timeline_status_and_end_date was not called, since the timeline did not exist
+        # Verify that set_timeline_end_date was not called, since the timeline did not exist
         mock_set_timeline.assert_not_called()
         mock_update_operator.assert_called_once_with(
             user_guid,
