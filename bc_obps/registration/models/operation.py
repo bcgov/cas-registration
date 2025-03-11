@@ -131,14 +131,6 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
     )
-    point_of_contact = models.ForeignKey(
-        Contact,
-        on_delete=models.PROTECT,
-        related_name="operations",
-        blank=True,
-        null=True,
-        db_comment="Foreign key to the contact that is the point of contact (point of contact is only used in registration 1)",
-    )
     contacts = models.ManyToManyField(
         Contact,
         blank=True,

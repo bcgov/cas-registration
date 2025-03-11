@@ -4,7 +4,7 @@ from service.email.email_service import EmailService
 from registration.enums.enums import BoroIdApplicationStates
 import logging
 
-from registration.models import Contact, User
+from registration.models import User
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,6 @@ def send_boro_id_application_email(
     operation_name: str,
     opted_in: Optional[bool],
     operation_creator: Optional[User],
-    point_of_contact: Optional[Contact],
 ) -> None:
     """
     Sends an email to the operation creator and point of contact regarding the BORO ID application based on the application state.
@@ -43,7 +42,6 @@ def send_boro_id_application_email(
         operation_name: The name of the operation to use in the email template.
         opted_in: A boolean indicating whether or not the operation is required to register or is simply opting in.
         operation_creator: The user who created the operation.
-        point_of_contact: The point of contact for the operation.
 
     Raises:
         ValueError: If the email template is not found.
@@ -59,9 +57,6 @@ def send_boro_id_application_email(
     recipients: List[Recipient] = []
     if operation_creator:
         recipients.append(Recipient(full_name=operation_creator.get_full_name(), email_address=operation_creator.email))
-    # If the point of contact is not the same as the operation creator, add them to the recipients list
-    if point_of_contact and (not operation_creator or operation_creator.email != point_of_contact.email):
-        recipients.append(Recipient(full_name=point_of_contact.get_full_name(), email_address=point_of_contact.email))
 
     # populating email context for each recipient
     email_contexts = []

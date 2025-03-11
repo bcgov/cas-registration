@@ -32,7 +32,6 @@ export interface Operation {
   reporting_activities: Array<any>; // Change this once we have the ReportingActivity type
   operator_id: number;
   naics_code_id: number;
-  is_user_point_of_contact?: boolean;
   multiple_operators_array?: Array<any>; // Change this once we have the MultipleOperator type
 }
 
