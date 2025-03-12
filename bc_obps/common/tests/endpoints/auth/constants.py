@@ -327,7 +327,6 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "list_user_operators"},
         {"method": "get", "endpoint_name": "list_transfer_events"},
         {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
-        {"method": "get", "endpoint_name": "test_elicensing_connection"},
     ],
     "approved_authorized_roles": [
         {
