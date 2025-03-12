@@ -64,7 +64,6 @@ class ELicensingService:
             Response object from the requests library
         """
         url = f"{self.base_url}{endpoint}"
-        logger.error(f"Making {method} request to {url} with data: {data} and params: {params}")
         headers = self._get_headers()
 
         try:
