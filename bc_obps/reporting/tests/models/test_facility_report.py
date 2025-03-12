@@ -48,6 +48,12 @@ class FacilityReportModelTest(BaseTestCase):
                 None,
                 0,
             ),
+            (
+                "reportemissionallocationnoproduct_records",
+                "report emission allocation no product",
+                None,
+                0,
+            ),
         ]
 
     def test_immutable_after_report_version_submitted(self):
