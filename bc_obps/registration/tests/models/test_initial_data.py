@@ -21,9 +21,7 @@ class TestInitialData(TestCase):
         self.assertEqual(existing_roles, expected_roles)
 
     def test_business_role_initial_data(self):
-        expected_roles = sorted(
-            ['Senior Officer', 'Operation Representative', 'Authorized Signing Officer', 'Operation Registration Lead']
-        )
+        expected_roles = sorted(['Senior Officer', 'Operation Representative', 'Authorized Signing Officer'])
         existing_roles = sorted(list(BusinessRole.objects.values_list('role_name', flat=True)))
 
         self.assertEqual(len(existing_roles), len(expected_roles))
