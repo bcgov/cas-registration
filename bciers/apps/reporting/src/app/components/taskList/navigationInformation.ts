@@ -3,6 +3,7 @@ import {
   NavigationInformation,
   ReportingFlowDescription,
   ReportingPage,
+  TaskListPageFactoryData,
 } from "./types";
 import { getFlow, reportingFlows } from "./reportingFlows";
 import { pageElementFactory } from "./pageElementFactory";
@@ -23,6 +24,15 @@ const getTasklistElementLink: (
   return (
     element.elements?.at(firstOrLast === "first" ? 0 : -1)?.link ?? element.link
   );
+};
+
+const splitHeaderElements = (
+  taskListFactoryDataItems: TaskListPageFactoryData[],
+) => {
+  return [
+    taskListFactoryDataItems.filter((i) => i.extraOptions?.taskListHeader),
+    taskListFactoryDataItems.filter((i) => !i.extraOptions?.taskListHeader),
+  ];
 };
 
 /**
@@ -55,7 +65,10 @@ export async function getNavigationInformation(
       return pageElementFactory(p, page, reportVersionId, facilityId, context);
     }),
   );
-  const taskList = tasklistPages.map((tlp) => tlp.element);
+  const [taskListHeaderPages, taskListNonHeaderPages] =
+    splitHeaderElements(tasklistPages);
+  const taskListHeader = taskListHeaderPages.map((tlp) => tlp.element);
+  const taskList = taskListNonHeaderPages.map((tlp) => tlp.element);
 
   const pageIndex = pages.indexOf(page);
   if (pageIndex === -1)
@@ -134,7 +147,9 @@ export async function getNavigationInformation(
   const rootElement = headerElementFactory(step, context);
 
   return {
-    taskList: rootElement ? [{ ...rootElement, elements: taskList }] : taskList,
+    taskList: rootElement
+      ? [...taskListHeader, { ...rootElement, elements: taskList }]
+      : [...taskListHeader, ...taskList],
     backUrl: backUrl ?? "/reports",
     continueUrl: continueUrl ?? "/reports",
   };
