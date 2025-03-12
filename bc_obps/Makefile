@@ -76,7 +76,7 @@ run:
 .PHONY: migrate
 migrate: ## run the migrations
 migrate:
-	$(POETRY_RUN) python $(MANAGE_PY) migrate
+	$(POETRY_RUN) python $(MANAGE_PY) custom_migrate
 
 .PHONY: migrations
 migrations: ## create the migrations
@@ -93,7 +93,7 @@ superuser: ## create a superuser
 superuser:
 	$(POETRY_RUN) python $(MANAGE_PY) create_superuser
 
-loadfixtures: ## add all registration fixture files to the db
+loadfixtures: ## add fixtures to the database
 loadfixtures:
 	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
 	$(POETRY_RUN) python $(MANAGE_PY) load_reporting_fixtures $(ARGS)
@@ -101,7 +101,7 @@ loadfixtures:
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
-reset_db:  drop_db create_db migrate loadfixtures
+reset_db:  drop_db create_db migrate
 
 .PHONY: clean
 clean: ## delete python bytecode
@@ -139,10 +139,6 @@ pythontests_parallel:
 clear_db: ## Clear all data in the datbase
 clear_db:
 	$(POETRY_RUN) python $(MANAGE_PY) truncate_dev_data_tables
-
-.PHONY: reset_reg_data
-reset_reg_data: ## Clear all data in the database and load registration fixtures
-reset_reg_data: clear_db loadfixtures
 
 .PHONY: shell
 shell: ## run the Django shell plus

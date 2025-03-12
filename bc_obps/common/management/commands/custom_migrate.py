@@ -19,30 +19,36 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         environment = os.environ.get('ENVIRONMENT')
-        if environment != 'prod':
-            self.stdout.write('Running default migrate command for all apps...')
-            call_command('migrate')
-            RlsManager.re_apply_rls()
+        if environment == 'prod':
+            self.run_prod_migrations()
+        else:
+            self.run_non_prod_migrations(environment)
 
-            if Operation.objects.exists():
-                self.stdout.write(self.style.WARNING("Skipping fixture load: Data already exists."))
-                return
+    def run_non_prod_migrations(self, environment):
+        self.stdout.write('Running default migrate command for all apps...')
+        call_command('migrate')
+        RlsManager.re_apply_rls()
 
-            if environment == 'test':
-                call_command("pgtrigger", "disable", "--schema", "erc")
-                call_command('load_test_data')
-                call_command("pgtrigger", "enable", "--schema", "erc")
-            if environment == 'dev' and os.environ.get('CI') != 'true':
+        if Operation.objects.exists():
+            self.stdout.write(self.style.WARNING("Skipping fixture load: Data already exists."))
+            return
+
+        if environment == 'test':
+            call_command("pgtrigger", "disable", "--schema", "erc")
+            call_command('load_test_data')
+            call_command("pgtrigger", "enable", "--schema", "erc")
+        elif environment == 'dev':
+            if settings.DEBUG:  # local dev
+                call_command('load_fixtures')
+                call_command('load_reporting_fixtures')
+            elif os.environ.get('CI') != 'true':  # dev not in CI
                 call_command("pgtrigger", "disable", "--schema", "erc")
                 call_command('load_fixtures')
                 call_command('load_reporting_fixtures')
                 call_command("pgtrigger", "enable", "--schema", "erc")
-            return
 
-        # Run the default migrate command for all apps except the ones in apps_to_not_include_in_prod
+    def run_prod_migrations(self):
         self.stdout.write('Running default migrate command for all apps except specified exclusions...')
-
-        # Get all installed apps
         all_apps_labels = [app.label for app in apps.get_app_configs()]
         apps_to_run_default_migrate = [
             app_label for app_label in all_apps_labels if app_label not in self.apps_to_not_include_in_prod
