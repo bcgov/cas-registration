@@ -55,7 +55,7 @@ To make django ninja happy, we have to separate out form data and file data. The
 ```python
 def update_operation(
     request: HttpRequest, operation_id: UUID,
-    details: Form[OperationAdminstrationIn], # OperationAdminstrationIn is a ModelSchema or Schema
+    details: Form[OperationAdministrationIn], # OperationAdministrationIn is a ModelSchema or Schema
     boundary_map: UploadedFile = File(None),
     process_flow_diagram: UploadedFile = File(None),
     new_entrant_application: UploadedFile = File(None)

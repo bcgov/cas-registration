@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
 from registration.models.facility import Facility
 from registration.schema.operation import (
-    OperationAdminstrationInWithDocuments,
+    OperationAdministrationInWithDocuments,
     OperationNewEntrantApplicationInWithDocuments,
     OperationRegistrationInWithDocuments,
 )
@@ -346,7 +346,7 @@ class OperationService:
     def update_operation(
         cls,
         user_guid: UUID,
-        payload: OperationRegistrationInWithDocuments | OperationAdminstrationInWithDocuments,
+        payload: OperationRegistrationInWithDocuments | OperationAdministrationInWithDocuments,
         operation_id: UUID,
     ) -> Operation:
 
@@ -387,7 +387,7 @@ class OperationService:
         )
 
         if operation.status == Operation.Statuses.REGISTERED and isinstance(
-            payload, OperationAdminstrationInWithDocuments
+            payload, OperationAdministrationInWithDocuments
         ):
             # operation representatives are only mandatory to register (vs. simply update) and operation
             for contact_id in payload.operation_representatives:

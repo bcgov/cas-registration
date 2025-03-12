@@ -1,8 +1,8 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from registration.schema.operation import (
-    OperationAdminstrationIn,
-    OperationAdminstrationInWithDocuments,
+    OperationAdministrationIn,
+    OperationAdministrationInWithDocuments,
     OperationAdministrationOut,
 )
 from common.permissions import authorize
@@ -59,14 +59,14 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 def update_operation(
     request: HttpRequest,
     operation_id: UUID,
-    details: Form[OperationAdminstrationIn],
+    details: Form[OperationAdministrationIn],
     # documents are optional because if the user hasn't given us an updated document, we don't do anything
     boundary_map: UploadedFile = File(None),
     process_flow_diagram: UploadedFile = File(None),
     new_entrant_application: UploadedFile = File(None),
 ) -> Tuple[Literal[200], Operation]:
 
-    payload = OperationAdminstrationInWithDocuments(
+    payload = OperationAdministrationInWithDocuments(
         **details.dict(by_alias=True),
         **({'boundary_map': boundary_map} if boundary_map else {}),
         **({'process_flow_diagram': process_flow_diagram} if process_flow_diagram else {}),

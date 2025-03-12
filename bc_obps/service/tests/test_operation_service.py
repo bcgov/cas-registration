@@ -19,7 +19,7 @@ from registration.schema.operation import (
     OperationRepresentativeIn,
     OperationNewEntrantApplicationInWithDocuments,
     OperationRepresentativeRemove,
-    OperationAdminstrationInWithDocuments,
+    OperationAdministrationInWithDocuments,
 )
 from registration.schema.operation_timeline import OperationTimelineFilterSchema
 from service.data_access_service.operation_service import OperationDataAccessService
@@ -861,7 +861,7 @@ class TestOperationServiceUpdateOperation:
             _quantity=3,
         )
 
-        payload = OperationAdminstrationInWithDocuments(
+        payload = OperationAdministrationInWithDocuments(
             registration_purpose='Reporting Operation',
             regulated_products=[1],
             name="I am updated",

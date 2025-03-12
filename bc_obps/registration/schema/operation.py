@@ -28,7 +28,7 @@ class OperationRegistrationIn(ModelSchema):
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
-    date_of_first_shipment: Optional[str] = Field(None, alias="date_of_first_shipment")
+    date_of_first_shipment: Optional[str] = None
 
     @staticmethod
     def resolve_multiple_operators_array(obj: Operation) -> Any | None:

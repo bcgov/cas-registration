@@ -29,7 +29,7 @@ interface OperationInformationFormProps {
 export const convertRjsfFormData = (rjsfFormData: { [key: string]: any }) => {
   const formData = new FormData();
   for (const key in rjsfFormData) {
-    // this removes the file keys if no new file has been uploaded
+    // this removes the file keys if no new file has been uploaded (a new file will be of type File)
     if (
       (key === "boundary_map" ||
         key === "process_flow_diagram" ||
@@ -57,6 +57,9 @@ export const convertRjsfFormData = (rjsfFormData: { [key: string]: any }) => {
     } else {
       formData.append(key, rjsfFormData[key]);
     }
+  }
+  for (let [key, value] of formData.entries()) {
+    console.log(key, value);
   }
 
   return formData;
