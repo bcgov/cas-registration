@@ -46,6 +46,9 @@ export async function getNavigationInformation(
 
   // build tasklist from factories
   const flowData = reportingFlows[flow] as ReportingFlowDescription;
+
+  if (!flowData) throw Error(`No reporting flow found for ${flow}`);
+
   const pages = flowData[step] as ReportingPage[];
   const tasklistPages = await Promise.all(
     pages.map(async (p) => {

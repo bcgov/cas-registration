@@ -13,6 +13,7 @@ export enum ReportingPage {
   EmissionSummary = "EmissionSummary",
   ProductionData = "ProductionData",
   AllocationOfEmissions = "AllocationOfEmissions",
+  EndOfReport = "EndOfReport",
   // 3
   AdditionalReportingData = "AdditionalReportingData",
   NewEntrantInformation = "NewEntrantInformation",
