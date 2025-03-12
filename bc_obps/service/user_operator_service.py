@@ -69,6 +69,7 @@ class UserOperatorService:
     def create_operator_and_user_operator(cls, user_guid: UUID, payload: OperatorIn) -> Dict[str, UUID]:
         """
         Function to create a user_operator and an operator
+        We also need to create a contact for the user_operator once operator is created
 
         Parameters:
             payload: Request payload from Operator form POST
@@ -102,6 +103,18 @@ class UserOperatorService:
 
         # update the user-operator operator with data in the request payload
         OperatorService.update_operator(user_guid, payload)
+
+        # Create a contact record for the user_operator and add it to the operator's contacts
+        # Using get_or_create to avoid creating duplicate contacts(if any)
+        Contact.objects.get_or_create(
+            first_name=user_operator.user.first_name,
+            last_name=user_operator.user.last_name,
+            email=user_operator.user.email,
+            phone_number=str(user_operator.user.phone_number),
+            position_title=user_operator.user.position_title,
+            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+            operator_id=operator.id,
+        )
 
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
@@ -175,7 +188,7 @@ class UserOperatorService:
                     first_name=user_operator.user.first_name,
                     last_name=user_operator.user.last_name,
                     email=user_operator.user.email,
-                    phone_number=str(user_operator.user.phone_number),  # ContactIn expects a string,
+                    phone_number=str(user_operator.user.phone_number),
                     position_title=user_operator.user.position_title,
                     business_role=BusinessRole.objects.get(role_name="Operation Representative"),
                     operator_id=user_operator.operator_id,

@@ -1,8 +1,10 @@
 from itertools import cycle
+from unittest.mock import patch, MagicMock
+
 import pytest
 from model_bakery import baker
 from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models import Operator, UserOperator, Contact
+from registration.models import Operator, UserOperator, Contact, BusinessRole
 from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from service.user_operator_service import UserOperatorService
 
@@ -122,7 +124,14 @@ class TestUserOperatorService:
         assert user_operators_sorted_by_status.last().status == UserOperator.Statuses.PENDING
 
     @staticmethod
-    def test_create_operator_and_user_operator():
+    @patch("service.user_operator_service.UserOperatorService.save_operator")
+    @patch(
+        "service.data_access_service.user_operator_service.UserOperatorDataAccessService.get_or_create_user_operator"
+    )
+    @patch("service.operator_service.OperatorService.update_operator")
+    def test_create_operator_and_user_operator(
+        mock_update_operator, mock_get_or_create_user_operator, mock_save_operator
+    ):
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         payload = OperatorIn(
             legal_name="Test",
@@ -134,11 +143,37 @@ class TestUserOperatorService:
             province="AB",
             postal_code="H0H0H0",
         )
+        operator_instance = baker.make_recipe(
+            'registration.tests.utils.operator', status=Operator.Statuses.APPROVED, is_new=False
+        )
+        mock_save_operator.return_value = operator_instance
+
+        user_operator_instance = MagicMock(
+            UserOperator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED, user=user
+        )
+        mock_get_or_create_user_operator.return_value = user_operator_instance, True
+
+        mock_update_operator.return_value = None  # We don't care about the return value of this function
+
         UserOperatorService.create_operator_and_user_operator(user_guid=user.user_guid, payload=payload)
-        assert UserOperator.objects.count() == 1
+
+        mock_save_operator.assert_called_once()
+        mock_get_or_create_user_operator.assert_called_once_with(user.user_guid, operator_instance.id)
+        mock_update_operator.assert_called_once_with(user.user_guid, payload)
+
         assert Operator.objects.count() == 1
         assert Operator.objects.first().status == "Approved"
         assert Operator.objects.first().is_new is False
+        assert Contact.objects.count() == 1
+        assert Contact.objects.filter(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
+            phone_number=user.phone_number,
+            position_title=user.position_title,
+            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+            operator_id=operator_instance.id,
+        ).exists()
 
 
 class TestUpdateStatusAndCreateContact:
