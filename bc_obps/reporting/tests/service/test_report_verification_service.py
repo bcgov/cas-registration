@@ -41,7 +41,7 @@ class TestReportVerificationService(TestCase):
             retrieved_verification.verification_conclusion, self.report_verification.verification_conclusion
         )
 
-    @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
+    @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_true_for_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
@@ -66,7 +66,7 @@ class TestReportVerificationService(TestCase):
         # Verify that emissions calculation is not called for regulated purpose
         mock_get_emissions.assert_not_called()
 
-    @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
+    @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_false_for_non_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
@@ -90,7 +90,7 @@ class TestReportVerificationService(TestCase):
         # Verify that emissions calculation is not called for unregulated purposes
         mock_get_emissions.assert_not_called()
 
-    @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
+    @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_true_for_reporting_operation_with_high_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
@@ -102,7 +102,7 @@ class TestReportVerificationService(TestCase):
         # Arrange: Simulate a reporting operation
         mock_get_registration_purpose.return_value = {"registration_purpose": Operation.Purposes.REPORTING_OPERATION}
         # Simulate high attributable emissions exceeding the verification threshold
-        mock_get_emissions.return_value = Decimal('26000')
+        mock_get_emissions.return_value = {"attributable_for_threshold": Decimal("26000")}
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
@@ -113,7 +113,7 @@ class TestReportVerificationService(TestCase):
         mock_get_registration_purpose.assert_called_once_with(self.report_version.id)
         mock_get_emissions.assert_called_once_with(self.report_version.id)
 
-    @patch("reporting.service.compliance_service.ComplianceService.get_emissions_attributable_for_reporting")
+    @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_false_for_reporting_operation_with_low_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
@@ -125,7 +125,7 @@ class TestReportVerificationService(TestCase):
         # Arrange: Simulate a reporting operation
         mock_get_registration_purpose.return_value = {"registration_purpose": Operation.Purposes.REPORTING_OPERATION}
         # Simulate low attributable emissions below the verification threshold
-        mock_get_emissions.return_value = Decimal('24000')
+        mock_get_emissions.return_value = {"attributable_for_threshold": Decimal("24000")}
 
         # Act: Call the method to determine if the report needs verification
         result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
