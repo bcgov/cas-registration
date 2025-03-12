@@ -1,13 +1,9 @@
 import React from "react";
 import OperationEmissionSummaryForm from "./OperationEmissionSummaryForm";
-import {
-  ActivePage,
-  getAdditionalInformationTaskList,
-} from "@reporting/src/app/components/taskList/3_additionalInformation";
-import { NEW_ENTRANT_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
 import { getOperationEmissionSummaryData } from "@bciers/actions/api/getOperationEmissionSummaryData";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
+import { getNavigationInformation } from "../../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../../taskList/types";
 
 interface Props {
   version_id: number;
@@ -15,23 +11,19 @@ interface Props {
 
 const OperationEmissionSummaryPage = async ({ version_id }: Props) => {
   const summaryData = await getOperationEmissionSummaryData(version_id);
-  const isNewEntrant =
-    (await getRegistrationPurpose(version_id))?.registration_purpose ===
-    NEW_ENTRANT_REGISTRATION_PURPOSE;
   const facilityReport = await getFacilityReport(version_id);
 
-  const taskListData = getAdditionalInformationTaskList(
+  const navInfo = await getNavigationInformation(
+    HeaderStep.AdditionalInformation,
+    ReportingPage.OperationEmissionSummary,
     version_id,
-    ActivePage.OperationEmissionSummary,
-    isNewEntrant,
-    facilityReport?.operation_type,
+    facilityReport?.facility_id,
   );
+
   return (
     <OperationEmissionSummaryForm
-      versionId={version_id}
       summaryFormData={summaryData}
-      taskListElements={taskListData}
-      isNewEntrant={isNewEntrant}
+      navigationInformation={navInfo}
     />
   );
 };

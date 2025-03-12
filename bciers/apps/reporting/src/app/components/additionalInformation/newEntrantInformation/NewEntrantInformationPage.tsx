@@ -1,9 +1,9 @@
 import NewEntrantInformationForm from "./NewEntrantInformationForm";
 import { getNewEntrantData } from "@reporting/src/app/utils/getNewEntrantData";
-import { getAdditionalInformationTaskList } from "@reporting/src/app/components/taskList/3_additionalInformation";
-import { ActivePage } from "@reporting/src/app/components/taskList/3_additionalInformation";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
+import { getNavigationInformation } from "../../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../../taskList/types";
 
 export default async function NewEntrantInformationPage({
   version_id,
@@ -64,18 +64,19 @@ export default async function NewEntrantInformationPage({
   };
 
   const facilityReport = await getFacilityReport(version_id);
-  const taskListElements = getAdditionalInformationTaskList(
+
+  const navInfo = await getNavigationInformation(
+    HeaderStep.AdditionalInformation,
+    ReportingPage.NewEntrantInformation,
     version_id,
-    ActivePage.NewEntrantInformation,
-    true,
-    facilityReport?.operation_type,
+    facilityReport?.facility_id,
   );
 
   return (
     <NewEntrantInformationForm
       version_id={version_id}
       initialFormData={formData}
-      taskListElements={taskListElements}
+      navigationInformation={navInfo}
     />
   );
 }

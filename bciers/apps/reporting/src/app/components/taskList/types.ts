@@ -34,6 +34,8 @@ export enum ReportingFlow {
   EIO = "EIO",
   ReportingOnlySFO = "Reporting Only - SFO",
   ReportingOnlyLFO = "Reporting Only - LFO",
+  NewEntrantSFO = "New Entrant - SFO",
+  NewEntrantLFO = "New Entrant - LFO",
 }
 
 export enum HeaderStep {
