@@ -18,10 +18,7 @@ export default async function VerificationPage({
   // Determine operationType based on reportOperation
   // 🚀 Fetch the operation associated with the specified version ID
   const reportOperation = await getReportingOperation(version_id);
-  const operationType =
-    reportOperation?.operation_type === "Single Facility Operation"
-      ? "SFO"
-      : "LFO";
+  const operationType = reportOperation?.operation_type;
 
   // 🚀 Fetch initial form data
   const initialData = (await getReportVerification(version_id)) || {};
