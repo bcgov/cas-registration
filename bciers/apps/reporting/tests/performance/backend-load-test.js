@@ -1,11 +1,6 @@
 /* eslint-disable */
 import exec from "k6/execution";
-import {
-  activity,
-  facilities,
-  facility,
-  report,
-} from "./scenarios/backend/index.js";
+import { facilities, facility, report } from "./scenarios/backend/index.js";
 
 // Calculate the number of VUs by multiplying the number of users by the number of scenarios
 // Example: 5 users and 5 scenarios result in 25 VUs

@@ -62,8 +62,8 @@ const changeReportType = (reportVersionId) => {
     `${SERVER_HOST}/report-version/${versionId}/change-report-type`,
     payload,
     getUserParams("industry_user_admin"),
-    200,
-    "Facility report create failed",
+    201,
+    "Change report type failed",
   );
 };
 const createNewEntrantData = (reportVersionId) => {
@@ -295,7 +295,7 @@ const fetchOperations = (reportVersion) => {
   );
 };
 
-export default function () {
+export default async function () {
   createReport();
   fetchOperations();
   createNewEntrantData();

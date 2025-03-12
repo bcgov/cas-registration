@@ -55,14 +55,13 @@ VALUES (
 
 -- Insert into the facility_designated_operation_timeline table
 INSERT INTO erc.facility_designated_operation_timeline (
-    facility_id, operation_id, start_date, end_date, status
+    facility_id, operation_id, start_date, end_date
 )
 VALUES (
            fac_id,
            op_id,
            '2025-03-11T19:54:04.734Z',
-           NULL,
-           'Active'
+           NULL
        );
 
 END LOOP;
