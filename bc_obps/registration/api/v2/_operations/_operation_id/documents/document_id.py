@@ -19,10 +19,10 @@ class DocumentOut:
     "/operations/{uuid:operation_id}/documents/{uuid:document_type}",
     response={200: DocumentOut, custom_codes_4xx: Message},
     tags=OPERATOR_TAGS,
-    description="""Retrieves a document""",
+    description="""Retrieves the most recent version of a document for the specified operation and document type.""",
     auth=authorize("approved_authorized_roles"),
 )
-def get_operation_doucment(
+def get_operation_document(
     request: HttpRequest, operation_id: UUID, document_type: str
 ) -> Tuple[Literal[200], Document | None]:
     return 200, DocumentDataAccessServiceV2.get_operation_document_by_type(operation_id, document_type)
