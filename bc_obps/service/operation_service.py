@@ -125,11 +125,14 @@ class OperationService:
         cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationInWithDocuments
     ) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
-        DocumentService.create_or_replace_operation_document(
-            operation_id=operation.id,
-            type='new_entrant_application',
-            file=payload.new_entrant_application,
-        )
+
+        if payload.new_entrant_application and isinstance(payload.new_entrant_application, UploadedFile):
+            DocumentService.create_or_replace_operation_document(
+                operation_id=operation.id,
+                type='new_entrant_application',
+                file=payload.new_entrant_application,
+            )
+
         operation.date_of_first_shipment = payload.date_of_first_shipment
         operation.save(update_fields=['date_of_first_shipment'])
         return operation
