@@ -40,10 +40,7 @@ class Operation(TimeStampedModel):
         NOT_STARTED = "Not Started"
         DRAFT = "Draft"
         REGISTERED = "Registered"
-        APPROVED = "Approved"
         DECLINED = "Declined"
-        CHANGES_REQUESTED = "Changes Requested"
-        PENDING = "Pending"
 
     class DateOfFirstShipmentChoices(models.TextChoices):
         ON_OR_BEFORE_MARCH_31_2024 = "On or before March 31, 2024"
