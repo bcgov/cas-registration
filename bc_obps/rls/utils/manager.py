@@ -62,7 +62,7 @@ class RlsManager:
 
     @classmethod
     def apply_rls(cls) -> None:
-        apps_to_apply_rls = [app for app in settings.LOCAL_APPS if app != 'rls']
+        apps_to_apply_rls = settings.RLS_GRANT_APPS
         for app_name in apps_to_apply_rls:
             for model_name in apps.all_models[app_name]:
                 cls.apply_rls_for_model(app_name, model_name)
