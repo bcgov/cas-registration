@@ -14,6 +14,7 @@ import {
 } from "@reporting/src/app/utils/constants";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getFacilityReport } from "../../utils/getFacilityReport";
 
 export default async function OperationReviewPage({
   version_id,
