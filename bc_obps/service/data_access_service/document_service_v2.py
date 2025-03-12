@@ -7,7 +7,7 @@ from django.core.files.base import ContentFile
 
 class DocumentDataAccessServiceV2:
     @classmethod
-    def get_by_id(cls, document_id)-> Document:
+    def get_by_id(cls, document_id) -> Document:
         return Document.objects.get(id=document_id)
 
     @classmethod
@@ -25,6 +25,8 @@ class DocumentDataAccessServiceV2:
     def create_document(
         cls, user_guid: UUID, file_data: Optional[ContentFile], document_type_name: str, operation_id: UUID
     ) -> Document:
+        # FIXME - file_data being passed here is just an int, not file contents
+        print(f'\n\nFILE DATA: type {type(file_data)}\n{file_data}')
         document = Document.objects.create(
             file=file_data,
             type=DocumentType.objects.get(name=document_type_name),

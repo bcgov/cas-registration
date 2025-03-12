@@ -48,5 +48,5 @@ class Document(TimeStampedModel):
         super().delete(*args, **kwargs)
 
     @property
-    def filename(self):
+    def filename(self) -> str:
         return os.path.basename(self.file.name)

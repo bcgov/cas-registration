@@ -18,13 +18,13 @@ class DocumentServiceV2:
 
     @classmethod
     def create_or_replace_operation_document(
-        cls, user_guid: UUID, document_id: UUID, file_data: ContentFile, document_type: str
-    ) -> Tuple[Document, bool]:
+        cls, user_guid: UUID, operation_id: UUID, file_data: ContentFile, document_type: str
+    ) -> Document:
         """
         This function receives a document and operation id.
         Operations only have one of each type of document, so this function uses the type to check if an existing document needs to be replaced, or if no document exists and one must be created.
         This function does NOT set any m2m relationships.
-        :returns:c Tuple[Document, bool] where the bool is True if a new document was created, False if an existing document was updated
+        :returns: the new Document that has been created or replaced
         """
         existing_document = cls.get_operation_document_by_type_if_authorized(user_guid, operation_id, document_type)
         # if there is an existing  document, delete it
@@ -33,5 +33,4 @@ class DocumentServiceV2:
 
         # create the new documeent
         document = DocumentDataAccessServiceV2.create_document(user_guid, file_data, document_type, operation_id)
-        return document, True
-
+        return document
