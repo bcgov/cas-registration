@@ -36,6 +36,8 @@ RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
 # Add Poetry's bin directory to PATH
 ENV PATH="${HOME}/.asdf/installs/poetry/1.8.1/bin:${PATH}"
 
+RUN poetry config virtualenvs.use-poetry-python true
+
 # Change ownership and permissions
 RUN chown -R bc_obps:0 ${HOME} && \
     chmod -R g+rwX ${HOME}
