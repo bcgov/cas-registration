@@ -8,8 +8,7 @@ export async function getOrderedActivities(
   const response = await actionHandler(endpoint, "GET");
   if (response.error) {
     throw new Error(
-      `Failed to fetch the activity list for report version ${reportVersionId}, facility ${facilityId}.\n` +
-        "Please check if the provided ID(s) are correct and try again.",
+      `Failed to fetch the activity list for report version ${reportVersionId}, facility ${facilityId}.`,
     );
   }
   return response;

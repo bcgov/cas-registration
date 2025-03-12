@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
 
 import { Alert, AlertTitle } from "@mui/material";
@@ -7,19 +7,18 @@ interface Props {
   error: Error & { digest?: string };
 }
 export default function ErrorBoundary({ error }: Props) {
+  const [eventId, setEventId] = useState<string | null>(null);
   useEffect(() => {
     if (error) {
       try {
         // Attempt to log the error to Sentry
-        Sentry.captureException(error);
+        const id = Sentry.captureException(error);
+        setEventId(id); // Store Sentry event ID
       } catch (sentryError) {
         // If there's an error logging to Sentry, log it to the console
         // eslint-disable-next-line no-console
         console.error("Error logging to Sentry:", sentryError);
       }
-      // Log the original error to the console
-      // eslint-disable-next-line no-console
-      console.error(error);
     }
   }, [error]);
 
@@ -37,9 +36,17 @@ export default function ErrorBoundary({ error }: Props) {
         <AlertTitle>
           <strong>Error</strong>
         </AlertTitle>
-        <div style={{ whiteSpace: "pre-wrap" }}>
-          <strong>{error.message}</strong>
-        </div>
+        <p>An internal server error has occured.</p>
+        <p>
+          Please try refreshing the page or contact support if the problem
+          persists.
+        </p>
+        <p>If reporting this issue, mention that the error has been logged.</p>
+        {eventId && (
+          <p>
+            Reference Code: <strong>{eventId}</strong>
+          </p>
+        )}
       </Alert>
     </div>
   );
