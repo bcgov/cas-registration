@@ -205,11 +205,11 @@ class OperationNewEntrantApplicationRemove(ModelSchema):
 # Administration schemas
 
 
-class OperationAdminstrationIn(OperationRegistrationIn):
+class OperationAdministrationIn(OperationRegistrationIn):
     operation_representatives: List[int]
 
 
-class OperationAdminstrationInWithDocuments(OperationRegistrationInWithDocuments):
+class OperationAdministrationInWithDocuments(OperationRegistrationInWithDocuments):
     operation_representatives: List[int]
 
 

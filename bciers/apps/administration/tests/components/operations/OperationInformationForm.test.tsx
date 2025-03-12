@@ -904,7 +904,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Must not have fewer than 1 items/i)).toBeVisible();
   });
 
-  it.only(
+  it(
     "should allow external users to replace their operation rep",
     { timeout: 100000 },
     async () => {
