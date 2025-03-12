@@ -1,12 +1,11 @@
 from typing import Optional
 from decimal import Decimal
 from django.db import transaction
+from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_verification_visit import ReportVerificationVisit
 from reporting.models import ReportVersion
-
 from registration.models import Operation
-from reporting.service.compliance_service import ComplianceService
 from reporting.schema.report_verification import ReportVerificationIn
 from service.report_service import ReportService
 
@@ -84,10 +83,10 @@ class ReportVerificationService:
         return report_verification
 
     @staticmethod
-    def get_report_needs_verification(version_id: int) -> bool:
+    def get_report_needs_verification(report_version_id: int) -> bool:
         """
         Determines if a report needs verification data based on its purpose
-        and attributable emissions.
+        and emissions attributable for reporting threshold
         """
         REGULATED_OPERATION_PURPOSES = {
             Operation.Purposes.OBPS_REGULATED_OPERATION,
@@ -97,16 +96,17 @@ class ReportVerificationService:
         ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal("25000")  # 25,000 TCo₂e
 
         # Fetch registration purpose
-        registration_purpose = ReportService.get_registration_purpose_by_version_id(version_id)
+        registration_purpose = ReportService.get_registration_purpose_by_version_id(report_version_id)
         registration_purpose_value = registration_purpose.get("registration_purpose", {})
 
         # Check the REGULATED_OPERATION_PURPOSES
         if registration_purpose_value in REGULATED_OPERATION_PURPOSES:
             return True
 
-        # Emission threshold: verification data is required if the registration purpose is Reporting Operation, and total TCo₂e >= 25,000
+        # Emission threshold: verification data is required if the registration purpose is Reporting Operation, and attributable_for_threshold TCo₂e >= 25,000
         if registration_purpose_value == Operation.Purposes.REPORTING_OPERATION:
-            attributable_emissions = ComplianceService.get_emissions_attributable_for_reporting(version_id)
-            return attributable_emissions >= ATTRIBUTABLE_EMISSION_THRESHOLD
+            totals = EmissionCategoryService.get_all_category_totals_by_version(report_version_id)            
+            attributable_for_threshold = totals.get("attributable_for_threshold")
+            return attributable_for_threshold >= ATTRIBUTABLE_EMISSION_THRESHOLD
 
         return False
