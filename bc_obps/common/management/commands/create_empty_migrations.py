@@ -14,7 +14,7 @@ class Command(BaseCommand):
         if not migration_name:
             raise CommandError("Migration name is required.")
 
-        for app_label in (app for app in settings.INSTALLED_APPS if app not in settings.APPS_TO_NOT_INCLUDE_IN_PROD):
+        for app_label in (app for app in settings.LOCAL_APPS if app not in settings.APPS_TO_NOT_INCLUDE_IN_PROD):
             try:
                 # This command creates an empty migration with the specified name
                 call_command('makemigrations', app_label, empty=True, name=f'V{migration_name}')
