@@ -9,10 +9,9 @@ from registration.utils import custom_reverse_lazy
 class TestActivityData(CommonTestSetup):
     def test_authorized_users_can_get_activity_data(self):
         operator = baker.make_recipe("registration.tests.utils.operator")
-        valid_year = baker.make_recipe('reporting.tests.utils.reporting_year', reporting_year=2025)
         facility_report = baker.make_recipe(
             'reporting.tests.utils.facility_report',
-            report_version__report__reporting_year_id=valid_year.reporting_year,
+            report_version__report__reporting_year_id=2025,
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 

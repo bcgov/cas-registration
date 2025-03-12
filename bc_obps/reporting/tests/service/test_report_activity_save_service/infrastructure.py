@@ -43,10 +43,9 @@ class TestInfrastructure:
     @classmethod
     def build(cls):
         t = TestInfrastructure()
-        valid_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2025)
         t.facility_report = make_recipe(
             'reporting.tests.utils.facility_report',
-            report_version__report__reporting_year_id=valid_year.reporting_year,
+            report_version__report__reporting_year_id=2025,
         )
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
@@ -72,10 +71,9 @@ class TestInfrastructure:
     @classmethod
     def build_from_real_config(cls, activity_slug="gsc_non_compression"):
         t = TestInfrastructure()
-        valid_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2025)
         t.facility_report = make_recipe(
             'reporting.tests.utils.facility_report',
-            report_version__report__reporting_year_id=valid_year.reporting_year,
+            report_version__report__reporting_year_id=2025,
         )
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
