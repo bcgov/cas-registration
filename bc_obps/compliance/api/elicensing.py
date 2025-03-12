@@ -1,5 +1,6 @@
 from typing import Dict, Any, Literal, Tuple
 from django.http import HttpRequest
+from common.permissions import authorize
 from service.elicensing_service import elicensing_service
 from compliance.api.router import router
 
@@ -9,6 +10,7 @@ from compliance.api.router import router
     response={200: Dict[str, Any]},
     tags=["eLicensing"],
     description="Tests the connection to the eLicensing API by querying client with ID 174044621",
+    auth=authorize("all_roles"),
 )
 def test_elicensing_connection(request: HttpRequest) -> Tuple[Literal[200], Dict[str, Any]]:
     """
