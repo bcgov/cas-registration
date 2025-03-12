@@ -1,5 +1,6 @@
 import { operationInformationPageFactories } from "./1_operationInformation";
 import { facilitiesInformationPageFactories } from "./2_facilitiesInformation";
+import { additionalInformationPageFactories } from "./3_additionalInformation";
 import { ReportingPage, TaskListPageFactory } from "./types";
 
 export const pageFactories: {
@@ -7,6 +8,7 @@ export const pageFactories: {
 } = {
   ...operationInformationPageFactories,
   ...facilitiesInformationPageFactories,
+  ...additionalInformationPageFactories,
 };
 
 export const pageElementFactory = (
