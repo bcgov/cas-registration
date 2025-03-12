@@ -67,7 +67,7 @@ export async function getNavigationInformation(
   );
   const [taskListHeaderPages, taskListNonHeaderPages] =
     splitHeaderElements(tasklistPages);
-  const taskListHeader = taskListHeaderPages.map((tlp) => tlp.element);
+  const taskListHeaders = taskListHeaderPages.map((tlp) => tlp.element);
   const taskList = taskListNonHeaderPages.map((tlp) => tlp.element);
 
   const pageIndex = pages.indexOf(page);
@@ -148,8 +148,8 @@ export async function getNavigationInformation(
 
   return {
     taskList: rootElement
-      ? [...taskListHeader, { ...rootElement, elements: taskList }]
-      : [...taskListHeader, ...taskList],
+      ? [...taskListHeaders, { ...rootElement, elements: taskList }]
+      : [...taskListHeaders, ...taskList],
     backUrl: backUrl ?? "/reports",
     continueUrl: continueUrl ?? "/reports",
   };
