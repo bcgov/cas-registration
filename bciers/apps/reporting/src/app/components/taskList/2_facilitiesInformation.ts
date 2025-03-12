@@ -51,6 +51,7 @@ export const facilitiesInformationPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
 } = {
   [ReportingPage.FacilitiesTable]: (activePage, reportVersionId) => ({
+    continueUrl: `/reports/${reportVersionId}/additional-reporting-data`,
     element: {
       type: "Link",
       text: "Back to facilities table",
@@ -117,6 +118,15 @@ export const facilitiesInformationPageFactories: {
       title: "Allocation of emissions",
       isActive: activePage === ReportingPage.AllocationOfEmissions,
       link: `/reports/${reportVersionId}/facilities/${facilityId}/allocation-of-emissions`,
+    },
+  }),
+  [ReportingPage.EndOfReport]: (activePage, reportVersionId, facilityId) => ({
+    continueUrl: `/reports/${reportVersionId}/facilities/report-information`,
+    element: {
+      type: "Page",
+      title: "Facility Report Completed",
+      isActive: activePage === ReportingPage.EndOfReport,
+      link: `/reports/${reportVersionId}/facilities/${facilityId}/end-of-facility-report`,
     },
   }),
 };

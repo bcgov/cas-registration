@@ -1,4 +1,3 @@
-import { getFacilityReport } from "../../utils/getFacilityReport";
 import { operationInformationPageFactories } from "./1_operationInformation";
 import { facilitiesInformationPageFactories } from "./2_facilitiesInformation";
 import { ReportingPage, TaskListPageFactory } from "./types";

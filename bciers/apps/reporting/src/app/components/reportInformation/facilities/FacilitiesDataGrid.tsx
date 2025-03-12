@@ -14,6 +14,7 @@ import { FacilityRow } from "@reporting/src/app/components/reportInformation/fac
 import getFacilityColumns from "@reporting/src/app/components/datagrid/models/facilities/getFacilityColumns";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import facilityTableGroupColumns from "@reporting/src/app/components/datagrid/models/facilities/facilityGroupColumns";
+import { NavigationInformation } from "../../taskList/types";
 
 interface FacilitiesDataGridProps {
   initialData: {
@@ -22,11 +23,13 @@ interface FacilitiesDataGridProps {
     is_completed_count: number;
   };
   version_id: number;
+  navigationInformation: NavigationInformation;
 }
 
 const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   initialData,
   version_id,
+  navigationInformation,
 }) => {
   const [rows, setRows] = useState(initialData);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
@@ -75,8 +78,6 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   }, [initialData, currentPage]);
 
   const router = useRouter();
-
-  const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data`;
 
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
@@ -150,7 +151,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       });
       if (redirect) {
         setIsRedirecting(true);
-        router.push(saveAndContinueUrl);
+        router.push(navigationInformation.continueUrl);
       } else {
         setIsSuccess(true);
         setTimeout(() => setIsSuccess(false), 3000);
@@ -239,8 +240,8 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       )}
 
       <ReportingStepButtons
-        backUrl={`/reports/${version_id}/facilities/review-facilities`}
-        continueUrl={saveAndContinueUrl}
+        backUrl={navigationInformation.backUrl}
+        continueUrl={navigationInformation.continueUrl}
         isSaving={isSaving}
         isSuccess={isSuccess}
         isRedirecting={isRedirecting}

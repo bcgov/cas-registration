@@ -43,6 +43,7 @@ const lfoFlow: ReportingFlowDescription = {
     ReportingPage.EmissionSummary,
     ReportingPage.ProductionData,
     ReportingPage.AllocationOfEmissions,
+    ReportingPage.EndOfReport,
   ],
   [HeaderStep.AdditionalInformation]: [ReportingPage.AdditionalReportingData],
   [HeaderStep.ComplianceSummary]: [ReportingPage.ComplianceSummary],
