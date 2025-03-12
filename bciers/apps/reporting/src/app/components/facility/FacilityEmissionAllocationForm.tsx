@@ -145,8 +145,6 @@ export default function FacilityEmissionAllocationForm({
     };
     modifiedEmissionAllocationSchema.properties.allocation_methodology =
       object as RJSFSchema;
-    // Set n/a as default since no product will be saved to draw methodology from
-    initialData.allocation_methodology = "Not Applicable";
   }
 
   // Using the useState hook to initialize the form data with initialData values
