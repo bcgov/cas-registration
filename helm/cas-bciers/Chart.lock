@@ -4,9 +4,9 @@ dependencies:
   version: 0.1.4
 - name: cas-airflow-dag-trigger
   repository: https://bcgov.github.io/cas-airflow
-  version: 1.0.7
+  version: 1.0.20
 - name: cas-logging-sidecar
   repository: https://bcgov.github.io/cas-pipeline/
   version: 0.4.0
-digest: sha256:298cd66df2840c10e12e7801f3435841adbe27ea1ea4d4a97a84adf76cf860f2
-generated: "2025-02-27T08:18:33.307011-08:00"
+digest: sha256:7e318f7dc1635c400648cfa54684ea35f41290e3abd775de78c13c0afffcfdda
+generated: "2025-03-12T11:46:46.41786175-07:00"
