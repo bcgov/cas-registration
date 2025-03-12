@@ -13,9 +13,7 @@ class BusinessRoleModelTest(BaseTestCase):
         ]
 
     def test_initial_data(self):
-        expected_roles = sorted(
-            ['Senior Officer', 'Operation Representative', 'Authorized Signing Officer', 'Operation Registration Lead']
-        )
+        expected_roles = sorted(['Senior Officer', 'Operation Representative', 'Authorized Signing Officer'])
         existing_roles = sorted(list(BusinessRole.objects.values_list('role_name', flat=True)))
 
         self.assertEqual(len(existing_roles), len(expected_roles))

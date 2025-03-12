@@ -37,5 +37,12 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing information about contacts. Contacts are people that IRC may need to get in touch with to confirm information about industry. Contacts can be BCIERs app users (in which case they will also have a record in the Users table), but they don't have to be."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.CONTACT.value}'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['email', 'operator'],
+                name='unique_email_per_operator',
+                condition=models.Q(operator__isnull=False),
+            )
+        ]
 
     Rls = ContactRls
