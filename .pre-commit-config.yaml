@@ -30,7 +30,6 @@ repos:
       - id: check-yaml
         exclude: (^helm/.*/templates/)
       - id: end-of-file-fixer
-        exclude: (^erd_diagrams/)
       - id: trailing-whitespace
       - id: debug-statements
 
