@@ -55,26 +55,29 @@ export type NavigationInformation = {
   backUrl: string;
 };
 
+export interface TaskListPageFactoryData {
+  element: TaskListElement;
+  continueUrl?: string;
+  backUrl?: string;
+  extraOptions?: {
+    // Setting this flag to `true` will cause the tasklist element factory
+    // to prop that element above all the other ones
+    taskListHeader?: boolean;
+  };
+}
+
 type SyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
   context?: any,
-) => {
-  element: TaskListElement;
-  continueUrl?: string;
-  backUrl?: string;
-};
+) => TaskListPageFactoryData;
 type AsyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
   context?: any,
-) => Promise<{
-  element: TaskListElement;
-  continueUrl?: string;
-  backUrl?: string;
-}>;
+) => Promise<TaskListPageFactoryData>;
 export type TaskListPageFactory =
   | SyncTaskListPageFactory
   | AsyncTaskListPageFactory;

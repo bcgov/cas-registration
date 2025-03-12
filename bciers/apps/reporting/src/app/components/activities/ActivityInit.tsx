@@ -2,10 +2,7 @@ import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import ActivityForm from "./ActivityForm";
 import { UUID } from "crypto";
-import {
-  ActivityData,
-  getFacilitiesInformationTaskList,
-} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
+import { ActivityData } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
@@ -65,21 +62,6 @@ export default async function ActivityInit({
       currentActivity: currentActivity,
     },
   );
-
-  // const taskListData = getFacilitiesInformationTaskList(
-  //   versionId,
-  //   facilityId,
-  //   orderedActivities,
-  //   undefined,
-  //   reportInfoTaskListData?.facilityName,
-  //   reportInfoTaskListData?.operationType,
-  // );
-
-  // const currentActivityTaskListElement = taskListData[0]?.elements?.find(
-  //   (e) => e.title == currentActivity.name,
-  // );
-  // if (currentActivityTaskListElement)
-  //   currentActivityTaskListElement.isActive = true;
 
   // Determine which source types (if any) are selected in the loaded formData & fetch the jsonSchema accordingly
   const sourceTypeIds = [];
