@@ -13,7 +13,9 @@ import { actionHandler } from "@bciers/actions";
 import { lfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import { sfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import { handleVerificationData } from "@reporting/src/app/utils/verification/handleVerificationData";
-import { mergeVerificationData } from "@reporting/src/app/utils/verification/mergeVerificationData";
+import { OperationTypes } from "@bciers/utils/src/enums";
+// TEMPORARY: remmed to support #607
+// import { mergeVerificationData } from "@reporting/src/app/utils/verification/mergeVerificationData";
 
 interface Props {
   version_id: number;
@@ -37,7 +39,7 @@ export default function VerificationForm({
   const backUrl = `/reports/${version_id}/final-review`;
 
   const verificationUiSchema =
-    operationType === "SFO" ? sfoUiSchema : lfoUiSchema;
+    operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
 
   // 🛠️ Function to handle form changes affecting ui schema
   const handleChange = (e: IChangeEvent) => {
@@ -55,8 +57,14 @@ export default function VerificationForm({
     // 📷 Clone formData as payload
     const payload = { ...formData };
 
+    // TEMPORARY: remmed to support #607
     // ➕ Update report_verification_visits property based on visit_types and visit_others
-    mergeVerificationData(payload);
+    // mergeVerificationData(payload);
+
+    // TEMPORARY: added to support #607
+    // ➕ Update report with hidden fields
+    payload.scope_of_verification = "";
+    payload.verification_conclusion = "";
 
     // 🧼 Remove unnecessary properties from payload
     delete payload.visit_names;
