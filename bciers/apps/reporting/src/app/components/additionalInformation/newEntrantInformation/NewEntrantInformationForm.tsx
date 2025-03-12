@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-
 import { actionHandler } from "@bciers/actions";
 import {
   NewEntrantSchema,
@@ -11,28 +9,24 @@ import {
 } from "@reporting/src/data/jsonSchema/newEntrantInformation";
 import { IChangeEvent } from "@rjsf/core";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-
-const baseUrl = "/reports";
-const cancelUrl = "/reports";
+import { NavigationInformation } from "../../taskList/types";
 
 interface NewEntrantInfornationProps {
   version_id: number;
   initialFormData: { assertion_statement?: boolean };
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
 }
 
 export default function NewEntrantInformationForm({
   version_id,
   initialFormData,
-  taskListElements,
+  navigationInformation,
 }: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
   const [errors, setErrors] = useState<string[]>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,
   );
-
-  const saveAndContinueUrl = `/reports/${version_id}/operation-emission-summary`;
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
@@ -61,17 +55,16 @@ export default function NewEntrantInformationForm({
     <MultiStepFormWithTaskList
       initialStep={2}
       steps={multiStepHeaderSteps}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       schema={NewEntrantSchema}
       uiSchema={NewEntrantUiSchema}
       formData={formData}
-      baseUrl={baseUrl}
-      cancelUrl={cancelUrl}
+      backUrl={navigationInformation.backUrl}
       onChange={handleChange}
       onSubmit={(data) => handleSubmit(data.formData)}
       submitButtonDisabled={submitButtonDisabled}
       formContext={formData}
-      continueUrl={saveAndContinueUrl}
+      continueUrl={navigationInformation.continueUrl}
       errors={errors}
     />
   );

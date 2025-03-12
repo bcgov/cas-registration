@@ -10,15 +10,14 @@ import {
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { NavigationInformation } from "../../taskList/types";
 
 interface AdditionalReportingDataProps {
   versionId: number;
   includeElectricityGenerated: boolean;
   initialFormData: any;
   isNewEntrant: boolean;
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
   operationType: string;
   facilityId: string;
 }
@@ -41,20 +40,10 @@ export default function AdditionalReportingDataForm({
   versionId,
   includeElectricityGenerated,
   initialFormData,
-  isNewEntrant,
-  taskListElements,
-  operationType,
-  facilityId,
+  navigationInformation,
 }: AdditionalReportingDataProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
-
-  const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
-  const saveAndContinueUrl = isNewEntrant
-    ? `new-entrant-information`
-    : operationType === OperationTypes.LFO
-    ? "operation-emission-summary"
-    : "compliance-summary";
 
   const schema: RJSFSchema = includeElectricityGenerated
     ? additionalReportingDataWithElectricityGeneratedSchema
@@ -86,16 +75,16 @@ export default function AdditionalReportingDataForm({
     <MultiStepFormWithTaskList
       initialStep={2}
       steps={multiStepHeaderSteps}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}
       formData={formData}
-      backUrl={backUrl}
+      backUrl={navigationInformation.backUrl}
       onChange={(data: any) => {
         setFormData(data.formData);
       }}
       onSubmit={(data: any) => handleSubmit(data.formData)}
-      continueUrl={saveAndContinueUrl}
+      continueUrl={navigationInformation.continueUrl}
       errors={errors}
     />
   );
