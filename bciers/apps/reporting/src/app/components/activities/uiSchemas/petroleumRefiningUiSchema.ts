@@ -6,9 +6,6 @@ import { emissionsOnlyUiSchema, sourceTypeCheckboxUiSchema } from "./common";
 const feedstockUiSchema = {
   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
   "ui:FieldTemplate": FieldTemplate,
-  id: {
-    "ui:widget": "hidden",
-  },
   "ui:options": {
     arrayAddLabel: "Add Feedstock",
     title: "Feedstocks",
@@ -54,6 +51,9 @@ const uiSchema = {
     "wastewaterProcessingAnaerobicDigestionAtRefineries",
     "*",
   ],
+  id: {
+    "ui:widget": "hidden",
+  },
   feedstocks: feedstockUiSchema,
   catalystRegeneration: sourceTypeCheckboxUiSchema,
   processVents: sourceTypeCheckboxUiSchema,
