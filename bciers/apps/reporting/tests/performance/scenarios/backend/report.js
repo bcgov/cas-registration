@@ -1,9 +1,12 @@
 /* eslint-disable */
 import { SERVER_HOST } from "../../setup/constants.js";
 import { getUserParams, makeRequest } from "../../setup/helpers.js";
+import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
+import http from "k6/http";
+import { sleep } from "k6";
 
+const pdfFile = open("./testFile.pdf");
 const mockreportVersionId = 1;
-// Generate all valid operation IDs (from 00000000-0000-0000-0000-000000000000 to 00000000-0000-0000-0000-000000000999)
 const generateOperationIds = () => {
   const operationIds = [];
   for (let i = 0; i <= 999; i++) {
@@ -13,13 +16,12 @@ const generateOperationIds = () => {
   }
   return operationIds;
 };
-// Store the operation IDs
+
 const operationIds = generateOperationIds();
 
 // Set to keep track of used operationIds
 const usedOperationIds = new Set();
 
-// Function to generate a unique operationId
 const generateOperationId = () => {
   if (usedOperationIds.size >= operationIds.length) {
     // All IDs have been used
@@ -43,7 +45,7 @@ const createReport = (operationId) => {
     operation_id: operationID,
     reporting_year: 2024,
   });
-  makeRequest(
+  const res = makeRequest(
     "POST",
     `${SERVER_HOST}/create-report`,
     payload,
@@ -51,6 +53,7 @@ const createReport = (operationId) => {
     201,
     "report create failed",
   );
+  return JSON.parse(res.body);
 };
 const changeReportType = (reportVersionId) => {
   const versionId = reportVersionId || mockreportVersionId;
@@ -224,7 +227,7 @@ const createReportOperation = (reportVersionId) => {
     operation_representative_name: [41],
     operation_report_type: "Annual Report",
   });
-  return makeRequest(
+  makeRequest(
     "POST",
     `${SERVER_HOST}/report-version/${versionId}/report-operation`,
     payload,
@@ -267,8 +270,62 @@ const createReportSubmit = (reportVersionId) => {
     `${SERVER_HOST}/report-version/${versionId}/submit`,
     payload,
     getUserParams("industry_user_admin"),
-    201,
+    200,
     "Report submit failed",
+  );
+};
+
+const createReportAttachment = (reportVersionId) => {
+  const versionId = reportVersionId || mockreportVersionId;
+  const formData = new FormData();
+
+  const files = [
+    {
+      file: pdfFile,
+      fileType: "verification_statement",
+      filename: "verification_statement.pdf",
+      content_type: "application/pdf",
+    },
+    {
+      file: pdfFile,
+      fileType: "wci_352_362",
+      filename: "wci_352_362.pdf",
+      content_type: "application/pdf",
+    },
+    {
+      file: pdfFile,
+      fileType: "additional_reportable_information",
+      filename: "additional_reportable_information.pdf",
+      content_type: "application/pdf",
+    },
+    {
+      file: pdfFile,
+      fileType: "confidentiality_request",
+      filename: "confidentiality_request.pdf",
+      content_type: "application/pdf",
+    },
+  ];
+
+  files.forEach(({ file, fileType, filename, content_type }) => {
+    // Create an object for each file and its type
+    formData.append("files", http.file(file, filename, content_type));
+    formData.append("file_types", fileType);
+  });
+  const industryUserParamHeaders = getUserParams("industry_user_admin");
+  return makeRequest(
+    "POST",
+    `${SERVER_HOST}/report-version/${versionId}/attachments`,
+    formData.body(),
+    {
+      ...industryUserParamHeaders,
+      headers: {
+        ...industryUserParamHeaders.headers,
+        "Content-Type": "multipart/form-data; boundary=" + formData.boundary,
+      },
+    },
+
+    200,
+    "Report attachment failed",
   );
 };
 
@@ -283,8 +340,7 @@ const fetchComplianceData = (reportVersion) => {
     "Compliance Data retrieval failed",
   );
 };
-const fetchOperations = (reportVersion) => {
-  const reportVersionId = reportVersion || mockreportVersionId;
+const fetchOperations = () => {
   makeRequest(
     "GET",
     `${SERVER_HOST}/operations`,
@@ -296,13 +352,16 @@ const fetchOperations = (reportVersion) => {
 };
 
 export default async function () {
-  createReport();
-  fetchOperations();
-  createNewEntrantData();
-  createReportAdditionalData();
-  createReportPersonResponsible();
-  createReportOperation();
-  createReportVerification();
-  // createReportSubmit();
-  fetchComplianceData();
+  const versionId = createReport();
+  sleep(2);
+
+  fetchOperations(versionId);
+  createReportOperation(versionId);
+  createReportPersonResponsible(versionId);
+  createNewEntrantData(versionId);
+  createReportAdditionalData(versionId);
+  createReportVerification(versionId);
+  createReportAttachment(versionId);
+  fetchComplianceData(versionId);
+  createReportSubmit(versionId);
 }
