@@ -9,8 +9,7 @@ export async function getActivityFormData(
   const response = await actionHandler(endpoint, "GET");
   if (response.error) {
     throw new Error(
-      `Failed to fetch the activity list for report version ${reportVersionId}, facility ${facilityId}, activity ${activityId}.\n` +
-        "Please check if the provided ID(s) are correct and try again.",
+      `Failed to fetch the activity list for report version ${reportVersionId}, facility ${facilityId}, activity ${activityId}.`,
     );
   }
   return response;

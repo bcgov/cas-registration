@@ -9,8 +9,7 @@ export async function getActivitySchema(
   const response = await actionHandler(endpoint, "GET");
   if (response.error) {
     throw new Error(
-      `Failed to fetch the schema for report version ${reportVersionId}, activity ${activityId}, source types ${sourceTypeQueryString}.\n` +
-        "Please check if the provided ID(s) are correct and try again.",
+      `Failed to fetch the schema for report version ${reportVersionId}, activity ${activityId}, source types ${sourceTypeQueryString}.`,
     );
   }
   return response;
