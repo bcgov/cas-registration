@@ -105,8 +105,8 @@ class ReportVerificationService:
 
         # Emission threshold: verification data is required if the registration purpose is Reporting Operation, and attributable_for_threshold TCo₂e >= 25,000
         if registration_purpose_value == Operation.Purposes.REPORTING_OPERATION:
-            totals = EmissionCategoryService.get_all_category_totals_by_version(report_version_id)            
+            totals = EmissionCategoryService.get_all_category_totals_by_version(report_version_id)
             attributable_for_threshold = totals.get("attributable_for_threshold")
-            return attributable_for_threshold >= ATTRIBUTABLE_EMISSION_THRESHOLD
+            return (attributable_for_threshold or Decimal("0")) >= ATTRIBUTABLE_EMISSION_THRESHOLD
 
         return False
