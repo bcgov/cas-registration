@@ -4,7 +4,9 @@ from reporting.models import report_version
 from reporting.models.facility_report import FacilityReport
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.report_emission_allocation_no_product import Rls as ReportEmissionAllocationNoProductRls
+from reporting.models.rls_configs.report_emission_allocation_no_product import (
+    Rls as ReportEmissionAllocationNoProductRls,
+)
 
 
 class ReportEmissionAllocationNoProduct(TimeStampedModel):
@@ -43,7 +45,9 @@ class ReportEmissionAllocationNoProduct(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_emission_allocation_no_product'
-        db_table_comment = "A table to store the methodology associated with the allocation of emissions IF there's no products"
+        db_table_comment = (
+            "A table to store the methodology associated with the allocation of emissions IF there's no products"
+        )
         app_label = "reporting"
         constraints = [
             models.UniqueConstraint(
