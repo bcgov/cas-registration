@@ -42,6 +42,7 @@ const OperationInformationForm = ({
   const [selectedPurpose, setSelectedPurpose] = useState(
     formData.registration_purpose || "",
   );
+  console.log("generalSchema", generalSchema);
   const [
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
@@ -68,6 +69,7 @@ const OperationInformationForm = ({
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
+    console.log("did i make it into handlesubmit");
     setError(undefined);
 
     const response = await actionHandler(
@@ -157,6 +159,7 @@ const OperationInformationForm = ({
           if (newSelectedPurpose !== selectedPurpose) {
             handleSelectedPurposeChange(newSelectedPurpose);
           }
+          console.log("e.formdata", e.formData);
         }}
         onCancel={() => router.push("/operations")}
         formContext={{

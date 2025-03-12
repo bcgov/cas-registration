@@ -4,6 +4,7 @@ const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
+  console.log("errors before filter", errors);
   errors = errors.filter((error) => {
     // in Administration boundary_map and process_flow_diagram are in section1, and in Registration they're in section2
     if (error?.property) {
@@ -30,12 +31,13 @@ const customTransformErrors = (
           return false;
         }
       }
-      if (error.message === "must be equal to constant") {
-        return false; // This will exclude the error from the array
-      }
+      // if (error.message === "must be equal to constant") {
+      //   return false; // This will exclude the error from the array
+      // }
     }
     return true; // Keep all other errors
   });
+  console.log("errors", errors);
   return errors.map((error) => {
     if (error?.property) {
       if (error.message === "must be equal to constant") {

@@ -32,6 +32,7 @@ const FileWidget = ({
   value,
   options,
 }: WidgetProps) => {
+  console.log("value", value);
   const { downloadUrl, extractedFileName } = handleValue(value);
   const [fileName, setFileName] = useState(extractedFileName);
 
@@ -45,7 +46,6 @@ const FileWidget = ({
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
-
   const handleChange = async (evt: ChangeEvent<HTMLInputElement>) => {
     if (!evt.target.files) {
       return;
