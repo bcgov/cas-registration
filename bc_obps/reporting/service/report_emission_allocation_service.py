@@ -11,6 +11,7 @@ from reporting.schema.report_product_emission_allocation import (
     ReportProductEmissionAllocationsSchemaOut,
 )
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.models.report_emission_allocation_no_product import ReportEmissionAllocationNoProduct
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models import FacilityReport
@@ -51,6 +52,18 @@ class ReportEmissionAllocationService:
             allocation_methodology = existing_allocation.allocation_methodology
             if existing_allocation.allocation_other_methodology_description is not None:
                 allocation_other_methodology_description = existing_allocation.allocation_other_methodology_description
+        else:
+            # get methodology in no-product table if any
+            report_emission_allocation_no_product = ReportEmissionAllocationNoProduct.objects.filter(
+                report_version_id=report_version_id, facility_report__facility_id=facility_id
+            )
+            existing_no_product_record = report_emission_allocation_no_product.first()
+            if existing_no_product_record is not None:
+                allocation_methodology = existing_no_product_record.allocation_methodology
+                if existing_no_product_record.allocation_other_methodology_description is not None:
+                    allocation_other_methodology_description = (
+                        existing_no_product_record.allocation_other_methodology_description
+                    )
 
         report_product_emission_allocations_data = []
         total_reportable_emissions = 0
@@ -113,6 +126,7 @@ class ReportEmissionAllocationService:
         allocation_methodology = data.allocation_methodology
         allocation_other_methodology_description = data.allocation_other_methodology_description
 
+        hasNoProducts = True
         # Update the emission allocations from the data
         for allocations in report_emission_allocations:
             # emission_total = allocations.emission_total # TODO: validation should be done with this value to make sure we are not under- or over-allocating (currently, this validation occurs in the frontend)
@@ -139,6 +153,22 @@ class ReportEmissionAllocationService:
                         "allocation_other_methodology_description": allocation_other_methodology_description,
                     },
                 )
+            if allocations.products:
+                hasNoProducts = False
+
+        # If no products found, save just methodology in separate table
+        if hasNoProducts:
+            (
+                report_emission_allocation_no_product_record,
+                _,
+            ) = ReportEmissionAllocationNoProduct.objects.update_or_create(
+                report_version_id=report_version_id,
+                facility_report_id=facility_report_id,
+                defaults={
+                    "allocation_methodology": allocation_methodology,
+                    "allocation_other_methodology_description": allocation_other_methodology_description,
+                },
+            )
 
     @staticmethod
     def check_if_products_are_allowed(report_version_id: int, product_ids: List[int]) -> bool:
