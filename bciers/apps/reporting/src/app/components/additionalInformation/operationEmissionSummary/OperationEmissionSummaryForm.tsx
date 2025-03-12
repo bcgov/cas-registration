@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
   operationEmissionSummarySchema,
   emissionSummaryUiSchema,
@@ -8,33 +7,26 @@ import {
 import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
 import { EmissionSummaryFormData } from "@reporting/src/app/utils/emissionSummaryTypes";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
+import { NavigationInformation } from "../../taskList/types";
 
 interface Props {
-  versionId: number;
   summaryFormData: EmissionSummaryFormData;
-  taskListElements: TaskListElement[];
-  isNewEntrant: boolean;
+  navigationInformation: NavigationInformation;
 }
 
 const OperationEmissionSummary: React.FC<Props> = ({
-  versionId,
   summaryFormData,
-  taskListElements,
-  isNewEntrant,
+  navigationInformation,
 }) => {
-  const backUrl = isNewEntrant
-    ? `/reports/${versionId}/new-entrant-information`
-    : `/reports/${versionId}/additional-reporting-data`;
-  const continueUrl = `/reports/${versionId}/compliance-summary`;
   const additionalReportingStepIndex = 2;
 
   return (
     <MultiStepFormWithTaskList
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       schema={operationEmissionSummarySchema}
       uiSchema={emissionSummaryUiSchema}
-      backUrl={backUrl}
-      continueUrl={continueUrl}
+      backUrl={navigationInformation.backUrl}
+      continueUrl={navigationInformation.continueUrl}
       steps={multiStepHeaderSteps}
       initialStep={additionalReportingStepIndex}
       formData={summaryFormData}
