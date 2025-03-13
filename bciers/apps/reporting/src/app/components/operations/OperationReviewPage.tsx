@@ -49,7 +49,7 @@ export default async function OperationReviewPage({
 
   const navigationInformation = await getNavigationInformation(
     HeaderStep.OperationInformation,
-    ReportingPage.ReviewOperatorInfo,
+    ReportingPage.ReviewOperationInfo,
     version_id,
     facilityReport.facility_id,
   );
