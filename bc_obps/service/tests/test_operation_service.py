@@ -106,7 +106,6 @@ class TestOperationService:
         assert operation.updated_at is not None
         assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
 
-
     @staticmethod
     def test_list_current_users_unregistered_operations():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
